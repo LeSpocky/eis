@@ -1,0 +1,140 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# system-devices-vg-resize - resize volume group
+#
+# Creation   : 02.09.2009 schlotze
+# Last Update: $Id: system-filesystems-vg-resize 16982 2008-10-17 12:52:01Z schlotze $
+#
+#----------------------------------------------------------------------------
+. /var/install/include/anykey
+. /var/install/include/mecho
+. /var/install/include/techo
+echo
+
+#exec 2> /tmp/system-devices-vg-resize-trace$$.log
+#set -x
+
+if ! lsmod | grep -qs "dm_mod"
+then
+    modprobe dm_mod
+fi
+
+mecho --info "Available volume groups"
+techo begin 4 35 5r 5r 5r 8 9r 9r
+techo row --info No. --info "VG" --info "#PV" --info "#LV" --info "#SN" --info "Attr" --info "VSize" --info "VFree"
+mecho --info "================================================================================"
+
+idx=1
+vgs > /tmp/tmp_vgs$$
+while read line
+do
+    set -- $line
+    if [ "$1" != "VG" ]
+    then
+        eval vg_$idx='"$1"'
+        techo row $idx $1 $2 $3 $4 $5 $6 $7
+        idx=`expr $idx + 1`
+    fi
+done < /tmp/tmp_vgs$$
+
+rm /tmp/tmp_vgs$$
+
+idx=`expr $idx - 1`
+novgdevice=`/var/install/bin/ask "Please choose the volume group to resize" "" "1-$idx" "0=Exit"`
+
+if [ "$novgdevice" != "0" ]
+then
+    eval "vgdevice"='$vg_'$novgdevice
+    
+    echo ""
+    extend=`/var/install/bin/ask "Do you want to expand the volume group?" "no"`
+    echo ""
+    if [ "$extend" = "no" ]
+    then
+        reduce=`/var/install/bin/ask "Do you want to reduce the logical volume?" "no"`
+        if [ "$reduce" = "yes" ]
+        then
+            removeAll=`/var/install/bin/ask "Do want to remove all free physical volumes from the chosen volume group?" "no"`
+            if [ "$removeAll" = "yes" ]
+            then
+                vgreduce -a $vgdevice
+            else
+                echo ""
+                mecho --info "List physical volumes"
+                echo ""
+                techo begin 4 11 35 6 6 9r 9r
+                techo row --info No. --info "PV" --info "VG" --info "Fmt" --info "Attr" --info "PSize" --info "PFree"
+                mecho --info "================================================================================"
+                
+                idx=1
+                pvs > /tmp/tmp_pvs$$
+                while read line
+                do
+                    set -- $line
+                    if [ "$1" != "PV" ]
+                    then
+                        eval pv_$idx='"$1"'
+                        eval pvDev_$idx='"$2"'
+                        if [ "$6" = "" ]
+                        then
+                            techo row $idx $1 "" $2 $3 $4 $5
+                        else
+                            techo row $idx $1 $2 $3 $4 $5 $6
+                        fi
+                        idx=`expr $idx + 1`
+                    fi
+                done < /tmp/tmp_pvs$$
+                
+                rm /tmp/tmp_pvs$$
+                
+                idx=`expr $idx - 1`
+                nopvdevice=`/var/install/bin/ask "Please choose a physical volume to remove" "" "1-$idx" "0=Exit"`
+                if [ "$nopvdevice" != "0" ]
+                then
+                    eval "pvdevice"='$pv_'$nopvdevice
+                    vgreduce $vgdevice $pvdevice
+                fi
+            fi
+        fi
+    else
+        echo ""
+        mecho --info "List physical volumes"
+        echo ""
+        techo begin 4 11 35 6 6 9r 9r
+        techo row --info No. --info "PV" --info "VG" --info "Fmt" --info "Attr" --info "PSize" --info "PFree"
+        mecho --info "================================================================================"
+        
+        idx=1
+        pvs > /tmp/tmp_pvs$$
+        while read line
+        do
+            set -- $line
+            if [ "$1" != "PV" ]
+            then
+                eval pv_$idx='"$1"'
+                eval pvDev_$idx='"$2"'
+                    if [ "$6" = "" ]
+                then
+                    techo row $idx $1 "" $2 $3 $4 $5
+                else
+                    techo row $idx $1 $2 $3 $4 $5 $6
+                fi
+                idx=`expr $idx + 1`
+            fi
+        done < /tmp/tmp_pvs$$
+        
+        rm /tmp/tmp_pvs$$
+        
+        idx=`expr $idx - 1`
+        nopvdevice=`/var/install/bin/ask "Please choose a physical volume to add to the volume group" "" "1-$idx" "0=Exit"`
+        if [ "$nopvdevice" != "0" ]
+        then
+            eval "pvdevice"='$pv_'$nopvdevice
+            vgextend $vgdevice $pvdevice
+        fi
+    fi
+fi
+
+echo
+anykey
+exit 0

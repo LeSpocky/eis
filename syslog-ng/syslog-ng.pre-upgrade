@@ -1,0 +1,6 @@
+#!/bin/sh
+
+rm -f /etc/syslog-ng/syslog-ng-*.std
+rm -f /etc/syslog-ng/*.apk*
+rm -f /etc/logrotate.d/*.apk*
+/etc/init.d/syslog-ng stop

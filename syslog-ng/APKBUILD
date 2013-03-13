@@ -1,0 +1,74 @@
+# Contributor:
+# Maintainer: jens@eisfair.org
+pkgname=syslog-ng
+pkgver=2.1.4
+pkgrel=1
+pkgdesc="Syslog-NG"
+url="http://www.balabit.com"
+arch="all"
+license="GNU"
+depends="glib libeventlog"
+depends_dev="glib-dev libeventlog-dev"
+makedepends="$depends_dev"
+install="$pkgname.pre-install $pkgname.post-install $pkgname.pre-deinstall $pkgname.pre-upgrade $pkgname.post-upgrade"
+subpackages=""
+source="http://www.balabit.com/downloads/files?path=/syslog-ng/open-source-edition/2.1.4/source/syslog-ng_2.1.4.tar.gz
+        syslog.logrotate
+        syslog-ng.conf
+        syslog-ng.initd
+        syslog-ng-destination.std
+        syslog-ng-filter.std
+        syslog-ng-log.std
+        syslog-ng-options.std
+        syslog-ng-source.std
+        "
+
+_builddir="$srcdir/${pkgname}-$pkgver"
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+	./configure --prefix=/usr \
+    --sysconfdir=/etc/syslog-ng \
+    --enable-ipv6 \
+    --disable-sql \
+    --disable-mongodb \
+    --disable-json \
+    || return 1
+	make || return 1    
+}
+
+package() {
+	cd "$_builddir"
+	make -j1 DESTDIR=${pkgdir} install || return 1
+    rm -rf ${pkgdir}/usr/share
+    strip -R .note -R .comment ${pkgdir}/usr/bin/*
+    strip -R .note -R .comment ${pkgdir}/usr/sbin/*
+    install -D -m755 "$srcdir"/$pkgname.initd ${pkgdir}/etc/init.d/$pkgname || return 1    
+    install -D -m644 "$srcdir"/syslog-ng.conf ${pkgdir}/etc/syslog-ng/syslog-ng.conf || return 1
+    install -D -m644 "$srcdir"/syslog-ng-destination.std ${pkgdir}/etc/syslog-ng/syslog-ng-destination.std || return 1
+    install -D -m644 "$srcdir"/syslog-ng-filter.std ${pkgdir}/etc/syslog-ng/syslog-ng-filter.std || return 1
+    install -D -m644 "$srcdir"/syslog-ng-log.std ${pkgdir}/etc/syslog-ng/syslog-ng-log.std || return 1
+    install -D -m644 "$srcdir"/syslog-ng-options.std ${pkgdir}/etc/syslog-ng/syslog-ng-options.std || return 1
+    install -D -m644 "$srcdir"/syslog-ng-source.std ${pkgdir}/etc/syslog-ng/syslog-ng-source.std || return 1
+    install -D -m644 "$srcdir"/syslog.logrotate ${pkgdir}/etc/logrotate.d/syslog || return 1
+}
+
+md5sums="17c4c7725d2eab62b588395f1ed93f32  syslog-ng_2.1.4.tar.gz
+8916d55f8213d2746e8c2a6a89c29d6c  syslog.logrotate
+6cf7b652fb10e3a112669ab1a76e379d  syslog-ng.conf
+45391099acb5dcb05ff5bfb6f10263b3  syslog-ng.initd
+c54897513a21f3f7f9714efb66fb883b  syslog-ng-destination.std
+2e54440ef707c9cbeb3560a27a86bcaa  syslog-ng-filter.std
+e934a4feb9a6665e8b6e46ff07dc34c5  syslog-ng-log.std
+20f2d523ff978fdc746be5582248a491  syslog-ng-options.std
+61b35e1230f0b6adf83d18a79a096157  syslog-ng-source.std"

@@ -1,0 +1,95 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# system-devices-lv-resize - resize logical volumes
+#
+# Creation   : 02.09.2009 schlotze
+# Last Update: $Id: system-filesystems-lv-resize 26120 2010-10-02 12:33:28Z schlotze $
+#
+#----------------------------------------------------------------------------
+. /var/install/include/anykey
+. /var/install/include/mecho
+. /var/install/include/techo
+echo
+
+#exec 2> /tmp/system-devices-lv-resize-trace$$.log
+#set -x
+
+modprobe dm_mod
+
+mecho --info "Resize volume groups"
+mecho --info "Available logical volumes"
+techo begin 4 27 32 8 9r
+techo row --info No. --info "LV" --info "VG" --info "Attr" --info "VSize"
+mecho --info "================================================================================"
+
+idx=1
+lvs > /tmp/tmp_lvs$$
+while read line
+do
+    set -- $line
+    if [ "$1" != "LV" ]
+    then
+        eval lv_$idx='"$1"'
+        eval vg_$idx='"$2"'
+        techo row $idx $1 $2 $3 $4
+        idx=`expr $idx + 1`
+    fi
+done < /tmp/tmp_lvs$$
+
+rm /tmp/tmp_lvs$$
+
+echo
+idx=`expr $idx - 1`
+nolvdevice=`/var/install/bin/ask "Please choose a volume which you want to resize" "" "1-$idx" "0=Exit"`
+if [ "$nolvdevice" != "0" ]
+then 
+    eval "lvdevice"='$lv_'$nolvdevice
+    eval "vgdevice"='$vg_'$nolvdevice
+    
+    # check if lv is mounted
+    if mount | grep -q "/dev/${vgdevice}/${lvdevice}"
+    then 
+        mecho --error "You cannot resize a mounted logical volume!"
+        exit 1
+    else
+        if mount | grep -q "/dev/mapper/${vgdevice}-${lvdevice}"
+        then 
+            mecho --error "You cannot resize a mounted logical volume!"
+            exit 1
+        fi
+    fi
+    
+    
+    extend=`/var/install/bin/ask "Do you want to expand the logical volume?" "no"`
+    mecho
+    if [ "$extend" = "no" ]
+    then
+        reduce=`/var/install/bin/ask "Do you want to reduce the logical volume?" "no"`
+        if [ "$reduce" = "yes" ]
+        then
+            size=`/var/install/bin/ask "Please enter the size you want to reduce the logical volume in megabyte (e.g. 100)" "" "1-999999" "0=Exit"`
+            if [ "$size" != "0" ]
+            then 
+                lvreduce -L-$size /dev/$vgdevice/$lvdevice
+            fi
+        fi
+    else
+        size=`/var/install/bin/ask "Please enter the size you want to expand the logical volume in megabyte (e.g. 100)" "" "1-999999" "0=Exit"`
+        if [ "$size" != "0" ]
+        then 
+            lvextend -L+$size /dev/$vgdevice/$lvdevice
+        fi
+    fi
+    
+    #umount
+    #e2fsck -f /dev/$vgdevice/$lvdevice
+    #resize2fs /dev/$vgdevice/$lvdevice
+    mecho --warn "You have to check and resize the filesystem manually!"
+    echo "You can do this by running:"
+    echo "e2fsck -f /dev/$vgdevice/$lvdevice"
+    echo "resize2fs /dev/$vgdevice/$lvdevice"
+fi
+
+echo
+anykey
+exit 0

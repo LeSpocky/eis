@@ -1,0 +1,7 @@
+<package>base</package>
+<title>eisfair setup</title>
+<version/>
+<menu file="setup.system.menu">System administration</menu>
+<menu file="setup.packages.menu">Package administration</menu>
+<menu file="setup.services.menu">Service administration</menu>
+<script file="userman.cui.sh" ui="cui">User administration</script>'

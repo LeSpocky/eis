@@ -1,0 +1,37 @@
+#!/sbin/runscript
+
+extra_started_commands="reload"
+extra_commands="update"
+
+depend() {
+	need localmount
+	need logger
+}
+
+start() {
+	ebegin "Starting fcron"
+	start-stop-daemon --start --pidfile /var/run/fcron.pid --exec /usr/sbin/fcron -- $CRON_OPTS
+	eend $?
+}
+
+stop () {
+	ebegin "Stopping fcron"
+	start-stop-daemon --stop --pidfile /var/run/fcron.pid --exec /usr/sbin/fcron
+	eend $?
+}
+
+update() {
+	cat /var/spool/fcron/systab.orig | fcrontab -u systab -z 
+	cd /etc/cron
+	for user in *
+	do
+		[ -d /etc/cron/${user} ] && cat /etc/cron/${user}/* 2>/dev/null | fcrontab - -u ${user} 
+	done
+}
+
+reload() {
+	update >/dev/null 2>&1
+	ebegin "Reloading fcron"
+	start-stop-daemon --signal HUP --pidfile /var/run/fcron.pid --exec /usr/sbin/fcron
+	eend $?
+}

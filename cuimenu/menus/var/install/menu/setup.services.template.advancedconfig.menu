@@ -1,0 +1,8 @@
+Advanced template-configuration file handling
+/var/install/bin/template-restore-dconf Restore configuration file from default directory
+/var/install/bin/template-restore-bconf Restore configuration file from backup directory
+/var/install/bin/template-backup-config Backup configuration file to backup directory
+/var/install/bin/template-diff-cd       Show difference between current and default configuration
+/var/install/bin/template-diff-cb       Show difference between current and a backup configuration
+/var/install/bin/template-diff-db       Show difference between default and a backup configuration
+/var/install/bin/template-diff-bb       Show difference between two backup configurations

@@ -1,0 +1,514 @@
+<help name="START_APACHE2">
+Startet den Apache-Webserver beim Booten des eisfairs.
+</help>
+
+<help name="APACHE2_PORT">
+Auf diesem Port läuft Apache und nimmt Anfragen entgegen.
+<br/><br/>
+Standardeinstellung: APACHE2_PORT='80'
+</help>
+
+<help name="APACHE2_SERVER_ADMIN">
+Die Email-Adresse des Serverbetreibers; diese wird auf den Seiten eingefügt,
+die vom Server in Fehlerfällen generiert werden.
+</help>
+
+<help name="APACHE2_SERVER_NAME">
+Hier wird der Name angegeben unter dem der Apache-Webserver im Browser später aufgerufen wird. Es muss ein FQDN (Full qualified domain name) angegeben werden. D.h. Hostname + Domainname.
+<br/><br/>
+Ist der Hostname vom eisfair z.B. obelix und der Domainname home.lan, so muss als Server-Name obelix.home.lan angegeben werden
+</help>
+
+<help name="APACHE2_SERVER_SIGNATURE">
+Hierüber kann festgelegt werden, ob Apache in automatisch
+generierte Dokumente wie Index- oder Fehlermeldungsseiten eine
+FußŸzeile einfügen soll.
+<br/><br/>
+- Off: Apache erzeugt keine InformationsfußŸzeile.
+- On: Es wird eine FußŸzeile ohne E-Mail-Adresse generiert.
+- Email: Es wird eine FußŸzeile mit E-Mail-Adresse generiert.
+<br/><br/>
+Standardeinstellung: APACHE2_SERVER_SIGNATURE='On'
+</help>
+
+<help name="APACHE2_SSL">
+Schaltet SSL global ein oder aus.
+</help>
+
+<help name="APACHE2_SSL_PORT">
+Gibt den Port an, auf dem der Webserver SSL-Verbindungen entgegen nehmen soll.
+<br/><br/>
+Standardeinstellung: 443
+</help>
+
+<help name="APACHE2_SSL_LOGDIR">
+Gibt das _Verzeichnis_ an, in dem die Logfiles der SSL-Zugriffe abgelegt werden sollen.
+<br/><br/>
+ACHTUNG: Es darf nicht der Slash am Ende des Pfades vergessen werden!
+Standardeinstellung: /data/www/log/
+</help>
+
+<help name="APACHE2_DIRECTORY_INDEX">
+Diese Seite wird aufgerufen, wenn keine Datei in der URL angegeben wird
+z.B. nur http://192.168.0.1/ dann wird automatisch umgeleitet auf
+http://192.168.0.1/index.html.
+<br/><br/>
+Wenn PHP installiert wird, wird (in der Konfiguration nicht sichtbar) automatisch
+index.php hinzugefügt.
+<br/><br/>
+Standardeinstellung: APACHE2_DIRECTORY_INDEX='index.html index.htm'
+</help>
+
+<help name="APACHE2_HOSTNAME_LOOKUPS">
+Normalerweise werden in der Logfile nur die IP-Adressen gespeichert, die auf
+den Server zugegriffen haben. Wenn man diese Variable auf yes setzt werden statt den
+IP-Adressen, die Hostnames in die Logfile geschrieben. Das Auflösen der IP-Adressen in DNS-Namen ist
+allerdings ein zeitaufwendiger Prozess; auf einem Server, der eine hohe Last hast, ist die
+Einstellung APACHE2_HOSTNAME_LOOKUPS='no' empfohlen.
+<br/><br/>
+Die IP-Adressen können beim Auswerten der Logfiles immer noch in (evt. veraltete) DNS-Namen aufgelöst werden.
+<br/><br/>
+Standardeinstellung: APACHE2_HOSTNAME_LOOKUPS='no'
+</help>
+
+<help name="APACHE2_VIEW_DIRECTORY_CONTENT">
+Wenn in der URL nur ein Verzeichnis angegeben ist und dort keine Index-Datei aus
+APACHE2_DIRECTORY_INDEX liegt, wird bei der Einstellung yes der Verzeichnis Inhalt angezeigt.
+<br/><br/>
+Standardeinstellung: APACHE2_VIEW_DIRECTORY_CONTENT='no'
+</help>
+
+<help name="APACHE2_ENABLE_SSI">
+Legt fest, ob Server Side Includes (SSI) verwendet werden. Server Side Includes sind eine Möglichkeit,
+Seiten dynamisch zusammenzubauen. Für weitere Informationen siehe http://www.apacheweek.com/features/ssi.
+</help>
+
+<help name="APACHE2_ENABLE_USERDIR">
+Ermöglich die Anzeige von Benutzer-Seiten aus: /home/USER/public_html
+</help>
+
+<help name="APACHE2_ACCESS_CONTROL">
+Die IPs bzw. Hosts die hier angegeben werden haben Zugriff auf den Apache.
+Für die Virtual Hosts muss dies extra eingestellt werden.
+Jeder Rechner hat Zugriff, wenn die Variable auf 'all' steht.
+<br/><br/>
+Folgende Beispiele illustrieren die Formate der Parameter:
+- 192.168.
+- 192.168.0.0/16
+- 192.168.0.0/255.255.0.0
+- 192.168.0.1 192.168.0.2
+- http.apache.org
+- apache.org
+- .org
+<br/><br/>
+Standardeinstellung: APACHE2_ACCESS_CONTROL='all'
+</help>
+
+<help name="APACHE2_ERROR_LOG">
+Alle Errors, die der Apache dem User liefert oder die sonst auftreten können (z.B. Fehler in Modulen)
+werden in dieser Datei gespeichert.
+<br/><br/>
+Standardeinstellung: APACHE2_ERROR_LOG='/var/www/log/error.log'
+</help>
+
+<help name="APACHE2_ACCESS_LOG">
+Alle Zugriffe werden in diese Datei geloggt.
+Standardeinstellung: APACHE2_ACCESS_LOG='/var/www/log/access.log'
+</help>
+
+<help name="APACHE2_ERROR_DOCUMENT_N">
+Legt die Anzahl von Fehlerdokumenten fest.
+</help>
+
+<help name="APACHE2_ERROR_DOCUMENT_%_ERROR">
+Ein Webserver liefert bei Fehlern bestimmte Statuscodes. Eine Auflistung aller Codes
+ist auf dieser Website zu finden: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+</help>
+
+<help name="APACHE2_ERROR_DOCUMENT_%_DOCUMENT">
+Wenn ein Fehler auftritt wird nicht die Fehlerseite vom Apache angezeigt
+sondern die hier angegebene HTML-Seite. Es können auch CGI- oder PHP-Scripts
+angegeben werden.
+</help>
+
+<help name="APACHE2_DIR_N">
+Legt die Anzahl der Directoryeinstellungen fest.
+</help>
+
+<help name="APACHE2_DIR_%_ACTIVE">
+Legt fest, ob die aktuelle Directory Sektion aktiv ist, oder nicht.
+</help>
+
+<help name="APACHE2_DIR_%_ALIAS">
+Hier kann angegeben werden, ob für die aktuelle
+Directoryeinstellungen ein Alias vergeben werden soll.
+</help>
+
+<help name="APACHE2_DIR_%_ALIAS_NAME">
+Soll für die aktuellen Directoryeinstellungen ein Alias
+vergeben werden, so muss hier der Aliasname eingetragen werden.
+</help>
+
+<help name="APACHE2_DIR_%_PATH">
+Hier muss der reelle Pfad angegeben werden für den die u.g. Parameter gelten.
+</help>
+
+<help name="APACHE2_DIR_%_AUTH_NAME">
+Wenn APACHE2_DIR_%_AUTH_N nicht gesezt ist, kann man dies Variable ignorieren.
+Wenn allerdings die Authentication genutzt werden soll wird der Inhalt dieser
+Variable im Fenster des Browser angezeigt, wo man Benutzername und Passwort
+eingeben muss.
+</help>
+
+<help name="APACHE2_DIR_%_AUTH_N">
+über diese Variable kann gesteuert werden, wieviele User einen
+geschützten Bereich nutzen dürfen.
+</help>
+
+<help name="APACHE2_DIR_%_AUTH_%_USER">
+Hier kann der User angegeben werden, der sich in den geschüzten Bereich
+einloggen kann. Die Passwort und Benutzername Abfrage geschieht über den
+Brwoser.
+</help>
+
+<help name="APACHE2_DIR_%_AUTH_%_PASS">
+Das Passwort für den Benutzer in APACHE2_DIR_%_AUTH_%_USER wird hier angegeben.
+Momentan wird dieses noch im Klartext in der Konfigurationsdatei abgespeichert,
+in den späteren Versionen vom Apache-Package wird sich dies aber noch ändern.
+</help>
+
+<help name="APACHE2_DIR_%_ACCESS_CONTROL">
+Der Syntax dieser Variable wird bei APACHE2_ACCESS_CONTROL erklärt.
+Die hier angegebene Zugriffserlaubnis bezieht sich dann nur auf APACHE2_DIR_%_PATH
+</help>
+
+<help name="APACHE2_DIR_%_CGI">
+Entweder darf hier 'no' angegeben werden oder '.pl', '.cgi' o.ä.
+Aber \textbf{nicht} 'yes'!
+Steht diese Variable nicht auf 'no', dann können CGI-Scripts mit den
+Endungen, die in der Variable stehen ausgeführt werde. Wenn ein CGI-Script
+aufgerufen wird, dessen Endung nicht in APACHE2_DIR_%_CGI steht, wird der
+Quelltext angezeigt.
+</help>
+
+<help name="APACHE2_DIR_%_SSI">
+Hier darf 'yes' oder 'no' eingetragen werden. Wenn 'yes' eingetragen ist,
+dann können SSI Scripts mit der Endung .shtml ausgeführt werden. Aber nur
+in dem in APACHE2_DIR_%_PATH angegebem Pfad.
+</help>
+
+<help name="APACHE2_DIR_%_VIEW_DIR_CONTENT">
+Diese Variable ist in APACHE2_VIEW_DIRECTORY_CONTENT erklärt.
+Bezieht sich aber nur auf den in APACHE2_DIR_%_PATH angegebenem Pfad.
+</help>
+
+<help name="APACHE2_DIR_%_WEBDAV">
+Schaltet WebDAV ein oder aus. WebDAV ist eine Dateifreigabe über HTTP und wird z.B. für gemeinsam genutze Terminkalender genutzt (z.B. Mozilla Sunbird)
+</help>
+
+<help name="APACHE2_VHOST_N">
+Hier kann die Anzahl der virtuellen Hosts definiert werden.
+</help>
+
+<help name="APACHE2_VHOST_%_ACTIVE">
+Hier wird angeben, ob der betreffende VirtualHost aktiv sein soll.
+</help>
+
+<help name="APACHE2_VHOST_%_IP">
+Wenn diese Variable auf * gesetzt ist (Standardeinstellung), kann dieser Virtual Host über jede IP-Adresse
+erreicht werden, die an die NICs gebunden sind. Gibt man hier eine IP-Adresse ein, ist der Virtual Host nur
+über die eingegeben IP-Adresse erreichbar. Dies nennt mann dann IP-Based Virtual Hosts.
+</help>
+
+<help name="APACHE2_VHOST_%_PORT">
+Hier wird angegeben, auf welchem Port der entsprechende Virtual Host Anfragen entgegen nehmen soll
+</help>
+
+<help name="APACHE2_VHOST_%_SERVER_NAME">
+Hier muss der Hostname des Virtual Hosts angegeben werden. Es muss ein Full Qualified Domain Name (FQDN) sein.
+D.h. der Hostname muss den Host-Anteil plus den Domainnamen enthalten.
+<br/><br/>
+Beispiel:
+APACHE2_VHOST_%_SERVER_NAME='eis.meinedomain.de'
+</help>
+
+<help name="APACHE2_VHOST_%_SERVER_ALIAS">
+Hier können zusätzliche Hostnamen angegeben werden.
+<br/><br/>
+Beispiel:
+APACHE2_VHOST_%_SERVER_ALIAS='www.meinedomain.de *.eis.meinedomain.de'
+</help>
+
+<help name="APACHE2_VHOST_%_SERVER_ADMIN">
+Die Email-Adresse des Serverbetreibers; diese wird auf den Seiten eingefügt,
+die vom Server in Fehlerfällen generiert werden.
+<br/><br/>
+Beispiel:
+APACHE2_VHOST_%_SERVER_ADMIN='wwwadmin@meinedomain.de'
+</help>
+
+<help name="APACHE2_VHOST_%_DOCUMENT_ROOT">
+In dem hier angegeben Verzeichnis liegen die HTML-Dateien die dieser Virtual Host zur Verfügung stehen soll.
+<br/><br/>
+Beispiel:
+APACHE2_VHOST_%_DOCUMENT_ROOT='/data/www/meinedomain.de/htdocs/'
+</help>
+
+<help name="APACHE2_VHOST_%_SCRIPT_ALIAS">
+</help>
+
+<help name="APACHE2_VHOST_%_SCRIPT_DIR">
+Hier muss das reelle Verzeichnis angegeben werden, in dem die CGI-Scripts für diesen
+VirtualHost liegen
+<br/><br/>
+Beispiel:
+APACHE2_VHOST_%_SCRIPT_DIR='/data/www/meinedomain.de/cgi-bin/'
+</help>
+
+<help name="APACHE2_VHOST_%_ERROR_LOG">
+In die hier angebene Datei werden die Fehler, welche für diesen Virtual Host auftreten
+geschrieben. z.B. Zugriffsfehler wie ein 404 - Not Found
+<br/><br/>
+Beispiel:
+APACHE2_VHOST_%_ERROR_LOG='/data/www/meinedomain.de/log/error_log'
+</help>
+
+<help name="APACHE2_VHOST_%_ACCESS_LOG">
+In die hier angegebe Datei werden die erfolgten Zugriffe geschrieben.
+<br/><br/>
+Beispiel:
+APACHE2_VHOST_%_ACCESS_LOG='/data/www/meinedomain.de/log/access_log'
+</help>
+
+<help name="APACHE2_VHOST_%_ACCESS_CONTROL">
+Die Adressen die hier angegeben werden, haben Zugriff auf den Server.
+Wenn alle Rechner Zugriff haben sollen, dann muss hier "all'' angegeben werden.
+<br/><br/>
+Siehe auch APACHE2_ACCESS_CONTROL
+</help>
+
+<help name="APACHE2_VHOST_%_SCRIPT_DIR">
+Hier muss das reelle Verzeichnis angegeben werden, in dem die
+CGI-Scripts für diesen VirtualHost liegen
+<br/><br/>
+Beispiel:
+APACHE2_VHOST_%_SCRIPT_DIR='/data/www/meinedomain.de/cgi-bin/'
+</help>
+
+<help name="APACHE2_VHOST_%_ERROR_LOG">
+In die hier angebene Datei werden die Fehler, welche für diesen
+Virtual Host auftreten geschrieben. z.B. Zugriffsfehler wie ein
+404 - Not Found
+<br/><br/>
+Beispiel:
+APACHE2_VHOST_%_ERROR_LOG='/data/www/meinedomain.de/log/error_log'
+</help>
+
+<help name="APACHE2_VHOST_%_ACCESS_LOG">
+In die hier angegebe Datei werden die erfolgten Zugriffe
+geschrieben.
+<br/><br/>
+Beispiel:
+APACHE2_VHOST_%_ACCESS_LOG='/data/www/meinedomain.de/log/access_log'
+</help>
+
+<help name="APACHE2_VHOST_%_ACCESS_CONTROL">
+Die Adressen die hier angegeben werden, haben Zugriff auf den
+Server. Wenn alle Rechner Zugriff haben sollen, dann muss hier
+``all'' angegeben werden.
+<br/><br/>
+Siehe auch [6]APACHE2_ACCESS_CONTROL
+</help>
+
+<help name="APACHE2_VHOST_%_VIEW_DIRECTORY_CONTENT">
+Wenn in der URL nur ein Verzeichnis angegeben ist und dort keine Index-Datei aus
+APACHE2_DIRECTORY_INDEX liegt, wird bei der Einstellung yes der Verzeichnis Inhalt angezeigt.
+<br/><br/>
+Standardeinstellung: APACHE2_VHOST_%_VIEW_DIRECTORY_CONTENT='no'
+</help>
+
+<help name="APACHE2_VHOST_%_ENABLE_SSI">
+Legt fest, ob Server Side Includes (SSI) verwendet werden. Server Side Includes sind eine Möglichkeit,
+Seiten dynamisch zusammenzubauen. Für weitere Informationen siehe http://www.apacheweek.com/features/ssi.
+</help>
+
+<help name="APACHE2_VHOST_%_MOD_CACHE">
+Schaltet für den VHOST den Festplatten Cache zu.<br/>
+Das reduziert die Last des Servers, kann aber gelegentlich mit einigen <br/>
+PHP-Scripte zu Problemen führen.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_N">
+Anzahl der Directories.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_%_ACTIVE">
+Gibt an, ob die aktuellen Einstellungen aktiv sind, oder nicht.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_%_ALIAS">
+Hier kann angegeben werden, ob für die aktuelle
+Directoryeinstellungen ein Alias vergeben werden soll.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_%_ALIAS_NAME">
+Soll für die aktuellen Directoryeinstellungen ein Alias
+vergeben werden, so muss hier der Aliasname eingetragen werden.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_%_PATH">
+Hier muss der reelle Pfad angegeben werden für den die u.g.
+Parameter gelten.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_%_AUTH_NAME">
+Wenn APACHE2_DIR_%_AUTH_N nicht gesezt ist, kann man dies
+Variable ignorieren. Wenn allerdings die Authentication genutzt
+werden soll wird der Inhalt dieser Variable im Fenster des
+Browser angezeigt, wo man Benutzername und Passwort eingeben
+muss.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_%_AUTH_N">
+über diese Variable kann gesteuert werden, wieviele User einen
+geschützten Bereich nutzen dürfen.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_%_AUTH_%_USER">
+Hier kann der User angegeben werden, der sich in den geschüzten
+Bereich einloggen kann. Die Passwort und Benutzername Abfrage
+geschieht über den Brwoser.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_%_AUTH_%_PASS">
+Das Passwort für den Benutzer in APACHE2_DIR_%_AUTH_%_USER wird
+hier angegeben. Momentan wird dieses noch im Klartext in der
+Konfigurationsdatei abgespeichert, in den späteren Versionen
+vom Apache-Package wird sich dies aber noch ändern.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_%_ACCESS_CONTROL">
+Der Syntax dieser Variable wird bei [7]APACHE2_ACCESS_CONTROL
+erklärt. Die hier angegebene Zugriffserlaubnis bezieht sich
+dann nur auf die aktuellen Directory Einstellungen.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_%_CGI">
+Entweder darf hier 'no' angegeben werden oder '.pl', '.cgi'
+o.ä. Aber nicht 'yes'! Steht diese Variable nicht auf 'no',
+dann können CGI-Scripts mit den Endungen, die in der Variable
+stehen ausgeführt werde. Wenn ein CGI-Script aufgerufen wird,
+dessen Endung nicht in APACHE2_DIR_%_CGI steht, wird der
+Quelltext angezeigt.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_%_SSI">
+Hier darf 'yes' oder 'no' eingetragen werden. Wenn 'yes'
+eingetragen ist, dann können SSI Scripts mit der Endung .shtml
+ausgeführt werden. Aber nur in dem in APACHE2_DIR_%_PATH
+angegebem Pfad.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_%_VIEW_DIR_CONTENT">
+Diese Variable ist in [8]APACHE2_VIEW_DIRECTORY_CONTENT
+erklärt. Bezieht sich aber nur auf den in APACHE2_DIR_%_PATH
+angegebenem Pfad.
+</help>
+
+<help name="APACHE2_VHOST_%_DIR_%_WEBDAV">
+Schaltet WebDAV ein oder aus. WebDAV ist eine Dateifreigabe
+über HTTP und wird z.B. für gemeinsam genutze Terminkalender
+genutzt (z.B. Mozilla Sunbird)
+</help>
+
+<help name="APACHE2_VHOST_%_SSL">
+Schaltet SSL für diesen Virtual Host ein oder aus.
+</help>
+
+<help name="APACHE2_VHOST_%_SSL">
+Gibt an, auf welchem Port Apache per SSL erreichbar sein soll.
+</help>
+
+<help name="APACHE2_VHOST_%_SSL_FORCE">
+Erzwingt SSL für diesen Virtual Host. Zugriffe per http://ServerName/ werden automatisch auf https://ServerName/ umgeleitet.
+</help>
+
+<help name="APACHE2_VHOST_%_SSL_CERT_NAME">
+Für jeden Virtual Host (IP-Based Virtual Hosts ausgenommen (APACHE_VHOST_%_IP ungleich '*')) wird ein eigenes Zertifikat benötigt. Der Name kann hier angegeben werden.<br/>
+Nach dem Abspeichern der Konfiguration wird ein neues Zertifikat erstellt, falls noch keines existiert.
+</help>
+
+<help name="APACHE2_LOG_LEVEL">
+über diese Variable kann geteuert werden, wieviel der apache
+protokollieren soll.
+<br/><br/>
+Gültige Werte: debug, info, notice, warn, error, crit, alert, emerg
+<br/><br/>
+Standardeinstellung: APACHE2_LOG_LEVEL='warn'
+</help>
+
+<help name="APACHE2_LOG_COUNT">
+Über diese variable kann gesteuert werden, wieviele Logfiles
+gespeichert werden sollen, bevor lofrotate alte Logfiles
+überschreibt.
+<br/><br/>
+Gültige Werte: Nummerischer Wert
+<br/><br/>
+Standardeinstellung: APACHE2_LOG_COUNT='10'
+</help>
+
+<help name="APACHE2_LOG_INTERVAL">
+Über diese Variable kann geteuert werden, wann logrotate
+Archive der aktuellen logfiles erstellt.
+<br/><br/>
+Gültige Werte: ''daily'', ''weekly'', ''monthly''
+<br/><br/>
+Standardeinstellung: APACHE2_LOG_INTERVAL='weekly'
+</help>
+
+<help name="APACHE2_MAX_KEEP_ALIVE_TIMEOUT">
+Über diese Variable kann gesteuert werden, wie viele Sekunden
+Apache eine persistente HTTP/1.1-Verbindung nach dem Abschluss
+einer Client-Anfrage offen halten und auf eine weitere Anfrage
+warten soll.
+<br/><br/>
+Gültige Werte: Nummerischer Wert
+<br/><br/>
+Standardeinstellung: APACHE2_MAX_KEEP_ALIVE_TIMEOUT='15'
+</help>
+
+<help name="APACHE2_MAX_KEEP_ALIVE_REQUESTS">
+Über diese Variable kann gesteuert werden, wie viele
+aufeinander folgende HTTP-Anfragen über ein und dieselbe
+persistente HTTP/1.1-Verbindung abgehandelt werden.
+<br/><br/>
+Gültige Werte: Nummerischer Wert
+<br/><br/>
+Standardeinstellung: APACHE2_MAX_KEEP_ALIVE_REQUESTS='100'
+</help>
+
+<help name="APACHE2_MAX_CLIENTS">
+Über diese Variable kann gesteuert werden, wie hoch die
+maximale Anzahl von Child-Prozessen beziehungsweise Threads
+ist, die Apache insgesamt zur Annahme von Client-Anfragen
+startet
+<br/><br/>
+Gültige Werte: Nummerischer Wert
+<br/><br/>
+Standardeinstellung: APACHE2_MAX_CLIENTS='250'
+</help>
+
+<help name="APACHE2_MAX_REQUESTS_PER_CHILD">
+Über diese Variable kann gesteuert werden, nach wievielen
+Anfragen ein worker thread beendet wird.
+<br/><br/>
+Gültige Werte: Nummerischer Wert
+<br/><br/>
+Standardeinstellung: APACHE2_MAX_REQUESTS_PER_CHILD='10000'
+</help>
+
+<help name="APACHE2_MOD_CACHE">
+Schaltet für das localhost Verzeichnis den Festplatten Cache zu.<br/>
+Das reduziert die Last des Servers, kann aber gelegentlich mit einigen <br/>
+PHP-Scripte zu Problemen führen.
+</help>

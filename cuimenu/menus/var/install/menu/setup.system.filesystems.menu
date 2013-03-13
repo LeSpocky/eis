@@ -1,0 +1,3 @@
+<package>base</package>
+<title>Filesystem administration</title>
+<script file="system-filesystems-list">List filesystems</script>

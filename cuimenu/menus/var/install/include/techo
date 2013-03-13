@@ -1,0 +1,172 @@
+#---------------------------------------------------------------------------
+# /usr/local/bin/techo - table echo
+#
+# Creation:     2004-08-20 max
+# Last Update: $Id: techo 24471 2012-11-14 21:14:01Z jv $
+#
+#----------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------
+# usage
+#     techo [--tty|--file] [--std|--info|--warn|--error] --begin width width ...
+#     techo [--tty|--file] [--std|--info|--warn|--error] --row [--std|--info|--warn|--error|--link] message ...
+#     techo [--tty|--file] [--std|--info|--warn|--error] --end
+#
+# options:
+#     --tty      use console colors
+#     --file     don't use any color tags
+#
+# message-options:
+#     --std      print standard message (default)
+#     --stdbr    print standard message (default)(bright)
+#     --info     print info message     (green)
+#     --warn     print warning message  (yellow)(bright)
+#     --error    print error message    (red)(brightinvers)
+#     --link     print message '>'      (cyan)
+#
+# example:
+#     techo --begin '3 3r 15 10 28* 20'
+#     techo --row "" 1 foo foo "This is a somehow longer text, since i need a very long line of text" foo
+#     techo --row "->" 2 --info "bar foo" --warn "foo bar" foo
+#     techo --row "" 12 foofoo foo foo --error foobar
+#     techo --info --row "" 24 foo foobar foo --error foobar
+#     techo --end
+# --------------------------------------------------------------------------
+
+_EISLIB_SCREENSIZE_X='80'
+
+techo()
+{
+    local _techo_opt='STD'
+    local _techo_mode="tty"
+    local _techo_mode2=""
+    local _techo_call=''
+    local _techo_colors=''
+    local _techo_total=0
+    local _techo_total_variable=0
+    local _techo_width=""
+    local _techo_reset="\033[0m"
+    local _techo_line="" 
+    local _techo_column=1  
+    local _techo_mask=""
+
+    while [ 1 ]
+    do
+        case "$1" in
+            --std)      _techo_opt='STD';      shift;;
+            --stdbr)    _techo_opt='STDBR';    shift;;
+            --info)     _techo_opt='INFO';     shift;;
+            --warn)     _techo_opt='WARN';     shift;;
+            --error)    _techo_opt='ERROR';    shift;;
+            --link)     _techo_opt='LINK';     shift;;
+            --tty)      _techo_mode=tty;       shift;;
+            --file)     _techo_mode=file;      shift;;
+            *)      break;;
+        esac
+    done
+
+    _techo_mode2=`echo $_techo_mode | tr 'a-z' 'A-Z'`
+
+    case "${1}" in
+        --begin|begin)  _techo_call='begin';     shift;;
+        --row|row)      _techo_call='row';       shift;;
+        --end|end)      _techo_call='end';       shift;;
+        *)              _techo_call='row';;
+    esac
+
+    case "${_techo_call}" in
+        begin)
+            # don't expand '*', do sed
+            for _techo_width in `echo "\"${*}\"" | tr -d 'rl' | sed 's# #" "#g'`
+            do
+                case "${_techo_width}" in
+                    *'*'*)
+                        # we can not use backticks in backticks, so we use $($( ))
+                        _techo_total_variable=$(/usr/bin/expr ${_techo_total_variable} + $(echo "${_techo_width}" | tr -d '*"'))
+                    ;;
+                esac
+                _techo_total=$(/usr/bin/expr ${_techo_total} + $(echo "${_techo_width}" | tr -d '*"'))
+            done
+
+            # check for row length only if != file
+            if [ "${_techo_mode}" != "file" ]
+            then
+                if [ ${_techo_total} -gt 80 ]
+                then
+                    echo "You cannot use techo with more than 80 columns."
+                    exit 255
+                fi
+
+                _techo_width_factor=100
+                if [ ${_EISLIB_SCREENSIZE_X} -gt 80 -a ${_techo_total_variable} -gt 0 ]
+                then
+                    let _techo_width_factor={$_EISLIB_SCREENSIZE_X-80}*100/$_techo_total_variable+100
+                fi
+            fi
+            ;;
+    esac
+
+    case "${_techo_call}" in
+        begin)
+            [ "$_techo_mode" = "file" ] && _techo_reset=""
+            for _techo_line in `echo "\"${*}\"" | sed 's# #" "#g'`
+            do
+                case "${_techo_line}" in
+                    *r*) _techo_align='';;
+                    *)   _techo_align='-';;
+                esac
+                _techo_width=`echo "${_techo_line}" | tr -d 'rl*"'`
+                case "${_techo_line}" in
+                    *'*'*) let _techo_width=$_techo_width*$_techo_width_factor/100
+                    ;;
+                esac
+                let _techo_width--
+
+                # generates pre-formatet string ...%b...%-7.7s...
+                eval _EISLIB_TECHO_${_techo_column}='%b%${_techo_align}${_techo_width}.${_techo_width}s${_techo_reset}\ '
+                 
+                let _techo_column++
+                shift
+            done
+            ;;
+        row)
+            _techo_column=1
+            _techo_mask=$_EISLIB_TECHO_1
+            while [ $# -gt 0 -a -n "$_techo_mask" ]
+            do
+                case $1 in
+                    --info)
+                        _techo_colors="\033[32m\033[49m"; shift;;
+                    --warn)
+                        _techo_colors="\033[33m\033[40m\033[1m"; shift;;
+                    --error)
+                        _techo_colors="\033[31m\033[47m\033[1m\033[7m"; shift;;
+                    --std)
+                        _techo_colors="\033[0m\033[49m"; shift;;
+                    --link)
+                        _techo_colors="\033[36m\033[49m"; shift;;
+                    *)  _techo_colors="";;
+                esac
+                [ "$_techo_mode" = "file" ] && _techo_colors=""
+                printf "${_techo_mask}" "$_techo_colors" "$1"
+                let _techo_column++
+                eval _techo_mask='$'_EISLIB_TECHO_${_techo_column}
+                shift
+            done
+            echo ""
+            ;;
+        end)
+            _techo_column=1
+            _techo_mask=$_EISLIB_TECHO_1
+            while [ -n "$_techo_mask" ]
+            do
+                unset _EISLIB_TECHO_${_techo_column}
+                let _techo_column++
+                eval _techo_mask='$'_EISLIB_TECHO_${_techo_column}
+            done
+            ;;
+    esac
+}
+# ==========================================================================
+# end
+# ==========================================================================

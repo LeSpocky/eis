@@ -1,0 +1,10 @@
+<package>base</package>
+<title>Device administration</title>
+<script file="system-devices-format-floppy">Format floppy disk</script>
+<script file="system-devices-mount-floppy">Mount floppy disk</script>
+<script file="system-devices-umount-floppy">Umount floppy disk</script>
+<script file="system-devices-mount-cdrom">Mount CDROM</script>
+<script file="system-devices-umount-cdrom">Umount CDROM</script>
+<script file="system-devices-mount-usb">Mount USB device</script>
+<script file="system-devices-umount-usb">Umount USB device</script>
+<script file="system-devices-mount-status">Mount status</script>

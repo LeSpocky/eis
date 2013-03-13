@@ -1,0 +1,27 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/system-base-set-menu-colors - set color style
+#
+# Creation:     2005-08-06  dv
+# Last Update:  $Id: system-base-set-menu-colors 24471 2012-11-14 21:14:01Z jv $
+#
+#----------------------------------------------------------------------------
+
+if [ $# -gt 0 ]
+then
+    restfile="$1"
+    if [ -f /var/install/styles/$restfile ]
+    then
+        /var/install/config.d/cui-update.sh /var/install/styles/$restfile
+        /var/install/config.d/cui.sh
+    fi
+    return 0
+fi
+
+/var/install/bin/list-files.cui -t "Change eisfair color style for CUI programs" \
+                                -c "Select Style:" \
+                                -p /var/install/styles \
+                                -f "*" \
+                                -o 1 \
+                                -s "/var/install/bin/system-base-set-menu-colors" 
+exit 0

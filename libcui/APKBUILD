@@ -1,0 +1,86 @@
+# Contributor: eisfair team
+# Maintainer: daniel@eisfair.org, jens@eisfair.org
+pkgname=libcui
+pkgver=1.0.7
+pkgrel=10
+pkgdesc="Eisfair CUI basis libs"
+url="http://www.eisfair.org"
+arch="all"
+license="GPL"
+depends="ncurses-widec-libs"
+depends_dev=""
+makedepends="$depends_dev"
+install=""
+subpackages="$pkgname-dev $pkgname-addonmysql $pkgname-addonpgsql"
+source=""
+
+_builddir="$srcdir/$pkgname"
+
+prepare() {
+	local i
+	cp -r libcui "$srcdir/"
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+	make -j1 -s || return 1
+	cd ${_builddir}/addons/libapk-addon
+	make -j1 -s || return 1
+	cd ${_builddir}/addons/libmysql-addon
+	make -j1 -s || return 1
+	cd ${_builddir}/addons/libpgsql-addon
+	make -j1 -s || return 1
+  	cd ${_builddir}/addons/libsys-addon
+	make -j1 -s || return 1  
+}
+
+package() {
+	cd "$_builddir"
+    make DESTDIR="$pkgdir/" install || return 1	
+    mkdir -p ${pkgdir}/var/install/include
+    cp -f cuilib ${pkgdir}/var/install/include/
+    mkdir -p ${pkgdir}/usr/lib/cui-addons
+    cd ${_builddir}/addons/libapk-addon
+    make DESTDIR=${pkgdir}/ install || return 1	    
+    cd ${_builddir}/addons/libsys-addon
+    make DESTDIR=${pkgdir}/ install || return 1	
+    strip -R .note -R .comment ${pkgdir}/usr/lib/*.so.*
+}
+
+dev(){
+    rm -rf ${pkgdir}/usr/include
+    rm -f ${pkgdir}/usr/lib/*.a
+    mkdir -p ${subpkgdir}/usr/lib || return 1
+    mkdir -p ${subpkgdir}/usr/include || return 1   
+    mv ${_builddir}/*.a ${subpkgdir}/usr/lib/ || return 1
+    cp ${_builddir}/cui.h ${subpkgdir}/usr/include/ || return 1
+    cp ${_builddir}/cui-char.h ${subpkgdir}/usr/include/ || return 1
+    cp ${_builddir}/cui-util.h ${subpkgdir}/usr/include/ || return 1
+    cp ${_builddir}/cui-script.h ${subpkgdir}/usr/include/ || return 1
+    # Don't strip libcui*.a files!
+#    strip -R .note -R .comment ${subpkgdir}/usr/lib/*.a
+    cd ${subpkgdir}/usr/lib
+    ln -s libcui.so.${pkgver} libcui.so  || return 1
+    ln -s libcui-script.so.${pkgver} libcui-script.so  || return 1
+    ln -s libcui-util.so.${pkgver} libcui-util.so  || return 1
+}
+
+addonmysql(){
+	pkgdesc="CUI lib addon for MySQL database"
+	depends="libcui mysql-libs"
+	cd ${_builddir}/addons/libmysql-addon
+	make -j1 -s DESTDIR=${subpkgdir} install || return 1	
+}
+
+addonpgsql(){
+	pkgdesc="CUI lib addon for Postgresql database"
+	depends="libcui pgsql-libs"
+	cd ${_builddir}/addons/libpgsql-addon
+	make -j1 -s DESTDIR=${subpkgdir} install || return 1	
+}

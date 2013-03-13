@@ -1,0 +1,38 @@
+<!-- Creation:     12.06.2005  jv -->
+<!-- Last Update:  $Id: cron 24471 2010-06-10 21:14:01Z schlotze $ -->
+
+<help name="START_FCRON">
+Start the cron daemon 'yes' or 'no'<br/>
+<br/>
+Default: START_FCRON='yes'
+</help>
+
+<help name="FCRON_N">
+Number of cron jobs to add<br/>
+<br/>
+Example: FCRON_N='1'
+</help>
+
+<help name="FCRON_%_ACTIVE">
+Activate current cron jobk<br/>
+<br/>
+Default: FCRON_1_ACTIVE='yes'
+</help>
+
+<help name="FCRON_%_TIMES">
+Start time for cron job: Minute, Hour, Day, Month, Day of Week<br/>
+<br/>
+Example: FCRON_1_TIME='0 0 * * *'
+</help>
+
+<help name="FCRON_%_USER">
+Start the cron job as user ...<br/>
+<br/>
+Default: FCRON_%_USER='root'
+</help>
+
+<help name="FCRON_%_COMMAND">
+Command to start with cron<br/>
+<br/>
+Example: FCRON_1_COMMAND='/usr/sbin/logrotate /etc/logrotate.conf'
+</help>

@@ -1,0 +1,157 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/edit - ask user for edit
+#
+# Creation   :  2003-07-19 fm
+# Last Update:  $Id: edit 27036 2012-11-08 17:24:49Z jv $
+#
+# Copyright (c) 2001-2011 the eisfair team, team@eisfair(dot)org
+#
+# usage: edit [--apply|--apply-stopstart] file
+#        edit [--apply|--apply-stopstart] package message
+#
+#----------------------------------------------------------------------------
+
+# include configuration
+. /etc/config.d/setup
+
+# include backup
+. /var/install/bin/config_shlib
+
+apply=''
+case "${1}" in
+    --apply|-apply)
+        apply='restart'
+        shift
+    ;;
+    --apply-stopstart|-apply-stopstart)
+        apply='stopstart'
+        shift
+    ;;
+esac
+
+if [ $# -eq 1 ]
+then
+    package=`basename $1`
+else
+    package="$1"
+fi
+
+
+exitval=0
+
+# edit first package...
+current_package=`echo $package | sed -e 's/ .*$//g'`
+
+if [ -f /etc/config.d/$current_package ]
+then
+    if ! /var/install/bin/edit-conf.cui --check /etc/config.d/$current_package
+    then
+        /var/install/bin/ask.cui --err "The configuration of this package can't be opened" 
+        exit 1
+    fi
+
+    old_umask=`umask`
+    umask 077       # do not allow anybody to read anything
+                    # config or logfile may contain secret passwords
+
+    # delete old tmpfile first, if exists ;-)
+    rm -f /tmp/edit-${current_package}-*
+
+    # create tmpfile name, do not change this name,
+    # many programs get the old config settings from it,
+    # to compare the value
+    tmp_edit_file=/tmp/edit-${current_package}-$$
+
+    # copy to tmpfile
+    cp -p /etc/config.d/$current_package ${tmp_edit_file}
+
+    # run editor
+    if ! /var/install/bin/edit-conf.cui -l /var/log/edit-conf.log /etc/config.d/$current_package
+    then
+        cp -p ${tmp_edit_file} /etc/config.d/$current_package 
+        rm -f ${tmp_edit_file}
+        exit 0
+    fi
+    # config_shlib has owne handling
+    umask $old_umask
+
+    if ! diff ${tmp_edit_file} /etc/config.d/$current_package >/dev/null
+    then
+        backup_config $current_package ${tmp_edit_file}
+    fi
+fi
+
+# call apply-script if exists
+apply_script()
+{
+    if [ -f /var/install/config.d/$1.sh ]
+    then
+        sh /var/install/config.d/$1.sh
+    else
+        return 0
+    fi
+    rm -f ${tmp_edit_file}
+}
+
+# can start package
+can_start()
+{
+    # read configuration file
+    . /etc/config.d/${1}
+    # change also '-' to '_', many packages use a '-' in the name,
+    # like package-dev and START_PACKAGE-DEV does not work :-(
+    startvar=`echo START_${1} | tr 'a-z' 'A-Z' | tr '-' '_'`
+    eval start='$'${startvar}
+    test "${start}" = "yes"
+}
+
+if [ -n "$apply" ]
+then
+    if [ "$package" = "base" -o "$package" = "environment" ]
+    then
+        apply_script $package
+    else
+        if /var/install/bin/ask.cui "Activate configuration now?"
+        then
+            # activate changes
+            for current_package in $package
+            do
+                if [ -f /etc/init.d/$current_package  ]
+                then
+                    if [ "$apply" = "restart" ]
+                    then
+                        if  apply_script $current_package &&
+                            can_start    $current_package
+                        then
+                            # restart package
+                            /etc/init.d/$current_package restart
+                            /sbin/rc-update -q add $current_package default >/dev/null 2>&1
+                        else
+                            # stop package
+                            /etc/init.d/$current_package stop
+                            /sbin/rc-update -q del $current_package
+                        fi
+                    elif [ "$apply" = "stopstart" ]
+                    then
+                        init_script $current_package stop
+                        if  apply_script $current_package &&
+                            can_start    $current_package
+                        then
+                            /etc/init.d/$current_package start
+                            /sbin/rc-update -q add $current_package default >/dev/null 2>&1                      
+                        else
+                            /sbin/rc-update -q del $current_package                    
+                        fi
+                    fi
+                fi
+            done
+            sleep 1
+        fi
+    fi
+fi
+
+# do it twice ;-)
+rm -f ${tmp_edit_file}
+
+exit 0

@@ -1,0 +1,54 @@
+libcui-1.0.7
+============
+- check if the terminal has been resized right before the application has
+  been started without the shell knowing about the change... if this
+  situation is detected, a resize of the CUI desktop is forced.
+- fix some issues concerning layout invalidation of listview controls
+
+libcui-1.0.6
+============
+- recognition of additional escape sequences added to make init 
+  status messages appear more correctly in terminal views.
+- some selection issues in list boxes and list views corrected.
+
+libcui-1.0.5
+============
+- some bug fixes concerning window resizing and window controls
+- cui.h uses enums instead of preprocessor defines for constants
+- No "doupdate" parameters required anymore. Update handling is
+  done internally now. The script interface still accepts these
+  parameters for compatibility reasons. They are just ignored.
+
+libcui-1.0.4
+============
+- Makefile modified so that it becomes platform independant
+- api functions added to temporarily leave and resume curses mode.
+- first release of shared library version.
+
+libcui-1.0.3
+============
+- handling of job control signals added. 
+- cui addon interface changed so that access to the backend's transfer 
+  buffer and it's associated functions is done by callback functions
+  that are passed to the addon module in form of function pointers upon
+  module init.
+- force a resize of the screen when resuming from a text console 
+  session.
+
+libcui-1.0.2
+============
+- passing of empty parameter strings from backend to frontend improved
+  (while the same problem from frontend to backend is still pending)
+- function cui_combobox_select() added
+
+libcui-1.0.1
+============
+- contained in update-1.5.2 statically linked to cui-tools.
+- cui script api improvements and new script api functions.
+
+libcui-1.0.0
+============
+- contained in update-1.5.0 and update-1.5.1 statically linked to cui-tools.
+- cui components
+- cui helper routines
+- cui script api

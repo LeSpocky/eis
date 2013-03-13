@@ -1,0 +1,49 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# system-devices-vg-delete - delete volume groups
+#
+# Creation   : 02.09.2009 schlotze
+# Last Update: $Id: system-filesystems-vg-delete 16982 2008-10-17 12:52:01Z schlotze $
+#
+#----------------------------------------------------------------------------
+. /var/install/include/anykey
+. /var/install/include/mecho
+. /var/install/include/techo
+
+echo ""
+
+#exec 2> /tmp/system-devices-vg-delete-trace$$.log
+#set -x
+
+mecho --info "Delete volume groups"
+mecho --info "Available volume groups"
+techo begin 4 35 5r 5r 5r 8 9r 9r
+techo row --info No. --info "VG" --info "#PV" --info "#LV" --info "#SN" --info "Attr" --info "VSize" --info "VFree"
+mecho --info "================================================================================"
+
+idx=1
+vgs > /tmp/tmp_vgs$$
+while read line
+do
+    set -- $line
+    if [ "$1" != "VG" ]
+    then
+        eval vg_$idx='"$1"'
+        techo row $idx $1 $2 $3 $4 $5 $6 $7
+        idx=`expr $idx + 1`
+    fi
+done < /tmp/tmp_vgs$$
+
+rm /tmp/tmp_vgs$$
+
+idx=`expr $idx - 1`
+novgdevice=`/var/install/bin/ask "Please choose the volume group to delete" "" "1-$idx" "0=Exit"`
+
+if [ "$novgdevice" != "0" ]
+then
+    eval "vgdevice"='$vg_'$novgdevice
+    vgremove $vgdevice
+fi
+echo ""
+anykey
+exit 0

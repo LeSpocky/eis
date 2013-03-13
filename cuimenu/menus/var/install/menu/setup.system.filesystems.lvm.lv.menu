@@ -1,0 +1,6 @@
+<package>base</package>
+<title>Logical Volumes Management</title>
+<script file="system-filesystems-lv-show">List Logical Volumes</script>
+<script file="system-filesystems-lv-create">Create Logical Volume</script>
+<script file="system-filesystems-lv-delete">Delete Logical Volume</script>
+<script file="system-filesystems-lv-resize">Resize Logical Volume</script>

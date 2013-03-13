@@ -1,0 +1,11 @@
+#!/bin/sh
+
+/etc/init.d/syslog stop
+[ -e /etc/runlevels/boot/syslog ] && /sbin/rc-update del syslog boot
+[ -e /etc/runlevels/boot/sysctl ] && /sbin/rc-update del sysctl boot
+/sbin/rc-update add syslog-ng boot
+[ ! -f /var/log/auth.log ] && touch /var/log/auth.log
+[ ! -f /var/log/error.log ] && touch /var/log/error.log
+[ ! -f /var/log/mail.log ] && touch /var/log/mail.log
+[ ! -f /var/log/kern.log ] && touch /var/log/kern.log
+/etc/init.d/syslog-ng start

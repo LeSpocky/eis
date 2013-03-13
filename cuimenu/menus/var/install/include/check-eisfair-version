@@ -1,0 +1,100 @@
+ #----------------------------------------------------------------------------
+# /var/install/include/check-eisfair-version - check installed version
+#
+# Creation   :  2007-12-18 hbfl
+# Last Update:  $Id: check-eisfair-version 24471 2010-06-10 21:14:01Z schlotze $
+#
+# Copyright (c) 2001-2009 the eisfair team, team(at)eisfair(dot)org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------
+# check first if eislib is included
+#----------------------------------------------------------------------------
+. /var/install/include/eislib
+
+#----------------------------------------------------------------------------
+# select system version
+#----------------------------------------------------------------------------
+
+    # list systems to select
+    systems="eisfair-1
+             eisfair-2
+             eisxen-1"
+
+    etc_system_file=/etc/eisfair-system
+
+check_system ()
+{
+    clrhome
+
+    # display systems to select on tty
+    mecho -info "Can't detect the system type,"
+    mecho -info "please select one first."
+
+    echo
+    echo
+    echo "${systems}" |
+    awk '{ printf ("%6s.  %s\n", FNR, $1) }'
+    echo
+    echo
+    /var/install/bin/ask "Select" "${system_to_work}" "1-$(echo "${systems}" | wc -l)" "^$=Return" "0=Exit" >/tmp/ask.$$
+    rc=${?}
+
+    system_to_work=`cat /tmp/ask.$$`
+    rm -f /tmp/ask.$$
+
+    if [ $rc = 255 ]
+    then
+        system_to_work=0
+    fi
+
+    case ${system_to_work} in
+        '')
+            exit 0
+        ;;
+        0)
+            exit 127
+        ;;
+        *)
+            # set working system
+            system_work="`echo "$systems" | awk 'FNR == '$system_to_work' { print $1 }'`"
+            # write ${etc_system_file}
+            echo "${system_work}" >${etc_system_file}
+            EISFAIR_SYSTEM=${system_work}
+
+            # export EISFAIR_SYSTEM to check it once
+            export EISFAIR_SYSTEM
+        ;;
+    esac
+}
+
+# check ${etc_system_file} exists
+if [ ! -f ${etc_system_file} ]
+then
+    # if not exists
+    check_system
+else
+    # if exists, read entry
+    system_work="`awk '{ print $1 }' ${etc_system_file}`"
+
+    # check if ${etc_system_file} entry broken
+    if `echo "${systems}" | grep -q "${system_work}$"`
+    then
+        # if not broken
+        EISFAIR_SYSTEM="${system_work}"
+
+        # export EISFAIR_SYSTEM to check it once
+        export EISFAIR_SYSTEM
+    else
+        # if broken
+        check_system
+    fi
+fi
+#----------------------------------------------------------------------------
+# end
+#----------------------------------------------------------------------------

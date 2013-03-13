@@ -1,0 +1,146 @@
+#!/bin/sh
+#-----------------------------------------------------------------------
+# /var/install/include/virtlib -- eislib functions for detecting virtualization context
+#
+# Creation:     2009-10-23 alex
+# Last Update:  $Id: virtlib 24471 2010-06-10 21:14:01Z schlotze $
+#
+# Copyright (c) 2009--2010 the eisfair team, team(at)eisfair(dot)org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+# interface description
+#-----------------------------------------------------------------------
+# is_running_in_xendomu()         : returns 0 or 1 as return codes if
+#                                   running in Xen DomU or not
+# check_running_on_xen_detailed() : echos one of four strings depending
+#                                   on virtualization context:
+#                                   'noxen', 'xendomu', 'xendom0', 'hvm'
+#-----------------------------------------------------------------------
+
+#=======================================================================
+# only include this file once
+#=======================================================================
+
+if [ "${_EISLIB_VIRTLIB}" != 'true' ]
+then
+
+_EISLIB_VIRTLIB='true'
+
+#=======================================================================
+# include other libs
+#=======================================================================
+. /var/install/include/check-eisfair-version
+
+#=======================================================================
+# initialize local variables
+#=======================================================================
+_NO_XEN='false'
+_IS_RUNNING_IN_DOMU='false'
+_IS_XEN_DOM0='false'
+_IS_EISXEN_SYSTEM='false'
+_HAS_EISXEN_INSTALLED='false'
+_IS_HVM='false'
+
+#=======================================================================
+# local functions
+#=======================================================================
+_collect_xen_context()
+{
+    local _DETECT_ANSWER=`xen-detect`
+    if [ "${_DETECT_ANSWER}" = 'Not running on Xen.' ]
+    then
+        _NO_XEN='true'
+    else
+        # PV or HVM?
+        echo "${_DETECT_ANSWER}" | grep -q 'PV'
+        if [ $? -eq 0 ]
+        then
+            # PV, could be DomU or Dom0, do some tests to get evidence
+
+            if pgrep -f xend &>/dev/null
+            then
+                _IS_XEN_DOM0='true'
+            fi
+
+            if `echo "${EISFAIR_SYSTEM}" | grep -q 'eisxen'`
+            then
+                _IS_EISXEN_SYSTEM='true'
+            fi
+
+            if [ `/var/install/bin/check-version eisxen` = 'new' ]
+            then
+                _HAS_EISXEN_INSTALLED='true'
+            fi
+
+            if [ "${_IS_XEN_DOM0}" = 'true'           \
+                -o "${_IS_EISXEN_SYSTEM}" = 'true'    \
+                -o "${_HAS_EISXEN_INSTALLED}" = 'true' ]
+            then
+                _IS_XEN_DOM0='true'
+            else
+                _IS_RUNNING_IN_DOMU='true'
+            fi
+        else
+            _IS_HVM='true'
+        fi
+    fi
+}
+
+#=======================================================================
+# exported functions
+#=======================================================================
+virtlib_debug_output()
+{
+    _collect_xen_context
+    echo "_NO_XEN:                  ${_NO_XEN}"
+    echo "_IS_RUNNING_IN_DOMU:      ${_IS_RUNNING_IN_DOMU}"
+    echo "_IS_XEN_DOM0:             ${_IS_XEN_DOM0}"
+    echo "_IS_EISXEN_SYSTEM:        ${_IS_EISXEN_SYSTEM}"
+    echo "_HAS_EISXEN_INSTALLED:    ${_HAS_EISXEN_INSTALLED}"
+    echo "_IS_HVM:                  ${_IS_HVM}"
+}
+
+is_running_in_xendomu()
+{
+    _collect_xen_context
+    if [ "${_IS_RUNNING_IN_DOMU}" = 'true' ]
+    then
+        return 0
+    else
+        return 1
+    fi
+}
+
+check_running_on_xen_detailed()
+{
+    _collect_xen_context
+    if [ "${_NO_XEN}" = 'true' ]
+    then
+        echo 'noxen'
+    elif [ "${_IS_RUNNING_IN_DOMU}" = 'true' ]
+    then
+        echo 'xendomu'
+    elif [ "${_IS_XEN_DOM0}" = 'true' ]
+    then
+        echo 'xendom0'
+    elif [ "${_IS_HVM}" = 'true' ]
+    then
+        echo 'hvm'
+    fi
+}
+
+#=======================================================================
+# end only include once
+#=======================================================================
+
+fi
+
+#=======================================================================
+# end
+#=======================================================================

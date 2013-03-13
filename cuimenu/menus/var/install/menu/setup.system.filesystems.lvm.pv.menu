@@ -1,0 +1,5 @@
+<package>base</package>
+<title>Physical Volume Management</title>
+<script file="system-filesystems-pv-show">List Physical Volumes</script>
+<script file="system-filesystems-pv-create">Create Physical Volume</script>
+<script file="system-filesystems-pv-delete">Delete Physical Volume</script>

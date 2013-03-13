@@ -1,0 +1,59 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# system-devices-lv-create - create logical volumes
+#
+# Creation   : 02.09.2009 schlotze
+# Last Update: $Id: system-filesystems-lv-create 16982 2008-10-17 12:52:01Z schlotze $
+#
+#----------------------------------------------------------------------------
+. /var/install/include/anykey
+. /var/install/include/mecho
+. /var/install/include/techo
+echo
+
+#exec 2> /tmp/system-devices-lv-create-trace$$.log
+#set -x
+
+modprobe dm_mod
+
+mecho --info "Create logical volumes"
+mecho --info "Available volume groups"
+techo begin 4 35 5r 5r 5r 8 9r 9r
+techo row --info "No." --info "VG" --info "#PV" --info "#LV" --info "#SN" --info "Attr" --info "VSize" --info "VFree"
+mecho --info "================================================================================"
+
+idx=1
+vgs > /tmp/tmp_vgs$$
+while read line
+do
+    set -- $line
+    if [ "$1" != "VG" ]
+    then
+        eval vg_$idx='"$1"'
+        techo row $idx $1 $2 $3 $4 $5 $6 $7
+        idx=`expr $idx + 1`
+    fi
+done < /tmp/tmp_vgs$$
+
+rm /tmp/tmp_vgs$$
+
+idx=`expr $idx - 1`
+novgdevice=`/var/install/bin/ask "Please choose a volume group in which you want to create the logical volume" "" "1-$idx" "0=Exit"`
+if [ "$novgdevice" != "0" ]
+then 
+    eval "vgdevice"='$vg_'$novgdevice
+    
+    name=`/var/install/bin/ask "Please enter the name of the logical volume you want to create (e.g. lv1) [0=Exit]" "" "+"`
+    if [ "$name" != "0" ]
+    then 
+        mecho
+        size=`/var/install/bin/ask "Please enter the size of the logical volume you want to create in megabyte (e.g. 100)" "" "1-999999" "0=Exit"`
+        if [ "$size" != "0" ]
+        then 
+            lvcreate -n $name -L ${size}M $vgdevice
+        fi
+    fi
+fi
+echo
+anykey
+exit 0

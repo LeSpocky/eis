@@ -1,0 +1,2286 @@
+#------------------------------------------------------------------------------
+# /var/install/include/cuilib - script interface for libcui
+#
+# Copyright (c) 2007 eisfair-Team
+#
+# Creation:    2007-06-30 dv
+# Last update: $Id: cuilib 25003 2010-07-17 05:50:58Z dv $
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+
+# special key codes
+KEY_ENTER=10
+KEY_F1=265
+KEY_F2=266
+KEY_F3=267
+KEY_F4=268
+KEY_F5=269
+KEY_F6=270
+KEY_F7=271
+KEY_F8=272
+KEY_F9=273
+KEY_F10=274
+# ... to be continued
+
+# cui colors
+COLOR_BLACK=0
+COLOR_RED=1
+COLOR_GREEN=2
+COLOR_BROWN=3
+COLOR_BLUE=4
+COLOR_MAGENTA=5
+COLOR_CYAN=6
+COLOR_LIGHTGRAY=7
+COLOR_DARKGRAY=8
+COLOR_LIGHTRED=9
+COLOR_LIGHTGREEN=10
+COLOR_YELLOW=11
+COLOR_LIGHTBLUE=12
+COLOR_LIGHTMAGENTA=13
+COLOR_LIGHTCYAN=14
+COLOR_WHITE=15
+
+# text alignment
+ALIGN_CENTER=0
+ALIGN_LEFT=1
+ALIGN_RIGHT=2
+
+# cui API codes
+API_MESSAGEBOX=0
+API_WINDOWNEW=1
+API_WINDOWCREATE=2
+API_WINDOWDESTROY=3
+API_WINDOWQUIT=4
+API_WINDOWMODAL=5
+API_WINDOWCLOSE=6
+API_WINDOWSETHOOK=7
+
+API_WINDOWGETCTRL=10
+API_WINDOWGETDESKTOP=11
+API_WINDOWMOVE=12
+API_WINDOWGETWINDOWRECT=13
+API_WINDOWGETCLIENTRECT=14
+
+API_WINDOWSETTIMER=20
+API_WINDOWKILLTIMER=21
+
+API_WINDOWADDCOLSCHEME=30
+API_WINDOWHASCOLSCHEME=31
+API_WINDOWCOLSCHEME=32
+
+API_WINDOWSETTEXT=40
+API_WINDOWSETLTEXT=41
+API_WINDOWSETRTEXT=42
+API_WINDOWSETSTATUSTEXT=43
+API_WINDOWSETLSTATUSTEXT=44
+API_WINDOWSETRSTATUSTEXT=45
+API_WINDOWGETTEXT=46
+
+API_WINDOWTOTOP=50
+API_WINDOWMAXIMIZE=51
+API_WINDOWMINIMIZE=52
+API_WINDOWHIDE=53
+API_WINDOWENABLE=54
+API_WINDOWSETFOCUS=55
+API_WINDOWGETFOCUS=56
+API_WINDOWINVALIDATE=60
+API_WINDOWINVALIDATELAYOUT=61
+API_WINDOWUPDATE=62
+
+API_WINDOW_CURSES_LEAVE=70
+API_WINDOW_CURSES_RESUME=71
+API_WINDOW_SHELL_EXECUTE=72
+
+API_LABELNEW=110
+API_LABELSETCALLBACK=111
+
+API_EDITNEW=100
+API_EDITSETCALLBACK=101
+API_EDITSETTEXT=102
+API_EDITGETTEXT=103
+
+API_BUTTONNEW=120
+API_BUTTONSETCALLBACK=121
+
+API_GROUPBOXNEW=125
+
+API_RADIONEW=130
+API_RADIOSETCALLBACK=131
+API_RADIOSETCHECK=132
+API_RADIOGETCHECK=133
+
+API_CHECKBOXNEW=135
+API_CHECKBOXSETCALLBACK=136
+API_CHECKBOXSETCHECK=137
+API_CHECKBOXGETCHECK=138
+
+API_LISTBOXNEW=140
+API_LISTBOXSETCALLBACK=141
+API_LISTBOXADD=142
+API_LISTBOXDELETE=143
+API_LISTBOXGET=144
+API_LISTBOXSETDATA=145
+API_LISTBOXGETDATA=146
+API_LISTBOXSETSEL=147
+API_LISTBOXGETSEL=148
+API_LISTBOXCLEAR=149
+API_LISTBOXGETCOUNT=150
+API_LISTBOXSELECT=151
+
+API_COMBOBOXNEW=160
+API_COMBOBOXSETCALLBACK=161
+API_COMBOBOXADD=162 
+API_COMBOBOXDELETE=163
+API_COMBOBOXGET=164
+API_COMBOBOXSETDATA=165
+API_COMBOBOXGETDATA=166
+API_COMBOBOXSETSEL=167
+API_COMBOBOXGETSEL=168   
+API_COMBOBOXCLEAR=169 
+API_COMBOBOXGETCOUNT=170
+API_COMBOBOXSELECT=171
+
+API_PROGRESSBARNEW=180
+API_PROGRESSBARSETRANGE=181
+API_PROGRESSBARSETPOS=182  
+API_PROGRESSBARGETRANGE=183
+API_PROGRESSBARGETPOS=184  
+
+API_TEXTVIEWNEW=200
+API_TEXTVIEWSETCALLBACK=201
+API_TEXTVIEWENABLEWORDWRAP=202
+API_TEXTVIEWADD=203
+API_TEXTVIEWCLEAR=204
+API_TEXTVIEWREAD=205
+API_TEXTVIEWSEARCH=206
+API_LISTVIEWNEW=210
+API_LISTVIEWSETCALLBACK=211
+API_LISTVIEWADDCOLUMN=212
+API_LISTVIEWSETTITLEALIGNMENT=213
+API_LISTVIEWCLEAR=214
+API_LISTVIEWADD=215
+API_LISTVIEWSETTEXT=216
+API_LISTVIEWGETTEXT=217
+API_LISTVIEWGETDATA=218
+API_LISTVIEWSETDATA=219
+API_LISTVIEWSETSEL=220
+API_LISTVIEWGETSEL=221
+API_LISTVIEWGETCOUNT=222
+API_LISTVIEWUPDATE=223
+API_LISTVIEWALPHASORT=224
+API_LISTVIEWNUMERICSORT=225
+
+API_TERMINALNEW=230
+API_TERMINALSETCALLBACK=231
+API_TERMINALWRITE=232
+API_TERMINALRUN=233
+API_TERMINALPIPEDATA=234
+
+API_MENUNEW=240
+API_MENUSETCALLBACK=241
+API_MENUADDITEM=242
+API_MENUADDSEPARATOR=243
+API_MENUSELECTITEM=244
+API_MENUGETSELITEM=245
+API_MENUCLEAR=246
+
+API_XMLREADTAG=500
+API_LOADADDON=999
+
+# cui error codes
+ERROR_SUCCESS=0
+ERROR_PROTO=1
+ERROR_UNKNWN=2
+ERROR_ARGC=3
+ERROR_INVALID=4
+ERROR_FAILED=5
+
+# Hook types
+HOOK_CREATE='0'
+HOOK_DESTROY='1'
+HOOK_CANCLOSE='2'
+HOOK_INIT='3'
+HOOK_PAINT='4'
+HOOK_NCPAINT='5'
+HOOK_SIZE='6'
+HOOK_SETFOCUS='7'
+HOOK_KILLFOCUS='8'
+HOOK_ACTIVATE='9'
+HOOK_DEACTIVATE='10'
+HOOK_KEY='11'
+HOOK_MMOVE='12'
+HOOK_MBUTTON='13'
+HOOK_VSCROLL='14'
+HOOK_HSCROLL='15'
+HOOK_TIMER='16'
+HOOK_LAYOUT='17'
+
+# Edit hook types
+EDIT_SETFOCUS='0'
+EDIT_KILLFOCUS='1'
+EDIT_PREKEY='2' 
+EDIT_POSTKEY='3'
+EDIT_CHANGED='4'
+
+# Label hook types
+LABEL_SETFOCUS='0'
+LABEL_KILLFOCUS='1'
+
+# Button hook types
+BUTTON_SETFOCUS='0'
+BUTTON_KILLFOCUS='1'
+BUTTON_PREKEY='2' 
+BUTTON_POSTKEY='3'
+BUTTON_CLICKED='4'
+
+# Radio hook types
+RADIO_SETFOCUS='0'
+RADIO_KILLFOCUS='1'
+RADIO_PREKEY='2'  
+RADIO_POSTKEY='3'  
+RADIO_CLICKED='4'
+
+# Checkbox hook types
+CHECKBOX_SETFOCUS='0'
+CHECKBOX_KILLFOCUS='1'
+CHECKBOX_PREKEY='2'
+CHECKBOX_POSTKEY='3'
+CHECKBOX_CLICKED='4'
+
+# Listbox hook types
+LISTBOX_SETFOCUS='0'
+LISTBOX_KILLFOCUS='1'
+LISTBOX_PREKEY='2'      
+LISTBOX_POSTKEY='3' 
+LISTBOX_CHANGED='4'
+LISTBOX_CHANGING='5'
+LISTBOX_CLICKED='6'
+
+# Combobox hook types
+COMBOBOX_SETFOCUS='0'
+COMBOBOX_KILLFOCUS='1'
+COMBOBOX_PREKEY='2'
+COMBOBOX_POSTKEY='3'
+COMBOBOX_CHANGED='4'
+COMBOBOX_CHANGING='5'
+
+# Textview hook types
+TEXTVIEW_SETFOCUS='0'
+TEXTVIEW_KILLFOCUS='1'
+TEXTVIEW_PREKEY='2'
+TEXTVIEW_POSTKEY='3'
+
+# Listview hook types
+LISTVIEW_SETFOCUS='0'
+LISTVIEW_KILLFOCUS='1'
+LISTVIEW_PREKEY='2'
+LISTVIEW_POSTKEY='3'
+LISTVIEW_CHANGED='4'
+LISTVIEW_CHANGING='5'
+LISTVIEW_CLICKED='6'
+
+# Terminal hook types
+TERMINAL_SETFOCUS='0'
+TERMINAL_KILLFOCUS='1'
+TERMINAL_PREKEY='2' 
+TERMINAL_POSTKEY='3' 
+TERMINAL_EXIT='4'
+
+# Menu hook types
+MENU_SETFOCUS='0'
+MENU_KILLFOCUS='1'
+MENU_PREKEY='2' 
+MENU_POSTKEY='3'
+MENU_CHANGED='4'
+MENU_CHANGING='5'
+MENU_CLICKED='6'
+MENU_ESCAPE='7'
+
+# Window and control styles
+CWS_NONE='0'
+CWS_BORDER='1'
+CWS_CAPTION='2'
+CWS_MINIMIZEBOX='4'
+CWS_MAXIMIZEBOX='8'
+CWS_CLOSEBOX='16'
+CWS_SYSMENU='32'
+CWS_RESIZE='64'
+CWS_HIDDEN='256'
+CWS_DISABLED='512'
+CWS_TABSTOP='1024'
+CWS_CENTERED='2048'
+CWS_POPUP='4096'
+CWS_MAXIMIZED='8192'
+CWS_MINIMIZED='16384'
+CWS_STATUSBAR='32768'
+CWS_DEFOK='65536'
+CWS_DEFCANCEL='131072'
+EF_PASSWORD='16777216'
+LB_SORTED='16777216'
+LB_DESCENDING='33554432'
+
+# MessageBox styles
+MB_NORMAL='0'
+MB_INFO='16777216'
+MB_ERROR='33554432'
+MB_OK='0'
+MB_OKCANCEL='67108864'
+MB_YESNO='134217728'
+MB_YESNOCANCEL='268435456'
+MB_RETRYCANCEL='536870912'
+MB_DEFBUTTON1='1073741824'
+MB_DEFBUTTON2='2147483648'
+
+# Dialog result codes
+IDOK='1'
+IDCANCEL='2'
+IDYES='3'
+IDNO='4'
+IDRETRY='5'
+
+# Scroll bar control codes
+SB_LINEDOWN='1'
+SB_LINEUP='2'
+SB_PAGEDOWN='3'
+SB_PAGEUP='4'
+SB_THUMBTRACK='5'
+
+SEP='	'
+SCRIPTFILE=$0
+CUIID=$1
+PARENTPID=$2
+ARGUMENTS=$@
+CUINL=$'\x0A'    #' newline character
+CUISEP=$'\x09'   #' tabulator / protocol seperator 
+
+#------------------------------------------------------------------------------
+# Pipe initialisation
+# Expects: <nothing>
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_init()
+{
+    pipe_in="/var/run/cui/cui${PARENTPID}rp"
+    pipe_out="/var/run/cui/cui${PARENTPID}wp"
+
+    if [ "$CUIID" != "CUISHELL" ]
+    then
+        if [ "$ARGUMENTS" != "" ]
+        then
+            /var/install/bin/shellrun.cui -o "\"$ARGUMENTS\"" "$SCRIPTFILE"
+        else
+            /var/install/bin/shellrun.cui "$SCRIPTFILE"
+        fi
+        exit $?
+    else
+        exec 7< $pipe_in
+        exec 8> $pipe_out
+    fi
+}
+
+#------------------------------------------------------------------------------
+# Send data to frontend (escape \t \n and \\)
+# Expects: $1 .. $n  <-- Parameters to send
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+function cui_send()
+{
+    local val=":$1"
+    local tmp=""
+    local idx=2
+    while [ "$idx" -le "$#" ]
+    do
+        eval tmp='$'"{$idx//'\\\\'/'\\\\'}"
+        tmp=${tmp//'\'/'\s'}
+        tmp=${tmp//$CUISEP/'\t'}
+        tmp=${tmp//$CUINL/'\n'}
+
+        val="${val}${CUISEP}:$tmp"
+
+        idx=$[$idx + 1]
+    done
+    echo "$val" >&8
+}
+
+#------------------------------------------------------------------------------
+# Send return from hook signal
+# Expects: $1  <-- Result data : one or more results 
+#                                (enclosed in quotes if necessary)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_return()
+{
+    cui_send "H" "$@"
+}
+
+#------------------------------------------------------------------------------
+# Main message polling loop
+# Expects: <nothing>
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_run()
+{
+    while [ "1" == "1" ]
+    do
+        {
+           cmdline=""
+           read -r cmdline
+        } <&7
+
+        if [ "$cmdline" != "" ]
+        then
+            cmdcount=0
+
+            OLD_IFS="$IFS"
+            IFS=$SEP
+
+            for cmd in $cmdline
+            do
+                # unescape parameter
+                cmd=${cmd//'\n'/$CUINL}
+                cmd=${cmd//'\t'/$CUISEP}
+                cmd=${cmd//'\s'/'\'}
+
+                # assign and remove colon
+                eval 'p'$cmdcount='${cmd:1}'      
+
+                cmdcount=$[$cmdcount + 1]
+            done
+
+            IFS="$OLD_IFS"
+
+            if [ "$cmdcount" -gt "0" -a "$p0" == "H" ]
+            then
+                if [ "$p1" == "exit" ]
+                then
+                    cui_return 0
+                    return;
+                else
+                    $p1
+                fi
+            fi
+        else
+            return;
+        fi
+    done
+}
+
+#------------------------------------------------------------------------------
+# Wait for acknowledge from frontend (internal function)
+# Expects: <nothing>
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_wait_ack()
+{
+    while [ "1" == "1" ]
+    do
+        {
+           cmdline=""
+           read -r cmdline
+        } <&7
+
+        if [ "$cmdline" != "" ]
+        then
+
+            OLD_IFS="$IFS"
+            IFS=$SEP
+
+            cmdcount=0
+            for cmd in $cmdline
+            do
+                # unescape parameter
+                cmd=${cmd//'\n'/$CUINL}
+                cmd=${cmd//'\t'/$CUISEP}
+                cmd=${cmd//'\s'/'\'}
+
+                # assign and remove colon
+                eval 'p'$cmdcount='${cmd:1}'      
+
+                cmdcount=$[$cmdcount + 1]
+            done
+
+            IFS="$OLD_IFS"
+
+            if [ "$cmdcount" -gt "0" ]
+            then
+                if [ "$p0" == "R" ]
+                then
+                    if [ "$cmdcount" -gt "1" ]
+                    then
+                        case $p1 in
+                        $ERROR_SUCCESS)
+                            return 0
+                            ;;
+                        $ERROR_PROTO)
+                            cui_message 0 "Protocol error!" "Error" $MB_ERROR
+                            return 1
+                            ;;
+                        $ERROR_UNKNWN)
+                            cui_message 0 "Unknown function called!" "Error" $MB_ERROR
+                            return 1
+                            ;;
+                        $ERROR_ARGC)
+                            cui_message 0 "Invalid number of arguments!" "Error" $MB_ERROR
+                            return 1
+                            ;;
+                        $ERROR_INVALID)
+                            cui_message 0 "Invalid arguments!" "Error" $MB_ERROR
+                            return 1
+                            ;;
+                        $ERROR_FAILED)
+                            return 1
+                            ;;
+                        *)
+                            cui_message 0 "Invalid reply!" "Error" $MB_ERROR
+                            return 1
+                            ;;
+                        esac
+                    else
+                        cui_message 0 "Invalid reply!" "Error" $MB_ERROR
+                        return 1
+                    fi
+                elif [ "$p0" == "H" ]
+                then
+                    $p1
+                fi
+            fi
+        else
+            return 1;
+        fi
+    done
+}
+
+
+#----------------------------------------------------------------------------
+# Check if $1 is a valid handle
+# Expects: $1  <-- Handle variable
+# Returns: exit code: (0 = Success, 1 = Failure)
+#----------------------------------------------------------------------------
+function cui_valid_handle()
+{
+    if [ "$1" != "" -a "$1" != "0" ]
+    then
+        return 0
+    fi
+    return 1
+}
+
+#----------------------------------------------------------------------------
+# Check if $1 is a valid list index
+# Expects: $1  <-- Index variable
+# Returns: exit code: (0 = Success, 1 = Failure)
+#----------------------------------------------------------------------------
+function cui_valid_index()
+{
+    if [ "$1" != "" -a "$1" -ge "0" ]
+    then
+        return 0
+    fi
+    return 1
+}
+
+
+#------------------------------------------------------------------------------
+# MessageBox
+# Expects: $1  <-- Parent window : Window Handle
+#          $2  <-- Message       : String
+#          $3  <-- Title         : String
+#          $4  <-- Style         : Integer (use $MB_XXX constants)
+# Returns: $p2 --> Result code : Integer
+#------------------------------------------------------------------------------
+cui_message()
+{
+    cui_send "C" "${API_MESSAGEBOX}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Make new window: 
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- X             : Integer
+#          $3  <-- Y             : Integer
+#          $4  <-- W             : Integer
+#          $5  <-- H             : Integer
+#          $6  <-- Style         : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_window_new()
+{
+    cui_send "C" "${API_WINDOWNEW}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Create window (and make it visible):
+# Expects: $1  <-- Window : Window Handle
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_create()
+{
+    cui_send "C" "${API_WINDOWCREATE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Destroy window (and it's data):
+# Expects: $1  <-- Window : Window Handle
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_destroy()
+{
+    cui_send "C" "${API_WINDOWDESTROY}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Quit application:
+# Expects: $1  <-- Exit code : Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_quit()
+{
+    cui_send "C" "${API_WINDOWQUIT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Execute as modal dialog
+# Expects: $1  <-- Window : Window Handle
+# Returns: $p2 --> Result code : Integer
+#------------------------------------------------------------------------------
+cui_window_modal()
+{
+    cui_send "C" "${API_WINDOWMODAL}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Close a modal dialog
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Result code : Integer
+# Returns: $p2 --> "1" success : "0" no success (refused to close)
+#------------------------------------------------------------------------------
+cui_window_close()
+{
+    cui_send "C" "${API_WINDOWCLOSE}" "$@" 
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Assign a window hook
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Hook   : Integer (use $HOOK_XXX constants)
+#          $3  <-- Proc   : String (name of shell function)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_sethook()
+{
+    cui_send "C" "${API_WINDOWSETHOOK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get a control window
+# Expects: $1  <-- Window  : Window Handle
+#          $2  <-- Ctrl ID : Integer
+# Returns: $p2 --> Ctrl    : Window Handle or "0" if not found
+#------------------------------------------------------------------------------
+cui_window_getctrl()
+{
+    cui_send "C" "${API_WINDOWGETCTRL}" "$@" 
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get desktop window
+# Expects: <nothing>
+# Returns: $p2 --> Desktop  : Window Handle
+#------------------------------------------------------------------------------
+cui_getdesktop()
+{
+    cui_send "C" "${API_WINDOWGETDESKTOP}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Move and/or resize a window
+# Expects: $1  <-- Window  : Window Handle
+#          $2  <-- X       : Integer
+#          $3  <-- Y       : Integer
+#          $4  <-- W       : Integer
+#          $5  <-- H       : Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_move()
+{
+    cui_send "C" "${API_WINDOWMOVE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get a window's rectangle
+# Expects: $1  <-- Window  : Window Handle
+# Returns: $p2 --> X       : Integer
+#          $p3 --> Y       : Integer
+#          $p4 --> W       : Integer
+#          $p5 --> H       : Integer
+#------------------------------------------------------------------------------
+cui_getwindowrect()
+{
+    cui_send "C" "${API_WINDOWGETWINDOWRECT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get a window's client rectangle
+# Expects: $1  <-- Window  : Window Handle
+# Returns: $p2 --> X       : Integer
+#          $p3 --> Y       : Integer
+#          $p4 --> W       : Integer
+#          $p5 --> H       : Integer
+#------------------------------------------------------------------------------
+cui_getclientrect()
+{
+    cui_send "C" "${API_WINDOWGETCLIENTRECT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Start a window timer
+# Expects: $1  <-- Window  : Window Handle
+#          $2  <-- TimerId : Integer
+#          $3  <-- Time    : Integer (Milliseconds 100ms resolution)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_settimer()
+{
+    cui_send "C" "${API_WINDOWSETTIMER}" "$@"
+    cui_wait_ack   
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Stop a window timer   
+# Expects: $1  <-- Window  : Window Handle
+#          $2  <-- TimerId : Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_killtimer()
+{
+    cui_send "C" "${API_WINDOWKILLTIMER}" "$@"
+    cui_wait_ack   
+    return $?  
+}
+
+#------------------------------------------------------------------------------
+# Add/Modify a color profile
+# Expects: $1  <-- Name  : Window Handle
+#          $2  <-- WndColor        : Integer (COLOR_XXX)
+#          $3  <-- WndSelColor     : Integer (COLOR_XXX)
+#          $4  <-- WndTxtColor     : Integer (COLOR_XXX)
+#          $5  <-- SelTxtColor     : Integer (COLOR_XXX)
+#          $6  <-- InactTxtColor   : Integer (COLOR_XXX)
+#          $7  <-- HilightColor    : Integer (COLOR_XXX)
+#          $8  <-- TitleTxtColor   : Integer (COLOR_XXX)
+#          $9  <-- TitleBkgndColor : Integer (COLOR_XXX)
+#          $10 <-- StatusTxtColor  : Integer (COLOR_XXX)
+#          $11 <-- StatusBkgndColor: Integer (COLOR_XXX)
+#          $12 <-- BorderColor     : Integer (COLOR_XXX)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_addcolors()
+{
+    cui_send "C" "${API_WINDOWADDCOLSCHEME}" "$@"
+    cui_wait_ack   
+    return $?      
+}
+
+#------------------------------------------------------------------------------
+# Check if color profile has been defined
+# Expects: $1  <-- Name  : Name of profile
+# returns: $p2 --> Result : Integer (0 = not defined, 1 = defined)
+#------------------------------------------------------------------------------
+cui_hascolors()
+{
+    cui_send "C" "${API_WINDOWHASCOLSCHEME}" "$@"
+    cui_wait_ack   
+    return $?  
+}
+
+#------------------------------------------------------------------------------
+# Assign a color profile to a window
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Nam e  : Name of profile
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_setcolors()
+{
+    cui_send "C" "${API_WINDOWCOLSCHEME}" "$@"
+    cui_wait_ack   
+    return $?  
+}
+
+#------------------------------------------------------------------------------
+# Set window text
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Text   : Window text
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_settext()
+{
+    cui_send "C" "${API_WINDOWSETTEXT}" "$@"
+    cui_wait_ack   
+    return $? 
+}
+
+#------------------------------------------------------------------------------
+# Set window left text
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Text   : Window text
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_setltext()
+{
+    cui_send "C" "${API_WINDOWSETLTEXT}" "$@"
+    cui_wait_ack   
+    return $? 
+}
+
+#------------------------------------------------------------------------------
+# Set window right text
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Text   : Window text
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_setrtext()
+{
+    cui_send "C" "${API_WINDOWSETRTEXT}" "$@"
+    cui_wait_ack   
+    return $?  
+}
+
+#------------------------------------------------------------------------------
+# Set window status text
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Text   : Window text
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_setstatustext()
+{
+    cui_send "C" "${API_WINDOWSETSTATUSTEXT}" "$@"
+    cui_wait_ack   
+    return $?  
+}
+
+#------------------------------------------------------------------------------
+# Set window left status text
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Text   : Window text
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_setlstatustext()
+{
+    cui_send "C" "${API_WINDOWSETLSTATUSTEXT}" "$@"
+    cui_wait_ack   
+    return $?  
+}
+
+#------------------------------------------------------------------------------
+# Set window right status text
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Text   : Window text
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_setrstatustext()
+{
+    cui_send "C" "${API_WINDOWSETRSTATUSTEXT}" "$@"
+    cui_wait_ack   
+    return $?      
+}
+
+#------------------------------------------------------------------------------
+# Bring window to top
+# Expects: $1  <-- Window : Window Handle
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_totop()
+{
+    cui_send "C" "${API_WINDOWTOTOP}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Maximize window (and reverse)
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- State  : 1 = maximize, 0 = normal
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_maximize()
+{
+    cui_send "C" "${API_WINDOWMAXIMIZE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Minimize window (and reverse)
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- State  : 1 = minimize, 0 = normal
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_minimize()
+{
+    cui_send "C" "${API_WINDOWMINIMIZE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Hide window (and reverse)
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- State  : 1 = hidden, 0 = visible
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_hide()
+{
+    cui_send "C" "${API_WINDOWHIDE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Enable window (and reverse)
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- State  : 1 = enabled (default), 0 = disabled
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_enable()
+{
+    cui_send "C" "${API_WINDOWENABLE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Set the input focus to a window
+# Expects: $1  <-- Window : Window Handle
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_setfocus()
+{
+    cui_send "C" "${API_WINDOWSETFOCUS}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get the window that owns the input focus 
+# Expects: <nothing>
+# returns: $p2 --> Window : Window Handle
+#------------------------------------------------------------------------------
+cui_window_getfocus()
+{
+    cui_send "C" "${API_WINDOWGETFOCUS}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Invalidate window and force redrawing
+# Expects: $1  <-- Window : Window Handle
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_invalidate()
+{
+    cui_send "C" "${API_WINDOWINVALIDATE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Invalidate window layout an scrollbar sizes (i.e. when a listbox receives
+# data)
+# Expects: $1  <-- Window : Window Handle
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_window_invalidate_layout()
+{
+    cui_send "C" "${API_WINDOWINVALIDATELAYOUT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Update window stack
+# Expects: <nothing>
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_update()
+{
+    cui_send "C" "${API_WINDOWUPDATE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Leave curses mode
+# Expects: <nothing>
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_leave_curses()
+{
+    cui_send "C" "${API_WINDOW_CURSES_LEAVE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Resume curses mode
+# Expects: <nothing>
+# returns: <nothing>
+#------------------------------------------------------------------------------
+cui_resume_curses()
+{
+    cui_send "C" "${API_WINDOW_CURSES_RESUME}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Execute shell command
+# Expects: $1  <-- Shell command : String
+# returns: $p2 --> Exit code
+#------------------------------------------------------------------------------
+cui_shell_execute()
+{
+    cui_send "C" "${API_WINDOW_SHELL_EXECUTE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Make new edit: 
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- Window title  : String
+#          $3  <-- X             : Integer
+#          $4  <-- Y             : Integer
+#          $5  <-- W             : Integer
+#          $6  <-- H             : Integer
+#          $7  <-- Len           : Integer
+#          $8  <-- ID            : Integer
+#          $9  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $10 <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_edit_new()
+{
+    cui_send "C" "${API_EDITNEW}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Assign a edit callback
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Hook   : Integer (use $HOOK_XXX constants)
+#          $3  <-- Target : Window Handle
+#          $4  <-- Proc   : String (name of shell function)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_edit_callback()
+{
+    cui_send "C" "${API_EDITSETCALLBACK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Set edit text
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Text   : String
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_edit_settext()
+{
+    cui_send "C" "${API_EDITSETTEXT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get edit text
+# Expects: $1  <-- Window : Window Handle
+# Returns: $p2 --> Text   : String
+#------------------------------------------------------------------------------
+cui_edit_gettext()
+{
+    cui_send "C" "${API_EDITGETTEXT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Make new label: 
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- Window title  : String
+#          $3  <-- X             : Integer
+#          $4  <-- Y             : Integer
+#          $5  <-- W             : Integer
+#          $6  <-- H             : Integer
+#          $7  <-- ID            : Integer
+#          $8  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $9  <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_label_new()
+{
+    cui_send "C" "${API_LABELNEW}" "$@"
+    cui_wait_ack
+    return $?   
+}
+
+#------------------------------------------------------------------------------
+# Assign a label callback
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Hook   : Integer (use $HOOK_XXX constants)
+#          $3  <-- Target : Window Handle
+#          $4  <-- Proc   : String (name of shell function)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_label_callback()
+{
+    cui_send "C" "${API_LABELSETCALLBACK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Make new button: 
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- Window title  : String
+#          $3  <-- X             : Integer
+#          $4  <-- Y             : Integer
+#          $5  <-- W             : Integer
+#          $6  <-- H             : Integer
+#          $7  <-- ID            : Integer
+#          $8  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $9  <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_button_new()
+{
+    cui_send "C" "${API_BUTTONNEW}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Assign a button callback
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Hook   : Integer (use $HOOK_XXX constants)
+#          $3  <-- Target : Window Handle
+#          $4  <-- Proc   : String (name of shell function)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_button_callback()
+{
+    cui_send "C" "${API_BUTTONSETCALLBACK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Make new groupbox: 
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- Window title  : String
+#          $3  <-- X             : Integer
+#          $4  <-- Y             : Integer
+#          $5  <-- W             : Integer
+#          $6  <-- H             : Integer
+#          $7  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $8  <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_groupbox_new()
+{
+    cui_send "C" "${API_GROUPBOXNEW}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Make new radio control: 
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- Window title  : String
+#          $3  <-- X             : Integer
+#          $4  <-- Y             : Integer
+#          $5  <-- W             : Integer
+#          $6  <-- H             : Integer
+#          $7  <-- ID            : Integer
+#          $8  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $9  <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_radio_new()
+{
+    cui_send "C" "${API_RADIONEW}" "$@"
+    cui_wait_ack
+    return $?   
+}
+
+#------------------------------------------------------------------------------
+# Assign a radio callback
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Hook   : Integer (use $HOOK_XXX constants)
+#          $3  <-- Target : Window Handle
+#          $4  <-- Proc   : String (name of shell function)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_radio_callback()
+{
+    cui_send "C" "${API_RADIOSETCALLBACK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Set radio check status
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Value  : Integer (0 or 1)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_radio_setcheck()
+{
+    cui_send "C" "${API_RADIOSETCHECK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get radio check status
+# Expects: $1  <-- Window : Window Handle
+# Returns: $p2 --> Value  : Integer (0 or 1)
+#------------------------------------------------------------------------------
+cui_radio_getcheck()
+{
+    cui_send "C" "${API_RADIOGETCHECK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Make new checkbox control: 
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- Window title  : String
+#          $3  <-- X             : Integer
+#          $4  <-- Y             : Integer
+#          $5  <-- W             : Integer
+#          $6  <-- H             : Integer
+#          $7  <-- ID            : Integer
+#          $8  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $9  <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_checkbox_new()
+{
+    cui_send "C" "${API_CHECKBOXNEW}" "$@"
+    cui_wait_ack
+    return $?   
+}
+
+#------------------------------------------------------------------------------
+# Assign a checkbox callback
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Hook   : Integer (use $HOOK_XXX constants)
+#          $3  <-- Target : Window Handle
+#          $4  <-- Proc   : String (name of shell function)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_checkbox_callback()
+{
+    cui_send "C" "${API_CHECKBOXSETCALLBACK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Set checkbox check status
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Value  : Integer (0 or 1)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_checkbox_setcheck()
+{
+    cui_send "C" "${API_CHECKBOXSETCHECK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get checkbox check status
+# Expects: $1  <-- Window : Window Handle
+# Returns: $p2 --> Value  : Integer (0 or 1)
+#------------------------------------------------------------------------------
+cui_checkbox_getcheck()
+{
+    cui_send "C" "${API_CHECKBOXGETCHECK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Make new listbox control: 
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- Window title  : String
+#          $3  <-- X             : Integer
+#          $4  <-- Y             : Integer
+#          $5  <-- W             : Integer
+#          $6  <-- H             : Integer
+#          $7  <-- ID            : Integer
+#          $8  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $9  <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_listbox_new()
+{
+    cui_send "C" "${API_LISTBOXNEW}" "$@"
+    cui_wait_ack
+    return $?   
+}
+
+#------------------------------------------------------------------------------
+# Assign a listbox callback
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Hook   : Integer (use $HOOK_XXX constants)
+#          $3  <-- Target : Window Handle
+#          $4  <-- Proc   : String (name of shell function)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_listbox_callback()
+{
+    cui_send "C" "${API_LISTBOXSETCALLBACK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Add string to listbox
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Value  : String
+# Returns: $p2 --> Index  : Integer
+#------------------------------------------------------------------------------
+cui_listbox_add()
+{
+    cui_send "C" "${API_LISTBOXADD}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Delete string from listbox
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Index  : Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_listbox_delete()
+{
+    cui_send "C" "${API_LISTBOXDELETE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get string from listbox
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Index  : Integer
+# Returns: $p2 --> Value  : String
+#------------------------------------------------------------------------------
+cui_listbox_get()
+{
+    cui_send "C" "${API_LISTBOXGET}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Assign data to listbox item
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Index  : Integer
+#          $3  <-- Data   : Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_listbox_adddata()
+{
+    cui_send "C" "${API_LISTBOXADDDATA}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Read data from listbox item
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Index  : Integer
+# Returns: $p2 --> Data   : Integer
+#------------------------------------------------------------------------------
+cui_listbox_getdata()
+{
+    cui_send "C" "${API_LISTBOXGETDATA}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Set current selection
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Index  : Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_listbox_setsel()
+{
+    cui_send "C" "${API_LISTBOXSETSEL}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get current selection
+# Expects: $1  <-- Window : Window Handle
+# Returns: $p2 --> Index  : Integer
+#------------------------------------------------------------------------------
+cui_listbox_getsel()
+{
+    cui_send "C" "${API_LISTBOXGETSEL}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Clear listbox content
+# Expects: $1  <-- Window : Window Handle
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_listbox_clear()
+{
+    cui_send "C" "${API_LISTBOXCLEAR}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get number of items in listbox
+# Expects: $1  <-- Window   : Window Handle
+# Returns: $p2 --> NumItems : Integer
+#------------------------------------------------------------------------------
+cui_listbox_getcount()
+{
+    cui_send "C" "${API_LISTBOXGETCOUNT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Select string in listbox
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- String : String to select
+# Returns: $p2 --> Index  : Integer
+#------------------------------------------------------------------------------
+cui_listbox_select()
+{
+    cui_send "C" "${API_LISTBOXSELECT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Make new combobox control: 
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- X             : Integer
+#          $3  <-- Y             : Integer
+#          $4  <-- W             : Integer
+#          $5  <-- H             : Integer
+#          $6  <-- ID            : Integer
+#          $7  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $8  <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_combobox_new()
+{
+    cui_send "C" "${API_COMBOBOXNEW}" "$@"
+    cui_wait_ack
+    return $?   
+}
+
+#------------------------------------------------------------------------------
+# Assign a combobox callback
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Hook   : Integer (use $HOOK_XXX constants)
+#          $3  <-- Target : Window Handle
+#          $4  <-- Proc   : String (name of shell function)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_combobox_callback()
+{
+    cui_send "C" "${API_COMBOBOXSETCALLBACK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Add string to combobox
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Value  : String
+# Returns: $p2 --> Index  : Integer
+#------------------------------------------------------------------------------
+cui_combobox_add()
+{
+    cui_send "C" "${API_COMBOBOXADD}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Delete string from combobox
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Index  : Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_combobox_delete()
+{
+    cui_send "C" "${API_COMBOBOXDELETE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get string from combobox
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Index  : Integer
+# Returns: $p2 --> Value  : String
+#------------------------------------------------------------------------------
+cui_combobox_get()
+{
+    cui_send "C" "${API_COMBOBOXGET}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Assign data to combobox item
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Index  : Integer
+#          $3  <-- Data   : Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_combobox_adddata()
+{
+    cui_send "C" "${API_COMBOBOXADDDATA}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Read data from combobox item
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Index  : Integer
+# Returns: $p2 --> Data   : Integer
+#------------------------------------------------------------------------------
+cui_combobox_getdata()
+{
+    cui_send "C" "${API_COMBOBOXGETDATA}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Set current selection
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Index  : Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_combobox_setsel()
+{
+    cui_send "C" "${API_COMBOBOXSETSEL}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get current selection
+# Expects: $1  <-- Window : Window Handle
+# Returns: $p2 --> Index  : Integer
+#------------------------------------------------------------------------------
+cui_combobox_getsel()
+{
+    cui_send "C" "${API_COMBOBOXGETSEL}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Clear combobox content
+# Expects: $1  <-- Window : Window Handle
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_combobox_clear()
+{
+    cui_send "C" "${API_COMBOBOXCLEAR}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get number of items in combobox
+# Expects: $1  <-- Window   : Window Handle
+# Returns: $p2 --> NumItems : Integer
+#------------------------------------------------------------------------------
+cui_combobox_getcount()
+{
+    cui_send "C" "${API_COMBOBOXGETCOUNT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Select string in combobox
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- String : String to select
+# Returns: $p2 --> Index  : Integer
+#------------------------------------------------------------------------------
+cui_combobox_select()
+{
+    cui_send "C" "${API_COMBOBOXSELECT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Make new progress bar control: 
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- Title         : String
+#          $3  <-- X             : Integer
+#          $4  <-- Y             : Integer
+#          $5  <-- W             : Integer
+#          $6  <-- H             : Integer
+#          $7  <-- ID            : Integer
+#          $8  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $9  <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_progress_new()
+{
+    cui_send "C" "${API_PROGRESSBARNEW}" "$@"
+    cui_wait_ack
+    return $?   
+}
+
+#------------------------------------------------------------------------------
+# Set bar range
+# Expects: $1  <-- Window   : Window Handle
+#          $2  <-- Range    : Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_progress_setrange()
+{
+    cui_send "C" "${API_PROGRESSBARSETRANGE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Set bar pos
+# Expects: $1  <-- Window   : Window Handle
+#          $2  <-- Pos      : Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_progress_setpos()
+{
+    cui_send "C" "${API_PROGRESSBARSETPOS}" "$@"
+    cui_wait_ack
+    return $?   
+}
+
+#------------------------------------------------------------------------------
+# Get bar range
+# Expects: $1  <-- Window   : Window Handle
+# Returns: $p2 --> Range    : Integer
+#------------------------------------------------------------------------------
+cui_progress_getrange()
+{
+    cui_send "C" "${API_PROGRESSBARGETRANGE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get bar pos
+# Expects: $1  <-- Window   : Window Handle
+# Returns: $p2 --> Pos      : Integer
+#------------------------------------------------------------------------------
+cui_progress_getpos()
+{
+    cui_send "C" "${API_PROGRESSBARGETPOS}" "$@"
+    cui_wait_ack
+    return $?   
+}
+
+
+#------------------------------------------------------------------------------
+# Make new textview control: 
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- Title         : String
+#          $3  <-- X             : Integer
+#          $4  <-- Y             : Integer
+#          $5  <-- W             : Integer
+#          $6  <-- H             : Integer
+#          $7  <-- ID            : Integer
+#          $8  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $9  <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_textview_new()
+{
+    cui_send "C" "${API_TEXTVIEWNEW}" "$@"
+    cui_wait_ack
+    return $?   
+}
+
+#------------------------------------------------------------------------------
+# Assign a textview callback
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Hook   : Integer (use $HOOK_XXX constants)
+#          $3  <-- Target : Window Handle
+#          $4  <-- Proc   : String (name of shell function)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_textview_callback()
+{
+    cui_send "C" "${API_TEXTVIEWSETCALLBACK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Enable word wrap
+# Expects: $1  <-- Window   : Window Handle
+#          $2  <-- Enable?  : Integer (0 or 1)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_textview_wordwrap()
+{
+    cui_send "C" "${API_TEXTVIEWENABLEWORDWRAP}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Add string to textview
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Value  : String
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_textview_add()
+{
+    cui_send "C" "${API_TEXTVIEWADD}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Add string to textview
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Value  : String
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_textview_clear()
+{
+    cui_send "C" "${API_TEXTVIEWCLEAR}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Read a file
+# Expects: $1  <-- Window    : Window Handle
+#          $2  <-- Filename  : String
+# Returns: $p2 --> Success   : Integer (0=failed, 1=success)
+#------------------------------------------------------------------------------
+cui_textview_read()
+{
+    cui_send "C" "${API_TEXTVIEWREAD}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# search within textview
+# Expects: $1  <-- Window    : Window Handle
+#          $2  <-- SearchStr : String
+#          $3  <-- WholeWord : Integer (0 or 1)
+#          $4  <-- CaseSense : Integer (0 or 1)
+#          $5  <-- Down      : Integer (0 or 1)
+# Returns: $p2 --> Success   : Integer (0=failed, 1=success)
+#------------------------------------------------------------------------------
+cui_textview_search()
+{
+    cui_send "C" "${API_TEXTVIEWSEARCH}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Make new listview control:
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- Title         : String
+#          $3  <-- X             : Integer
+#          $4  <-- Y             : Integer
+#          $5  <-- W             : Integer
+#          $6  <-- H             : Integer
+#          $7  <-- Num columns   : Integer
+#          $8  <-- ID            : Integer
+#          $9  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $10 <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_listview_new()
+{
+    cui_send "C" "${API_LISTVIEWNEW}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Assign a listview callback
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Hook   : Integer (use $HOOK_XXX constants)
+#          $3  <-- Target : Window Handle
+#          $4  <-- Proc   : String (name of shell function)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_listview_callback()
+{
+    cui_send "C" "${API_LISTVIEWSETCALLBACK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Set listview column titel
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Col-No : Integer
+#          $3  <-- Text   : String
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_listview_setcoltext()
+{
+    cui_send "C" "${API_LISTVIEWADDCOLUMN}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Set listview column titel
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Col-No : Integer
+#          $3  <-- Alignment : Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_listview_settitlealignment()
+{
+    cui_send "C" "${API_LISTVIEWSETTITLEALIGNMENT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Clear listview data
+# Expects: $1  <-- Window : Window Handle
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_listview_clear()
+{
+    cui_send "C" "${API_LISTVIEWCLEAR}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Add a new (empty) record to the list view
+# (must be populated with data using cui_listview_settext)
+# Expects: $1  <-- Window   : Window Handle
+# Returns: $p2 --> Index of new record : Integer
+#------------------------------------------------------------------------------
+cui_listview_add()
+{
+    cui_send "C" "${API_LISTVIEWADD}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Assign text data to listview record
+# Expects: $1  <-- Window     : Window Handle
+#          $2  <-- Rec. index : Integer (returned by cui_listview_add)
+#          $3  <-- Col. index : Integer (0 | 1 | ... | cols - 1)
+#          $4  <-- Text       : String
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_listview_settext()
+{
+    cui_send "C" "${API_LISTVIEWSETTEXT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get text data assigned listview record
+# Expects: $1  <-- Window     : Window Handle
+#          $2  <-- Rec. index : Integer (returned by cui_listview_add)
+#          $3  <-- Col. index : Integer (0 | 1 | ... | cols - 1)
+# Returns: $p2 --> Text       : String
+#------------------------------------------------------------------------------
+cui_listview_gettext()
+{
+    cui_send "C" "${API_LISTVIEWGETTEXT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Assign integer data to listview record
+# Expects: $1  <-- Window     : Window Handle
+#          $2  <-- Rec. index : Integer (returned by cui_listview_add)
+#          $3  <-- Data       : Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_listview_setdata()
+{
+    cui_send "C" "${API_LISTVIEWSETDATA}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get integer data from listview record
+# Expects: $1  <-- Window     : Window Handle
+#          $2  <-- Rec. index : Integer (returned by cui_listview_add)
+# Returns: $p2 --> Data       : Integer
+#------------------------------------------------------------------------------
+cui_listview_getdata()
+{
+    cui_send "C" "${API_LISTVIEWGETDATA}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Set current selection in listview control
+# Expects: $1  <-- Window     : Window Handle
+#          $2  <-- Rec. index : Integer (returned by cui_listview_add)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_listview_setsel()
+{
+    cui_send "C" "${API_LISTVIEWSETSEL}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get current selection of listview control
+# Expects: $1  <-- Window     : Window Handle
+# Returns: $p2 --> Sel. index : Integer (-1 if not selected)
+#------------------------------------------------------------------------------
+cui_listview_getsel()
+{
+    cui_send "C" "${API_LISTVIEWGETSEL}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get number of records in listview control
+# Expects: $1  <-- Window     : Window Handle
+# Returns: $p2 --> Count      : Integer
+#------------------------------------------------------------------------------
+cui_listview_getcount()
+{
+    cui_send "C" "${API_LISTVIEWGETCOUNT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Update listview visual display after modifying data (!!! function is obsolete !!!)
+# Expects: $1  <-- Window   : Window Handle
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_listview_update()
+{
+    cui_send "C" "${API_LISTVIEWUPDATE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Sort listview column in alphabetic order
+# Expects: $1  <-- Window   : Window Handle
+#          $2  <-- Column   : Integer
+#          $3  <-- Dir      : 1 = up, 0 = down
+# Returns: <nothing>   
+#------------------------------------------------------------------------------
+cui_listview_alphasort() 
+{
+    cui_send "C" "${API_LISTVIEWALPHASORT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Sort listview column in numeric order
+# Expects: $1  <-- Window   : Window Handle
+#          $2  <-- Column   : Integer
+#          $3  <-- Dir      : 1 = up, 0 = down
+# Returns: <nothing>   
+#------------------------------------------------------------------------------
+cui_listview_numericsort()
+{
+    cui_send "C" "${API_LISTVIEWNUMERICSORT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Make new terminal control:
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- Title         : String
+#          $3  <-- X             : Integer
+#          $4  <-- Y             : Integer
+#          $5  <-- W             : Integer
+#          $6  <-- H             : Integer
+#          $7  <-- ID            : Integer
+#          $8  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $9  <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_terminal_new()
+{
+    cui_send "C" "${API_TERMINALNEW}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Assign a terminal callback
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Hook   : Integer (use $HOOK_XXX constants)
+#          $3  <-- Target : Window Handle
+#          $4  <-- Proc   : String (name of shell function)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_terminal_callback()
+{
+    cui_send "C" "${API_TERMINALSETCALLBACK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Write text into the terminal window
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Text   : String
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_terminal_write()
+{
+    cui_send "C" "${API_TERMINALWRITE}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Run a command within the terminal window
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Text   : String
+# Returns: $p2 --> Success : Integer (0 or 1 !not the exit code of the process!)
+#------------------------------------------------------------------------------
+cui_terminal_run()
+{
+    cui_send "C" "${API_TERMINALRUN}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Pipe text data to the running co process
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Text   : String
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_terminal_pipe()
+{
+    cui_send "C" "${API_TERMINALPIPEDATA}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# Make new menu control:
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- Title         : String
+#          $3  <-- X             : Integer
+#          $4  <-- Y             : Integer
+#          $5  <-- W             : Integer
+#          $6  <-- H             : Integer
+#          $7  <-- ID            : Integer
+#          $8  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $9  <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_menu_new()
+{
+    cui_send "C" "${API_MENUNEW}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Assign a menu callback
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Hook   : Integer (use $HOOK_XXX constants)
+#          $3  <-- Target : Window Handle
+#          $4  <-- Proc   : String (name of shell function)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_menu_callback()
+{
+    cui_send "C" "${API_MENUSETCALLBACK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Add a menu item
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Text   : String
+#          $3  <-- Id     : Item id
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_menu_additem()
+{
+    cui_send "C" "${API_MENUADDITEM}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Add a menu separator
+# Expects: $1  <-- Window : Window Handle
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_menu_addseparator()
+{
+    cui_send "C" "${API_MENUADDSEPARATOR}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Select menu item
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Id     : Integer (item id)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_menu_selitem()
+{
+    cui_send "C" "${API_MENUSELECTITEM}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get selected menu item
+# Expects: $1  <-- Window : Window Handle
+# Returns: $p2 --> ItemId : Integer
+#------------------------------------------------------------------------------
+cui_menu_getselitem()
+{
+    cui_send "C" "${API_MENUGETSELITEM}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Clear menu
+# Expects: $1  <-- Window : Window Handle
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_menu_clear()
+{
+    cui_send "C" "${API_MENUCLEAR}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
+# util functions
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# Read XML tag
+# Expects: $1  <-- Filename    : String
+#          $2  <-- Search Spec : String (something like "tag:subtag:subsubtag"
+# Returns: $p2 --> Data        : String
+#------------------------------------------------------------------------------
+xml_read_tag()
+{
+    cui_send "C" "${API_XMLREADTAG}" "$@"
+    cui_wait_ack
+    return $?   
+}
+
+#------------------------------------------------------------------------------
+# Load addon module
+# Expects: $1  <-- Filename     : String (library with full pathname)
+# Returns: $p2 --> ModuleOffset : String (0 if error, > 10000 if success)
+#------------------------------------------------------------------------------
+cui_load_addon()
+{
+    cui_send "C" "${API_LOADADDON}" "$@"
+    cui_wait_ack
+    return $? 
+}
+

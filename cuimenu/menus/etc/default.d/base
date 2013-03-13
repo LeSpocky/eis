@@ -1,0 +1,124 @@
+#-----------------------------------------------------------------------------
+# /etc/config.d/base - eisfair boot configuration parameters
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# General settings:
+#------------------------------------------------------------------------------
+
+HOSTNAME='eisfair2'                    # name of eisfair server
+
+#------------------------------------------------------------------------------
+# Ether networks used with IP protocol:
+#------------------------------------------------------------------------------
+
+IP_NET_N='1'                        # number of ip ethernet networks, usually 1
+IP_NET_1_NAME=''                    # optional: other device name than ethX
+IP_NET_1_IPV4_ACTIVE='yes'          # use IPv4 for your LAN
+IP_NET_1_IPV4_STATIC_IP='yes'       # use dhcp or static address
+IP_NET_1_IPV4_IPADDR='192.168.6.254'   # IP address of your n'th ethernet card
+IP_NET_1_IPV4_NETMASK='255.255.255.0'  # netmask of your LAN
+IP_NET_1_IPV4_GATEWAY='192.168.6.1'    # gateway of your LAN
+IP_NET_1_IPV4_POINTOPOINT='no'           # set the geate as point to point link
+IP_NET_1_IPV6_ACTIVE='no'           # use IPv6 for your LAN
+IP_NET_1_IPV6_STATIC_IP='yes'       # use dhcp or static address
+IP_NET_1_IPV6_IPADDR='2001:db8:0:f101::254' # IP address of your n'th ethernet card
+IP_NET_1_IPV6_NETMASKBITS='64'      # bits of netmask of your LAN
+IP_NET_1_IPV6_GATEWAY='2001:db8:0:f101::1'  # gateway of your LAN
+IP_NET_1_IPV6_POINTOPOINT='no'           # set the geate as point to point link
+
+#------------------------------------------------------------------------------
+# Additional routes
+#------------------------------------------------------------------------------
+
+IPV4_ROUTE_N='0'                    # number of additional routes
+IPV4_ROUTE_1='192.168.7.0 255.255.255.0 192.168.6.99'
+                                    # network netmask gateway
+IPV6_ROUTE_N='0'                    # number of additional routes
+IPV6_ROUTE_1='2001:db8:1:f101::12/64 2001:db8:0:f101::99'
+                                    # network/netmaskbits gateway
+
+
+#------------------------------------------------------------------------------
+# Domain & DNS server
+#------------------------------------------------------------------------------
+
+DOMAIN_NAME='lan.home'              # your domain name
+DNS_SERVER='192.168.6.1 2001:db8:1:f101::1' # your dns server, e.g. fli4l router
+
+#------------------------------------------------------------------------------
+# Time zone
+#------------------------------------------------------------------------------
+
+TIME_ZONE='CET'                        # time zone, use 'CET' or 'GMT'
+
+#------------------------------------------------------------------------------
+# Syslog service
+#------------------------------------------------------------------------------
+
+START_SYSLOG='yes'                          # start syslog: yes or no
+
+SYSLOG_AUTH_INTERVAL='weekly'
+SYSLOG_AUTH_MAXCOUNT='4'
+SYSLOG_AUTH_RELOAD='no'
+
+SYSLOG_MAIL_INTERVAL='weekly'
+SYSLOG_MAIL_MAXCOUNT='4'
+SYSLOG_MAIL_RELOAD='no'
+
+SYSLOG_MESSAGES_INTERVAL='daily'
+SYSLOG_MESSAGES_MAXCOUNT='14'
+SYSLOG_MESSAGES_RELOAD='yes'
+
+SYSLOG_KERNEL_INTERVAL='monthly'
+SYSLOG_KERNEL_MAXCOUNT='2'
+SYSLOG_KERNEL_RELOAD='no'
+
+#------------------------------------------------------------------------------
+# Syslog external access
+#------------------------------------------------------------------------------
+
+SYSLOG_SOURCE_UDP='no'
+
+SYSLOG_DEST_N='0'                          # number of destinations
+
+SYSLOG_DEST_1_TARGET='192.168.1.10'        # target of log
+SYSLOG_DEST_1_FILTER='facility(auth, authpriv) or level(err, crit)' # filter string
+SYSLOG_DEST_1_INTERVAL='weekly'
+SYSLOG_DEST_1_MAXCOUNT='2'
+
+SYSLOG_DEST_2_TARGET='/var/log/debug.log'  # target of log
+SYSLOG_DEST_2_FILTER='level(debug)'        # filter string
+SYSLOG_DEST_2_INTERVAL='weekly'
+SYSLOG_DEST_2_MAXCOUNT='2'
+
+#------------------------------------------------------------------------------
+# Keymapping
+#------------------------------------------------------------------------------
+
+KEYMAP='de-latin1-nodeadkeys'              # load german keymap
+
+#------------------------------------------------------------------------------
+# Console setup
+#------------------------------------------------------------------------------
+
+CONSOLEFONT='Lat15-TerminusBold16'
+
+CONSOLE_BLANK_TIME='30'
+
+#------------------------------------------------------------------------------
+# Kernel modules treatment
+#------------------------------------------------------------------------------
+
+MODULE_N='0'                           # number of modules to be treated
+MODULE_1='loop'                        # name of 1st module to be treated
+MODULE_1_ACTION='option'               # action to apply to this module
+MODULE_1_STRING='max_loop=128'         # string with option for module action
+MODULE_2='dummy'                       # name of 2st module to be treated
+MODULE_2_ACTION='option'               # action to apply to this module
+MODULE_2_STRING='numdummies=8'         # string with option for module action
+
+#------------------------------------------------------------------------------
+# End
+#------------------------------------------------------------------------------

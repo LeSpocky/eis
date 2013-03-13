@@ -1,0 +1,276 @@
+#!/bin/bash
+#----------------------------------------------------------------------------
+# /var/install/bin/ask - ask user
+#
+# Creation:                2003-07-19  fm
+# Last Update:  $Id: ask 30220 2012-03-11 20:02:57Z hbfl $
+#
+#----------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------
+# Syntax:
+#
+# /var/install/bin/ask [--tty --info --warn --error] QUESTION [DEFAULT] [PATTERN] [PATTERN] ...
+#
+# QUESTION  -  Question to be asked.
+# DEFAULT   -  Default answer
+# PATTERN   -  Possible answers:
+#              empty        -   y(es) or n(o)
+#              *            -   string input
+#              +            -   string input (not empty!)
+#              min-max      -   numerical input (range given)
+#              WORD|WORD    -   a list of possible values
+#                               the first will be included into the question
+#                               the last will be returned if choosen
+#              WORD=WORD    -   a list of possible values
+#                               all will be included into the question
+#                               the first will be returned if choosen
+#              ^$           -   ENTER
+#
+# Return Values:
+#
+# Exitcode:    Zero-Based Index of the Choosen PATTERN
+#              255 ask was aborted by typing CTRL-C
+# Output:      If Output is redirected, the output is either a part
+#              of the matching pattern (if PATTERN is given) or the
+#              entered text
+#
+# Examples:
+#              ask "Kernel loeschen"
+#              ask "Kernel loeschen" "no"
+#              ask "Cronzyklus" "" "d|daily" "w|weekly" "m|monthly"
+#              ask "Hostname" "eistest" "*"
+#              ask "Hostname" "" "+" >result
+#              ask "Weiter" >result
+#              ask "Anzahl" "1" "1-7" >result
+#              ask "Anzahl" "" "1-15" >result
+#
+#     --std      print standard message (default)
+#     --stdbr    print standard message (default)(bright)
+#     --info     print info message     (green)
+#     --warn     print warning message  (yellow)(bright)
+#     --error    print error message    (red)(brightinvers)
+#     --link     print message          '>'  (cyan)
+#
+#     --tty      use console colors
+#
+# Example with colors from 'xen-import-domain':
+#
+# importTarget=`/var/install/bin/ask --tty --info \
+#        "What kind of domU you want to import? please make your choice\n" \
+#                                                                      "i" \
+#                                               "disk [i]mage|i|diskImage" \
+#                                     "phisical [d]evice|d|phisicalDevice"`
+#----------------------------------------------------------------------------
+
+
+#debug_ask=true
+
+if ${debug_ask:-false}
+then
+    exec 2>/tmp/$(basename ${0})-trace$$.log
+    set -x
+    ask_debug=true
+fi
+
+trap 'echo >/dev/tty;stty echo;exit 255' SIGINT
+
+_ask_opt=''
+_ask_mode="tty"
+_ask_colors=''
+_ask_reset='\033[0m'
+_ask_bold='\033[1m'
+full_values=""
+_ask_question=""
+default=""
+
+while [ 1 ]
+do
+    case "$1" in
+        --std)    _ask_colors="\033[0m\033[49m"; shift;;
+        --stdbr)  _ask_colors="\033[0m\033[49m"; shift;;
+        --info)   _ask_colors="\033[32m\033[49m"; shift;;
+        --warn)   _ask_colors="\033[33m\033[40m\033[1m"; shift;;
+        --error)  _ask_colors="\033[31m\033[47m\033[1m\033[7m"; shift;;
+        --link)   _ask_colors="\033[36m\033[49m"; shift;;
+        --tty)    _ask_mode=tty;  shift;;
+        --file)   _ask_mode=file; shift;;
+        *)      break;;
+    esac
+done
+
+if [ "_ask_mode" = "file" ] 
+then
+    _ask_colors=""
+    _ask_reset=""
+    _ask_bold=""
+fi
+
+
+_ask_question="$1"; shift
+default="$1";  shift
+
+### parameter processing
+if [ $# -eq 0 ]                     # use yes/no as default
+then
+    regexp_n=2
+    regexp_1="y|yes"
+    regexp_2="n|no"
+    values="${_ask_colors}y/n${_ask_reset}"
+    full_values=" y(es) or n(o)"
+elif [ $# -eq 1 -a "$1" = "*" ]     # string (empty allowed)
+then
+    regexp_n=1
+    regexp_1=".*"
+    values=""
+    full_values=""
+elif [ $# -eq 1 -a "$1" = "*hidden*" ] # string (empty allowed)
+then
+    regexp_n=1
+    regexp_1=".*"
+    values=""
+    full_values=""
+    hidden=true
+elif [ $# -eq 1 -a "$1" = "+" ]     # string (not empty)
+then
+    regexp_n=1
+    regexp_1=".+"
+    values=""
+    full_values=""
+elif [ $# -eq 1 -a "$1" = "+hidden+" ] # string (not empty)
+then
+    regexp_n=1
+    regexp_1=".+"
+    values=""
+    full_values=""
+    hidden=true
+else                                # list of values
+    ### Build strings of possible values for output
+    values=""
+    full_values=" "
+    regexp_n=0
+
+    while [ $# -gt 0 ]
+    do
+        regexp_n=`/usr/bin/expr $regexp_n + 1`
+
+        if echo -e "$1" | grep -qsE '[0-9]+\-[0-9]+'
+        then
+            eval regexp_$regexp_n="[0-9]+"
+            from=`echo "$1" | sed -e 's/-.*$//'`
+            to=`echo "$1" | sed -e 's/^.*-//'`
+            eval from_$regexp_n="$from"
+            eval to_$regexp_n="$to"
+            full_values="$full_values$from-$to"
+            values="$values${_ask_colors}$from${_ask_reset}-${_ask_colors}$to${_ask_reset}"
+        elif echo "$1" | grep -qsE '='
+        then
+            eval regexp_$regexp_n=\"`echo -e "$1" | sed -e 's/=.*$//'`\"
+            if echo -e "$1" | grep -qsE '\^[$]='
+            then
+                eval regexp_$regexp_n=\"'$regexp_'$regexp_n'|'\"
+            fi
+            full_values="$full_values`echo -e "$1" |
+                sed -e 's/\^[$]/ENTER/'`"
+            values="$values${_ask_colors}`echo -e "$1" |
+                sed -e 's/\^[$]/ENTER/'`${_ask_reset}"
+        else
+            eval regexp_$regexp_n=\"$1\"
+            if echo -e "$1" | grep -qsE '\^[$]$'
+            then
+                eval regexp_$regexp_n=\"'$regexp_'$regexp_n'|'\"
+            fi
+            full_values="$full_values`echo -e "$1" |
+                sed -e 's/\(.*\)|/\1=/' -e 's/\^[$]/ENTER/'`"
+            values="$values${_ask_colors}`echo -e "$1" |
+                sed -e 's/|.*//' | sed -e 's/\^[$]/ENTER/'`${_ask_reset}"
+        fi
+
+        shift
+
+        if [ $# -gt 0 ]
+        then
+            full_values="$full_values or "
+            values="$values, "
+        fi
+    done
+fi
+
+### build question
+if [ -n "$values" ]
+then
+    _ask_question="$_ask_question ($values)"
+fi
+if [ -n "$default" ]
+then
+    _ask_question="$_ask_question [${_ask_colors}${_ask_bold}$default${_ask_reset}]"
+fi
+_ask_question="$_ask_question"
+#${hidden:-false} && _ask_question="$_ask_question" || _ask_question="$_ask_question"
+
+while [ 1 ]
+do
+    # show the question for debug.
+    # the question was included in the 'read' string, since
+    # ask_debug=true
+    # export ask_debug
+    #
+    # in your script
+    if ${ask_debug:-false}
+    then
+        echo -e "${_ask_question}? " >/dev/tty
+    fi
+
+    # supress output if hidden is wanted
+    ${hidden:-false} && q_h='-s' #stty -echo
+
+    # ask the question - read the answer
+    # -e enable use of libreadline, to navigate in the row
+    # -r raw text, enable no backslash as escape character
+    # -p promt the question, to no overwrite the row with 'cursor back'
+    read -e -r ${q_h} -p "$(echo -e "${_ask_question}"?) " a
+    a=${a:-$default}
+
+    ### re-enable output if hidden was wanted
+    #${hidden:-false} && stty echo
+    # 'strg c' desater, enable output in the trap handler
+
+    # is the answer allowed?
+    idx=1
+    while [ $idx -le $regexp_n ]
+    do
+        eval regexp='$'regexp_$idx
+        if echo -e $a | grep -qsE "^($regexp)$"
+        then
+            eval from='$'from_$idx
+            eval to='$'to_$idx
+            if [ -z "${from}" ] || [ "$from" -le "$a" -a "$to" -ge "$a" ]
+            then
+                if ! /usr/bin/tty -s <&1
+                then
+                    # if pattern was in '*' '+' '^$'
+                    #    or $from is not empty
+                    #    write INPUT VALUE to file
+                    # else
+                    #    write LAST PART of REGEXP to file
+                    #    e.g. (d|daily)                    -> daily
+                    #    e.g. (d|daily|d) former (d=daily) -> d
+                    if [ "$regexp" = ".*" ] || [ "$regexp" = ".+" ] \
+                       || [ -n "${from}" ] || [ "$regexp" = "^$" ]
+                    then
+                        echo -e $a
+                    else
+                        echo "$regexp" | sed -e "s/.*|//"
+                    fi
+                fi
+                exit `/usr/bin/expr $idx - 1`
+            fi
+        fi
+        idx=`/usr/bin/expr $idx + 1`
+    done
+    echo -e "\033[33m\033[40m\033[1m Please answer $full_values !" >/dev/tty
+done
+
+exit 255 # not reached
+
+#set +x

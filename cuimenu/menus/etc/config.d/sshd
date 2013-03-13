@@ -1,0 +1,166 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/ssh - configuration for the ssh service on eisfair
+#
+# Copyright (c) 2007 The Eisfair Team <team@eisfair.org>
+#
+# Creation:     2007-11-20  jv
+# Last Update:  2007-11-20  jv
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# SSH - secure shell (general settings)
+#------------------------------------------------------------------------------
+
+START_SSHD='yes'
+                                  # start ssh 'yes' or 'no'
+SSHD_PORT='22'
+                                  # ssh port, see also FIREWALL_DENY_PORT_x
+
+#------------------------------------------------------------------------------
+# SSH - secure shell (protocol settings)
+#------------------------------------------------------------------------------
+SSHD_SVR_KEYBITS='1536'
+                                  # server keybits - default: 1536
+SSHD_LISTEN_ADDR_N='0'
+                                  # Number of addresses sshd should listen to
+                                  # 0 - listen on all local addresses
+SSHD_LISTEN_ADDR_1='1'
+                                  # First ip address, sshd should listen to
+                                  # use n'th ethernet card configured in
+                                  # /etc/config.d/base.
+                                  # E.g. SSHD_LISTEN_ADDR_1='2' points to
+                                  # IP_NET_2_IPADDR in /etc/config.d/base.
+
+#------------------------------------------------------------------------------
+# SSH - secure shell (allow/deny settings)
+#
+# Please use this settings with care.
+# All four lists are checked when a login is
+# done. So wrong settings could exclude an
+# important user (e.g. root or eis) from login.
+#------------------------------------------------------------------------------
+
+SSHD_ALLOW_USER_N='0'
+                                  # Number of user name patterns.
+                                  # Login is allowed only for user names that
+                                  # match one of the pattern. '*' and '?' can
+                                  # be used as wildcards in the patterns.
+                                  # Default: 0 - login is allowed for all users.
+SSHD_ALLOW_USER_1='root'
+                                  # First user name pattern.
+SSHD_DENY_USER_N='0'
+                                  # Number of user name patterns.
+                                  # Login is disallowed only for user names that
+                                  # match one of the pattern. '*' and '?' can be
+                                  # used as wildcards in the patterns.
+                                  # Default: 0 - login is allowed for all users.
+SSHD_DENY_USER_1='batch'
+                                  # First user name pattern.
+SSHD_ALLOW_GROUP_N='0'
+                                  # Number of group name patterns.
+                                  # Login is allowed only for users whose
+                                  # primary group or supplementary group
+                                  # matches one of the pattern. '*' and '?' can
+                                  # be used as wildcards in the patterns.
+                                  # Default: 0 - login is allowed for all groups
+SSHD_ALLOW_GROUP_1='root'
+                                  # First group name pattern.
+SSHD_DENY_GROUP_N='0'
+                                  # Number of group name patterns.
+                                  # Login is disallowed only for users whose
+                                  # primary group or supplementary group
+                                  # matches one of the pattern. '*' and '?' can
+                                  # be used as wildcards in the patterns.
+                                  # Default: 0 - login is allowed for all groups
+SSHD_DENY_GROUP_1='batch'
+                                  # First group name pattern.
+SSHD_PERMITROOTLOGIN='yes'
+                                  # Secifies whether root can login using ssh.
+                                  # 'yes' User root can login.
+                                  # 'no' User root can't login.
+                                  # 'without-password' Password authentication
+                                  # for user root is disabled. Note that other
+                                  # authentications (e.g. keyboard-interactive/
+                                  # PAM) may still allow root to login using a
+                                  # password.
+                                  # 'forced-commands-only' root login with
+                                  # public key authentication will be allowed,
+                                  # but only if the command option has been
+                                  # specified.
+
+#------------------------------------------------------------------------------
+# SSH - secure shell (public key settings for user root)
+#------------------------------------------------------------------------------
+
+SSHD_PUBLIC_KEY_N='0'
+                                  # number of public keys or keyfile to add
+                                  # to /root/.ssh/authorized_keys
+SSHD_PUBLIC_KEY_1=''
+                                  # public key (identity.pub) generated
+                                  # by ssh-keygen
+                                  # If the first character is a slash (/)
+                                  # the value is interpreted as an absolut
+                                  # pathname of a file. The content of this
+                                  # file is added to the file
+                                  # /root/.ssh/authorized_keys
+
+#------------------------------------------------------------------------------
+# SSH - secure shell (additional settings)
+#------------------------------------------------------------------------------
+
+SSHD_MAX_STARTUPS='10'
+                                  # maximum number of concurrent unauthenticated
+                                  # connections. default: 10
+SSHD_ENABLE_PRIV_SEPARATION='no'
+                                  # enable privilege separation: 'yes' or 'no'
+SSHD_COMPRESSION='yes'
+                                  # allow compression: 'yes' or 'no'
+SSHD_STRICTMODES='yes'
+                                  # Use Strictmodes: 'yes' or 'no'
+SSHD_PASSWDAUTH='yes'
+                                  # Allow password authentication 'yes'
+                                  # or 'no'. If password authentication
+                                  # is not allowed you have to use key
+                                  # authentication. Check that key
+                                  # authentication works fine before you
+                                  # set SSHD_PASSWDAUTH to 'no'.
+SSHD_CH_RESPONSEAUTH='yes'
+                                  # Allow challenge response authentication
+                                  # 'yes' or 'no'.
+SSHD_CLIENTALIVEINTERVAL='0'
+                                  # Timeout interval in seconds for
+                                  # client alive message.
+                                  # Default: 0 - no message
+SSHD_CLIENTALIVECOUNTMAX='3'
+                                  # Number of client alive messages
+                                  # until disconnection.
+                                  # Default: 3
+
+#------------------------------------------------------------------------------
+# SSH - secure shell (subsystem settings)
+#------------------------------------------------------------------------------
+
+SSHD_ENABLE_SFTP='yes'
+                                  # activate sftp: 'yes' or 'no'
+
+#------------------------------------------------------------------------------
+# SSH - secure shell (log level settings)
+#------------------------------------------------------------------------------
+
+SSHD_LOGLEVEL='INFO'
+                                  # Verbosity level that is used when
+                                  # logging messages from sshd.
+                                  # Values QUIET FATAL ERROR INFO VERBOSE
+                                  # DEBUG DEBUG1 DEBUG2 DEBUG3 are allowed.
+                                  # Default: INFO
+                                  # Logging with a DEBUG level violates
+                                  # the privacy of users and is not
+                                  # recommended.
+#------------------------------------------------------------------------------
+# End
+#------------------------------------------------------------------------------

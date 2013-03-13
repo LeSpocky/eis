@@ -1,0 +1,63 @@
+# Contributor:
+# Maintainer: jens@eisfair.org
+pkgname=fcron
+pkgver=3.0.6
+pkgrel=1
+pkgdesc="cron scheduler"
+url="http://fcron.free.fr"
+arch="all"
+license="GNU"
+depends=""
+depends_dev=""
+makedepends="$depends_dev"
+install="$pkgname.pre-install $pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall $pkgname.pre-upgrade $pkgname.post-upgrade"
+subpackages=""
+source="http://fcron.free.fr/archives/fcron-3.0.6.src.tar.gz
+        ${pkgname}.initd
+        systab.orig"
+
+_builddir="$srcdir/${pkgname}-$pkgver"
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+	./configure --prefix=/usr \
+	--sysconfdir=/etc \
+	--with-spooldir=/var/spool/fcron \
+	--with-piddir=/var/run \
+	--with-fifodir=/var/run \
+	--enable-ipv6 \
+	--with-username=cron \
+	--with-groupname=cron \
+	--with-selinux=no \
+	--with-pam=no \
+	--with-sysfcrontab=yes \
+	--with-boot-install=no \
+	|| return 1
+	make || return 1
+}
+
+package() {
+	cd "$_builddir"
+	make -j1 DESTDIR="$pkgdir" install || return 1
+	rm -rf ${pkgdir}/usr/share
+	rm -rf ${pkgdir}/var/run
+	strip -R .note -R .comment ${pkgdir}/usr/bin/*
+	strip -R .note -R .comment ${pkgdir}/usr/sbin/*
+	install -D -m755 ${srcdir}/${pkgname}.initd ${pkgdir}/etc/init.d/${pkgname} || return 1
+	install -D -m640 ${srcdir}/systab.orig ${pkgdir}/var/spool/fcron/systab.orig || return 1
+	mkdir -p ${pkgdir}/etc/cron/root || return 1
+}
+
+md5sums="69ebcb41921e2a282f41ebecb3a27053  fcron-3.0.6.src.tar.gz
+a7656772a06d46b6cb7cc7cf19e3175d  fcron.initd
+34bf916ff0f845960dce715f052bc48b  systab.orig"

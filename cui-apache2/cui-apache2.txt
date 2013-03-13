@@ -1,0 +1,896 @@
+                               Das Apache2-Paket
+
+   (c) Sebastian Scholze <sebastian(at)eisfair(dot)org>
+
+                                   Einleitung
+
+   Mit dem Apache-HTTP-Server kann man selbst Webseiten auf eisfair
+   bereitstellen, auch Seiten mit dynamischen Inhalten (PHP, Perl) stellen
+   damit kein Problem dar.
+
+   Das Apache-Paket stellt nur den eigentlichen Webserver bereit; um PHP
+   benutzen zu koennen, muss das APACHE2_PHP5-Paket installiert werden.
+
+                              Die Voraussetzungen
+
+   Das Apache2-Paket benoetigt die folgenden Pakete:
+     * certs
+
+                                Die Installation
+
+   Das apache2-Paket wird ueber das Setup-Menue im Untermenue ''Package
+   administration'' installiert. Wird eine aeltere Paketversion
+   vorgefunden, so wird deren Konfiguration gesichert und das alte Paket
+   deinstalliert bevor die neuen Programmdateien installiert werden und
+   die Konfiguration uebernommen wird.
+   Bei einer Neuinstallation wird automatisch die Standardkonfiguration
+   erstellt. Nach Beendigung diese Schrittes werden die
+   Konfigurationsdateien generiert und der httpd- Prozess gestartet.
+
+                          Das Menue im Setup-Programm
+
+   Das Menue des apache2 Paketes im Setup-Programm ist wie folgt
+   aufgebaut:
+
+     * Read Apache Documentation
+     * Configuration
+          + Edit configuration
+            Konfiguration von Apache ueber die eisfair-Konfigurationsebene
+            bearbeiten.
+          + Advanced configuration file handling
+            Versionsverwaltung der Apache Konfiguration.
+          + Append commands to the httpd.conf
+            Dieser Punkt bietet die Moeglichkeit, manuell Kommandos in die
+            Konfigurationsdatei des Apache einzutragen.
+          + Modules Configuration
+            Ueber diesen Punkt koennen Module, wie z.B. die PHP5
+            Erweiterung administriert und konfiguriert werden.
+     * Server Handling
+          + Show Status
+            Zeigt den aktuellen Status des Apache Dienstes an.
+          + Restart
+            Startet den Apache Server neu.
+          + Start
+            Startet den Apache Server.
+          + Stop
+            Stoppt den Apache Server.
+
+                        Die Aenderung der Konfiguration
+
+   Die Konfiguration von Apache2 unter eisfair erfolgt ueber den
+   Menuepunkt ''Edit configuration'' im Paketmenue. Die vorgenommenen
+   Aenderungen werden nach Beenden des Editors automatisch uebernommen.
+
+                            Die Konfigurationsdatei
+
+   In der Konfigurationsdatei, die ueber das Menue zugaenglich ist, sind
+   die in den folgenden Unterabschnitten beschriebenen Parameter
+   vorhanden.
+
+Die allgemeine Konfiguration
+
+   START_APACHE2
+          Ueber diese Variable kann gesteuert werden, ob der Apache
+          gestartet werden soll, oder nicht.
+
+          Standardeinstellung: START_APACHE2='no'
+
+   APACHE2_PORT
+          Auf diesem Port laeuft Apache und nimmt Anfragen entgegen.
+
+          Standardeinstellung: APACHE2_PORT='80'
+
+   APACHE2_SERVER_ADMIN
+          Die E-Mail-Adresse des Serverbetreibers; diese wird auf den
+          Seiten eingefuegt, die vom Server in Fehlerfaellen generiert
+          werden.
+
+   APACHE2_SERVER_NAME
+          Hier wird der Name angegeben unter dem der Apache-Webserver im
+          Browser spaeter aufgerufen wird. Es muss ein FQDN (Full
+          qualified domain name) angegeben werden. D.h. Hostname +
+          Domainname.
+
+          Ist der Hostname vom eisfair z.B. obelix und der Domainname
+          home.lan, so muss als Server-Name obelix.home.lan angegeben
+          werden
+
+   APACHE2_SERVER_SIGNATURE
+          Hierueber kann festgelegt werden, ob Apache in automatisch
+          generierte Dokumente wie Index- oder Fehlermeldungsseiten eine
+          Fusszeile einfuegen soll.
+
+          - Off: Apache erzeugt keine Informationsfusszeile.
+          - On: Es wird eine Fusszeile ohne E-Mail-Adresse generiert.
+          - Email: Es wird eine Fusszeile mit E-Mail-Adresse generiert.
+          Standardeinstellung: APACHE2_SERVER_SIGNATURE='On'
+
+
+Allgemeine SSL Einstellungen
+
+   APACHE2_SSL
+          Hier kann eingestellt werden, ob SSL genutzt werden soll, oder
+          nicht.
+
+          Standardeinstellung: APACHE2_SSL='no'
+
+   APACHE2_SSL_PORT
+          Hier kann der SSL Port, der genutzt werden soll, eingestellt
+          werden.
+
+          Standardeinstellung: APACHE2_SSL_PORT='443'
+
+   APACHE2_SSL_LOGDIR
+          Hier kann das Verzeichnis angegeben werden, in das SSL Meldungen
+          protokolliert werden sollen.
+
+          Standardeinstellung: APACHE2_SSL_LOGDIR='/var/www/log/'
+
+Spezielle Einstellungen
+
+   APACHE2_DIRECTORY_INDEX
+          Diese Seite wird aufgerufen, wenn keine Datei in der URL
+          angegeben wird z.B. nur http://192.168.0.1/ dann wird
+          automatisch umgeleitet auf http://192.168.0.1/index.html.
+
+          Wenn PHP installiert wird, wird (in der Konfiguration nicht
+          sichtbar) automatisch index.php hinzugefuegt.
+
+          Standardeinstellung: APACHE2_DIRECTORY_INDEX='index.html
+          index.htm'
+
+   APACHE2_HOSTNAME_LOOKUPS
+          Normalerweise werden in der Logdatei nur die IP-Adressen
+          gespeichert, die auf den Server zugegriffen haben. Wenn man
+          diese Variable auf yes setzt werden statt der IP-Adressen, die
+          Hostnames in die Logdatei geschrieben. Das Aufloesen der
+          IP-Adressen in DNS-Namen ist allerdings ein zeitaufwendiger
+          Prozess; auf einem Server, der eine hohe Last hast, wird deshalb
+          die Einstellung APACHE2_HOSTNAME_LOOKUPS='no' empfohlen.
+
+          Die IP-Adressen koennen beim Auswerten der Logdateien immer noch
+          in (evtl. veraltete) DNS-Namen aufgeloest werden.
+
+          Standardeinstellung: APACHE2_HOSTNAME_LOOKUPS='no'
+
+   APACHE2_VIEW_DIRECTORY_CONTENT
+          Wenn in der URL nur ein Verzeichnis angegeben ist und dort keine
+          Index-Datei aus [1]APACHE2_DIRECTORY_INDEX liegt, wird bei der
+          Einstellung yes der Verzeichnis Inhalt angezeigt.
+
+          Standardeinstellung: APACHE2_VIEW_DIRECTORY_CONTENT='no'
+
+   APACHE2_ACCESS_CONTROL
+          Die IP-Adressen bzw. Hosts die hier angegeben werden haben
+          Zugriff auf den Apache. Fuer die Virtual Hosts muss dies extra
+          eingestellt werden. Jeder Rechner hat Zugriff, wenn die Variable
+          auf 'all' steht.
+
+          Folgende Beispiele illustrieren die Formate der Parameter:
+
+          + ''192.168.''
+          + ''192.168.0.0/16''
+          + ''192.168.0.0/255.255.0.0''
+          + ''192.168.0.1 192.168.0.2''
+          + ''http.apache.org''
+          + ''apache.org''
+          + ''.org''
+
+          Standardeinstellung: APACHE2_ACCESS_CONTROL='all'
+
+   APACHE2_ENABLE_SSI
+          Legt fest, ob Server Side Includes (SSI) verwendet werden.
+          Server Side Includes sind eine Moeglichkeit, Seiten dynamisch
+          zusammenzubauen. Fuer weitere Informationen siehe
+          [2]http://www.apacheweek.com/features/ssi.
+
+Error- und Access-Logdatei
+
+   APACHE2_ERROR_LOG
+          Alle Fehler, die der Apache dem User liefert oder die sonst
+          auftreten koennen (z.B. Fehler in Modulen) werden in dieser
+          Datei gespeichert.
+
+          Standardeinstellung: APACHE2_ERROR_LOG='/var/www/log/error_log'
+
+   APACHE2_ACCESS_LOG
+          Alle Zugriffe werden in diese Datei geloggt.
+
+          Standardeinstellung:
+          APACHE2_ACCESS_LOG='/var/www/log/access_log'
+
+Script Aliases
+
+   APACHE2_SCRIPT_ALIAS
+          Name des Skript-Alias.
+
+   APACHE2_SCRIPT_DIR
+          Hier wird der reelle-Pfad vom CGI-Verzeichnis angegeben. Alle
+          CGI-Skripte muessen in dieses Verzeichnis gelegt werden, da
+          ansonsten der Quelltext von dem Skript angezeigt wird. Man kann
+          auch ueber die Variable APACHE2_DIR_n_CGI CGI-Ausfuehrung in
+          einem anderen Verzeichnis erlauben, aber dies wird aus
+          Sicherheitsgruenden nicht empfohlen.
+
+          Standardeinstellung: APACHE2_SCRIPT_ALIAS='/var/www/cgi-bin'
+
+Error Documents
+
+   APACHE2_ERROR_DOCUMENT_N
+          Hier kann die Anzahl der Fehlerdokumente definiert werden.
+
+   APACHE2_ERROR_DOCUMENT_x_ERROR
+          Ein Webserver liefert bei Fehlern bestimmte Statuscodes. Eine
+          Auflistung aller Codes ist auf dieser Website zu finden:
+          [3]http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+
+   APACHE2_ERROR_DOCUMENT_x_DOCUMENT
+          Wenn ein Fehler auftritt wird nicht die Fehlerseite vom Apache
+          angezeigt sondern die hier angegebene HTML-Seite. Es koennen
+          auch CGI- oder PHP-Skripte angegeben werden.
+
+Directory Settings und Aliases
+
+   APACHE2_DIR_N
+          Hier kann die Anzahl der Verzeichnisse definiert werden.
+
+   APACHE2_DIR_x_ACTIVE
+          Hierueber kann angegeben werden, ob die aktuellen Einstellungen
+          aktiv sind, oder nicht.
+
+   APACHE2_DIR_x_ALIAS
+          Hier kann angegeben werden, ob fuer die aktuellen
+          Verzeichniseinstellungen ein Alias vergeben werden soll.
+
+   APACHE2_DIR_x_ALIAS_NAME
+          Soll fuer die aktuellen Verzeichniseinstellungen ein Alias
+          vergeben werden, so muss hier der Aliasname eingetragen werden.
+
+   APACHE2_DIR_x_PATH
+          Hier muss der reelle Pfad angegeben werden fuer den die u.g.
+          Parameter gelten.
+
+   APACHE2_DIR_x_AUTH_NAME
+          Wenn APACHE2_DIR_x_AUTH_N nicht gesetzt ist, kann man dies
+          Variable ignorieren. Wenn allerdings die Authentifizierung
+          genutzt werden soll wird der Inhalt dieser Variable im Fenster
+          des Browser angezeigt, wo man Benutzername und Passwort eingeben
+          muss.
+
+   APACHE2_DIR_x_AUTH_N
+          Ueber diese Variable kann gesteuert werden, wie viele User einen
+          geschuetzten Bereich nutzen duerfen.
+
+   APACHE2_DIR_x_AUTH_x_USER
+          Hier kann der User angegeben werden, der sich in den
+          geschuetzten Bereich einloggen kann. Die Passwort und
+          Benutzername Abfrage geschieht ueber den Browser.
+
+   APACHE2_DIR_x_AUTH_x_PASS
+          Das Passwort fuer den Benutzer in APACHE2_DIR_x_AUTH_x_USER wird
+          hier angegeben. Momentan wird dieses noch im Klartext in der
+          Konfigurationsdatei abgespeichert, in den spaeteren Versionen
+          vom Apache-Paket wird sich dies aber noch aendern.
+
+   APACHE2_DIR_x_ACCESS_CONTROL
+          Der Syntax dieser Variable wird bei [4]APACHE2_ACCESS_CONTROL
+          erklaert. Die hier angegebene Zugriffserlaubnis bezieht sich
+          dann nur auf die aktuellen Verzeichniseinstellungen.
+
+   APACHE2_DIR_x_CGI
+          Entweder darf hier 'no' angegeben werden oder '.pl', '.cgi'
+          o.ae. Aber nicht 'yes'! Steht diese Variable nicht auf 'no',
+          dann koennen CGI-Skripte mit den Endungen, die in der Variable
+          stehen ausgefuehrt werde. Wenn ein CGI-Skript aufgerufen wird,
+          dessen Endung nicht in APACHE2_DIR_x_CGI steht, wird der
+          Quelltext angezeigt.
+
+   APACHE2_DIR_x_SSI
+          Hier darf 'yes' oder 'no' eingetragen werden. Wenn 'yes'
+          eingetragen ist, dann koennen SSI-Skripte mit der Endung .shtml
+          ausgefuehrt werden. Aber nur in dem in APACHE2_DIR_x_PATH
+          angegebenen Pfad.
+
+   APACHE2_DIR_x_VIEW_DIR_CONTENT
+          Diese Variable ist in [5]APACHE2_VIEW_DIRECTORY_CONTENT
+          erklaert. Bezieht sich aber nur auf den in APACHE2_DIR_x_PATH
+          angegebenem Pfad.
+
+   APACHE2_DIR_x_WEBDAV
+          Schaltet WebDAV ein oder aus. WebDAV ist eine Dateifreigabe
+          ueber HTTP und wird z.B. fuer gemeinsam genutzte Terminkalender
+          genutzt (z.B. Mozilla Sunbird)
+
+Virtual Hosts
+
+   Mit Virtual Hosts kann man mehrere Domainnamen oder/und mehrere
+   IP-Adressen auf einem Apache hosten.
+
+   Beispiel: Unter www.eisfair.net wurde die Domain
+   meinesubdomain.eisfair.net registriert. Nun hat kann man seinen
+   eisfair-Server z.B. unter folgenden Domains erreichbar machen
+   asterix.meinesubdomain.eisfair.net und
+   obelix.meinesubdomain.eisfair.net. Denn dank DNS-Wildcard zeigen alle
+   Domains, die man in der Form xxx.meinesubdomain.eisfair.net z.B. in
+   seinen Browser eingibt auf die IP-Adresse des eisfair-Servers.
+
+   APACHE2_VHOST_1_ACTIVE='yes'
+   APACHE2_VHOST_1_IP='*'
+   APACHE2_VHOST_1_PORT='80'
+   APACHE2_VHOST_1_SERVER_NAME='asterix.meinesubdomain.eisfair.net'
+   APACHE2_VHOST_1_SERVER_ALIAS='*.asterix.meinesubdomain.eisfair.net'
+   APACHE2_VHOST_1_SERVER_ADMIN='wwwadmin@asterix.meinesubdomain.eisfair.n
+   et'
+   APACHE2_VHOST_1_DOCUMENT_ROOT='/var/www/asterix/htdocs'
+   APACHE2_VHOST_1_SCRIPT_DIR='/var/www/asterix/cgi-bin/'
+   APACHE2_VHOST_1_ERROR_LOG='/var/www/asterix/log/error_log'
+   APACHE2_VHOST_1_ACCESS_LOG='/var/www/asterix/log/access_log'
+   APACHE2_VHOST_1_ACCESS_CONTROL='all'
+   APACHE2_VHOST_1_SSL='no'
+   APACHE2_VHOST_1_SSL_PORT='443'
+   APACHE2_VHOST_1_SSL_FORCE='no'
+   APACHE2_VHOST_1_SSL_CERT_NAME='apache-asterix.meinesubdomain.eisfair.ne
+   t'
+   APACHE2_VHOST_2_ACTIVE='yes'
+   APACHE2_VHOST_2_IP='*'
+   APACHE2_VHOST_2_PORT='80'
+   APACHE2_VHOST_2_SERVER_NAME='obelix.meinesubdomain.eisfair.net'
+   APACHE2_VHOST_2_SERVER_ALIAS='*.obelix.meinesubdomain.eisfair.net'
+   APACHE2_VHOST_2_SERVER_ADMIN='wwwadmin@obelix.meinesubdomain.eisfair.ne
+   t'
+   APACHE2_VHOST_2_DOCUMENT_ROOT='/var/www/obelix/htdocs'
+   APACHE2_VHOST_2_SCRIPT_DIR='/var/www/obelix/cgi-bin/'
+   APACHE2_VHOST_2_ERROR_LOG='/var/www/obelix/log/error_log'
+   APACHE2_VHOST_2_ACCESS_LOG='/var/www/obelix/log/access_log'
+   APACHE2_VHOST_2_ACCESS_CONTROL='all'
+   APACHE2_VHOST_2_SSL='no'
+   APACHE2_VHOST_2_SSL_PORT='443'
+   APACHE2_VHOST_2_SSL_FORCE='no'
+   APACHE2_VHOST_2_SSL_CERT_NAME='apache-obelix.meinesubdomain.eisfair.net
+   '
+
+   APACHE2_VHOST_N
+          Hier kann die Anzahl der virtuellen Hosts definiert werden.
+
+   APACHE2_VHOST_x_ACTIVE
+          Hier wird angeben, ob der betreffende VirtualHost aktiv sein
+          soll.
+
+   APACHE2_VHOST_x_IP
+          Wenn diese Variable auf * gesetzt ist (Standardeinstellung),
+          kann dieser Virtual Host ueber jede IP-Adresse erreicht werden,
+          die an die NICs gebunden sind. Gibt man hier eine IP-Adresse
+          ein, ist der Virtual Host nur ueber die eingegeben IP-Adresse
+          erreichbar. Dies nennt man dann IP-Based Virtual Hosts.
+
+   APACHE2_VHOST_x_PORT
+          Hier kann angegeben werden, welcher Port fuer diesen VirtualHost
+          genutzt werden soll
+
+   APACHE2_VHOST_x_SERVER_NAME
+          Hier muss der Hostname des Virtual Hosts angegeben werden. Es
+          muss ein Full Qualified Domain Name (FQDN) sein. D.h. der
+          Hostname muss den Host-Anteil plus den Domainnamen enthalten.
+
+          Beispiel:
+          APACHE2_VHOST_x_SERVER_NAME='eis.meinedomain.de'
+
+   APACHE2_VHOST_x_SERVER_ALIAS
+          Hier koennen zusaetzliche Hostnamen angegeben werden.
+
+          Beispiel:
+          APACHE2_VHOST_x_SERVER_ALIAS='www.meinedomain.de
+          *.eis.meinedomain.de'
+
+   APACHE2_VHOST_x_SERVER_ADMIN
+          Die E-Mail-Adresse des Serverbetreibers; diese wird auf den
+          Seiten eingefuegt, die vom Server in Fehlerfaellen generiert
+          werden.
+
+          Beispiel:
+          APACHE2_VHOST_x_SERVER_ADMIN='wwwadmin@meinedomain.de'
+
+   APACHE2_VHOST_x_DOCUMENT_ROOT
+          In dem hier angegeben Verzeichnis liegen die HTML-Dateien die
+          dieser Virtual Host zur Verfuegung stehen soll.
+
+          Beispiel:
+          APACHE2_VHOST_x_DOCUMENT_ROOT='/var/www/meinedomain.de/htdocs/'
+
+   APACHE2_VHOST_x_SCRIPT_ALIAS
+
+   APACHE2_VHOST_x_SCRIPT_DIR
+          Hier muss das reelle Verzeichnis angegeben werden, in dem die
+          CGI-Skripte fuer diesen VirtualHost liegen
+
+          Beispiel:
+          APACHE2_VHOST_x_SCRIPT_DIR='/var/www/meinedomain.de/cgi-bin/'
+
+   APACHE2_VHOST_x_ERROR_LOG
+          In die hier angegebene Datei werden die Fehler, welche fuer
+          diesen Virtual Host auftreten geschrieben. z.B. Zugriffsfehler
+          wie ein 404 - Not Found
+
+          Beispiel:
+          APACHE2_VHOST_x_ERROR_LOG='/var/www/meinedomain.de/log/error_log
+          '
+
+   APACHE2_VHOST_x_ACCESS_LOG
+          In die hier angegebene Datei werden die erfolgten Zugriffe
+          geschrieben.
+
+          Beispiel:
+          APACHE2_VHOST_x_ACCESS_LOG='/var/www/meinedomain.de/log/access_l
+          og'
+
+   APACHE2_VHOST_x_ACCESS_CONTROL
+          Die Adressen die hier angegeben werden, haben Zugriff auf den
+          Server. Wenn alle Rechner Zugriff haben sollen, dann muss hier
+          ''all'' angegeben werden.
+
+          Siehe auch [6]APACHE2_ACCESS_CONTROL
+
+   APACHE2_VHOST_x_DIR_N
+          Anzahl der Directories.
+
+   APACHE2_VHOST_x_DIR_x_ACTIVE
+          Gibt an, ob die aktuellen Einstellungen aktiv sind, oder nicht.
+
+   APACHE2_VHOST_x_DIR_x_ALIAS
+          Hier kann angegeben werden, ob fuer die aktuellen
+          Verzeichniseinstellungen ein Alias vergeben werden soll.
+
+   APACHE2_VHOST_x_DIR_x_ALIAS_NAME
+          Soll fuer die aktuellen Verzeichniseinstellungen ein Alias
+          vergeben werden, so muss hier der Aliasname eingetragen werden.
+
+   APACHE2_VHOST_x_DIR_x_PATH
+          Hier muss der reelle Pfad angegeben werden fuer den die u.g.
+          Parameter gelten.
+
+   APACHE2_VHOST_x_DIR_x_AUTH_NAME
+          Wenn APACHE2_DIR_x_AUTH_N nicht gesetzt ist, kann man dies
+          Variable ignorieren. Wenn allerdings die Authentifizierung
+          genutzt werden soll wird der Inhalt dieser Variable im Fenster
+          des Browser angezeigt, wo man Benutzername und Passwort eingeben
+          muss.
+
+   APACHE2_VHOST_x_DIR_x_AUTH_N
+          Ueber diese Variable kann gesteuert werden, wie viele User einen
+          geschuetzten Bereich nutzen duerfen.
+
+   APACHE2_VHOST_x_DIR_x_AUTH_x_USER
+          Hier kann der User angegeben werden, der sich in den
+          geschuetzten Bereich einloggen kann. Die Passwort und
+          Benutzername Abfrage geschieht ueber den Browser.
+
+   APACHE2_VHOST_x_DIR_x_AUTH_x_PASS
+          Das Passwort fuer den Benutzer in APACHE2_DIR_x_AUTH_x_USER wird
+          hier angegeben. Momentan wird dieses noch im Klartext in der
+          Konfigurationsdatei abgespeichert, in den spaeteren Versionen
+          vom Apache-Paket wird sich dies aber noch aendern.
+
+   APACHE2_VHOST_x_DIR_x_ACCESS_CONTROL
+          Der Syntax dieser Variable wird bei [7]APACHE2_ACCESS_CONTROL
+          erklaert. Die hier angegebene Zugriffserlaubnis bezieht sich
+          dann nur auf die aktuellen Verzeichniseinstellungen.
+
+   APACHE2_VHOST_x_DIR_x_CGI
+          Entweder darf hier 'no' angegeben werden oder '.pl', '.cgi'
+          o.ae. Aber nicht 'yes'! Steht diese Variable nicht auf 'no',
+          dann koennen CGI-Skripte mit den Endungen, die in der Variable
+          stehen ausgefuehrt werde. Wenn ein CGI-Skript aufgerufen wird,
+          dessen Endung nicht in APACHE2_DIR_x_CGI steht, wird der
+          Quelltext angezeigt.
+
+   APACHE2_VHOST_x_DIR_x_SSI
+          Hier darf 'yes' oder 'no' eingetragen werden. Wenn 'yes'
+          eingetragen ist, dann koennen SSI-Skripte mit der Endung .shtml
+          ausgefuehrt werden. Aber nur in dem in APACHE2_DIR_x_PATH
+          angegebenen Pfad.
+
+   APACHE2_VHOST_x_DIR_x_VIEW_DIR_CONTENT
+          Diese Variable ist in [8]APACHE2_VIEW_DIRECTORY_CONTENT
+          erklaert. Bezieht sich aber nur auf den in APACHE2_DIR_x_PATH
+          angegebenem Pfad.
+
+   APACHE2_VHOST_x_DIR_x_WEBDAV
+          Schaltet WebDAV ein oder aus. WebDAV ist eine Dateifreigabe
+          ueber HTTP und wird z.B. fuer gemeinsam genutzte Terminkalender
+          genutzt (z.B. Mozilla Sunbird)
+
+   APACHE2_VHOST_x_MOD_CACHE
+          Schaltet fuer den VHOST den Festplatten Cache zu. Das reduziert
+          die Last des Servers, kann aber gelegentlich mit einigen
+          PHP-Scripte zu Problemen fuehren.
+
+   APACHE2_VHOST_x_SSL
+          Hier kann eingestellt werden, ob SSL genutzt werden soll, oder
+          nicht.
+
+          Standardeinstellung: APACHE2_VHOST_x_SSL='no'
+
+   APACHE2_VHOST_x_SSL_PORT
+          Hier kann der SSL Port, der genutzt werden soll, eingestellt
+          werden.
+
+          Standardeinstellung: APACHE2_VHOST_x_SSL_PORT='443'
+
+   APACHE2_VHOST_x_SSL_FORCE
+          Hierueber kann eingestellt werden, ob der SSL Modus erzwungen
+          werden soll.
+
+   APACHE2_VHOST_x_SSL_CERT_NAME
+          Ueber diese Variable kann der Name des SSL-Zertifikates
+          definiert werden.
+
+Logfile Handling
+
+   APACHE2_LOG_LEVEL
+          Ueber diese Variable kann gesteuert werden, wie viel der apache
+          protokollieren soll.
+
+          Gueltige Werte: ''debug'', ''info'', ''notice'', ''warn'',
+          ''errer'', ''crit'', ''alert'', ''emerg''
+
+          Standardeinstellung: APACHE2_LOG_LEVEL='warn'
+
+   APACHE2_LOG_COUNT
+          Ueber diese Variable kann gesteuert werden, wie viele Logdateien
+          gespeichert werden sollen, bevor logrotate alte Logdateien
+          ueberschreibt.
+
+          Gueltige Werte: Nummerischer Wert
+
+          Standardeinstellung: APACHE2_LOG_COUNT='10'
+
+   APACHE2_LOG_INTERVAL
+          Ueber diese Variable kann gesteuert werden, wann logrotate
+          Archive der aktuellen Logdateien erstellt.
+
+          Gueltige Werte: ''daily'', ''weekly'', ''monthly''
+
+          Standardeinstellung: APACHE2_LOG_INTERVAL='weekly'
+
+Performance Einstellungen
+
+   APACHE2_MAX_KEEP_ALIVE_TIMEOUT
+          Ueber diese Variable kann gesteuert werden, wie viele Sekunden
+          Apache eine persistente HTTP/1.1-Verbindung nach dem Abschluss
+          einer Client-Anfrage offen halten und auf eine weitere Anfrage
+          warten soll.
+
+          Gueltige Werte: Nummerischer Wert
+
+          Standardeinstellung: APACHE2_MAX_KEEP_ALIVE_TIMEOUT='15'
+
+   APACHE2_MAX_KEEP_ALIVE_REQUESTS
+          Ueber diese Variable kann gesteuert werden, wie viele
+          aufeinander folgende HTTP-Anfragen ueber ein und dieselbe
+          persistente HTTP/1.1-Verbindung abgehandelt werden.
+
+          Gueltige Werte: Nummerischer Wert
+
+          Standardeinstellung: APACHE2_MAX_KEEP_ALIVE_REQUESTS='100'
+
+   APACHE2_MAX_CLIENTS
+          Ueber diese Variable kann gesteuert werden, wie hoch die
+          maximale Anzahl von Kindprozessen beziehungsweise Threads ist,
+          die Apache insgesamt zur Annahme von Client-Anfragen startet
+
+          Gueltige Werte: Nummerischer Wert
+
+          Standardeinstellung: APACHE2_MAX_CLIENTS='250'
+
+   APACHE2_MAX_REQUESTS_PER_CHILD
+          Ueber diese Variable kann gesteuert werden, nach wie vielen
+          Anfragen ein worker thread beendet wird.
+
+          Gueltige Werte: Nummerischer Wert
+
+          Standardeinstellung: APACHE2_MAX_REQUESTS_PER_CHILD='10000'
+
+Cache Einstellungen
+
+   APACHE2_MOD_CACHE
+          Schaltet fuer das APACHE2_DOCUMENT_ROOT Verzeichnis den
+          Festplatten Cache zu. (Nicht fuer die Vhosts!) Das reduziert die
+          Last des Servers, kann aber gelegentlich mit einigen PHP-Scripte
+          zu Problemen fuehren.
+
+          Standardeinstellung: APACHE2_MOD_CACHE='no'
+
+Manuelle Konfigurationsergaenzungen
+
+   Fuer Ergaenzungen an der httpd.conf gibt es den Menue-Punkt 'Append
+   commands to the httpd.conf'.
+
+                   Einstellungen beim Uebersetzen des Paketes
+
+   Der httpd wurde mit den folgenden Einstellungen uebersetzt:
+
+   apache2
+          -host=i486-pc-linux-gnu
+          -build=i486-pc-linux-gnu
+          -target=i486-pc-linux-gnu
+          -with-apr=/usr/bin/apr-1-config
+          -with-apr-util=/usr/bin/apu-1-config
+          -with-ssl
+          -prefix=/usr/local/apache2
+          -enable-so
+          -enable-cgi
+          -enable-modules=all
+          -enable-mods-shared=all
+          -enable-ssl
+          -with-libmm
+          -enable-auth-dbm
+
+                        Eigene Erweiterungen des Paketes
+
+   Es ist moeglich, dass apache2 Paket mit eigenen Module zu erweitern.
+   Hierbei gibt es grundsaetzlich zwei unterschiedliche Arten von
+   Erweiterungen. Die eine Moeglichkeit ist die Erweiterung des httpd um
+   Module (z.B. PHP5, mod_jk). Bei der zweiten Moeglichkeit handelt es
+   sich um alle Moeglichkeiten, die sich nicht auf httpd Module beziehen.
+
+   Im folgenden wird kurz beschrieben, wie Erweiterungspakete aufgebaut
+   sein muessen bzw. was zu beachten ist um ein lauffaehiges
+   Erweiterungspaket zu erstellen.
+
+Erweiterung per httpd-Module
+
+   Fuer die Erstellung eines Modul Erweiterungspaketes sind im allgemeinen
+   die folgenden Schritte notwendig:
+     * Uebersetzen des Moduls
+     * Installieren des Moduls
+     * Erstellen der Dateien zum Integrieren/Konfigurieren des Moduls
+     * Implementierung der Funktion check_httpd
+     * Erstellen der Menueeintraege
+
+  Uebersetzen des Moduls
+
+   Die fuer die Uebersetzung von eigenen Modulen benoetigten
+   HEADER-Dateien koennen mit Hilfe des apache2-dev Paketes installiert
+   werden.
+
+  Installieren des Moduls
+
+   Das uebersetzte httpd-Modul ist vorzugsweise unter
+   /usr/local/apache2/modules abzulegen. Es kann jedoch auch jedes andere
+   Verzeichnis, das vom httpd zu erreichen ist, gewaehlt werden.
+
+  Erstellen der Dateien zum Integrieren/Konfigurieren des Moduls
+
+   Damit das httpd-Modul beim Starten geladen wird, ist eine Datei
+   <module>.load und ggf. eine Konfigurationsdatei <module>.conf zu
+   erstellen. Die Datei <module>.load muss unter
+   /etc/apache2/mods-available abgelegt werden. Die ggf. notwendige
+   Konfigurationsdatei des Moduls ist mit dem Namen <module>.conf unter
+   /etc/apache2/mods-available abzulegen. Beim Erstellen der Konfiguration
+   wird fuer alle vorhandenen *.load Dateien ein symbolischer Link unter
+   /etc/apache2/mods-enabled angelegt. Saemtliche *.load und die
+   zugehoerigen Konfigurationsdateien unter /etc/apache2/mods-enabled
+   werden beim Start des httpd eingelesen.
+
+   Beispiel <module>.conf:
+    LoadModule php5_module /usr/local/apache2/modules/libphp5.so
+
+   Beispiel <module>.conf:
+    DirectoryIndex index.php index.php3 index.php4 index.php5
+    AddType application/x-httpd-php .php .php3 .php4 .php5
+    AddType application/x-httpd-php-source .phps
+
+  Implementierung der Funktion check_httpd
+
+   Da es zur Zeit unterschiedliche Versionen des apache2 Paketes gibt, die
+   nicht zu einander binaerkompatibel sind (Version 1.2.x enthaelt
+   httpd-2.0.x; Version 1.3.x enthaelt httpd-2.2.x) muss jedes Modul
+   Erweiterungspaket selbst die Informationen liefern koennen, ob es zu
+   der jeweiligen httpd Version passt. Hierzu ist in der Datei <module>.sh
+   unter /var/install/config.d/ die Funktion check_httpd zu
+   implementieren. Diese Funktion muss 0 zurueckliefern, wenn das
+   Erweiterungspaket zu dem installierten apache2 Paket passt. Andernfalls
+   muss diese Funktion 1 zurueckliefern.
+   Beispiel fuer eine Implementierung dieser Funktion:
+    #-------------------------------------------------------------------------
+    # check httpd version
+    #-------------------------------------------------------------------------
+    httpd_version=2.2.9
+    check_httpd ()
+    {
+      needed_version=${httpd_version}
+      httpd_installed="`/usr/local/apache2/bin/httpd -v | sed '2,$d; s#^.*/##'`"
+
+      case ${httpd_installed} in
+        ${needed_version%.*}*)
+          # nothing to do
+          retval=0
+        ;;
+        *)
+          echo
+          mecho -n "The installed package, "
+          mecho --info -n "'apache2_php5', "
+          mecho "works only"
+          mecho "for a Apache2 package that has been included"
+          mecho "the httpd version '${needed_version%.*}.xx'."
+          echo
+          mecho --info "Please install the recent version."
+          echo
+
+          anykey
+
+          retval=1
+        ;;
+      esac
+    }
+
+  Erstellen der Menueeintraege
+
+   Damit das Erweiterungspaket ueber die Modulkonfiguration des apache2
+   Paketes konfiguriert werden kann muss eine Menue-Datei angelegt werden,
+   die folgendem Namensschema entspricht:
+   setup.services.apache2.config.modules.<module>.menu
+
+  Sonstiges
+
+   Um zusaetzliche Eintraege in die Konfigurationsdatei des apache2
+   vorzunehmen, die nicht mit Hilfe der Modulkonfigurationsdateien unter
+   /etc/apache2/mods-available bzw. /etc/apache2/mods-enabled vorgenommen
+   werden koennen, kann im Erweiterungspaket eine Datei
+   httpd.conf.<module>.sh angelegt werden. Diese Datei muss unter
+   /var/install/config.d/ abgelegt werden. Beim Erstellen der apache2
+   Konfiguration werden automatische saemtliche Dateien, die obigem
+   Namensschema entsprechen ausgefuehrt und die Ausgabe dieser Dateien
+   wird in die Konfigurationsdatei httpd.conf uebernommen.
+   Es ist aber vorzuziehen, dass die Modulkonfiguration ueber die *.conf
+   Dateien vorgenommen wird, die unter /etc/apache2/mods-available liegen.
+
+Andere Erweiterungen
+
+   Fuer die Erstellung eines solchen Erweiterungspaketes sind im
+   allgemeinen die folgenden Schritte notwendig:
+     * Installieren der Erweiterungen
+     * Implementierung der Funktion check_httpd
+     * Erstellen der Menueeintraege
+
+  Installieren des Moduls
+
+   Das uebersetzte httpd-Modul ist vorzugsweise unter
+   /usr/local/apache2/modules abzulegen. Es kann jedoch auch jedes andere
+   Verzeichnis, das vom httpd zu erreichen ist, gewaehlt werden.
+
+  Implementierung der Funktion check_httpd
+
+   Da es zur Zeit unterschiedliche Versionen des apache2 Paketes gibt, die
+   nicht zu einander binaerkompatibel sind (Version 1.2.x enthaelt
+   httpd-2.0.x; Version 1.3.x enthaelt httpd-2.2.x) muss jedes Modul
+   Erweiterungspaket selbst die Informationen liefern koennen, ob es zu
+   der jeweiligen httpd Version passt. Hierzu ist in der Datei <module>.sh
+   unter /var/install/config.d/ die Funktion check_httpd zu
+   implementieren. Diese Funktion muss 0 zurueckliefern, wenn das
+   Erweiterungspaket zu dem installierten apache2 Paket passt. Andernfalls
+   muss diese Funktion 1 zurueckliefern.
+   Auch wenn ein Erweiterungspaket keine Module mitbringt, die von der
+   verwendeten httpd Version abhaengen, muss die Funktion innerhalb des
+   Erweiterungspaketes implementiert werden. Es reicht dann jedoch leere
+   Implementierung.
+   Beispiel fuer eine Implementierung dieser Funktion:
+    #-------------------------------------------------------------------------
+    # check httpd version
+    #-------------------------------------------------------------------------
+    check_httpd ()
+    {
+        retval=0
+    }
+
+  Erstellen der Menueeintraege
+
+   Damit das Erweiterungspaket ueber die Modulkonfiguration des apache2
+   Paketes konfiguriert werden kann muss eine Menue-Datei angelegt werden,
+   die folgendem Namensschema entspricht:
+   setup.services.apache2.config.modules.<module>.menu
+
+  Sonstiges
+
+   Um zusaetzliche Eintraege in die Konfigurationsdatei des apache2
+   vorzunehmen, die nicht mit Hilfe der Modulkonfigurationsdateien unter
+   /etc/apache2/mods-available bzw. /etc/apache2/mods-enabled vorgenommen
+   werden koennen, kann im Erweiterungspaket eine Datei
+   httpd.conf.<module>.sh angelegt werden. Diese Datei muss unter
+   /var/install/config.d/ abgelegt werden. Beim Erstellen der apache2
+   Konfiguration werden automatische saemtliche Dateien, die obigem
+   Namensschema entsprechen ausgefuehrt und die Ausgabe dieser Dateien
+   wird in die Konfigurationsdatei httpd.conf uebernommen.
+   Es ist aber vorzuziehen, dass die Modulkonfiguration ueber die *.conf
+   Dateien vorgenommen wird, die unter /etc/apache2/mods-available liegen.
+
+                                 Verschiedenes
+
+Unterschiede zwischen der eisfair-1 und eisfair-2 Version
+
+   Bei der eisfair-1 Version des Paketes wird der Benutzer wwwrun mit der
+   Gruppe nogroup verwendet.
+   Bei der eisfair-2 Version des Paketes wird der Benutzer www-data mit
+   der Gruppe www-data verwendet.
+
+SSL
+
+   SSL (Secure Socket Layer) stellt eine sichere, verschluesselte
+   Verbindung zwischen Server und Client her. Der Einsatzort ist meist
+   beim Online-Banking oder bei Online-Shops, wo vertrauliche Daten
+   uebermittelt werden muessen.
+
+   Um SSL einsetzten zu koennen, muessen zwei Zertifikat erstellt werden.
+   Dies geschieht mit der Hilfe des Pakets ,,certs`` von Juergen Edner.
+   (Das Paket wird automatisch bei der Apache-Installation heruntergeladen
+   und installiert).
+
+   Wenn die Variable APACHE2_SSL in der Apache-Konfiguration gesetzt
+   worden ist und noch keine Zertifikate bestehen, wird man dazu
+   aufgefordert, eine ,,Passphrase`` einzugeben. Diese Eingabe sollten Sie
+   sich unbedingt merken, da sie zu einem spaeteren Zeitpunkt noch einmal
+   gebraucht wird.
+
+   Es folgen weitere Eingaben, wie z.B. die Oertlichkeit oder Ihre
+   E-Mail-Adresse fuer Rueckfragen (Diese Angaben koennen vom Client, der
+   auf Ihrer Website surft abgerufen werden)
+
+   WICHTIG: Wenn Sie nach ,,Common Name`` gefragt werden, muessen Sie den
+   Namen Ihres Servers eingeben! (z.B. ,,www.karl-egon.eisfair.net,,)
+   Ansonsten wird das Zertifikat vom Browser des Clients als
+   Nicht-Vertrauenswuerdig eingestuft.
+
+   Dies ist ebenfalls der Fall, wenn Sie Name Based Virtual Hosts (mehrere
+   Domainnamen zeigen auf eine IP-Adresse) einsetzten. Das erstellte
+   Zertifikat ist nur fuer den VirtualHost gueltig, bei dem der ,,Common
+   Name``, den Sie bei der Erstellung des Zertifikates eingegeben haben,
+   gleich dem Servernamen ist.
+
+Nimda & CodeRed
+
+   Der Nimda-Wurm versucht eine Sicherheitsluecke im ISS (Internet
+   Information Server von Microsoft) zu benutzen. Einem Linux-System kann
+   dieser Wurm absolut nichts anrichten. Wenn der eisfair gescannt wird,
+   erscheinen u.a. diese Eintraege in der Logdatei. Mehrere Eintraege pro
+   Minute koennen durchaus moeglich sein.
+
+   GET /scripts/root.exe?/c+dir
+   GET /MSADC/root.exe?/c+dir
+   GET /c/winnt/system32/cmd.exe?/c+dir
+   GET /d/winnt/system32/cmd.exe?/c+dir
+   GET /scripts/..x5c../winnt/system32/cmd.exe?/c+dir
+   GET /_vti_bin/..x5c../..x5c../..x5c../winnt/system32/cmd.exe?/c+dir
+   GET /_mem_bin/..x5c../..x5c../..x5c../winnt/system32/cmd.exe?/c+dir
+   GET
+   /msadc/..x5c../..x5c../..x5c/..\xc1\x1c../..\xc1\x1c../..\xc1\x1c../win
+   nt/system32/cmd.exe?/c+dir
+   GET /scripts/..\xc1\x1c../winnt/system32/cmd.exe?/c+dir
+   GET /scripts/..\xc0/../winnt/system32/cmd.exe?/c+dir
+   GET /scripts/..\xc0\xaf../winnt/system32/cmd.exe?/c+dir
+   GET /scripts/..\xc1\x9c../winnt/system32/cmd.exe?/c+dir
+   GET /scripts/..x35c../winnt/system32/cmd.exe?/c+dir
+   GET /scripts/..x35c../winnt/system32/cmd.exe?/c+dir
+   GET /scripts/..x5c../winnt/system32/cmd.exe?/c+dir
+   GET /scripts/..x2f../winnt/system32/cmd.exe?/c+dir
+
+   Andere merkwuerdige Eintraege koennen durch CodeRed entstehen, ein
+   aehnlicher Wurm. Wenn dies der Fall sein sollte, einfach einen Teil der
+   Logeintraege bei Google eingeben, meist wird dort dann der
+   verursachende Wurm gefunden.
+     __________________________________________________________________
+
+   next_inactive up previous
+
+
+    Sebastian Scholze 2012-03-08
+
+Verweise
+
+   1. file://localhost/home/schlotze/svn/trunk/doc/output/apache2/apache2.tmp#APACHE2DIRECTORYINDEX
+   2. http://www.apacheweek.com/features/ssi
+   3. http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+   4. file://localhost/home/schlotze/svn/trunk/doc/output/apache2/apache2.tmp#APACHE2ACCESSCONTROL
+   5. file://localhost/home/schlotze/svn/trunk/doc/output/apache2/apache2.tmp#APACHE2VIEWDIRECTORYCONTENT
+   6. file://localhost/home/schlotze/svn/trunk/doc/output/apache2/apache2.tmp#APACHE2ACCESSCONTROL
+   7. file://localhost/home/schlotze/svn/trunk/doc/output/apache2/apache2.tmp#APACHE2ACCESSCONTROL
+   8. file://localhost/home/schlotze/svn/trunk/doc/output/apache2/apache2.tmp#APACHE2VIEWDIRECTORYCONTENT

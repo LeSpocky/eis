@@ -1,0 +1,11 @@
+<!-- /var/install/menu/setup.system.cron.menu    -->
+<!-- Creation:     2005-06-03  max               -->
+<!-- Last Update:  $Id: setup.system.cron.menu 24471 2010-06-10 21:14:01Z schlotze $ -->
+<package>fcron</package>
+<title>Cron administration</title>
+<doc>View documentation</doc>
+<edit>Edit configuration</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
+<init task="status">Status</init>
+<init task="stop">Stop cron daemon</init>
+<init task="start">Start cron daemon</init>

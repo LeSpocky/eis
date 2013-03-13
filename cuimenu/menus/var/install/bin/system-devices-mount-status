@@ -1,0 +1,26 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# system-devices-mount-status - mount status
+#
+# Creation   : 19.07.2003 fm  Frank Meyer <frank@eisfair.org>
+# Last Update: $Id: system-devices-format-floppy 24471 2012-11-14 21:14:01Z jv $
+#
+#----------------------------------------------------------------------------
+
+clean()
+{
+    rm -f $show_file
+}
+
+show_file=/tmp/list-devices.$$
+
+{
+echo
+echo "___Mounted devices on /media____________________________________________"
+mount | grep '/media'
+echo
+} > $show_file
+
+/var/install/bin/show-doc.cui -f $show_file
+
+exit 0

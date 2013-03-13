@@ -1,0 +1,33 @@
+#!/bin/sh
+
+rm -f /etc/check.d/*.apk-new
+rm -f /etc/config.d/*.apk-new
+rm -f /etc/default.d/*.apk-new
+
+rm -f /etc/check.d/base
+rm -f /etc/check.d/base.exp
+rm -f /etc/check.d/base.ext
+rm -f /etc/check.d/cron
+rm -f /etc/check.d/cui
+rm -f /etc/check.d/environment
+rm -f /etc/check.d/sshd
+rm -f /etc/default.d/base
+rm -f /etc/default.d/cron
+rm -f /etc/default.d/cui
+rm -f /etc/default.d/environment
+rm -f /etc/default.d/sshd
+
+[ -f /etc/config.d/base ] || return 0
+# convert IP_NET_%
+if [ -z "$IP_NET_1_IPV4_ACTIVE" ]
+then
+    sed -i -e 's/^IP_NET_\([0-9]\+\)_\(STATIC_IP\|IPADDR\|NETMASK\|GATEWAY\|POINTOPOINT\)/IP_NET_\1_IPV4_\2/' /etc/config.d/base
+    sed -i -e '/IP_NET_[0-9]\+_NAME/ s/^\(.*IP_NET_\([0-9]\+\)_.*\)$/\1\nIP_NET_\2_IPV4_ACTIVE="yes"\nIP_NET_\2_IPV6_ACTIVE="no"/' /etc/config.d/base
+fi
+
+# convert IP_ROUTE_%
+if [ -z "$IPV4_ROUTE_N" ]
+then
+    sed -i -e 's/IP_ROUTE_\([N0-9]\+\)/IPV4_ROUTE_\1/' /etc/config.d/base
+    sed -i -e '/IPV4_ROUTE_N/ s/^\(.*\)$/\1\nIPV6_ROUTE_N="0"/' /etc/config.d/base
+fi

@@ -1,0 +1,51 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# system-devices-lv-delete - delete logical volumes
+#
+# Creation   : 02.09.2009 schlotze
+# Last Update: $Id: system-filesystems-lv-delete 16982 2008-10-17 12:52:01Z schlotze $
+#
+#----------------------------------------------------------------------------
+. /var/install/include/anykey
+. /var/install/include/mecho
+. /var/install/include/techo
+echo
+
+#exec 2> /tmp/system-devices-lv-delete-trace$$.log
+#set -x
+
+modprobe dm_mod
+
+mecho --info "Delete logical volumes"
+mecho --info "Available logical volumes"
+techo begin 4 27 32 8 9r
+techo row --info No. --info "LV" --info "VG" --info "Attr" --info "VSize"
+mecho --info "================================================================================"
+
+idx=1
+lvs > /tmp/tmp_lvs$$
+while read line
+do
+    set -- $line
+    if [ "$1" != "LV" ]
+    then
+        eval lv_$idx='"$1"'
+        eval vg_$idx='"$2"'
+        techo row $idx $1 $2 $3 $4
+        idx=`expr $idx + 1`
+    fi
+done < /tmp/tmp_lvs$$
+
+rm /tmp/tmp_lvs$$
+
+idx=`expr $idx - 1`
+nolvdevice=`/var/install/bin/ask "Please choose the logical volume to delete" "" "1-$idx" "0=Exit"`
+
+eval "lvdevice"='$lv_'$nolvdevice
+eval "vgdevice"='$vg_'$nolvdevice
+
+lvremove /dev/$vgdevice/$lvdevice
+
+echo
+anykey
+exit 0

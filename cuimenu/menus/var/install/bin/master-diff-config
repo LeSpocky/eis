@@ -1,0 +1,336 @@
+#!/bin/bash
+#----------------------------------------------------------------------------
+# master-diff-config - master file for config file camparison
+#
+# Creation:	2003-12-24  Ansgar Püster
+# Last Update:  $Id: template-restore-dconf 24471 2012-11-08 21:14:01Z jv $
+#----------------------------------------------------------------------------
+
+# include techo only for better performance
+. /var/install/include/techo
+
+halt()
+{
+  echo "+++ halt:"
+  read a < /dev/tty
+}
+
+header()
+{
+  header_${type}
+}
+
+header_cd()
+{
+  echo "Show difference between current and default configuration"
+  echo "line 2: $l_source line 1: $r_source"
+}
+
+header_cb()
+{
+  echo "Show difference between current and backup configuration"
+  echo "line 2: $l_source line 1: $r_source"
+  echo
+}
+
+header_db()
+{
+  echo "Show difference between default and a backup configuration"
+  echo "line 2: $l_source line 1: $r_source"
+  echo
+}
+
+header_bb()
+{
+  echo "Show difference between two backup configurations"
+  echo "line 2: $l_source line 1: $r_source"
+  echo
+}
+
+
+strip_file()
+{
+  local in=$1
+  local out=$2
+
+  cat ${in} |       \
+  sed 's|^[[:blank:]]*||' | \
+  sed 's|[[:blank:]]*$||' | \
+  sed 's| |~|g'           | \
+  grep '^[A-Z]'           | \
+  sed 's|=| |'            | \
+  sed "s|^\([^']*'\)\([^']*'\)\(.*\)|\1\2|"> ${out}
+  chmod og-rw $out
+}
+
+echo_x()
+{
+  val="$1                                                                                "
+  echo -e "${val:0:max_len}\c"
+}
+
+gotoyx () {
+  echo -e "\033[$1;$2H\c"
+}
+
+get_max_len()
+{
+  max_len=0
+  while read var val
+  do
+     [ ${#var} -gt $max_len ] && max_len=${#var}
+  done < $left
+  while read var val
+  do
+     [ ${#var} -gt $max_len ] && max_len=${#var}
+  done < $right
+  max_len=$(expr $max_len + 2)
+}
+
+file_differ()
+{
+  sort < $left > $left_sort
+  sort < $right > $right_sort
+  chmod og-rw $left_sort $right_sort
+  diff $left_sort $right_sort >/dev/null 2>&1
+  rc=$?
+  return $rc
+}
+
+clean()
+{
+  rm -f $right
+  rm -f $left
+  rm -f $right_sort
+  rm -f $left_sort
+  rm -f $diff_file
+  rm -f $both_ucont
+  rm -f $both_cont
+  rm -f $show_diff_file
+}
+
+# save to o_<xxxx>
+set_old ()
+{
+  o_varname=$varname
+  o_varval=$varval
+}
+
+# save to n_<xxxx>
+set_new ()
+{
+  n_varname=$varname
+  n_varval=$varval
+}
+
+env_diff()
+{
+  sed 's/.*/new &/' < $1 > $both_ucont
+  sed 's/.*/old &/' < $2 >> $both_ucont
+  chmod og-rw $both_ucont
+  sort -k 2,2 < $both_ucont > $both_cont
+  chmod og-rw $both_cont
+
+  # indicator for new-line and old-line
+  n_val=0
+  o_val=0
+
+  while read ind varname varval
+  do
+    # new indicator
+    if [ $ind = 'new' ]
+    then
+      if [ $n_val = 1 ]
+      then
+        echo "> $n_varname $n_varval"
+        set_new
+      else
+        set_new
+        n_val=1
+      fi
+    fi
+
+    # old indicator
+    if [ $ind = 'old' ]
+    then
+      if [ $o_val = 1 ]
+      then
+        echo "$o_varname $o_varval <"
+        set_old
+      else
+        set_old
+        o_val=1
+      fi
+    fi
+      
+    # both value are set
+    if [ $n_val = 1 -a $o_val = 1 ]
+    then
+      if [ $n_varname = $o_varname ]
+      then
+        # identical names
+        if [ "$n_varval" = "$o_varval" ]
+        then
+           echo "$o_varname $o_varval $n_varname $n_varval"
+        else
+           echo "$o_varname $o_varval | $n_varname $n_varval"
+        fi
+        o_val=0
+        n_val=0
+      else
+        if [[ $n_varname < $o_varname ]]
+        then
+          echo "> $n_varname $n_varval"
+          n_val=0
+        else
+          echo "$o_varname $o_varval <"
+          o_val=0
+        fi
+      fi
+    fi
+  done < $both_cont
+
+  # check remaining names
+  if [ $n_val = 1 ]
+  then
+    echo "> $n_varname $n_varval"
+    n_val=0
+  fi 
+  
+  if [ $o_val = 1 ]
+  then
+    echo "$o_varname $o_varval <"
+    o_val=0
+  fi
+}
+
+show_detail()
+{
+  
+  show_diff_file=/tmp/show_diff_file.$$
+  header > $show_diff_file
+  env_diff $left_sort $right_sort >> $show_diff_file
+
+  sed -i -e 's|~| |g' $show_diff_file
+
+  /var/install/bin/show-doc.cui -f $show_diff_file
+}
+
+#----------------------------------------------------------------------------
+
+filename=`basename $0`
+# get package name from filename PACKAGE-diff-XY
+package=`echo $filename | sed "s|-diff-[cdb][cdb]$||"`
+type=`echo $filename | sed "s|^${package}-diff-||"`
+
+# if package is template
+#    take package from $PACKAGE
+[ "$package" = 'template' ] && package="$PACKAGE"
+
+#debug echo "+++ TEST filename: $filename"
+#debug echo "         PACKAGE:  $PACKAGE"
+#debug echo "         package:  $package"
+#debug echo "         type:     $type"
+#debug read answ < /dev/tty
+
+case $type in
+  cd)  l_source=/etc/config.d/$package
+       r_source=/etc/default.d/$package
+       ;;
+  cb)  l_source=/etc/config.d/$package
+       r_source="-"
+       ;;
+  db)  l_source=/etc/default.d/$package
+       r_source="-"
+       ;;
+  bb)  l_source="-"
+       r_source="-"
+       ;;
+  *)   echo "Error: illegal call $filename"
+       exit 1
+       ;;
+esac
+
+fmask='*[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
+
+act_count=0
+fcount=0
+
+if  [ $l_source = '-' ]
+then
+    sourcefile=/tmp/sourcefile.$$    
+    if ! /var/install/bin/list-files.cui -t "Select backup config file for DIFF" \
+                                -c "Select:" \
+                                -p /etc/backup.d \
+                                -f "${package}.${fmask}" \
+                                -o 1 -d -n \
+                                -s "/var/install/bin/echowrite.sh $sourcefile"     
+    then
+        exit 1
+    fi
+    l_source=`cat $sourcefile`
+    l_source="/etc/backup.d/$l_source"
+    rm -f $sourcefile
+fi
+
+if  [ $r_source = '-' ]
+then
+    sourcefile=/tmp/sourcefile.$$  
+    if ! /var/install/bin/list-files.cui -t "Select second backup config file for DIFF" \
+                                -c "Select:" \
+                                -p /etc/backup.d \
+                                -f "${package}.${fmask}" \
+                                -o 1 -d -n \
+                                -s "/var/install/bin/echowrite.sh $sourcefile"  
+    then
+        exit 1
+    fi
+    r_source=`cat $sourcefile`
+    r_source="/etc/backup.d/$r_source"    
+    rm -f $sourcefile 
+fi
+
+if [ $l_source != '-' -a ! -f $l_source ]; then
+   header
+   echo
+   echo "File $l_source does not exist."
+   l_source='-'
+fi
+
+if [ $r_source != '-' -a ! -f $r_source ]; then
+   header
+   echo
+   echo "File $r_source does not exist." rd
+   r_source='-'
+fi
+
+if [ $l_source != '-' -a $r_source != '-' ]
+then
+   header
+   tmp_dir=/tmp
+   right=$tmp_dir/right.$$
+   left=$tmp_dir/left.$$
+   diff_file=$tmp_dir/diff_file.$$
+   right_sort=$tmp_dir/right.srt.$$
+   left_sort=$tmp_dir/left.srt.$$
+   both_ucont=$tmp_dir/both.ucont.$$
+   both_cont=$tmp_dir/both.cont.$$
+
+   strip_file ${l_source} $left
+   strip_file ${r_source} $right
+
+   if ! file_differ; then
+       if /var/install/bin/ask.cui "The two files are different. Show differencies?"
+       then
+	       show_detail
+       fi
+   else
+       /var/install/bin/ask.cui --inf "The files are identical."   
+   fi
+else
+   header
+   echo "Too few files selected"
+   exit 1
+fi
+
+exit 0

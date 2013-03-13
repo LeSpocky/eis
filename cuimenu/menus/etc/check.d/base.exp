@@ -1,0 +1,243 @@
+#-----------------------------------------------------------------------------
+# /etc/check.d/base.exp - expressions for check table of configuration params
+#
+# Creation:     2003-09-14  fm
+# Last Update:  $Id: base.exp 29077 2011-11-06 15:27:16Z hbfl $
+#
+# Copyright (c) 2001-2011 the eisfair team, team(at)eisfair(dot)org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+# fli4l
+#-----------------------------------------------------------------------------
+NONE            = '.*'
+                : ''
+NOTEMPTY        = '.*[^ ]+.*'
+                : 'should not be empty'
+NOBLANK         = '[^ ]+'
+                : 'should not contain spaces'
+ENOBLANK        = '()|(RE:NOBLANK)'
+                : 'should be empty or should not contain spaces'
+NUMERIC         = '0|[1-9][0-9]*'
+                : 'should be numeric (decimal) without leading zero(s)'
+ENUMERIC        = '()|(RE:NUMERIC)'
+                : 'should be numeric (decimal) without leading zero(s) or empty'
+NUMERICLZ       = '[0-9][0-9]*'
+                : 'should be numeric (decimal) with or without leading zero(s)'
+ENUMERICLZ      = '()|(RE:NUMERICLZ)'
+                : 'should be numeric (decimal) with or without leading zero(s) or empty'
+DOT_NUMERIC     = '(RE:NUMERIC).[0-9]+'
+                : 'should be numeric (decimal) with dot e.g. 5.0'
+EDOT_NUMERIC    = '()|(RE:DOT_NUMERIC)'
+                : 'should be numeric (decimal) with dot e.g. 5.0 or empty'
+NUM_HEX         = '0x[[:xdigit:]]+'
+                : 'should be a hexadecimal number (a number starting with "0x")'
+ENUM_HEX        = '()|0x[[:xdigit:]]+'
+                : 'should be empty or a hexadecimal number (a number starting with "0x")'
+NUM_ANY         = '(RE:NUMERIC)|(RE:NUM_HEX)'
+                : 'should be a decimal or hexadecimal number'
+ENUM_ANY        = '()|(RE:NUMERIC)|(RE:NUM_HEX)'
+                : 'should be empty or be a decimal or hexadecimal number'
+YESNO           = 'yes|no'
+                : 'only yes or no are allowed'
+MACADDR         = '[[:xdigit:]][[:xdigit:]](:[[:xdigit:]][[:xdigit:]]){5}'
+                : 'wrong mac address, it should be 6 hex numbers each 
+                   represented by two digits and separated by a ":" (for instance 
+                   00:00:E8:83:72:92)'
+# DNS definitions modeled after http://www.icann.org/general/idn-guidelines-20jun03.htm
+LABEL           = '[0-9A-Za-z]([-0-9A-Za-z]{0,61}[0-9A-Za-z])?' : ''
+COMMENT         = '(RE:LABEL)'
+                : 'wrong comment, only letters, numbers and minus sign
+                   are allowed; no leading or trailing minus-sign; 63 characters maximum'
+HOSTNAME        = '(RE:LABEL)'
+                : 'wrong hostname, only letters, numbers and minus sign 
+                   are allowed; no leading or trailing minus sign; 63 characters maximum'
+DOMAIN          = '(RE:LABEL)(\.(RE:LABEL))*'
+                : 'wrong domain name, only letters, numbers and minus sign 
+                   are allowed; parts are separated by a dot (for instance 
+                   lan.fli4l); no leading or trailing minus sign or dot'
+FQDN            = '(RE:LABEL)(\.(RE:LABEL))+'
+                : 'wrong fully qualified domain name, it should consist of a 
+                   hostname and a domain name separated by a dot; only 
+                   letters, numbers and minus sign are allowed, no leading 
+                   or trailing minus sign'
+EDOMAIN         = '()|(RE:DOMAIN)'
+                : 'should either be empty or contain a valid domain name (only letters, numbers and minus 
+                   sign are allowed; parts are separated by a dot (for instance 
+                   lan.fli4l); no leading or trailing minus sign or dot)'
+EHOSTNAME       = '()|(RE:HOSTNAME)'
+                : 'invalid hostname, should be empty or contain only 
+                   letters, numbers and minus sign; leading or trailing minus signs are not allowed.'
+EFQDN           = '()|(RE:FQDN)'
+                : 'should either be empty or contain a fully qualified domain name (should consist of a 
+                   host name and a domain name separated by a dot; only letters, 
+                   numbers and minus sign are allowed, no leading or trailing 
+                   minus sign)'
+OCTET           = '1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5]'
+                : 'should be a value between 0 and 255'
+OCTET6          = '[0-9a-fA-F]{1,4}'
+                : 'should be a hex value between 0 and ffff'
+IPADDR          = '((RE:OCTET)\.){3}(RE:OCTET)'
+                : 'invalid ip address'
+IPADDR6COMPAT  = '(((RE:OCTET6):){6}(RE:IPADDR))|(::((RE:OCTET6):){0,5}(RE:IPADDR))|(((RE:OCTET6):){1}:((RE:OCTET6):){0,4}(RE:IPADDR))|(((RE:OCTET6):){2}:((RE:OCTET6):){0,3}(RE:IPADDR))|(((RE:OCTET6):){3}:((RE:OCTET6):){0,2}(RE:IPADDR))|(((RE:OCTET6):){4}:((RE:OCTET6):)?(RE:IPADDR))|(((RE:OCTET6):){5}:(RE:IPADDR))'
+                : 'invalid ipv6 address'
+IPADDR6         = '(((RE:OCTET6):){7}(RE:OCTET6))|(::((RE:OCTET6)(:(RE:OCTET6)){0,6})?)|((RE:OCTET6){1}::((RE:OCTET6)(:(RE:OCTET6)){0,5})?)|((RE:OCTET6)(:(RE:OCTET6)){1}::((RE:OCTET6)(:(RE:OCTET6)){0,4})?)|((RE:OCTET6)(:(RE:OCTET6)){2}::((RE:OCTET6)(:(RE:OCTET6)){0,3})?)|((RE:OCTET6)(:(RE:OCTET6)){3}::((RE:OCTET6)(:(RE:OCTET6)){0,2})?)|((RE:OCTET6)(:(RE:OCTET6)){4}::((RE:OCTET6)(:(RE:OCTET6)){0,1})?)|((RE:OCTET6)(:(RE:OCTET6)){5}::(RE:OCTET6)?)|(RE:IPADDR6COMPAT)'
+                : 'invalid ipv6 address'
+EIPADDR         = '()|(RE:IPADDR)'
+                : 'should be empty or contain a valid ip address'
+EIPADDR6        = '()|(RE:IPADDR6)'
+                : 'should be empty or contain a valid ipv6 address'
+NEIPADDR        = 'none|()|(RE:IPADDR)'
+                : 'should be empty, contain "none" or contain a valid ip address'
+NEIPADDR6       = 'none|()|(RE:IPADDR6)'
+                : 'should be empty, contain "none" or contain a valid ipv6 address'
+NUM_INT         = '6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[0-5][0-9]{4}|[0-9]{1,4}'
+                : 'should be a number between 0 and 65535'
+MASK            = '3[0-2]|[1-2]?[0-9]'
+                : 'invalid netmask specified, please specify a value 
+                   between 0 and 32'
+NETWORK         = '(RE:IPADDR)/(RE:MASK)'
+                : 'invalid network specification, should be a network 
+                  address followed by a netmask, for instance 192.168.6.0/24'
+ENETWORK        = '()|(RE:NETWORK)'
+                : 'invalid network specification, should be empty or it
+                  should contain a network address followed by a netmask, for
+                  instance 192.168.6.0/24'
+MASK6           = '12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]' 
+                : 'invalid ipv6 netmask specified, please specify a value
+                  between 0 and 128'
+NETWORK6        = '(RE:IPADDR6)/(RE:MASK6)'
+                : 'invalid ipv6 network specification, should be a network
+                  address followed by a netmask, for instance fe80::/10'
+ENETWORK6       = '()|(RE:NETWORK6)'
+                : 'invalid ipv6 network specification, should be empty or
+                  it should contain a network address followed by a netmask,
+                  for instance fe80::/10'
+NETWORKS        = '(RE:NETWORK)([[:space:]]+(RE:NETWORK))*'
+                : 'invalid network specification, should be one or more 
+                  network addresse(s) followed by a netmask, 
+                  for instance 192.168.6.0/24'
+ENETWORKS       = '()|(RE:NETWORKS)'
+                : 'invalid network specification, should be empty or 
+                  should contain one or more 
+                  network addresse(s) followed by a netmask, 
+                  for instance 192.168.6.0/24, for dhcp config package dhcp_client'
+MULTIPLE_NETWORKS = '(RE:NETWORK)([[:space:]]+(RE:NETWORK))+'
+                : 'invalid network specification, should be two or more 
+                  network addresses followed by their netmasks, 
+                  for instance "192.168.6.0/24 192.168.7.0/24"'
+EMULTIPLE_NETWORKS= '()|(RE:MULTIPLE_NETWORKS)'
+                : 'invalid network specification, should be empty or 
+                  contain two or more 
+                  network addresses followed by their netmasks, 
+                  for instance "192.168.6.0/24 192.168.7.0/24"'
+IPADDR_NETWORK  = '(RE:IPADDR)|(RE:NETWORK)'
+                : 'should contain a valid ip or network address '
+EIPADDR_NETWORK = '()|(RE:IPADDR)|(RE:NETWORK)'
+                : 'should either be empty or contain a valid ip or network address'
+LOCAL_PART      = '[0-9A-Za-z]([0-9A-Za-z.-]+)?'
+                : 'invalid local-part of email address'
+MAILADDR        = '(RE:LOCAL_PART)@((RE:DOMAIN)|localhost)'
+                : 'invalid email address, use e.g. "aaaa@bbbb.ccc"'
+EMAILADDR       = '()|(RE:MAILADDR)'
+                : 'should either be empty or contain a valid email address'
+CRONTAB         = '([0-9,/*-]+) *([0-9,/*-]+) *([0-9,/*-]+) *([0-9,/*(jan,feb,mar,apr,may,jun,jul,aug,sep,oct,nov,dec)-]+) *([0-7,/*(mon,tue,wed,thu,fri,sat,sun)-]+)'
+                : 'invalid crontab string, use e.g. "3 5 * * *"'
+REL_PATH        = '(([0-9A-Za-z]|[-_.])+)(/([0-9A-Za-z]|[-_.])+)*/?'
+                : 'invalid relative path, only numbers, letters, "-" and 
+                   "_" separated by "/" are allowed'
+E_REL_PATH      = '()|(RE:REL_PATH)'
+                : 'should either be empty or contain a valid relative path; only numbers, 
+                  letters, "-" and "_" separated by "/" are allowed'
+ABS_PATH        = '/(RE:E_REL_PATH)'
+                : 'invalid absolute path (must start with a slash and 
+                   only numbers, letters, "-" and "_" separated by "/" are 
+                   allowed)'
+E_ABS_PATH      = '()|(RE:ABS_PATH)'
+                : 'should either be empty or contain a 
+                   valid absolute path (must start with a slash and 
+                   only numbers, letters, "-" and "_" separated by "/" are 
+                   allowed)'
+CONFIG_FILENAME = '[-@_.0-9A-Za-z]+'
+                : 'invalid filename, only numbers, letters, ".", "-", "@" and 
+                   "_" are allowed'
+#-----------------------------------------------------------------------------
+# eisfair
+#-----------------------------------------------------------------------------
+IPADDRESSES     = '(RE:IPADDR)([[:space:]]+(RE:IPADDR))*'
+                : 'invalid ip address, please specify one or more valid ipv4
+                  addresses'
+EIPADDRESSES    = '()|(RE:IPADDRESSES)'
+                : 'should be empty or contain one or more valid ipv4 addresses'
+IPADDRESSES6    = '(RE:IPADDR6)([[:space:]]+(RE:IPADDR6))*'
+                : 'invalid ip address, please specify one or more valid ipv6 
+                  addresses'
+EIPADDRESSES6   = '()|(RE:IPADDRESSES6)'
+                : 'should be empty or contain one or more valid ipv6 addresses'
+IPADDRESSES46   = '((RE:IPADDR)|(RE:IPADDR6))([[:space:]]+((RE:IPADDR)|(RE:IPADDR6)))*'
+                : 'invalid ip address, please specify one or more valid ipv4 
+                  or ipv6 addresses'
+EIPADDRESSES46  = '()|(RE:IPADDRESSES46)'
+                : 'should be empty or contain one or more valid ipv4 or ipv6
+                addresses'
+DNS_SPEC        = '(RE:DOMAIN)[[:space:]]+(RE:IPADDR)'
+                : 'invalid specification for special dns servers, should
+                   be a domain name followed by one ip address'
+ECRONTAB        = '()|(RE:CRONTAB)'
+                : 'should be empty or contain a valid crontab string,
+                  use e.g. "3 5 * * *"'
+DISK            = '(sd[a-p]|hd[a-l]|c0d[0-7])'
+                : 'invalid disk'
+PARTITION       = '(RE:DISK)[1-8]|c0d[0-7]p[1-7]'
+                : 'invalid partion'
+LOG_INTERVAL    = 'daily|weekly|monthly'
+                : 'invalid interval, should be "daily, weekly or monthly'
+PORT            = '[0-9]{0,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]'
+                : 'port must be in range 1..65535'
+EPORT           = '()|(RE:PORT)'
+                : 'should be empty or contain a valid port number'
+ETH_BASE_DEV_NAME = 'eth[1-9]?[0-9]'
+                : 'Invalid ethernet device name, ether devices are named eth0, eth1, ..., eth99'
+ETH_DEV_NAME    = '(RE:ETH_BASE_DEV_NAME)(:[1-9]?[0-9])?'
+                : 'Invalid ethernet device name, ether devices are named eth0, eth1:3, eth2:0'
+TR_DEV_NAME     = 'tr[1-9]?[0-9]'
+                : 'Invalid tokenring device name, tokenring devices are named tr0, tr1, ..., tr9'
+BR_BASE_DEV_NAME = 'br[1-9]?[0-9]'
+                 : 'Invalid bridge device name, bridge devices are named br0, br1, ..., br9'
+BR_DEV_NAME     = '(RE:BR_BASE_DEV_NAME)(:[1-9]?[0-9])?'
+                : 'Invalid bridge device name, bridge devices are named br0, br1:3, br2:0'
+BOND_BASE_DEV_NAME = 'bond[1-9]?[0-9]'
+                   : 'Invalid bonding device name, bonding devices are named bond0, bond1, ..., bond9'
+BOND_DEV_NAME   = '(RE:BOND_BASE_DEV_NAME)(:[1-9]?[0-9])?'
+                : 'Invalid bonding device name, bonding devices are named bond0, bond1:3, bond2:0'
+XEN_BASE_DEV_NAME = 'xenbr[1-9]?[0-9]'
+                  : 'Invalid xen bridge device name, xen bridge devices are named xenbr0, xenbr1, ..., xenbr9'
+XEN_DEV_NAME     = '(RE:XEN_BASE_DEV_NAME)(:[1-9]?[0-9])?'
+                 : 'Invalid xen bridge device name, xen bridge devices are named xenbr0, xenbr1:3, xenbr2:0'
+DUMMY_DEV_NAME  = 'dummy[0-9]+'
+                : 'Invalid dummy device name, dummy devices are named dummy<number>'
+IP_NET_NAME     = '(RE:TR_DEV_NAME)|(RE:BR_DEV_NAME)|(RE:ETH_DEV_NAME)|(RE:BOND_DEV_NAME)|(RE:XEN_DEV_NAME)|(RE:DUMMY_DEV_NAME)'
+                : 'Invalid device name, only ethernet (eth), token ring (tr), bridge (br),
+                   bonding (bond), xen bridge (xen-br) or dummy (dummy<number>) devices are allowed.'
+IP_ROUTE        = '(RE:IPADDR)[[:space:]]+(RE:IPADDR)[[:space:]]+(RE:IPADDR)'
+                : 'invalid route specification (network netmask gateway)'
+IP_ROUTE_CIDR   = '(RE:NETWORK)[[:space:]]+(((RE:IPADDR)|(RE:IP_NET_NAME))|((RE:IPADDR)[[:space:]]+(RE:IP_NET_NAME)))'
+                : 'invalid route specification (network/cidr gateway)'
+IP_ROUTE6       = '(RE:NETWORK6)[[:space:]]+(RE:IPADDR6)'
+                : 'invalid ipv6 route specification (network/netmaskbits gateway)'
+PASSWD          = '(RE:NONE)'
+                : ''
+READONLY        = '(RE:NONE)'
+                : ''
+HIDDEN          = '(RE:NONE)'
+                : ''
+CONSOLE_KEYMAP  = '(RE:NOTEMPTY)'
+                : 'select a keyboard, for german: de-nodeadkeys'
+CONSOLEFONT_NAME = '(RE:NOTEMPTY)'
+                : 'select a console font name'
+MODULE_ACTION   = 'option|alias|blacklist|forcedstart'
+                : 'select the action to aplicate to the module'

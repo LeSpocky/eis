@@ -1,0 +1,98 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/menu - configuration file for menu
+#
+# Creation   : 2005-08-07 dv
+# Last Update: 2006-07-21 root
+#
+# Copyright (c) Daniel Vogel
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#------------------------------------------------------------------------------
+
+
+#------------------------------------------------------------------------------
+# color enable option
+#------------------------------------------------------------------------------
+
+USE_COLORS='yes'                      # Enable colors
+MAP_CONSOLE_COLORS='no'               # Map color pair 0 to console colors
+
+#------------------------------------------------------------------------------
+# global cui application appearence options
+#------------------------------------------------------------------------------
+
+TITLE_BACKGROUND_COLOR='LIGHTGRAY'    # Prog. title background color
+TITLE_TEXT_COLOR='BLACK'              # Prog. title text color
+STATUS_BACKGROUND_COLOR='BLACK'       # Status bar background color
+STATUS_TEXT_COLOR='LIGHTGRAY'         # Status bar text color
+WINDOW_BACKGROUND='BLUE'              # Background color of main window
+
+#------------------------------------------------------------------------------
+# menu color options
+#------------------------------------------------------------------------------
+
+MENU_TEXT_NORMAL_COLOR='BLACK'        # Menu text color
+MENU_TEXT_SELECTED_COLOR='WHITE'      # Menu selected text color
+MENU_NUMBER_NORMAL_COLOR='YELLOW'     # Number text color
+MENU_NUMBER_SELECTED_COLOR='YELLOW'   # Number selected text color
+MENU_BACKGROUND_COLOR='CYAN'          # Menu background color
+MENU_SELECTION_COLOR='BLACK'          # Menu selection color
+MENU_FRAME_COLOR='BLACK'              # Menu frame color
+
+#------------------------------------------------------------------------------
+# text window view options
+#------------------------------------------------------------------------------
+
+TEXTWIN_TEXT_COLOR='LIGHTGRAY'        # Text color of text window views
+TEXTWIN_BACKGROUND_COLOR='BLUE'       # Background of text window views
+TEXTWIN_FRAME_COLOR='LIGHTGRAY'       # Frame color of text windows
+TEXTWIN_TEXT_SELECTED_COLOR='BLACK'   # Text color of selected text
+TEXTWIN_SELECTION_COLOR='LIGHTGRAY'   # Background color of selected text
+
+#------------------------------------------------------------------------------
+# terminal window view options
+#------------------------------------------------------------------------------
+
+TERMWIN_TEXT_COLOR='LIGHTGRAY'        # Terminal window text color
+TERMWIN_BACKGROUND_COLOR='BLACK'      # Terminal window background
+TERMWIN_FRAME_COLOR='LIGHTGRAY'       # Terminal window frame color
+
+#------------------------------------------------------------------------------
+# list view options
+#------------------------------------------------------------------------------
+
+LISTWIN_TEXT_COLOR='LIGHTGRAY'        # List view window text color
+LISTWIN_TEXT_TITLE_COLOR='YELLOW'     # List view title text color
+LISTWIN_TEXT_SELECTED_COLOR='BLACK'   # List view selected text color
+LISTWIN_SELECTION_COLOR='CYAN'        # List view selection color
+LISTWIN_BACKGROUND_COLOR='BLUE'       # List view  background
+LISTWIN_FRAME_COLOR='LIGHTGRAY'       # List view  frame color
+
+#------------------------------------------------------------------------------
+# ECE help window view options
+#------------------------------------------------------------------------------
+
+HELPWIN_TEXT_COLOR='BLACK'            # ECE help window text color
+HELPWIN_BACKGROUND_COLOR='LIGHTGRAY'  # ECE help window background
+HELPWIN_FRAME_COLOR='BLACK'           # ECE help window frame color
+
+#------------------------------------------------------------------------------
+# ECE config view options
+#------------------------------------------------------------------------------
+
+CONFIG_FRAME_COLOR='LIGHTGRAY'        # ECE config window frame color
+CONFIG_NAMES_COLOR='YELLOW'           # ECE variable text color
+CONFIG_TEXT_NORMAL_COLOR='LIGHTGRAY'  # ECE config window text color
+CONFIG_TEXT_SELECTED_COLOR='BLACK'    # ECE selected text color
+CONFIG_SELECTION_COLOR='CYAN'         # ECE selection color
+CONFIG_BACKGROUND_COLOR='BLUE'        # ECE config window background
+
+CONFIG_SHOW_LINES='no'                # ECE Show seperator lines
+CONFIG_SHOW_COMMENTS='yes'            # ECE Show comments
+
+#------------------------------------------------------------------------------
+# End
+#------------------------------------------------------------------------------

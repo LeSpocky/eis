@@ -1,0 +1,5 @@
+<package>base</package>
+<title>LVM Management</title>
+<menu file="setup.system.filesystems.lvm.pv.menu">Physical Volume Management</menu>
+<menu file="setup.system.filesystems.lvm.vg.menu">Volume Groups Management</menu>
+<menu file="setup.system.filesystems.lvm.lv.menu">Logical Volumes Management</menu>

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+rm -rf /var/spool/fcron
+/sbin/rc-update add cron default
+/etc/init.d/cron start

@@ -1,0 +1,262 @@
+<!-- Creation:     10.04.2005  dv -->
+<!-- Last Update:  $Id: base 30791 2012-05-17 12:23:33Z sk $ -->
+
+<help name="HOSTNAME">
+This specifies the name of your machine. <br/><br/>
+Examples: 'eis', 'iceland' ...
+</help>
+
+<help name="IP_NET_N">
+Number of local networks connected to your machine.
+</help>
+
+<help name="IP_NET_%_NAME">
+Other device name than ethX (optional).
+</help>
+
+<help name="IP_NET_%_STATIC_IP">
+Use DHCP or static address for ethX (optional).
+</help>
+
+<help name="IP_NET_%_IPADDR">
+IP address of your n'th ethernet card. <br/>
+<br/>
+Example: 192.168.0.1
+</help>
+
+
+<help name="IP_NET_%_NETMASK">
+Netmask of your LAN.<br/>
+<br/>
+Example: 255.255.255.0
+</help>
+
+<help name="IP_NET_%_GATEWAY">
+Your default gateway. A default gateway is the machine that routes network traffic from
+and to other networks. Very often this is the router connected to the internet.<br/>
+<br/>
+Examples: fli4l router ...
+</help>
+
+<help name="IP_NET_%_POINTOPOINT">
+Set your default gateway as point-to-point link.
+</help>
+
+<help name="IP_NET_%_BIND_DEV">
+Real net device, which is binded to IP_NET_%_NAME.
+</help>
+
+<help name="IP_ROUTE_N">
+Number of additional routes.
+</help>
+
+<help name="IP_ROUTE_%">
+Additional route: network netmask gateway <br/>
+<br/>
+Example: "192.168.7.0 255.255.255.0 192.168.6.99"  routes all network traffic related to
+network "192.168.7.0/24" to the gateway machine "192.168.6.99"
+</help>
+
+<help name="DOMAIN_NAME">
+Your domain name. The local domain your machine is a member of. All unqualified host names
+will automatically be expanded with the local domain suffix. <br/>
+<br/>
+Example: local.network
+</help>
+
+<help name="DNS_SERVER">
+The IP-Adress of the machine that hosts the DNS-Server of your local network. A DNS-Server
+is required to translate host names to IP-Adresses. <br/>
+<br/>
+Example: "127.0.0.1" the DNS-Server runs on this eisfair server.
+</help>
+
+<help name="TIME_ZONE">
+Time zone, use "CET" or "GMT"
+</help>
+
+
+<help name="START_SYSLOG">
+Shall syslog-deamon be started? "yes" or "no".<br/>
+Default "yes"
+</help>
+
+<help name="SYSLOG_MESSAGES_INTERVAL">
+Logrotate interval: daily, weekly, monthly.<br/>
+How often shall logrotate be executed?
+</help>
+
+<help name="SYSLOG_MESSAGES_MAXCOUNT">
+Number of log files to save.<br/>
+This is the number of log file archives that are kept
+on the system by logrotate, before they are outdated and removed.
+</help>
+
+<help name="SYSLOG_MESSAGES_RELOAD">
+Force reload syslog-deamon on rotate the logfile.<br/>
+Default "yes"
+</help>
+
+
+<help name="SYSLOG_AUTH_INTERVAL">
+Logrotate interval: daily, weekly, monthly.<br/>
+How often shall logrotate be executed?
+</help>
+
+<help name="SYSLOG_AUTH_MAXCOUNT">
+Number of log files to save.<br/>
+This is the number of log file archives that are kept
+on the system by logrotate, before they are outdated and removed.
+</help>
+
+<help name="SYSLOG_AUTH_RELOAD">
+Force reload syslog-deamon on rotate the logfile.
+</help>
+
+
+<help name="SYSLOG_MAIL_INTERVAL">
+Logrotate interval: daily, weekly, monthly.<br/>
+How often shall logrotate be executed?
+</help>
+
+<help name="SYSLOG_MAIL_MAXCOUNT">
+Number of log files to save.<br/>
+This is the number of log file archives that are kept
+on the system by logrotate, before they are outdated and removed.
+</help>
+
+<help name="SYSLOG_MAIL_RELOAD">
+Force reload syslog-deamon on rotate the logfile.
+</help>
+
+
+<help name="SYSLOG_KERNEL_INTERVAL">
+Logrotate interval: daily, weekly, monthly.<br/>
+How often shall logrotate be executed?
+</help>
+
+<help name="SYSLOG_KERNEL_MAXCOUNT">
+Number of log files to save.<br/>
+This is the number of log file archives that are kept
+on the system by logrotate, before they are outdated and removed.
+</help>
+
+<help name="SYSLOG_KERNEL_RELOAD">
+Force reload syslog-deamon on rotate the logfile.
+</help>
+
+
+<help name="SYSLOG_SOURCE_UDP">
+Activate external UDP-Port for connect this syslog server? "yes" or "no"
+</help>
+
+
+<help name="SYSLOG_DEST_N">
+Number or destinations for syslog messages.
+</help>
+
+<help name="SYSLOG_DEST_%_TARGET">
+Logfile: '/var/log/debug.log' or<br/>
+IP for external server: '192.168.1.10'<br/>
+</help>
+
+<help name="SYSLOG_DEST_%_FILTER">
+Filter expression string:<br/>
+level(notice, err, crit) and facility(mail)<br/>
+facility(kern) and match("IN=") and match("OUT=")<br/>
+not facility(auth, authpriv)<br/>
+program( "isdnlog" )<br/>
+FACILITY: auth, authpriv, cron, daemon, ftp, kern, lpr, mail, mark, news, syslog, user, uucp, local0 - local7<br/>
+LEVEL: debug, info, notice, warn, err, crit, alert, emerg<br/>
+</help>
+
+<help name="SYSLOG_DEST_%_INTERVAL">
+Logrotate interval: daily, weekly, monthly.<br/>
+How often shall logrotate be executed?<br/>
+Not used if TARGET a externel logserver.
+</help>
+
+<help name="SYSLOG_DEST_%_MAXCOUNT">
+Number of log files to save.<br/>
+This is the number of log file archives that are kept
+on the system by logrotate, before they are outdated and removed.<br/>
+Not used if TARGET a externel logserver.
+</help>
+
+
+<help name="START_ATD">
+Shall the AT-deamon be started? "yes" or "no"<br/>
+Default "yes"
+</help>
+
+<help name="KEYMAP">
+Keyboard mapping. Use "de-nodeadkeys" for german keyboards.
+</help>
+
+<help name="CONSOLEFONT">
+Console font style.
+</help>
+
+<help name="CONSOLE_BLANK_TIME">
+Screen blanking timeout.<br/>
+Monitor remains on, but the screen is cleared to range:<br/>
+0-60 min (0==never)
+</help>
+
+
+<help name="POWEROFF">
+Shall the system be switched off automatically after shutdown? "yes" or "no".
+</help>
+
+<help name="POWEROFF_SMP">
+Power off a machine running the SMP kernel? "yes" or "no".
+</help>
+
+<help name="POWEROFF_REALMODE">
+Use realmode? "yes" or "no"
+</help>
+
+<help name="MODULE_N">
+Number of modules to be treated.
+</help>
+
+<help name="MODULE_%">
+Name of the module to be treated.
+</help>
+
+<help name="MODULE_%_ACTION">
+Possible actions are: 'option', 'alias', 'blacklist' or 'forcedstart'<br/><br/>
+- option:<br/>
+This action allows you to add options (into MODULE_%_STRING=) to the module
+MODULE_x (which might be an alias) every time it is inserted into the kernel:
+whether directly (using modprobe modulename or MODULE_%_ACTION='forcedstart')
+or because the module being inserted depends on this module.
+All options are added together: they can come from an option for the module
+itself, for an alias, and on the command line.<br/><br/>
+- alias:<br/>
+This allows you to give alternate names for a module (into MODULE_%_STRING=).
+For example: "my-mod" as an alias for "really_long_modulename" means you can
+use "modprobe my-mod" instead of "modprobe really_long_modulename".<br/>
+You can also use shell-style wildcards, so "my-mod*" means that
+"modprobe my-mod-something" has the same effect. You can't have aliases to other
+aliases (that way lies madness), but aliases can have options, which will be
+added to any other options.<br/>
+Note that modules can also contain their own aliases, which you can see using
+modinfo. These aliases are used as a last resort (ie. if there is no real
+module, install, remove, or alias command in the configuration).<br/><br/>
+- blacklist:<br/>
+Modules can contain their own aliases: usually these are aliases describing the
+devices they support, such as "pci:123...". These "internal" aliases can be
+overridden by normal "alias" keywords, but there are cases where two or more
+modules both support the same devices, or a module invalidly claims to support
+a device: the blacklist keyword indicates that all of that particular module's
+internal aliases are to be ignored.<br/><br/>
+- startforced:<br/>
+Normaly the modules will get loaded fully automatic by mechanisms like udev.
+In verry rare situations you may want a module to be loaded directly on startup,
+independent from those mechanisms or when they fail, then you can choose this.
+</help>
+<help name="MODULE_%_STRING">
+Additional string that have to be supplied when "MODULE_%_ACTION" is 'option' or
+'alias'.
+</help>

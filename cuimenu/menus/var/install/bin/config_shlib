@@ -1,0 +1,312 @@
+#!/bin/bash
+#----------------------------------------------------------------------------
+# /var/install/bin/config_shlib -
+#                      shell library for advanced configfile handling
+#
+# Creation:     2003-12-24 ap
+# Last Update:  $Id: config_shlib 24471 2010-06-10 21:14:01Z schlotze $
+#
+# Copyright (c) 2001-2007 Ansgar Püster <Ansgar.Puester(at)T-Online(dot)de>
+# Copyright (c) 2008-2009 the eisfair team, team(at)eisfair(dot)org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+#
+# This library is used by
+#
+#    /var/install/bin/edit
+#    /var/install/bin/template-backup-config and all it's links
+#    /var/install/bin/template-restore-bconf and all it's links
+#    /var/install/bin/template-restore-dconf and all it's links
+#    /var/install/bin/master-diff-config     and all it's links
+#
+
+defaultd=/etc/default.d
+configd=/etc/config.d
+backupd=/etc/backup.d
+fmask='*[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
+
+#debug='true'
+#trace='true'
+
+gotoyx () { echo -e "\033[$1;$2H\c"; }
+
+#
+# get_date
+# ========
+#
+# Parameters:      $1    name of file in backup directory
+#                        <dir>/<components>.<date>
+#                        <components> may contain .
+#
+# Returns:         <date>
+#
+get_date()
+{
+   old_ifs="$IFS"
+   IFS=.
+   set $1
+   eval echo \$$#
+   IFS="$old_ifs"
+}
+
+#
+# check_backupdir
+# ===============
+#
+# Parameters:      $1    name of backup directory
+#
+# Returns:         0     success
+#                  1     failure
+#
+check_backupdir()
+{
+    dir=$1
+
+    if [ ! -d $dir ]
+    then
+        mkdir $dir
+        [ $? != 0 ] && return 1
+        chmod og-rw $dir
+        [ $? != 0 ] && return 1
+    fi
+    return 0
+}
+
+#
+# check_config_files
+# ==================
+#
+#  Parameters:     $1    package name
+#                  $2    'quiet' - disable screen output
+#
+#  Returns:        0     success
+#                  1     failure
+#
+check_config_files()
+{
+    [ "$debug" = 'true' ] && echo "call check_config_files: $*"
+    [ "$trace" = 'true' ] && set -x
+    package=$1
+    quiet=$2
+
+    # count files
+    fcount=`find $backupd -maxdepth 1 -type f -name "$package.$fmask" 2>/dev/null | wc -l`
+    fcount=`echo $fcount`
+
+    # verify environment variable MAX_BACKUP_CONFIG
+    _ccf_max_backup=`echo ${MAX_BACKUP_CONFIG} | sed 's/[^0-9]//g'`
+    [ "${_ccf_max_backup}" = '' ] && _ccf_max_backup=10
+
+    # check number of files
+    if [ "$fcount" -gt "${_ccf_max_backup}" ]
+    then
+        # number of files to remove
+        rmcount=`expr $fcount - ${_ccf_max_backup}`
+        count=0
+        # find files in sorted order
+        {
+            for FNAME in `find ${backupd} -maxdepth 1 -type f -name "${package}.${fmask}"`
+            do
+                # extract timestamp
+                FDATE=`get_date ${FNAME}`
+
+                # add timestamp as second field to in-transit output
+                echo "${FNAME}:${FDATE}"
+            done
+        } | sort -t: -k2 | while read line
+        do
+            # remove obsolete files
+            if [ "$count" -lt "$rmcount" ]
+            then
+                # extract filename from line
+                file=`echo ${line} | cut -d: -f1`
+                rm $file
+                count=`expr $count + 1`
+            else
+                break
+            fi
+        done
+
+        if [ "${quiet}" != "quiet" ]
+        then
+            echo "Backup directory contained $fcount files for package $package ($rmcount removed)."
+        fi
+    fi
+
+  set +x
+}
+
+#
+# backup_config
+# =============
+#
+#  Parameters:     $1    package name
+#                  $2    file to backup
+#                  $3    individal backup suffix
+#                  $4    'quiet' - disable screen output
+#
+#  Returns:        0     backup O.K.
+#                  1     failure
+#
+backup_config()
+{
+    [ "$debug" = 'true' ] && echo "call backup_config: $*"
+    [ "$trace" = 'true' ] && set -x
+    package=$1
+    file=$2
+    suffix=$3
+    quiet=$4
+
+    # check backup directory
+    if ! check_backupdir $backupd
+    then
+        echo " * Error creating backup directory $backupd ..."
+        return 1
+    fi
+
+    if [ "$suffix" = "" ]
+    then
+        # timestamp to add to filename
+        stamp=`date +%Y-%m-%d-%H-%M-%S`
+    else
+        # individual suffix to add to filename
+        stamp=$suffix
+    fi
+
+    # do the backup
+    if [ -f $file ]
+    then
+        cp -p $file $backupd/$package.$stamp
+        chmod og-rw $backupd/$package.$stamp
+
+        if [ "$quiet" != "quiet" ]
+        then
+            echo "Configuration file was saved as $package.$stamp in $backupd."
+        fi
+    else
+        if [ "$quiet" != "quiet" ]
+        then
+            echo "File $file not found - no backup done"
+        fi
+    fi
+
+    # check if files have to be deleted
+    check_config_files ${package} ${quiet}
+
+  set +x
+}
+
+activate_hint()
+{
+    echo "Configuration file $configd/$package was overwritten."
+    echo "You have to activate the configuration in order to"
+    echo "let the changes take effect."
+    echo "For most packages an 'Edit Configuration' without any"
+    echo "changes followed by an answer 'yes' to the question"
+    echo "'Activate the new configuration now (y/n)?' will do"
+    echo "this job."
+}
+
+select_file()
+{
+    # count files
+    fcount=`find $backupd -maxdepth 1 -type f -name "$package.$fmask" 2>/dev/null | wc -l`
+    fcount=`echo $fcount`
+    [ "$omit_file" != '' ] && fcount=`expr $fcount - 1`
+
+    selected='false'
+
+    act_count=1
+    header
+
+    if [ $fcount -gt 0 ]
+    then
+        row=4
+        # find files in sorted order
+        for file in `find $backupd -maxdepth 1 -type f -name "$package.$fmask" | sort`
+        do
+            [ "$file" = "$omit_file" ] && continue
+            eval bfile[$act_count]=\$file
+            gotoyx $row 3
+            echo $act_count
+            gotoyx $row 8
+            echo $file
+
+            selected='false'
+          # if [ $row = 21 ]
+            if [ $row = 13 ]
+            then
+                while [ $selected = 'false' ]
+                do
+                    gotoyx $row 1
+                    question
+                    fnumber=""
+                    read fnumber
+                    case $fnumber in
+                        [0-9]*)
+                            if [ $fnumber -gt $act_count -o $fnumber -le 0 ]
+                            then
+                                echo " * wrong number: $fnumber"
+                            else
+                                selected='true'
+                            fi
+                            ;;
+                        Q|q)
+                            selected='quit'
+                            break
+                            ;;
+                        '')
+                            header
+                            row=4
+                            break
+                            ;;
+                        *)
+                            echo " * wrong value: $fnumber"
+                            ;;
+                    esac
+                done
+            fi
+            if [ $selected != 'false' ]; then
+                break
+            fi
+            row=`expr $row + 1`
+            act_count=`expr $act_count + 1`
+        done
+
+        if [ $selected = 'false' ]; then
+            if [ $row -gt 4 ]; then
+                while [ $selected = 'false' ]
+                do
+                    gotoyx $row 1
+                    question
+                    fnumber=""
+                    read fnumber
+                    case $fnumber in
+                        [0-9]*)
+                            if [ $fnumber -ge $act_count -o $fnumber -le 0 ]; then
+                                echo " * wrong number: $fnumber"
+                            else
+                                selected='true'
+                            fi
+                            ;;
+                        Q|q)  break;;
+                        '')  break;;
+                        *)
+                            echo " * wrong value: $fnumber"
+                            ;;
+                    esac
+                done
+            fi
+        fi
+    else
+        if [ "$omit_file" = '' ]; then
+            echo "No files for $package found in $backupd."
+        else
+            echo "Only one file for $package found in $backupd."
+        fi
+    fi
+}

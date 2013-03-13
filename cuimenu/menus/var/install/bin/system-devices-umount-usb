@@ -1,0 +1,20 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# system-devices-umount-usb - umount usb device
+#
+# Creation   : 19.07.2003 fm  Frank Meyer <frank@eisfair.org>
+# Last Update: $Id: system-devices-format-floppy 24471 2012-11-14 21:14:01Z jv $
+#
+#----------------------------------------------------------------------------
+
+mountpath='/media/usb'
+
+umount $mountpath
+if [ $? = 0 ]
+then
+    /var/install/bin/ask.cui --info "Umount $mountpath successful."
+else
+    /var/install/bin/ask.cui --error "Umount $mountpath failed!"
+fi
+
+exit 0

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+[ ! -e /var/spool/fcron/root.orig ] && touch /var/spool/fcron/root.orig
+/sbin/rc-update add fcron default
+/etc/init.d/fcron update >/dev/null 2>&1
+/etc/init.d/fcron start

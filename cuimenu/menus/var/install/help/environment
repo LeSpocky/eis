@@ -1,0 +1,87 @@
+<!--
+#============================================================================
+# /var/install/help/environment - helptexts for package environment
+#
+# Creation:     2005-04-10  dv
+# Last Update:  $Id: environment 24471 2010-06-10 21:14:01Z schlotze $
+#
+# Copyright (c) 2001-2009 the eisfair team, team(at)eisfair(dot)org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#============================================================================
+-->
+
+<help name="EDITOR">
+    joe (alternative: vi)<br/>
+<br/>
+    Legal-value: joe, vi
+<br/>
+    Default-value: EDITOR='joe'
+</help>
+
+
+<help name="PAGER">
+    less (alternative: more)<br/>
+<br/>
+    Legal-value: less, more<br/>
+<br/>
+    Default-value: PAGER='less'
+</help>
+
+
+<help name="MAX_BACKUP_CONFIG">
+    Maximum number of package config files to backup up in /etc/backup.d<br/>
+<br/>
+    Legal-value: Number<br/>
+<br/>
+    Default-value: MAX_BACKUP_CONFIG='10'
+</help>
+
+
+<help name="SCROLL">
+    no:  no-scroll - show pages if lists are too long<br/>
+    yes: always show entire lists - you need to scroll manually<br/>
+<br/>
+    Legal-value: yes, no<br/>
+<br/>
+    Default-value: SCROLL='no'
+</help>
+
+
+<help name="HTTP_PROXY">
+    Http proxy for package installer in the form server:port<br/>
+    (empty to disable)<br/>
+<br/>
+    Legal-value:<br/>
+<br/>
+    Default-value: HTTP_PROXY=''
+</help>
+
+
+<help name="HTTP_PROXY_USER">
+    Http proxy username (emtpy to disable auth)<br/>
+<br/>
+    Legal-value:<br/>
+<br/>
+    Default-value: HTTP_PROXY_USER=''
+</help>
+
+
+<help name="HTTP_PROXY_PASSWD">
+    Http proxy password<br/>
+<br/>
+    Legal-value:<br/>
+<br/>
+    Default-value: HTTP_PROXY_PASSWD=''
+</help>
+
+<help name="LC_CTYPE">
+    Locale setting (don't change yet)<br/>
+<br/>
+    Legal-value: de_DE@euro<br/>
+<br/>
+    Default-value: LC_CTYPE='de_DE@euro'
+</help>

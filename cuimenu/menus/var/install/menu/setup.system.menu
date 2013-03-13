@@ -1,0 +1,8 @@
+<package>base</package>
+<title>System administration</title>
+<menu file="setup.system.base.menu">Base configuration</menu>
+<menu file="setup.system.logfileview.menu">Logfile view</menu>
+<menu file="setup.system.cron.menu">Cron administration</menu>
+<menu file="setup.system.sshd.menu">SSH administration</menu>
+<menu file="setup.system.filesystems.menu">Filesystems</menu>
+<menu file="setup.system.devices.menu">Devices</menu>

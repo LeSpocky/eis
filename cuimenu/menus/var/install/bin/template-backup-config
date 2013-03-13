@@ -1,0 +1,89 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# template-backup-config - backup config file to /etc/backup.d
+#
+# Creation:	2003-12-24  Ansgar Püster
+# Last Update:  $Id: template-restore-dconf 24471 2012-11-08 21:14:01Z jv $
+#----------------------------------------------------------------------------
+
+# get package name from filename PACKAGE-backup-config
+filename=`basename $0`
+package=`echo $filename | sed "s|-backup-config$||"`
+
+# if package is template
+#    take package from $PACKAGE
+[ "$package" = 'template' ] && package="$PACKAGE"
+
+#debug echo "+++ TEST filename: $filename"
+#debug echo "         PACKAGE:  $PACKAGE"
+#debug echo "         package:  $package"
+#debug read answ < /dev/tty
+
+if [ ! -f /etc/config.d/$package ]
+then
+    /var/install/bin/ask.cui --err "Configuration file /etc/config.d/$package does not exist!"
+    exit 1
+fi
+
+file="/etc/config.d/$package"
+
+mkdir -p /etc/backup.d
+chmod og-rw /etc/backup.d
+
+# timestamp to add to filename
+stamp=`date +%Y-%m-%d-%H-%M-%S`
+ 
+cp -p $file /etc/backup.d/${package}.$stamp
+chmod og-rw /etc/backup.d/${package}.$stamp
+
+
+
+get_date()
+{
+   old_ifs="$IFS"
+   IFS=.
+   set $1
+   eval echo \$$#
+   IFS="$old_ifs"
+}
+
+fmask='*[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
+
+# count files
+fcount=`find /etc/backup.d -maxdepth 1 -type f -name "${package}.${fmask}" 2>/dev/null | wc -l`
+fcount=`echo $fcount`
+
+_ccf_max_backup=10
+
+# check number of files
+if [ "$fcount" -gt "${_ccf_max_backup}" ]
+then
+    # number of files to remove
+    rmcount=`expr $fcount - ${_ccf_max_backup}`
+    count=0
+    # find files in sorted order
+    {
+        for FNAME in `find /etc/backup.d -maxdepth 1 -type f -name "${package}.${fmask}"`
+        do
+            # extract timestamp
+            FDATE=`get_date ${FNAME}`
+            # add timestamp as second field to in-transit output
+            echo "${FNAME}:${FDATE}"
+        done
+    } | sort -t: -k2 | while read line
+    do
+        # remove obsolete files
+        if [ "$count" -lt "$rmcount" ]
+        then
+            # extract filename from line
+            file=`echo ${line} | cut -d: -f1`
+            rm $file
+            count=`expr $count + 1`
+        else
+            break
+        fi
+    done
+    /var/install/bin/ask.cui --inf "Backup directory contained $fcount files for package $package ($rmcount removed)"
+fi
+
+exit 0

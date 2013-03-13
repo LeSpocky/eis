@@ -1,0 +1,504 @@
+<help name="CUI_USE_COLORS">
+Enable colors. <br/>
+<br/>
+Possible values: yes | no
+</help>
+
+<help name="CUI_USE_MOUSE">
+Enable mouse input. <br/>
+<br/>
+Possible values: yes | no
+</help>
+
+
+
+<help name="CUI_WINDOW_WND_COLOR">
+Window background color.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_WINDOW_WND_SEL_COLOR">
+Background color of selected text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_WINDOW_WND_TXT_COLOR">
+Color of normal window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_WINDOW_SEL_TXT_COLOR">
+Color of selected window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_WINDOW_INACT_TXT_COLOR">
+Color of inactive window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_WINDOW_HILIGHT_COLOR">
+Color of highlighted window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_WINDOW_TITLE_TXT_COLOR">
+Color of text in window title.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_WINDOW_TITLE_BKG_COLOR">
+Background color of window title.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_WINDOW_STATUS_TXT_COLOR">
+Color of text in window status bar.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_WINDOW_STATUS_BKG_COLOR">
+Background color of window status bar.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_WINDOW_BORDER_COLOR">
+Color of window frame.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+
+
+<help name="CUI_DESKTOP_WND_COLOR">
+Window background color.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_DESKTOP_WND_SEL_COLOR">
+Background color of selected text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_DESKTOP_WND_TXT_COLOR">
+Color of normal window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_DESKTOP_SEL_TXT_COLOR">
+Color of selected window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_DESKTOP_INACT_TXT_COLOR">
+Color of inactive window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_DESKTOP_HILIGHT_COLOR">
+Color of highlighted window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_DESKTOP_TITLE_TXT_COLOR">
+Color of text in window title.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_DESKTOP_TITLE_BKG_COLOR">
+Background color of window title.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_DESKTOP_STATUS_TXT_COLOR">
+Color of text in window status bar.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_DESKTOP_STATUS_BKG_COLOR">
+Background color of window status bar.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_DESKTOP_BORDER_COLOR">
+Color of window frame.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+
+
+<help name="CUI_DIALOG_WND_COLOR">
+Window background color.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_DIALOG_WND_SEL_COLOR">
+Background color of selected text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_DIALOG_WND_TXT_COLOR">
+Color of normal window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_DIALOG_SEL_TXT_COLOR">
+Color of selected window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_DIALOG_INACT_TXT_COLOR">
+Color of inactive window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_DIALOG_HILIGHT_COLOR">
+Color of highlighted window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_DIALOG_TITLE_TXT_COLOR">
+Color of text in window title.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_DIALOG_TITLE_BKG_COLOR">
+Background color of window title.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_DIALOG_STATUS_TXT_COLOR">
+Color of text in window status bar.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_DIALOG_STATUS_BKG_COLOR">
+Background color of window status bar.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_DIALOG_BORDER_COLOR">
+Color of window frame.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+
+
+<help name="CUI_MENU_WND_COLOR">
+Window background color.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_MENU_WND_SEL_COLOR">
+Background color of selected text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_MENU_WND_TXT_COLOR">
+Color of normal window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_MENU_SEL_TXT_COLOR">
+Color of selected window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_MENU_INACT_TXT_COLOR">
+Color of inactive window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_MENU_HILIGHT_COLOR">
+Color of highlighted window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_MENU_TITLE_TXT_COLOR">
+Color of text in window title.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_MENU_TITLE_BKG_COLOR">
+Background color of window title.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_MENU_STATUS_TXT_COLOR">
+Color of text in window status bar.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_MENU_STATUS_BKG_COLOR">
+Background color of window status bar.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_MENU_BORDER_COLOR">
+Color of window frame.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+
+
+<help name="CUI_TERMINAL_WND_COLOR">
+Window background color.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_TERMINAL_WND_SEL_COLOR">
+Background color of selected text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_TERMINAL_WND_TXT_COLOR">
+Color of normal window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_TERMINAL_SEL_TXT_COLOR">
+Color of selected window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_TERMINAL_INACT_TXT_COLOR">
+Color of inactive window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_TERMINAL_HILIGHT_COLOR">
+Color of highlighted window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_TERMINAL_TITLE_TXT_COLOR">
+Color of text in window title.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_TERMINAL_TITLE_BKG_COLOR">
+Background color of window title.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_TERMINAL_STATUS_TXT_COLOR">
+Color of text in window status bar.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_TERMINAL_STATUS_BKG_COLOR">
+Background color of window status bar.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_TERMINAL_BORDER_COLOR">
+Color of window frame.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+
+
+<help name="CUI_HELP_WND_COLOR">
+Window background color.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_HELP_WND_SEL_COLOR">
+Background color of selected text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_HELP_WND_TXT_COLOR">
+Color of normal window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_HELP_SEL_TXT_COLOR">
+Color of selected window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_HELP_INACT_TXT_COLOR">
+Color of inactive window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_HELP_HILIGHT_COLOR">
+Color of highlighted window text.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_HELP_TITLE_TXT_COLOR">
+Color of text in window title.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_HELP_TITLE_BKG_COLOR">
+Background color of window title.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_HELP_STATUS_TXT_COLOR">
+Color of text in window status bar.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="CUI_HELP_STATUS_BKG_COLOR">
+Background color of window status bar.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CUI_HELP_BORDER_COLOR">
+Color of window frame.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+

@@ -1,0 +1,42 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# template-restore-bconf - restore config file from /etc/backup.d
+#
+# Creation:	2003-12-24  Ansgar Püster
+# Last Update:  $Id: template-restore-dconf 24471 2012-11-08 21:14:01Z jv $
+#----------------------------------------------------------------------------
+
+if [ $# -gt 0 ]
+then
+    restfile="$1"
+  
+    if ( /var/install/bin/ask.cui "Overwrite your current configuration with: $restfile ?" )
+    then
+        cp -p /etc/backup.d/$restfile /etc/config.d/$package
+    fi
+    return 0
+fi
+
+# get package name from filename PACKAGE-restore-bconf
+filename=`basename $0`
+package=`echo $filename | sed "s|-restore-bconf$||"`
+
+# if package is template
+#    take package from $PACKAGE
+[ "$package" = 'template' ] && package="$PACKAGE"
+
+#debug echo "+++ TEST filename: $filename"
+#debug echo "         PACKAGE:  $PACKAGE"
+#debug echo "         package:  $package"
+#debug read answ < /dev/tty
+
+fmask='*[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
+
+/var/install/bin/list-files.cui -t "Select config backup file" \
+                                -c "Restore from:" \
+                                -p /etc/backup.d \
+                                -f "$package.$fmask" \
+                                -o 1 -d -n \
+                                -s "/var/install/bin/template-restore-bconf" 
+
+return 0

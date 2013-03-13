@@ -1,0 +1,18 @@
+<!-- /var/install/menu/setup.users.menu -->
+<!-- Creation:     05.04.2005  jed -->
+<!-- Last Update:  $Id: setup.users.menu 24471 2010-06-10 21:14:01Z schlotze $ -->
+<package>base</package>
+<title>User administration</title>
+<script file="list-users">List users</script>
+<script file="add-user">Add a new user</script>
+<script file="remove-user">Remove a user</script>
+<script file="modify-user">Modify a user</script>
+<script file="change-password">Change password</script>
+<script file="invalidate-password">Invalidate password</script>
+<script file="list-groups">List groups</script>
+<script file="add-group">Add a new group</script>
+<script file="remove-group">Remove a group</script>
+<script file="change-group">Change group of user</script>
+<script file="show-user-additional-group">Show additional groups of user</script>
+<script file="add-user-to-additional-group">Add user to additional group</script>
+<script file="remove-user-from-additional-group">Remove user from additional group</script>

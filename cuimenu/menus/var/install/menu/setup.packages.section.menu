@@ -1,0 +1,35 @@
+<!-- /var/install/menu/setup.packages.section.menu -->
+<!-- Creation:     2005-10-13  tg -->
+<!-- Last Update:  $Id: setup.packages.section.menu 24471 2010-06-10 21:14:01Z schlotze $ -->
+<package>base</package>
+<title>List packages by section</title>
+<script file="list-packages upgradable">Upgradable packages</script>
+<script file="list-packages all">All</script>
+<script file="list-packages nolib">All, but no libs</script>
+<script file="list-packages admin">admin       (deprecated section)</script>
+<script file="list-packages backup">backup</script>
+<script file="list-packages base">base</script>
+<script file="list-packages chat">chat</script>
+<script file="list-packages communication">communication</script>
+<script file="list-packages contrib">contrib</script>
+<script file="list-packages database">database</script>
+<script file="list-packages devel">devel</script>
+<script file="list-packages drivers">drivers</script>
+<script file="list-packages game">game</script>
+<script file="list-packages interpreter">interpreter (deprecated section)</script>
+<script file="list-packages lib">lib</script>
+<script file="list-packages libdev">libdev</script>
+<script file="list-packages mail">mail</script>
+<script file="list-packages misc">misc</script>
+<script file="list-packages multimedia">multimedia</script>
+<script file="list-packages net">net         (deprecated section)</script>
+<script file="list-packages netservices">netservices</script>
+<script file="list-packages netutils">netutils</script>
+<script file="list-packages news">news</script>
+<script file="list-packages plang">plang</script>
+<script file="list-packages printer-file">printer-file</script>
+<script file="list-packages security">security</script>
+<script file="list-packages system">system</script>
+<script file="list-packages utils">utils</script>
+<script file="list-packages web">web</script>
+<script file="list-packages invalid">Invalid sections</script>

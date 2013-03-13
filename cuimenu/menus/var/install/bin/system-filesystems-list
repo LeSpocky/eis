@@ -1,0 +1,57 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/system-filesystems-list - list filesystems
+#
+# Creation   : 19.07.2003 fm  Frank Meyer <frank@eisfair.org>
+# Last Update: $Id: system-devices-format-floppy 24471 2012-11-14 21:14:01Z jv $
+#
+#----------------------------------------------------------------------------
+
+. /var/install/include/techo
+
+local filesystem_file=/tmp/listfs.$$
+local fs_spec=""
+local fs_file=""
+local fs_vfstype=""
+local fs_mntopts=""
+local fs_freq=""
+local fs_passno=""
+
+clean()
+{
+    rm -f $filesystem_file
+}
+
+techo --file begin '2 13 15 10 32 5 5' 
+
+cat /etc/fstab |
+(
+    {
+    techo --file row "" --info device --info mountpoint --info fs-type --info mountopts --info freq --info pass
+    row=4
+    echo '  -------------------------------------------------------------------------------'
+    } >> $filesystem_file
+
+    while read line
+    do
+        set -- $line
+
+        if `echo $1 | grep -qs UUID=`
+        then
+            fs_spec=`blkid -o device -t $1`
+        else
+            fs_spec=$1
+        fi
+        fs_file=$2
+        fs_vfstype=$3
+        fs_mntopts=$4
+        fs_freq=$5
+        fs_passno=$6
+        techo --file row "" $fs_spec $fs_file $fs_vfstype $fs_mntopts $fs_freq $fs_passno >> $filesystem_file
+        row=`expr $row + 1`
+   done
+)
+
+/var/install/bin/show-doc.cui -f $filesystem_file -t "List filesystems"
+
+exit 0

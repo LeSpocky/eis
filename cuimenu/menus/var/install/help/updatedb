@@ -1,0 +1,51 @@
+<!-- Copyright (c)  2003-2009 Sebastian Scholze <webmaster@schlotze.de>  -->
+<!--                                                                    -->
+<!-- Creation:      2003-03-13  schlotze                                -->
+<!-- Last Update:   $Id: updatedb 24471 2010-06-10 21:14:01Z schlotze $ -->
+<help name="UPDATEDB_CRON_USE">
+    Hierueber laesst sich steuern, ob updatedb ueber einen cronjob gestartet werden soll.
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standard-Einstellung: UPDATEDB_CRON_USE='yes'
+</help>
+
+<help name="UPDATEDB_UPDATE_CRON_TIMES">
+    Ueber diese Variable wird gesteuert, wann der cron job gestartet wird
+    <br/>
+    Gueltige Werte: crontab<br/>
+    <br/>
+    Standard-Einstellung: UPDATEDB_CRON_TIMES='25 0 * * *'
+</help>
+
+<help name="UPDATEDB_SUPPRESS_CRON_MAIL">
+    Unterdrueckt, auf Wunsch die cron mail
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standard-Einstellung: UPDATEDB_SUPPRESS_CRON_MAIL='yes'
+</help>
+
+<help name="UPDATEDB_PRUNEPATH_N">
+    Anzahl der Pfade, die nicht durchsucht werden sollen
+    <br/>
+    Gueltige Werte: number<br/>
+    <br/>
+    Standard-Einstellung: UPDATEDB_PRUNEPATH_N='5'
+</help>
+
+<help name="UPDATEDB_PRUNEPATH_%_ACTIVE">
+    Ob dieser Datensatz aktiv sein soll.
+    <br/>
+    Gueltige Werte: yes/no<br/>
+    <br/>
+    Standard-Einstellung: UPDATEDB_PRUNEPATH_%_ACTIVE='yes'
+</help>
+
+<help name="UPDATEDB_PRUNEPATH_%">
+    Pfad der nicht durchsucht werden soll.
+    <br/>
+    Gueltige Werte: Name<br/>
+    <br/>
+    Standard-Einstellung: UPDATEDB_PRUNEPATH_%=''
+</help>

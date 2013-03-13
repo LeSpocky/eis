@@ -1,0 +1,21 @@
+#-----------------------------------------------------------------------------
+# /etc/config.d/fcron - configuration file for cron
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------
+# Cron Jobs
+#-----------------------------------------------------------------------------
+
+START_FCRON='yes'                      # start cron: yes or no
+
+FCRON_N='0'                            # number of cron jobs to add
+
+FCRON_1_ACTIVE='yes'                   # cron activate string
+FCRON_1_TIMES='0 0 * * *'              # cron time configuration string
+FCRON_1_USER='root'                    # cron configuration string
+FCRON_1_COMMAND='/usr/bin/foo /etc/foo.conf'
+
+#------------------------------------------------------------------------------
+# End
+#------------------------------------------------------------------------------

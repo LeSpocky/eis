@@ -1,0 +1,7 @@
+<package>base</package>
+<title>Show logfiles</title>
+<doc tail="yes" file="/var/log/messages">Show messages</doc>
+<doc tail="yes" file="/var/log/error.log">Show errors</doc>
+<doc tail="yes" file="/var/log/auth.log">Show auth</doc>
+<doc tail="yes" file="/var/log/mail.log">Show mail</doc>
+<doc tail="yes" file="/var/log/kern.log">Show kernel</doc>

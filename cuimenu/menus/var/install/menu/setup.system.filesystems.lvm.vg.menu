@@ -1,0 +1,6 @@
+<package>base</package>
+<title>Volume Groups Management</title>
+<script file="system-filesystems-vg-show">List Volume Groups</script>
+<script file="system-filesystems-vg-create">Create Volume Group</script>
+<script file="system-filesystems-vg-resize">Resize Volume Group</script>
+<script file="system-filesystems-vg-delete">Delete Volume Group</script>

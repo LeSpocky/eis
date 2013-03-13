@@ -1,0 +1,62 @@
+#----------------------------------------------------------------------------
+# /var/install/include/mecho - multi echo
+#
+# Creation:     2004-07-22 fm
+# Last Update: $Id: mecho 24471 2012-11-14 21:14:01Z jv $
+#
+#----------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# usage
+#
+# mecho [-n] [--std|--info|--warn|--error] [--tty|--html|--file] message ...
+#
+# options:
+#     -n         do not append newline
+#
+#     --std      print standard message (default)
+#     --stdbr    print standard message (default)(bright)
+#     --info     print info message     (green)
+#     --warn     print warning message  (yellow)(bright)
+#     --error    print error message    (red)(brightinvers)
+#     --link     print message          '>'  (cyan)
+#     --ok       print message          [  OK  ] (green)
+#     --fail     print message          [ Fail ] (red)(bright)
+#
+#     --tty      use console colors
+#     --file     don't use any color tags
+# ---------------------------------------------------------------------------
+
+mecho()
+{
+    local _mecho_mode="tty"
+    local _mecho_flags=''
+    local _mecho_colors=''
+    local _mecho_reset="\033[0m"
+
+    while [ 1 ]
+    do
+        case "$1" in
+            -n)       _mecho_flags='-n'; shift;;
+            --std)    _mecho_colors="\033[0m\033[49m"; shift;;
+            --stdbr)  _mecho_colors="\033[0m\033[49m"; shift;;
+            --info)   _mecho_colors="\033[32m\033[49m"; shift;;
+            --warn)   _mecho_colors="\033[33m\033[40m\033[1m"; shift;;
+            --error)  _mecho_colors="\033[31m\033[47m\033[1m\033[7m"; shift;;
+            --link)   _mecho_colors="\033[36m\033[49m"; shift;;
+            --ok)     _mecho_colors="\033[1A\033[0G\033[300C\033[8D[\033[32m\033[49m  OK  \033[0m]"; shift;;
+            --fail)   _mecho_colors="\033[1A\033[0G\033[300C\033[8D[\033[31m\033[1m\033[49m FAIL \033[0m]"; shift;;
+            --tty)    _mecho_mode='tty';     shift;;
+            --file)   _mecho_mode='file';    shift;;
+            *)  break;;
+        esac
+    done
+
+    if [ "$_mecho_mode" = "file" ] 
+    then
+        _mecho_colors=""
+        _mecho_reset=""
+    fi    
+
+    echo -e $_mecho_flags "${_mecho_colors}${*}${_mecho_reset}"
+}

@@ -1,0 +1,75 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/create-menu - create a new menu file
+#
+# Creation:	09.04.2005  jed
+# Last Update:  $Id: create-menu 24471 2010-06-10 21:14:01Z schlotze $
+#
+# Usage (for XML-menus)
+# ---------------------------------
+# create-menu menu-file menu-title
+#
+#          menu-file      filename relativ to menupath /var/install/menu
+#          menu-title     title of the new menu
+#----------------------------------------------------------------------------
+pgmname=`basename $0`
+menu_path='/var/install/menu'
+
+#----------------------------------------------------------------------------
+# check menu naming
+# input: $1 - menu name
+# return: 0 - ok
+#         1 - false
+#----------------------------------------------------------------------------
+check_menu_naming()
+{
+    local p_name="$1"
+    local m_name="$2"
+    local rval=1
+    
+    if [ -n "$p_name" ]
+    then
+        #/var/install/menu/setup.services.foo.menu
+        echo "${m_name}" | grep -q "^setup\.services\.${p_name}\.menu$"
+        if [ $? -eq 0 ]
+        then
+            rval=0
+        else    
+            #/var/install/menu/setup.services.foo.bar.menu
+            echo "${m_name}" | grep -E -q "^setup\.services\.${p_name}\..+\.menu$"
+            if [ $? -eq 0 ]
+            then
+                rval=0
+            fi
+        fi
+    fi
+    return $rval
+}
+
+# main
+ret=1
+if [ $# -ge 2 ]
+then
+    menu_file=`basename $1`
+    shift 1
+    menu_title="$*"
+    package_name=`echo $menu_file | cut -d. -f3`
+
+    if check_menu_naming "$package_name" "$menu_file"
+    then
+        {
+            echo "<!-- $menu_path/$menu_file -->"
+            echo "<!-- Creation:  `date` by $pgmname -->"
+            echo "<package>$package_name</package>"
+            echo "<title>$menu_title</title>"
+        } > $menu_path/$menu_file
+
+        ret=0
+    else
+        echo "Invalid menu naming '$menu_file'!"
+    fi
+else
+    echo "Invalid number of parameters!"
+fi    
+
+exit $ret

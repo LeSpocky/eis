@@ -1,0 +1,25 @@
+<!-- Creation:     26.02.2005  jv -->
+<!-- Last Update:  $Id: packages 24471 2010-06-10 21:14:01Z schlotze $ -->
+
+<help name="PACKAGELIST">
+'F1' &nbsp;&nbsp; show or hide this help window.<br/>
+'F4' or 'ENTER' show long package information.<br/>
+'F8' &nbsp;&nbsp; deinstall current package.<br/>
+</help>
+
+<help name="PACKAGEUPGRADE">
+'F1' &nbsp;&nbsp; show or hide this help window.<br/>
+'F2' &nbsp;&nbsp; get update information from new stable versions.<br/>
+'F3' &nbsp;&nbsp; get the latest package version.<br/>
+'F4' or 'ENTER' show long package information<br/>
+'F7' &nbsp;&nbsp; upgrade current package.<br/>
+'F8' &nbsp;&nbsp; deinstall current package.<br/>
+</help>
+
+<help name="PACKAGEUPGRADEONLY">
+'F1' &nbsp;&nbsp; show or hide this help window<br/>
+'F2' &nbsp;&nbsp; get update information from new stable versions.<br/>
+'F3' &nbsp;&nbsp; get the latest package version.<br/>
+'F4' or 'ENTER' show long package information.<br/>
+'F7' &nbsp;&nbsp; upgrade current package.<br/>
+</help>

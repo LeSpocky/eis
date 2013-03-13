@@ -1,0 +1,59 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
+pkgname=cui-apache2
+pkgver=2.4.4
+pkgrel=0
+pkgdesc="CUI Setup for Apache 2"
+url="http://www.eisfair.org"
+arch="all"
+license="GPL"
+depends="cuimenu apache2 apache2-utils"
+depends_dev=""
+makedepends="$depends_dev"
+install="$pkgname.post-install $pkgname.post-deinstall"
+subpackages=""
+source="${pkgname}.help
+		${pkgname}.sh
+		${pkgname}-update.sh
+		${pkgname}.lib
+		${pkgname}.menu
+		${pkgname}.dauth.sh
+		${pkgname}.dlog.sh
+		${pkgname}.dlevel.sh
+		${pkgname}.dsig.sh
+		${pkgname}.txt
+"
+
+_builddir=
+prepare() {
+	cd "$_builddir"
+}
+
+build() {
+	cd "$_builddir"
+}
+
+package() {
+	cd "$_builddir"
+	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/apache2 || return 1	
+	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/apache2.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/apache2-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.lib           ${pkgdir}/var/install/include/apache2 || return 1	
+	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.apache2.menu || return 1	
+	install -D -m755 ${srcdir}/${pkgname}.dauth.sh      ${pkgdir}/var/install/dialog.d/APACHE2_DIR_AUTH_TYPE.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}.dlog.sh       ${pkgdir}/var/install/dialog.d/APACHE2_LOG_INTERVAL.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}.dlevel.sh     ${pkgdir}/var/install/dialog.d/APACHE2_LOG_LEVEL.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}.dsig.sh       ${pkgdir}/var/install/dialog.d/APACHE2_SERVER_SIGNATURE.sh || return 1	
+	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/apache2/apache2.txt || return 1	
+}
+
+md5sums="96371bea9ca03d6c78dbaf0fe1d76e8b  cui-apache2.help
+03a1dd8f59eddc44bfbaa46935954e1f  cui-apache2.sh
+90306324cb8b61ea76e1d3409c3c8822  cui-apache2-update.sh
+8cebbb50734d1925389fc52f550feefc  cui-apache2.lib
+372917a5fbe1f1bf25599f6365821b5a  cui-apache2.menu
+b3aa496d205aa7df2b31f9ed8cd567ec  cui-apache2.dauth.sh
+93921cc893dd7792135f95c1afcdf156  cui-apache2.dlog.sh
+773842c4b63c9212465b777729741613  cui-apache2.dlevel.sh
+09aeef556896cdc3b3d856ae5e97adb0  cui-apache2.dsig.sh
+6a2b334cae956854af7fb1d4ee367a5b  cui-apache2.txt"

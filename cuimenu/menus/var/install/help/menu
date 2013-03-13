@@ -1,0 +1,213 @@
+<help name="USE_COLORS">
+Enable colors. <br/>
+<br/>
+Possible values: yes | no
+</help>
+
+<help name="TITLE_BACKGROUND_COLOR">
+Progam title background color.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="TITLE_TEXT_COLOR">
+Program title text color.<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, 
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE, 
+LIGHTMAGENTA, LIGHTCYAN, WHITE 
+</help>
+
+<help name="STATUS_BACKGROUND_COLOR">
+Status bar background color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="STATUS_TEXT_COLOR">
+Status bar text color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="WINDOW_BACKGROUND">
+Background color of main window<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="MENU_TEXT_NORMAL_COLOR">
+Menu text color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="MENU_TEXT_SELECTED_COLOR">
+Menu selected text color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="MENU_NUMBER_NORMAL_COLOR">
+Number text color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="MENU_NUMBER_SELECTED_COLOR">
+Number selected text color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="MENU_BACKGROUND_COLOR">
+Menu background color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="MENU_SELECTION_COLOR"><br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+Menu selection color
+</help>
+
+<help name="MENU_FRAME_COLOR">
+Menu frame color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="TEXTWIN_TEXT_COLOR">
+Text color of text window views<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="TEXTWIN_BACKGROUND_COLOR">
+Background of text window views<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="TEXTWIN_FRAME_COLOR">
+Frame color of text windows<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="TERMWIN_TEXT_COLOR">
+Terminal window text color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="TERMWIN_BACKGROUND_COLOR">
+Terminal window background<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="TERMWIN_FRAME_COLOR">
+Terminal window frame color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="HELPWIN_TEXT_COLOR">
+ECE help window text color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="HELPWIN_BACKGROUND_COLOR">
+ECE help window background<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="HELPWIN_FRAME_COLOR">
+ECE help window frame color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="CONFIG_FRAME_COLOR">
+ECE config window frame color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="CONFIG_NAMES_COLOR">
+ECE variable text color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="CONFIG_TEXT_NORMAL_COLOR">
+ECE config window text color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="CONFIG_TEXT_SELECTED_COLOR">
+ECE selected text color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN,
+LIGHTGRAY, DARKGRAY, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTBLUE,
+LIGHTMAGENTA, LIGHTCYAN, WHITE
+</help>
+
+<help name="CONFIG_SELECTION_COLOR">
+ECE selection color<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CONFIG_BACKGROUND_COLOR">
+ECE config window background<br/>
+<br/>
+Possible values: BLACK, RED, GREEN, BROWN, BLUE, MAGENTA, CYAN, LIGHTGRAY
+</help>
+
+<help name="CONFIG_SHOW_LINES">
+ECE Show seperator lines<br/>
+<br/>
+Possible values: yes | no
+</help>
+
+<help name="CONFIG_SHOW_COMMENTS">
+ECE Show comments<br/>
+<br/>
+Possible values: yes | no
+</help>

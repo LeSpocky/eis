@@ -1,0 +1,54 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# system-devices-pv-delete - delete physical volumes
+#
+# Creation   : 02.09.2009 schlotze
+# Last Update: $Id: system-filesystems-pv-delete 16982 2008-10-17 12:52:01Z schlotze $
+#
+#----------------------------------------------------------------------------
+. /var/install/include/anykey
+. /var/install/include/mecho
+. /var/install/include/techo
+
+echo
+
+#exec 2> /tmp/system-devices-pv-delete-trace$$.log
+#set -x
+
+mecho --info "Delete physical volumes"
+mecho --info "Available physical volumes"
+techo begin 4 11 35 6 6 9r 9r
+techo row --info No. --info "PV" --info "VG" --info "Fmt" --info "Attr" --info "PSize" --info "PFree"
+mecho --info "================================================================================"
+
+idx=1
+pvs > /tmp/tmp_pvs$$
+while read line
+do
+    set -- $line
+    if [ "$1" != "PV" ]
+    then
+        eval pv_$idx='"$1"'
+        if [ "$6" = "" ]
+        then
+            techo row $idx $1 "" $2 $3 $4 $5
+        else
+            techo row $idx $1 $2 $3 $4 $5 $6
+        fi
+        idx=`expr $idx + 1`
+    fi
+done < /tmp/tmp_pvs$$
+rm /tmp/tmp_pvs$$
+
+idx=`expr $idx - 1`
+nopvdevice=`/var/install/bin/ask "Please choose the physical volume to delete" "" "1-$idx" "0=Exit"`
+
+if [ "$nopvdevice" != "0" ]
+then
+    eval "pvdevice"='$pv_'$nopvdevice
+    pvremove $pvdevice
+fi
+
+echo
+anykey
+exit 0

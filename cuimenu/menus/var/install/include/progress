@@ -1,0 +1,52 @@
+#----------------------------------------------------------------------------
+# /var/install/include/progress - display progress bar
+#
+# Creation:     2007-10-09 max
+# Last Update: $Id: progress 24471 2012-11-14 21:14:01Z jv $
+#
+#----------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------
+# usage:
+# progress_bar [--tty|--file] current max
+#
+#     --tty      use console colors
+#     --file     don't use any color tags
+
+
+progress_bar()
+{
+    local _progress_signstr="=================================================="
+    local _progress_spacestr="                                                  "
+    local _progress_mode="$_EISLIB_PRINTMODE"
+    local _progress_pos=0
+    local _progress_max=0
+    local _progress_percent=0
+    local _progress_signlen=0
+    local _progress_spacelen=0
+    local _progress_spacelen2=0
+    local _progress_spacelen3=0
+
+    while [ 1 ]
+    do
+        case "$1" in
+            --tty)  _progress_mode='tty';     shift;;
+            --file) return 0;;
+            *)      break;;
+        esac
+    done
+    _progress_pos=$1
+    _progress_max=$2
+
+    # no progress bar for file or html
+    if [ "$_progress_mode" = "tty" ]
+    then
+        [ $_progress_pos -gt $_progress_max ] && _progress_max=$_progress_pos
+        let _progress_percent="100 * $_progress_pos / $_progress_max"
+        let _progress_signlen="$_progress_percent / 2"
+        let _progress_spacelen="50 - $_progress_signlen"
+        let _progress_spacelen2="3 - ${#_progress_percent}"
+        let _progress_spacelen3="${#_progress_max} - ${#_progress_pos}"
+        echo -ne "\r${_progress_spacestr:0:$_progress_spacelen2}$_progress_percent% [${_progress_signstr:0:$_progress_signlen}>${_progress_spacestr:0:$_progress_spacelen}] ${_progress_spacestr:0:_progress_spacelen3}$_progress_pos / $_progress_max "
+    fi
+}

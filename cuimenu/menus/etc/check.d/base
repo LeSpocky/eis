@@ -1,0 +1,63 @@
+#-----------------------------------------------------------------------------
+# /etc/check.d/base - check table for configuration parameters
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
+
+# Variable                   OPT_VARIABLE           VARIABLE_N         VALUE
+HOSTNAME                     -                       -                 HOSTNAME
+
+IP_NET_N                     -                       -                 NUMERIC
+IP_NET_%_NAME                -                       IP_NET_N          NONE
+IP_NET_%_IPV4_ACTIVE         -                       IP_NET_N          YESNO
+IP_NET_%_IPV4_STATIC_IP      IP_NET_%_IPV4_ACTIVE    IP_NET_N          YESNO
+IP_NET_%_IPV4_IPADDR         IP_NET_%_IPV4_STATIC_IP IP_NET_N          IPADDR
+IP_NET_%_IPV4_NETMASK        IP_NET_%_IPV4_STATIC_IP IP_NET_N          IPADDR
+IP_NET_%_IPV4_GATEWAY        IP_NET_%_IPV4_STATIC_IP IP_NET_N          EIPADDR
+++IP_NET_%_IPV4_POINTOPOINT  IP_NET_%_IPV4_STATIC_IP IP_NET_N          YESNO
+IP_NET_%_IPV6_ACTIVE         -                       IP_NET_N          YESNO
+IP_NET_%_IPV6_STATIC_IP      IP_NET_%_IPV6_ACTIVE    IP_NET_N          YESNO
+IP_NET_%_IPV6_IPADDR         IP_NET_%_IPV6_STATIC_IP IP_NET_N          IPADDR6
+IP_NET_%_IPV6_NETMASKBITS    IP_NET_%_IPV6_STATIC_IP IP_NET_N          MASK6
+IP_NET_%_IPV6_GATEWAY        IP_NET_%_IPV6_STATIC_IP IP_NET_N          EIPADDR6
+++IP_NET_%_IPV6_POINTOPOINT  IP_NET_%_IPV6_STATIC_IP IP_NET_N          YESNO
+
+IPV4_ROUTE_N                 -                       -                 NUMERIC
+IPV4_ROUTE_%                 -                       IPV4_ROUTE_N      IP_ROUTE
+IPV6_ROUTE_N                 -                       -                 NUMERIC
+IPV6_ROUTE_%                 -                       IPV6_ROUTE_N      IP_ROUTE6
+
+DOMAIN_NAME                  -                       -                 DOMAIN
+DNS_SERVER                   -                       -                 IPADDRESSES46
+
+TIME_ZONE                    -                       -                 NONE
+
+START_SYSLOG                 -                       -                 YESNO
+SYSLOG_MESSAGES_INTERVAL     START_SYSLOG            -                 LOG_INTERVAL
+SYSLOG_MESSAGES_MAXCOUNT     START_SYSLOG            -                 NUMERIC
+SYSLOG_MESSAGES_RELOAD       START_SYSLOG            -                 YESNO
+SYSLOG_AUTH_INTERVAL         START_SYSLOG            -                 LOG_INTERVAL
+SYSLOG_AUTH_MAXCOUNT         START_SYSLOG            -                 NUMERIC
+SYSLOG_AUTH_RELOAD           START_SYSLOG            -                 YESNO
+SYSLOG_MAIL_INTERVAL         START_SYSLOG            -                 LOG_INTERVAL
+SYSLOG_MAIL_MAXCOUNT         START_SYSLOG            -                 NUMERIC
+SYSLOG_MAIL_RELOAD           START_SYSLOG            -                 YESNO
+SYSLOG_KERNEL_INTERVAL       START_SYSLOG            -                 LOG_INTERVAL
+SYSLOG_KERNEL_MAXCOUNT       START_SYSLOG            -                 NUMERIC
+SYSLOG_KERNEL_RELOAD         START_SYSLOG            -                 YESNO
+
+SYSLOG_SOURCE_UDP            START_SYSLOG            -                 YESNO
+
+SYSLOG_DEST_N                START_SYSLOG            -                 NUMERIC
+SYSLOG_DEST_%_TARGET         START_SYSLOG            SYSLOG_DEST_N     NOTEMPTY
+SYSLOG_DEST_%_FILTER         START_SYSLOG            SYSLOG_DEST_N     NONE
+SYSLOG_DEST_%_INTERVAL       START_SYSLOG            SYSLOG_DEST_N     LOG_INTERVAL
+SYSLOG_DEST_%_MAXCOUNT       START_SYSLOG            SYSLOG_DEST_N     NUMERIC
+
+KEYMAP                       -                       -                 CONSOLE_KEYMAP
+CONSOLEFONT                  -                       -                 CONSOLEFONT_NAME
+CONSOLE_BLANK_TIME           -                       -                 NUMERIC
+
+MODULE_N                     -                       -                 NUMERIC
+MODULE_%                     -                       MODULE_N          NOTEMPTY
+MODULE_%_ACTION              -                       MODULE_N          MODULE_ACTION
+MODULE_%_STRING              -                       MODULE_N          NONE

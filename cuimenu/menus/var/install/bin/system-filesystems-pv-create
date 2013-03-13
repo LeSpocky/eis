@@ -1,0 +1,35 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# system-devices-pv-create - create physical volumes
+#
+# Creation   : 02.09.2009 schlotze
+# Last Update: $Id: system-filesystems-pv-create 16982 2008-10-17 12:52:01Z schlotze $
+#
+#----------------------------------------------------------------------------
+. /var/install/include/anykey
+. /var/install/include/mecho
+echo
+
+mecho --info "Create physical volumes"
+
+device=`/var/install/bin/ask "Please enter the device on which you want to create a physical volume (e.g. /dev/hdd) [0=Exit]" "" "+"`
+while [ 0 ]
+do
+    if [ "$device" != "0" ]
+    then    
+        if [ -e $device ]
+        then
+            pvcreate $device
+            break
+        else
+            mecho -error "Please enter a valid device."
+            device=`/var/install/bin/ask "Please enter the device on which you want to create a physical volume (e.g. /dev/hdd) [0=Exit]" "" "+"`
+        fi
+    else
+        break
+    fi
+done
+
+echo
+anykey
+exit 0

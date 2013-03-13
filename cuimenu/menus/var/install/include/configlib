@@ -1,0 +1,493 @@
+#----------------------------------------------------------------------------
+# /var/install/include/configlib - library for eisfair scripts
+#
+# Creation   :  2005-05-24  max
+# Last Update: $Id: configlib 24471 2012-11-14 21:14:01Z jv $
+#
+#----------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------
+# interface description:
+# printgpl()           : [--conf|--check|--check_exp|--check_ext|()]
+#        [--conf]      : print the GPL Header for config
+#        [--check]     : print the GPL Header for check
+#        [--check_exp] : print the GPL Header for check.exp
+#        [--check_ext] : print the GPL Header for check.ext
+#        [()]          : print the GPL Header for config (for compatible to old Version of printgpl)
+# printgroup()         : print a configuration group header
+# printcustomgroup()   : print a configuration group header
+#                      : with customized comment
+# printvar()           : print a config variable
+# printcomment()       : print a comment
+# printend()           : print the footer
+# setlinespacing()     : set linespaceing (on/off)
+#                        if set, printvar will print
+#                        "FOO_ARRAY_2_VARIABLE="myvalue"    # an important option"
+#                       instead of
+#                       "FOO_ARRAY_2_VARIABLE="myvalue"     # an important option"
+#----------------------------------------------------------------------------
+
+# only include this file once
+if [ "$_CONFIGLIB" = "true" ]
+then
+    return 0
+fi
+_CONFIGLIB='true'
+# default for linespacing
+_CONFIGLIB_LINESPACING='off'
+# fixed spaces string - 60 character long (fast method)
+_CONFIGLIB_SPACESTR="                                                            "
+_CONFIGLIB_COMMENTPOS=37
+_CONFIGLIB_MAXLINELEN=79
+
+# printgpl
+# ==================
+# prints the GPL header for a configuration and check file
+#
+# parameters: $1 file-name in header
+#                e.g [--conf|--check|--check_exp|--check_ext|()]
+#             $2 package name
+#                e.g. "base"
+#             $3 creation date
+#                e.g. "2001-12-31"
+#             $4 creator
+#                e.g. "fm"
+#             $5 copyright notice, if not set default will be used [optional]
+#                e.g. "2001-2009 the eisfair team, team(at)eisfair(dot)org"
+#
+# output    : GPL header for an eisfair config- and check-file
+printgpl()
+{
+    case "${1}" in
+        --conf)
+                if [ "${2}" != "base" ]
+                then
+                    folder_line="/etc/config.d/${2} - configuration file for ${2}"
+                    shift 2
+                    gpl "$1" "$2" "$3"
+                else
+                    folder_line="/etc/config.d/${2} - eisfair boot configuration parameters"
+                    shift 2
+                    gpl "$1" "$2" "$3"
+                fi
+            ;;
+        --check)
+                folder_line="/etc/check.d/${2} - eischk file for ${2}"
+                shift 2
+                gpl "$1" "$2" "$3"
+            ;;
+        --check_exp)
+                folder_line="/etc/check.d/${2}.exp - eischk exp file for ${2}"
+                shift 2
+                gpl "$1" "$2" "$3"
+            ;;
+        --check_ext)
+                folder_line="/etc/check.d/${2}.ext - eischk ext file for ${2}"
+                shift 2
+                gpl "$1" "$2" "$3"
+            ;;
+        *)
+                folder_line="/etc/config.d/${1} - configuration file for ${1}"
+                shift
+                gpl "$1" "$2" "$3"
+                ;;
+    esac
+}
+
+    gpl()
+    {
+        echo "#------------------------------------------------------------------------------"
+        echo "# ${folder_line}"
+        echo "#"
+        echo "# Creation   :  ${1} ${2}"
+        echo "# Last Update:  `date +%Y-%m-%d` ${LOGNAME}"
+        echo "#"
+
+        if [ -n "${3}" ]
+        then
+            echo "# Copyright (c) ${3}"
+        else
+            echo "# Copyright (c) 2001-`date +\"%Y\"` the eisfair team, team(at)eisfair(dot)org"
+        fi
+
+        echo "#"
+        echo "# This program is free software; you can redistribute it and/or modify"
+        echo "# it under the terms of the GNU General Public License as published by"
+        echo "# the Free Software Foundation; either version 2 of the License, or"
+        echo "# (at your option) any later version."
+        echo "#------------------------------------------------------------------------------"
+        echo ""
+    }
+
+# printgroup
+# ==========
+# prints an eisfair configuration group header
+#
+# parameters: -b x  print 'x' newline before the group,
+#                   one newline is the default and must not be set
+#             -a x  print 'x' newline after the group,
+#                   one newline is the default and must not be set
+#             $1    group name
+#                   e.g. "General settings"
+#             $2    group comment [optional]
+#                   e.g. "general settings for eisfair configuration"
+#
+# output    : group header for an eisfair config-file
+printgroup()
+{
+    local _newline_before=1
+    local _newline_after=1
+
+    # 'case' is not a solution in this place, so we do it step by step
+    if [ "${1}" = "-b" ]
+    then
+        _newline_before=${2}
+        shift 2
+    fi
+    if [ "${1}" = "-a" ]
+    then
+        _newline_after=${2}
+        shift 2
+    fi
+    # do it twice, if -a the first parameter
+        if [ "${1}" = "-b" ]
+        then
+            _newline_before=${2}
+            shift 2
+        fi
+
+        _pg_idx=1
+        while [ ${_newline_before} -ge ${_pg_idx} ]
+        do
+            echo ""
+            _pg_idx=`expr ${_pg_idx} + 1 `
+        done
+
+        echo "#------------------------------------------------------------------------------"
+        echo "# ${1}"
+
+        if [ -n "${2}" ]
+        then
+            echo "# ${2}"
+        fi
+
+        echo "#------------------------------------------------------------------------------"
+
+        _pg_idx=1
+        while [ ${_newline_after} -ge ${_pg_idx} ]
+        do
+            echo ""
+            _pg_idx=`expr ${_pg_idx} + 1`
+        done
+}
+
+# printcustomgroup
+# ================
+# prints an eisfair configuration group header with customized comment
+#
+# parameters: -b x  print 'x' newline before the group,
+#                   one newline is the default and must not be set
+#             -a x  print 'x' newline after the group,
+#                   one newline is the default and must not be set
+#             $1    group name
+#                   e.g. "General settings"
+#
+# usage     : printcustomgroup 'General settings' << !EOC
+#             comment line
+#             comment line
+#             comment line
+#             !EOC
+#
+#             set # first on the line when many space on the begin from the line
+#              e.g. #                       here is the text
+#
+#             -Syntax from Here-Document-
+#
+# output    : group header for an eisfair config-file
+printcustomgroup()
+{
+    local _newline_before=1
+    local _newline_after=1
+    local _pg_idx=1
+
+    # 'case' is not a solution in this place, so we do it step by step
+        if [ "${1}" = "-b" ]
+        then
+            _newline_before=${2}
+            shift 2
+        fi
+        if [ "${1}" = "-a" ]
+        then
+            _newline_after=${2}
+            shift 2
+        fi
+    # do it twice, if -a the first parameter
+        if [ "${1}" = "-b" ]
+        then
+            _newline_before=${2}
+            shift 2
+        fi
+
+        _pg_idx=1
+        while [ ${_newline_before} -ge ${_pg_idx} ]
+        do
+            echo ""
+            _pg_idx=`expr ${_pg_idx} + 1`
+        done
+
+        echo "#------------------------------------------------------------------------------"
+        echo "# $1"
+        echo "#"
+
+        while read line
+        do
+            if [ `echo $line | cut -c1` = \# ]
+            then
+                echo "$line"
+            else
+                echo "# $line"
+            fi
+        done
+
+        echo "#------------------------------------------------------------------------------"
+
+        _pg_idx=1
+        while [ ${_newline_after} -ge ${_pg_idx} ]
+        do
+            echo ""
+            _pg_idx=`expr ${_pg_idx} + 1`
+        done
+}
+
+# printvar
+# ========
+# prints config variables and comments with specific indenting
+#
+# parameters: $1 name of variable
+#                e.g. "FOO_ARRAY_2_VARIABLE"
+#             $2 comment
+#                e.g. "an important option"
+#
+# output    : variable entry line for an eisfair config-file
+#             e.g. "FOO_ARRAY_2_VARIABLE="myvalue"  # an important option"
+
+    # get_splitpos
+    # ============
+    # looking for space
+    #
+    # parameters: $1 maximum comment length
+    #                e.g. 42
+    #             $2 comment
+    #                e.g. "this is an important option for the program."
+    #
+    # output    : returns position of last space character in string before position $1
+    #             e.g. '36'
+    #
+    #             _pos=`get_splitpos ${_comment_length} "${_comment}"`
+    get_splitpos()
+    {
+        local _gsp_maxcommentlen=`expr $1 + 1`
+        local _gsp_comment=`echo "$2" | sed 's/ *$//g'`
+        local _gsp_commentlen=${#_gsp_comment}
+        local _gsp_comment=`echo "$2" | head -c$_gsp_maxcommentlen`
+        local _gsp_idx=0
+
+        if [ $_gsp_commentlen -ge $_gsp_maxcommentlen ]
+        then
+            # string to long, find spaces
+            _gsp_return=0
+            _gsp_idx=$_gsp_maxcommentlen
+
+            while [ $_gsp_idx -ge $_printvar_mincommentlen ]
+            do
+                # search for space character from string end to begin
+                _gsp_tmp=`echo "$_gsp_comment" | cut -c${_gsp_idx}`
+
+                if [ "$_gsp_tmp" = " " ]
+                then
+                    # space character found
+                    _gsp_return=${_gsp_idx}
+                    break
+                fi
+
+                _gsp_idx=`expr $_gsp_idx - 1`
+            done
+        else
+            # string ok.
+            _gsp_return=$_gsp_commentlen
+        fi
+        echo $_gsp_return
+    }
+
+
+printvar()
+{
+    local _printvar_varname=$1
+    local _printvar_comment=""
+    local _printvar_varlen=0
+    local _printvar_value=""
+    local _printvar_maxcommentlen=0
+    local _printvar_mincommentlen=0
+    local _printvar_headerflag=0
+    local _printvar_exitflag=0    
+    local _printvar_restcommentlen=0
+    local _printvar_comment_rest=0
+
+    if [ -n "$2" ]
+    then
+        _printvar_comment=" # $2"
+    fi
+
+    if [ -z "$_printvar_varname" ]
+    then
+        # no variable name given
+        echo "`echo "$_CONFIGLIB_SPACESTR" | head -c$_CONFIGLIB_COMMENTPOS`$_printvar_comment"
+    else
+        # variable name given
+        _printvar_varlen=${#_printvar_varname}
+        eval _printvar_value="\$${_printvar_varname}"
+        _printvar_vallen=${#_printvar_value}
+
+        # if _CONFIGLIB_LINESPACING is 'on': simulate a very long value
+        if [ "$_CONFIGLIB_LINESPACING" = 'on' ]
+        then
+            _printvar_vallen=`expr $_printvar_vallen + $_CONFIGLIB_MAXLINELEN`
+        fi
+
+        _printvar_maxcommentlen=`expr $_CONFIGLIB_MAXLINELEN - $_CONFIGLIB_COMMENTPOS`
+        _printvar_mincommentlen=`expr $_printvar_maxcommentlen / 2`
+
+        # check string quotation
+        HK="'"
+
+        if echo $_printvar_value | grep -q "'"
+        then
+            HK='"'
+        fi
+
+            if [ -n "$_printvar_comment" ]
+            then
+            # comment found, go on ...
+                _printvar_strlen=`expr $_CONFIGLIB_COMMENTPOS - 3 - $_printvar_varlen - $_printvar_vallen`
+                _printvar_exitflag=0
+                _printvar_headerflag=0
+
+                while [ $_printvar_exitflag -eq 0 ]
+                do
+                    _printvar_commentlen=${#_printvar_comment}
+
+                    if [ $_printvar_commentlen -gt $_printvar_maxcommentlen ]
+                    then
+                    # multi-line output
+                        _printvar_breakpos=`get_splitpos ${_printvar_maxcommentlen} "${_printvar_comment}"`
+
+                        if [ $_printvar_breakpos -eq 0 ]
+                        then
+                        # no space found, force hard line break
+                            _printvar_restcommentlen=`expr $_printvar_commentlen - $_printvar_maxcommentlen + 1`
+                            _printvar_comment_rest="`echo "$_printvar_comment" | tail -c$_printvar_restcommentlen`"
+                            _printvar_comment=`echo "$_printvar_comment" | head -c$_printvar_maxcommentlen | sed 's/ *$//g'`
+                        else
+                        # space found, force soft line break
+                            _printvar_restcommentlen=`expr $_printvar_commentlen - $_printvar_breakpos + 1`
+                            _printvar_comment_rest="`echo "$_printvar_comment" | tail -c$_printvar_restcommentlen`"
+                            _printvar_comment=`echo "$_printvar_comment" | head -c$_printvar_breakpos | sed 's/ *$//g'`
+                        fi
+
+                        if [ $_printvar_strlen -ge 0 ]
+                        then
+                        # comment in same row
+                            if [ $_printvar_headerflag -eq 0 ]
+                            then
+                            # print header and comment
+                                echo "${_printvar_varname}=${HK}${_printvar_value}${HK}`echo "${_CONFIGLIB_SPACESTR}" | head -c${_printvar_strlen}`${_printvar_comment}"
+                                _printvar_headerflag=1
+                            else
+                            # print comment only
+                                echo "`echo "${_CONFIGLIB_SPACESTR}" | head -c${_CONFIGLIB_COMMENTPOS}`${_printvar_comment}"
+                            fi
+
+                            _printvar_headerflag=1
+                        else
+                        # comment in separate row
+                            if [ $_printvar_headerflag -eq 0 ]
+                            then
+                            # print header only
+                                echo "${_printvar_varname}=${HK}${_printvar_value}${HK}"
+                                _printvar_headerflag=1
+                            fi
+
+                        # print comment only
+                            echo "`echo "${_CONFIGLIB_SPACESTR}" | head -c${_CONFIGLIB_COMMENTPOS}`${_printvar_comment}"
+                        fi
+
+                        _printvar_comment=" # ${_printvar_comment_rest}"
+                    else
+                    # single-line/dual-line output
+                        if [ $_printvar_headerflag -eq 0 ]
+                        then
+                            if [ $_printvar_strlen -lt 0 ]
+                            then
+                            # dual-line output with parameter, value and comment
+                                echo "${_printvar_varname}=${HK}${_printvar_value}${HK}"
+
+                                if [ -n "$_printvar_comment" ]
+                                then
+                                    echo "`echo "${_CONFIGLIB_SPACESTR}" | head -c${_CONFIGLIB_COMMENTPOS}`${_printvar_comment}"
+                                fi
+                            else
+                            # single-line output with parameter and value
+                                echo "${_printvar_varname}=${HK}${_printvar_value}${HK}`echo "${_CONFIGLIB_SPACESTR}" | head -c${_printvar_strlen}`${_printvar_comment}"
+                            fi
+
+                            _printvar_headerflag=1
+                        else
+                        # last line of multi-line output
+                            echo "`echo "${_CONFIGLIB_SPACESTR}" | head -c${_CONFIGLIB_COMMENTPOS}`${_printvar_comment}"
+                        fi
+
+                        _printvar_exitflag=1
+                    fi
+                done
+            else
+            # no comment found
+                echo "${_printvar_varname}=${HK}${_printvar_value}${HK}"
+            fi
+    fi
+}
+
+# printcomment
+# ============
+# print a comment
+#
+# output: comment for an eisfair config-file
+printcomment()
+{
+    printvar '' "$1"
+}
+
+# printend
+# ========
+# prints an eisfair configuration footer
+#
+# output: footer for an eisfair config-file
+printend()
+{
+    echo ""
+    echo "#------------------------------------------------------------------------------"
+    echo "# End"
+    echo "#------------------------------------------------------------------------------"
+}
+
+# setlinespacing
+# ==============
+#
+# set linespacing on or off
+#
+# parameters: $1 on or off
+#
+# output    : -none-
+setlinespacing()
+{
+    _CONFIGLIB_LINESPACING="$1"
+}
