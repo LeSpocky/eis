@@ -51,17 +51,7 @@ function load_data()
     cui_window_getctrl "$win" "$IDC_MENU" && menu="$p2"
     if cui_valid_handle "$menu"
     then
-        cui_menu_getselitem "$menu" && index="$p2"
-    fi
-
-    if cui_valid_index "$index"
-    then
-        if [ $index -eq 0 ]
-        then
-            section="0"
-        else
-            pm_get_repo_by_id "$index" && section="$p2"
-        fi
+        cui_menu_getselitem "$menu" && section="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && list="$p2"
