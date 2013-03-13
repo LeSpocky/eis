@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #----------------------------------------------------------------------------
 # Eisfair configuration parameter update script
 #
@@ -55,11 +55,6 @@ APACHE2_ENABLE_USERDIR='yes'
 #----------------------------------------------------------------------------
 APACHE2_ERROR_LOG='/var/www/log/error.log'
 APACHE2_ACCESS_LOG='/var/www/log/access.log'
-#----------------------------------------------------------------------------
-# Scrip-Aliases [DON'T FORGET TO APPEND A SLASH (/) AFTER PATHNAMES!]
-#----------------------------------------------------------------------------
-APACHE2_SCRIPT_ALIAS='/cgi-bin/'
-APACHE2_SCRIPT_DIR='/var/www/cgi-bin/'
 #----------------------------------------------------------------------------
 # Error Documents
 #----------------------------------------------------------------------------
@@ -180,7 +175,7 @@ make_config_file()
     internal_conf_file=${1}
     (
     #------------------------------------------------------------------------
-    printgpl -conf "$packages_name" "$datum_creation" "schlotze" "2008-2010 Sebastian Scholze <sebastian@eisfair.org>"
+    printgpl "$packages_name" "$datum_creation" "schlotze" "2008-2010 Sebastian Scholze <sebastian@eisfair.org>"
 
     #------------------------------------------------------------------------
     printgroup  "Start Apache2 Webserver during startup"
@@ -226,19 +221,11 @@ make_config_file()
 	printvar "APACHE2_ENABLE_USERDIR"         "Show content of /home/USER/public_html"
     printvar
 
-
     #------------------------------------------------------------------------------
     printgroup "Error and Access Logs "
     #------------------------------------------------------------------------------
     printvar "APACHE2_ERROR_LOG"  "Error log file"
     printvar "APACHE2_ACCESS_LOG" "Access log file"
-    printvar
-
-    #------------------------------------------------------------------------------
-    printgroup "Scrip Aliases [DON'T FORGET TO APPEND A SLASH (/) AFTER PATHNAMES!]"     #'
-    #------------------------------------------------------------------------------
-    printvar "APACHE2_SCRIPT_ALIAS"    ""
-    printvar "APACHE2_SCRIPT_DIR"      "Root where to put the CGIs in"
     printvar
 
     #------------------------------------------------------------------------------
@@ -434,8 +421,6 @@ APACHE2_ENABLE_SSI                     -                             -          
 APACHE2_ENABLE_USERDIR                 -                             -                            YESNO
 APACHE2_ERROR_LOG                      -                             -                            ABS_PATH
 APACHE2_ACCESS_LOG                     -                             -                            ABS_PATH
-APACHE2_SCRIPT_ALIAS                   -                             -                            ABS_PATH
-APACHE2_SCRIPT_DIR                     -                             -                            ABS_PATH
 APACHE2_ERROR_DOCUMENT_N               -                             -                            NUMERIC
 APACHE2_ERROR_DOCUMENT_%_ERROR         -                             APACHE2_ERROR_DOCUMENT_N     NUMERIC
 APACHE2_ERROR_DOCUMENT_%_DOCUMENT      -                             APACHE2_ERROR_DOCUMENT_N     NONE

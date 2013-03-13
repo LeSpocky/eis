@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #-------------------------------------------------------------------------------
 # Eisfair configuration generator script for Apache
 #
@@ -671,7 +671,7 @@ do
             echo '    AddType text/html .shtml'
             echo '    AddHandler server-parsed .shtml'
         fi
-        if [ "0$auth_n" -gt 0 ]
+        if [ "$auth_n" -gt 0 ]
         then
             mkdir -p /etc/apache2/passwd
             if [ "${auth_type}" = "Basic" ]
