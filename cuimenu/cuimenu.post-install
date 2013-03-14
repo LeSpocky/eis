@@ -1,0 +1,14 @@
+#!/bin/sh
+
+tmp=$(hostname -i)
+sed -i -e "s/^IP_NET_1_IPV4_IPADDR=.*/IP_NET_1_IPV4_IPADDR='${tmp}'/" /etc/config.d/base
+sed -i -e "s/^IP_NET_1_IPV4_IPADDR=.*/IP_NET_1_IPV4_IPADDR='${tmp}'/" /etc/config.d/default
+
+tmp=$(hostname -s)
+sed -i -e "s/^HOSTNAME=.*/HOSTNAME='${tmp}'/" /etc/config.d/base
+sed -i -e "s/^HOSTNAME=.*/HOSTNAME='${tmp}'/" /etc/config.d/default
+
+tmp=$(hostname -d)
+sed -i -e "s/^DOMAIN_NAME=.*/DOMAIN_NAME='${tmp}'/" /etc/config.d/base
+sed -i -e "s/^DOMAIN_NAME=.*/DOMAIN_NAME='${tmp}'/" /etc/config.d/default
+
