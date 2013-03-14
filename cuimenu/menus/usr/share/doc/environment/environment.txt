@@ -1,0 +1,65 @@
+Environment - for eisfair
+===============================
+
+
+EDITOR
+    joe (alternative: vi)
+
+    Legal-value: joe, vi
+
+    Default-value: EDITOR='joe'
+
+PAGER
+    less (alternative: more)
+
+    Legal-value: less, more
+
+    Default-value: PAGER='less'
+
+MAX_BACKUP_CONFIG
+    maximum number of package config files
+    to backup up in /etc/backup.d
+
+    Legal-value: Number
+
+    Default-value: MAX_BACKUP_CONFIG='10'
+
+SCROLL
+    no:  no-scroll - show pages if lists are too long
+    yes: always show entire lists - you need to scroll manually
+
+    Legal-value: yes, no
+
+    Default-value: SCROLL='no'
+
+HTTP_PROXY
+    http proxy for package installer<br/>
+    (empty to disable)
+    server:port
+
+    Legal-value:
+
+    Default-value: HTTP_PROXY=''
+
+HTTP_PROXY_USER
+    http proxy username (emtpy to disable auth)
+
+    Legal-value:
+
+    Default-value: HTTP_PROXY_USERT=''
+
+HTTP_PROXY_PASSWD
+    http proxy password
+
+    Legal-value:
+
+    Default-value: HTTP_PROXY_PASSWD=''
+
+LC_CTYPE
+    locale setting (don't change yet)
+
+    Legal-value: de_DE@euro
+
+    Default-value: LC_CTYPE='de_DE@euro'
+
+Copyright (c) 2001-2009 the eisfair team, team(at)eisfair(dot)org

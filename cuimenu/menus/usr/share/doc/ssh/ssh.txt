@@ -1,0 +1,102 @@
+SSH - secure shell (general settings)
+
+   START_SSHD
+          Soll der SSH-Server gestartet werden (yes) oder nicht (no)?
+
+          Gueltige Werte: yes,no
+
+   SSHD_PORT
+          Definiert den Port, auf dem der SSH-Server lauschen soll.
+          Achtung: Diese Angabe wird bei SSHD_START_METHOD='xi' zur Zeit
+          nicht ausgewertet.
+
+          Default: 22
+
+   SSHD_LISTEN_ADDR_N
+          Anzahl der folgenden Angaben SSHD_LISTEN_ADDR_x. Hat
+          SSHD_LISTEN_ADDR_N den Wert 0, so wir auf alle lokalen Adressen
+          gelauscht.
+
+   SSHD_LISTEN_ADDR_x
+          IP-Adresse auf die der SSH-Server lauschen soll. Hier ist die
+          Nummer der IP-Adresse aus /etc/config.d/base anzugeben. Diese
+          Angabe ist also eine Referenz auf eine Angaben in der Datei
+          base.
+
+          Beispiel: SSHD_LISTEN_ADDR_1='2' zeigt auf IP_NET_2_IPADDR in
+          /etc/config.d/base.
+
+          Gueltige Werte: 1 bis IP_NET_N (siehe Datei base)
+
+   SSHD_ENABLE_SFTP
+          Legt fest, ob die Benutzung des sftp-Dienstes erlaubt wird.
+
+          Gueltige Werte: yes,no
+
+   SSHD_USEDNS
+          Legt fest, ob Clientanfrage mit DNS aufgeloest werden oder nur
+          die IP-Adresse verwendet wird.
+
+          Gueltige Werte: yes,no
+
+
+
+SSH - secure shell (public key settings for user root)
+
+   Die fuer Public Key Authentication des Users root benoetigte Datei
+   /root/.ssh/authorized_keys wird aus den Informationen der
+   Konfiguration generiert. Dazu muessen die oeffentlichen Teile der
+   mittels ssh-keygen generierten Schluesselpaare (identity.pub) in der
+   Konfiguration angegeben werden. Das kann auf zwei Arten geschehen:
+
+     * Direkt in der Konfiguration
+       Der Inhalt von identity.pub wird direkt in der
+       Konfigurationsvariable angegeben (nicht empfohlen)
+     * Referenz auf Datei
+       Der Schluessel bleibt in einer Datei, in der
+       Konfiguration wird eine Referenz auf die Datei in Form eines
+       absoluten Pfadnamens (beginnend mit '/') angegeben.
+
+   Bei Uebernahme einer Konfigurationsaenderung extrahiert das
+   Konfigurationsscript die Schluessel aus der Konfiguration bzw. den dort
+   referenzierten Dateien und erstellt die Datei authorized_keys neu.
+
+   ACHTUNG
+   Hat SSHD_PUBLIC_KEY_N den Wert '0', so wird die Datei
+   /root/.ssh/authorized_keys geloescht. Wurde diese Datei unter Umgehung
+   der eisfair Konfigurationsprozesse geaendert, so gehen diese Aenderungen
+   verloren.
+
+   SSHD_PUBLIC_KEY_N
+          Anzahl der folgenden Angaben SSHD_PUBLIC_KEY_x
+
+   SSHD_PUBLIC_KEY_x
+          Public Key (identity.pub), entweder direkt oder als absoluter
+          Dateiname
+
+
+SSH - secure shell (log level settings)
+
+   SSHD_LOGLEVEL
+          Stufe der Ausfuehrlichkeit, mit der der sshd Meldungen in die
+          zentrale Logdatei schreibt.
+
+          Es sind folgende Werte möglich: QUIET FATAL ERROR INFO VERBOSE
+          DEBUG DEBUG1 DEBUG2 DEBUG3.
+
+          Default: INFO
+
+          Bitte beachten: Wird hier eine DEBUG-Stufe eingestellt, so
+          werden ggf. Informationen mitgeschrieben, die in den
+          Privatbereich eines User fallen koennen. Eine solche
+          Ausfuehrlichkeit sollte nur wenn unbedingt notwendig
+          eingeschaltet werden.
+
+          Die Menge der Informationen, die mitgeschrieben werden, steigt
+          ggf. in gewaltige Groessenordnungen.
+
+          Gueltige Werte:
+          QUIET,FATAL,ERROR,INFO,VERBOSE,DEBUG,DEBUG1,DEBUG2,DEBUG3
+
+
+Ansgar Puester 2007-06-23

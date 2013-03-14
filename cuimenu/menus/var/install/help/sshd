@@ -4,30 +4,18 @@ Start ssh 'yes' or 'no'<br/>
 Default: START_SSHD='yes'
 </help>
 
-<help name="SSHD_START_METHOD">
-Start method for sshd.<br/>
-'st' start sshd as standalone server.<br/>
-'xi' start sshd via xinetd. 'xi' requires START_XINETD='yes'.<br/>
-Default: SSHD_START_METHOD='st'
-</help>
-
 <help name="SSHD_PORT">
 The ssh port to use, see also FIREWALL_DENY_PORT_x<br/>
 <br/>
 Default: SSHD_PORT='22'
 </help>
 
-
-<help name="SSHD_USE_SSH1">
-Use ssh1 protocol<br/>
+<help name="SSHD_USEDNS">
+Specifies whether sshd should look up the remote host name and<br/>
+check that the resolved host name for the remote IP address maps<br/>
+back to the very same IP address.<br/>
 <br/>
-Default: SSHD_USE_SSH1='no'
-</help>
-
-<help name="SSHD_USE_SSH2">
-Use ssh2 protocol<br/>
-<br/>
-Default: SSHD_USE_SSH2='yes'
+Default: SSHD_USEDNS='no'
 </help>
 
 <help name="SSHD_SVR_KEYBITS">

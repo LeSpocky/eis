@@ -1,0 +1,97 @@
+Cron - Cron Daemon fuer eisfair
+===============================
+
+Cron ist bestandteil der eisfair base und nicht ein Einzelnes package.
+
+Features
+--------
+
+Cron ist ein Dienst, der zeitgesteuert Programme und Skripte ausfuehren
+kann.
+Zusätzlich zu den Verzeichnissen etc/cron.daily, etc/cron.weekly und
+etc/cron.monthly können weitere wiederkehrende Aufträge/Programme zu
+bestimmten Zeiten ausgeführt werden.
+
+
+Konfigurationsdatei
+-------------------
+
+
+START_CRON
+     Fuer die Aktivierung zur Abarbeitung dieser configuration muss
+     diese Variable lediglich auf den Wert 'yes' gestellt werden.
+     Die Einstellung 'no' schaltet die Abarbeitung dieser Configuration aus.
+
+     Gueltige Werte: yes, no
+
+     Standard-Einstellung: START_CRON='yes'
+
+CRON_N
+     Bei diesem Parameter wird angegeben, wieviele Cron Jobs
+     konfiguriert werden sollen.
+
+     Gueltige Werte: Zahl
+
+     Standard-Einstellung: CRON_N='1'
+
+CRON_%_ACTIVE
+     Ueber diesen Parameter wird eingestellt, ob der Datensatz
+     aktiv sein soll.
+
+     Gueltige Werte: yes, no
+
+     Standard-Einstellung: CRON_%_ACTIVE'='yes'
+
+CRON_%_TIMES
+     (komplexe Definition): Legt fest, zu welchen Zeitpunkten dieser
+     Cronjob ausgefuehrt wird. Die einzelnen Werte sind durch
+     Leerzeichen voneinander getrennt. Das Format setzt sich wie
+     folgt zusammen:
+     Minute Stunde Tag_im_Monat Monat Wochentag
+     Minute:
+            Wert von 0 bis 59
+     Stunde:
+            Wert von 0 bis 23
+     Tag_im_Monat:
+            Wert von 1 bis 31
+     Monat:
+            Wert von 1 bis 12
+     Wochentag:
+            Wert von 0 bis 7, wobei 0 und 7 Sonntag sind
+     Ein Cronjob wird nur ausgefuehrt, wenn alle Kriterien zutreffen
+     (logisches UND); so wird ein Cronjob mit der Definition
+     23 12 1 * 1
+     nur um 12.23 Uhr eines jeden Monatsersten ausgefuehrt, der
+     zugleich ein Montag ist.
+
+     Einzelne Werte koennen mit Kommata getrennt gruppiert werden;
+     sie werden dann wie ein logisches ODER betrachtet. Beispiel:
+     0,27 * * * * fuehrt jeweils zur vollen Stunde und 27 Minuten
+     danach einen Job aus; dieser Eintrag ist equivalent zu den
+     beiden folgenden (zusammen betrachtet): 0 * * * * und 27 * * * *
+     Periodische Eintraege koennen durch die Angabe einer Basis und
+     des Intervalls angegeben werden. So wird 0 0/2 * * *
+     immer zu jeder geraden vollen Stunde ausgefuehrt.
+
+     Gueltige Werte: m s T M W (25 23 * * *)
+
+     Standard-Einstellung: CRON_%_TIMES='0 0 * * *'
+
+CRON_%_USER
+     Der unter CRON_%_COMMAND eingetragene Befehl kann auch unter
+     nicht root-Benutzer ausgeführt werden.
+
+     Gueltige Werte: alle Systembenutzer
+
+     Standard-Einstellung: CRON_%_USER='root'
+
+CRON_%_COMMAND
+     (Befehl): Der Befehl, der zu der angegebenen Zeit ausgefuehrt
+     werden soll; es sollten immer komplette Pfade angegeben werden.
+
+     Gueltige Werte: Fast Alles
+
+     Standard-Einstellung: CRON_%_COMMAND='/usr/bin/foo /etc/foo.conf'
+
+
+Copyright (c) 2006-2008 the eisfair team, team(at)eisfair(dot)org
