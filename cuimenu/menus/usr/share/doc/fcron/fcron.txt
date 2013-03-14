@@ -1,23 +1,18 @@
-Cron - Cron Daemon fuer eisfair
-===============================
+  fcron - Cron Daemon 
+  ===================
 
-Cron ist bestandteil der eisfair base und nicht ein Einzelnes package.
-
-Features
---------
-
-Cron ist ein Dienst, der zeitgesteuert Programme und Skripte ausfuehren
-kann.
-Zusätzlich zu den Verzeichnissen etc/cron.daily, etc/cron.weekly und
-etc/cron.monthly können weitere wiederkehrende Aufträge/Programme zu
-bestimmten Zeiten ausgeführt werden.
+  Features
+  --------
+  Fcron ist ein Dienst, der zeitgesteuert Programme und Skripte ausfuehren
+  kann. Zusaetzlich zu den Unterverzeichnissen in etc/periodic koennen 
+  weitere wiederkehrende Auftraege und Programme zu bestimmten Zeiten 
+  ausgefuehrt werden.
 
 
-Konfigurationsdatei
--------------------
+  Konfigurationsdatei
+  -------------------
 
-
-START_CRON
+  START_FCRON
      Fuer die Aktivierung zur Abarbeitung dieser configuration muss
      diese Variable lediglich auf den Wert 'yes' gestellt werden.
      Die Einstellung 'no' schaltet die Abarbeitung dieser Configuration aus.
@@ -26,23 +21,23 @@ START_CRON
 
      Standard-Einstellung: START_CRON='yes'
 
-CRON_N
+  FFCRON_N
      Bei diesem Parameter wird angegeben, wieviele Cron Jobs
      konfiguriert werden sollen.
 
      Gueltige Werte: Zahl
 
-     Standard-Einstellung: CRON_N='1'
+     Standard-Einstellung: FCRON_N='1'
 
-CRON_%_ACTIVE
+  FCRON_%_ACTIVE
      Ueber diesen Parameter wird eingestellt, ob der Datensatz
      aktiv sein soll.
 
      Gueltige Werte: yes, no
 
-     Standard-Einstellung: CRON_%_ACTIVE'='yes'
+     Standard-Einstellung: FCRON_%_ACTIVE'='yes'
 
-CRON_%_TIMES
+  FCRON_%_TIMES
      (komplexe Definition): Legt fest, zu welchen Zeitpunkten dieser
      Cronjob ausgefuehrt wird. Die einzelnen Werte sind durch
      Leerzeichen voneinander getrennt. Das Format setzt sich wie
@@ -75,23 +70,23 @@ CRON_%_TIMES
 
      Gueltige Werte: m s T M W (25 23 * * *)
 
-     Standard-Einstellung: CRON_%_TIMES='0 0 * * *'
+     Standard-Einstellung: FCRON_%_TIMES='0 0 * * *'
 
-CRON_%_USER
-     Der unter CRON_%_COMMAND eingetragene Befehl kann auch unter
+  FCRON_%_USER
+     Der unter FCRON_%_COMMAND eingetragene Befehl kann auch unter
      nicht root-Benutzer ausgeführt werden.
 
      Gueltige Werte: alle Systembenutzer
 
-     Standard-Einstellung: CRON_%_USER='root'
+     Standard-Einstellung: FCRON_%_USER='root'
 
-CRON_%_COMMAND
+  FCRON_%_COMMAND
      (Befehl): Der Befehl, der zu der angegebenen Zeit ausgefuehrt
      werden soll; es sollten immer komplette Pfade angegeben werden.
 
      Gueltige Werte: Fast Alles
 
-     Standard-Einstellung: CRON_%_COMMAND='/usr/bin/foo /etc/foo.conf'
+     Standard-Einstellung: FCRON_%_COMMAND='/usr/bin/foo /etc/foo.conf'
 
 
-Copyright (c) 2006-2008 the eisfair team, team(at)eisfair(dot)org
+  Copyright (c) 2006-2008 the eisfair team, team(at)eisfair(dot)org
