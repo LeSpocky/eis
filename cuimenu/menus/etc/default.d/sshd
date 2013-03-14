@@ -1,32 +1,14 @@
 #------------------------------------------------------------------------------
 # /etc/config.d/ssh - configuration for the ssh service on eisfair
-#
-# Copyright (c) 2007 The Eisfair Team <team@eisfair.org>
-#
-# Creation:     2007-11-20  jv
-# Last Update:  2007-11-20  jv
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
 # SSH - secure shell (general settings)
 #------------------------------------------------------------------------------
 
-START_SSHD='yes'
-                                  # start ssh 'yes' or 'no'
-SSHD_PORT='22'
-                                  # ssh port, see also FIREWALL_DENY_PORT_x
-
-#------------------------------------------------------------------------------
-# SSH - secure shell (protocol settings)
-#------------------------------------------------------------------------------
-
-SSHD_SVR_KEYBITS='1536'
-                                  # server keybits - default: 1536
+START_SSHD='yes'                  # start ssh 'yes' or 'no'
+SSHD_PORT='22'                    # change ssh port (default 22)
 SSHD_LISTEN_ADDR_N='0'
                                   # Number of addresses sshd should listen to
                                   # 0 - listen on all local addresses
@@ -37,57 +19,9 @@ SSHD_LISTEN_ADDR_1='1'
                                   # E.g. SSHD_LISTEN_ADDR_1='2' points to
                                   # IP_NET_2_IPADDR in /etc/config.d/base.
 
-#------------------------------------------------------------------------------
-# SSH - secure shell (allow/deny settings)
-#------------------------------------------------------------------------------
+SSHD_ENABLE_SFTP='yes'            # activate sftp: 'yes' or 'no'
 
-SSHD_ALLOW_USER_N='0'
-                                  # Number of user name patterns.
-                                  # Login is allowed only for user names that
-                                  # match one of the pattern. '*' and '?' can
-                                  # be used as wildcards in the patterns.
-                                  # Default: 0 - login is allowed for all users.
-SSHD_ALLOW_USER_1='root'
-                                  # First user name pattern.
-SSHD_DENY_USER_N='0'
-                                  # Number of user name patterns.
-                                  # Login is disallowed only for user names that
-                                  # match one of the pattern. '*' and '?' can be
-                                  # used as wildcards in the patterns.
-                                  # Default: 0 - login is allowed for all users.
-SSHD_DENY_USER_1='batch'
-                                  # First user name pattern.
-SSHD_ALLOW_GROUP_N='0'
-                                  # Number of group name patterns.
-                                  # Login is allowed only for users whose
-                                  # primary group or supplementary group
-                                  # matches one of the pattern. '*' and '?' can
-                                  # be used as wildcards in the patterns.
-                                  # Default: 0 - login is allowed for all groups
-SSHD_ALLOW_GROUP_1='root'
-                                  # First group name pattern.
-SSHD_DENY_GROUP_N='0'
-                                  # Number of group name patterns.
-                                  # Login is disallowed only for users whose
-                                  # primary group or supplementary group
-                                  # matches one of the pattern. '*' and '?' can
-                                  # be used as wildcards in the patterns.
-                                  # Default: 0 - login is allowed for all groups
-SSHD_DENY_GROUP_1='batch'
-                                  # First group name pattern.
-SSHD_PERMITROOTLOGIN='yes'
-                                  # Secifies whether root can login using ssh.
-                                  # 'yes' User root can login.
-                                  # 'no' User root can't login.
-                                  # 'without-password' Password authentication
-                                  # for user root is disabled. Note that other
-                                  # authentications (e.g. keyboard-interactive/
-                                  # PAM) may still allow root to login using a
-                                  # password.
-                                  # 'forced-commands-only' root login with
-                                  # public key authentication will be allowed,
-                                  # but only if the command option has been
-                                  # specified.
+SSHD_USEDNS='no'                  # Use DNS for login                                  
 
 #------------------------------------------------------------------------------
 # SSH - secure shell (public key settings for user root)
@@ -104,45 +38,6 @@ SSHD_PUBLIC_KEY_1=''
                                   # pathname of a file. The content of this
                                   # file is added to the file
                                   # /root/.ssh/authorized_keys
-
-#------------------------------------------------------------------------------
-# SSH - secure shell (additional settings)
-#------------------------------------------------------------------------------
-
-SSHD_MAX_STARTUPS='10'
-                                  # maximum number of concurrent unauthenticated
-                                  # connections. default: 10
-SSHD_ENABLE_PRIV_SEPARATION='no'
-                                  # enable privilege separation: 'yes' or 'no'
-SSHD_COMPRESSION='yes'
-                                  # allow compression: 'yes' or 'no'
-SSHD_STRICTMODES='yes'
-                                  # Use Strictmodes: 'yes' or 'no'
-SSHD_PASSWDAUTH='yes'
-                                  # Allow password authentication 'yes'
-                                  # or 'no'. If password authentication
-                                  # is not allowed you have to use key
-                                  # authentication. Check that key
-                                  # authentication works fine before you
-                                  # set SSHD_PASSWDAUTH to 'no'.
-SSHD_CH_RESPONSEAUTH='yes'
-                                  # Allow challenge response authentication
-                                  # 'yes' or 'no'.
-SSHD_CLIENTALIVEINTERVAL='0'
-                                  # Timeout interval in seconds for
-                                  # client alive message.
-                                  # Default: 0 - no message
-SSHD_CLIENTALIVECOUNTMAX='3'
-                                  # Number of client alive messages
-                                  # until disconnection.
-                                  # Default: 3
-
-#------------------------------------------------------------------------------
-# SSH - secure shell (subsystem settings)
-#------------------------------------------------------------------------------
-
-SSHD_ENABLE_SFTP='yes'
-                                  # activate sftp: 'yes' or 'no'
 
 #------------------------------------------------------------------------------
 # SSH - secure shell (log level settings)

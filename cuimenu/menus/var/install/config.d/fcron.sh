@@ -1,9 +1,7 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/config.d/fcron.sh - fcron configuration file
-#
-# Creation:	2012-11-08  jens@eisfair.org
-# Last Update:  $Id: cron.sh24471 2012-11-08 21:14:01Z jv $
+# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 
 # added config file
@@ -64,5 +62,4 @@ else
 	/sbin/rc-update del fcron default
 fi
 
-#============================================================================
 exit 0

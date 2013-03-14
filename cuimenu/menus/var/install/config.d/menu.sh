@@ -1,21 +1,10 @@
 #!/bin/sh
 #------------------------------------------------------------------------------
 # /var/install/config.d/menu.sh - menu configuration script
-#
-# Copyright (c) 2001-2005 The Eisfair Team, c/o Frank Meyer, frank(at)eisfair(dot)org
-#
-# Creation:     07.08.2005  dv
-# Last Update:  07.08.2005  dv
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
 #------------------------------------------------------------------------------
-
 . /var/install/include/configlib
 . /etc/config.d/menu
-
 
 # write new config file
 {
@@ -120,7 +109,4 @@
 chmod 0644 /etc/menu.conf
 chown root /etc/menu.conf
 
-#------------------------------------------------------------------------------
-# End
-#------------------------------------------------------------------------------
 exit 0

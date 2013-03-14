@@ -13,7 +13,12 @@
 exec_dialog()
 {
     win="$p2"
-    cd /lib/kbd/keymaps
+    if [ -e /lib/kbd/keymaps ]
+    then    
+        cd /lib/kbd/keymaps
+    else
+        cd /etc/keymap
+    fi
     for I in *
     do 
         [ -n "$sellist" ] && sellist="$sellist,"

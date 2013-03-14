@@ -13,12 +13,17 @@
 exec_dialog()
 {
     win="$p2"
-    cd /lib/kbd/consolefonts
-    for I in *
-    do 
-        [ -n "$sellist" ] && sellist="$sellist,"
-        sellist="$sellist$(echo $I | sed 's#\.psf.*\.gz##g')"
-    done
+    if [ -e /lib/kbd/consolefonts ]
+    then
+        cd /lib/kbd/consolefonts
+        for I in *
+        do 
+            [ -n "$sellist" ] && sellist="$sellist,"
+            sellist="$sellist$(echo $I | sed 's#\.psf.*\.gz##g')"
+        done
+    else
+        sellist="default8x16"
+    fi
     ece_select_list_dlg "$win" "Console font face" "$sellist"
 }
 

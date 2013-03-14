@@ -1,12 +1,8 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/config.d/base.sh - apply configuration for base
-#
-# Creation:     2007-05-09  jens@eisfair.org
-# Last Update:  $Id: base.sh 26533 2010-11-03 08:48:27Z jv $
-#
+# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
-
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 # include base-config
 . /etc/config.d/base
@@ -347,6 +343,4 @@ fi
 sed -i -e 's/^#unicode=.*/unicode="YES"/' /etc/rc.conf
 sed -i -e 's/^unicode=.*/unicode="YES"/'  /etc/rc.conf
 
-#----------------------------------------------------------------------------
 exit 0
-#----------------------------------------------------------------------------
