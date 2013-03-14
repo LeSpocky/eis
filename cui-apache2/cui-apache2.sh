@@ -480,12 +480,14 @@ AddLanguage sv .sv
 AddLanguage zh-CN .zh-cn
 AddLanguage zh-TW .zh-tw
 
-LanguagePriority en ca cs da de el eo es et fr he hr it ja ko ltz nl nn no pl pt pt-BR ru sv zh-CN zh-TW
-
-ForceLanguagePriority Prefer Fallback
+<IfModule mod_negotiation.c>
+    LanguagePriority en ca cs da de el eo es et fr he hr it ja ko ltz nl nn no pl pt pt-BR ru sv zh-CN zh-TW
+    ForceLanguagePriority Prefer Fallback
+</IfModule>
 
 AddType application/x-compress .Z
 AddType application/x-gzip .gz .tgz
+
 
 # The following directives modify normal HTTP response behavior to
 # handle known problems with browser implementations.

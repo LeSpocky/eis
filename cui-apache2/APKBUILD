@@ -48,7 +48,7 @@ package() {
 }
 
 md5sums="96371bea9ca03d6c78dbaf0fe1d76e8b  cui-apache2.help
-90e2ac24a5ebea12d4b14b1f76a75b26  cui-apache2.sh
+59f2118f7c93a484a013b6c1f0323843  cui-apache2.sh
 de05ca829a7ef4a21a07ad45230f4a42  cui-apache2-update.sh
 8cebbb50734d1925389fc52f550feefc  cui-apache2.lib
 372917a5fbe1f1bf25599f6365821b5a  cui-apache2.menu
