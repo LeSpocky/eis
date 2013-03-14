@@ -1,14 +1,7 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # Eisfair configuration parameter update script
-#
-# Creation:     2006-2013 the eisfair team, team(at)eisfair(dot)org
-# Last Update:  $Id: apache2-update.sh 31505 2013-03-07 15:36:29Z jv $
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 
 ### -------------------------------------------------------------------------
@@ -50,11 +43,6 @@ APACHE2_ACCESS_CONTROL='all'
 APACHE2_ENABLE_SSI='no'
 APACHE2_ENABLE_USERDIR='yes'
 
-#----------------------------------------------------------------------------
-# Error and Access Logs
-#----------------------------------------------------------------------------
-APACHE2_ERROR_LOG='/var/www/log/error.log'
-APACHE2_ACCESS_LOG='/var/www/log/access.log'
 #----------------------------------------------------------------------------
 # Error Documents
 #----------------------------------------------------------------------------
@@ -98,7 +86,7 @@ APACHE2_DIR_2_WEBDAV='no'
 #----------------------------------------------------------------------------
 APACHE2_SSL='no'
 APACHE2_SSL_PORT='443'
-APACHE2_SSL_LOGDIR='/var/www/log/'
+APACHE2_SSL_LOGDIR='/var/log/apache2/'
 #----------------------------------------------------------------------------
 # Settings for Log-file handling
 #----------------------------------------------------------------------------
@@ -125,8 +113,8 @@ APACHE2_VHOST_1_SERVER_ADMIN='webmaster@foo.bar'
 APACHE2_VHOST_1_DOCUMENT_ROOT='/var/www/foo/htdocs'
 APACHE2_VHOST_1_SCRIPT_ALIAS='/cgi-bin/'
 APACHE2_VHOST_1_SCRIPT_DIR='/var/www/foo/cgi-bin/'
-APACHE2_VHOST_1_ERROR_LOG='/var/www/log/foo_error.log'
-APACHE2_VHOST_1_ACCESS_LOG='/var/www/log/foo_access.log'
+APACHE2_VHOST_1_ERROR_LOG='/var/log/apache2/foo_error.log'
+APACHE2_VHOST_1_ACCESS_LOG='/var/log/apache2/foo_access.log'
 APACHE2_VHOST_1_ACCESS_CONTROL='all'
 APACHE2_VHOST_1_VIEW_DIRECTORY_CONTENT='no'
 APACHE2_VHOST_1_ENABLE_SSI='no'
@@ -219,13 +207,6 @@ make_config_file()
     printvar "APACHE2_ENABLE_SSI"             "Enable SSI 'yes' or 'no'"
     printvar
 	printvar "APACHE2_ENABLE_USERDIR"         "Show content of /home/USER/public_html"
-    printvar
-
-    #------------------------------------------------------------------------------
-    printgroup "Error and Access Logs "
-    #------------------------------------------------------------------------------
-    printvar "APACHE2_ERROR_LOG"  "Error log file"
-    printvar "APACHE2_ACCESS_LOG" "Access log file"
     printvar
 
     #------------------------------------------------------------------------------
@@ -419,8 +400,6 @@ APACHE2_VIEW_DIRECTORY_CONTENT         -                             -          
 APACHE2_ACCESS_CONTROL                 -                             -                            NONE
 APACHE2_ENABLE_SSI                     -                             -                            YESNO
 APACHE2_ENABLE_USERDIR                 -                             -                            YESNO
-APACHE2_ERROR_LOG                      -                             -                            ABS_PATH
-APACHE2_ACCESS_LOG                     -                             -                            ABS_PATH
 APACHE2_ERROR_DOCUMENT_N               -                             -                            NUMERIC
 APACHE2_ERROR_DOCUMENT_%_ERROR         -                             APACHE2_ERROR_DOCUMENT_N     NUMERIC
 APACHE2_ERROR_DOCUMENT_%_DOCUMENT      -                             APACHE2_ERROR_DOCUMENT_N     NONE

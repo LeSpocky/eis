@@ -1,15 +1,8 @@
 #!/bin/sh
-#-------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Eisfair configuration generator script for Apache
-#
-# Creation:     2006-2013 the eisfair team, team(at)eisfair(dot)org
-# Last Update:  $Id: apache2.sh 32586 2013-03-07 22:10:26Z jv $
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#-------------------------------------------------------------------------------
+# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+#----------------------------------------------------------------------------
 
 #echo "Executing $0 ..."
 #exec 2> /tmp/apache2-trace$$.log
@@ -148,7 +141,6 @@ options="FollowSymLinks MultiViews"
 
 hnlookup='Off'
 [ "$APACHE2_HOSTNAME_LOOKUPS" = "yes" ] && hnlookup='On'
-
 
 cat > /etc/apache2/httpd.conf <<EOF
 #-------------------------------------------------------------------------------
@@ -331,11 +323,11 @@ DirectoryIndex ${APACHE2_DIRECTORY_INDEX}
 AccessFileName .htaccess
 TypesConfig /etc/apache2/mime.types
 HostnameLookups ${hnlookup}
-ErrorLog ${APACHE2_ERROR_LOG}
+ErrorLog /var/log/apache2/error.log
 LogLevel ${APACHE2_LOG_LEVEL}
 LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
 SetEnvIf Remote_Addr "127\.0\.0\.1" dontlog
-CustomLog ${APACHE2_ACCESS_LOG} combined env=!dontlog
+CustomLog /var/log/apache2/access.log combined env=!dontlog
 ServerTokens Minor
 ServerSignature ${APACHE2_SERVER_SIGNATURE}
 
@@ -831,9 +823,10 @@ do
     eval sslcertname='$APACHE2_VHOST_'$idx'_SSL_CERT_NAME'
 
     # append vhost logfiles
-    if [ $active = "yes" ] ;
+    if [ $active = "yes" ] 
+	then
         if ! grep -q "$accesslog"  ${testroot}/etc/logrotate.d/apache2
-        then
+		then
             echo -n "$accesslog " >> ${testroot}/etc/logrotate.d/apache2
         fi
         if ! grep -q "$errorlog"  ${testroot}/etc/logrotate.d/apache2
@@ -855,27 +848,12 @@ do
 
     options="FollowSymLinks MultiViews"
 
-    if [ "$ssi" = "yes" ]
-    then
-        options="$options Includes"
-    fi
-    if [ "$content" = "yes" ]
-    then
-        options="$options Indexes"
-    fi
-
+    [ "$ssi" = "yes" ]     && options="$options Includes"
+    [ "$content" = "yes" ] && options="$options Indexes"
     if [ "$active" != "yes" ]
     then
         idx=`expr $idx + 1`
         continue
-    fi
-
-    if [ "$ssl" = "yes" -a "$APACHE2_SSL" != "yes" ]
-    then
-        (
-        mecho "* You enabled SSL for the VHost no. $idx ($servername)"
-        mecho "  but this will not take affect because APACHE2_SSL is not set to 'yes'"
-        )>`tty`
     fi
 
     if [ ! -d ${docroot} ]
@@ -1051,8 +1029,8 @@ grep -vE ".*>Show apache .*" /var/install/menu/setup.system.logfileview.menu >/t
 cp -f /tmp/setup.system.logfileview.menu.$$ /var/install/menu/setup.system.logfileview.menu     # don't mv, keep permissions
 rm -f /tmp/setup.system.logfileview.menu.$$
     
-/var/install/bin/add-menu -script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f $APACHE2_ACCESS_LOG" "Show apache access"
-/var/install/bin/add-menu -script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f $APACHE2_ERROR_LOG" "Show apache error"
+/var/install/bin/add-menu -script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f /var/log/apache2/access.log" "Show apache access"
+/var/install/bin/add-menu -script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f /var/log/apache2/error.log" "Show apache error"
 
 idx=1
 while [ "$idx" -le "$APACHE2_VHOST_N" ]
