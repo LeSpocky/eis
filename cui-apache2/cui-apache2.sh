@@ -1029,8 +1029,8 @@ grep -vE ".*>Show apache .*" /var/install/menu/setup.system.logfileview.menu >/t
 cp -f /tmp/setup.system.logfileview.menu.$$ /var/install/menu/setup.system.logfileview.menu     # don't mv, keep permissions
 rm -f /tmp/setup.system.logfileview.menu.$$
     
-/var/install/bin/add-menu -script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f /var/log/apache2/access.log" "Show apache access"
-/var/install/bin/add-menu -script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f /var/log/apache2/error.log" "Show apache error"
+/var/install/bin/add-menu --script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f /var/log/apache2/access.log" "Show apache access"
+/var/install/bin/add-menu --script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f /var/log/apache2/error.log" "Show apache error"
 
 idx=1
 while [ "$idx" -le "$APACHE2_VHOST_N" ]
@@ -1041,8 +1041,8 @@ do
         eval servername='$APACHE2_VHOST_'$idx'_SERVER_NAME'
         eval errorlog='$APACHE2_VHOST_'$idx'_ERROR_LOG'
         eval accesslog='$APACHE2_VHOST_'$idx'_ACCESS_LOG'
-        /var/install/bin/add-menu -script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f $accesslog" "Show apache access $servername"
-        /var/install/bin/add-menu -script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f $errorlog" "Show apache error $servername"
+        /var/install/bin/add-menu --script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f $accesslog" "Show apache access $servername"
+        /var/install/bin/add-menu --script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f $errorlog" "Show apache error $servername"
     fi
     idx=`expr $idx + 1`
 done
