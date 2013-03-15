@@ -1,14 +1,11 @@
-#! /bin/sh
+#!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/config.d/environment.sh - apply script for environment
-#
-# Creation   :  2004-05-21 max
-# Last Update:  $Id: environment.sh 24471 2010-06-10 21:14:01Z schlotze $
-#
+# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 
 wgetrcfile='/etc/wgetrc'
-wgetrcfiles_auth='/root/.wgetrc /home/eis/.wgetrc'
+wgetrcfiles_auth='/root/.wgetrc'
 
 ### read configuration file ###
 . /etc/config.d/environment

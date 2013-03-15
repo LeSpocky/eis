@@ -50,16 +50,16 @@ done
 #----------------------------------------------------------------------------
 if [ "$START_FCRON" = "yes" ]
 then
-	/sbin/rc-update add fcron default >/dev/null 2>&1
-	if [ -e /var/run/fcron.pid ]
-	then
-		/etc/init.d/fcron reload
-	else
-		/etc/init.d/fcron update
-		/etc/init.d/fcron start
-	fi
+	  rc-update -q add fcron default 2>/dev/null 
+	  if [ -e /var/run/fcron.pid ]
+	  then
+		    /etc/init.d/fcron reload
+	  else
+		    /etc/init.d/fcron update
+		    /etc/init.d/fcron start
+	  fi
 else
-	/sbin/rc-update del fcron default
+	  rc-update del fcron default
 fi
 
 exit 0

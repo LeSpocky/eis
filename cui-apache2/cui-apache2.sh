@@ -30,18 +30,12 @@ chmod 600 /etc/config.d/apache2
 #    fi
 #fi
 
-#if [ "$START_APACHE2" = "yes" ]
-#then
-#    cd /etc/rc2.d
-#    rm -f K??apache
-#    rm -f S??apache
-#    ln -sf ../init.d/apache2 K40apache
-#    ln -sf ../init.d/apache2 S60apache
-#else
-#    cd /etc/rc2.d
-#    rm -f K??apache
-#    rm -f S??apache
-#fi
+if [ "$START_APACHE2" = "yes" ]
+then
+     rc-update -q add apache2 2>/dev/null
+else
+     rc-update del apache2 
+fi
 
 #if [ ! -f /etc/ssl/certs/apache.pem -a "$APACHE2_SSL" = "yes" ]
 #then
