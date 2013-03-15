@@ -52,35 +52,21 @@ APACHE2_ERROR_DOCUMENT_1_DOCUMENT='/404error.html'
 #----------------------------------------------------------------------------
 # Directory Settings + Alias
 #----------------------------------------------------------------------------
-APACHE2_DIR_N='2'
-APACHE2_DIR_1_ACTIVE='yes'
-APACHE2_DIR_1_ALIAS='yes'
-APACHE2_DIR_1_ALIAS_NAME='/icons/'
-APACHE2_DIR_1_PATH='/usr/share/apache2/icons/'
-APACHE2_DIR_1_AUTH_NAME=''
+APACHE2_DIR_N='1'
+APACHE2_DIR_1_ACTIVE='no'
+APACHE2_DIR_1_ALIAS='no'
+APACHE2_DIR_1_ALIAS_NAME=''
+APACHE2_DIR_1_PATH='/var/www/localhost/htdocs/geheim/'
+APACHE2_DIR_1_AUTH_NAME='Members only!'
 APACHE2_DIR_1_AUTH_TYPE='Basic'
 APACHE2_DIR_1_AUTH_N='0'
-APACHE2_DIR_1_AUTH_1_USER=''
-APACHE2_DIR_1_AUTH_1_PASS=''
+APACHE2_DIR_1_AUTH_1_USER='user'
+APACHE2_DIR_1_AUTH_1_PASS='secret'
 APACHE2_DIR_1_ACCESS_CONTROL='all'
 APACHE2_DIR_1_CGI='none'
 APACHE2_DIR_1_SSI='no'
 APACHE2_DIR_1_VIEW_DIR_CONTENT='no'
 APACHE2_DIR_1_WEBDAV='no'
-APACHE2_DIR_2_ACTIVE='no'
-APACHE2_DIR_2_ALIAS='no'
-APACHE2_DIR_2_ALIAS_NAME=''
-APACHE2_DIR_2_PATH='/var/www/localhost/htdocs/geheim/'
-APACHE2_DIR_2_AUTH_NAME='Members only!'
-APACHE2_DIR_2_AUTH_TYPE='Basic'
-APACHE2_DIR_2_AUTH_N='0'
-APACHE2_DIR_2_AUTH_1_USER='user'
-APACHE2_DIR_2_AUTH_1_PASS='secret'
-APACHE2_DIR_2_ACCESS_CONTROL='all'
-APACHE2_DIR_2_CGI='none'
-APACHE2_DIR_2_SSI='no'
-APACHE2_DIR_2_VIEW_DIR_CONTENT='no'
-APACHE2_DIR_2_WEBDAV='no'
 #----------------------------------------------------------------------------
 # SSL
 #----------------------------------------------------------------------------
@@ -113,8 +99,6 @@ APACHE2_VHOST_1_SERVER_ADMIN='webmaster@foo.bar'
 APACHE2_VHOST_1_DOCUMENT_ROOT='/var/www/foo/htdocs'
 APACHE2_VHOST_1_SCRIPT_ALIAS='/cgi-bin/'
 APACHE2_VHOST_1_SCRIPT_DIR='/var/www/foo/cgi-bin/'
-APACHE2_VHOST_1_ERROR_LOG='/var/log/apache2/foo_error.log'
-APACHE2_VHOST_1_ACCESS_LOG='/var/log/apache2/foo_access.log'
 APACHE2_VHOST_1_ACCESS_CONTROL='all'
 APACHE2_VHOST_1_VIEW_DIRECTORY_CONTENT='no'
 APACHE2_VHOST_1_ENABLE_SSI='no'
@@ -148,7 +132,11 @@ APACHE2_MOD_CACHE='no'
 ### -------------------------------------------------------------------------
 rename_old_variables()
 {
-    # read old values
+    # set the defaults for new config.d file
+    APACHE2_DIR_N='0'
+    APACHE2_VHOST_N='0'
+    APACHE2_VHOST_1_DIR_N=0
+    # read old values if exists
     if [ -f /etc/config.d/${packages_name} ]
     then
         . /etc/config.d/${packages_name}
@@ -206,7 +194,7 @@ make_config_file()
     printvar
     printvar "APACHE2_ENABLE_SSI"             "Enable SSI 'yes' or 'no'"
     printvar
-	printvar "APACHE2_ENABLE_USERDIR"         "Show content of /home/USER/public_html"
+    printvar "APACHE2_ENABLE_USERDIR"         "Show content of /home/USER/public_html"
     printvar
 
     #------------------------------------------------------------------------------
@@ -285,7 +273,7 @@ make_config_file()
     #------------------------------------------------------------------------------
     printvar "APACHE2_VHOST_N"           "no. of virtual hosts"
 
-    if [ "$APACHE2_VHOST_1_IP" != "" ]
+    if [ -n "$APACHE2_VHOST_1_IP" ]
     then
         idx='1'
         count=`expr $APACHE2_VHOST_N + 0`
@@ -301,8 +289,6 @@ make_config_file()
             printvar "APACHE2_VHOST_"$idx"_DOCUMENT_ROOT"           "document root"
             printvar "APACHE2_VHOST_"$idx"_SCRIPT_ALIAS"            "script alias"
             printvar "APACHE2_VHOST_"$idx"_SCRIPT_DIR"              "directory to use"
-            printvar "APACHE2_VHOST_"$idx"_ERROR_LOG"               "error log"
-            printvar "APACHE2_VHOST_"$idx"_ACCESS_LOG"              "access log"
             printvar "APACHE2_VHOST_"$idx"_ACCESS_CONTROL"          "controls who get stuff"
             printvar "APACHE2_VHOST_"$idx"_VIEW_DIRECTORY_CONTENT"  ""
             printvar "APACHE2_VHOST_"$idx"_ENABLE_SSI"              ""
@@ -431,8 +417,6 @@ APACHE2_VHOST_%_SERVER_ADMIN           APACHE2_VHOST_%_ACTIVE        APACHE2_VHO
 APACHE2_VHOST_%_DOCUMENT_ROOT          APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              ABS_PATH
 APACHE2_VHOST_%_SCRIPT_ALIAS           APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              ABS_PATH
 APACHE2_VHOST_%_SCRIPT_DIR             APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              ABS_PATH
-APACHE2_VHOST_%_ERROR_LOG              APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              ABS_PATH
-APACHE2_VHOST_%_ACCESS_LOG             APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              ABS_PATH
 APACHE2_VHOST_%_ACCESS_CONTROL         APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              NONE
 APACHE2_VHOST_%_VIEW_DIRECTORY_CONTENT APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              YESNO
 APACHE2_VHOST_%_ENABLE_SSI             APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              YESNO  
@@ -496,24 +480,8 @@ EOF
 # write default config file
 make_config_file /etc/default.d/${packages_name}
 
-# Der erste Beispiel VHost soll nur waehrend der Installation angelegt werden 
-# und dann auch nur, wenn noch keine Konfigurationsdatei existiert. 
-# Waere dieser Scriptblock nicht da, koennte man den ersten VHost nie entfernen
-if [ ! -f /tmp/apache-install.lock ]
-then
-    vhost_n_old=$APACHE_VHOST_N
-
-    APACHE2_VHOST_N='1'
-    unset_vhost_vars
-
-    APACHE2_VHOST_N=$vhost_n_old
-fi
-
 # update from old version
-if [ -f /etc/config.d/$packages_name ]
-then
-    rename_old_variables
-fi
+rename_old_variables
 
 # write new config file
 make_config_file /etc/config.d/${packages_name}
@@ -521,6 +489,4 @@ make_config_file /etc/config.d/${packages_name}
 # write check.d file
 make_check_file
 
-### ---------------------------------------------------------------------------
-### end
-### ---------------------------------------------------------------------------
+exit 0
