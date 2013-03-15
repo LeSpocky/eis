@@ -72,7 +72,6 @@ APACHE2_DIR_1_WEBDAV='no'
 #----------------------------------------------------------------------------
 APACHE2_SSL='no'
 APACHE2_SSL_PORT='443'
-APACHE2_SSL_LOGDIR='/var/log/apache2/'
 #----------------------------------------------------------------------------
 # Settings for Log-file handling
 #----------------------------------------------------------------------------
@@ -177,8 +176,6 @@ make_config_file()
     #------------------------------------------------------------------------------
     printvar "APACHE2_SSL"        "Start SSL-Engine?"
     printvar "APACHE2_SSL_PORT"   "Port on which SSL should run"
-    printvar "APACHE2_SSL_LOGDIR" "SSL error and access logfiles directory"
-    printvar ""                   "!!!DON'T FORGET TO APPEND A SLASH!!!"
     printvar
 
     #------------------------------------------------------------------------
@@ -406,7 +403,6 @@ APACHE2_DIR_%_VIEW_DIR_CONTENT         APACHE2_DIR_%_ACTIVE          APACHE2_DIR
 APACHE2_DIR_%_WEBDAV                   APACHE2_DIR_%_ACTIVE          APACHE2_DIR_N                YESNO
 APACHE2_SSL                            -                             -                            YESNO
 APACHE2_SSL_PORT                       APACHE2_SSL                   -                            NUMERIC
-APACHE2_SSL_LOGDIR                     APACHE2_SSL                   -                            ABS_PATH
 APACHE2_VHOST_N                        -                             -                            NUMERIC
 APACHE2_VHOST_%_ACTIVE                 -                             APACHE2_VHOST_N              YESNO
 APACHE2_VHOST_%_IP                     APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              RE:\*|(RE:IPADDR)

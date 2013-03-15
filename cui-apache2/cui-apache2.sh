@@ -749,7 +749,7 @@ then
         echo '        SSLOptions +StdEnvVars'
         echo '    </Directory>'
         echo '    SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0'
-        echo '    CustomLog '$APACHE2_SSL_LOGDIR'ssl_request_log "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"'
+        echo '    CustomLog /var/log/apache2/ssl_request.log "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"'
         echo '</VirtualHost>'
     fi
 fi
