@@ -157,12 +157,12 @@ KeepAliveTimeout ${APACHE2_MAX_KEEP_ALIVE_TIMEOUT}
 # MaxRequestsPerChild: maximum number of requests a server process serves
 # if use: /usr/sbin/httpd
 <IfModule prefork.c>
-StartServers       8
-MinSpareServers    5
-MaxSpareServers   20
-ServerLimit      ${APACHE2_MAX_CLIENTS}
-MaxClients       ${APACHE2_MAX_CLIENTS}
-MaxRequestsPerChild ${APACHE2_MAX_REQUESTS_PER_CHILD}
+    StartServers       8
+    MinSpareServers    5
+    MaxSpareServers   20
+    ServerLimit      ${APACHE2_MAX_CLIENTS}
+    MaxClients       ${APACHE2_MAX_CLIENTS}
+    MaxRequestsPerChild ${APACHE2_MAX_REQUESTS_PER_CHILD}
 </IfModule>
  
 # itk MPM
@@ -176,13 +176,13 @@ MaxRequestsPerChild ${APACHE2_MAX_REQUESTS_PER_CHILD}
 # a VirtualHost directive.
 # if use: /usr/sbin/httpd.itk
 <IfModule itk.c>
-AssignUserID apache apache
-StartServers       8
-MinSpareServers    5
-MaxSpareServers   20
-ServerLimit      ${APACHE2_MAX_CLIENTS}
-MaxClients       ${APACHE2_MAX_CLIENTS}
-MaxRequestsPerChild ${APACHE2_MAX_REQUESTS_PER_CHILD}
+    AssignUserID apache apache
+    StartServers       8
+    MinSpareServers    5
+    MaxSpareServers   20
+    ServerLimit      ${APACHE2_MAX_CLIENTS}
+    MaxClients       ${APACHE2_MAX_CLIENTS}
+    MaxRequestsPerChild ${APACHE2_MAX_REQUESTS_PER_CHILD}
 </IfModule>
 
 # worker MPM
@@ -194,12 +194,12 @@ MaxRequestsPerChild ${APACHE2_MAX_REQUESTS_PER_CHILD}
 # MaxRequestsPerChild: maximum number of requests a server process serves
 # if use: /usr/sbin/httpd.worker
 <IfModule worker.c>
-StartServers         4
-MaxClients          ${APACHE2_MAX_CLIENTS}
-MinSpareThreads     25
-MaxSpareThreads     75
-ThreadsPerChild     25
-MaxRequestsPerChild ${APACHE2_MAX_REQUESTS_PER_CHILD}
+    StartServers         4
+    MaxClients          ${APACHE2_MAX_CLIENTS}
+    MinSpareThreads     25
+    MaxSpareThreads     75
+    ThreadsPerChild     25
+    MaxRequestsPerChild ${APACHE2_MAX_REQUESTS_PER_CHILD}
 </IfModule>
 
 Include /etc/apache2/conf.d/*.conf
@@ -211,7 +211,7 @@ LoadModule actions_module modules/mod_actions.so
 LoadModule alias_module modules/mod_alias.so
 #LoadModule asis_module modules/mod_asis.so
 LoadModule auth_basic_module modules/mod_auth_basic.so
-#LoadModule auth_digest_module modules/mod_auth_digest.so
+LoadModule auth_digest_module modules/mod_auth_digest.so
 #LoadModule authn_alias_module modules/mod_authn_alias.so
 #LoadModule authn_anon_module modules/mod_authn_anon.so
 #LoadModule authn_dbd_module modules/mod_authn_dbd.so
@@ -312,7 +312,7 @@ ServerAdmin  ${APACHE2_SERVER_ADMIN}
 ServerName   ${APACHE2_SERVER_NAME}:${APACHE2_PORT}
 UseCanonicalName Off
 DocumentRoot "/var/www/localhost/htdocs"
-UserDir public_html
+${enuser} UserDir public_html
 DirectoryIndex ${APACHE2_DIRECTORY_INDEX}
 AccessFileName .htaccess
 TypesConfig /etc/apache2/mime.types
@@ -338,8 +338,7 @@ ServerSignature ${APACHE2_SERVER_SIGNATURE}
 </Directory>
 
 <Directory "/home/*/public_html">
-    AllowOverride FileInfo 
-    AuthConfig Limit Indexes
+    AllowOverride FileInfo AuthConfig Limit Indexes
     Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
     <Limit GET POST OPTIONS>
         Order allow,deny
@@ -684,25 +683,27 @@ done
 
 if [ "$APACHE2_ERROR_DOCUMENT_N" -gt 0 ]
 then
+    cat << EOF
+Alias /error/ "/usr/share/apache2/error/"
+<IfModule mod_negotiation.c>
+<IfModule mod_include.c>
+    <Directory "/usr/share/apache2/error">
+        AllowOverride None
+        Options IncludesNoExec
+        AddOutputFilter Includes html
+        AddHandler type-map var
+        Order allow,deny
+        Allow from all
+        LanguagePriority en de fr
+        ForceLanguagePriority Prefer Fallback
+    </Directory>
+EOF
     idx=1
-    echo "Alias /error/ \"/usr/share/apache2/error/\""
-    echo "<IfModule mod_negotiation.c>"
-    echo "<IfModule mod_include.c>"
-    echo "    <Directory \"/usr/share/apache2/error\">"
-    echo "        AllowOverride None"
-    echo "        Options IncludesNoExec"
-    echo "        AddOutputFilter Includes html"
-    echo "        AddHandler type-map var"
-    echo "        Order allow,deny"
-    echo "        Allow from all"
-    echo "        LanguagePriority en de fr"
-    echo "        ForceLanguagePriority Prefer Fallback"
-    echo "    </Directory>"
     while [ "$idx" -le "$APACHE2_ERROR_DOCUMENT_N" ]
     do
         eval error='$APACHE2_ERROR_DOCUMENT_'$idx'_ERROR'
         eval doc='$APACHE2_ERROR_DOCUMENT_'$idx'_DOCUMENT'
-        echo "ErrorDocument $error $doc"
+        echo "    ErrorDocument $error $doc"
         idx=`expr $idx + 1`
     done
     echo "</IfModule>"
@@ -714,27 +715,29 @@ if [ "$APACHE2_SSL" = "yes" ]
 then
     if [ $APACHE2_VHOST_N -eq 0 -o "$uses_vhost_atall" = "no" ]
     then
-        echo "<VirtualHost _default_:${APACHE2_SSL_PORT}>"
-        echo "    ServerName ${APACHE2_SERVER_NAME}:${APACHE2_SSL_PORT}"
-        echo '    <Directory \"/var/www/localhost/htdocs\">'
-        echo "        Options ${options}"
-        echo '        AllowOverride All'
-        echo '        Require all denied'
-        echo "        Require ${APACHE2_ACCESS_CONTROL} granted"
-        echo '    </Directory>'
-        echo "    SSLEngine On"
-        echo "    SSLCipherSuite ALL:!ADH:!EXP56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL"
-        echo "    SSLCertificateFile /etc/ssl/certs/apache.pem"
-        echo "    SSLCertificateKeyFile /etc/ssl/private/apache.key"
-        echo '    <Files ~ \"\.(pl|cgi|shtml|phtml|php?)$\">'
-        echo '        SSLOptions +StdEnvVars'
-        echo '    </Files>'
-        echo '    <Directory \"/var/www/cgi-bin\">'
-        echo '        SSLOptions +StdEnvVars'
-        echo '    </Directory>'
-        echo '    SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0'
-        echo '    CustomLog /var/log/apache2/ssl_request.log "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"'
-        echo '</VirtualHost>'
+        cat << EOF    
+<VirtualHost _default_:${APACHE2_SSL_PORT}>
+    ServerName ${APACHE2_SERVER_NAME}:${APACHE2_SSL_PORT}
+    <Directory "/var/www/localhost/htdocs">
+        Options ${options}
+        AllowOverride All
+        Require all denied
+        Require ${APACHE2_ACCESS_CONTROL} granted
+    </Directory>
+    SSLEngine On
+    SSLCipherSuite ALL:!ADH:!EXP56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
+    SSLCertificateFile /etc/ssl/certs/apache.pem
+    SSLCertificateKeyFile /etc/ssl/private/apache.key
+    <Files ~ "\.(pl|cgi|shtml|phtml|php?)$">
+        SSLOptions +StdEnvVars
+    </Files>
+    <Directory "/var/www/cgi-bin">
+        SSLOptions +StdEnvVars
+    </Directory>
+    SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
+    CustomLog /var/log/apache2/ssl_request.log "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+</VirtualHost>
+EOF
     fi
 fi
 
@@ -803,22 +806,22 @@ do
     if [ ! -d ${docroot} ]
     then
         mkdir -p ${docroot}
-        (
-        echo "<html>"
-        echo "<body>"
-        echo "<h1>Der VirtualHost <em>$servername</em> wurde erfolgreich eingerichtet!</h1>"
-        echo "HTML-Dateien muessen nach <em>$docroot</em> geladen werden, CGI-Scripts nach <i>$scriptdir</i>.<br>"
-        echo "Die Access-Logfile ist <em>$accesslog</em><br>"
-        echo "Die Error-Logfile ist <em>$errorlog</em><p>"
-        echo "Zugriff auf diesen VirtualHost hat <em>$accesscontrol</em>"
-        echo "<h1>The VirtualHost <em>$servername</em> was created succesfully!</h1>"
-        echo "HTML files must be loaded into <em>$docroot</em>, the CGI-Scripts into <em>$scriptdir</em>.<br>"
-        echo "The access logfile is <em>$accesslog</em><br>"
-        echo "The error logfile is <em>$errorlog</em><p>"
-        echo "Access to this VirtualHost has <em>$accesscontrol</em>"
-        echo "</body>"
-        echo "</html>"
-        ) > ${docroot}/index.html
+        cat > ${docroot}/index.html << EOF
+<html>
+<body>
+<h1>Der VirtualHost <em>$servername</em> wurde erfolgreich eingerichtet!</h1>
+HTML-Dateien muessen nach <em>$docroot</em> geladen werden, CGI-Scripts nach <i>$scriptdir</i>.<br>
+Die Access-Logfile ist <em>$accesslog</em><br>
+Die Error-Logfile ist <em>$errorlog</em><p>
+Zugriff auf diesen VirtualHost hat <em>$accesscontrol</em>
+<h1>The VirtualHost <em>$servername</em> was created succesfully!</h1>
+HTML files must be loaded into <em>$docroot</em>, the CGI-Scripts into <em>$scriptdir</em>.<br>
+The access logfile is <em>$accesslog</em><br>
+The error logfile is <em>$errorlog</em><p>
+Access to this VirtualHost has <em>$accesscontrol</em>
+</body>
+</html>
+EOF        
         chown apache:apache -R ${docroot}
     fi
 
