@@ -293,10 +293,10 @@ ${envhost}LoadModule vhost_alias_module modules/mod_vhost_alias.so
     SSLRandomSeed connect builtin
     AddType       application/x-x509-ca-cert .crt
     AddType       application/x-pkcs7-crl    .crl
-	SSLPassPhraseDialog builtin
+	  SSLPassPhraseDialog builtin
     SSLSessionCache "shmcb:/var/run/apache2/ssl_scache(512000)"
     SSLSessionCacheTimeout 300
-	SSLMutex "file:/var/run/apache2/ssl_mutex"
+	  SSLMutex "file:/var/run/apache2/ssl_mutex"
 </IfModule>
 
 <IfModule mod_mime_magic.c>
@@ -338,7 +338,8 @@ ServerSignature ${APACHE2_SERVER_SIGNATURE}
 </Directory>
 
 <Directory "/home/*/public_html">
-    AllowOverride FileInfo AuthConfig Limit Indexes
+    AllowOverride FileInfo 
+    AuthConfig Limit Indexes
     Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
     <Limit GET POST OPTIONS>
         Order allow,deny

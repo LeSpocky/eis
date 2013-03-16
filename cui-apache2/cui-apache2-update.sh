@@ -31,7 +31,7 @@ packages_name=apache2
 ### -------------------------------------------------------------------------
 ### Set the default values for configuration
 ### ----------------------------------------
-START_APACHE2='no'
+START_APACHE2='yes'
 APACHE2_PORT='80'
 APACHE2_SERVER_ADMIN='webmaster@foo.bar'
 APACHE2_SERVER_NAME='eis.lan.fli4l'
@@ -168,48 +168,37 @@ make_config_file()
     #------------------------------------------------------------------------
     printgroup  "Start Apache2 Webserver during startup"
     #------------------------------------------------------------------------
-    printvar "START_APACHE2"         "Start the Apache Webserver"
-    printvar ""                      "yes=ON / no=OFF (default)"
+    printvar "START_APACHE2"            "Start the Apache Webserver"
 
     #------------------------------------------------------------------------
     printgroup  "General settings"
     #------------------------------------------------------------------------
     printvar "APACHE2_PORT"             "TCP/IP port"
-    printvar
     printvar "APACHE2_SERVER_NAME"      "FQND of the server e.g."
     printvar ""                         "meineis.eisfair.net"
     printvar "APACHE2_SERVER_ADMIN"     "Email address of webmaster "
-    printvar
     printvar "APACHE2_SERVER_SIGNATURE" "On/Off/Email"
-    printvar
 
     #------------------------------------------------------------------------------
     printgroup "Gerneral SSL Settings"
     #------------------------------------------------------------------------------
     printvar "APACHE2_SSL"        "Start SSL-Engine?"
     printvar "APACHE2_SSL_PORT"   "Port on which SSL should run"
-    printvar
 
     #------------------------------------------------------------------------
     printgroup  "Special Settings"
     #------------------------------------------------------------------------
     printvar "APACHE2_DIRECTORY_INDEX"        "Default document"
-    printvar
     printvar "APACHE2_HOSTNAME_LOOKUPS"       "Resolve IPs in logfile?"
-    printvar
     printvar "APACHE2_VIEW_DIRECTORY_CONTENT" "If there's no index.html view files in dir"
-    printvar
     printvar "APACHE2_ACCESS_CONTROL"         "Who get access e.g. 192.168.0.0/24"
-    printvar
     printvar "APACHE2_ENABLE_SSI"             "Enable SSI 'yes' or 'no'"
-    printvar
     printvar "APACHE2_ENABLE_USERDIR"         "Show content of /home/USER/public_html"
-    printvar
 
     #------------------------------------------------------------------------------
     printgroup "Error Documents"
     #------------------------------------------------------------------------------
-    printvar "APACHE2_ERROR_DOCUMENT_N"          "no. costum of Error Documents"
+    printvar "APACHE2_ERROR_DOCUMENT_N"       "no. costum of Error Documents"
 
     idx='1'
     count=`expr $APACHE2_ERROR_DOCUMENT_N + 1`
@@ -271,7 +260,6 @@ make_config_file()
             printvar "APACHE2_DIR_"$idx"_SSI"              "Allow Server Side Includes?"
             printvar "APACHE2_DIR_"$idx"_VIEW_DIR_CONTENT" "View files in dir if no index.html"
             printvar "APACHE2_DIR_"$idx"_WEBDAV"           "Enable WebDav"
-            printvar
         fi
         idx=`expr $idx + 1`
     done
