@@ -404,39 +404,6 @@ AddIcon /icons/folder.gif ^^DIRECTORY^^
 AddIcon /icons/blank.gif ^^BLANKICON^^
 DefaultIcon /icons/unknown.gif
 
-Alias /error/ "/usr/share/apache2/error/"
-<IfModule mod_negotiation.c>
-<IfModule mod_include.c>
-    <Directory "/usr/share/apache2/error">
-        AllowOverride None
-        Options IncludesNoExec
-        AddOutputFilter Includes html
-        AddHandler type-map var
-        Order allow,deny
-        Allow from all
-        LanguagePriority en es de fr
-        ForceLanguagePriority Prefer Fallback
-    </Directory>
-#    ErrorDocument 400 /error/HTTP_BAD_REQUEST.html.var
-#    ErrorDocument 401 /error/HTTP_UNAUTHORIZED.html.var
-#    ErrorDocument 403 /error/HTTP_FORBIDDEN.html.var
-#    ErrorDocument 404 /error/HTTP_NOT_FOUND.html.var
-#    ErrorDocument 405 /error/HTTP_METHOD_NOT_ALLOWED.html.var
-#    ErrorDocument 408 /error/HTTP_REQUEST_TIME_OUT.html.var
-#    ErrorDocument 410 /error/HTTP_GONE.html.var
-#    ErrorDocument 411 /error/HTTP_LENGTH_REQUIRED.html.var
-#    ErrorDocument 412 /error/HTTP_PRECONDITION_FAILED.html.var
-#    ErrorDocument 413 /error/HTTP_REQUEST_ENTITY_TOO_LARGE.html.var
-#    ErrorDocument 414 /error/HTTP_REQUEST_URI_TOO_LARGE.html.var
-#    ErrorDocument 415 /error/HTTP_UNSUPPORTED_MEDIA_TYPE.html.var
-#    ErrorDocument 500 /error/HTTP_INTERNAL_SERVER_ERROR.html.var
-#    ErrorDocument 501 /error/HTTP_NOT_IMPLEMENTED.html.var
-#    ErrorDocument 502 /error/HTTP_BAD_GATEWAY.html.var
-#    ErrorDocument 503 /error/HTTP_SERVICE_UNAVAILABLE.html.var
-#    ErrorDocument 506 /error/HTTP_VARIANT_ALSO_VARIES.html.var
-</IfModule>
-</IfModule>
-
 AddDefaultCharset UTF-8
 
 AddLanguage ca .ca
@@ -714,16 +681,32 @@ do
     idx=`expr $idx + 1`
 done
 
-
-idx=1
-while [ "$idx" -le "$APACHE2_ERROR_DOCUMENT_N" ]
-do
-    eval error='$APACHE2_ERROR_DOCUMENT_'$idx'_ERROR'
-    eval doc='$APACHE2_ERROR_DOCUMENT_'$idx'_DOCUMENT'
-
-    echo "ErrorDocument $error $doc"
-    idx=`expr $idx + 1`
-done
+if [ "$APACHE2_ERROR_DOCUMENT_N" -gt 0 ]
+then
+    idx=1
+    echo "Alias /error/ \"/usr/share/apache2/error/\""
+    echo "<IfModule mod_negotiation.c>"
+    echo "<IfModule mod_include.c>"
+    echo "    <Directory \"/usr/share/apache2/error\">"
+    echo "        AllowOverride None"
+    echo "        Options IncludesNoExec"
+    echo "        AddOutputFilter Includes html"
+    echo "        AddHandler type-map var"
+    echo "        Order allow,deny"
+    echo "        Allow from all"
+    echo "        LanguagePriority en de fr"
+    echo "        ForceLanguagePriority Prefer Fallback"
+    echo "    </Directory>"
+    while [ "$idx" -le "$APACHE2_ERROR_DOCUMENT_N" ]
+    do
+        eval error='$APACHE2_ERROR_DOCUMENT_'$idx'_ERROR'
+        eval doc='$APACHE2_ERROR_DOCUMENT_'$idx'_DOCUMENT'
+        echo "ErrorDocument $error $doc"
+        idx=`expr $idx + 1`
+    done
+    echo "</IfModule>"
+    echo "</IfModule>"
+fi
 
 
 if [ "$APACHE2_SSL" = "yes" ]

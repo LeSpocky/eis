@@ -46,9 +46,22 @@ APACHE2_ENABLE_USERDIR='yes'
 #----------------------------------------------------------------------------
 # Error Documents
 #----------------------------------------------------------------------------
-APACHE2_ERROR_DOCUMENT_N='0'
+APACHE2_ERROR_DOCUMENT_N='6'
 APACHE2_ERROR_DOCUMENT_1_ERROR='404'
-APACHE2_ERROR_DOCUMENT_1_DOCUMENT='/404error.html'
+APACHE2_ERROR_DOCUMENT_1_DOCUMENT='/error/HTTP_NOT_FOUND.html.var'
+APACHE2_ERROR_DOCUMENT_2_ERROR='400'
+APACHE2_ERROR_DOCUMENT_2_DOCUMENT='/error/HTTP_BAD_REQUEST.html.var'
+APACHE2_ERROR_DOCUMENT_3_ERROR='401'
+APACHE2_ERROR_DOCUMENT_3_DOCUMENT='/error/HTTP_UNAUTHORIZED.html.var'
+APACHE2_ERROR_DOCUMENT_4_ERROR='403'
+APACHE2_ERROR_DOCUMENT_4_DOCUMENT='/error/HTTP_FORBIDDEN.html.var'
+APACHE2_ERROR_DOCUMENT_5_ERROR='405'
+APACHE2_ERROR_DOCUMENT_5_DOCUMENT='/error/HTTP_FORBIDDEN.html.var'
+APACHE2_ERROR_DOCUMENT_6_ERROR='408'
+APACHE2_ERROR_DOCUMENT_6_DOCUMENT='/error/HTTP_FORBIDDEN.html.var'
+APACHE2_ERROR_DOCUMENT_7_ERROR='414'
+APACHE2_ERROR_DOCUMENT_7_DOCUMENT='/error/HTTP_REQUEST_URI_TOO_LARGE.html.var'
+
 #----------------------------------------------------------------------------
 # Directory Settings + Alias
 #----------------------------------------------------------------------------
@@ -102,11 +115,11 @@ APACHE2_VHOST_1_ACCESS_CONTROL='all'
 APACHE2_VHOST_1_VIEW_DIRECTORY_CONTENT='no'
 APACHE2_VHOST_1_ENABLE_SSI='no'
 APACHE2_VHOST_1_MOD_CACHE='no'
-APACHE2_VHOST_1_DIR_N='1'
+APACHE2_VHOST_1_DIR_N='0'
 APACHE2_VHOST_1_DIR_1_ACTIVE='no'
-APACHE2_VHOST_1_DIR_1_ALIAS='no'
+APACHE2_VHOST_1_DIR_1_ALIAS='no'       
 APACHE2_VHOST_1_DIR_1_ALIAS_NAME=''
-APACHE2_VHOST_1_DIR_1_PATH='/var/www/localhost/htdocs/geheim'
+APACHE2_VHOST_1_DIR_1_PATH='/var/www/foo/htdocs/geheim'
 APACHE2_VHOST_1_DIR_1_AUTH_NAME='Members only!'
 APACHE2_VHOST_1_DIR_1_AUTH_TYPE='Basic'
 APACHE2_VHOST_1_DIR_1_AUTH_N='0'
@@ -157,17 +170,16 @@ make_config_file()
     #------------------------------------------------------------------------
     printvar "START_APACHE2"         "Start the Apache Webserver"
     printvar ""                      "yes=ON / no=OFF (default)"
-    printvar
 
     #------------------------------------------------------------------------
     printgroup  "General settings"
     #------------------------------------------------------------------------
     printvar "APACHE2_PORT"             "TCP/IP port"
     printvar
-    printvar "APACHE2_SERVER_ADMIN"     "Email address of webmaster "
-    printvar
     printvar "APACHE2_SERVER_NAME"      "FQND of the server e.g."
     printvar ""                         "meineis.eisfair.net"
+    printvar "APACHE2_SERVER_ADMIN"     "Email address of webmaster "
+    printvar
     printvar "APACHE2_SERVER_SIGNATURE" "On/Off/Email"
     printvar
 
