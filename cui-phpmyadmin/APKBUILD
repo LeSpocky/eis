@@ -12,7 +12,13 @@ depends_dev=""
 makedepends="$depends_dev"
 install=""
 subpackages="$pkgname-dev $pkgname-doc"
-source=""
+source="${pkgname}.txt                                 
+        ${pkgname}.sh                                  
+        ${pkgname}-update.sh                           
+        ${pkgname}.help                                
+        ${pkgname}.setup.services.phpmyadmin.menu      
+        ${pkgname}.setup.services.phpmyadmin.tools.menu
+"
 
 _builddir=
 prepare() {
@@ -36,4 +42,10 @@ package() {
 		install -D -m755 $currentDialogScript ${pkgdir}/var/install/dialog.d/$currentDialogScript || return 1
 	done
 	cd -
+	install -D -m744 ${srcdir}/${pkgname}.txt                                  ${pkgdir}/usr/share/doc/phpmyadmin/phpmyadmin.txt || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh                                   ${pkgdir}/var/install/config.d/phpmyadmin.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh                            ${pkgdir}/var/install/config.d/phpmyadmin-update.sh || return 1
+	install -D -m744 ${srcdir}/${pkgname}.help                                 ${pkgdir}/var/install/help/phpmyadmin || return 1
+	install -D -m744 ${srcdir}/${pkgname}.setup.services.phpmyadmin.menu       ${pkgdir}/var/install/menu/setup.services.phpmyadmin.menu || return 1
+	install -D -m744 ${srcdir}/${pkgname}.setup.services.phpmyadmin.tools.menu ${pkgdir}/var/install/menu/setup.services.phpmyadmin.tools.menu || return 1
 }

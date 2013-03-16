@@ -1,0 +1,8 @@
+#!/bin/sh
+
+/var/install/bin/del-menu setup.services.menu setup.services.phpmyadmin.menu
+
+rm -f /etc/backup.d/phpmyadmin.*
+rm -f /etc/check.d/phpmyadmin
+rm -f /etc/check.d/phpmyadmin.exp
+rm -f /etc/default.d/phpmyadmin
