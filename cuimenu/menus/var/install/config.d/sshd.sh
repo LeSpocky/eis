@@ -95,15 +95,8 @@ rm -f $ssh_authorized_keys_file_tmp
 if [ "$START_SSHD" = "yes" ]
 then
 	  rc-update -q add sshd 2>/dev/null
-	  if [ -e /var/run/sshd.pid ]
-	  then
-		    /etc/init.d/sshd reload
-	  else
-		    #/etc/init.d/sshd checkconfig
-		    /etc/init.d/sshd start
-	  fi
 else
-	  rc-update del sshd
+	  rc-update -q del sshd  2>/dev/null
 fi
 
 
