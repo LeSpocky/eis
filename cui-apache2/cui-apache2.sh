@@ -127,6 +127,12 @@ then
 	chown apache /var/lib/dav
 fi
 #----------------------------------------------------------------------------------------
+# use SSI
+#----------------------------------------------------------------------------------------
+enssi="#"
+[ "$APACHE2_ENABLE_SSI" = "yes" ] && enssi=""
+
+#----------------------------------------------------------------------------------------
 # creating httpd.conf
 #----------------------------------------------------------------------------------------
 options="FollowSymLinks MultiViews"
@@ -312,7 +318,7 @@ ServerAdmin  ${APACHE2_SERVER_ADMIN}
 ServerName   ${APACHE2_SERVER_NAME}:${APACHE2_PORT}
 UseCanonicalName Off
 DocumentRoot "/var/www/localhost/htdocs"
-${enuser} UserDir public_html
+${enuser}UserDir public_html
 DirectoryIndex ${APACHE2_DIRECTORY_INDEX}
 AccessFileName .htaccess
 TypesConfig /etc/apache2/mime.types
@@ -465,17 +471,15 @@ BrowserMatch "^gnome-vfs/1.0" redirect-carefully
 BrowserMatch "^XML Spy" redirect-carefully
 BrowserMatch "^Dreamweaver-WebDAV-SCM1" redirect-carefully
 
-EOF
-#----------------------------------------------------------------------------------------
-# Add other configuation option:
-#----------------------------------------------------------------------------------------
-(
-if [ "$APACHE2_ENABLE_SSI" = "yes" ]
-then
-    echo 'AddType text/html .shtml'
-    echo 'AddHandler server-parsed .shtml'
-fi
+# SSI
+${enssi}AddType text/html .shtml
+${enssi}AddHandler server-parsed .shtml
 
+EOF
+
+#----------------------------------------------------------------------------------------
+# Listen to IP and ports
+#----------------------------------------------------------------------------------------
 nameIpMixture="no"
 hasAsterisk="no"
 hasIp="no"
@@ -485,20 +489,8 @@ do
     eval active='$APACHE2_VHOST_'$idx'_ACTIVE'
     eval ip='$APACHE2_VHOST_'$idx'_IP'
     eval port='$APACHE2_VHOST_'$idx'_PORT'
-    eval servername='$APACHE2_VHOST_'$idx'_SERVER_NAME'
-    eval serveralias='$APACHE2_VHOST_'$idx'_SERVER_ALIAS'
-    eval mail='$APACHE2_VHOST_'$idx'_SERVER_ADMIN'
-    eval docroot='$APACHE2_VHOST_'$idx'_DOCUMENT_ROOT'
-    eval scriptalias='$APACHE2_VHOST_'$idx'_SCRIPT_ALIAS'
-    eval scriptdir='$APACHE2_VHOST_'$idx'_SCRIPT_DIR'
-    eval accesscontrol='$APACHE2_VHOST_'$idx'_ACCESS_CONTROL'
     eval ssl='$APACHE2_VHOST_'$idx'_SSL'
     eval sslport='$APACHE2_VHOST_'$idx'_SSL_PORT'
-    eval forcessl='$APACHE2_VHOST_'$idx'_SSL_FORCE'
-    eval sslcertname='$APACHE2_VHOST_'$idx'_SSL_CERT_NAME'
-    errorlog="/var/log/apache2/error-${servername}.log"
-    accesslog="/var/log/apache2/access-${servername}.log"     
- 
     if [ "$active" = "no" ]
     then
         idx=`expr $idx + 1`
@@ -518,7 +510,6 @@ do
         then
             ipports="$ipports $ip:$single_port "
         fi
-
         if [ "$ip" = "*" ]
         then
             hasAsterisk="yes"
@@ -561,6 +552,7 @@ else
     fi
 fi
 
+(
 # if a vhost active $envhost=""
 if [  "$envhost" = "#" ] 
 then
@@ -681,63 +673,59 @@ do
     idx=`expr $idx + 1`
 done
 
+
 if [ "$APACHE2_ERROR_DOCUMENT_N" -gt 0 ]
 then
-    cat << EOF
-Alias /error/ "/usr/share/apache2/error/"
-<IfModule mod_negotiation.c>
-<IfModule mod_include.c>
-    <Directory "/usr/share/apache2/error">
-        AllowOverride None
-        Options IncludesNoExec
-        AddOutputFilter Includes html
-        AddHandler type-map var
-        Order allow,deny
-        Allow from all
-        LanguagePriority en de fr
-        ForceLanguagePriority Prefer Fallback
-    </Directory>
-EOF
     idx=1
+    echo "Alias /error/ \"/usr/share/apache2/error/\""
+    echo "<IfModule mod_negotiation.c>"
+    echo "<IfModule mod_include.c>"
+    echo "    <Directory \"/usr/share/apache2/error\">"
+    echo "        AllowOverride None"
+    echo "        Options IncludesNoExec"
+    echo "        AddOutputFilter Includes html"
+    echo "        AddHandler type-map var"
+    echo "        Order allow,deny"
+    echo "        Allow from all"
+    echo "        LanguagePriority en de fr"
+    echo "        ForceLanguagePriority Prefer Fallback"
+    echo "    </Directory>"
     while [ "$idx" -le "$APACHE2_ERROR_DOCUMENT_N" ]
     do
         eval error='$APACHE2_ERROR_DOCUMENT_'$idx'_ERROR'
         eval doc='$APACHE2_ERROR_DOCUMENT_'$idx'_DOCUMENT'
-        echo "    ErrorDocument $error $doc"
+        echo "ErrorDocument $error $doc"
         idx=`expr $idx + 1`
     done
     echo "</IfModule>"
     echo "</IfModule>"
 fi
 
-
 if [ "$APACHE2_SSL" = "yes" ]
 then
     if [ $APACHE2_VHOST_N -eq 0 -o "$uses_vhost_atall" = "no" ]
     then
-        cat << EOF    
-<VirtualHost _default_:${APACHE2_SSL_PORT}>
-    ServerName ${APACHE2_SERVER_NAME}:${APACHE2_SSL_PORT}
-    <Directory "/var/www/localhost/htdocs">
-        Options ${options}
-        AllowOverride All
-        Require all denied
-        Require ${APACHE2_ACCESS_CONTROL} granted
-    </Directory>
-    SSLEngine On
-    SSLCipherSuite ALL:!ADH:!EXP56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
-    SSLCertificateFile /etc/ssl/certs/apache.pem
-    SSLCertificateKeyFile /etc/ssl/private/apache.key
-    <Files ~ "\.(pl|cgi|shtml|phtml|php?)$">
-        SSLOptions +StdEnvVars
-    </Files>
-    <Directory "/var/www/cgi-bin">
-        SSLOptions +StdEnvVars
-    </Directory>
-    SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
-    CustomLog /var/log/apache2/ssl_request.log "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
-</VirtualHost>
-EOF
+        echo "<VirtualHost _default_:${APACHE2_SSL_PORT}>"
+        echo "    ServerName ${APACHE2_SERVER_NAME}:${APACHE2_SSL_PORT}"
+        echo '    <Directory \"/var/www/localhost/htdocs\">'
+        echo "        Options ${options}"
+        echo '        AllowOverride All'
+        echo '        Require all denied'
+        echo "        Require ${APACHE2_ACCESS_CONTROL} granted"
+        echo '    </Directory>'
+        echo "    SSLEngine On"
+        echo "    SSLCipherSuite ALL:!ADH:!EXP56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL"
+        echo "    SSLCertificateFile /etc/ssl/certs/apache.pem"
+        echo "    SSLCertificateKeyFile /etc/ssl/private/apache.key"
+        echo '    <Files ~ \"\.(pl|cgi|shtml|phtml|php?)$\">'
+        echo '        SSLOptions +StdEnvVars'
+        echo '    </Files>'
+        echo '    <Directory \"/var/www/cgi-bin\">'
+        echo '        SSLOptions +StdEnvVars'
+        echo '    </Directory>'
+        echo '    SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0'
+        echo '    CustomLog /var/log/apache2/ssl_request.log "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"'
+        echo '</VirtualHost>'
     fi
 fi
 
@@ -806,7 +794,7 @@ do
     if [ ! -d ${docroot} ]
     then
         mkdir -p ${docroot}
-        cat > ${docroot}/index.html << EOF
+        cat > ${docroot}/index.html <<EOF
 <html>
 <body>
 <h1>Der VirtualHost <em>$servername</em> wurde erfolgreich eingerichtet!</h1>
@@ -935,7 +923,7 @@ EOF
 
     idx=`expr $idx + 1`
 done
-)>>/etc/apache2/httpd.conf
+) >>/etc/apache2/httpd.conf
 
 #----------------------------------------------------------------------------------------
 # setup logrotate
