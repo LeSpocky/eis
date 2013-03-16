@@ -1,0 +1,10 @@
+<!-- /var/install/menu/setup.services.phpmyadmin.menu -->
+<!-- Creation:         2006-09-15 starwarsfan -->
+<!-- Last Update:     $Id: setup.services.phpmyadmin.menu 21479 2009-10-05 21:34:14Z starwarsfan $ -->
+<package>phpmyadmin</package>
+<title>phpMyAdmin Administration</title>
+<doc file="/usr/share/doc/phpmyadmin/phpmyadmin.txt">View short package documentation</doc>
+<edit>Edit configuration</edit>
+<doc file="/usr/share/doc/phpmyadmin/Documentation.txt">View original documentation</doc>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
+<menu file="setup.services.phpmyadmin.tools.menu">Tools</menu>
