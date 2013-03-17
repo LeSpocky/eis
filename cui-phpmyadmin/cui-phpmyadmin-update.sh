@@ -30,10 +30,6 @@ package_name=phpmyadmin
 # ----------------------------------------------------------------------------
 START_PHPMYADMIN='no'
 
-PHPMYADMIN_INSTALL_PATH="${APACHE2_DOCUMENT_ROOT}"
-PHPMYADMIN_INSTALL_FOLDER='phpmyadmin'        #This folder will be created in
-                                              #PHPMYADMIN_INSTALL_PATH
-
 #servers
 PHPMYADMIN_SERVER_N='1'                       #number of server
 PHPMYADMIN_SERVER_1_NAME=''                   #name of server, not used intern
@@ -213,13 +209,6 @@ createConfigFile()
     #-------------------------------------------------------------------------
 
     printvar "START_PHPMYADMIN"              "Use: yes or no"
-
-    #-------------------------------------------------------------------------
-    printgroup "Folder to install phpMyAdmin in"
-    #-------------------------------------------------------------------------
-
-    printvar "PHPMYADMIN_INSTALL_PATH"       "Path to your Webpage directory"
-    printvar "PHPMYADMIN_INSTALL_FOLDER"     "Folder to create"
 
     #-------------------------------------------------------------------------
     printgroup "Servers"
@@ -446,9 +435,6 @@ createCheckFile()
 # Variable                               OPT_VARIABLE                            VARIABLE_N                          VALUE
 START_PHPMYADMIN                         -                                       -                                   YESNO
 
-PHPMYADMIN_INSTALL_PATH                  START_PHPMYADMIN                        -                                   PHPMYADMIN_INSTALL_PATH_EXP
-PHPMYADMIN_INSTALL_FOLDER                START_PHPMYADMIN                        -                                   NOBLANK
-
 PHPMYADMIN_SERVER_N                      START_PHPMYADMIN                        -                                   NUMERIC
 PHPMYADMIN_SERVER_%_NAME                 START_PHPMYADMIN                        PHPMYADMIN_SERVER_N                 NONE
 PHPMYADMIN_SERVER_%_ACTIVE               START_PHPMYADMIN                        PHPMYADMIN_SERVER_N                 YESNO
@@ -625,11 +611,6 @@ PHPMYADMIN_SERVER_CONNECT_TYPE_CUI     = 'tcp|socket'
 
 PHPMYADMIN_SERVER_EXTENSION_CUI        = 'mysql|mysqli'
                                        : 'Only "mysql" or "mysqli" is valid'
-
-
-
-PHPMYADMIN_INSTALL_PATH_EXP            = '/((([[:alnum:]]|[-_.])+)(/([[:alnum:]]|[-_.])+)*?)?'
-                                       : 'Use path without / at the end'
 
 PHPMYADMIN_BLOWFISH_SECRET_EXP         = '([^ .*]{6,46})'
                                        : 'Only more than 6 and at max 46 characters allowed, without blanks'

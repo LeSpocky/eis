@@ -1,10 +1,5 @@
-phpMyAdmin for eisfair - MySQL-Administration mit phpMyAdmin
-============================================================
-
-Version 1.7.3 - testing
-Last Change $Id: phpmyadmin.txt 21582 2009-10-17 09:17:35Z alex $
-
-
+phpMyAdmin for eisfair-ng - MySQL-Administration mit phpMyAdmin
+==============================================================
 
 1. phpMyAdmin - Was ist das?
 ============================

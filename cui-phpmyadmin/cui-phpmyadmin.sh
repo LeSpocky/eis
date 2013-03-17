@@ -24,158 +24,11 @@ phpMyAdminVersion='3.5.5'
 . /var/install/bin/phpmyadmin-helpers.sh
 . /var/install/include/eislib
 
-# Setup system specific values
-if [ -z "${EISFAIR_SYSTEM}" ]
-then
-    # get eisfair system-type
-    . /var/install/include/check-eisfair-version
-fi
+# TODO: Set proper values
+ownerToUse='wwwrun:nogroup'
 
-case "${EISFAIR_SYSTEM}" in
-    eisfair-1)
-        ownerToUse='wwwrun:nogroup'
-        ;;
-    *)
-        ownerToUse='www-data:www-data'
-        ;;
-esac
-
-mysql_data_dir=/var/lib/mysql
-mysql_base_dir=/usr/local/mysql
-
-phpMyAdminFolder=${PHPMYADMIN_INSTALL_PATH}/${PHPMYADMIN_INSTALL_FOLDER}
-config_php=${phpMyAdminFolder}/config.inc.php
+config_php=/etc/phpmyadmin/config.inc.php
 sweKeyConfigured=false
-
-# ----------------------------------------------------------------------------
-# This method will unpack the phpMyAdmin archive and rename it to the
-# value coming from $PHPMYADMIN_INSTALL_FOLDER
-# ----------------------------------------------------------------------------
-unpackAndRenamePhpMyAdmin ()
-{
-    mecho -n "Unpacking phpMyAdmin to ${PHPMYADMIN_INSTALL_PATH}... "
-    tar -xjf /var/lib/phpmyadmin/phpMyAdmin-${phpMyAdminVersion}-all-languages.tar.bz2
-#    tar -xzf /var/lib/phpmyadmin/phpMyAdmin-${phpMyAdminVersion}-all-languages.tar.gz
-    actionFinished
-    mecho -n "Renaming phpMyAdmin-Folder from 'phpMyAdmin-${phpMyAdminVersion}-all-languages' to '${PHPMYADMIN_INSTALL_FOLDER}'... "
-    mv phpMyAdmin-${phpMyAdminVersion}-all-languages ${PHPMYADMIN_INSTALL_FOLDER}
-    chown -R ${ownerToUse} ${PHPMYADMIN_INSTALL_FOLDER}
-    actionFinished
-}
-
-
-# ----------------------------------------------------------------------------
-# This method will write a file "VERSION" into the installation directory
-# which contains the version number of the installed phpMyAdmin archive
-# ----------------------------------------------------------------------------
-writeVersionFile ()
-{
-    mecho -n "Writing version file... "
-    cat >${PHPMYADMIN_INSTALL_FOLDER}/VERSION <<EOF
-${phpMyAdminVersion}
-EOF
-    chown ${ownerToUse} ${PHPMYADMIN_INSTALL_FOLDER}/VERSION
-    actionFinished
-}
-
-
-# ----------------------------------------------------------------------------
-# Install phpMyAdmin into the webpage path coming from $APACHE2_DOCUMENT_ROOT
-# and there into the folder $PHPMYADMIN_INSTALL_FOLDER
-# ----------------------------------------------------------------------------
-installPhpMyAdmin ()
-{
-    callDir=`pwd`
-
-    if [ ! -d ${PHPMYADMIN_INSTALL_PATH} ]
-    then
-        echo
-        mecho -warn "The path '${PHPMYADMIN_INSTALL_PATH}' doesn't exist!"
-        mecho -warn "Please solve that first."
-        echo
-        anykey
-
-        exit 1
-    else
-        cd ${PHPMYADMIN_INSTALL_PATH}
-    fi
-
-#    phpMyAdminIsInstalled=`dir ${PHPMYADMIN_INSTALL_FOLDER}`
-#    if [ -z "${phpMyAdminIsInstalled}" ]
-    if [ -d ${PHPMYADMIN_INSTALL_FOLDER} ]
-    then
-        mecho "phpMyAdmin folder found"
-
-        PHPMYADMIN_INSTALLED_VERSION=`more ${PHPMYADMIN_INSTALL_FOLDER}/VERSION`
-        if [ "${PHPMYADMIN_INSTALLED_VERSION}" == "${phpMyAdminVersion}" ]
-        then
-            if ${quietmode}
-            then
-                reInstall='yes'
-            else
-                reInstall=`/var/install/bin/ask "Delete old and reinstall phpMyAdmin files?" "n"`
-            fi
-
-            if [ "${reInstall}" == 'yes' ]
-            then
-                mecho ""
-                removePhpMyAdmin
-                unpackAndRenamePhpMyAdmin
-            else
-                mecho "Old files not changed"
-                rm ${config_php}
-                mecho "Old configuration deleted"
-            fi
-            writeVersionFile
-        else
-            if ${quietmode}
-            then
-                deleteOldInstallation='yes'
-            else
-                mecho -n "The installed version of phpMyAdmin is "
-                mecho -info "${PHPMYADMIN_INSTALLED_VERSION}"
-                mecho -n "but the version to install is "
-                mecho -n -info "${phpMyAdminVersion}"
-                mecho ". Because of this"
-                mecho "difference it is strongly recommended to remove the old"
-                mecho "version for a clean installation of the new version."
-
-                deleteOldInstallation=`/var/install/bin/ask "Delete old phpMyAdmin installation?" "y"`
-            fi
-
-            if [ "${deleteOldInstallation}" == 'yes' ]
-            then
-                mecho ""
-                removePhpMyAdmin
-                unpackAndRenamePhpMyAdmin
-                writeVersionFile
-            else
-                mecho "Old files not changed"
-                rm ${config_php}
-                mecho "Old configuration deleted"
-            fi
-        fi
-    else
-        unpackAndRenamePhpMyAdmin
-        writeVersionFile
-    fi
-    cd ${callDir}
-}
-
-
-
-# ----------------------------------------------------------------------------
-# Remove phpMyAdmin
-# ----------------------------------------------------------------------------
-removePhpMyAdmin ()
-{
-    mecho -n "Removing phpMyAdmin webpage files... "
-    rm -rf ${phpMyAdminFolder}
-    rm -f /etc/swekey.conf
-    actionFinished
-}
-
-
 
 # ----------------------------------------------------------------------------
 # Setup the boolean values as php they want
@@ -945,6 +798,12 @@ createSweKeyConfig ()
 
 
 
+removePhpMyAdmin ()
+{
+    echo "TODO: Deactivation of phpmyadmin"
+}
+
+
 # ----------------------------------------------------------------------------
 # Main
 # ----------------------------------------------------------------------------
@@ -959,7 +818,6 @@ if [ "${START_PHPMYADMIN}" == 'yes' ]
 then
     checkCredentials
     checkSocketSetup
-    installPhpMyAdmin
     createBooleanValues
 #    createSelections
     createConfigIncPhp
