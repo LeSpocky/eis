@@ -477,6 +477,7 @@ ${enssi}AddHandler server-parsed .shtml
 
 EOF
 
+
 #----------------------------------------------------------------------------------------
 # Listen to IP and ports
 #----------------------------------------------------------------------------------------
@@ -578,6 +579,9 @@ else
     fi
 fi
 
+#----------------------------------------------------------------------------------------
+# directory setup
+#----------------------------------------------------------------------------------------
 idx=1
 while [ "$idx" -le "$APACHE2_DIR_N" ]
 do
@@ -594,12 +598,16 @@ do
     eval content='$APACHE2_DIR_'$idx'_VIEW_DIR_CONTENT'
     eval webdav='$APACHE2_DIR_'$idx'_WEBDAV'
 
-    if [ "$active" = "yes" ]
+    if [ "$active" = "no" ]
     then
-        if [ "$useAlias" = "yes" ]
-        then
-            echo "Alias $alias $path"
-        fi
+        idx=`expr $idx + 1`
+        continue
+    fi
+ 
+    if [ "$useAlias" = "yes" ]
+    then
+        echo "Alias $alias $path"
+    fi
 
         #echo "Adding directory $path ..." >`tty`
         echo "<Directory \"${path}\">"
@@ -669,11 +677,12 @@ do
             echo "<h1>GEHEIM!</h1>" > ${path}/index.html
             chown -R apache:apache ${path}
         fi
-    fi
     idx=`expr $idx + 1`
 done
 
-
+#----------------------------------------------------------------------------------------
+# error setup
+#----------------------------------------------------------------------------------------
 if [ "$APACHE2_ERROR_DOCUMENT_N" -gt 0 ]
 then
     idx=1
@@ -694,13 +703,16 @@ then
     do
         eval error='$APACHE2_ERROR_DOCUMENT_'$idx'_ERROR'
         eval doc='$APACHE2_ERROR_DOCUMENT_'$idx'_DOCUMENT'
-        echo "ErrorDocument $error $doc"
+        echo "    ErrorDocument $error $doc"
         idx=`expr $idx + 1`
     done
     echo "</IfModule>"
     echo "</IfModule>"
 fi
 
+#----------------------------------------------------------------------------------------
+# SSL setup
+#----------------------------------------------------------------------------------------
 if [ "$APACHE2_SSL" = "yes" ]
 then
     if [ $APACHE2_VHOST_N -eq 0 -o "$uses_vhost_atall" = "no" ]
@@ -729,8 +741,13 @@ then
     fi
 fi
 
+
+#----------------------------------------------------------------------------------------
+# VHost setup
+#----------------------------------------------------------------------------------------
 if [ "$APACHE2_VHOST_N" -gt 0 ]
 then
+    echo ""
     idx=1
     anyVHostActive="no"
     anyVHostSSLActive="no"
@@ -738,25 +755,18 @@ then
     do
         eval active='$APACHE2_VHOST_'$idx'_ACTIVE'
         eval ssl='$APACHE2_VHOST_'$idx'_SSL'
-        if [ "$active" = "yes" ]
-        then
-            anyVHostActive="yes"
-        fi
-        if [ "$ssl" = "yes" ]
-        then
-            anyVHostSSLActive="yes"
-        fi
+        [ "$active" = "yes" ] && anyVHostActive="yes"
+        [ "$ssl" = "yes" ]    && anyVHostSSLActive="yes"
         idx=`expr $idx + 1`
     done
     if [ "$anyVHostActive" = "yes" ]
     then
         for ipport in $ipports
         do
-                echo "NameVirtualHost $ipport"
+            echo "NameVirtualHost $ipport"
         done
     fi
 fi
-
 
 idx=1
 while [ "$idx" -le "$APACHE2_VHOST_N" ]
@@ -781,10 +791,6 @@ do
     errorlog="/var/log/apache2/error-${servername}.log"
     accesslog="/var/log/apache2/access-${servername}.log" 
 
-    options="FollowSymLinks MultiViews"
-
-    [ "$ssi" = "yes" ]     && options="$options Includes"
-    [ "$content" = "yes" ] && options="$options Indexes"
     if [ "$active" != "yes" ]
     then
         idx=`expr $idx + 1`
@@ -794,44 +800,32 @@ do
     if [ ! -d ${docroot} ]
     then
         mkdir -p ${docroot}
-        cat > ${docroot}/index.html <<EOF
-<html>
-<body>
-<h1>Der VirtualHost <em>$servername</em> wurde erfolgreich eingerichtet!</h1>
-HTML-Dateien muessen nach <em>$docroot</em> geladen werden, CGI-Scripts nach <i>$scriptdir</i>.<br>
-Die Access-Logfile ist <em>$accesslog</em><br>
-Die Error-Logfile ist <em>$errorlog</em><p>
-Zugriff auf diesen VirtualHost hat <em>$accesscontrol</em>
-<h1>The VirtualHost <em>$servername</em> was created succesfully!</h1>
-HTML files must be loaded into <em>$docroot</em>, the CGI-Scripts into <em>$scriptdir</em>.<br>
-The access logfile is <em>$accesslog</em><br>
-The error logfile is <em>$errorlog</em><p>
-Access to this VirtualHost has <em>$accesscontrol</em>
-</body>
-</html>
-EOF        
+        {
+            echo "<html><body><h1>Der VirtualHost <em>$servername</em> wurde erfolgreich eingerichtet!</h1>"
+            echo "HTML-Dateien muessen nach <em>$docroot</em> geladen werden, CGI-Scripts nach <i>$scriptdir</i>.<br>"
+            echo "Die Access-Logfile ist <em>$accesslog</em><br>"
+            echo "Die Error-Logfile ist <em>$errorlog</em><p>"
+            echo "Zugriff auf diesen VirtualHost hat <em>$accesscontrol</em>"
+            echo "<h1>The VirtualHost <em>$servername</em> was created succesfully!</h1>"
+            echo "HTML files must be loaded into <em>$docroot</em>, the CGI-Scripts into <em>$scriptdir</em>.<br>"
+            echo "The access logfile is <em>$accesslog</em><br>"
+            echo "The error logfile is <em>$errorlog</em><p>"
+            echo "Access to this VirtualHost has <em>$accesscontrol</em></body></html>"
+        } > ${docroot}/index.html        
         chown apache:apache -R ${docroot}
     fi
-
-    if [ ! -d $scriptdir ]
+    if [ ! -d ${scriptdir} ]
     then
-        mkdir -p $scriptdir
-        chown apache:apache $scriptdir
+        mkdir -p ${scriptdir}
+        chown apache:apache ${scriptdir}
     fi
-
+    echo ""
     echo "<VirtualHost $ip:$port>"
     echo "    ServerName $servername:$port"
-
-    if [ "x$serveralias" != "x" ]
-    then
-        echo "    ServerAlias $serveralias"
-    fi
-
+    [ "x$serveralias" != "x" ] && echo "    ServerAlias $serveralias"
     echo "    ServerAdmin $mail"
     echo "    DocumentRoot $docroot"
-
     echo "    ScriptAlias $scriptalias $scriptdir"
-
     if [ "$modcache" = "yes" ] 
     then
         echo "    CacheEnable mem /"
@@ -841,13 +835,16 @@ EOF
     else    
         [ "$APACHE2_MOD_CACHE" = "yes" ] && echo "    CacheDisable /"
     fi
-
     echo "    <Directory \"${scriptdir}\">"
     echo '        AllowOverride All'
     echo '        Options None'
     echo '        Require all denied'
     echo "        Require ${accesscontrol} granted"
     echo '    </Directory>'
+
+    options="FollowSymLinks MultiViews"
+    [ "$ssi" = "yes" ]     && options="$options Includes"
+    [ "$content" = "yes" ] && options="$options Indexes"
 
     echo "    <Directory \"${docroot}\">"
     echo '        AllowOverride All'
@@ -882,14 +879,12 @@ EOF
         echo '    <Files ~ "\.(pl|cgi|shtml|phtml|php|php?)$">'
         echo '        SSLOptions +StdEnvVars'
         echo '    </Files>'
-
         echo "    <Directory \"${docroot}\">"
         echo "        AllowOverride All"
         echo "        Options ${options}"
         echo '        Require all denied'
         echo "        Require ${accesscontrol} granted"
         echo '    </Directory>'
-
         echo "    <Directory \"${scriptdir}\">"
         echo "        SSLOptions +StdEnvVars"
         echo "    </Directory>"
@@ -914,7 +909,6 @@ EOF
             then
                 echo "Creating $sslcertname.pem"
                 echo "Notice: The Common Name (you will type it in a moment) has to be the ServerName!"
-
                 /var/install/bin/certs-create-tls-certs web batch alternate "$sslcertname" "$servername"
             fi
         fi
@@ -928,7 +922,7 @@ done
 #----------------------------------------------------------------------------------------
 # setup logrotate
 #----------------------------------------------------------------------------------------
-cat >> ${testroot}/etc/logrotate.d/apache2 <<EOF
+cat >> /etc/logrotate.d/apache2 <<EOF
 /var/log/apache2/*log {
     ${APACHE2_LOG_INTERVAL}
     missingok
