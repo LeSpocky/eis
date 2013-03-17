@@ -334,13 +334,15 @@ ServerSignature ${APACHE2_SERVER_SIGNATURE}
 <Directory />
     Options FollowSymLinks
     AllowOverride None
+    Order deny,allow
+    Deny from all    
 </Directory>
 
 <Directory "/var/www/localhost/htdocs">
     Options ${options}
     AllowOverride All
-    Require all denied
-    Require ${APACHE2_ACCESS_CONTROL} granted
+    Order allow,deny
+    Allow from ${APACHE2_ACCESS_CONTROL} 
 </Directory>
 
 <Directory "/home/*/public_html">
@@ -368,8 +370,8 @@ ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
 <Directory "/var/www/cgi-bin">
     AllowOverride None
     Options None
-    Require all denied
-    Require ${APACHE2_ACCESS_CONTROL} granted
+    Order allow,deny
+    Allow from ${APACHE2_ACCESS_CONTROL}
 </Directory>
 
 IndexOptions FancyIndexing VersionSort NameWidth=* HTMLTable Charset=UTF-8
@@ -722,8 +724,8 @@ then
         echo '    <Directory \"/var/www/localhost/htdocs\">'
         echo "        Options ${options}"
         echo '        AllowOverride All'
-        echo '        Require all denied'
-        echo "        Require ${APACHE2_ACCESS_CONTROL} granted"
+        echo '        Order allow,deny'
+        echo "        Allow from ${APACHE2_ACCESS_CONTROL}"
         echo '    </Directory>'
         echo "    SSLEngine On"
         echo "    SSLCipherSuite ALL:!ADH:!EXP56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL"
@@ -838,8 +840,8 @@ do
     echo "    <Directory \"${scriptdir}\">"
     echo '        AllowOverride All'
     echo '        Options None'
-    echo '        Require all denied'
-    echo "        Require ${accesscontrol} granted"
+    echo '        Order allow,deny'
+    echo "        Allow from ${accesscontrol}"
     echo '    </Directory>'
 
     options="FollowSymLinks MultiViews"
@@ -849,8 +851,8 @@ do
     echo "    <Directory \"${docroot}\">"
     echo '        AllowOverride All'
     echo "        Options ${options}"
-    echo '        Require all denied'
-    echo "        Require ${accesscontrol} granted"
+    echo '        Order allow,deny'
+    echo "        Allow from ${accesscontrol}"
     echo '    </Directory>'
 
     if [ "$APACHE2_SSL" = "yes" -a "$ssl" = "yes" -a "$forcessl" = "yes" ]
@@ -882,8 +884,8 @@ do
         echo "    <Directory \"${docroot}\">"
         echo "        AllowOverride All"
         echo "        Options ${options}"
-        echo '        Require all denied'
-        echo "        Require ${accesscontrol} granted"
+        echo '        Order allow,deny'
+        echo "        Allow from ${accesscontrol}"
         echo '    </Directory>'
         echo "    <Directory \"${scriptdir}\">"
         echo "        SSLOptions +StdEnvVars"
