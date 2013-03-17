@@ -11,7 +11,7 @@ depends="cuimenu phpmyadmin"
 depends_dev=""
 makedepends="$depends_dev"
 install=""
-subpackages="$pkgname-dev $pkgname-doc"
+subpackages=""
 source="${pkgname}.txt                                 
         ${pkgname}.sh                                  
         ${pkgname}-update.sh                           
@@ -37,9 +37,10 @@ build() {
 
 package() {
 	cd "$_builddir"
-	cd ${srcdir}/dialog.d
-	for currentDialogScript in `ls` do
-		install -D -m755 $currentDialogScript ${pkgdir}/var/install/dialog.d/$currentDialogScript || return 1
+	cd ${startdir}/dialog.d
+	for currentDialogScript in `ls`
+	do
+		install -D -m755 ${startdir}/dialog.d/$currentDialogScript ${pkgdir}/var/install/dialog.d/$currentDialogScript || return 1
 	done
 	cd -
 	install -D -m744 ${srcdir}/${pkgname}.txt                                  ${pkgdir}/usr/share/doc/phpmyadmin/phpmyadmin.txt || return 1
@@ -49,3 +50,9 @@ package() {
 	install -D -m744 ${srcdir}/${pkgname}.setup.services.phpmyadmin.menu       ${pkgdir}/var/install/menu/setup.services.phpmyadmin.menu || return 1
 	install -D -m744 ${srcdir}/${pkgname}.setup.services.phpmyadmin.tools.menu ${pkgdir}/var/install/menu/setup.services.phpmyadmin.tools.menu || return 1
 }
+md5sums="9d58799f12b8385b1ef64f5c303b69c0  cui-phpmyadmin.txt
+3f8ebe7d6ea50909da02ea61efca011f  cui-phpmyadmin.sh
+edcdfbc31192eca5f3a6788c5efbf440  cui-phpmyadmin-update.sh
+c34375723a9b08e5032f31487b709512  cui-phpmyadmin.help
+31a2ecd9c7d026a57696e15d41a650a3  cui-phpmyadmin.setup.services.phpmyadmin.menu
+f8c5f7cc1dc20ad5b15ed32d28df5233  cui-phpmyadmin.setup.services.phpmyadmin.tools.menu"
