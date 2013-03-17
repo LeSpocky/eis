@@ -148,6 +148,7 @@ rename_old_variables()
     APACHE2_DIR_N='0'
     APACHE2_VHOST_N='0'
     APACHE2_VHOST_1_DIR_N=0
+    APACHE2_ERROR_DOCUMENT_N='0'
     # read old values if exists
     if [ -f /etc/config.d/${packages_name} ]
     then

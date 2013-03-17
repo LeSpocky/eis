@@ -133,6 +133,12 @@ enssi="#"
 [ "$APACHE2_ENABLE_SSI" = "yes" ] && enssi=""
 
 #----------------------------------------------------------------------------------------
+# Enable negotiation
+#----------------------------------------------------------------------------------------
+enneg="#"
+[ "$APACHE2_ERROR_DOCUMENT_N" -gt 0 ] && enneg=""
+
+#----------------------------------------------------------------------------------------
 # creating httpd.conf
 #----------------------------------------------------------------------------------------
 options="FollowSymLinks MultiViews"
@@ -259,7 +265,7 @@ LoadModule log_config_module modules/mod_log_config.so
 ${encache}LoadModule mem_cache_module modules/mod_mem_cache.so
 LoadModule mime_module modules/mod_mime.so
 #LoadModule mime_magic_module modules/mod_mime_magic.so
-#LoadModule negotiation_module modules/mod_negotiation.so
+${enneg}LoadModule negotiation_module modules/mod_negotiation.so
 #LoadModule proxy_module modules/mod_proxy.so
 #LoadModule proxy_ajp_module modules/mod_proxy_ajp.so
 #LoadModule proxy_balancer_module modules/mod_proxy_balancer.so
