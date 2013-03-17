@@ -3,49 +3,10 @@
 
 <help name="START_PHPMYADMIN">
   Soll phpMyAdmin verfuegbar sein oder nicht.<br/>
+  TODO: Zur Zeit noch nicht implementiert.
 <br/>
-  Wird hier 'no' eingestellt, so wird das angegebene phpMyAdmin-Verzeichnis
-  geloescht. Solange das Gesamtpaket nicht deinstalliert wird, kann es jeder-
-  zeit wieder aktiviert werden, da die gepackte Version von phpMyAdmin 
-  innerhalb des phpMyAdmin-EisFair-Pakets noch zur Verfuegung steht.<br/>
-<br/>
-  Es ist zu beachten, dass _nach_ einer erfolgreichen Konfiguration _nicht_ 
-  der Pfad oder das Verzeichnis von phpMyAdmin geaendert und dann 
-  START_PHPMYADMIN auf 'no' gestellt wird! In diesem Fall kennt das 
-  Eis-Setup den urspruenglichen Folder nicht mehr und kann somit phpMyAdmin
-  _nicht_ deaktiveren. In diesem Fall muss der nun noch exitierende Folder
-  im WebPage-Verzeichnis von Hand geloescht werden. <br/>
-<br/>  
-  Soll der Pfad zu phpMyAdmin geaendert werden, so ist _ohne_ Veraenderung der 
-  Pfadangabe START_PHPMYADMIN='no' einzustellen und das Setup zu speichern 
-  und zu verlassen. Damit wird der urspruengliche Folder geloescht. Nun kann 
-  erneut ins Setup gegangen und ein anderer Pfad angegeben werden. Saemtliche
-  bisherigen Einstellungen sind bei dieser Vorgehensweise noch vorhanden.<br/>
-<br/> 
   Gueltige Werte: yes, no<br/> 
   Standard-Einstellung: START_PHPMYADMIN='no'
-<br/>
-</help>
-
-
-<help name="PHPMYADMIN_INSTALL_PATH">
-  Hier wird der Pfad angegeben, in welchem der Folder fuer phpMyAdmin erzeugt
-  werden soll. Im Normalfall ist dies der APACHE2_DOCUMENT_ROOT, welcher 
-  beim ersten Setup hier eingeblendet wird.<br/>
-<br/>
-  Gueltige Werte: jeder gueltige Pfad _ohne_ abschliessenden Slash <br/>
-  Standard-Einstellung: PHPMYADMIN_INSTALL_PATH='/var/www/htdocs'<br/>
-<br/>
-</help>
-
-
-<help name="PHPMYADMIN_INSTALL_FOLDER">
-  Hier wird der Folder eingestellt, welcher unterhalb von 
-  PHPMYADMIN_INSTALL_PATH angelegt wird. In diesen Ordner wird phpMyAdmin 
-  installiert.<br/>
-<br/>
-  Gueltige Werte: jeder gueltige Name fuer ein Verzeichnis<br/> 
-  Standard-Einstellung: PHPMYADMIN_INSTALL_FOLDER='phpMyAdmin'<br/>
 <br/>
 </help>
 

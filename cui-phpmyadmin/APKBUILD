@@ -12,11 +12,11 @@ depends_dev=""
 makedepends="$depends_dev"
 install=""
 subpackages=""
-source="${pkgname}.txt                                 
-        ${pkgname}.sh                                  
-        ${pkgname}-update.sh                           
-        ${pkgname}.help                                
-        ${pkgname}.setup.services.phpmyadmin.menu      
+source="${pkgname}.txt
+        ${pkgname}.sh
+        ${pkgname}-update.sh
+        ${pkgname}.help
+        ${pkgname}.setup.services.phpmyadmin.menu
         ${pkgname}.setup.services.phpmyadmin.tools.menu
 "
 
@@ -40,7 +40,7 @@ package() {
 	cd ${startdir}/dialog.d
 	for currentDialogScript in `ls`
 	do
-		install -D -m755 ${startdir}/dialog.d/$currentDialogScript ${pkgdir}/var/install/dialog.d/$currentDialogScript || return 1
+		install -D -m755 $currentDialogScript ${pkgdir}/var/install/dialog.d/$currentDialogScript || return 1
 	done
 	cd -
 	install -D -m744 ${srcdir}/${pkgname}.txt                                  ${pkgdir}/usr/share/doc/phpmyadmin/phpmyadmin.txt || return 1
