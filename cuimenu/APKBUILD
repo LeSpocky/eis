@@ -39,8 +39,6 @@ build() {
 	make -j1 eischk || return 1
 	cd ${_builddir}/list-files.cui
 	make -j1 -s || return 1 
-	cd ${_builddir}/list-packages.cui
-	make -j1 -s || return 1
 	cd ${_builddir}/shellrun.cui
 	make -j1 -s || return 1
 	cd ${_builddir}/show-doc.cui
@@ -56,8 +54,6 @@ package() {
 	make -j1 DESTDIR="$pkgdir" install || return 1
 	cp ${_builddir}/eischk/eischk ${pkgdir}/var/install/bin/
 	cd ${_builddir}/list-files.cui
-	make -j1 DESTDIR="$pkgdir" install || return 1
-	cd ${_builddir}/list-packages.cui
 	make -j1 DESTDIR="$pkgdir" install || return 1
 	cd ${_builddir}/shellrun.cui
 	make -j1 DESTDIR="$pkgdir" install || return 1

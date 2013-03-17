@@ -1377,8 +1377,8 @@ EisMenuUpdateVersionTitle(EISMENU* eismenu)
 	TCHAR base[64 + 1];
 	int len;
 
-	EisMenuKernelVersion(kernel, 64);
-	EisMenuGetFileData(_T("/etc/version"), base, 64);
+//	EisMenuKernelVersion(kernel, 64);
+	EisMenuGetFileData(_T("/etc/alpine-release"), base, 64);
 
 	if (eismenu->SubTitle) 
 	{
@@ -1390,11 +1390,14 @@ EisMenuUpdateVersionTitle(EISMENU* eismenu)
 	stprintf(eismenu->SubTitle,
 		len,
 #ifdef _UNICODE
-		_T("base: %ls  eiskernel: %ls"),
+//		_T("Release: %ls  eiskernel: %ls"),
+		_T("Release: %ls"),		
 #else
-		_T("base: %s  eiskernel: %s"),
+//		_T("Release: %s  eiskernel: %s"),
+		_T("Release: %s),		
 #endif
-		base,kernel);
+//		base,kernel);
+		base);		
 }
 
 /* ---------------------------------------------------------------------
