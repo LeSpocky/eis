@@ -5,63 +5,16 @@ phpMyAdmin for eisfair-ng - MySQL-Administration mit phpMyAdmin
 ============================
 
 Dieses Paket stellt das Datenbank-Administrationstool phpMyAdmin fuer MySQL
-zur Verfuegung. Das Paket basiert auf der Version 3.2.2.1 von phpMyAdmin.
-
-Im Folgenden werden die Moeglichkeiten des Setups erlaeutert. Die
-vollstaendige Originaldokumentation steht unter dem Menuepunkt
-
-   "View original documentation"
-
 zur Verfuegung.
 
-
-
-2. Voraussetzungen
-==================
-
-Fuer die Benutzung von phpMyAdmin werden die folgenden installierten Pakete
-benoetigt:
-
-- Base      (base)           1.5.2
-- Apache2   (apache2)        1.0.8
-- MySQL     (mysql)          1.2.13
-- PHP       (apache2_php4)   1.0.8 oder
-            (apache2_php5)   1.0.8
-
-Eine MySQL-Installation auf der gleichen Maschine ist lediglich fuer den
-Zugriff auf Datenbanken notwendig. Auf der Maschine, auf welcher
-phpMyAdmin laeuft, muessen sich nicht unbedingt die Datenbanken befinden.
+Im Folgenden werden die Moeglichkeiten des Setups erlaeutert.
 
 
 
-3. Installation
-===============
-
-Die Installation wird lediglich dann abgebrochen, wenn die Base-Version zu
-alt ist oder wenn die anderen Pakete nicht vorhanden sind. Bei aelteren
-Versionen der anderen Pakete erscheint ein Hinweis, dass die installierte
-Version aelter als die gewuenschte Version ist.
-
-Bisher sind keine Schwierigkeiten mit aelteren Versionen bekannt. Sollten
-hier Probleme auftauchen, diese bitte an <yves(at)eisfair(dot)org>
-unter genauer Angabe der verwendeten Versionen und einer Fehlerbeschreibung
-mailen. Vielen Dank.
-
-Bei der Installation wird das eventuell vorhandene alte Paket "phpMyAdmin"
-von Oliver Buschjost entfernt. Wenn dieses Paket gefunden wurde, dann wird
-auch der Folder
-
-   /var/www/htdocs/phpMyAdmin
-
-geloescht. Dies ist der uebliche Installationsfolder dieses Paketes gewesen.
-Wie gesagt wird er nur geloescht, wenn das alte Paket gefunden wurde.
-
-
-
-4. Die phpMyAdmin Menuepunkte
+2. Die phpMyAdmin Menuepunkte
 =============================
 
-4.1 phpMyAdmin Hauptmenue
+2.1 phpMyAdmin Hauptmenue
 =========================
 
   1. View documentaion
@@ -80,7 +33,7 @@ Wie gesagt wird er nur geloescht, wenn das alte Paket gefunden wurde.
   3. Edit configuration
      Mit diesem Menuepunkt wird die Konfiguration von phpMyAdmin vorgenommen.
      Eine genaue Erlaeuterung der Menuepunkte folgt unter
-     "4.2 Edit configuration"
+     "2.2 Edit configuration"
 
   4. Advanced configuration file handling
      Unter diesem Menuepunkt befinden sich die ueblichen Eis-Moeglichkeiten,
@@ -123,7 +76,7 @@ Wie gesagt wird er nur geloescht, wenn das alte Paket gefunden wurde.
 
 
 
-4.2 Edit configuration
+2.2 Edit configuration
 ======================
 
 Im Folgenden werden die Moeglichkeiten der phpMyAdmin-Konfiguration
@@ -139,44 +92,11 @@ MySQL-Konfiguration angelegt werden.
 
 "START_PHPMYADMIN"
   Soll phpMyAdmin verfuegbar sein oder nicht.
-  Wird hier 'no' eingestellt, so wird das angegebene phpMyAdmin-Verzeichnis
-  geloescht. Solange das Gesamtpaket nicht deinstalliert wird, kann es jeder-
-  zeit wieder aktiviert werden, da die gepackte Version von phpMyAdmin
-  innerhalb des phpMyAdmin-EisFair-Pakets noch zur Verfuegung steht.
 
-  Es ist zu beachten, dass _nach_ einer erfolgreichen Konfiguration _nicht_
-  der Pfad oder das Verzeichnis von phpMyAdmin geaendert und dann
-  START_PHPMYADMIN auf 'no' gestellt wird! In diesem Fall kennt das
-  Eis-Setup den urspruenglichen Folder nicht mehr und kann somit phpMyAdmin
-  _nicht_ deaktivieren. In diesem Fall muss der nun noch exitierende Folder
-  im WebPage-Verzeichnis von Hand geloescht werden.
-
-  Soll der Pfad zu phpMyAdmin geaendert werden, so ist _ohne_ Veraenderung der
-  Pfadangabe START_PHPMYADMIN='no' einzustellen und das Setup zu speichern
-  und zu verlassen. Damit wird der urspruengliche Folder geloescht. Nun kann
-  erneut ins Setup gegangen und ein anderer Pfad angegeben werden. Saemtliche
-  bisherigen Einstellungen sind bei dieser Vorgehensweise noch vorhanden.
+  TODO: Zur Zeit noch nicht implementiert
 
   Gueltige Werte: yes, no
   Standard-Einstellung: START_PHPMYADMIN='no'
-
-
-"PHPMYADMIN_INSTALL_PATH"
-  Hier wird der Pfad angegeben, in welchem der Folder fuer phpMyAdmin erzeugt
-  werden soll. Im Normalfall ist dies der APACHE2_DOCUMENT_ROOT, welcher
-  beim ersten Setup hier eingeblendet wird.
-
-  Gueltige Werte: jeder gueltige Pfad _ohne_ abschliessenden Slash
-  Standard-Einstellung: PHPMYADMIN_INSTALL_PATH='/var/www/htdocs'
-
-
-"PHPMYADMIN_INSTALL_FOLDER"
-  Hier wird der Folder eingestellt, welcher unterhalb von
-  PHPMYADMIN_INSTALL_PATH angelegt wird. In diesen Ordner wird phpMyAdmin
-  installiert.
-
-  Gueltige Werte: jeder gueltige Name fuer ein Verzeichnis
-  Standard-Einstellung: PHPMYADMIN_INSTALL_FOLDER='phpMyAdmin'
 
 
 "PHPMYADMIN_SERVER_N"
@@ -1142,4 +1062,4 @@ MySQL-Konfiguration angelegt werden.
 
 
 
-Copyright (c) 2006-2009 The eisfair Team, <team(at)eisfair(dot)org>
+Copyright (c) 2006-2013 The eisfair Team, <team(at)eisfair(dot)org>
