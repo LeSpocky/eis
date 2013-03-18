@@ -3,6 +3,3 @@
 /var/install/bin/del-menu setup.services.menu setup.services.apache2.menu
 
 rm -f /etc/backup.d/apache2.*
-rm -f /etc/check.d/apache2
-rm -f /etc/check.d/apache2.exp
-rm -f /etc/default.d/apache2

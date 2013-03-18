@@ -14,7 +14,7 @@ START_APACHE2='yes'                   # Start the Apache Webserver
 #------------------------------------------------------------------------------
 
 APACHE2_PORT='80'                     # TCP/IP port
-APACHE2_SERVER_NAME='www.foo.lan.'    # FQND of the server e.g.
+APACHE2_SERVER_NAME='www.foo.lan'     # FQND of the server e.g.
                                       # meineis.eisfair.net
 APACHE2_SERVER_ADMIN='webmaster@foo.lan'
                                       # Email address of webmaster 
