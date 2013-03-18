@@ -1,0 +1,170 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/apache2 - configuration file for apache2
+# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Start Apache2 Webserver during startup
+#------------------------------------------------------------------------------
+
+START_APACHE2='yes'                   # Start the Apache Webserver
+
+#------------------------------------------------------------------------------
+# General settings
+#------------------------------------------------------------------------------
+
+APACHE2_PORT='80'                     # TCP/IP port
+APACHE2_SERVER_NAME='www.foo.lan.'    # FQND of the server e.g.
+                                      # meineis.eisfair.net
+APACHE2_SERVER_ADMIN='webmaster@foo.lan'
+                                      # Email address of webmaster 
+APACHE2_SERVER_SIGNATURE='Off'        # On/Off/Email
+
+#------------------------------------------------------------------------------
+# Gerneral SSL Settings
+#------------------------------------------------------------------------------
+
+APACHE2_SSL='no'                      # Start SSL-Engine?
+APACHE2_SSL_PORT='443'                # Port on which SSL should run
+
+#------------------------------------------------------------------------------
+# Special Settings
+#------------------------------------------------------------------------------
+
+APACHE2_DIRECTORY_INDEX='index.html index.htm'
+                                      # Default document
+APACHE2_HOSTNAME_LOOKUPS='yes'        # Resolve IPs in logfile?
+APACHE2_VIEW_DIRECTORY_CONTENT='yes'  # If there's no index.html view files in
+                                      # dir
+APACHE2_ACCESS_CONTROL='all'          # Who get access e.g. 192.168.0.0/24
+APACHE2_ENABLE_SSI='no'               # Enable SSI 'yes' or 'no'
+APACHE2_ENABLE_USERDIR='yes'          # Show content of /home/USER/public_html
+
+#------------------------------------------------------------------------------
+# Error Documents
+#------------------------------------------------------------------------------
+
+APACHE2_ERROR_DOCUMENT_N='0'          # no. costum of Error Documents
+APACHE2_ERROR_DOCUMENT_1_ERROR='404'  # HTTP-Error number
+APACHE2_ERROR_DOCUMENT_1_DOCUMENT='/error/HTTP_NOT_FOUND.html.var'
+                                      # HTML-Document to view 
+APACHE2_ERROR_DOCUMENT_2_ERROR='400'  # HTTP-Error number
+APACHE2_ERROR_DOCUMENT_2_DOCUMENT='/error/HTTP_BAD_REQUEST.html.var'
+                                      # HTML-Document to view 
+APACHE2_ERROR_DOCUMENT_3_ERROR='401'  # HTTP-Error number
+APACHE2_ERROR_DOCUMENT_3_DOCUMENT='/error/HTTP_UNAUTHORIZED.html.var'
+                                      # HTML-Document to view 
+APACHE2_ERROR_DOCUMENT_4_ERROR='403'  # HTTP-Error number
+APACHE2_ERROR_DOCUMENT_4_DOCUMENT='/error/HTTP_FORBIDDEN.html.var'
+                                      # HTML-Document to view 
+APACHE2_ERROR_DOCUMENT_5_ERROR='405'  # HTTP-Error number
+APACHE2_ERROR_DOCUMENT_5_DOCUMENT='/error/HTTP_FORBIDDEN.html.var'
+                                      # HTML-Document to view 
+APACHE2_ERROR_DOCUMENT_6_ERROR='408'  # HTTP-Error number
+APACHE2_ERROR_DOCUMENT_6_DOCUMENT='/error/HTTP_FORBIDDEN.html.var'
+                                      # HTML-Document to view 
+APACHE2_ERROR_DOCUMENT_7_ERROR='414'  # HTTP-Error number
+APACHE2_ERROR_DOCUMENT_7_DOCUMENT='/error/HTTP_REQUEST_URI_TOO_LARGE.html.var'
+                                      # HTML-Document to view 
+                                     
+
+#------------------------------------------------------------------------------
+# Directory Settings + Aliases
+#------------------------------------------------------------------------------
+
+APACHE2_DIR_N='0'                     # No. of dirs
+APACHE2_DIR_1_ACTIVE='no'             # Dir Active? yes/no
+APACHE2_DIR_1_ALIAS='no'              # Create an alias?
+APACHE2_DIR_1_ALIAS_NAME=''           # Name of alias
+APACHE2_DIR_1_PATH='/var/www/localhost/htdocs/geheim/'
+                                      # Name of 1. dir
+APACHE2_DIR_1_AUTH_NAME='Members only!'
+                                      # Name of the area to protect
+APACHE2_DIR_1_AUTH_TYPE='Basic'       # Authentication type: Basic or Digest
+APACHE2_DIR_1_AUTH_N='0'              # No. of usernames
+APACHE2_DIR_1_AUTH_1_USER='user'      # User no. 1.
+APACHE2_DIR_1_AUTH_1_PASS='secret'    # Password for user 1.
+APACHE2_DIR_1_ACCESS_CONTROL='all'    # e.g. 192.168.0.0/24 or 192.168.
+APACHE2_DIR_1_CGI='none'              # !NOT YES! Possibilities are: 'none'
+                                      # '.pl' '.cgi'
+APACHE2_DIR_1_SSI='no'                # Allow Server Side Includes?
+APACHE2_DIR_1_VIEW_DIR_CONTENT='no'   # View files in dir if no index.html
+APACHE2_DIR_1_WEBDAV='no'             # Enable WebDav
+
+#------------------------------------------------------------------------------
+# Virtual Hosts
+#------------------------------------------------------------------------------
+
+APACHE2_VHOST_N='1'                   # no. of virtual hosts
+APACHE2_VHOST_1_ACTIVE='no'           # Should the VHost be active?
+APACHE2_VHOST_1_IP='*'                # '*' or ip address
+APACHE2_VHOST_1_PORT='80'             # Port
+APACHE2_VHOST_1_SERVER_NAME='www.demo.lan'
+                                      # server name
+APACHE2_VHOST_1_SERVER_ALIAS='*.demo'  # server alias, may be empty
+APACHE2_VHOST_1_SERVER_ADMIN='webmaster@demo.lan'
+                                      # email of webmaster
+APACHE2_VHOST_1_DOCUMENT_ROOT='/var/www/demo/htdocs'
+                                      # document root
+APACHE2_VHOST_1_SCRIPT_ALIAS='/cgi-bin/'
+                                      # script alias
+APACHE2_VHOST_1_SCRIPT_DIR='/var/www/demo/cgi-bin/'
+                                      # directory to use
+APACHE2_VHOST_1_ACCESS_CONTROL='all'  # controls who get stuff
+APACHE2_VHOST_1_VIEW_DIRECTORY_CONTENT='no'
+APACHE2_VHOST_1_ENABLE_SSI='no'
+APACHE2_VHOST_1_MOD_CACHE='no'        # Enable mod_cache for current vhost
+APACHE2_VHOST_1_DIR_N='0'
+APACHE2_VHOST_1_DIR_1_ACTIVE='no'
+APACHE2_VHOST_1_DIR_1_ALIAS='no'      # Create an alias?
+APACHE2_VHOST_1_DIR_1_ALIAS_NAME=''   # Name of alias
+APACHE2_VHOST_1_DIR_1_PATH='/var/www/demo/htdocs/geheim'
+                                      # Name of 1. dir
+APACHE2_VHOST_1_DIR_1_AUTH_NAME='Members only!'
+                                      # Name of the area to protect
+APACHE2_VHOST_1_DIR_1_AUTH_TYPE='Basic'
+                                      # Authentication type: Basic or Digest
+APACHE2_VHOST_1_DIR_1_AUTH_N='0'      # No. of usernames
+APACHE2_VHOST_1_DIR_1_AUTH_1_USER='user'
+APACHE2_VHOST_1_DIR_1_AUTH_1_PASS='secret'
+APACHE2_VHOST_1_DIR_1_ACCESS_CONTROL='all'
+                                      # e.g. 192.168.0.0/24 or 192.168.
+APACHE2_VHOST_1_DIR_1_CGI='none'      # !NOT YES! Possibilities are: 'none'
+                                      # '.pl' '.cgi'
+APACHE2_VHOST_1_DIR_1_SSI='no'        # Allow Server Side Includes?
+APACHE2_VHOST_1_DIR_1_VIEW_DIR_CONTENT='no'
+                                      # View files in dir if no index.html
+APACHE2_VHOST_1_DIR_1_WEBDAV='no'     # Enable WebDav
+APACHE2_VHOST_1_SSL='no'              # activate SSL
+APACHE2_VHOST_1_SSL_PORT='443'        # activate SSL
+APACHE2_VHOST_1_SSL_FORCE='no'        # redirect to https://
+APACHE2_VHOST_1_SSL_CERT_NAME='apache'
+                                      # Name of the cert.
+
+#------------------------------------------------------------------------------
+# Log-file handling
+#------------------------------------------------------------------------------
+
+APACHE2_LOG_LEVEL='warn'              # warning level
+APACHE2_LOG_COUNT='10'                # number of log files to save
+APACHE2_LOG_INTERVAL='weekly'         # logrotate interval: daily, weekly,
+                                      # monthly
+
+#------------------------------------------------------------------------------
+# Settings for performance tuning
+#------------------------------------------------------------------------------
+
+APACHE2_MAX_KEEP_ALIVE_TIMEOUT='15'
+APACHE2_MAX_KEEP_ALIVE_REQUESTS='100'
+APACHE2_MAX_CLIENTS='256'
+APACHE2_MAX_REQUESTS_PER_CHILD='4000'
+
+#------------------------------------------------------------------------------
+# Settings for apache modules
+#------------------------------------------------------------------------------
+
+APACHE2_MOD_CACHE='no'                # Enable mod_cache for localhost
+
+#------------------------------------------------------------------------------
+# End
+#------------------------------------------------------------------------------

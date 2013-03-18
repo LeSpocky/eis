@@ -4,167 +4,28 @@
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 
-### -------------------------------------------------------------------------
-### major variables
-### -------------------------------------------------------------------------
-# presonal data
-# -------------
-my_name='Sebastian Scholze'
-my_initial='schlotze'
-my_copy="`date +%Y` ${my_name} <sebastian(at)eisfair(dot)org>"
-
-# date settings
-# -------------
-datum_creation="2006-07-31"
-datum_update=`date +%Y-%m-%d`
-
 # name of the current package
 # ---------------------------
 packages_name=apache2
 
-### -------------------------------------------------------------------------
-### include libs for using
-### -------------------------------------------------------------------------
+# include libs for using
+# ----------------------
 . /var/install/include/configlib     # configlib from eisfair
-. /var/install/include/apache2
-
-### -------------------------------------------------------------------------
-### Set the default values for configuration
-### ----------------------------------------
-START_APACHE2='yes'
-APACHE2_PORT='80'
-APACHE2_SERVER_ADMIN='webmaster@foo.bar'
-APACHE2_SERVER_NAME='eis.lan.fli4l'
-APACHE2_SERVER_SIGNATURE='Off'
-APACHE2_DIRECTORY_INDEX='index.html index.htm'
-APACHE2_HOSTNAME_LOOKUPS='yes'
-APACHE2_VIEW_DIRECTORY_CONTENT='yes'
-APACHE2_ACCESS_CONTROL='all'
-APACHE2_ENABLE_SSI='no'
-APACHE2_ENABLE_USERDIR='yes'
-
-#----------------------------------------------------------------------------
-# Error Documents
-#----------------------------------------------------------------------------
-APACHE2_ERROR_DOCUMENT_N='6'
-APACHE2_ERROR_DOCUMENT_1_ERROR='404'
-APACHE2_ERROR_DOCUMENT_1_DOCUMENT='/error/HTTP_NOT_FOUND.html.var'
-APACHE2_ERROR_DOCUMENT_2_ERROR='400'
-APACHE2_ERROR_DOCUMENT_2_DOCUMENT='/error/HTTP_BAD_REQUEST.html.var'
-APACHE2_ERROR_DOCUMENT_3_ERROR='401'
-APACHE2_ERROR_DOCUMENT_3_DOCUMENT='/error/HTTP_UNAUTHORIZED.html.var'
-APACHE2_ERROR_DOCUMENT_4_ERROR='403'
-APACHE2_ERROR_DOCUMENT_4_DOCUMENT='/error/HTTP_FORBIDDEN.html.var'
-APACHE2_ERROR_DOCUMENT_5_ERROR='405'
-APACHE2_ERROR_DOCUMENT_5_DOCUMENT='/error/HTTP_FORBIDDEN.html.var'
-APACHE2_ERROR_DOCUMENT_6_ERROR='408'
-APACHE2_ERROR_DOCUMENT_6_DOCUMENT='/error/HTTP_FORBIDDEN.html.var'
-APACHE2_ERROR_DOCUMENT_7_ERROR='414'
-APACHE2_ERROR_DOCUMENT_7_DOCUMENT='/error/HTTP_REQUEST_URI_TOO_LARGE.html.var'
-
-#----------------------------------------------------------------------------
-# Directory Settings + Alias
-#----------------------------------------------------------------------------
-APACHE2_DIR_N='1'
-APACHE2_DIR_1_ACTIVE='no'
-APACHE2_DIR_1_ALIAS='no'
-APACHE2_DIR_1_ALIAS_NAME=''
-APACHE2_DIR_1_PATH='/var/www/localhost/htdocs/geheim/'
-APACHE2_DIR_1_AUTH_NAME='Members only!'
-APACHE2_DIR_1_AUTH_TYPE='Basic'
-APACHE2_DIR_1_AUTH_N='0'
-APACHE2_DIR_1_AUTH_1_USER='user'
-APACHE2_DIR_1_AUTH_1_PASS='secret'
-APACHE2_DIR_1_ACCESS_CONTROL='all'
-APACHE2_DIR_1_CGI='none'
-APACHE2_DIR_1_SSI='no'
-APACHE2_DIR_1_VIEW_DIR_CONTENT='no'
-APACHE2_DIR_1_WEBDAV='no'
-#----------------------------------------------------------------------------
-# SSL
-#----------------------------------------------------------------------------
-APACHE2_SSL='no'
-APACHE2_SSL_PORT='443'
-#----------------------------------------------------------------------------
-# Settings for Log-file handling
-#----------------------------------------------------------------------------
-APACHE2_LOG_LEVEL='warn'
-APACHE2_LOG_COUNT='10'
-APACHE2_LOG_INTERVAL='weekly'
-#----------------------------------------------------------------------------
-# Settings for performance tuning
-#----------------------------------------------------------------------------
-APACHE2_MAX_KEEP_ALIVE_TIMEOUT='15'
-APACHE2_MAX_KEEP_ALIVE_REQUESTS='100'
-APACHE2_MAX_CLIENTS='256'
-APACHE2_MAX_REQUESTS_PER_CHILD='4000'
-#----------------------------------------------------------------------------
-# Settings for VHost
-#----------------------------------------------------------------------------
-APACHE2_VHOST_N='1'
-APACHE2_VHOST_1_ACTIVE='no'
-APACHE2_VHOST_1_IP='*'
-APACHE2_VHOST_1_PORT='80'
-APACHE2_VHOST_1_SERVER_NAME='bar.foo.local'
-APACHE2_VHOST_1_SERVER_ALIAS='*.foo'
-APACHE2_VHOST_1_SERVER_ADMIN='webmaster@foo.local'
-APACHE2_VHOST_1_DOCUMENT_ROOT='/var/www/foo/htdocs'
-APACHE2_VHOST_1_SCRIPT_ALIAS='/cgi-bin/'
-APACHE2_VHOST_1_SCRIPT_DIR='/var/www/foo/cgi-bin/'
-APACHE2_VHOST_1_ACCESS_CONTROL='all'
-APACHE2_VHOST_1_VIEW_DIRECTORY_CONTENT='no'
-APACHE2_VHOST_1_ENABLE_SSI='no'
-APACHE2_VHOST_1_MOD_CACHE='no'
-APACHE2_VHOST_1_DIR_N='0'
-APACHE2_VHOST_1_DIR_1_ACTIVE='no'
-APACHE2_VHOST_1_DIR_1_ALIAS='no'       
-APACHE2_VHOST_1_DIR_1_ALIAS_NAME=''
-APACHE2_VHOST_1_DIR_1_PATH='/var/www/foo/htdocs/geheim'
-APACHE2_VHOST_1_DIR_1_AUTH_NAME='Members only!'
-APACHE2_VHOST_1_DIR_1_AUTH_TYPE='Basic'
-APACHE2_VHOST_1_DIR_1_AUTH_N='0'
-APACHE2_VHOST_1_DIR_1_AUTH_1_USER='user'
-APACHE2_VHOST_1_DIR_1_AUTH_1_PASS='secret'
-APACHE2_VHOST_1_DIR_1_ACCESS_CONTROL='all'
-APACHE2_VHOST_1_DIR_1_CGI='none'
-APACHE2_VHOST_1_DIR_1_SSI='no'
-APACHE2_VHOST_1_DIR_1_VIEW_DIR_CONTENT='no'
-APACHE2_VHOST_1_DIR_1_WEBDAV='no'
-APACHE2_VHOST_1_SSL='no'
-APACHE2_VHOST_1_SSL_PORT='443'
-APACHE2_VHOST_1_SSL_FORCE='no'
-APACHE2_VHOST_1_SSL_CERT_NAME='apache'
-#----------------------------------------------------------------------------
-# Settings for apache modules
-#----------------------------------------------------------------------------
-APACHE2_MOD_CACHE='no'
 
 ### -------------------------------------------------------------------------
 ### read old configuration and rename old variables
 ### -------------------------------------------------------------------------
-rename_old_variables()
-{
-    # set the defaults for new config.d file
-    APACHE2_DIR_N='0'
-    APACHE2_VHOST_N='0'
-    APACHE2_VHOST_1_DIR_N=0
-    APACHE2_ERROR_DOCUMENT_N='0'
-    # read old values if exists
-    if [ -f /etc/config.d/${packages_name} ]
-    then
-        . /etc/config.d/${packages_name}
-    fi
-}
+# set the defaults from default.d file
+. /etc/default.d/${packages_name}
+# read old values if exists
+[ -f /etc/config.d/${packages_name} ] && . /etc/config.d/${packages_name}
 
 ### -------------------------------------------------------------------------
-### Write config and default files
+### Write the new config
 ### -------------------------------------------------------------------------
-make_config_file()
-{
-    internal_conf_file=${1}
-    (
+(
     #------------------------------------------------------------------------
-    printgpl "$packages_name" "$datum_creation" "schlotze" "2008-2010 Sebastian Scholze <sebastian@eisfair.org>"
+    printgpl "$packages_name" "2006-07-31" "schlotze" "2008-2013 Sebastian Scholze <sebastian@eisfair.org>"
 
     #------------------------------------------------------------------------
     printgroup  "Start Apache2 Webserver during startup"
@@ -213,8 +74,6 @@ make_config_file()
         fi
         idx=`expr $idx + 1`
     done
-
-    printvar
 
     #------------------------------------------------------------------------------
     printgroup "Directory Settings + Aliases"
@@ -267,7 +126,7 @@ make_config_file()
         
         
     #------------------------------------------------------------------------------
-    printgroup "Virtual Hosts" ""
+    printgroup "Virtual Hosts" 
     #------------------------------------------------------------------------------
     printvar "APACHE2_VHOST_N"           "no. of virtual hosts"
 
@@ -359,131 +218,10 @@ make_config_file()
     printend
     #------------------------------------------------------------------------------
 
-    ) > ${internal_conf_file}
-    # Set rights
-    chmod 0644 ${internal_conf_file}
-    chown root ${internal_conf_file}
-}
+) > /etc/config.d/${packages_name}
+# Set rights
+chmod 0644  /etc/config.d/${packages_name}
+chown root  /etc/config.d/${packages_name}
 
-### -------------------------------------------------------------------------
-### Create the check.d file
-### -------------------------------------------------------------------------
-make_check_file()
-{
-    printgpl -check "$packages_name" "$datum_creation" "schlotze" "2008-2010 Sebastian Scholze <sebastian@eisfair.org>" > /etc/check.d/${packages_name}
-    cat >/etc/check.d/${packages_name} <<EOF_INT
-# Variable                             OPT_VARIABLE                  VARIABLE_N                   VALUE
-START_APACHE2                          -                             -                            YESNO
-APACHE2_PORT                           -                             -                            NUMERIC
-APACHE2_SERVER_ADMIN                   -                             -                            MAILADDR
-APACHE2_SERVER_NAME                    -                             -                            EFQDN
-APACHE2_SERVER_SIGNATURE               -                             -                            APACHE2_SERVER_SIGNATURE
-APACHE2_DIRECTORY_INDEX                -                             -                            NONE
-APACHE2_HOSTNAME_LOOKUPS               -                             -                            YESNO
-APACHE2_VIEW_DIRECTORY_CONTENT         -                             -                            YESNO
-APACHE2_ACCESS_CONTROL                 -                             -                            NONE
-APACHE2_ENABLE_SSI                     -                             -                            YESNO
-APACHE2_ENABLE_USERDIR                 -                             -                            YESNO
-APACHE2_ERROR_DOCUMENT_N               -                             -                            NUMERIC
-APACHE2_ERROR_DOCUMENT_%_ERROR         -                             APACHE2_ERROR_DOCUMENT_N     NUMERIC
-APACHE2_ERROR_DOCUMENT_%_DOCUMENT      -                             APACHE2_ERROR_DOCUMENT_N     NONE
-APACHE2_DIR_N                          -                             -                            NUMERIC
-APACHE2_DIR_%_ACTIVE                   -                             APACHE2_DIR_N                YESNO
-APACHE2_DIR_%_ALIAS                    APACHE2_DIR_%_ACTIVE          APACHE2_DIR_N                YESNO
-APACHE2_DIR_%_ALIAS_NAME               APACHE2_DIR_%_ALIAS           APACHE2_DIR_N                E_ABS_PATH
-APACHE2_DIR_%_PATH                     APACHE2_DIR_%_ACTIVE          APACHE2_DIR_N                ABS_PATH
-APACHE2_DIR_%_AUTH_NAME                APACHE2_DIR_%_ACTIVE          APACHE2_DIR_N                NONE
-APACHE2_DIR_%_AUTH_TYPE                APACHE2_DIR_%_ACTIVE          APACHE2_DIR_N                APACHE2_DIR_AUTH_TYPE
-APACHE2_DIR_%_AUTH_N                   APACHE2_DIR_%_ACTIVE          APACHE2_DIR_N                NUMERIC
-APACHE2_DIR_%_AUTH_%_USER              APACHE2_DIR_%_ACTIVE          APACHE2_DIR_%_AUTH_N         NONE
-APACHE2_DIR_%_AUTH_%_PASS              APACHE2_DIR_%_ACTIVE          APACHE2_DIR_%_AUTH_N         PASSWD
-APACHE2_DIR_%_CGI                      APACHE2_DIR_%_ACTIVE          APACHE2_DIR_N                NONE
-APACHE2_DIR_%_SSI                      APACHE2_DIR_%_ACTIVE          APACHE2_DIR_N                YESNO
-APACHE2_DIR_%_ACCESS_CONTROL           APACHE2_DIR_%_ACTIVE          APACHE2_DIR_N                NONE
-APACHE2_DIR_%_VIEW_DIR_CONTENT         APACHE2_DIR_%_ACTIVE          APACHE2_DIR_N                YESNO
-APACHE2_DIR_%_WEBDAV                   APACHE2_DIR_%_ACTIVE          APACHE2_DIR_N                YESNO
-APACHE2_SSL                            -                             -                            YESNO
-APACHE2_SSL_PORT                       APACHE2_SSL                   -                            NUMERIC
-APACHE2_VHOST_N                        -                             -                            NUMERIC
-APACHE2_VHOST_%_ACTIVE                 -                             APACHE2_VHOST_N              YESNO
-APACHE2_VHOST_%_IP                     APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              RE:\*|(RE:IPADDR)
-APACHE2_VHOST_%_PORT                   APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              NUMERIC
-APACHE2_VHOST_%_SERVER_NAME            APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              FQDN
-APACHE2_VHOST_%_SERVER_ALIAS           APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              NONE
-APACHE2_VHOST_%_SERVER_ADMIN           APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              MAILADDR
-APACHE2_VHOST_%_DOCUMENT_ROOT          APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              ABS_PATH
-APACHE2_VHOST_%_SCRIPT_ALIAS           APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              ABS_PATH
-APACHE2_VHOST_%_SCRIPT_DIR             APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              ABS_PATH
-APACHE2_VHOST_%_ACCESS_CONTROL         APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              NONE
-APACHE2_VHOST_%_VIEW_DIRECTORY_CONTENT APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              YESNO
-APACHE2_VHOST_%_ENABLE_SSI             APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              YESNO  
-APACHE2_VHOST_%_MOD_CACHE              APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              YESNO
-APACHE2_VHOST_%_DIR_N                  APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              NUMERIC
-APACHE2_VHOST_%_DIR_%_ACTIVE           APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_%_DIR_N        YESNO
-APACHE2_VHOST_%_DIR_%_ALIAS            APACHE2_VHOST_%_DIR_%_ACTIVE  APACHE2_VHOST_%_DIR_N        YESNO
-APACHE2_VHOST_%_DIR_%_ALIAS_NAME       APACHE2_VHOST_%_DIR_%_ALIAS   APACHE2_VHOST_%_DIR_N        E_ABS_PATH
-APACHE2_VHOST_%_DIR_%_PATH             APACHE2_VHOST_%_DIR_%_ACTIVE  APACHE2_VHOST_%_DIR_N        ABS_PATH
-APACHE2_VHOST_%_DIR_%_AUTH_NAME        APACHE2_VHOST_%_DIR_%_ACTIVE  APACHE2_VHOST_%_DIR_N        NONE
-APACHE2_VHOST_%_DIR_%_AUTH_TYPE        APACHE2_VHOST_%_DIR_%_ACTIVE  APACHE2_VHOST_%_DIR_N        APACHE2_DIR_AUTH_TYPE
-APACHE2_VHOST_%_DIR_%_AUTH_N           APACHE2_VHOST_%_DIR_%_ACTIVE  APACHE2_VHOST_%_DIR_N        NUMERIC
-APACHE2_VHOST_%_DIR_%_AUTH_%_USER      APACHE2_VHOST_%_DIR_%_ACTIVE  APACHE2_VHOST_%_DIR_%_AUTH_N NONE
-APACHE2_VHOST_%_DIR_%_AUTH_%_PASS      APACHE2_VHOST_%_DIR_%_ACTIVE  APACHE2_VHOST_%_DIR_%_AUTH_N PASSWD
-APACHE2_VHOST_%_DIR_%_ACCESS_CONTROL   APACHE2_VHOST_%_DIR_%_ACTIVE  APACHE2_VHOST_%_DIR_N        NONE
-APACHE2_VHOST_%_DIR_%_CGI              APACHE2_VHOST_%_DIR_%_ACTIVE  APACHE2_VHOST_%_DIR_N        NONE
-APACHE2_VHOST_%_DIR_%_SSI              APACHE2_VHOST_%_DIR_%_ACTIVE  APACHE2_VHOST_%_DIR_N        YESNO
-APACHE2_VHOST_%_DIR_%_VIEW_DIR_CONTENT APACHE2_VHOST_%_DIR_%_ACTIVE  APACHE2_VHOST_%_DIR_N        YESNO
-APACHE2_VHOST_%_DIR_%_WEBDAV           APACHE2_VHOST_%_DIR_%_ACTIVE  APACHE2_VHOST_%_DIR_N        YESNO
-APACHE2_VHOST_%_SSL                    APACHE2_VHOST_%_ACTIVE        APACHE2_VHOST_N              YESNO
-APACHE2_VHOST_%_SSL_PORT               APACHE2_VHOST_%_SSL           APACHE2_VHOST_N              NUMERIC
-APACHE2_VHOST_%_SSL_FORCE              APACHE2_VHOST_%_SSL           APACHE2_VHOST_N              YESNO
-APACHE2_VHOST_%_SSL_CERT_NAME          APACHE2_VHOST_%_SSL           APACHE2_VHOST_N              NOTEMPTY
-APACHE2_LOG_LEVEL                      -                             -                            APACHE2_LOG_LEVEL
-APACHE2_LOG_COUNT                      -                             -                            NUMERIC
-APACHE2_LOG_INTERVAL                   -                             -                            APACHE2_LOG_INTERVAL
-APACHE2_MAX_KEEP_ALIVE_TIMEOUT         -                             -                            NUMERIC
-APACHE2_MAX_KEEP_ALIVE_REQUESTS        -                             -                            NUMERIC
-APACHE2_MAX_CLIENTS                    -                             -                            NUMERIC
-APACHE2_MAX_REQUESTS_PER_CHILD         -                             -                            NUMERIC
-APACHE2_MOD_CACHE                      -                             -                            YESNO
-
-EOF_INT
-
-    # Set rights for check.d file
-    chmod 0644 /etc/check.d/${packages_name}
-    chown root /etc/check.d/${packages_name}
-
-### ---------------------------------------------------------------------------
-### Create the EXTENTED check.d file
-### ---------------------------------------------------------------------------
-    printgpl -check_exp "$packages_name" "${datum_update}" "${my_initial}" "${my_name}" > /etc/check.d/${packages_name}.exp
-cat >> /etc/check.d/${packages_name}.exp << EOF
-APACHE2_LOG_LEVEL        = 'debug|info|notice|warn|error|crit|alert|emerg'
-                          : 'no valid level, should be debug, info, notice, warn, error, crit, alert or emerg'
-APACHE2_LOG_INTERVAL     = 'daily|weekly|monthly'
-                          : 'no valid interval, should be daily, weekly or monthly'
-APACHE2_SERVER_SIGNATURE = 'On|Off|Email'
-                          : 'only on, off or email is allowd'
-APACHE2_DIR_AUTH_TYPE    = 'Basic|Digest'
-                          : 'only Basic or Digest is allowd'
-EOF
-    # Set rights for check.exp file
-    chmod 0644 /etc/check.d/${packages_name}.exp
-    chown root /etc/check.d/${packages_name}.exp
-}
-
-### ---------------------------------------------------------------------------
-### Main
-### ---------------------------------------------------------------------------
-# write default config file
-make_config_file /etc/default.d/${packages_name}
-
-# update from old version
-rename_old_variables
-
-# write new config file
-make_config_file /etc/config.d/${packages_name}
-
-# write check.d file
-make_check_file
 
 exit 0

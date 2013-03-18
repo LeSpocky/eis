@@ -1,4 +1,4 @@
 #!/bin/sh
 
 /var/install/bin/add-menu setup.services.menu setup.services.apache2.menu "Apache2 Webserver"
-/var/install/config.d/apache2-update.sh
+[ ! -f /etc/config.d/apache2 ] && cp /etc/default.d/apache2 /etc/config.d/

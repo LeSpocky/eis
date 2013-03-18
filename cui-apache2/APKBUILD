@@ -2,17 +2,20 @@
 # Maintainer: jv <jens@eisfair.org>
 pkgname=cui-apache2
 pkgver=2.4.4
-pkgrel=0
+pkgrel=1
 pkgdesc="CUI Setup for Apache 2"
 url="http://www.eisfair.org"
-arch="all"
+arch="noarch"
 license="GPL"
 depends="cuimenu apache2 apache2-utils"
 depends_dev=""
 makedepends="$depends_dev"
-install="$pkgname.post-install $pkgname.post-deinstall"
+install="$pkgname.pre-upgrade $pkgname.post-install $pkgname.post-deinstall"
 subpackages=""
-source="${pkgname}.help
+source="${pkgname}.default
+		${pkgname}.check
+		${pkgname}.check.exp
+		${pkgname}.help
 		${pkgname}.sh
 		${pkgname}-update.sh
 		${pkgname}.lib
@@ -35,6 +38,9 @@ build() {
 
 package() {
 	cd "$_builddir"
+	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/apache2 || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/apache2.exp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/apache2 || return 1
 	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/apache2 || return 1	
 	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/apache2.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/apache2-update.sh || return 1
@@ -47,9 +53,12 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/apache2/apache2.txt || return 1	
 }
 
-md5sums="96371bea9ca03d6c78dbaf0fe1d76e8b  cui-apache2.help
-f4737bfa6f3a81db8887f861ba3edf14  cui-apache2.sh
-d16caaaf94c4293a268260a25dafc331  cui-apache2-update.sh
+md5sums="ac35bf7fa62e5d83661ff6c439e297c9  cui-apache2.default
+4533c53e8df1fa677ee77db4746b8f34  cui-apache2.check
+c07ecf7ec1d6fddf7f1547eb0d26bade  cui-apache2.check.exp
+96371bea9ca03d6c78dbaf0fe1d76e8b  cui-apache2.help
+1febab05e5e9bcf65b43b00a15f7fcb2  cui-apache2.sh
+d08018dd6ab42da90233800a95c1ba97  cui-apache2-update.sh
 8cebbb50734d1925389fc52f550feefc  cui-apache2.lib
 372917a5fbe1f1bf25599f6365821b5a  cui-apache2.menu
 b3aa496d205aa7df2b31f9ed8cd567ec  cui-apache2.dauth.sh

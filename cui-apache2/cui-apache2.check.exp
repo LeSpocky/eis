@@ -1,0 +1,13 @@
+#----------------------------------------------------------------------------
+# /etc/config.d/-check_exp - configuration file for -check_exp
+# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+#----------------------------------------------------------------------------
+
+APACHE2_LOG_LEVEL        = 'debug|info|notice|warn|error|crit|alert|emerg'
+                          : 'no valid level, should be debug, info, notice, warn, error, crit, alert or emerg'
+APACHE2_LOG_INTERVAL     = 'daily|weekly|monthly'
+                          : 'no valid interval, should be daily, weekly or monthly'
+APACHE2_SERVER_SIGNATURE = 'On|Off|Email'
+                          : 'only on, off or email is allowd'
+APACHE2_DIR_AUTH_TYPE    = 'Basic|Digest'
+                          : 'only Basic or Digest is allowd'
