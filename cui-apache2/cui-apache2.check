@@ -71,4 +71,3 @@ APACHE2_MAX_KEEP_ALIVE_REQUESTS        -                             -          
 APACHE2_MAX_CLIENTS                    -                             -                            NUMERIC
 APACHE2_MAX_REQUESTS_PER_CHILD         -                             -                            NUMERIC
 APACHE2_MOD_CACHE                      -                             -                            YESNO
-

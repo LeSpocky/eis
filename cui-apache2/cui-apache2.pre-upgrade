@@ -3,3 +3,4 @@
 rm -f /etc/default.d/apache2
 rm -f /etc/check.d/apache2
 rm -f /etc/check.d/apache2.exp
+exit 0
