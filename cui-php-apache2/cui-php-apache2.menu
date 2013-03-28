@@ -1,0 +1,5 @@
+<!-- /var/install/menu/setup.services.apache2.php.menu -->
+<title>PHP Administration</title>
+<package>php-apache2</package>
+<doc file="php-apache2.txt">PHP Documentation</doc>
+<edit>Edit PHP Configuration</edit>

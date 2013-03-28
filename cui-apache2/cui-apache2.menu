@@ -1,7 +1,6 @@
 <!-- /var/install/menu/setup.services.apache2.menu -->
 <title>Administration of Package Apache2</title>
 <package>apache2</package>
-<version/>
 <doc file="apache2.txt">Read Apache Documentation</doc>
 <edit>Edit Apache Configuration</edit>
 <menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>

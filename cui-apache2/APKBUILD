@@ -60,7 +60,7 @@ c07ecf7ec1d6fddf7f1547eb0d26bade  cui-apache2.check.exp
 1febab05e5e9bcf65b43b00a15f7fcb2  cui-apache2.sh
 d08018dd6ab42da90233800a95c1ba97  cui-apache2-update.sh
 8cebbb50734d1925389fc52f550feefc  cui-apache2.lib
-372917a5fbe1f1bf25599f6365821b5a  cui-apache2.menu
+3e43571fff01e1da468b8fa2deaa1f91  cui-apache2.menu
 b3aa496d205aa7df2b31f9ed8cd567ec  cui-apache2.dauth.sh
 93921cc893dd7792135f95c1afcdf156  cui-apache2.dlog.sh
 773842c4b63c9212465b777729741613  cui-apache2.dlevel.sh

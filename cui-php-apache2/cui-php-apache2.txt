@@ -1,0 +1,192 @@
+   next_inactive up previous
+
+                  Die PHP-Erweiterung fuer das Apache2 Paket
+
+   (c) Sebastian Scholze <sebastian(at)eisfair(dot)org>
+
+                                   Einleitung
+
+   Das PHP-Paket ist eine Erweiterung des Apache2-Paketes. Es kann nur
+   installiert werden, wenn Apache2 bereits installiert ist.
+
+                            Menue im Setup-Programm
+
+   Das Menue des apache2-php5 Paketes im Setup-Programm ist wie folgt
+   aufgebaut:
+
+     * Apache2 module configuration
+          + PHP Documentation
+          + Edit PHP Configuration
+            Konfiguration von PHP5 ueber die eisfair-Konfigurationsebene
+            bearbeiten.
+
+                          Aenderung der Konfiguration
+
+   Die Konfiguration von PHP5 unter eisfair erfolgt ueber den Menuepunkt
+   ''Edit PHP5 configuration'' im Paketmenue. Die vorgenommenen
+   Aenderungen werden nach Beenden des Editors automatisch uebernommen.
+
+                            Die Konfigurationsdatei
+
+   In der Konfigurationsdatei, die ueber das Menue zugaenglich ist, sind
+   die in den folgenden Unterabschnitten beschriebenen Parameter
+   vorhanden.
+
+Allgemeine Konfiguration
+
+   PHP5_MAX_EXECUTION_TIME
+          Hat ein PHP-Script eine laengere Laufzeit als die hier
+          angegebene, wird die Ausfuehrung des Scripts abgebrochen.
+
+          Standardeinstellung: PHP5_MAX_EXECUTION='30'
+
+   PHP5_DISPLAY_ERRORS
+          Hier kann man die Anzeige von Syntaxfehlern im Browser waehrend
+          der Laufzeit unterdruecken.
+
+          Standardeinstellung: PHP5_DISPLAY_ERRORS='yes'
+
+   PHP5_LOG_ERROR
+          Mit Hilfe dieser Variablen kann gesteuert werden, ob Fehler in
+          der log-Datei protokolliert werden sollen, oder nicht.
+
+          Standardeinstellung: PHP5_LOG_ERROR='no'
+
+   PHP5_INCLUDE_PATH
+          In diesen Verzeichnissen schaut PHP nach, wenn per include(),
+          require() o.ae. eine Datei ohne die Angabe von einem absoluten
+          Verzeichnis inkludiert werden soll. Oder wenn diese Datei im
+          aktuellen Verzeichnis nicht gefunden wird.
+
+          Als Trennzeichen der Verzeichnisse wird ein Doppelpunkt (:)
+          verwendet.
+
+          Standardeinstellung:
+          PHP5_INCLUDE_PATH='.:/usr/share/php5:/usr/include/php5'
+
+   PHP5_REGISTER_GLOBALS
+          Wird diese Variable auf 'yes' gesetzt, stellt dies ein
+          Sicherheitsrisiko da! aeltere PHP-Scripts laufen evt. nicht,
+          wenn diese Variable auf 'no' steht. Es ist allerdings keine
+          Loesung diese Variable einfach auf 'yes' zu stellen, damit die
+          alten Scripts laufen. Ferner wird empfohlen diese auf den
+          neusten Stand zu bringen!
+
+          Naehere Informationen dazu unter
+          http://de.php.net/register_globals
+
+          ACHTUNG
+          Es wird unter keinen Umstaenden empfohlen diese Variable zu
+          aktivieren
+          Standardeinstellung: PHP5_REGISTER_GLOBALS='no'
+
+   PHP5_EXTENSION_DIR
+          Ueber die Variable kann festgelegt werden, wo php5 nach
+          Erweiterungen suchen soll. Normalerweise muss diese Variable
+          nicht veraendert werden.
+
+          Standardeinstellung:
+          PHP5_EXTENSION_DIR='/usr/lib/php5/extensions'
+
+   PHP5_SENDMAIL_PATH
+          Hier kann der Pfad zu sendmail angegeben werden. Wenn diese
+          Variable leer ist, wird die sendmail in dem Standardverzeichnis
+          gesucht.
+
+          Standardeinstellung: PHP5_SENDMAIL_PATH=''
+
+   PHP5_SENDMAIL_APP
+          Hier koennen zusaetzlich Kommandos angegeben werden, die fuer
+          die Benutzung von sendmail notwendig sind. Ist diese Variable
+          leer, werden die Standareinstellung genutzt.
+
+          Standardeinstellung: PHP5_SENDMAIL_APP=''
+
+   PHP5_DATE_TIMEZONE
+          Hier kann die Datums und Zeitzone definiert werden, die von PHP
+          genutzt werden soll.
+
+          Standardeinstellung: PHP5_DATE_TIMEZONE='Europe/Berlin'
+
+   PHP5_INFO
+          Steht diese Variable auf 'yes' werden in
+          [2]APACHE2_DOCUMENT_ROOT drei Scripts abgelegt, um die
+          Funktionalitaet vom GD-Library, bzw. von PDF-Library zu testen.
+          Oder um allgemeine PHP-Informationen abzurufen.
+
+          Die Scripts heissen folgendermassen
+
+          + info.php - Generelle Informationen ueber die PHP-Installation
+          + gd.php - ueberpruefung der Funktionalitaet vom GB-Library
+            (Erstellen von JPEGs, GIFs, etc.)
+          + pdf.php - ueberpruefung der Funktionalitaet vom PDF-Library
+            (Erstellung von PDF-Dateien)
+
+          Standardeinstellung: PHP5_INFO='no'
+
+   PHP5_MAX_POST_SIZE
+          Clients koennen groessere Datenmengen an den Server ueber HTTP
+          schicken. Dazu wird meistens die POST-Method verwendet.
+
+          Diese Variable definiert, wie gross die Datenmenge fuer einen
+          Upload mit POST-Method maximal sein darf.
+
+          Standardeinstellung: PHP5_MAX_POST_SIZE='8M'
+
+   PHP5_MAX_UPLOAD_FILESIZE
+          Neben der POST-Method existieren noch weitere Methoden, um
+          groessere Daten an den Server zu senden. Z.B. die PUT-Method.
+
+          Diese Variable definiert, wie gross die Datenmenge fuer einen
+          Upload generell sein darf.
+
+          Standardeinstellung: PHP5_MAX_UPLOAD_FILESIZE='2M'
+
+   PHP5_MEMORY_LIMIT
+          Verbraucht ein Script mehr als den in dieser Variable defnierten
+          Arbeitsspeicher, wird die Ausfuehrung abgebrochen.
+
+          Standardeinstellung: PHP5_MEMORY_LIMIT='8M'
+
+   PHP5_UPLOAD_DIR
+          Gibt den Pfad an, an den die Uploads temporaer gespeichert
+          werden. Wichtig: Der Web-Server muss schreibzugriffe auf dieses
+          Verzeichnis haben.
+
+          Standardeinstellung: PHP5_UPLOAD_DIR='/tmp'
+
+   PHP5_EXT_CACHE
+          Mit Hilfe dieser Variablen kann gesteuert werden, ob ein PHP
+          Caching Modul verwendet werden soll. Soll ein solches Modul
+          verwendet werden, so kann das zu verwendende ausgewaehlt werden
+          (zur Verfuegung stehen apc und eac).
+
+          Standardeinstellung: PHP5_EXT_CACHE='no'
+
+   PHP5_EXT_MYSQL
+          Hier kann die MySQL Erweiterung in PHP5 aktiviert werden
+
+          Standardeinstellung: PHP5_EXT_MYSQL='no'
+
+   PHP5_EXT_MYSQL_SOCKET
+          Wurde die MySQL Erweiterung aktiviert, muss hier der Pfad zum
+          MySQL Socket angegeben werden.
+
+          Standardeinstellung:
+          PHP5_EXT_MYSQL_SOCKET='/var/run/mysql/mysql.sock'
+
+   PHP5_EXT_MSSQL
+          Hier kann die MSSQL Erweiterung in PHP5 aktiviert werden
+
+          Standardeinstellung: PHP5_EXT_MSSQL='no'
+
+   PHP5_EXT_PGSQL
+          Hier kann die PostgreSQL Erweiterung in PHP5 aktiviert werden
+
+          Standardeinstellung: PHP5_EXT_PGSQL='no'
+
+   PHP5_EXT_INTER
+          Hier kann die Interbase Erweiterung in PHP5 aktiviert werden
+
+          Standardeinstellung: PHP5_EXT_INTER='no'
+

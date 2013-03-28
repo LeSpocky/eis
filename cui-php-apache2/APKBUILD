@@ -1,0 +1,53 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
+pkgname=cui-php-apache2
+pkgver=5.3.0
+pkgrel=0
+pkgdesc="CUI Setup PHP 5.3.x Module for Apache"
+url="http://www.eisfair.org"
+arch="noarch"
+license="GPL"
+depends="cuimenu cui-apache2"
+depends_dev=""
+makedepends="$depends_dev"
+install="$pkgname.pre-upgrade $pkgname.post-install $pkgname.post-deinstall"
+subpackages=""
+source="${pkgname}.default
+		${pkgname}.check
+		${pkgname}.check.exp
+		${pkgname}.help
+		${pkgname}.sh
+		${pkgname}-update.sh
+		${pkgname}.menu
+		${pkgname}.txt
+"
+
+_builddir=
+prepare() {
+	cd "$_builddir"
+}
+
+build() {
+	cd "$_builddir"
+}
+
+package() {
+	cd "$_builddir"
+	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/php-apache2 || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/php-apache2.exp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/php-apache2 || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/php-apache2 || return 1	
+	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/php-apache2.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/php-apache2-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.apache2.php.menu || return 1	
+	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/php-apache2/php-apache2.txt || return 1	
+}
+
+md5sums="04c335bf62d33153c6b79f556dc41744  cui-php-apache2.default
+bc2876c3c8bd6a01b910ef67496e2a49  cui-php-apache2.check
+70b147e374ee2547c45c2066c9be76b8  cui-php-apache2.check.exp
+d0a1df0513f1135fba97d92148caf01e  cui-php-apache2.help
+b78ce48b568c6d6bddec365ec1c2b1cd  cui-php-apache2.sh
+14e27c3de0ab2753de666f169ddcd3f7  cui-php-apache2-update.sh
+ae8cf28ea4b40035a5fd6f24cfc3ea95  cui-php-apache2.menu
+a328bad059c811936c5d6d85a4313f97  cui-php-apache2.txt"
