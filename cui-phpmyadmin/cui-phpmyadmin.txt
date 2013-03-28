@@ -1,5 +1,5 @@
-phpMyAdmin for eisfair-ng - MySQL-Administration mit phpMyAdmin
-==============================================================
+phpMyAdmin for alpeis (eisfair-ng) - MySQL-Administration mit phpMyAdmin
+========================================================================
 
 1. phpMyAdmin - Was ist das?
 ============================
