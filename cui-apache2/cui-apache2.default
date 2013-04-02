@@ -58,10 +58,10 @@ APACHE2_ERROR_DOCUMENT_4_ERROR='403'  # HTTP-Error number
 APACHE2_ERROR_DOCUMENT_4_DOCUMENT='/error/HTTP_FORBIDDEN.html.var'
                                       # HTML-Document to view 
 APACHE2_ERROR_DOCUMENT_5_ERROR='405'  # HTTP-Error number
-APACHE2_ERROR_DOCUMENT_5_DOCUMENT='/error/HTTP_FORBIDDEN.html.var'
+APACHE2_ERROR_DOCUMENT_5_DOCUMENT='/error/HTTP_METHOD_NOT_ALLOWED.html.var'
                                       # HTML-Document to view 
 APACHE2_ERROR_DOCUMENT_6_ERROR='408'  # HTTP-Error number
-APACHE2_ERROR_DOCUMENT_6_DOCUMENT='/error/HTTP_FORBIDDEN.html.var'
+APACHE2_ERROR_DOCUMENT_6_DOCUMENT='/error/HTTP_REQUEST_TIME_OUT.html.var'
                                       # HTML-Document to view 
 APACHE2_ERROR_DOCUMENT_7_ERROR='414'  # HTTP-Error number
 APACHE2_ERROR_DOCUMENT_7_DOCUMENT='/error/HTTP_REQUEST_URI_TOO_LARGE.html.var'

@@ -366,8 +366,8 @@ ServerSignature ${APACHE2_SERVER_SIGNATURE}
         Order deny,allow
         Deny from all
     </LimitExcept>	
-    Require all denied
-    Require ${APACHE2_ACCESS_CONTROL} granted
+    Order allow,deny
+    Allow from ${APACHE2_ACCESS_CONTROL} 
 </Directory>
 
 

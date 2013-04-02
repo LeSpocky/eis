@@ -53,11 +53,11 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/apache2/apache2.txt || return 1	
 }
 
-md5sums="a89611b6806db221a9f4332acd36fdb2  cui-apache2.default
+md5sums="983840fea92fd304cc9b1f570aa90477  cui-apache2.default
 280426f3f8549a32d547df4142defc1f  cui-apache2.check
 c07ecf7ec1d6fddf7f1547eb0d26bade  cui-apache2.check.exp
 96371bea9ca03d6c78dbaf0fe1d76e8b  cui-apache2.help
-1febab05e5e9bcf65b43b00a15f7fcb2  cui-apache2.sh
+bfa28549c3b6ccef1d4150e59c299f30  cui-apache2.sh
 d08018dd6ab42da90233800a95c1ba97  cui-apache2-update.sh
 8cebbb50734d1925389fc52f550feefc  cui-apache2.lib
 3e43571fff01e1da468b8fa2deaa1f91  cui-apache2.menu
