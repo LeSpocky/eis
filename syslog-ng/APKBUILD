@@ -1,8 +1,8 @@
-# Contributor:
-# Maintainer: jens@eisfair.org
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
 pkgname=syslog-ng
 pkgver=2.1.4
-pkgrel=1
+pkgrel=2
 pkgdesc="Syslog-NG"
 url="http://www.balabit.com"
 arch="all"
@@ -66,7 +66,7 @@ package() {
 md5sums="17c4c7725d2eab62b588395f1ed93f32  syslog-ng_2.1.4.tar.gz
 8916d55f8213d2746e8c2a6a89c29d6c  syslog.logrotate
 6cf7b652fb10e3a112669ab1a76e379d  syslog-ng.conf
-45391099acb5dcb05ff5bfb6f10263b3  syslog-ng.initd
+a1cba3519107a021c123b9f7f6b47d48  syslog-ng.initd
 c54897513a21f3f7f9714efb66fb883b  syslog-ng-destination.std
 2e54440ef707c9cbeb3560a27a86bcaa  syslog-ng-filter.std
 e934a4feb9a6665e8b6e46ff07dc34c5  syslog-ng-log.std
