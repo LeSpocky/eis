@@ -54,20 +54,20 @@ CheckboxPaintHook(void* w)
 	CUIWINDOW*     win = (CUIWINDOW*) w;
 	CHECKBOXDATA*  data = (CHECKBOXDATA*) win->InstData;
 	CUIRECT        rc;
-	int            i; //, len, cpos;
+	int            i,len, cpos;
 	int            hkey_pos;
-	TCHAR          hkey = _T('\0');
-	TCHAR          buffer[128 + 1];
+	wchar_t          hkey = _T('\0');
+	wchar_t          buffer[128 + 1];
 
 	WindowGetClientRect(win, &rc);
 	if (rc.W <= 0) return;
 
-//	cpos = 0;
+	cpos = 0;
 	if (rc.W > 1) 
 	{
 		int   pos, n;
-		TCHAR* ch;
-		TCHAR* ch2;
+		wchar_t* ch;
+		wchar_t* ch2;
 
 		for (i = 0; i < rc.W; i++) buffer[i] = _T(' ');
 		buffer[i] = 0;
@@ -81,22 +81,22 @@ CheckboxPaintHook(void* w)
 
 		pos = 4;
 		ch  = win->Text;
-		ch2 = (TCHAR*) tcschr(ch, _T('&'));
+		ch2 = (wchar_t*) wcschr(ch, _T('&'));
 		while (ch2)
 		{
 			n = (pos + (ch2 - ch)) < 128 ? (ch2 - ch) : (128 - pos);
 
-			tcsncpy(&buffer[pos], ch, n);
+			wcsncpy(&buffer[pos], ch, n);
 			pos += (ch2 - ch);
 			hkey_pos = pos;
 
 			ch = ch2 + 1;
 			hkey = *ch;
-			ch2 = (TCHAR*) tcschr(ch, _T('&'));
+			ch2 = (wchar_t*) wcschr(ch, _T('&'));
 		}
 
-		n = (pos + tcslen(ch)) < 128 ? tcslen(ch) : (128 - pos);
-		tcsncpy(&buffer[pos], ch, n);
+		n = (pos + wcslen(ch)) < 128 ? (int)wcslen(ch) : (int)(128 - pos);
+		wcsncpy(&buffer[pos], ch, n);
 		buffer[128] = 0;
 	}
 	else 
@@ -104,7 +104,7 @@ CheckboxPaintHook(void* w)
 		buffer[0] = 0;
 	}
 
-//	len = tcslen(buffer);
+	len = wcslen(buffer);
 
 	if (win->IsEnabled)
 	{
@@ -189,6 +189,9 @@ CheckboxKeyHook(void* w, int key)
 static void
 CheckboxMButtonHook(void* w, int x, int y, int flags)
 {
+	CUI_USE_ARG(x);
+	CUI_USE_ARG(y);
+	
 	if ((flags & BUTTON1_CLICKED) || (flags & BUTTON1_DOUBLE_CLICKED) || 
 	    (flags & BUTTON1_TRIPLE_CLICKED) || (flags & BUTTON1_PRESSED))
 	{
@@ -258,7 +261,7 @@ CheckboxKillFocusHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-CheckboxNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h, 
+CheckboxNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h, 
             int id, int sflags, int cflags)
 {
 	if (parent)
@@ -301,7 +304,7 @@ CheckboxNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 int 
 CheckboxGetCheck(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("CHECKBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("CHECKBOX")) == 0))
 	{
 		return ((CHECKBOXDATA*)win->InstData)->Checked;
 	}
@@ -316,7 +319,7 @@ CheckboxGetCheck(CUIWINDOW* win)
 void
 CheckboxSetCheck(CUIWINDOW* win, int state)
 {
-	if (win && (tcscmp(win->Class, _T("CHECKBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("CHECKBOX")) == 0))
 	{
 		((CHECKBOXDATA*)win->InstData)->Checked = state;
 		CheckboxUpdate(win);
@@ -331,7 +334,7 @@ CheckboxSetCheck(CUIWINDOW* win, int state)
 void
 CheckboxSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("CHECKBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("CHECKBOX")) == 0))
 	{
 		((CHECKBOXDATA*)win->InstData)->PreKeyHook = proc;
 		((CHECKBOXDATA*)win->InstData)->PreKeyTarget = target;
@@ -346,7 +349,7 @@ CheckboxSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* ta
 void
 CheckboxSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("CHECKVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CHECKVIEW")) == 0))
 	{
 		((CHECKBOXDATA*)win->InstData)->PostKeyHook = proc;
 		((CHECKBOXDATA*)win->InstData)->PostKeyTarget = target;
@@ -361,7 +364,7 @@ CheckboxSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* t
 void 
 CheckboxSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("CHECKBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("CHECKBOX")) == 0))
 	{
 		((CHECKBOXDATA*)win->InstData)->SetFocusHook = proc;
 		((CHECKBOXDATA*)win->InstData)->SetFocusTarget = target;
@@ -376,7 +379,7 @@ CheckboxSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* tar
 void 
 CheckboxSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("CHECKBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("CHECKBOX")) == 0))
 	{
 		((CHECKBOXDATA*)win->InstData)->KillFocusHook = proc;
 		((CHECKBOXDATA*)win->InstData)->KillFocusTarget = target;
@@ -391,7 +394,7 @@ CheckboxSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target
 void 
 CheckboxSetClickedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("CHECKBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("CHECKBOX")) == 0))
 	{
 		((CHECKBOXDATA*)win->InstData)->ButtonClickedHook = proc;
 		((CHECKBOXDATA*)win->InstData)->ButtonClickedTarget = target;

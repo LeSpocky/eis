@@ -36,11 +36,11 @@ enum
 void PMApiInit                   (void);
 void PMApiClear                  (void);
 
-void PMApiReposToMenu            (int argc, const TCHAR* argv[]);
-void PMApiGetRepoById            (int argc, const TCHAR* argv[]);
-void PMApiPackagesToList         (int argc, const TCHAR* argv[]);
-void PMApiInfoToTextView         (int argc, const TCHAR* argv[]);
-void PMApiListInstalledPackages  (int argc, const TCHAR* argv[]);
-void PMApiDelPackagesList        (int argc, const TCHAR* argv[]);
+void PMApiReposToMenu            (int argc, const wchar_t* argv[]);
+void PMApiGetRepoById            (int argc, const wchar_t* argv[]);
+void PMApiPackagesToList         (int argc, const wchar_t* argv[]);
+void PMApiInfoToTextView         (int argc, const wchar_t* argv[]);
+void PMApiListInstalledPackages  (int argc, const wchar_t* argv[]);
+void PMApiDelPackagesList        (int argc, const wchar_t* argv[]);
 
 #endif

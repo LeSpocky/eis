@@ -33,9 +33,9 @@
 void SysApiInit                 (void);
 void SysApiClear                (void);
 
-void SysApiUsersToList          (int argc, const TCHAR* argv[]);
-void SysApiGroupsToList         (int argc, const TCHAR* argv[]);
-void SysApiGroupMemberSelection (int argc, const TCHAR* argv[]);
-void SysApiSetGroupMembers      (int argc, const TCHAR* argv[]);
+void SysApiUsersToList          (int argc, const wchar_t* argv[]);
+void SysApiGroupsToList         (int argc, const wchar_t* argv[]);
+void SysApiGroupMemberSelection (int argc, const wchar_t* argv[]);
+void SysApiSetGroupMembers      (int argc, const wchar_t* argv[]);
 
 #endif

@@ -50,14 +50,14 @@ StubSetProcProc   LibPqStubSetProc;
 StubFindProc      LibPqStubFind;
 
 void
-Testfunc(int argc, const TCHAR* argv[])
+Testfunc(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		int    a, b;
 
-		stscanf(argv[0], _T("%d"), &a);
-		stscanf(argv[1], _T("%d"), &b);
+		swscanf(argv[0], _T("%d"), &a);
+		swscanf(argv[1], _T("%d"), &b);
 
 		LibPqStartFrame(_T('R'), 32);
 		LibPqInsertInt (ERROR_SUCCESS);
@@ -104,7 +104,7 @@ ModuleInit(MODULEINIT_T* modinit)
  * ---------------------------------------------------------------------
  */
 int
-ModuleExecFunction(int func_nr, int argc, const TCHAR* argv[])
+ModuleExecFunction(int func_nr, int argc, const wchar_t* argv[])
 {
 	switch (func_nr)
 	{

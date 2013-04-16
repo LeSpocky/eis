@@ -5,7 +5,7 @@
  * Copyright (C) 2004
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: listview.c 28705 2011-08-14 18:33:50Z dv $
+ * Last Update:  $Id: listview.c 33467 2013-04-14 16:23:14Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -131,7 +131,7 @@ ListviewNcPaintHook(void* w, int size_x, int size_y)
 	/* title text */
 	if (!win->Text || (win->Text[0] == 0) || (!win->HasBorder)) return;
 
-	len = tcslen(win->Text);
+	len = wcslen(win->Text);
 	if (len > rc.W - 4)
 	{
 		len = rc.W - 4;
@@ -437,6 +437,8 @@ ListviewVScrollHook(void* w, int sbcode, int pos)
 	CUIWINDOW* win = (CUIWINDOW*) w;
 	CUIRECT rc;
 	int sbpos, range;
+	
+	CUI_USE_ARG(pos);
 
 	WindowGetClientRect(win, &rc);
 	sbpos = WindowGetVScrollPos(win);
@@ -576,7 +578,7 @@ ListviewLayoutHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-ListviewNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
+ListviewNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h,
            int num_cols, int id, int sflags, int cflags)
 {
 	if (parent)
@@ -622,7 +624,7 @@ ListviewNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 		((LISTVIEWDATA*)listview->InstData)->ListTitle =
 		      (LISTREC*)     malloc(sizeof(LISTREC));
 		((LISTVIEWDATA*)listview->InstData)->ListTitle->ColumnText =
-		      (TCHAR**)      malloc(num_cols * sizeof(TCHAR*));
+		      (wchar_t**)      malloc(num_cols * sizeof(wchar_t*));
 		((LISTVIEWDATA*)listview->InstData)->ListTitle->ColumnWidth =
 		      (int*)         malloc(num_cols * sizeof(int));
 		((LISTVIEWDATA*)listview->InstData)->ListTitle->ColumnAlignment =
@@ -653,7 +655,7 @@ ListviewNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 void
 ListviewSetSetFocusHook(CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		((LISTVIEWDATA*)win->InstData)->SetFocusHook = proc;
 		((LISTVIEWDATA*)win->InstData)->SetFocusTarget = target;
@@ -668,7 +670,7 @@ ListviewSetSetFocusHook(CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* targ
 void
 ListviewSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		((LISTVIEWDATA*)win->InstData)->KillFocusHook = proc;
 		((LISTVIEWDATA*)win->InstData)->KillFocusTarget = target;
@@ -683,7 +685,7 @@ ListviewSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void
 ListviewSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		((LISTVIEWDATA*)win->InstData)->PreKeyHook = proc;
 		((LISTVIEWDATA*)win->InstData)->PreKeyTarget = target;
@@ -698,7 +700,7 @@ ListviewSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* ta
 void
 ListviewSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		((LISTVIEWDATA*)win->InstData)->PostKeyHook = proc;
 		((LISTVIEWDATA*)win->InstData)->PostKeyTarget = target;
@@ -713,7 +715,7 @@ ListviewSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* t
 void
 ListviewSetLbChangedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		((LISTVIEWDATA*)win->InstData)->LbChangedHook = proc;
 		((LISTVIEWDATA*)win->InstData)->LbChangedTarget = target;
@@ -728,7 +730,7 @@ ListviewSetLbChangedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target
 void
 ListviewSetLbChangingHook(CUIWINDOW* win, CustomBoolHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		((LISTVIEWDATA*)win->InstData)->LbChangingHook = proc;
 		((LISTVIEWDATA*)win->InstData)->LbChangingTarget = target;
@@ -743,7 +745,7 @@ ListviewSetLbChangingHook(CUIWINDOW* win, CustomBoolHookProc proc, CUIWINDOW* ta
 void
 ListviewSetLbClickedHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		((LISTVIEWDATA*)win->InstData)->LbClickedHook = proc;
 		((LISTVIEWDATA*)win->InstData)->LbClickedTarget = target;
@@ -756,9 +758,9 @@ ListviewSetLbClickedHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
  * ---------------------------------------------------------------------
  */
 void
-ListviewAddColumn(CUIWINDOW* win, int colnr, const TCHAR* text)
+ListviewAddColumn(CUIWINDOW* win, int colnr, const wchar_t* text)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		LISTVIEWDATA* data = win->InstData;
 
@@ -768,8 +770,8 @@ ListviewAddColumn(CUIWINDOW* win, int colnr, const TCHAR* text)
 			{
 				free(data->ListTitle->ColumnText[colnr]);
 			}
-			data->ListTitle->ColumnText[colnr] = tcsdup(text);
-			data->ListTitle->ColumnWidth[colnr] = tcslen(text);
+			data->ListTitle->ColumnText[colnr] = wcsdup(text);
+			data->ListTitle->ColumnWidth[colnr] = wcslen(text);
 		}
 
 		ListviewCalculate(win);
@@ -785,7 +787,7 @@ ListviewAddColumn(CUIWINDOW* win, int colnr, const TCHAR* text)
 void
 ListviewSetTitleAlignment(CUIWINDOW* win, int colnr, ALIGNMENT_T align)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		LISTVIEWDATA* data = win->InstData;
 
@@ -806,7 +808,7 @@ ListviewSetTitleAlignment(CUIWINDOW* win, int colnr, ALIGNMENT_T align)
 void
 ListviewClear(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		LISTVIEWDATA* data = win->InstData;
 		LISTREC* delptr;
@@ -838,7 +840,7 @@ ListviewClear(CUIWINDOW* win)
 		{
 			if (data->ListTitle->ColumnText[i])
 			{
-				data->ListTitle->ColumnWidth[i] = tcslen(data->ListTitle->ColumnText[i]);
+				data->ListTitle->ColumnWidth[i] = wcslen(data->ListTitle->ColumnText[i]);
 			}
 			else
 			{
@@ -859,7 +861,7 @@ ListviewClear(CUIWINDOW* win)
 LISTREC*
 ListviewCreateRecord(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		LISTVIEWDATA* data = (LISTVIEWDATA*) win->InstData;
 		LISTREC* newrec;
@@ -868,7 +870,7 @@ ListviewCreateRecord(CUIWINDOW* win)
 		numcols = data->ListTitle->NumColumns;
 
 		newrec = (LISTREC*) malloc(sizeof(LISTREC));
-		newrec->ColumnText      = (TCHAR**) malloc(numcols * sizeof(TCHAR*));
+		newrec->ColumnText      = (wchar_t**) malloc(numcols * sizeof(wchar_t*));
 		newrec->ColumnWidth     = (int*) malloc(numcols * sizeof(int));
 		newrec->NumColumns      = numcols;
 		newrec->ColumnAlignment = NULL;
@@ -893,7 +895,7 @@ ListviewCreateRecord(CUIWINDOW* win)
 int
 ListviewInsertRecord (CUIWINDOW* win, LISTREC* newrec)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		LISTVIEWDATA* data = (LISTVIEWDATA*) win->InstData;
 		int i;
@@ -939,7 +941,7 @@ ListviewInsertRecord (CUIWINDOW* win, LISTREC* newrec)
  * ---------------------------------------------------------------------
  */
 void
-ListviewSetColumnText(LISTREC* rec, int colnr, const TCHAR* text)
+ListviewSetColumnText(LISTREC* rec, int colnr, const wchar_t* text)
 {
 	if (!rec) return;
 
@@ -949,8 +951,8 @@ ListviewSetColumnText(LISTREC* rec, int colnr, const TCHAR* text)
 		{
 			free(rec->ColumnText[colnr]);
 		}
-		rec->ColumnText[colnr] = tcsdup(text);
-		rec->ColumnWidth[colnr] = tcslen(text);
+		rec->ColumnText[colnr] = wcsdup(text);
+		rec->ColumnWidth[colnr] = wcslen(text);
 
 		if (rec->Owner)
 		{
@@ -964,7 +966,7 @@ ListviewSetColumnText(LISTREC* rec, int colnr, const TCHAR* text)
  * Get the string from record
  * ---------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 ListviewGetColumnText(LISTREC* rec, int colnr)
 {
 	if (!rec) return _T("");
@@ -984,7 +986,7 @@ ListviewGetColumnText(LISTREC* rec, int colnr)
 void
 ListviewSetSel(CUIWINDOW* win, int index)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		LISTVIEWDATA* data = (LISTVIEWDATA*) win->InstData;
 
@@ -1006,7 +1008,7 @@ ListviewSetSel(CUIWINDOW* win, int index)
 int
 ListviewGetSel(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		return ((LISTVIEWDATA*)win->InstData)->SelIndex;
 	}
@@ -1021,7 +1023,7 @@ ListviewGetSel(CUIWINDOW* win)
 LISTREC*
 ListviewGetRecord(CUIWINDOW* win, int index)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		LISTVIEWDATA* data = (LISTVIEWDATA*) win->InstData;
 		int count = 0;
@@ -1059,7 +1061,7 @@ ListviewGetRecord(CUIWINDOW* win, int index)
 int
 ListviewGetCount(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		return ((LISTVIEWDATA*)win->InstData)->NumRecords;
 	}
@@ -1074,7 +1076,7 @@ ListviewGetCount(CUIWINDOW* win)
 void
 ListviewAlphaSort(CUIWINDOW* win, int colnr, int up)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		LISTVIEWDATA* data = (LISTVIEWDATA*) win->InstData;
 		int           num = data->NumRecords - 1;
@@ -1091,15 +1093,15 @@ ListviewAlphaSort(CUIWINDOW* win, int colnr, int up)
 				    (colnr < cmpptr->NumColumns))
 				{
 					int exchange =
-						(up && (tcscmp(workptr->ColumnText[colnr], 
+						(up && (wcscmp(workptr->ColumnText[colnr], 
 							cmpptr->ColumnText[colnr]) > 0)) ||
-						(!up && (tcscmp(workptr->ColumnText[colnr], 
+						(!up && (wcscmp(workptr->ColumnText[colnr], 
 							cmpptr->ColumnText[colnr]) < 0));
 
 					if (exchange)
 					{
-						TCHAR** p;
-//						unsigned long data;
+						wchar_t** p;
+						unsigned long data;
 						int* width;
 						int  num;
 
@@ -1107,7 +1109,7 @@ ListviewAlphaSort(CUIWINDOW* win, int colnr, int up)
 						workptr->ColumnText = cmpptr->ColumnText;
 						cmpptr->ColumnText  = p;
 
-//						data = workptr->Data;
+						data = workptr->Data;
 						workptr->Data = cmpptr->Data;
 						cmpptr->Data = workptr->Data;
 
@@ -1137,7 +1139,7 @@ ListviewAlphaSort(CUIWINDOW* win, int colnr, int up)
 void
 ListviewNumericSort(CUIWINDOW* win, int colnr, int up)
 {
-	if (win && (tcscmp(win->Class, _T("LISTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTVIEW")) == 0))
 	{
 		LISTVIEWDATA* data = (LISTVIEWDATA*) win->InstData;
 		int           num = data->NumRecords - 1;
@@ -1156,14 +1158,14 @@ ListviewNumericSort(CUIWINDOW* win, int colnr, int up)
 					int val1, val2;
 					int exchange;
 
-					stscanf(workptr->ColumnText[colnr], _T("%d"), &val1);
-					stscanf(cmpptr->ColumnText[colnr],  _T("%d"), &val2);
+					swscanf(workptr->ColumnText[colnr], _T("%d"), &val1);
+					swscanf(cmpptr->ColumnText[colnr],  _T("%d"), &val2);
 
 					exchange = (up  && (val1 > val2)) || (!up && (val1 < val2));
 					if (exchange)
 					{
-						TCHAR** p;
-//						unsigned long data;
+						wchar_t** p;
+						unsigned long data;
 						int* width;
 						int  num;
 
@@ -1171,7 +1173,7 @@ ListviewNumericSort(CUIWINDOW* win, int colnr, int up)
 						workptr->ColumnText = cmpptr->ColumnText;
 						cmpptr->ColumnText  = p;
 
-//						data = workptr->Data;
+						data = workptr->Data;
 						workptr->Data = cmpptr->Data;
 						cmpptr->Data = workptr->Data;
 
@@ -1221,11 +1223,11 @@ ListviewShowTitle(CUIWINDOW* win)
 		int n;
 		int len = 0;
 		int offs = 0;
-		TCHAR* ch = data->ListTitle->ColumnText[i];
+		wchar_t* ch = data->ListTitle->ColumnText[i];
 
 		if (ch)
 		{
-			len = tcslen(ch);
+			len = wcslen(ch);
 			
 			switch(data->ListTitle->ColumnAlignment[i])
 			{
@@ -1342,11 +1344,11 @@ ListviewShowRecord(CUIWINDOW* win, LISTREC* recptr, int ypos, int xscroll, CUIRE
 	{
 		int n, p;
 		int len = 0;
-		TCHAR* ch = recptr->ColumnText[i];
+		wchar_t* ch = recptr->ColumnText[i];
 
 		if (ch)
 		{
-			len = tcslen(ch);
+			len = wcslen(ch);
 		}
 		else
 		{
@@ -1495,7 +1497,7 @@ ListviewCalculateWidth(CUIWINDOW* win)
 
 	for (i = 0; i < data->ListTitle->NumColumns; i++)
 	{
-		data->ListTitle->ColumnWidth[i] = tcslen(data->ListTitle->ColumnText[i]);
+		data->ListTitle->ColumnWidth[i] = wcslen(data->ListTitle->ColumnText[i]);
 	}
 
 	rec = data->FirstRecord;

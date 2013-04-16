@@ -29,11 +29,11 @@
 
 /* local prototypes */
 void       ConfigDeleteEntry(CONFENTRY* entry);
-int        ConfigMatchName  (const TCHAR* mask, const TCHAR* name, 
+int        ConfigMatchName  (const wchar_t* mask, const wchar_t* name, 
                              int* nummasked, int* values);
-CONFENTRY* ConfigMatchMasks (CONFIG* cfg, const TCHAR* variable);
-void       ConfigBuildName  (const TCHAR* mask, TCHAR* varname, int* index);
-CONFENTRY* ConfigFindEntry  (CONFENTRY* first, const TCHAR* varname);
+CONFENTRY* ConfigMatchMasks (CONFIG* cfg, const wchar_t* variable);
+void       ConfigBuildName  (const wchar_t* mask, wchar_t* varname, int* index);
+CONFENTRY* ConfigFindEntry  (CONFENTRY* first, const wchar_t* varname);
 
 
 /* ---------------------------------------------------------------------
@@ -61,13 +61,13 @@ ConfigOpen(ErrorCallback errout, void* instance)
  * ---------------------------------------------------------------------
  */
 void 
-ConfigAddNode(CONFIG* cfg, const TCHAR* n_node, const TCHAR* mask)
+ConfigAddNode(CONFIG* cfg, const wchar_t* n_node, const wchar_t* mask)
 {
 	CONFNODE* node = malloc(sizeof(CONFNODE));
 	if (node)
 	{
-		node->NNode = tcsdup(n_node);
-		node->Mask = tcsdup(mask);
+		node->NNode = wcsdup(n_node);
+		node->Mask = wcsdup(mask);
 		node->Next = cfg->FirstNode;
 		cfg->FirstNode = node;
 	}
@@ -80,14 +80,14 @@ ConfigAddNode(CONFIG* cfg, const TCHAR* n_node, const TCHAR* mask)
  * ---------------------------------------------------------------------
  */
 void 
-ConfigReadFile(CONFIG* cfg, const TCHAR* filename)
+ConfigReadFile(CONFIG* cfg, const wchar_t* filename)
 {
 	if (cfg->FileName) 
 	{
 		free(cfg->FileName);
 	}
 
-	cfg->FileName = tcsdup(filename);
+	cfg->FileName = wcsdup(filename);
 
 	if (!CfgFileOpen(filename, cfg->ErrOut, cfg->ErrInst))
 	{
@@ -98,7 +98,7 @@ ConfigReadFile(CONFIG* cfg, const TCHAR* filename)
 		int sym = CfgRead();
 		while (sym != CFG_EOF)
 		{
-			TCHAR* variable = NULL;
+			wchar_t* variable = NULL;
 
 			if (sym == CFG_IDENT)
 			{
@@ -196,9 +196,9 @@ ConfigReadFile(CONFIG* cfg, const TCHAR* filename)
  * ---------------------------------------------------------------------
  */
 CONFENTRY* 
-ConfigGetEntry(CONFIG* cfg, CONFENTRY* parent, const TCHAR* name, int * index)
+ConfigGetEntry(CONFIG* cfg, CONFENTRY* parent, const wchar_t* name, int * index)
 {
-	TCHAR  varname[64 + 1];
+	wchar_t  varname[64 + 1];
 
 	ConfigBuildName(name, varname, index);
 	if (parent)
@@ -216,9 +216,9 @@ ConfigGetEntry(CONFIG* cfg, CONFENTRY* parent, const TCHAR* name, int * index)
  * Find and return an config value as string
  * ---------------------------------------------------------------------
  */
-const TCHAR* 
-ConfigGetString(CONFIG* cfg, CONFENTRY* parent, const TCHAR* name,
-                OPT_TYPE type, const TCHAR* defval, int * index)
+const wchar_t* 
+ConfigGetString(CONFIG* cfg, CONFENTRY* parent, const wchar_t* name,
+                OPT_TYPE type, const wchar_t* defval, int * index)
 {
 	CONFENTRY* entry = ConfigGetEntry(cfg, parent, name, index);
 	if (entry)
@@ -227,12 +227,9 @@ ConfigGetString(CONFIG* cfg, CONFENTRY* parent, const TCHAR* name,
 	}
 	else if (type == REQUIRED)
 	{
-		TCHAR errmsg[128 + 1];
-#ifdef _UNICODE
-		stprintf(errmsg, 128, _T("Missing required option '%ls'"), name);
-#else
-		stprintf(errmsg, 128, _T("Missing required option '%s'"), name);
-#endif
+		wchar_t errmsg[128 + 1];
+
+		swprintf(errmsg, 128, _T("Missing required option '%ls'"), name);
 		cfg->ErrOut(cfg->ErrInst, errmsg, cfg->FileName, 0, TRUE);
 	}
 	return defval;
@@ -244,42 +241,36 @@ ConfigGetString(CONFIG* cfg, CONFENTRY* parent, const TCHAR* name,
  * ---------------------------------------------------------------------
  */
 int
-ConfigGetBool(CONFIG* cfg, CONFENTRY* parent, const TCHAR* name,
-                OPT_TYPE type, const TCHAR* defval, int * index)
+ConfigGetBool(CONFIG* cfg, CONFENTRY* parent, const wchar_t* name,
+                OPT_TYPE type, const wchar_t* defval, int * index)
 {
 	CONFENTRY* entry = ConfigGetEntry(cfg, parent, name, index);
 	if (entry)
 	{
-		if (tcscasecmp(entry->Value, _T("yes")) == 0)
+		if (wcscasecmp(entry->Value, _T("yes")) == 0)
 		{
 			return TRUE;
 		}
-		else if (tcscasecmp(entry->Value, _T("no")) == 0)
+		else if (wcscasecmp(entry->Value, _T("no")) == 0)
 		{
 			return FALSE;
 		}
 		else
 		{
-			TCHAR errmsg[128 + 1];
-#ifdef _UNICODE
-			stprintf(errmsg, 128, _T("Option '%ls' contains an invalid value"), name);
-#else
-			stprintf(errmsg, 128, _T("Option '%s' contains an invalid value"), name);
-#endif
+			wchar_t errmsg[128 + 1];
+
+			swprintf(errmsg, 128, _T("Option '%ls' contains an invalid value"), name);
 			cfg->ErrOut(cfg->ErrInst, errmsg, cfg->FileName, 0, TRUE);
 		}
 	}
 	else if (type == REQUIRED)
 	{
-		TCHAR errmsg[128 + 1];
-#ifdef _UNICODE
-		stprintf(errmsg, 128, _T("Missing required option '%ls'"), name);
-#else
-		stprintf(errmsg, 128, _T("Missing required option '%s'"), name);
-#endif
+		wchar_t errmsg[128 + 1];
+
+		swprintf(errmsg, 128, _T("Missing required option '%ls'"), name);
 		cfg->ErrOut(cfg->ErrInst, errmsg, cfg->FileName, 0, TRUE);
 	}
-	if (tcscasecmp(defval, _T("yes")) == 0)
+	if (wcscasecmp(defval, _T("yes")) == 0)
 	{
 		return TRUE;
 	}
@@ -292,40 +283,32 @@ ConfigGetBool(CONFIG* cfg, CONFENTRY* parent, const TCHAR* name,
  * ---------------------------------------------------------------------
  */
 int
-ConfigGetNum(CONFIG* cfg, CONFENTRY* parent, const TCHAR* name,
-                OPT_TYPE type, const TCHAR* defval, int * index)
+ConfigGetNum(CONFIG* cfg, CONFENTRY* parent, const wchar_t* name,
+                OPT_TYPE type, const wchar_t* defval, int * index)
 {
 	int  value;
 
 	CONFENTRY* entry = ConfigGetEntry(cfg, parent, name, index);
 	if (entry)
 	{
-		TCHAR errmsg[128 + 1];
+		wchar_t errmsg[128 + 1];
 
-		if (stscanf(entry->Value, _T("%d"), &value) == 1)
+		if (swscanf(entry->Value, _T("%d"), &value) == 1)
 		{
 			return value;
 		}
-#ifdef _UNICODE
-		stprintf(errmsg, 128, _T("Option '%ls' contains an invalid value"), name);
-#else
-		stprintf(errmsg, 128, _T("Option '%s' contains an invalid value"), name);
-#endif
+		swprintf(errmsg, 128, _T("Option '%ls' contains an invalid value"), name);
 
 		cfg->ErrOut(cfg->ErrInst, errmsg, cfg->FileName, 0, TRUE);
 	}
 	else if (type == REQUIRED)
 	{
-		TCHAR errmsg[128 + 1];
-#ifdef _UNICODE
-		stprintf(errmsg, 128, _T("Missing required option '%ls'"), name);
-#else
-		stprintf(errmsg, 128, _T("Missing required option '%s'"), name);
-#endif
+		wchar_t errmsg[128 + 1];
+		swprintf(errmsg, 128, _T("Missing required option '%ls'"), name);
 		cfg->ErrOut(cfg->ErrInst, errmsg, cfg->FileName, 0, TRUE);
 	}
 
-	if (stscanf(defval, _T("%d"), &value) == 1)
+	if (swscanf(defval, _T("%d"), &value) == 1)
 	{
 		return value;
 	}
@@ -392,9 +375,9 @@ ConfigDeleteEntry(CONFENTRY* entry)
  * ---------------------------------------------------------------------
  */
 int 
-ConfigMatchName(const TCHAR* mask, const TCHAR* name, int* nummasked, int* values)
+ConfigMatchName(const wchar_t* mask, const wchar_t* name, int* nummasked, int* values)
 {
-	int len = tcslen(mask);
+	int len = wcslen(mask);
 	int i, pos;
 
 	*nummasked = 0;
@@ -405,11 +388,11 @@ ConfigMatchName(const TCHAR* mask, const TCHAR* name, int* nummasked, int* value
 	{
 		if (mask[i] == _T('%'))
 		{
-			if (istdigit(name[pos]))
+			if (iswdigit(name[pos]))
 			{
 				values[*nummasked] = name[pos++] - 48;
 
-				while (istdigit(name[pos]))
+				while (iswdigit(name[pos]))
 				{
 					values[*nummasked] *= 10;
 					values[*nummasked] += name[pos++] - 48;
@@ -444,32 +427,32 @@ ConfigMatchName(const TCHAR* mask, const TCHAR* name, int* nummasked, int* value
  * ---------------------------------------------------------------------
  */
 void 
-ConfigBuildName(const TCHAR* mask, TCHAR* varname, int* index)
+ConfigBuildName(const wchar_t* mask, wchar_t* varname, int* index)
 {
-	const TCHAR* pos1 = mask;
-	const TCHAR* pos2 = tcschr(pos1,_T('%'));
+	const wchar_t* pos1 = mask;
+	const wchar_t* pos2 = wcschr(pos1,_T('%'));
 	int   cpos = 0;
 	int   i = 0;
 
 	while (pos1)
 	{
-		int len = tcslen(pos1);
+		int len = wcslen(pos1);
 		if (pos2)
 		{
 			len = pos2 - pos1;
 		}
-		tcsncpy(&varname[cpos],pos1,len);
+		wcsncpy(&varname[cpos],pos1,len);
 		cpos += len;
 
 		varname[cpos] = 0;
 
 		if (pos2)
 		{
-			stprintf(&varname[cpos], 32, _T("%i"),index[i]);
+			swprintf(&varname[cpos], 32, _T("%i"),index[i]);
 			pos1 = pos2 + 1;
-			pos2 = tcschr(pos1,_T('%'));
+			pos2 = wcschr(pos1,_T('%'));
 
-			cpos += tcslen(&varname[cpos]);
+			cpos += wcslen(&varname[cpos]);
 
 			i++;
 		}
@@ -486,7 +469,7 @@ ConfigBuildName(const TCHAR* mask, TCHAR* varname, int* index)
  * ---------------------------------------------------------------------
  */
 CONFENTRY* 
-ConfigMatchMasks(CONFIG* cfg, const TCHAR* variable)
+ConfigMatchMasks(CONFIG* cfg, const wchar_t* variable)
 {
 	CONFNODE* node = cfg->FirstNode;
 	int nummasked;
@@ -510,11 +493,11 @@ ConfigMatchMasks(CONFIG* cfg, const TCHAR* variable)
  * ---------------------------------------------------------------------
  */
 CONFENTRY* 
-ConfigFindEntry(CONFENTRY* first, const TCHAR* varname)
+ConfigFindEntry(CONFENTRY* first, const wchar_t* varname)
 {
 	while (first)
 	{
-		if (tcscmp(first->Name,varname)==0)
+		if (wcscmp(first->Name,varname)==0)
 		{
 			return first;
 		}

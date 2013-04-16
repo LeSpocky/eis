@@ -29,8 +29,8 @@
 #include <cui-char.h>
 
 int    ModuleMbStrLen(const char* str);
-int    ModuleMbByteLen(const TCHAR* str);
-TCHAR* ModuleMbToTCharDup(const char*  str);
-char*  ModuleTCharToMbDup(const TCHAR* str);
+int    ModuleMbByteLen(const wchar_t* str);
+wchar_t* ModuleMbToTCharDup(const char*  str);
+char*  ModuleTCharToMbDup(const wchar_t* str);
 
 #endif

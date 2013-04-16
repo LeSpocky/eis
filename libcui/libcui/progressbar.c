@@ -57,7 +57,7 @@ ProgressbarNcPaintHook(void* w, int size_x, int size_y)
 
 		if (!win->Text) return;
 
-		len = tcslen(win->Text);
+		len = wcslen(win->Text);
 		if (len > rc.W - 4)
 		{
 			len = rc.W - 4;
@@ -146,7 +146,7 @@ ProgressbarDestroyHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-ProgressbarNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h, 
+ProgressbarNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h, 
                int id, int sflags, int cflags)
 {
 	if (parent)
@@ -183,7 +183,7 @@ ProgressbarNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 void 
 ProgressbarSetRange(CUIWINDOW* win, int range)
 {
-	if (win && (tcscmp(win->Class, _T("PROGRESSBAR")) == 0))
+	if (win && (wcscmp(win->Class, _T("PROGRESSBAR")) == 0))
 	{
 		((PROGRESSBARDATA*) win->InstData)->Range = range;
 		ProgressbarUpdate(win);
@@ -199,7 +199,7 @@ ProgressbarSetRange(CUIWINDOW* win, int range)
 void 
 ProgressbarSetPos(CUIWINDOW* win, int pos)
 {
-	if (win && (tcscmp(win->Class, _T("PROGRESSBAR")) == 0))
+	if (win && (wcscmp(win->Class, _T("PROGRESSBAR")) == 0))
 	{
 		((PROGRESSBARDATA*) win->InstData)->Pos = pos;
 		ProgressbarUpdate(win);
@@ -215,7 +215,7 @@ ProgressbarSetPos(CUIWINDOW* win, int pos)
 int 
 ProgressbarGetRange(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("PROGRESSBAR")) == 0))
+	if (win && (wcscmp(win->Class, _T("PROGRESSBAR")) == 0))
 	{
 		return ((PROGRESSBARDATA*) win->InstData)->Range;
 	}
@@ -231,7 +231,7 @@ ProgressbarGetRange(CUIWINDOW* win)
 int 
 ProgressbarGetPos(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("PROGRESSBAR")) == 0))
+	if (win && (wcscmp(win->Class, _T("PROGRESSBAR")) == 0))
 	{
 		return ((PROGRESSBARDATA*) win->InstData)->Pos;
 	}

@@ -5,7 +5,7 @@
  * Copyright (C) 2006
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: server.c 23497 2010-03-14 21:53:08Z dv $
+ * Last Update:  $Id: server.c 33402 2013-04-02 21:32:17Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -48,15 +48,15 @@ static const char* MyGetClientSocket(void);
  * ---------------------------------------------------------------------
  */
 SQLCONNECT*
-MyServerConnect(const TCHAR* host, const TCHAR* port, 
-                const TCHAR* user, const TCHAR* passwd,
-                const TCHAR* database)
+MyServerConnect(const wchar_t* host, const wchar_t* port, 
+                const wchar_t* user, const wchar_t* passwd,
+                const wchar_t* database)
 {
 	SQLCONNECT* con;
 
 	if (!Initialized)
 	{
-		my_init( NULL );
+		my_init();
 		Initialized = TRUE;
 	}
 
@@ -73,22 +73,22 @@ MyServerConnect(const TCHAR* host, const TCHAR* port,
 		
 		if (port)
 		{
-			stscanf(port, _T("%d"), &iport);
+			swscanf(port, _T("%d"), &iport);
 		}
 		
 		/* in case of local connections, we try to read the name of the socket
 		   from /etc/my.cnf */
-		if (tcscmp(host, _T("localhost")) == 0)
+		if (wcscmp(host, _T("localhost")) == 0)
 		{
 			socket = MyGetClientSocket();
 		}
 
 		con->Connected   = FALSE;
-		con->Host        = (host != NULL)     ? tcsdup(host) : NULL;
-		con->User        = (user != NULL)     ? tcsdup(user) : NULL;
-		con->Database    = (database != NULL) ? tcsdup(database) : NULL;
-		con->Password    = (passwd != NULL)   ? tcsdup(passwd) : NULL;
-		con->Port        = (port != NULL)     ? tcsdup(port) : NULL;
+		con->Host        = (host != NULL)     ? wcsdup(host) : NULL;
+		con->User        = (user != NULL)     ? wcsdup(user) : NULL;
+		con->Database    = (database != NULL) ? wcsdup(database) : NULL;
+		con->Password    = (passwd != NULL)   ? wcsdup(passwd) : NULL;
+		con->Port        = (port != NULL)     ? wcsdup(port) : NULL;
 		con->ErrMsg      = NULL;
 
 		mysql_init(&con->HConnect);
@@ -161,7 +161,7 @@ MyServerDisconnect(SQLCONNECT* con)
  * Get last error message available on this connection
  * ---------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 MyServerGetError(SQLCONNECT* con)
 {
 	if (con)
@@ -185,7 +185,7 @@ MyServerGetError(SQLCONNECT* con)
  * Returns the password used to open the connection
  * ---------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 MyServerPasswd(SQLCONNECT* con)
 {
 	if (con)
@@ -201,7 +201,7 @@ MyServerPasswd(SQLCONNECT* con)
  * Returns the user used to open the connection
  * ---------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 MyServerUser(SQLCONNECT* con)
 {
 	if (con)
@@ -217,7 +217,7 @@ MyServerUser(SQLCONNECT* con)
  * Returns the host used to open the connection
  * ---------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 MyServerHost(SQLCONNECT* con)
 {
 	if (con)
@@ -233,7 +233,7 @@ MyServerHost(SQLCONNECT* con)
  * Returns the port used to open the connection
  * ---------------------------------------------------------------------
  */
-const TCHAR* 
+const wchar_t* 
 MyServerPort(SQLCONNECT* con)
 {
 	if (con)
@@ -251,7 +251,7 @@ MyServerPort(SQLCONNECT* con)
  * ---------------------------------------------------------------------
  */
 SQLCONNECT*
-MyServerDupTo(SQLCONNECT* con, const TCHAR* database)
+MyServerDupTo(SQLCONNECT* con, const wchar_t* database)
 {
 	if (con)
 	{
@@ -282,7 +282,7 @@ MyServerDefault(void)
  * ---------------------------------------------------------------------
  */
 SQLRESULT* 
-MyQuerySQL(SQLCONNECT* con, const TCHAR* sqlstmt)
+MyQuerySQL(SQLCONNECT* con, const wchar_t* sqlstmt)
 {
 	if (con && con->Connected)
 	{
@@ -308,8 +308,8 @@ MyQuerySQL(SQLCONNECT* con, const TCHAR* sqlstmt)
 						result->RowIndex   = 0;
 						result->Row        = NULL;
 
-						result->Columns   = (TCHAR**) malloc(result->NumColumns * sizeof(TCHAR*));
-						result->RowData   = (TCHAR**) malloc(result->NumColumns * sizeof(TCHAR*));
+						result->Columns   = (wchar_t**) malloc(result->NumColumns * sizeof(wchar_t*));
+						result->RowData   = (wchar_t**) malloc(result->NumColumns * sizeof(wchar_t*));
 
 						for (index = 0; index < result->NumColumns; index++)
 						{
@@ -355,7 +355,7 @@ MyQuerySQL(SQLCONNECT* con, const TCHAR* sqlstmt)
  * ---------------------------------------------------------------------
  */
 int
-MyExecSQL(SQLCONNECT* con, const TCHAR* sqlstmt)
+MyExecSQL(SQLCONNECT* con, const wchar_t* sqlstmt)
 {
 	SQLRESULT* res = MyQuerySQL(con, sqlstmt);
 	if (res)
@@ -419,7 +419,7 @@ MyResultNumColumns(SQLRESULT* result)
  * Return the name of the specified column
  * ---------------------------------------------------------------------
  */
-const TCHAR* 
+const wchar_t* 
 MyResultColumnName(SQLRESULT* result, int index)
 {
 	if ((index >= 0) && (index < result->NumColumns))
@@ -502,7 +502,7 @@ MyResultFetch(SQLRESULT* result)
  * Read the data from the result set.
  * ---------------------------------------------------------------------
  */
-const TCHAR* 
+const wchar_t* 
 MyResultData(SQLRESULT* result, int index)
 {
 	if ((result->RowIndex >= 0) && (index >= 0) && (index < result->NumColumns))

@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: api_ctrl.c 24868 2010-07-04 11:02:11Z dv $
+ * Last Update:  $Id: api_ctrl.c 33402 2013-04-02 21:32:17Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -45,11 +45,11 @@ typedef enum
 
 typedef struct
 {
-	TCHAR*      SetFocusHookProc;     /* control got input focus */
-	TCHAR*      KillFocusHookProc;    /* control lost input focus */
-	TCHAR*      PreKeyHookProc;       /* control got input focus */
-	TCHAR*      PostKeyHookProc;      /* control lost input focus */
-	TCHAR*      ChangedHookProc;      /* changed hook function */
+	wchar_t*      SetFocusHookProc;     /* control got input focus */
+	wchar_t*      KillFocusHookProc;    /* control lost input focus */
+	wchar_t*      PreKeyHookProc;       /* control got input focus */
+	wchar_t*      PostKeyHookProc;      /* control lost input focus */
+	wchar_t*      ChangedHookProc;      /* changed hook function */
 } EDITSTUB;
 
 static void ApiEditSetFocusHook(void* win, void* ctrl, void* oldfocus);
@@ -60,7 +60,7 @@ static void ApiEditChangedHook(void* win, void* ctrl);
 static void ApiEditFreeStub(void* ctrlstub);
 
 void
-ApiEditNew(int argc, const TCHAR* argv[])
+ApiEditNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 10)
 	{
@@ -72,15 +72,15 @@ ApiEditNew(int argc, const TCHAR* argv[])
 		int   len;
 		int   sflags, cflags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &x);
-		stscanf(argv[3], _T("%d"), &y);
-		stscanf(argv[4], _T("%d"), &w);
-		stscanf(argv[5], _T("%d"), &h);
-		stscanf(argv[6], _T("%d"), &len);
-		stscanf(argv[7], _T("%d"), &id);
-		stscanf(argv[8], _T("%d"), &sflags);
-		stscanf(argv[9], _T("%d"), &cflags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &x);
+		swscanf(argv[3], _T("%d"), &y);
+		swscanf(argv[4], _T("%d"), &w);
+		swscanf(argv[5], _T("%d"), &h);
+		swscanf(argv[6], _T("%d"), &len);
+		swscanf(argv[7], _T("%d"), &id);
+		swscanf(argv[8], _T("%d"), &sflags);
+		swscanf(argv[9], _T("%d"), &cflags);
 
 		win = ApiLookupWindow(wndnr);
 
@@ -115,7 +115,7 @@ ApiEditNew(int argc, const TCHAR* argv[])
 }
 
 void
-ApiEditSetCallback(int argc, const TCHAR* argv[])
+ApiEditSetCallback(int argc, const wchar_t* argv[])
 {
 	if (argc == 4)
 	{
@@ -124,11 +124,11 @@ ApiEditSetCallback(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		unsigned long target;
 		int           hook;
-		const TCHAR*  procname;
+		const wchar_t*  procname;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &hook);
-		stscanf(argv[2], _T("%ld"), &target);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &hook);
+		swscanf(argv[2], _T("%ld"), &target);
 		procname = argv[3];
 
 		if ((hook >= EDIT_SETFOCUS) && (hook <= EDIT_CHANGED))
@@ -136,7 +136,7 @@ ApiEditSetCallback(int argc, const TCHAR* argv[])
 			winstub = StubFind(wndnr);
 			targetwin = StubFind(target);
 			if (targetwin && winstub && winstub->CtrlStubClass &&
-			   (tcscmp(winstub->CtrlStubClass, _T("EDITSTUB")) == 0))
+			   (wcscmp(winstub->CtrlStubClass, _T("EDITSTUB")) == 0))
 			{
 				EDITSTUB* editstub = (EDITSTUB*) winstub->CtrlStub;
 
@@ -220,14 +220,14 @@ ApiEditSetCallback(int argc, const TCHAR* argv[])
 }
 
 void
-ApiEditSetText(int argc, const TCHAR* argv[])
+ApiEditSetText(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -250,24 +250,24 @@ ApiEditSetText(int argc, const TCHAR* argv[])
 }
 
 void
-ApiEditGetText(int argc, const TCHAR* argv[])
+ApiEditGetText(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
 		{
-			TCHAR* result = (TCHAR*) malloc((1024 + 1) * sizeof(TCHAR));
+			wchar_t* result = (wchar_t*) malloc((1024 + 1) * sizeof(wchar_t));
 			if (result)
 			{
 				EditGetText(winstub->Window, result, 1000);
 
-				BackendStartFrame(_T('R'), tcslen(result) + 32);
+				BackendStartFrame(_T('R'), wcslen(result) + 32);
 				BackendInsertInt (ERROR_SUCCESS);
 				BackendInsertStr (result);
 				BackendSendFrame ();
@@ -304,14 +304,14 @@ static void
 ApiEditSetFocusHook(void* win, void* ctrl, void* oldfocus)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("EDITSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("EDITSTUB")) == 0))
 	{
 		EDITSTUB* editstub = (EDITSTUB*) ctrlstub->CtrlStub;
 		if (editstub->SetFocusHookProc)
 		{
 			StubCheckStub(oldfocus);
 
-			BackendStartFrame(_T('H'), tcslen(editstub->SetFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(editstub->SetFocusHookProc) + 64);
 			BackendInsertStr (editstub->SetFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -325,12 +325,12 @@ static void
 ApiEditKillFocusHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("EDITSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("EDITSTUB")) == 0))
 	{
 		EDITSTUB* editstub = (EDITSTUB*) ctrlstub->CtrlStub;
 		if (editstub->KillFocusHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(editstub->KillFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(editstub->KillFocusHookProc) + 64);
 			BackendInsertStr (editstub->KillFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -345,18 +345,18 @@ ApiEditPreKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("EDITSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("EDITSTUB")) == 0))
 	{
 		EDITSTUB* editstub = (EDITSTUB*) ctrlstub->CtrlStub;
 		if (editstub->PreKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(editstub->PreKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(editstub->PreKeyHookProc) + 64);
 			BackendInsertStr (editstub->PreKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -371,18 +371,18 @@ ApiEditPostKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("EDITSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("EDITSTUB")) == 0))
 	{
 		EDITSTUB* editstub = (EDITSTUB*) ctrlstub->CtrlStub;
 		if (editstub->PostKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(editstub->PostKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(editstub->PostKeyHookProc) + 64);
 			BackendInsertStr (editstub->PostKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -395,12 +395,12 @@ static void
 ApiEditChangedHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("EDITSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("EDITSTUB")) == 0))
 	{
 		EDITSTUB* editstub = (EDITSTUB*) ctrlstub->CtrlStub;
 		if (editstub->ChangedHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(editstub->ChangedHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(editstub->ChangedHookProc) + 64);
 			BackendInsertStr (editstub->ChangedHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -423,8 +423,8 @@ typedef enum
 
 typedef struct
 {
-	TCHAR*     SetFocusHookProc;     /* control got input focus */
-	TCHAR*     KillFocusHookProc;    /* control lost input focus */
+	wchar_t*     SetFocusHookProc;     /* control got input focus */
+	wchar_t*     KillFocusHookProc;    /* control lost input focus */
 } LABELSTUB;
 
 static void ApiLabelSetFocusHook(void* win, void* ctrl, void* oldfocus);
@@ -432,7 +432,7 @@ static void ApiLabelKillFocusHook(void* win, void* ctrl);
 static void ApiLabelFreeStub(void* ctrlstub);
 
 void
-ApiLabelNew(int argc, const TCHAR* argv[])
+ApiLabelNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 9)
 	{
@@ -443,14 +443,14 @@ ApiLabelNew(int argc, const TCHAR* argv[])
 		int    x, y, w, h, id;
 		int    sflags, cflags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &x);
-		stscanf(argv[3], _T("%d"), &y);
-		stscanf(argv[4], _T("%d"), &w);
-		stscanf(argv[5], _T("%d"), &h);
-		stscanf(argv[6], _T("%d"), &id);
-		stscanf(argv[7], _T("%d"), &sflags);
-		stscanf(argv[8], _T("%d"), &cflags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &x);
+		swscanf(argv[3], _T("%d"), &y);
+		swscanf(argv[4], _T("%d"), &w);
+		swscanf(argv[5], _T("%d"), &h);
+		swscanf(argv[6], _T("%d"), &id);
+		swscanf(argv[7], _T("%d"), &sflags);
+		swscanf(argv[8], _T("%d"), &cflags);
 
 		win = ApiLookupWindow(wndnr);
 
@@ -485,7 +485,7 @@ ApiLabelNew(int argc, const TCHAR* argv[])
 }
 
 void
-ApiLabelSetCallback(int argc, const TCHAR* argv[])
+ApiLabelSetCallback(int argc, const wchar_t* argv[])
 {
 	if (argc == 4)
 	{
@@ -494,11 +494,11 @@ ApiLabelSetCallback(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		unsigned long target;
 		int           hook;
-		const TCHAR*  procname;
+		const wchar_t*  procname;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &hook);
-		stscanf(argv[2], _T("%ld"), &target);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &hook);
+		swscanf(argv[2], _T("%ld"), &target);
 		procname = argv[3];
 
 		if ((hook >= LABEL_SETFOCUS) && (hook <= LABEL_KILLFOCUS))
@@ -506,7 +506,7 @@ ApiLabelSetCallback(int argc, const TCHAR* argv[])
 			winstub = StubFind(wndnr);
 			targetwin = StubFind(target);
 			if (targetwin && winstub && winstub->CtrlStubClass &&
-			   (tcscmp(winstub->CtrlStubClass, _T("LABELSTUB")) == 0))
+			   (wcscmp(winstub->CtrlStubClass, _T("LABELSTUB")) == 0))
 			{
 				LABELSTUB* labelstub = (LABELSTUB*) winstub->CtrlStub;
 
@@ -571,14 +571,14 @@ static void
 ApiLabelSetFocusHook(void* win, void* ctrl, void* oldfocus)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LABELSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LABELSTUB")) == 0))
 	{
 		LABELSTUB* labelstub = (LABELSTUB*) ctrlstub->CtrlStub;
 		if (labelstub->SetFocusHookProc)
 		{
 			StubCheckStub(oldfocus);
 
-			BackendStartFrame(_T('H'), tcslen(labelstub->SetFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(labelstub->SetFocusHookProc) + 64);
 			BackendInsertStr (labelstub->SetFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -592,12 +592,12 @@ static void
 ApiLabelKillFocusHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LABELSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LABELSTUB")) == 0))
 	{
 		LABELSTUB* labelstub = (LABELSTUB*) ctrlstub->CtrlStub;
 		if (labelstub->KillFocusHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(labelstub->KillFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(labelstub->KillFocusHookProc) + 64);
 			BackendInsertStr (labelstub->KillFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -624,11 +624,11 @@ typedef enum
 
 typedef struct
 {
-	TCHAR*      SetFocusHookProc;     /* control got input focus */
-	TCHAR*      KillFocusHookProc;    /* control lost input focus */
-	TCHAR*      PreKeyHookProc;       /* control got input focus */
-	TCHAR*      PostKeyHookProc;      /* control lost input focus */
-	TCHAR*      ClickedHookProc;      /* clicked hook function */
+	wchar_t*      SetFocusHookProc;     /* control got input focus */
+	wchar_t*      KillFocusHookProc;    /* control lost input focus */
+	wchar_t*      PreKeyHookProc;       /* control got input focus */
+	wchar_t*      PostKeyHookProc;      /* control lost input focus */
+	wchar_t*      ClickedHookProc;      /* clicked hook function */
 } BUTTONSTUB;
 
 static void ApiButtonSetFocusHook(void* win, void* ctrl, void* oldfocus);
@@ -639,7 +639,7 @@ static void ApiButtonClickedHook(void* win, void* ctrl);
 static void ApiButtonFreeStub(void* ctrlstub);
 
 void
-ApiButtonNew(int argc, const TCHAR* argv[])
+ApiButtonNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 9)
 	{
@@ -649,14 +649,14 @@ ApiButtonNew(int argc, const TCHAR* argv[])
 		int    x, y, w, h, id;
 		int    sflags, cflags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &x);
-		stscanf(argv[3], _T("%d"), &y);
-		stscanf(argv[4], _T("%d"), &w);
-		stscanf(argv[5], _T("%d"), &h);
-		stscanf(argv[6], _T("%d"), &id);
-		stscanf(argv[7], _T("%d"), &sflags);
-		stscanf(argv[8], _T("%d"), &cflags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &x);
+		swscanf(argv[3], _T("%d"), &y);
+		swscanf(argv[4], _T("%d"), &w);
+		swscanf(argv[5], _T("%d"), &h);
+		swscanf(argv[6], _T("%d"), &id);
+		swscanf(argv[7], _T("%d"), &sflags);
+		swscanf(argv[8], _T("%d"), &cflags);
 
 		button = ButtonNew(
 			ApiLookupWindow(wndnr),
@@ -689,7 +689,7 @@ ApiButtonNew(int argc, const TCHAR* argv[])
 }
 
 void
-ApiButtonSetCallback(int argc, const TCHAR* argv[])
+ApiButtonSetCallback(int argc, const wchar_t* argv[])
 {
 	if (argc == 4)
 	{
@@ -698,11 +698,11 @@ ApiButtonSetCallback(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		unsigned long target;
 		int           hook;
-		const TCHAR*  procname;
+		const wchar_t*  procname;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &hook);
-		stscanf(argv[2], _T("%ld"), &target);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &hook);
+		swscanf(argv[2], _T("%ld"), &target);
 		procname = argv[3];
 
 		if ((hook >= BUTTON_SETFOCUS) && (hook <= BUTTON_CLICKED))
@@ -710,7 +710,7 @@ ApiButtonSetCallback(int argc, const TCHAR* argv[])
 			winstub = StubFind(wndnr);
 			targetwin = StubFind(target);
 			if (targetwin && winstub && winstub->CtrlStubClass &&
-			   (tcscmp(winstub->CtrlStubClass, _T("BUTTONSTUB")) == 0))
+			   (wcscmp(winstub->CtrlStubClass, _T("BUTTONSTUB")) == 0))
 			{
 				BUTTONSTUB* butstub = (BUTTONSTUB*) winstub->CtrlStub;
 
@@ -812,14 +812,14 @@ static void
 ApiButtonSetFocusHook(void* win, void* ctrl, void* oldfocus)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("BUTTONSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("BUTTONSTUB")) == 0))
 	{
 		BUTTONSTUB* buttonstub = (BUTTONSTUB*) ctrlstub->CtrlStub;
 		if (buttonstub->SetFocusHookProc)
 		{
 			StubCheckStub(oldfocus);
 
-			BackendStartFrame(_T('H'), tcslen(buttonstub->SetFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(buttonstub->SetFocusHookProc) + 64);
 			BackendInsertStr (buttonstub->SetFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -833,12 +833,12 @@ static void
 ApiButtonKillFocusHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("BUTTONSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("BUTTONSTUB")) == 0))
 	{
 		BUTTONSTUB* buttonstub = (BUTTONSTUB*) ctrlstub->CtrlStub;
 		if (buttonstub->KillFocusHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(buttonstub->KillFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(buttonstub->KillFocusHookProc) + 64);
 			BackendInsertStr (buttonstub->KillFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -853,18 +853,18 @@ ApiButtonPreKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("BUTTONSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("BUTTONSTUB")) == 0))
 	{
 		BUTTONSTUB* buttonstub = (BUTTONSTUB*) ctrlstub->CtrlStub;
 		if (buttonstub->PreKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(buttonstub->PreKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(buttonstub->PreKeyHookProc) + 64);
 			BackendInsertStr (buttonstub->PreKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -879,18 +879,18 @@ ApiButtonPostKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("BUTTONSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("BUTTONSTUB")) == 0))
 	{
 		BUTTONSTUB* buttonstub = (BUTTONSTUB*) ctrlstub->CtrlStub;
 		if (buttonstub->PostKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(buttonstub->PostKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(buttonstub->PostKeyHookProc) + 64);
 			BackendInsertStr (buttonstub->PostKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -903,12 +903,12 @@ static void
 ApiButtonClickedHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("BUTTONSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("BUTTONSTUB")) == 0))
 	{
 		BUTTONSTUB* buttonstub = (BUTTONSTUB*) ctrlstub->CtrlStub;
 		if (buttonstub->ClickedHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(buttonstub->ClickedHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(buttonstub->ClickedHookProc) + 64);
 			BackendInsertStr (buttonstub->ClickedHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -924,7 +924,7 @@ ApiButtonClickedHook(void* win, void* ctrl)
  */
 
 void
-ApiGroupboxNew(int argc, const TCHAR* argv[])
+ApiGroupboxNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 8)
 	{
@@ -934,13 +934,13 @@ ApiGroupboxNew(int argc, const TCHAR* argv[])
 		int    x, y, w, h;
 		int    sflags, cflags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &x);
-		stscanf(argv[3], _T("%d"), &y);
-		stscanf(argv[4], _T("%d"), &w);
-		stscanf(argv[5], _T("%d"), &h);
-		stscanf(argv[6], _T("%d"), &sflags);
-		stscanf(argv[7], _T("%d"), &cflags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &x);
+		swscanf(argv[3], _T("%d"), &y);
+		swscanf(argv[4], _T("%d"), &w);
+		swscanf(argv[5], _T("%d"), &h);
+		swscanf(argv[6], _T("%d"), &sflags);
+		swscanf(argv[7], _T("%d"), &cflags);
 
 		box = GroupboxNew(
 			ApiLookupWindow(wndnr),
@@ -986,11 +986,11 @@ typedef enum
 
 typedef struct
 {
-	TCHAR*      SetFocusHookProc;     /* control got input focus */
-	TCHAR*      KillFocusHookProc;    /* control lost input focus */
-	TCHAR*      PreKeyHookProc;       /* control got input focus */
-	TCHAR*      PostKeyHookProc;      /* control lost input focus */
-	TCHAR*      ClickedHookProc;      /* changed hook function */
+	wchar_t*      SetFocusHookProc;     /* control got input focus */
+	wchar_t*      KillFocusHookProc;    /* control lost input focus */
+	wchar_t*      PreKeyHookProc;       /* control got input focus */
+	wchar_t*      PostKeyHookProc;      /* control lost input focus */
+	wchar_t*      ClickedHookProc;      /* changed hook function */
 } RADIOSTUB;
 
 static void ApiRadioSetFocusHook(void* win, void* ctrl, void* oldfocus);
@@ -1001,7 +1001,7 @@ static void ApiRadioClickedHook(void* win, void* ctrl);
 static void ApiRadioFreeStub(void* ctrlstub);
 
 void
-ApiRadioNew(int argc, const TCHAR* argv[])
+ApiRadioNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 9)
 	{
@@ -1012,14 +1012,14 @@ ApiRadioNew(int argc, const TCHAR* argv[])
 		int   x, y, w, h, id;
 		int   sflags, cflags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &x);
-		stscanf(argv[3], _T("%d"), &y);
-		stscanf(argv[4], _T("%d"), &w);
-		stscanf(argv[5], _T("%d"), &h);
-		stscanf(argv[6], _T("%d"), &id);
-		stscanf(argv[7], _T("%d"), &sflags);
-		stscanf(argv[8], _T("%d"), &cflags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &x);
+		swscanf(argv[3], _T("%d"), &y);
+		swscanf(argv[4], _T("%d"), &w);
+		swscanf(argv[5], _T("%d"), &h);
+		swscanf(argv[6], _T("%d"), &id);
+		swscanf(argv[7], _T("%d"), &sflags);
+		swscanf(argv[8], _T("%d"), &cflags);
 
 		win = ApiLookupWindow(wndnr);
 
@@ -1054,7 +1054,7 @@ ApiRadioNew(int argc, const TCHAR* argv[])
 }
 
 void
-ApiRadioSetCallback(int argc, const TCHAR* argv[])
+ApiRadioSetCallback(int argc, const wchar_t* argv[])
 {
 	if (argc == 4)
 	{
@@ -1063,11 +1063,11 @@ ApiRadioSetCallback(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		unsigned long target;
 		int           hook;
-		const TCHAR*  procname;
+		const wchar_t*  procname;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &hook);
-		stscanf(argv[2], _T("%ld"), &target);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &hook);
+		swscanf(argv[2], _T("%ld"), &target);
 		procname = argv[3];
 
 		if ((hook >= RADIO_SETFOCUS) && (hook <= RADIO_CLICKED))
@@ -1075,7 +1075,7 @@ ApiRadioSetCallback(int argc, const TCHAR* argv[])
 			winstub = StubFind(wndnr);
 			targetwin = StubFind(target);
 			if (targetwin && winstub && winstub->CtrlStubClass &&
-			   (tcscmp(winstub->CtrlStubClass, _T("RADIOSTUB")) == 0))
+			   (wcscmp(winstub->CtrlStubClass, _T("RADIOSTUB")) == 0))
 			{
 				RADIOSTUB* radiostub = (RADIOSTUB*) winstub->CtrlStub;
 
@@ -1159,7 +1159,7 @@ ApiRadioSetCallback(int argc, const TCHAR* argv[])
 }
 
 void
-ApiRadioSetCheck(int argc, const TCHAR* argv[])
+ApiRadioSetCheck(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -1167,8 +1167,8 @@ ApiRadioSetCheck(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           check;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &check);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &check);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -1191,14 +1191,14 @@ ApiRadioSetCheck(int argc, const TCHAR* argv[])
 }
 
 void
-ApiRadioGetCheck(int argc, const TCHAR* argv[])
+ApiRadioGetCheck(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -1238,14 +1238,14 @@ static void
 ApiRadioSetFocusHook(void* win, void* ctrl, void* oldfocus)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("RADIOSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("RADIOSTUB")) == 0))
 	{
 		RADIOSTUB* radiostub = (RADIOSTUB*) ctrlstub->CtrlStub;
 		if (radiostub->SetFocusHookProc)
 		{
 			StubCheckStub(oldfocus);
 
-			BackendStartFrame(_T('H'), tcslen(radiostub->SetFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(radiostub->SetFocusHookProc) + 64);
 			BackendInsertStr (radiostub->SetFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -1259,12 +1259,12 @@ static void
 ApiRadioKillFocusHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("RADIOSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("RADIOSTUB")) == 0))
 	{
 		RADIOSTUB* radiostub = (RADIOSTUB*) ctrlstub->CtrlStub;
 		if (radiostub->KillFocusHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(radiostub->KillFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(radiostub->KillFocusHookProc) + 64);
 			BackendInsertStr (radiostub->KillFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -1279,18 +1279,18 @@ ApiRadioPreKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("RADIOSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("RADIOSTUB")) == 0))
 	{
 		RADIOSTUB* radiostub = (RADIOSTUB*) ctrlstub->CtrlStub;
 		if (radiostub->PreKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(radiostub->PreKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(radiostub->PreKeyHookProc) + 64);
 			BackendInsertStr (radiostub->PreKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -1305,18 +1305,18 @@ ApiRadioPostKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("RADIOBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("RADIOBOXSTUB")) == 0))
 	{
 		RADIOSTUB* radiostub = (RADIOSTUB*) ctrlstub->CtrlStub;
 		if (radiostub->PostKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(radiostub->PostKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(radiostub->PostKeyHookProc) + 64);
 			BackendInsertStr (radiostub->PostKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -1329,12 +1329,12 @@ static void
 ApiRadioClickedHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("RADIOSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("RADIOSTUB")) == 0))
 	{
 		RADIOSTUB* radiostub = (RADIOSTUB*) ctrlstub->CtrlStub;
 		if (radiostub->ClickedHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(radiostub->ClickedHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(radiostub->ClickedHookProc) + 64);
 			BackendInsertStr (radiostub->ClickedHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -1360,11 +1360,11 @@ typedef enum
 
 typedef struct
 {
-	TCHAR*      SetFocusHookProc;     /* control got input focus */
-	TCHAR*      KillFocusHookProc;    /* control lost input focus */
-	TCHAR*      PreKeyHookProc;       /* control got input focus */
-	TCHAR*      PostKeyHookProc;      /* control lost input focus */
-	TCHAR*      ClickedHookProc;      /* changed hook function */
+	wchar_t*      SetFocusHookProc;     /* control got input focus */
+	wchar_t*      KillFocusHookProc;    /* control lost input focus */
+	wchar_t*      PreKeyHookProc;       /* control got input focus */
+	wchar_t*      PostKeyHookProc;      /* control lost input focus */
+	wchar_t*      ClickedHookProc;      /* changed hook function */
 } CHECKBOXSTUB;
 
 static void ApiCheckboxSetFocusHook(void* win, void* ctrl, void* oldfocus);
@@ -1375,7 +1375,7 @@ static void ApiCheckboxClickedHook(void* win, void* ctrl);
 static void ApiCheckboxFreeStub(void* ctrlstub);
 
 void
-ApiCheckboxNew(int argc, const TCHAR* argv[])
+ApiCheckboxNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 9)
 	{
@@ -1386,14 +1386,14 @@ ApiCheckboxNew(int argc, const TCHAR* argv[])
 		int   x, y, w, h, id;
 		int   sflags, cflags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &x);
-		stscanf(argv[3], _T("%d"), &y);
-		stscanf(argv[4], _T("%d"), &w);
-		stscanf(argv[5], _T("%d"), &h);
-		stscanf(argv[6], _T("%d"), &id);
-		stscanf(argv[7], _T("%d"), &sflags);
-		stscanf(argv[8], _T("%d"), &cflags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &x);
+		swscanf(argv[3], _T("%d"), &y);
+		swscanf(argv[4], _T("%d"), &w);
+		swscanf(argv[5], _T("%d"), &h);
+		swscanf(argv[6], _T("%d"), &id);
+		swscanf(argv[7], _T("%d"), &sflags);
+		swscanf(argv[8], _T("%d"), &cflags);
 
 		win = ApiLookupWindow(wndnr);
 
@@ -1428,7 +1428,7 @@ ApiCheckboxNew(int argc, const TCHAR* argv[])
 }
 
 void
-ApiCheckboxSetCallback(int argc, const TCHAR* argv[])
+ApiCheckboxSetCallback(int argc, const wchar_t* argv[])
 {
 	if (argc == 4)
 	{
@@ -1437,11 +1437,11 @@ ApiCheckboxSetCallback(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		unsigned long target;
 		int           hook;
-		const TCHAR*  procname;
+		const wchar_t*  procname;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &hook);
-		stscanf(argv[2], _T("%ld"), &target);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &hook);
+		swscanf(argv[2], _T("%ld"), &target);
 		procname = argv[3];
 
 		if ((hook >= CHECKBOX_SETFOCUS) && (hook <= CHECKBOX_CLICKED))
@@ -1449,7 +1449,7 @@ ApiCheckboxSetCallback(int argc, const TCHAR* argv[])
 			winstub = StubFind(wndnr);
 			targetwin = StubFind(target);
 			if (targetwin && winstub && winstub->CtrlStubClass &&
-			   (tcscmp(winstub->CtrlStubClass, _T("CHECKBOXSTUB")) == 0))
+			   (wcscmp(winstub->CtrlStubClass, _T("CHECKBOXSTUB")) == 0))
 			{
 				CHECKBOXSTUB* checkboxstub = (CHECKBOXSTUB*) winstub->CtrlStub;
 
@@ -1532,7 +1532,7 @@ ApiCheckboxSetCallback(int argc, const TCHAR* argv[])
 }
 
 void
-ApiCheckboxSetCheck(int argc, const TCHAR* argv[])
+ApiCheckboxSetCheck(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -1540,8 +1540,8 @@ ApiCheckboxSetCheck(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           check;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &check);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &check);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -1564,14 +1564,14 @@ ApiCheckboxSetCheck(int argc, const TCHAR* argv[])
 }
 
 void
-ApiCheckboxGetCheck(int argc, const TCHAR* argv[])
+ApiCheckboxGetCheck(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -1611,14 +1611,14 @@ static void
 ApiCheckboxSetFocusHook(void* win, void* ctrl, void* oldfocus)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("CHECKBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("CHECKBOXSTUB")) == 0))
 	{
 		CHECKBOXSTUB* checkboxstub = (CHECKBOXSTUB*) ctrlstub->CtrlStub;
 		if (checkboxstub->SetFocusHookProc)
 		{
 			StubCheckStub(oldfocus);
 
-			BackendStartFrame(_T('H'), tcslen(checkboxstub->SetFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(checkboxstub->SetFocusHookProc) + 64);
 			BackendInsertStr (checkboxstub->SetFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -1632,12 +1632,12 @@ static void
 ApiCheckboxKillFocusHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("CHECKBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("CHECKBOXSTUB")) == 0))
 	{
 		CHECKBOXSTUB* checkboxstub = (CHECKBOXSTUB*) ctrlstub->CtrlStub;
 		if (checkboxstub->KillFocusHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(checkboxstub->KillFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(checkboxstub->KillFocusHookProc) + 64);
 			BackendInsertStr (checkboxstub->KillFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -1652,18 +1652,18 @@ ApiCheckboxPreKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("CHECKBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("CHECKBOXSTUB")) == 0))
 	{
 		CHECKBOXSTUB* checkboxstub = (CHECKBOXSTUB*) ctrlstub->CtrlStub;
 		if (checkboxstub->PreKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(checkboxstub->PreKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(checkboxstub->PreKeyHookProc) + 64);
 			BackendInsertStr (checkboxstub->PreKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -1678,18 +1678,18 @@ ApiCheckboxPostKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("CHECKBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("CHECKBOXSTUB")) == 0))
 	{
 		CHECKBOXSTUB* checkboxstub = (CHECKBOXSTUB*) ctrlstub->CtrlStub;
 		if (checkboxstub->PostKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(checkboxstub->PostKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(checkboxstub->PostKeyHookProc) + 64);
 			BackendInsertStr (checkboxstub->PostKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -1702,12 +1702,12 @@ static void
 ApiCheckboxClickedHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("CHECKBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("CHECKBOXSTUB")) == 0))
 	{
 		CHECKBOXSTUB* checkboxstub = (CHECKBOXSTUB*) ctrlstub->CtrlStub;
 		if (checkboxstub->ClickedHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(checkboxstub->ClickedHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(checkboxstub->ClickedHookProc) + 64);
 			BackendInsertStr (checkboxstub->ClickedHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -1735,13 +1735,13 @@ typedef enum
 
 typedef struct
 {
-	TCHAR*      SetFocusHookProc;     /* control got input focus */
-	TCHAR*      KillFocusHookProc;    /* control lost input focus */
-	TCHAR*      PreKeyHookProc;       /* control got input focus */
-	TCHAR*      PostKeyHookProc;      /* control lost input focus */
-	TCHAR*      ChangedHookProc;      /* control lost input focus */
-	TCHAR*      ChangingHookProc;     /* control lost input focus */
-	TCHAR*      ClickedHookProc;      /* changed hook function */
+	wchar_t*      SetFocusHookProc;     /* control got input focus */
+	wchar_t*      KillFocusHookProc;    /* control lost input focus */
+	wchar_t*      PreKeyHookProc;       /* control got input focus */
+	wchar_t*      PostKeyHookProc;      /* control lost input focus */
+	wchar_t*      ChangedHookProc;      /* control lost input focus */
+	wchar_t*      ChangingHookProc;     /* control lost input focus */
+	wchar_t*      ClickedHookProc;      /* changed hook function */
 } LISTBOXSTUB;
 
 static void ApiListboxSetFocusHook(void* win, void* ctrl, void* oldfocus);
@@ -1754,7 +1754,7 @@ static void ApiListboxClickedHook(void* win, void* ctrl);
 static void ApiListboxFreeStub(void* ctrlstub);
 
 void
-ApiListboxNew(int argc, const TCHAR* argv[])
+ApiListboxNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 9)
 	{
@@ -1765,14 +1765,14 @@ ApiListboxNew(int argc, const TCHAR* argv[])
 		int   x, y, w, h, id;
 		int   sflags, cflags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &x);
-		stscanf(argv[3], _T("%d"), &y);
-		stscanf(argv[4], _T("%d"), &w);
-		stscanf(argv[5], _T("%d"), &h);
-		stscanf(argv[6], _T("%d"), &id);
-		stscanf(argv[7], _T("%d"), &sflags);
-		stscanf(argv[8], _T("%d"), &cflags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &x);
+		swscanf(argv[3], _T("%d"), &y);
+		swscanf(argv[4], _T("%d"), &w);
+		swscanf(argv[5], _T("%d"), &h);
+		swscanf(argv[6], _T("%d"), &id);
+		swscanf(argv[7], _T("%d"), &sflags);
+		swscanf(argv[8], _T("%d"), &cflags);
 
 		win = ApiLookupWindow(wndnr);
 
@@ -1807,7 +1807,7 @@ ApiListboxNew(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListboxSetCallback(int argc, const TCHAR* argv[])
+ApiListboxSetCallback(int argc, const wchar_t* argv[])
 {
 	if (argc == 4)
 	{
@@ -1816,11 +1816,11 @@ ApiListboxSetCallback(int argc, const TCHAR* argv[])
 		unsigned long  wndnr;
 		unsigned long  target;
 		int            hook;
-		const TCHAR*   procname;
+		const wchar_t*   procname;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &hook);
-		stscanf(argv[2], _T("%ld"), &target);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &hook);
+		swscanf(argv[2], _T("%ld"), &target);
 		procname = argv[3];
 
 		if ((hook >= LISTBOX_SETFOCUS) && (hook <= LISTBOX_CLICKED))
@@ -1828,7 +1828,7 @@ ApiListboxSetCallback(int argc, const TCHAR* argv[])
 			winstub = StubFind(wndnr);
 			targetwin = StubFind(target);
 			if (targetwin && winstub && winstub->CtrlStubClass &&
-			   (tcscmp(winstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
+			   (wcscmp(winstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
 			{
 				LISTBOXSTUB* listboxstub = (LISTBOXSTUB*) winstub->CtrlStub;
 
@@ -1934,14 +1934,14 @@ ApiListboxSetCallback(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListboxAdd(int argc, const TCHAR* argv[])
+ApiListboxAdd(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -1963,7 +1963,7 @@ ApiListboxAdd(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListboxDelete(int argc, const TCHAR* argv[])
+ApiListboxDelete(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -1971,8 +1971,8 @@ ApiListboxDelete(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           index;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -1995,7 +1995,7 @@ ApiListboxDelete(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListboxGet(int argc, const TCHAR* argv[])
+ApiListboxGet(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -2003,14 +2003,14 @@ ApiListboxGet(int argc, const TCHAR* argv[])
 		int           index;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
 		{
-			const TCHAR* data   = ListboxGet(winstub->Window, index);
-			int          len    = tcslen(data);
+			const wchar_t* data   = ListboxGet(winstub->Window, index);
+			int          len    = wcslen(data);
 
 			BackendStartFrame(_T('R'), len + 32);
 			BackendInsertInt (ERROR_SUCCESS);
@@ -2029,7 +2029,7 @@ ApiListboxGet(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListboxSetData(int argc, const TCHAR* argv[])
+ApiListboxSetData(int argc, const wchar_t* argv[])
 {
 	if (argc == 3)
 	{
@@ -2038,9 +2038,9 @@ ApiListboxSetData(int argc, const TCHAR* argv[])
 		unsigned long data;
 		int           index;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &index);
-		stscanf(argv[2], _T("%ld"), &data);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &index);
+		swscanf(argv[2], _T("%ld"), &data);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2063,7 +2063,7 @@ ApiListboxSetData(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListboxGetData(int argc, const TCHAR* argv[])
+ApiListboxGetData(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -2071,8 +2071,8 @@ ApiListboxGetData(int argc, const TCHAR* argv[])
 		int           index;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2094,7 +2094,7 @@ ApiListboxGetData(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListboxSetSel(int argc, const TCHAR* argv[])
+ApiListboxSetSel(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -2102,8 +2102,8 @@ ApiListboxSetSel(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           index;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2126,14 +2126,14 @@ ApiListboxSetSel(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListboxGetSel(int argc, const TCHAR* argv[])
+ApiListboxGetSel(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2155,14 +2155,14 @@ ApiListboxGetSel(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListboxClear(int argc, const TCHAR* argv[])
+ApiListboxClear(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2185,14 +2185,14 @@ ApiListboxClear(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListboxGetCount(int argc, const TCHAR* argv[])
+ApiListboxGetCount(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2214,14 +2214,14 @@ ApiListboxGetCount(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListboxSelect(int argc, const TCHAR* argv[])
+ApiListboxSelect(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2263,14 +2263,14 @@ static void
 ApiListboxSetFocusHook(void* win, void* ctrl, void* oldfocus)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
 	{
 		LISTBOXSTUB* listboxstub = (LISTBOXSTUB*) ctrlstub->CtrlStub;
 		if (listboxstub->SetFocusHookProc)
 		{
 			StubCheckStub(oldfocus);
 
-			BackendStartFrame(_T('H'), tcslen(listboxstub->SetFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listboxstub->SetFocusHookProc) + 64);
 			BackendInsertStr (listboxstub->SetFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -2284,12 +2284,12 @@ static void
 ApiListboxKillFocusHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
 	{
 		LISTBOXSTUB* listboxstub = (LISTBOXSTUB*) ctrlstub->CtrlStub;
 		if (listboxstub->KillFocusHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(listboxstub->KillFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listboxstub->KillFocusHookProc) + 64);
 			BackendInsertStr (listboxstub->KillFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -2304,18 +2304,18 @@ ApiListboxPreKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
 	{
 		LISTBOXSTUB* listboxstub = (LISTBOXSTUB*) ctrlstub->CtrlStub;
 		if (listboxstub->PreKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(listboxstub->PreKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listboxstub->PreKeyHookProc) + 64);
 			BackendInsertStr (listboxstub->PreKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -2330,18 +2330,18 @@ ApiListboxPostKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
 	{
 		LISTBOXSTUB* listboxstub = (LISTBOXSTUB*) ctrlstub->CtrlStub;
 		if (listboxstub->PostKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(listboxstub->PostKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listboxstub->PostKeyHookProc) + 64);
 			BackendInsertStr (listboxstub->PostKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -2354,12 +2354,12 @@ static void
 ApiListboxChangedHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
 	{
 		LISTBOXSTUB* listboxstub = (LISTBOXSTUB*) ctrlstub->CtrlStub;
 		if (listboxstub->ChangedHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(listboxstub->ChangedHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listboxstub->ChangedHookProc) + 64);
 			BackendInsertStr (listboxstub->ChangedHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -2374,17 +2374,17 @@ ApiListboxChangingHook(void* win, void* ctrl)
 	int result = TRUE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
 	{
 		LISTBOXSTUB* listboxstub = (LISTBOXSTUB*) ctrlstub->CtrlStub;
 		if (listboxstub->ChangingHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(listboxstub->ChangingHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listboxstub->ChangingHookProc) + 64);
 			BackendInsertStr (listboxstub->ChangingHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("0")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("0")) == 0))
 			{
 				result = FALSE;
 			}
@@ -2397,12 +2397,12 @@ static void
 ApiListboxClickedHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTBOXSTUB")) == 0))
 	{
 		LISTBOXSTUB* listboxstub = (LISTBOXSTUB*) ctrlstub->CtrlStub;
 		if (listboxstub->ClickedHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(listboxstub->ClickedHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listboxstub->ClickedHookProc) + 64);
 			BackendInsertStr (listboxstub->ClickedHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -2429,12 +2429,12 @@ typedef enum
 
 typedef struct
 {
-	TCHAR*      SetFocusHookProc;     /* control got input focus */
-	TCHAR*      KillFocusHookProc;    /* control lost input focus */
-	TCHAR*      PreKeyHookProc;       /* control got input focus */
-	TCHAR*      PostKeyHookProc;      /* control lost input focus */
-	TCHAR*      ChangedHookProc;      /* control lost input focus */
-	TCHAR*      ChangingHookProc;     /* control lost input focus */
+	wchar_t*      SetFocusHookProc;     /* control got input focus */
+	wchar_t*      KillFocusHookProc;    /* control lost input focus */
+	wchar_t*      PreKeyHookProc;       /* control got input focus */
+	wchar_t*      PostKeyHookProc;      /* control lost input focus */
+	wchar_t*      ChangedHookProc;      /* control lost input focus */
+	wchar_t*      ChangingHookProc;     /* control lost input focus */
 } COMBOBOXSTUB;
 
 static void ApiComboboxSetFocusHook(void* win, void* ctrl, void* oldfocus);
@@ -2446,7 +2446,7 @@ static int  ApiComboboxChangingHook(void* win, void* ctrl);
 static void ApiComboboxFreeStub(void* ctrlstub);
 
 void
-ApiComboboxNew(int argc, const TCHAR* argv[])
+ApiComboboxNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 8)
 	{
@@ -2457,14 +2457,14 @@ ApiComboboxNew(int argc, const TCHAR* argv[])
 		int   x, y, w, h, id;
 		int   sflags, cflags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &x);
-		stscanf(argv[2], _T("%d"), &y);
-		stscanf(argv[3], _T("%d"), &w);
-		stscanf(argv[4], _T("%d"), &h);
-		stscanf(argv[5], _T("%d"), &id);
-		stscanf(argv[6], _T("%d"), &sflags);
-		stscanf(argv[7], _T("%d"), &cflags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &x);
+		swscanf(argv[2], _T("%d"), &y);
+		swscanf(argv[3], _T("%d"), &w);
+		swscanf(argv[4], _T("%d"), &h);
+		swscanf(argv[5], _T("%d"), &id);
+		swscanf(argv[6], _T("%d"), &sflags);
+		swscanf(argv[7], _T("%d"), &cflags);
 
 		win = ApiLookupWindow(wndnr);
 
@@ -2498,7 +2498,7 @@ ApiComboboxNew(int argc, const TCHAR* argv[])
 }
 
 void
-ApiComboboxSetCallback(int argc, const TCHAR* argv[])
+ApiComboboxSetCallback(int argc, const wchar_t* argv[])
 {
 	if (argc == 4)
 	{
@@ -2507,11 +2507,11 @@ ApiComboboxSetCallback(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		unsigned long target;
 		int           hook;
-		const TCHAR*  procname;
+		const wchar_t*  procname;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &hook);
-		stscanf(argv[2], _T("%ld"), &target);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &hook);
+		swscanf(argv[2], _T("%ld"), &target);
 		procname = argv[3];
 
 		if ((hook >= COMBOBOX_SETFOCUS) && (hook <= COMBOBOX_CHANGING))
@@ -2519,7 +2519,7 @@ ApiComboboxSetCallback(int argc, const TCHAR* argv[])
 			winstub = StubFind(wndnr);
 			targetwin = StubFind(target);
 			if (targetwin && winstub && winstub->CtrlStubClass &&
-			   (tcscmp(winstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
+			   (wcscmp(winstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
 			{
 				COMBOBOXSTUB* comboboxstub = (COMBOBOXSTUB*) winstub->CtrlStub;
 
@@ -2614,14 +2614,14 @@ ApiComboboxSetCallback(int argc, const TCHAR* argv[])
 }
 
 void
-ApiComboboxAdd(int argc, const TCHAR* argv[])
+ApiComboboxAdd(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2643,7 +2643,7 @@ ApiComboboxAdd(int argc, const TCHAR* argv[])
 }
 
 void
-ApiComboboxDelete(int argc, const TCHAR* argv[])
+ApiComboboxDelete(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -2651,8 +2651,8 @@ ApiComboboxDelete(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           index;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2675,7 +2675,7 @@ ApiComboboxDelete(int argc, const TCHAR* argv[])
 }
 
 void
-ApiComboboxGet(int argc, const TCHAR* argv[])
+ApiComboboxGet(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -2683,14 +2683,14 @@ ApiComboboxGet(int argc, const TCHAR* argv[])
 		int           index;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
 		{
-			const TCHAR* data   = ComboboxGet(winstub->Window, index);
-			int          len    = tcslen(data);
+			const wchar_t* data   = ComboboxGet(winstub->Window, index);
+			int          len    = wcslen(data);
 
 			BackendStartFrame(_T('R'), len + 32);
 			BackendInsertInt (ERROR_SUCCESS);
@@ -2709,7 +2709,7 @@ ApiComboboxGet(int argc, const TCHAR* argv[])
 }
 
 void
-ApiComboboxSetData(int argc, const TCHAR* argv[])
+ApiComboboxSetData(int argc, const wchar_t* argv[])
 {
 	if (argc == 3)
 	{
@@ -2718,9 +2718,9 @@ ApiComboboxSetData(int argc, const TCHAR* argv[])
 		unsigned long data;
 		int           index;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &index);
-		stscanf(argv[2], _T("%ld"), &data);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &index);
+		swscanf(argv[2], _T("%ld"), &data);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2743,7 +2743,7 @@ ApiComboboxSetData(int argc, const TCHAR* argv[])
 }
 
 void
-ApiComboboxGetData(int argc, const TCHAR* argv[])
+ApiComboboxGetData(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -2751,8 +2751,8 @@ ApiComboboxGetData(int argc, const TCHAR* argv[])
 		int           index;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2774,7 +2774,7 @@ ApiComboboxGetData(int argc, const TCHAR* argv[])
 }
 
 void
-ApiComboboxSetSel(int argc, const TCHAR* argv[])
+ApiComboboxSetSel(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -2782,8 +2782,8 @@ ApiComboboxSetSel(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           index;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2806,14 +2806,14 @@ ApiComboboxSetSel(int argc, const TCHAR* argv[])
 }
 
 void
-ApiComboboxGetSel(int argc, const TCHAR* argv[])
+ApiComboboxGetSel(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2835,14 +2835,14 @@ ApiComboboxGetSel(int argc, const TCHAR* argv[])
 }
 
 void
-ApiComboboxClear(int argc, const TCHAR* argv[])
+ApiComboboxClear(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2865,14 +2865,14 @@ ApiComboboxClear(int argc, const TCHAR* argv[])
 }
 
 void
-ApiComboboxGetCount(int argc, const TCHAR* argv[])
+ApiComboboxGetCount(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2894,14 +2894,14 @@ ApiComboboxGetCount(int argc, const TCHAR* argv[])
 }
 
 void
-ApiComboboxSelect(int argc, const TCHAR* argv[])
+ApiComboboxSelect(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -2942,14 +2942,14 @@ static void
 ApiComboboxSetFocusHook(void* win, void* ctrl, void* oldfocus)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
 	{
 		COMBOBOXSTUB* comboboxstub = (COMBOBOXSTUB*) ctrlstub->CtrlStub;
 		if (comboboxstub->SetFocusHookProc)
 		{
 			StubCheckStub(oldfocus);
 
-			BackendStartFrame(_T('H'), tcslen(comboboxstub->SetFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(comboboxstub->SetFocusHookProc) + 64);
 			BackendInsertStr (comboboxstub->SetFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -2963,12 +2963,12 @@ static void
 ApiComboboxKillFocusHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
 	{
 		COMBOBOXSTUB* comboboxstub = (COMBOBOXSTUB*) ctrlstub->CtrlStub;
 		if (comboboxstub->KillFocusHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(comboboxstub->KillFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(comboboxstub->KillFocusHookProc) + 64);
 			BackendInsertStr (comboboxstub->KillFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -2983,18 +2983,18 @@ ApiComboboxPreKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
 	{
 		COMBOBOXSTUB* comboboxstub = (COMBOBOXSTUB*) ctrlstub->CtrlStub;
 		if (comboboxstub->PreKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(comboboxstub->PreKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(comboboxstub->PreKeyHookProc) + 64);
 			BackendInsertStr (comboboxstub->PreKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -3009,18 +3009,18 @@ ApiComboboxPostKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
 	{
 		COMBOBOXSTUB* comboboxstub = (COMBOBOXSTUB*) ctrlstub->CtrlStub;
 		if (comboboxstub->PostKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(comboboxstub->PostKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(comboboxstub->PostKeyHookProc) + 64);
 			BackendInsertStr (comboboxstub->PostKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -3033,12 +3033,12 @@ static void
 ApiComboboxChangedHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
 	{
 		COMBOBOXSTUB* comboboxstub = (COMBOBOXSTUB*) ctrlstub->CtrlStub;
 		if (comboboxstub->ChangedHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(comboboxstub->ChangedHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(comboboxstub->ChangedHookProc) + 64);
 			BackendInsertStr (comboboxstub->ChangedHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -3053,17 +3053,17 @@ ApiComboboxChangingHook(void* win, void* ctrl)
 	int result = TRUE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("COMBOBOXSTUB")) == 0))
 	{
 		COMBOBOXSTUB* comboboxstub = (COMBOBOXSTUB*) ctrlstub->CtrlStub;
 		if (comboboxstub->ChangingHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(comboboxstub->ChangingHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(comboboxstub->ChangingHookProc) + 64);
 			BackendInsertStr (comboboxstub->ChangingHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("0")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("0")) == 0))
 			{
 				result = FALSE;
 			}
@@ -3078,7 +3078,7 @@ ApiComboboxChangingHook(void* win, void* ctrl)
  */
 
 void
-ApiProgressbarNew(int argc, const TCHAR* argv[])
+ApiProgressbarNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 9)
 	{
@@ -3089,14 +3089,14 @@ ApiProgressbarNew(int argc, const TCHAR* argv[])
 		int   x, y, w, h, id;
 		int   sflags, cflags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &x);
-		stscanf(argv[3], _T("%d"), &y);
-		stscanf(argv[4], _T("%d"), &w);
-		stscanf(argv[5], _T("%d"), &h);
-		stscanf(argv[6], _T("%d"), &id);
-		stscanf(argv[7], _T("%d"), &sflags);
-		stscanf(argv[8], _T("%d"), &cflags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &x);
+		swscanf(argv[3], _T("%d"), &y);
+		swscanf(argv[4], _T("%d"), &w);
+		swscanf(argv[5], _T("%d"), &h);
+		swscanf(argv[6], _T("%d"), &id);
+		swscanf(argv[7], _T("%d"), &sflags);
+		swscanf(argv[8], _T("%d"), &cflags);
 
 		win = ApiLookupWindow(wndnr);
 
@@ -3128,7 +3128,7 @@ ApiProgressbarNew(int argc, const TCHAR* argv[])
 }
 
 void
-ApiProgressbarSetRange(int argc, const TCHAR* argv[])
+ApiProgressbarSetRange(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -3136,8 +3136,8 @@ ApiProgressbarSetRange(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           range;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &range);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &range);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -3160,7 +3160,7 @@ ApiProgressbarSetRange(int argc, const TCHAR* argv[])
 }
 
 void
-ApiProgressbarSetPos(int argc, const TCHAR* argv[])
+ApiProgressbarSetPos(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -3168,8 +3168,8 @@ ApiProgressbarSetPos(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           pos;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &pos);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &pos);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -3192,7 +3192,7 @@ ApiProgressbarSetPos(int argc, const TCHAR* argv[])
 }
 
 void
-ApiProgressbarGetRange(int argc, const TCHAR* argv[])
+ApiProgressbarGetRange(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
@@ -3200,8 +3200,8 @@ ApiProgressbarGetRange(int argc, const TCHAR* argv[])
 		int           index;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -3223,7 +3223,7 @@ ApiProgressbarGetRange(int argc, const TCHAR* argv[])
 }
 
 void
-ApiProgressbarGetPos(int argc, const TCHAR* argv[])
+ApiProgressbarGetPos(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
@@ -3231,8 +3231,8 @@ ApiProgressbarGetPos(int argc, const TCHAR* argv[])
 		int           index;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -3269,10 +3269,10 @@ typedef enum
 
 typedef struct
 {
-	TCHAR*      SetFocusHookProc;     /* control got input focus */
-	TCHAR*      KillFocusHookProc;    /* control lost input focus */
-	TCHAR*      PreKeyHookProc;       /* control got input focus */
-	TCHAR*      PostKeyHookProc;      /* control lost input focus */
+	wchar_t*      SetFocusHookProc;     /* control got input focus */
+	wchar_t*      KillFocusHookProc;    /* control lost input focus */
+	wchar_t*      PreKeyHookProc;       /* control got input focus */
+	wchar_t*      PostKeyHookProc;      /* control lost input focus */
 } TEXTVIEWSTUB;
 
 static void ApiTextviewSetFocusHook(void* win, void* ctrl, void* oldfocus);
@@ -3282,7 +3282,7 @@ static int  ApiTextviewPostKeyHook(void* win, void* ctrl, int key);
 static void ApiTextviewFreeStub(void* ctrlstub);
 
 void
-ApiTextviewNew(int argc, const TCHAR* argv[])
+ApiTextviewNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 9)
 	{
@@ -3293,14 +3293,14 @@ ApiTextviewNew(int argc, const TCHAR* argv[])
 		int   x, y, w, h, id;
 		int   sflags, cflags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &x);
-		stscanf(argv[3], _T("%d"), &y);
-		stscanf(argv[4], _T("%d"), &w);
-		stscanf(argv[5], _T("%d"), &h);
-		stscanf(argv[6], _T("%d"), &id);
-		stscanf(argv[7], _T("%d"), &sflags);
-		stscanf(argv[8], _T("%d"), &cflags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &x);
+		swscanf(argv[3], _T("%d"), &y);
+		swscanf(argv[4], _T("%d"), &w);
+		swscanf(argv[5], _T("%d"), &h);
+		swscanf(argv[6], _T("%d"), &id);
+		swscanf(argv[7], _T("%d"), &sflags);
+		swscanf(argv[8], _T("%d"), &cflags);
 
 		win = ApiLookupWindow(wndnr);
 
@@ -3335,7 +3335,7 @@ ApiTextviewNew(int argc, const TCHAR* argv[])
 }
 
 void
-ApiTextviewSetCallback(int argc, const TCHAR* argv[])
+ApiTextviewSetCallback(int argc, const wchar_t* argv[])
 {
 	if (argc == 4)
 	{
@@ -3344,11 +3344,11 @@ ApiTextviewSetCallback(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		unsigned long target;
 		int           hook;
-		const TCHAR*  procname;
+		const wchar_t*  procname;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &hook);
-		stscanf(argv[2], _T("%ld"), &target);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &hook);
+		swscanf(argv[2], _T("%ld"), &target);
 		procname = argv[3];
 
 		if ((hook >= TEXTVIEW_SETFOCUS) && (hook <= TEXTVIEW_POSTKEY))
@@ -3356,7 +3356,7 @@ ApiTextviewSetCallback(int argc, const TCHAR* argv[])
 			winstub = StubFind(wndnr);
 			targetwin = StubFind(target);
 			if (targetwin && winstub && winstub->CtrlStubClass &&
-			   (tcscmp(winstub->CtrlStubClass, _T("TEXTVIEWSTUB")) == 0))
+			   (wcscmp(winstub->CtrlStubClass, _T("TEXTVIEWSTUB")) == 0))
 			{
 				TEXTVIEWSTUB* textviewstub = (TEXTVIEWSTUB*) winstub->CtrlStub;
 
@@ -3429,7 +3429,7 @@ ApiTextviewSetCallback(int argc, const TCHAR* argv[])
 }
 
 void
-ApiTextviewEnableWordWrap(int argc, const TCHAR* argv[])
+ApiTextviewEnableWordWrap(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -3437,8 +3437,8 @@ ApiTextviewEnableWordWrap(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           enable;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &enable);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &enable);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -3461,14 +3461,14 @@ ApiTextviewEnableWordWrap(int argc, const TCHAR* argv[])
 }
 
 void
-ApiTextviewAdd(int argc, const TCHAR* argv[])
+ApiTextviewAdd(int argc, const wchar_t* argv[])
 {
 	if ((argc == 2) || (argc == 3)) /* simply ignore "doupdate" parameter */
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -3491,14 +3491,14 @@ ApiTextviewAdd(int argc, const TCHAR* argv[])
 }
 
 void
-ApiTextviewClear(int argc, const TCHAR* argv[])
+ApiTextviewClear(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -3521,14 +3521,14 @@ ApiTextviewClear(int argc, const TCHAR* argv[])
 }
 
 void
-ApiTextviewRead(int argc, const TCHAR* argv[])
+ApiTextviewRead(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -3550,7 +3550,7 @@ ApiTextviewRead(int argc, const TCHAR* argv[])
 }
 
 void
-ApiTextviewSearch(int argc, const TCHAR* argv[])
+ApiTextviewSearch(int argc, const wchar_t* argv[])
 {
 	if (argc == 5)
 	{
@@ -3560,10 +3560,10 @@ ApiTextviewSearch(int argc, const TCHAR* argv[])
 		int           casesens;
 		int           down;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &wholeword);
-		stscanf(argv[3], _T("%d"), &casesens);
-		stscanf(argv[4], _T("%d"), &down);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &wholeword);
+		swscanf(argv[3], _T("%d"), &casesens);
+		swscanf(argv[4], _T("%d"), &down);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -3603,14 +3603,14 @@ static void
 ApiTextviewSetFocusHook(void* win, void* ctrl, void* oldfocus)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("TEXTVIEWSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("TEXTVIEWSTUB")) == 0))
 	{
 		TEXTVIEWSTUB* textviewstub = (TEXTVIEWSTUB*) ctrlstub->CtrlStub;
 		if (textviewstub->SetFocusHookProc)
 		{
 			StubCheckStub(oldfocus);
 
-			BackendStartFrame(_T('H'), tcslen(textviewstub->SetFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(textviewstub->SetFocusHookProc) + 64);
 			BackendInsertStr (textviewstub->SetFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -3624,12 +3624,12 @@ static void
 ApiTextviewKillFocusHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("TEXTVIEWSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("TEXTVIEWSTUB")) == 0))
 	{
 		TEXTVIEWSTUB* textviewstub = (TEXTVIEWSTUB*) ctrlstub->CtrlStub;
 		if (textviewstub->KillFocusHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(textviewstub->KillFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(textviewstub->KillFocusHookProc) + 64);
 			BackendInsertStr (textviewstub->KillFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -3644,18 +3644,18 @@ ApiTextviewPreKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("TEXTVIEWSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("TEXTVIEWSTUB")) == 0))
 	{
 		TEXTVIEWSTUB* textviewstub = (TEXTVIEWSTUB*) ctrlstub->CtrlStub;
 		if (textviewstub->PreKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(textviewstub->PreKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(textviewstub->PreKeyHookProc) + 64);
 			BackendInsertStr (textviewstub->PreKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -3670,18 +3670,18 @@ ApiTextviewPostKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("TEXTVIEWSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("TEXTVIEWSTUB")) == 0))
 	{
 		TEXTVIEWSTUB* textviewstub = (TEXTVIEWSTUB*) ctrlstub->CtrlStub;
 		if (textviewstub->PostKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(textviewstub->PostKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(textviewstub->PostKeyHookProc) + 64);
 			BackendInsertStr (textviewstub->PostKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -3710,13 +3710,13 @@ typedef enum
 
 typedef struct
 {
-	TCHAR*      SetFocusHookProc;     /* control got input focus */
-	TCHAR*      KillFocusHookProc;    /* control lost input focus */
-	TCHAR*      PreKeyHookProc;       /* control got input focus */
-	TCHAR*      PostKeyHookProc;      /* control lost input focus */
-	TCHAR*      ChangedHookProc;      /* selection has been changed */
-	TCHAR*      ChangingHookProc;     /* selection is beeing changed */
-	TCHAR*      ClickedHookProc;      /* record has been selected/clicked */
+	wchar_t*      SetFocusHookProc;     /* control got input focus */
+	wchar_t*      KillFocusHookProc;    /* control lost input focus */
+	wchar_t*      PreKeyHookProc;       /* control got input focus */
+	wchar_t*      PostKeyHookProc;      /* control lost input focus */
+	wchar_t*      ChangedHookProc;      /* selection has been changed */
+	wchar_t*      ChangingHookProc;     /* selection is beeing changed */
+	wchar_t*      ClickedHookProc;      /* record has been selected/clicked */
 } LISTVIEWSTUB;
 
 static void ApiListviewSetFocusHook(void* win, void* ctrl, void* oldfocus);
@@ -3729,7 +3729,7 @@ static void ApiListviewClickedHook(void* win, void* ctrl);
 static void ApiListviewFreeStub(void* ctrlstub);
 
 void
-ApiListviewNew(int argc, const TCHAR* argv[])
+ApiListviewNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 10)
 	{
@@ -3741,15 +3741,15 @@ ApiListviewNew(int argc, const TCHAR* argv[])
 		int   x, y, w, h, id;
 		int   sflags, cflags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &x);
-		stscanf(argv[3], _T("%d"), &y);
-		stscanf(argv[4], _T("%d"), &w);
-		stscanf(argv[5], _T("%d"), &h);
-		stscanf(argv[6], _T("%d"), &cols);
-		stscanf(argv[7], _T("%d"), &id);
-		stscanf(argv[8], _T("%d"), &sflags);
-		stscanf(argv[9], _T("%d"), &cflags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &x);
+		swscanf(argv[3], _T("%d"), &y);
+		swscanf(argv[4], _T("%d"), &w);
+		swscanf(argv[5], _T("%d"), &h);
+		swscanf(argv[6], _T("%d"), &cols);
+		swscanf(argv[7], _T("%d"), &id);
+		swscanf(argv[8], _T("%d"), &sflags);
+		swscanf(argv[9], _T("%d"), &cflags);
 
 		win = ApiLookupWindow(wndnr);
 
@@ -3784,7 +3784,7 @@ ApiListviewNew(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListviewSetCallback(int argc, const TCHAR* argv[])
+ApiListviewSetCallback(int argc, const wchar_t* argv[])
 {
 	if (argc == 4)
 	{
@@ -3793,11 +3793,11 @@ ApiListviewSetCallback(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		unsigned long target;
 		int           hook;
-		const TCHAR*  procname;
+		const wchar_t*  procname;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &hook);
-		stscanf(argv[2], _T("%ld"), &target);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &hook);
+		swscanf(argv[2], _T("%ld"), &target);
 		procname = argv[3];
 
 		if ((hook >= LISTVIEW_SETFOCUS) && (hook <= LISTVIEW_CLICKED))
@@ -3805,7 +3805,7 @@ ApiListviewSetCallback(int argc, const TCHAR* argv[])
 			winstub = StubFind(wndnr);
 			targetwin = StubFind(target);
 			if (targetwin && winstub && winstub->CtrlStubClass &&
-			   (tcscmp(winstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
+			   (wcscmp(winstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
 			{
 				LISTVIEWSTUB* listviewstub = (LISTVIEWSTUB*) winstub->CtrlStub;
 
@@ -3909,7 +3909,7 @@ ApiListviewSetCallback(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiListviewAddColumn(int argc, const TCHAR* argv[])
+void ApiListviewAddColumn(int argc, const wchar_t* argv[])
 {
 	if (argc == 3)
 	{
@@ -3917,8 +3917,8 @@ void ApiListviewAddColumn(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           colnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &colnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &colnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -3940,7 +3940,7 @@ void ApiListviewAddColumn(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiListviewSetTitleAlignment(int argc, const TCHAR* argv[])
+void ApiListviewSetTitleAlignment(int argc, const wchar_t* argv[])
 {
 	if (argc == 3)
 	{
@@ -3949,9 +3949,9 @@ void ApiListviewSetTitleAlignment(int argc, const TCHAR* argv[])
 		int           colnr;
 		int           align;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &colnr);
-		stscanf(argv[2], _T("%d"),  &align);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &colnr);
+		swscanf(argv[2], _T("%d"),  &align);
 
 		winstub = StubFind(wndnr);
 		if (winstub && (align >= ALIGN_CENTER) && (align <= ALIGN_RIGHT))
@@ -3976,14 +3976,14 @@ void ApiListviewSetTitleAlignment(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiListviewClear(int argc, const TCHAR* argv[])
+void ApiListviewClear(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -4005,14 +4005,14 @@ void ApiListviewClear(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiListviewAdd(int argc, const TCHAR* argv[])
+void ApiListviewAdd(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -4041,7 +4041,7 @@ void ApiListviewAdd(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiListviewSetText(int argc, const TCHAR* argv[])
+void ApiListviewSetText(int argc, const wchar_t* argv[])
 {
 	if (argc == 4)
 	{
@@ -4050,9 +4050,9 @@ void ApiListviewSetText(int argc, const TCHAR* argv[])
 		int           index;
 		int           colnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
-		stscanf(argv[2], _T("%d"), &colnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[2], _T("%d"), &colnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -4077,7 +4077,7 @@ void ApiListviewSetText(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiListviewGetText(int argc, const TCHAR* argv[])
+void ApiListviewGetText(int argc, const wchar_t* argv[])
 {
 	if (argc == 3)
 	{
@@ -4086,21 +4086,21 @@ void ApiListviewGetText(int argc, const TCHAR* argv[])
 		int           index;
 		int           colnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
-		stscanf(argv[2], _T("%d"), &colnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[2], _T("%d"), &colnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
 		{
 			LISTREC*     rec = ListviewGetRecord(winstub->Window, index);
-			const TCHAR* text = _T("");
+			const wchar_t* text = _T("");
 			int          len = 0;
 
 			if (rec)
 			{
 				text = ListviewGetColumnText(rec, colnr);
-				len = tcslen(text);
+				len = wcslen(text);
 			}
 			BackendStartFrame(_T('R'), len + 32);
 			BackendInsertInt (ERROR_SUCCESS);
@@ -4118,7 +4118,7 @@ void ApiListviewGetText(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiListviewSetData(int argc, const TCHAR* argv[])
+void ApiListviewSetData(int argc, const wchar_t* argv[])
 {
 	if (argc == 3)
 	{
@@ -4127,9 +4127,9 @@ void ApiListviewSetData(int argc, const TCHAR* argv[])
 		unsigned long data;
 		int           index;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
-		stscanf(argv[2], _T("%ld"), &data);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[2], _T("%ld"), &data);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -4154,7 +4154,7 @@ void ApiListviewSetData(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiListviewGetData(int argc, const TCHAR* argv[])
+void ApiListviewGetData(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -4162,8 +4162,8 @@ void ApiListviewGetData(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           index;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -4191,7 +4191,7 @@ void ApiListviewGetData(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListviewSetSel(int argc, const TCHAR* argv[])
+ApiListviewSetSel(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -4199,8 +4199,8 @@ ApiListviewSetSel(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           index;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -4223,14 +4223,14 @@ ApiListviewSetSel(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListviewGetSel(int argc, const TCHAR* argv[])
+ApiListviewGetSel(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -4252,14 +4252,14 @@ ApiListviewGetSel(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListviewGetCount(int argc, const TCHAR* argv[])
+ApiListviewGetCount(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -4281,14 +4281,14 @@ ApiListviewGetCount(int argc, const TCHAR* argv[])
 }
 
 void
-ApiListviewUpdate(int argc, const TCHAR* argv[])
+ApiListviewUpdate(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -4311,7 +4311,7 @@ ApiListviewUpdate(int argc, const TCHAR* argv[])
 }
 
 void 
-ApiListviewAlphaSort(int argc, const TCHAR* argv[])
+ApiListviewAlphaSort(int argc, const wchar_t* argv[])
 {
 	if (argc == 3)
 	{
@@ -4320,9 +4320,9 @@ ApiListviewAlphaSort(int argc, const TCHAR* argv[])
 		int           colnr;
 		int           up;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &colnr);
-		stscanf(argv[2], _T("%d"), &up); 
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &colnr);
+		swscanf(argv[2], _T("%d"), &up); 
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -4345,7 +4345,7 @@ ApiListviewAlphaSort(int argc, const TCHAR* argv[])
 }
 
 void 
-ApiListviewNumericSort(int argc, const TCHAR* argv[])
+ApiListviewNumericSort(int argc, const wchar_t* argv[])
 {
 	if (argc == 3)
 	{
@@ -4354,9 +4354,9 @@ ApiListviewNumericSort(int argc, const TCHAR* argv[])
 		int           colnr;
 		int           up;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &colnr);
-		stscanf(argv[2], _T("%d"), &up); 
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &colnr);
+		swscanf(argv[2], _T("%d"), &up); 
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -4399,14 +4399,14 @@ static void
 ApiListviewSetFocusHook(void* win, void* ctrl, void* oldfocus)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
 	{
 		LISTVIEWSTUB* listviewstub = (LISTVIEWSTUB*) ctrlstub->CtrlStub;
 		if (listviewstub->SetFocusHookProc)
 		{
 			StubCheckStub(oldfocus);
 
-			BackendStartFrame(_T('H'), tcslen(listviewstub->SetFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listviewstub->SetFocusHookProc) + 64);
 			BackendInsertStr (listviewstub->SetFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -4420,12 +4420,12 @@ static void
 ApiListviewKillFocusHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
 	{
 		LISTVIEWSTUB* listviewstub = (LISTVIEWSTUB*) ctrlstub->CtrlStub;
 		if (listviewstub->KillFocusHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(listviewstub->KillFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listviewstub->KillFocusHookProc) + 64);
 			BackendInsertStr (listviewstub->KillFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -4440,18 +4440,18 @@ ApiListviewPreKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
 	{
 		LISTVIEWSTUB* listviewstub = (LISTVIEWSTUB*) ctrlstub->CtrlStub;
 		if (listviewstub->PreKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(listviewstub->PreKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listviewstub->PreKeyHookProc) + 64);
 			BackendInsertStr (listviewstub->PreKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -4466,18 +4466,18 @@ ApiListviewPostKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
 	{
 		LISTVIEWSTUB* listviewstub = (LISTVIEWSTUB*) ctrlstub->CtrlStub;
 		if (listviewstub->PostKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(listviewstub->PostKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listviewstub->PostKeyHookProc) + 64);
 			BackendInsertStr (listviewstub->PostKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -4490,12 +4490,12 @@ static void
 ApiListviewChangedHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
 	{
 		LISTVIEWSTUB* listviewstub = (LISTVIEWSTUB*) ctrlstub->CtrlStub;
 		if (listviewstub->ChangedHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(listviewstub->ChangedHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listviewstub->ChangedHookProc) + 64);
 			BackendInsertStr (listviewstub->ChangedHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -4510,17 +4510,17 @@ ApiListviewChangingHook(void* win, void* ctrl)
 	int result = TRUE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
 	{
 		LISTVIEWSTUB* listviewstub = (LISTVIEWSTUB*) ctrlstub->CtrlStub;
 		if (listviewstub->ChangingHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(listviewstub->ChangingHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listviewstub->ChangingHookProc) + 64);
 			BackendInsertStr (listviewstub->ChangingHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("0")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("0")) == 0))
 			{
 				result = FALSE;
 			}
@@ -4533,12 +4533,12 @@ static void
 ApiListviewClickedHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("LISTVIEWSTUB")) == 0))
 	{
 		LISTVIEWSTUB* listviewstub = (LISTVIEWSTUB*) ctrlstub->CtrlStub;
 		if (listviewstub->ClickedHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(listviewstub->ClickedHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(listviewstub->ClickedHookProc) + 64);
 			BackendInsertStr (listviewstub->ClickedHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -4564,11 +4564,11 @@ typedef enum
 
 typedef struct
 {
-	TCHAR*      SetFocusHookProc;     /* control got input focus */
-	TCHAR*      KillFocusHookProc;    /* control lost input focus */
-	TCHAR*      PreKeyHookProc;       /* control got input focus */
-	TCHAR*      PostKeyHookProc;      /* control lost input focus */
-	TCHAR*      CoProcExitHookProc;   /* co process has terminated */
+	wchar_t*      SetFocusHookProc;     /* control got input focus */
+	wchar_t*      KillFocusHookProc;    /* control lost input focus */
+	wchar_t*      PreKeyHookProc;       /* control got input focus */
+	wchar_t*      PostKeyHookProc;      /* control lost input focus */
+	wchar_t*      CoProcExitHookProc;   /* co process has terminated */
 } TERMINALSTUB;
 
 static void ApiTerminalSetFocusHook(void* win, void* ctrl, void* oldfocus);
@@ -4579,7 +4579,7 @@ static void ApiTerminalCoProcExitHook(void* win, void* ctrl, int exitcode);
 static void ApiTerminalFreeStub(void* ctrlstub);
 
 void
-ApiTerminalNew(int argc, const TCHAR* argv[])
+ApiTerminalNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 9)
 	{
@@ -4590,14 +4590,14 @@ ApiTerminalNew(int argc, const TCHAR* argv[])
 		int   x, y, w, h, id;
 		int   sflags, cflags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &x);
-		stscanf(argv[3], _T("%d"), &y);
-		stscanf(argv[4], _T("%d"), &w);
-		stscanf(argv[5], _T("%d"), &h);
-		stscanf(argv[6], _T("%d"), &id);
-		stscanf(argv[7], _T("%d"), &sflags);
-		stscanf(argv[8], _T("%d"), &cflags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &x);
+		swscanf(argv[3], _T("%d"), &y);
+		swscanf(argv[4], _T("%d"), &w);
+		swscanf(argv[5], _T("%d"), &h);
+		swscanf(argv[6], _T("%d"), &id);
+		swscanf(argv[7], _T("%d"), &sflags);
+		swscanf(argv[8], _T("%d"), &cflags);
 
 		win = ApiLookupWindow(wndnr);
 
@@ -4632,7 +4632,7 @@ ApiTerminalNew(int argc, const TCHAR* argv[])
 }
 
 void
-ApiTerminalSetCallback(int argc, const TCHAR* argv[])
+ApiTerminalSetCallback(int argc, const wchar_t* argv[])
 {
 	if (argc == 4)
 	{
@@ -4641,11 +4641,11 @@ ApiTerminalSetCallback(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		unsigned long target;
 		int           hook;
-		const TCHAR*  procname;
+		const wchar_t*  procname;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &hook);
-		stscanf(argv[2], _T("%ld"), &target);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &hook);
+		swscanf(argv[2], _T("%ld"), &target);
 		procname = argv[3];
 
 		if ((hook >= TERMINAL_SETFOCUS) && (hook <= TERMINAL_EXIT))
@@ -4653,7 +4653,7 @@ ApiTerminalSetCallback(int argc, const TCHAR* argv[])
 			winstub = StubFind(wndnr);
 			targetwin = StubFind(target);
 			if (targetwin && winstub && winstub->CtrlStubClass &&
-			   (tcscmp(winstub->CtrlStubClass, _T("TERMINALSTUB")) == 0))
+			   (wcscmp(winstub->CtrlStubClass, _T("TERMINALSTUB")) == 0))
 			{
 				TERMINALSTUB* terminalstub = (TERMINALSTUB*) winstub->CtrlStub;
 
@@ -4736,19 +4736,19 @@ ApiTerminalSetCallback(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiTerminalWrite(int argc, const TCHAR* argv[])
+void ApiTerminalWrite(int argc, const wchar_t* argv[])
 {
 	if ((argc == 2) || (argc == 3)) /* simply ignore "doupdate" parameter */
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
 		{
-			TerminalWrite(winstub->Window, argv[1], tcslen(argv[1]));
+			TerminalWrite(winstub->Window, argv[1], wcslen(argv[1]));
 
 			BackendStartFrame(_T('R'), 32);
 			BackendInsertInt (ERROR_SUCCESS);
@@ -4765,14 +4765,14 @@ void ApiTerminalWrite(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiTerminalRun(int argc, const TCHAR* argv[])
+void ApiTerminalRun(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -4795,13 +4795,13 @@ void ApiTerminalRun(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiTerminalPipeData(int argc, const TCHAR* argv[])
+void ApiTerminalPipeData(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -4842,14 +4842,14 @@ static void
 ApiTerminalSetFocusHook(void* win, void* ctrl, void* oldfocus)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("TERMINALSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("TERMINALSTUB")) == 0))
 	{
 		TERMINALSTUB* terminalstub = (TERMINALSTUB*) ctrlstub->CtrlStub;
 		if (terminalstub->SetFocusHookProc)
 		{
 			StubCheckStub(oldfocus);
 
-			BackendStartFrame(_T('H'), tcslen(terminalstub->SetFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(terminalstub->SetFocusHookProc) + 64);
 			BackendInsertStr (terminalstub->SetFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -4863,12 +4863,12 @@ static void
 ApiTerminalKillFocusHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("TERMINALSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("TERMINALSTUB")) == 0))
 	{
 		TERMINALSTUB* terminalstub = (TERMINALSTUB*) ctrlstub->CtrlStub;
 		if (terminalstub->KillFocusHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(terminalstub->KillFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(terminalstub->KillFocusHookProc) + 64);
 			BackendInsertStr (terminalstub->KillFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -4883,18 +4883,18 @@ ApiTerminalPreKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("TERMINALSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("TERMINALSTUB")) == 0))
 	{
 		TERMINALSTUB* terminalstub = (TERMINALSTUB*) ctrlstub->CtrlStub;
 		if (terminalstub->PreKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(terminalstub->PreKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(terminalstub->PreKeyHookProc) + 64);
 			BackendInsertStr (terminalstub->PreKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -4909,18 +4909,18 @@ ApiTerminalPostKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("TERMINALSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("TERMINALSTUB")) == 0))
 	{
 		TERMINALSTUB* terminalstub = (TERMINALSTUB*) ctrlstub->CtrlStub;
 		if (terminalstub->PostKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(terminalstub->PostKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(terminalstub->PostKeyHookProc) + 64);
 			BackendInsertStr (terminalstub->PostKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -4934,12 +4934,12 @@ static void
 ApiTerminalCoProcExitHook(void* win, void* ctrl, int exitcode)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("TERMINALSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("TERMINALSTUB")) == 0))
 	{
 		TERMINALSTUB* terminalstub = (TERMINALSTUB*) ctrlstub->CtrlStub;
 		if (terminalstub->CoProcExitHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(terminalstub->CoProcExitHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(terminalstub->CoProcExitHookProc) + 64);
 			BackendInsertStr (terminalstub->CoProcExitHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -4969,14 +4969,14 @@ typedef enum
 
 typedef struct
 {
-	TCHAR*      SetFocusHookProc;     /* control got input focus */
-	TCHAR*      KillFocusHookProc;    /* control lost input focus */
-	TCHAR*      PreKeyHookProc;       /* control got input focus */
-	TCHAR*      PostKeyHookProc;      /* control lost input focus */
-	TCHAR*      ChangedHookProc;      /* selection changed */
-	TCHAR*      ChangingHookProc;     /* selection is changing */
-	TCHAR*      ClickedHookProc;      /* item has been clicked */
-	TCHAR*      EscapeHookProc;       /* selection aborted due to escape key */
+	wchar_t*      SetFocusHookProc;     /* control got input focus */
+	wchar_t*      KillFocusHookProc;    /* control lost input focus */
+	wchar_t*      PreKeyHookProc;       /* control got input focus */
+	wchar_t*      PostKeyHookProc;      /* control lost input focus */
+	wchar_t*      ChangedHookProc;      /* selection changed */
+	wchar_t*      ChangingHookProc;     /* selection is changing */
+	wchar_t*      ClickedHookProc;      /* item has been clicked */
+	wchar_t*      EscapeHookProc;       /* selection aborted due to escape key */
 } MENUSTUB;
 
 static void ApiMenuSetFocusHook(void* win, void* ctrl, void* oldfocus);
@@ -4990,7 +4990,7 @@ static void ApiMenuEscapeHook(void* win, void* ctrl);
 static void ApiMenuFreeStub(void* ctrlstub);
 
 void
-ApiMenuNew(int argc, const TCHAR* argv[])
+ApiMenuNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 9)
 	{
@@ -5001,14 +5001,14 @@ ApiMenuNew(int argc, const TCHAR* argv[])
 		int   x, y, w, h, id;
 		int   sflags, cflags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &x);
-		stscanf(argv[3], _T("%d"), &y);
-		stscanf(argv[4], _T("%d"), &w);
-		stscanf(argv[5], _T("%d"), &h);
-		stscanf(argv[6], _T("%d"), &id);
-		stscanf(argv[7], _T("%d"), &sflags);
-		stscanf(argv[8], _T("%d"), &cflags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &x);
+		swscanf(argv[3], _T("%d"), &y);
+		swscanf(argv[4], _T("%d"), &w);
+		swscanf(argv[5], _T("%d"), &h);
+		swscanf(argv[6], _T("%d"), &id);
+		swscanf(argv[7], _T("%d"), &sflags);
+		swscanf(argv[8], _T("%d"), &cflags);
 
 		win = ApiLookupWindow(wndnr);
 
@@ -5043,7 +5043,7 @@ ApiMenuNew(int argc, const TCHAR* argv[])
 }
 
 void
-ApiMenuSetCallback(int argc, const TCHAR* argv[])
+ApiMenuSetCallback(int argc, const wchar_t* argv[])
 {
 	if (argc == 4)
 	{
@@ -5052,11 +5052,11 @@ ApiMenuSetCallback(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		unsigned long target;
 		int           hook;
-		const TCHAR*  procname;
+		const wchar_t*  procname;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"),  &hook);
-		stscanf(argv[2], _T("%ld"), &target);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &hook);
+		swscanf(argv[2], _T("%ld"), &target);
 		procname = argv[3];
 
 		if ((hook >= MENU_SETFOCUS) && (hook <= MENU_ESCAPE))
@@ -5064,7 +5064,7 @@ ApiMenuSetCallback(int argc, const TCHAR* argv[])
 			winstub = StubFind(wndnr);
 			targetwin = StubFind(target);
 			if (targetwin && winstub && winstub->CtrlStubClass &&
-			   (tcscmp(winstub->CtrlStubClass, _T("MENUSTUB")) == 0))
+			   (wcscmp(winstub->CtrlStubClass, _T("MENUSTUB")) == 0))
 			{
 				MENUSTUB* menustub = (MENUSTUB*) winstub->CtrlStub;
 
@@ -5179,7 +5179,7 @@ ApiMenuSetCallback(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiMenuAddItem(int argc, const TCHAR* argv[])
+void ApiMenuAddItem(int argc, const wchar_t* argv[])
 {
 	if (argc == 3)
 	{
@@ -5187,8 +5187,8 @@ void ApiMenuAddItem(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           id;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[2], _T("%d"), &id);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &id);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -5210,14 +5210,14 @@ void ApiMenuAddItem(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiMenuAddSeparator(int argc, const TCHAR* argv[])
+void ApiMenuAddSeparator(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -5239,7 +5239,7 @@ void ApiMenuAddSeparator(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiMenuSelectItem(int argc, const TCHAR* argv[])
+void ApiMenuSelectItem(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -5247,8 +5247,8 @@ void ApiMenuSelectItem(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		unsigned long id;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%ld"), &id);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%ld"), &id);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -5270,14 +5270,14 @@ void ApiMenuSelectItem(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiMenuGetSelectedItem(int argc, const TCHAR* argv[])
+void ApiMenuGetSelectedItem(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -5304,14 +5304,14 @@ void ApiMenuGetSelectedItem(int argc, const TCHAR* argv[])
 	}
 }
 
-void ApiMenuClear(int argc, const TCHAR* argv[])
+void ApiMenuClear(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -5355,14 +5355,14 @@ static void
 ApiMenuSetFocusHook(void* win, void* ctrl, void* oldfocus)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
 	{
 		MENUSTUB* menustub = (MENUSTUB*) ctrlstub->CtrlStub;
 		if (menustub->SetFocusHookProc)
 		{
 			StubCheckStub(oldfocus);
 
-			BackendStartFrame(_T('H'), tcslen(menustub->SetFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(menustub->SetFocusHookProc) + 64);
 			BackendInsertStr (menustub->SetFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -5376,12 +5376,12 @@ static void
 ApiMenuKillFocusHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
 	{
 		MENUSTUB* menustub = (MENUSTUB*) ctrlstub->CtrlStub;
 		if (menustub->KillFocusHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(menustub->KillFocusHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(menustub->KillFocusHookProc) + 64);
 			BackendInsertStr (menustub->KillFocusHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -5396,18 +5396,18 @@ ApiMenuPreKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
 	{
 		MENUSTUB* menustub = (MENUSTUB*) ctrlstub->CtrlStub;
 		if (menustub->PreKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(menustub->PreKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(menustub->PreKeyHookProc) + 64);
 			BackendInsertStr (menustub->PreKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -5422,18 +5422,18 @@ ApiMenuPostKeyHook(void* win, void* ctrl, int key)
 	int result = FALSE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
 	{
 		MENUSTUB* menustub = (MENUSTUB*) ctrlstub->CtrlStub;
 		if (menustub->PostKeyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(menustub->PostKeyHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(menustub->PostKeyHookProc) + 64);
 			BackendInsertStr (menustub->PostKeyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendInsertInt (key);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 			{
 				result = TRUE;
 			}
@@ -5446,12 +5446,12 @@ static void
 ApiMenuChangedHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
 	{
 		MENUSTUB* menustub = (MENUSTUB*) ctrlstub->CtrlStub;
 		if (menustub->ChangedHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(menustub->ChangedHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(menustub->ChangedHookProc) + 64);
 			BackendInsertStr (menustub->ChangedHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -5466,17 +5466,17 @@ ApiMenuChangingHook(void* win, void* ctrl)
 	int result = TRUE;
 
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
 	{
 		MENUSTUB* menustub = (MENUSTUB*) ctrlstub->CtrlStub;
 		if (menustub->ChangingHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(menustub->ChangingHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(menustub->ChangingHookProc) + 64);
 			BackendInsertStr (menustub->ChangingHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendExecFrame ();
-			if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("0")) == 0))
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("0")) == 0))
 			{
 				result = FALSE;
 			}
@@ -5489,12 +5489,12 @@ static void
 ApiMenuClickedHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
 	{
 		MENUSTUB* menustub = (MENUSTUB*) ctrlstub->CtrlStub;
 		if (menustub->ClickedHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(menustub->ClickedHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(menustub->ClickedHookProc) + 64);
 			BackendInsertStr (menustub->ClickedHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
@@ -5507,12 +5507,12 @@ static void
 ApiMenuEscapeHook(void* win, void* ctrl)
 {
 	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
-	if (ctrlstub && (tcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("MENUSTUB")) == 0))
 	{
 		MENUSTUB* menustub = (MENUSTUB*) ctrlstub->CtrlStub;
 		if (menustub->EscapeHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(menustub->EscapeHookProc) + 64);
+			BackendStartFrame(_T('H'), wcslen(menustub->EscapeHookProc) + 64);
 			BackendInsertStr (menustub->EscapeHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);

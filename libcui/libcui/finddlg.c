@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: finddlg.c 23497 2010-03-14 21:53:08Z dv $
+ * Last Update:  $Id: finddlg.c 33402 2013-04-02 21:32:17Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -146,7 +146,7 @@ FindDlgDestroyHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-FinddlgNew(CUIWINDOW* parent, const TCHAR* title, int sflags, int cflags)
+FinddlgNew(CUIWINDOW* parent, const wchar_t* title, int sflags, int cflags)
 {
 	if (parent)
 	{
@@ -180,7 +180,7 @@ FinddlgNew(CUIWINDOW* parent, const TCHAR* title, int sflags, int cflags)
 FINDDLGDATA*
 FinddlgGetData(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("FIND_DLG")) == 0))
+	if (win && (wcscmp(win->Class, _T("FIND_DLG")) == 0))
 	{
 		return (FINDDLGDATA*) win->InstData;
 	}

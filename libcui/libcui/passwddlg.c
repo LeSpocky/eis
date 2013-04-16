@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: passwddlg.c 23497 2010-03-14 21:53:08Z dv $
+ * Last Update:  $Id: passwddlg.c 33402 2013-04-02 21:32:17Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -51,10 +51,10 @@ PasswddlgButtonHook(void* w, void* c)
 		ctrl = WindowGetCtrl(win, IDC_EDTEXT2);
 		if (ctrl)
 		{
-			TCHAR cmptext[MAX_PASSWD_SIZE + 1];
+			wchar_t cmptext[MAX_PASSWD_SIZE + 1];
 
 			EditGetText(ctrl, cmptext, MAX_PASSWD_SIZE);
-			if (tcscmp(cmptext, data->Password) != 0)
+			if (wcscmp(cmptext, data->Password) != 0)
 			{
 				MessageBox(win,
 				           _T("Passwords to not match! Please enter them again."),
@@ -135,7 +135,7 @@ PasswddlgDestroyHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-PasswddlgNew(CUIWINDOW* parent, const TCHAR* title, int sflags, int cflags)
+PasswddlgNew(CUIWINDOW* parent, const wchar_t* title, int sflags, int cflags)
 {
 	if (parent)
 	{
@@ -167,7 +167,7 @@ PasswddlgNew(CUIWINDOW* parent, const TCHAR* title, int sflags, int cflags)
 PASSWDDLGDATA*
 PasswddlgGetData(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("PASSWD_DLG")) == 0))
+	if (win && (wcscmp(win->Class, _T("PASSWD_DLG")) == 0))
 	{
 		return (PASSWDDLGDATA*) win->InstData;
 	}

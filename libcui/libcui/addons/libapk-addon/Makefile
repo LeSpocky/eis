@@ -41,9 +41,9 @@ LDFLAGS    += -l$(CURSESLIB) -lcrypto -lz
 # ----------------------------------------------------------------------
 
 # output files
-LIB_VERSION        = 1.0.0
+LIB_VERSION        = 2.0.0
 LIB_NAME           = libapk-addon
-INC_NAME           = apklib
+INC_NAME           = apklib-2
 
 # files
 C_OBJECTS          =  libmain.o

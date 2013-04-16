@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: cui-script.h 25003 2010-07-17 05:50:58Z dv $
+ * Last Update:  $Id: cui-script.h 33397 2013-04-02 20:48:05Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,35 +38,35 @@ enum
 	ERROR_FAILED  = 5,
 };
 
-typedef int  (*ApiProc)        (int func_nr, int argc, const TCHAR* argv[]);
+typedef int  (*ApiProc)        (int func_nr, int argc, const wchar_t* argv[]);
 typedef void (*DeleteProc)     (void* ctrlstub);
 
 typedef struct
 {
-	CUIWINDOW*  Window;
-	TCHAR*      CreateHookProc;     /* create hook function */
-	TCHAR*      DestroyHookProc;    /* destroy hook function */
-	TCHAR*      CanCloseHookProc;   /* can close hook function */
-	TCHAR*      InitHookProc;       /* init hook */
-	TCHAR*      PaintHookProc;      /* paint hook function */
-	TCHAR*      NcPaintHookProc;    /* non client paint hook fn. (size_x, size_y) */
-	TCHAR*      SizeHookProc;       /* size/resize hook function */
-	TCHAR*      SetFocusHookProc;   /* set focus hook function (lastfocus) */
-	TCHAR*      KillFocusHookProc;  /* kill focus hook function */
-	TCHAR*      ActivateHookProc;   /* not used yet */
-	TCHAR*      DeactivateHookProc; /* not used yes */
-	TCHAR*      KeyHookProc;        /* key input hook function (key) */
-	TCHAR*      MMoveHookProc;      /* mouse move hook function (x, y)*/
-	TCHAR*      MButtonHookProc;    /* mouse button hook function (x, y, flags)*/
-	TCHAR*      VScrollHookProc;    /* vertical scroll hook fn. (sbcode, pos) */
-	TCHAR*      HScrollHookProc;    /* horiz. scroll hook fn. (sbcode, pos) */
-	TCHAR*      TimerHookProc;      /* timer elapsed hook fn. (id) */
-	TCHAR*      LayoutHookProc;     /* layout in invalid -> update */
+	CUIWINDOW*     Window;
+	wchar_t*       CreateHookProc;     /* create hook function */
+	wchar_t*       DestroyHookProc;    /* destroy hook function */
+	wchar_t*       CanCloseHookProc;   /* can close hook function */
+	wchar_t*       InitHookProc;       /* init hook */
+	wchar_t*       PaintHookProc;      /* paint hook function */
+	wchar_t*       NcPaintHookProc;    /* non client paint hook fn. (size_x, size_y) */
+	wchar_t*       SizeHookProc;       /* size/resize hook function */
+	wchar_t*       SetFocusHookProc;   /* set focus hook function (lastfocus) */
+	wchar_t*       KillFocusHookProc;  /* kill focus hook function */
+	wchar_t*       ActivateHookProc;   /* not used yet */
+	wchar_t*       DeactivateHookProc; /* not used yes */
+	wchar_t*       KeyHookProc;        /* key input hook function (key) */
+	wchar_t*       MMoveHookProc;      /* mouse move hook function (x, y)*/
+	wchar_t*       MButtonHookProc;    /* mouse button hook function (x, y, flags)*/
+	wchar_t*       VScrollHookProc;    /* vertical scroll hook fn. (sbcode, pos) */
+	wchar_t*       HScrollHookProc;    /* horiz. scroll hook fn. (sbcode, pos) */
+	wchar_t*       TimerHookProc;      /* timer elapsed hook fn. (id) */
+	wchar_t*       LayoutHookProc;     /* layout in invalid -> update */
 
-	void*       CtrlStub;           /* additional control hooks */
-	const TCHAR*CtrlStubClass;      /* control class */
-	DeleteProc  CtrlStubDelete;     /* delete control hook struct */
-	void*       Next;               /* next window stub */
+	void*          CtrlStub;           /* additional control hooks */
+	const wchar_t* CtrlStubClass;      /* control class */
+	DeleteProc     CtrlStubDelete;     /* delete control hook struct */
+	void*          Next;               /* next window stub */
 } WINDOWSTUB;
 
 typedef enum
@@ -92,8 +92,8 @@ typedef enum
 } HOOKTYPE;
 
 
-typedef void        (*StartFrameProc)    (TCHAR ctype, int size);
-typedef void        (*InsertStrProc)     (const TCHAR* str);
+typedef void        (*StartFrameProc)    (wchar_t ctype, int size);
+typedef void        (*InsertStrProc)     (const wchar_t* str);
 typedef void        (*InsertIntProc)     (int val);
 typedef void        (*InsertLongProc)    (unsigned long val);
 typedef void        (*InsertRawProc)     (void* data, int size);
@@ -104,8 +104,8 @@ typedef void        (*WriteErrorProc)    (int code);
 typedef WINDOWSTUB* (*StubCreateProc)    (CUIWINDOW* win);
 typedef void        (*StubCheckStubProc) (CUIWINDOW* win);
 typedef void        (*StubDeleteProc)    (WINDOWSTUB* stub);
-typedef void        (*StubSetHookProc)   (WINDOWSTUB* stub, HOOKTYPE hook, const TCHAR* procname);
-typedef void        (*StubSetProcProc)   (TCHAR** p, const TCHAR* procname);
+typedef void        (*StubSetHookProc)   (WINDOWSTUB* stub, HOOKTYPE hook, const wchar_t* procname);
+typedef void        (*StubSetProcProc)   (wchar_t** p, const wchar_t* procname);
 typedef WINDOWSTUB* (*StubFindProc)      (unsigned long key);
 
 typedef struct
@@ -133,19 +133,19 @@ void         ScriptingEnd(void);
 WINDOWSTUB*  StubCreate(CUIWINDOW* win);
 void         StubCheckStub(CUIWINDOW* win);
 void         StubDelete(WINDOWSTUB* stub);
-void         StubSetHook(WINDOWSTUB* stub, HOOKTYPE hook, const TCHAR* procname);
-void         StubSetProc(TCHAR** p, const TCHAR* procname);
+void         StubSetHook(WINDOWSTUB* stub, HOOKTYPE hook, const wchar_t* procname);
+void         StubSetProc(wchar_t** p, const wchar_t* procname);
 WINDOWSTUB*  StubFind(unsigned long key);
 
 int          BackendCreatePipes(void);
 void         BackendRemovePipes(void);
 
-int          BackendOpen(const TCHAR* command, int debug);
+int          BackendOpen(const wchar_t* command, int debug);
 int          BackendClose(void);
 int          BackendRun(void);
 
-void         BackendStartFrame(TCHAR ctype, int size);
-void         BackendInsertStr (const TCHAR* str);
+void         BackendStartFrame(wchar_t ctype, int size);
+void         BackendInsertStr (const wchar_t* str);
 void         BackendInsertInt (int val);
 void         BackendInsertLong(unsigned long val);
 void         BackendSendFrame (void);
@@ -153,7 +153,7 @@ int          BackendExecFrame (void);
 void         BackendWriteError(int code);
 
 int          BackendNumResultParams(void);
-const TCHAR* BackendResultParam(int nr);
+const wchar_t* BackendResultParam(int nr);
 
 void         BackendSetExternalApi(ApiProc api);
 

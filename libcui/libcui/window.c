@@ -65,7 +65,7 @@ typedef void (*SigProc)(int);
  */
 typedef struct
 {
-	TCHAR*      Name;         /* Name of this color scheme */
+	wchar_t*      Name;         /* Name of this color scheme */
 	CUIWINCOLOR ColorRec;     /* Colors defined here */
 	void*       Next;         /* Next scheme in the list */
 } CUICOLSCHEME;
@@ -175,13 +175,14 @@ WindowStart(int color, int mouse)
 
 	/* setup locales */
 	setlocale(LC_ALL,"");
-/*
+#ifdef UNICODE
 	if(strcmp(nl_langinfo(CODESET), "UTF-8")) 
 	{
-		fprintf(stderr, "UTF-8 noch nicht aktiviert!\n");
+		fprintf(stderr, "Du willst UTF-8 aktivieren!\n");
 		exit(EXIT_SUCCESS);
 	}
-*/
+#endif
+
 	/* setup signals for job control handling */
 	SignalAction.sa_handler = (SigProc) WindowSigHandler;
 	SignalAction.sa_flags = 0;
@@ -913,12 +914,12 @@ WindowDestroy(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 void
-WindowAddColScheme(const TCHAR* name, CUIWINCOLOR* colrec)
+WindowAddColScheme(const wchar_t* name, CUIWINCOLOR* colrec)
 {
 	CUICOLSCHEME* scheme = FirstColScheme;
 	while (scheme)
 	{
-		if (tcscasecmp(scheme->Name, name) == 0)
+		if (wcscasecmp(scheme->Name, name) == 0)
 		{
 			scheme->ColorRec = *colrec;
 			return;
@@ -926,7 +927,7 @@ WindowAddColScheme(const TCHAR* name, CUIWINCOLOR* colrec)
 		scheme = (CUICOLSCHEME*) scheme->Next;
 	}
 	scheme = (CUICOLSCHEME*) malloc(sizeof(CUICOLSCHEME));
-	scheme->Name = tcsdup(name);
+	scheme->Name = wcsdup(name);
 	scheme->ColorRec = *colrec;
 	scheme->Next = FirstColScheme;
 	FirstColScheme = scheme;
@@ -940,12 +941,12 @@ WindowAddColScheme(const TCHAR* name, CUIWINCOLOR* colrec)
  * ---------------------------------------------------------------------
  */
 void
-WindowColScheme(CUIWINDOW* win, const TCHAR* name)
+WindowColScheme(CUIWINDOW* win, const wchar_t* name)
 {
 	CUICOLSCHEME* scheme = FirstColScheme;
 	while (scheme)
 	{
-		if (tcscasecmp(scheme->Name, name) == 0)
+		if (wcscasecmp(scheme->Name, name) == 0)
 		{
 			win->Color = scheme->ColorRec;
 			return;
@@ -960,12 +961,12 @@ WindowColScheme(CUIWINDOW* win, const TCHAR* name)
  * ---------------------------------------------------------------------
  */
 int
-WindowHasColScheme(const TCHAR* name)
+WindowHasColScheme(const wchar_t* name)
 {
 	CUICOLSCHEME* scheme = FirstColScheme;
 	while (scheme)
 	{
-		if (tcscasecmp(scheme->Name, name) == 0)
+		if (wcscasecmp(scheme->Name, name) == 0)
 		{
 			return TRUE;
 		}
@@ -980,21 +981,21 @@ WindowHasColScheme(const TCHAR* name)
  * ---------------------------------------------------------------------
  */
 void
-WindowSetText(CUIWINDOW* win, const TCHAR* text)
+WindowSetText(CUIWINDOW* win, const wchar_t* text)
 {
-	TCHAR* hkey = tcschr(text, _T('&'));
+	wchar_t* hkey = wcschr(text, _T('&'));
 	if (hkey)
 	{
 		win->HotKey = tolower(*(hkey + 1));
 	}
 	if (!win->Text)
 	{
-		win->Text = tcsdup(text);
+		win->Text = wcsdup(text);
 	}
 	else
 	{
 		free(win->Text);
-		win->Text = tcsdup(text);
+		win->Text = wcsdup(text);
 	}
 	if (win->IsCreated)
 	{
@@ -1010,13 +1011,13 @@ WindowSetText(CUIWINDOW* win, const TCHAR* text)
  * ---------------------------------------------------------------------
  */
 void
-WindowSetRText(CUIWINDOW* win, const TCHAR* text)
+WindowSetRText(CUIWINDOW* win, const wchar_t* text)
 {
 	if (win->RText)
 	{
 		free(win->RText);
 	}
-	win->RText = tcsdup(text);
+	win->RText = wcsdup(text);
 	if (win->IsCreated)
 	{
 		CUIRECT rc;
@@ -1031,13 +1032,13 @@ WindowSetRText(CUIWINDOW* win, const TCHAR* text)
  * ---------------------------------------------------------------------
  */
 void
-WindowSetLText(CUIWINDOW* win, const TCHAR* text)
+WindowSetLText(CUIWINDOW* win, const wchar_t* text)
 {
 	if (win->RText)
 	{
 		free(win->LText);
 	}
-	win->LText = tcsdup(text);
+	win->LText = wcsdup(text);
 	if (win->IsCreated)
 	{
 		CUIRECT rc;
@@ -1052,13 +1053,13 @@ WindowSetLText(CUIWINDOW* win, const TCHAR* text)
  * ---------------------------------------------------------------------
  */
 void
-WindowSetRStatusText(CUIWINDOW* win, const TCHAR* text)
+WindowSetRStatusText(CUIWINDOW* win, const wchar_t* text)
 {
 	if (win->RStatusText)
 	{
 		free(win->RStatusText);
 	}
-	win->RStatusText = tcsdup(text);
+	win->RStatusText = wcsdup(text);
 	if (win->IsCreated)
 	{
 		CUIRECT rc;
@@ -1073,13 +1074,13 @@ WindowSetRStatusText(CUIWINDOW* win, const TCHAR* text)
  * ---------------------------------------------------------------------
  */
 void
-WindowSetLStatusText(CUIWINDOW* win, const TCHAR* text)
+WindowSetLStatusText(CUIWINDOW* win, const wchar_t* text)
 {
 	if (win->LStatusText)
 	{
 		free(win->LStatusText);
 	}
-	win->LStatusText = tcsdup(text);
+	win->LStatusText = wcsdup(text);
 	if (win->IsCreated)
 	{
 		CUIRECT rc;
@@ -1094,13 +1095,13 @@ WindowSetLStatusText(CUIWINDOW* win, const TCHAR* text)
  * ---------------------------------------------------------------------
  */
 void
-WindowSetStatusText(CUIWINDOW* win, const TCHAR* text)
+WindowSetStatusText(CUIWINDOW* win, const wchar_t* text)
 {
 	if (win->StatusText)
 	{
 		free(win->StatusText);
 	}
-	win->StatusText = tcsdup(text);
+	win->StatusText = wcsdup(text);
 	if (win->IsCreated)
 	{
 		CUIRECT rc;
@@ -1114,14 +1115,14 @@ WindowSetStatusText(CUIWINDOW* win, const TCHAR* text)
  * Read the (title) text from a window
  * ---------------------------------------------------------------------
  */
-const TCHAR*
-WindowGetText(CUIWINDOW* win, TCHAR* text, int len)
+const wchar_t*
+WindowGetText(CUIWINDOW* win, wchar_t* text, int len)
 {
 	if (len > 0)
 	{
 		if (win->Text)
 		{
-			tcsncpy(text, win->Text, len);
+			wcsncpy(text, win->Text, len);
 			text[len - 1] = 0;
 		}
 		else
@@ -1982,7 +1983,7 @@ WindowPaintCaption(CUIWINDOW* win, int size_x)
 {
 	WINDOW* w = win->Frame;
 	int  x, x1, x2;
-	TCHAR buffer[256 + 1];
+	wchar_t buffer[256 + 1];
 	int  max = 256;
 	int  left = 0;
 	int  right = 0;
@@ -2057,15 +2058,15 @@ WindowPaintCaption(CUIWINDOW* win, int size_x)
 
 	if (win->LText)
 	{
-		left = tcslen(win->LText);
+		left = wcslen(win->LText);
 	}
 	if (win->RText)
 	{
-		right = tcslen(win->RText);
+		right = wcslen(win->RText);
 	}
 	if (win->Text)
 	{
-		center = tcslen(win->Text);
+		center = wcslen(win->Text);
 	}
 
 	while ((max > 0) && ((left + right + center) >= max))
@@ -2088,19 +2089,19 @@ WindowPaintCaption(CUIWINDOW* win, int size_x)
 	SetColor(w, win->Color.TitleTxtColor, win->Color.TitleBkgndColor, TRUE);
 	if (win->LText)
 	{
-		tcsncpy(buffer, win->LText, left);
+		wcsncpy(buffer, win->LText, left);
 		buffer[left] = 0;
 		MOVEYX(w, 0, x1); PRINT(w, buffer);
 	}
 	if (win->RText)
 	{
-		tcsncpy(buffer, win->RText, right);
+		wcsncpy(buffer, win->RText, right);
 		buffer[right] = 0;
 		MOVEYX(w, 0, x1 + max - right); PRINT(w, buffer);
 	}
 	if (win->Text)
 	{
-		tcsncpy(buffer, win->Text, center);
+		wcsncpy(buffer, win->Text, center);
 		buffer[center] = 0;
 		MOVEYX(w, 0, x1 + max / 2 - center / 2); PRINT(w, buffer);
 	}
@@ -2117,7 +2118,7 @@ WindowPaintStatusBar(CUIWINDOW* win, int size_x, int size_y)
 {
 	WINDOW* w = win->Frame;
 	int  y, x, x1, x2;
-	TCHAR buffer[256 + 1];
+	wchar_t buffer[256 + 1];
 	int  max = 256;
 	int  left = 0;
 	int  right = 0;
@@ -2146,15 +2147,15 @@ WindowPaintStatusBar(CUIWINDOW* win, int size_x, int size_y)
 
 	if (win->LStatusText)
 	{
-		left = tcslen(win->LStatusText);
+		left = wcslen(win->LStatusText);
 	}
 	if (win->RStatusText)
 	{
-		right = tcslen(win->RStatusText);
+		right = wcslen(win->RStatusText);
 	}
 	if (win->StatusText)
 	{
-		center = tcslen(win->StatusText);
+		center = wcslen(win->StatusText);
 	}
 
 	while ((max > 0) && ((left + right + center) >= max))
@@ -2176,19 +2177,19 @@ WindowPaintStatusBar(CUIWINDOW* win, int size_x, int size_y)
 	/* show status text */
 	if (win->LStatusText)
 	{
-		tcsncpy(buffer, win->LStatusText, left);
+		wcsncpy(buffer, win->LStatusText, left);
 		buffer[left] = 0;
 		MOVEYX(w, y, x1); PRINT(w, buffer);
 	}
 	if (win->RStatusText)
 	{
-		tcsncpy(buffer, win->RStatusText, right);
+		wcsncpy(buffer, win->RStatusText, right);
 		buffer[right] = 0;
 		MOVEYX(w, y, x1 + max - right); PRINT(w, buffer);
 	}
 	if (win->StatusText)
 	{
-		tcsncpy(buffer, win->StatusText, center);
+		wcsncpy(buffer, win->StatusText, center);
 		buffer[center] = 0;
 		MOVEYX(w, y, x1 + max / 2 - center / 2); PRINT(w, buffer);
 	}
@@ -3225,7 +3226,7 @@ WindowPaintTitleText1(CUIWINDOW* win, int width)
 	WINDOW* w = win->Frame;
 	if ((width > 6) && (win->Text))
 	{
-		int len = tcslen(win->Text);
+		int len = wcslen(win->Text);
 		int x1;
 
 		if (len > (width - 4))
@@ -4415,6 +4416,8 @@ WindowGetRelWindowRect(CUIWINDOW* win, CUIRECT* rc)
 static void
 WindowResizeHandler (int sig)
 {
+	CUI_USE_ARG(sig);
+	
 	Resize = TRUE;
 	(void) signal(SIGWINCH, WindowResizeHandler);    /* some systems need this */
 }
@@ -4455,7 +4458,6 @@ WindowSigHandler (int sig)
 static int
 GetKey(int* key)
 {
-#ifdef _UNICODE
 	wint_t c;
 	int result = get_wch(&c);
 	if ((result == KEY_CODE_YES) || (result == OK))
@@ -4478,75 +4480,6 @@ GetKey(int* key)
 		}
 		return FALSE;
 	}
-#else
-	int ch = getch();
-
-	if (ch == 27)
-	{
-		ch = getch();
-
-		if (ch == ERR)
-		{
-			ch = 27;                     
-		}
-		else if (ch == _T('O'))
-		{
-			ch = getch();
-
-			switch (ch)
-			{
-			case _T('P'): ch = KEY_F(1); break;
-			case _T('Q'): ch = KEY_F(2); break;
-			case _T('R'): ch = KEY_F(3); break;
-			case _T('S'): ch = KEY_F(4); break;
-			default:  ch = ERR; break;
-			}
-		}
-		else if (ch != 27)
-		{
-			ch = ERR;
-		}
-	}
-	else if (ch != ERR)
-	{
-		switch (ch)      
-		{
-		case KEY_FIND:   ch = KEY_HOME; break;
-		case KEY_SELECT: ch = KEY_END;  break;
-		case KEY_SR:     ch = _T('9'); break;
-		case KEY_SPREVIOUS: ch = _T('8'); break;
-		case KEY_SHOME:  ch = _T('7'); break;
-		case KEY_SRIGHT: ch = _T('6'); break;
-		case KEY_SBEG:   ch = _T('5'); break;
-		case KEY_SLEFT:  ch = _T('4'); break;
-		case KEY_SF:     ch = _T('3'); break;
-		case KEY_SNEXT:  ch = _T('2'); break;
-		case KEY_SEND:   ch = _T('1'); break;
-		case KEY_SIC:    ch = _T('0'); break;
-		case KEY_ENTER:  ch = KEY_RETURN; break;
-		}
-	}
-	else
-	{
-		if (Resize)
-		{
-			struct winsize size;
-
-			if (ioctl(fileno(stdout), TIOCGWINSZ, &size) == 0)
-			{
-				resizeterm(size.ws_row, size.ws_col);
-				wrefresh(curscr);
-			}
-			Resize = FALSE;
-		}
-	}
-	if (ch != ERR)
-	{
-		*key = ch;
-		return TRUE;
-	}
-        return FALSE;
-#endif
 }
 
 

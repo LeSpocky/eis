@@ -69,7 +69,7 @@ typedef struct
 
 typedef struct TERMINALStruct
 {
-	TCHAR*       Lines[MAX_TERMLINES];         /* Text line buffers */
+	wchar_t*       Lines[MAX_TERMLINES];         /* Text line buffers */
 	BYTE*        Colors[MAX_TERMLINES];        /* Color line buffers */
 
 	int          CurAttr;                      /* Current color attribute */
@@ -81,7 +81,7 @@ typedef struct TERMINALStruct
 
 	int          InputState;                   /* State of input interpreter */
 	int          InputPos;                     /* Sequence read pos */
-	TCHAR        EscSeq[MAX_SEQUENCE + 1];     /* Buffer for ANSI control sequences */
+	wchar_t        EscSeq[MAX_SEQUENCE + 1];     /* Buffer for ANSI control sequences */
 
 	COPROC*      CoProc;                       /* Running co process */
 
@@ -106,19 +106,17 @@ static void    TerminalCalcPos    (CUIWINDOW* win);
 static void    TerminalNextLine   (CUIWINDOW* win);
 static void    TerminalPrevLine   (CUIWINDOW* win);
 static void    TerminalCursorOnOff(CUIWINDOW* win);
-static COPROC* TerminalCoCreate   (const TCHAR* cmd);
+static COPROC* TerminalCoCreate   (const wchar_t* cmd);
 static void    TerminalCoDelete   (COPROC* coproc);
 static int     TerminalCoIsRunning(COPROC* coproc, int *exitcode);
 static void    TerminalCoExecute  (int* pipe1, int* pipe2, int* pipe3, 
                                    const char* filename, char* const parameters[]);
-static int     TerminalCoWrite    (COPROC* coproc, const TCHAR *buf, int count);
-static int     TerminalCoRead     (COPROC* coproc, TCHAR *buf, int count);
+static int     TerminalCoWrite    (COPROC* coproc, const wchar_t *buf, int count);
+static int     TerminalCoRead     (COPROC* coproc, wchar_t *buf, int count);
 static void    sig_handler        (int signr);
 
-#ifdef _UNICODE
-static char*   TCHAR_dup_to_mbchar(const TCHAR* str);
-static int     mbchar_byte_len(const TCHAR* p);
-#endif
+static char*   wchar_t_dup_to_mbchar(const wchar_t* str);
+static int     mbchar_byte_len(const wchar_t* p);
 
 
 /* ---------------------------------------------------------------------
@@ -178,7 +176,7 @@ TerminalNcPaintHook(void* w, int size_x, int size_y)
 	/* title text */
 	if (!win->Text || (win->Text[0] == 0) || (!win->HasBorder)) return;
 
-	len = tcslen(win->Text);
+	len = wcslen(win->Text);
 	if (len > rc.W - 4)
 	{
 		len = rc.W - 4;
@@ -361,7 +359,7 @@ TerminalKeyHook(void* w, int key)
 			{
 				if ((key >= KEY_SPACE) && (key <= 255))
 				{
-					TCHAR c = (TCHAR) key;
+					wchar_t c = (wchar_t) key;
 					TerminalCoWrite(data->CoProc, &c, 1);
 					return TRUE;
 				}
@@ -395,6 +393,8 @@ TerminalVScrollHook(void* w, int sbcode, int pos)
 	CUIWINDOW* win = (CUIWINDOW*) w;
 	CUIRECT rc;
 	int sbpos, range;
+	
+	CUI_USE_ARG(pos);
 
 	WindowGetClientRect(win, &rc);
 	sbpos = WindowGetVScrollPos(win);
@@ -527,7 +527,7 @@ TerminalTimerHook(void* w, int id)
 	if (data && data->CoProc)
 	{
 		int exitcode;
-		TCHAR buffer[256 + 1];
+		wchar_t buffer[256 + 1];
 
 		int c = TerminalCoRead(data->CoProc, buffer, 255);
 		while (c > 0)
@@ -576,7 +576,7 @@ TerminalLayoutHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-TerminalNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
+TerminalNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h,
            int id, int sflags, int cflags)
 {
 	if (parent)
@@ -621,11 +621,11 @@ TerminalNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 		for(i = 0; i < MAX_TERMLINES; i++)
 		{
 			((TERMINALDATA*)terminal->InstData)->Lines[i] = 
-				(TCHAR*) malloc((MAX_TERMCOLS + 1) * sizeof(TCHAR));
+				(wchar_t*) malloc((MAX_TERMCOLS + 1) * sizeof(wchar_t));
 			((TERMINALDATA*)terminal->InstData)->Colors[i] = 
 				(BYTE*) malloc((MAX_TERMCOLS + 1) * sizeof(BYTE));
 
-			tmemset(((TERMINALDATA*)terminal->InstData)->Lines[i],_T(' '),MAX_TERMCOLS);
+			wmemset(((TERMINALDATA*)terminal->InstData)->Lines[i],_T(' '),MAX_TERMCOLS);
 			memset(((TERMINALDATA*)terminal->InstData)->Colors[i], col, MAX_TERMCOLS);
 		}
 
@@ -645,7 +645,7 @@ TerminalNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 void
 TerminalSetSetFocusHook(CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("TERMINAL")) == 0))
+	if (win && (wcscmp(win->Class, _T("TERMINAL")) == 0))
 	{
 		((TERMINALDATA*)win->InstData)->SetFocusHook = proc;
 		((TERMINALDATA*)win->InstData)->SetFocusTarget = target;
@@ -661,7 +661,7 @@ TerminalSetSetFocusHook(CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* targ
 void
 TerminalSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("TERMINAL")) == 0))
+	if (win && (wcscmp(win->Class, _T("TERMINAL")) == 0))
 	{
 		((TERMINALDATA*)win->InstData)->KillFocusHook = proc;
 		((TERMINALDATA*)win->InstData)->KillFocusTarget = target;
@@ -677,7 +677,7 @@ TerminalSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void
 TerminalSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("TERMINAL")) == 0))
+	if (win && (wcscmp(win->Class, _T("TERMINAL")) == 0))
 	{
 		((TERMINALDATA*)win->InstData)->PreKeyHook = proc;
 		((TERMINALDATA*)win->InstData)->PreKeyTarget = target;
@@ -693,7 +693,7 @@ TerminalSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* ta
 void
 TerminalSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("TERMINAL")) == 0))
+	if (win && (wcscmp(win->Class, _T("TERMINAL")) == 0))
 	{
 		((TERMINALDATA*)win->InstData)->PostKeyHook = proc;
 		((TERMINALDATA*)win->InstData)->PostKeyTarget = target;
@@ -709,7 +709,7 @@ TerminalSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* t
 void
 TerminalSetCoProcExitHook(CUIWINDOW* win, CustomHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("TERMINAL")) == 0))
+	if (win && (wcscmp(win->Class, _T("TERMINAL")) == 0))
 	{
 		((TERMINALDATA*)win->InstData)->CoProcExitHook = proc;
 		((TERMINALDATA*)win->InstData)->CoProcExitTarget = target;
@@ -723,12 +723,12 @@ TerminalSetCoProcExitHook(CUIWINDOW* win, CustomHook1IntProc proc, CUIWINDOW* ta
  * ---------------------------------------------------------------------
  */
 void
-TerminalWrite(CUIWINDOW* win, const TCHAR* text, int numchar)
+TerminalWrite(CUIWINDOW* win, const wchar_t* text, int numchar)
 {
 	int i;
 	int width;
 
-	if (win && (tcscmp(win->Class, _T("TERMINAL")) == 0))
+	if (win && (wcscmp(win->Class, _T("TERMINAL")) == 0))
 	{
 		TERMINALDATA* data = (TERMINALDATA*) win->InstData;
 		CUIRECT rc;
@@ -827,9 +827,9 @@ TerminalWrite(CUIWINDOW* win, const TCHAR* text, int numchar)
  * ---------------------------------------------------------------------
  */
 int
-TerminalRun(CUIWINDOW* win, const TCHAR* cmd)
+TerminalRun(CUIWINDOW* win, const wchar_t* cmd)
 {
-	if (win && (tcscmp(win->Class, _T("TERMINAL")) == 0))
+	if (win && (wcscmp(win->Class, _T("TERMINAL")) == 0))
 	{
 		TERMINALDATA* data = (TERMINALDATA*) win->InstData;
 
@@ -853,15 +853,15 @@ TerminalRun(CUIWINDOW* win, const TCHAR* cmd)
  * ---------------------------------------------------------------------
  */
 void 
-TerminalPipeData(CUIWINDOW* win, const TCHAR* txt_data)
+TerminalPipeData(CUIWINDOW* win, const wchar_t* txt_data)
 {
-	if (win && (tcscmp(win->Class, _T("TERMINAL")) == 0))
+	if (win && (wcscmp(win->Class, _T("TERMINAL")) == 0))
 	{
 		TERMINALDATA* data = (TERMINALDATA*) win->InstData;
 
 		if (data->CoProc != NULL)
 		{
-			TerminalCoWrite(data->CoProc, txt_data, tcslen(txt_data));
+			TerminalCoWrite(data->CoProc, txt_data, wcslen(txt_data));
 		}
 	}	
 }
@@ -875,7 +875,7 @@ TerminalPipeData(CUIWINDOW* win, const TCHAR* txt_data)
 int  
 TerminalRunning(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("TERMINAL")) == 0))
+	if (win && (wcscmp(win->Class, _T("TERMINAL")) == 0))
 	{
 		int exitcode;
 		TERMINALDATA* data = (TERMINALDATA*) win->InstData;
@@ -906,12 +906,12 @@ TerminalRunning(CUIWINDOW* win)
 void
 TerminalUpdateView(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("TERMINAL")) == 0))
+	if (win && (wcscmp(win->Class, _T("TERMINAL")) == 0))
 	{
 		TERMINALDATA* data = (TERMINALDATA*) win->InstData;
 		if (data->CoProc)
 		{
-			TCHAR buffer[256 + 1];
+			wchar_t buffer[256 + 1];
 
 			int c = TerminalCoRead(data->CoProc, buffer, 255);
 			while (c > 0)
@@ -937,7 +937,7 @@ TerminalShowLine(CUIWINDOW* win, int ypos, int line, CUIRECT* rc)
 	TERMINALDATA* data = win->InstData;
 	WINDOW* w = win->Win;
 	int x, attr;
-	TCHAR* text = data->Lines[line];
+	wchar_t* text = data->Lines[line];
 	BYTE*  cols = data->Colors[line];
 
 	attr = cols[0];
@@ -979,15 +979,15 @@ TerminalProcessEscSequence(CUIWINDOW* win, CUIRECT* rc)
 	case _T('m'):
 		/* terminal colors */
 		{
-			TCHAR* pos1 = data->EscSeq;
-			TCHAR* pos2;
+			wchar_t* pos1 = data->EscSeq;
+			wchar_t* pos2;
 			while (pos1)
 			{
 				int val;
 
-				pos2 = tcschr(pos1,_T(';'));
+				pos2 = wcschr(pos1,_T(';'));
 
-				stscanf(pos1,_T("%d"),&val);
+				swscanf(pos1,_T("%d"),&val);
 				switch(val)
 				{
 				case 0:  data->CurAttr = (win->Color.WndTxtColor << 4) + win->Color.WndColor; break;
@@ -1023,18 +1023,18 @@ TerminalProcessEscSequence(CUIWINDOW* win, CUIRECT* rc)
 		/* cursor position (gotoxy)*/
 		{
 			int   x = 1 ,y = 1;
-			TCHAR* sep = tcschr(data->EscSeq,_T(';'));
+			wchar_t* sep = wcschr(data->EscSeq,_T(';'));
 
 			if ((data->EscSeq[0] >= _T('0')) && (data->EscSeq[0] <= _T('9')))
 			{
-				stscanf(data->EscSeq,_T("%d"),&y);
+				swscanf(data->EscSeq,_T("%d"),&y);
 			}
 			if (sep)
 			{
 				sep++;
 				if ((sep[0] >= _T('0')) && (sep[0] <= _T('9')))
 				{
-					stscanf(sep,_T("%d"),&x);
+					swscanf(sep,_T("%d"),&x);
 				}
 			}
 			x--; y--;
@@ -1053,7 +1053,7 @@ TerminalProcessEscSequence(CUIWINDOW* win, CUIRECT* rc)
 		/* Move cursor up */
 		{
 			int count, i;
-			if (stscanf(data->EscSeq,_T("%d"),&count) != 1)
+			if (swscanf(data->EscSeq,_T("%d"),&count) != 1)
 			{
 				count = 1;
 			}
@@ -1068,7 +1068,7 @@ TerminalProcessEscSequence(CUIWINDOW* win, CUIRECT* rc)
 		/* Move cursor down */
 		{
 			int count, i;
-			if (stscanf(data->EscSeq,_T("%d"),&count) != 1)
+			if (swscanf(data->EscSeq,_T("%d"),&count) != 1)
 			{
 				count = 1;
 			}
@@ -1083,7 +1083,7 @@ TerminalProcessEscSequence(CUIWINDOW* win, CUIRECT* rc)
 		/* Move cursor right */
 		{
 			int count;
-			if (stscanf(data->EscSeq,_T("%d"),&count) != 1)
+			if (swscanf(data->EscSeq,_T("%d"),&count) != 1)
 			{
 				count = 1;
 			}
@@ -1103,7 +1103,7 @@ TerminalProcessEscSequence(CUIWINDOW* win, CUIRECT* rc)
 		/* Move cursor left */
 		{
 			int count;
-			if (stscanf(data->EscSeq,_T("%d"),&count) != 1)
+			if (swscanf(data->EscSeq,_T("%d"),&count) != 1)
 			{
 				count = 1;
 			}
@@ -1131,7 +1131,7 @@ TerminalProcessEscSequence(CUIWINDOW* win, CUIRECT* rc)
 	case _T('K'):
 		/* clear line */
 		{
-			tmemset(data->Lines[data->YCursor],_T(' '),MAX_TERMCOLS);
+			wmemset(data->Lines[data->YCursor],_T(' '),MAX_TERMCOLS);
 			memset(data->Colors[data->YCursor],data->CurAttr,MAX_TERMCOLS);
 		}
 		break;
@@ -1140,7 +1140,7 @@ TerminalProcessEscSequence(CUIWINDOW* win, CUIRECT* rc)
 		/* Move cursor to column */
 		{
 			int column;
-			if (stscanf(data->EscSeq,_T("%d"),&column) != 1)
+			if (swscanf(data->EscSeq,_T("%d"),&column) != 1)
 			{
 				column = 1;
 			}
@@ -1165,7 +1165,7 @@ TerminalNextLine(CUIWINDOW* win)
 
 	if (data->YCursor == data->FirstLine)
 	{
-		tmemset(data->Lines[data->YCursor],_T(' '),MAX_TERMCOLS);
+		wmemset(data->Lines[data->YCursor],_T(' '),MAX_TERMCOLS);
 		memset(data->Colors[data->YCursor],data->CurAttr,MAX_TERMCOLS);
 		data->FirstLine = (data->FirstLine + 1) % MAX_TERMLINES;
 	}
@@ -1306,7 +1306,7 @@ TerminalUpdate(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 static COPROC*
-TerminalCoCreate(const TCHAR* cmd)
+TerminalCoCreate(const wchar_t* cmd)
 {
 	int     pipe1[2], pipe2[2], pipe3[2];
 	pid_t   pid;
@@ -1324,11 +1324,7 @@ TerminalCoCreate(const TCHAR* cmd)
 	}
 
 	coproc = (COPROC*) malloc(sizeof(COPROC));
-#ifdef _UNICODE
-	coproc->Command = TCHAR_dup_to_mbchar(cmd);
-#else
-	coproc->Command = strdup(cmd);
-#endif
+	coproc->Command = wchar_t_dup_to_mbchar(cmd);
 	coproc->ReadBuf = (char*) malloc((BUFSIZE + 1) * sizeof(char));
 	coproc->ReadPos = 0;
 	coproc->ReadSize = 0;
@@ -1386,15 +1382,14 @@ TerminalCoCreate(const TCHAR* cmd)
  * ---------------------------------------------------------------------
  */
 static int
-TerminalCoRead(COPROC* coproc, TCHAR *buf, int count)
+TerminalCoRead(COPROC* coproc, wchar_t *buf, int count)
 {
-#ifdef _UNICODE
-	mbstate_t    state = {0};
-#endif
+	mbstate_t    state;
 	const char*  p;
 	int          c;
 	int          result = 0;
-
+	
+	memset (&state, 0, sizeof(state));
 	do
 	{	
 		if (coproc->ReadPos >= coproc->ReadSize)
@@ -1462,7 +1457,6 @@ TerminalCoRead(COPROC* coproc, TCHAR *buf, int count)
 		if (c > 0)
 		{
 			int num;
-#ifdef _UNICODE
 			num = c;
 			do
 			{
@@ -1496,20 +1490,6 @@ TerminalCoRead(COPROC* coproc, TCHAR *buf, int count)
 				}
 			}
 			while (num > 0);
-#else
-			num = ((count - result) > c) ? c : (count - result);
-
-			strncpy(buf, p, num);
-			result += num;
-			buf += num;
-
-			if (result >= count)
-			{
-				*(buf++) = 0;
-				coproc->ReadPos += num;
-				return result;				
-			}			
-#endif
 			coproc->ReadPos += c;
 		}
 	}
@@ -1526,14 +1506,15 @@ TerminalCoRead(COPROC* coproc, TCHAR *buf, int count)
  * ---------------------------------------------------------------------
  */
 static int
-TerminalCoWrite(COPROC* coproc, const TCHAR *buf, int count)
+TerminalCoWrite(COPROC* coproc, const wchar_t *buf, int count)
 {
-#ifdef _UNICODE
-	mbstate_t       state  = {0};
-	int             result = 0;
-	const TCHAR*    p1     = buf;
-	const TCHAR*    p2     = buf;
-	char            cbuffer[128 + 1];
+	mbstate_t         state;
+	int               result = 0;
+	const wchar_t*    p1     = buf;
+	const wchar_t*    p2     = buf;
+	char              cbuffer[128 + 1];
+	
+	memset (&state, 0, sizeof(state));
 
 	while ((count > 0) && (p1 != NULL))
 	{
@@ -1554,9 +1535,6 @@ TerminalCoWrite(COPROC* coproc, const TCHAR *buf, int count)
 		p1 = p2;
 	}
 	return result;
-#else
-	return write(coproc->FdStdin, buf, count);
-#endif
 }
 
 /* ---------------------------------------------------------------------
@@ -1683,12 +1661,11 @@ static void sig_handler(int signr)
  * exports them as public functions
  * ---------------------------------------------------------------------
  */
-#ifdef _UNICODE
 static char* 
-TCHAR_dup_to_mbchar(const TCHAR* str)
+wchar_t_dup_to_mbchar(const wchar_t* str)
 {
 	int   len = mbchar_byte_len(str);
-	char* mbstr = (char*) malloc((len + 1) * sizeof(TCHAR));
+	char* mbstr = (char*) malloc((len + 1) * sizeof(wchar_t));
 	if (mbstr)
 	{
 		wcsrtombs(mbstr, &str, len + 1, NULL);	
@@ -1696,15 +1673,12 @@ TCHAR_dup_to_mbchar(const TCHAR* str)
 	}
 	return NULL;
 }
-#endif
 
-#ifdef _UNICODE
 static int
-mbchar_byte_len(const TCHAR* s)
+mbchar_byte_len(const wchar_t* s)
 {
 	return wcsrtombs(NULL, &s, SIZE_MAX, NULL);
 }
-#endif
 
 
 

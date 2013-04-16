@@ -58,8 +58,8 @@ int CoProcReadLineBuffer(int* pipe, char* buffer, TextCall callback, int fd_type
  * ---------------------------------------------------------------------
  */
 int
-RunCoProcess(const TCHAR* filename,
-             TCHAR* const parameters[],
+RunCoProcess(const wchar_t* filename,
+             wchar_t* const parameters[],
              TextCall callback,
              void* instance,
              int* exitcode)
@@ -123,7 +123,7 @@ RunCoProcess(const TCHAR* filename,
  * ---------------------------------------------------------------------
  */
 COPROC*
-CoProcCreate(const TCHAR* cmd)
+CoProcCreate(const wchar_t* cmd)
 {
 	int     pipe1[2], pipe2[2], pipe3[2];
 	pid_t   pid;
@@ -141,11 +141,7 @@ CoProcCreate(const TCHAR* cmd)
 	}
 
 	coproc = (COPROC*) malloc(sizeof(COPROC));
-#ifdef _UNICODE
 	coproc->Command = TCharToMbDup(cmd);
-#else
-	coproc->Command = strdup(cmd);
-#endif
 	coproc->Terminated = FALSE;
 	coproc->ReadPos = 0;
 	coproc->ReadSize = 0;
@@ -201,14 +197,14 @@ CoProcCreate(const TCHAR* cmd)
  * ---------------------------------------------------------------------
  */
 int
-CoProcRead(COPROC* coproc, TCHAR *buf, int count)
+CoProcRead(COPROC* coproc, wchar_t *buf, int count)
 {
-#ifdef _UNICODE
-	mbstate_t    state = {0};
-#endif
+	mbstate_t    state;
 	const char*  p;
 	int          c;
 	int          result = 0;
+	
+	memset (&state, 0, sizeof(state));
 
 	do
 	{	
@@ -278,7 +274,6 @@ CoProcRead(COPROC* coproc, TCHAR *buf, int count)
 		if (c > 0)
 		{
 			int num;
-#ifdef _UNICODE
 			num = c;
 			do
 			{
@@ -312,19 +307,6 @@ CoProcRead(COPROC* coproc, TCHAR *buf, int count)
 				}
 			}
 			while (num > 0);
-#else
-			num = ((count - result) > c) ? c : (count - result);
-
-			strncpy(buf, p, num);
-			result += num;
-
-			if (result >= count)
-			{
-				*(buf++) = 0;
-				coproc->ReadPos += num;
-				return result;				
-			}			
-#endif
 			coproc->ReadPos += c;
 		}
 	}
@@ -341,14 +323,15 @@ CoProcRead(COPROC* coproc, TCHAR *buf, int count)
  * ---------------------------------------------------------------------
  */
 int
-CoProcWrite(COPROC* coproc, const TCHAR *buf, int count)
+CoProcWrite(COPROC* coproc, const wchar_t *buf, int count)
 {
-#ifdef _UNICODE
-	mbstate_t       state  = {0};
+	mbstate_t       state;
 	int             result = 0;
-	const TCHAR*    p1     = buf;
-	const TCHAR*    p2     = buf;
+	const wchar_t*    p1     = buf;
+	const wchar_t*    p2     = buf;
 	char            cbuffer[128 + 1];
+	
+	memset (&state, 0, sizeof(state));
 
 	while ((count > 0) && (p1 != NULL))
 	{
@@ -369,9 +352,6 @@ CoProcWrite(COPROC* coproc, const TCHAR *buf, int count)
 		p1 = p2;
 	}
 	return result;
-#else
-	return write(coproc->FdStdin, buf, count);
-#endif
 }
 
 

@@ -31,7 +31,7 @@
 
 typedef struct TEXTLINEStruct
 {
-	TCHAR*  Text;
+	wchar_t*  Text;
 	int     NumLines;
 	void*   Next;
 	void*   Previous;
@@ -63,18 +63,15 @@ static int    TextviewShowLine(CUIWINDOW* win, TEXTLINE* text, int ypos,
                                int selpos1, int selpos2, int do_print);
 static void   TextviewUpdate(CUIWINDOW* win);
 static void   TextviewCalculate(CUIWINDOW* win);
-static int    TextviewLineLength(const TCHAR* line);
-static int    TextviewMatchWord(const TCHAR* s1, const TCHAR* s2, int casesens);
-static int    TextviewIsChar(TCHAR c);
+static int    TextviewLineLength(const wchar_t* line);
+static int    TextviewMatchWord(const wchar_t* s1, const wchar_t* s2, int casesens);
+static int    TextviewIsChar(wchar_t c);
 static void   TextviewCheckSelectionPos(CUIWINDOW* win);
 
-static char*  TCHAR_dup_to_mbchar(const TCHAR* str);
-static TCHAR* mbchar_dup_to_TCHAR(const char* str);
-
-#ifdef _UNICODE
+static char*  wchar_t_dup_to_mbchar(const wchar_t* str);
+static wchar_t* mbchar_dup_to_wchar_t(const char* str);
 static int    mbchar_char_len(const char* p);
-static int    mbchar_byte_len(const TCHAR* p);
-#endif
+static int    mbchar_byte_len(const wchar_t* p);
 
 /* ---------------------------------------------------------------------
  * TextviewNcPaintHook
@@ -111,7 +108,7 @@ TextviewNcPaintHook(void* w, int size_x, int size_y)
 	/* title text */
 	if (!win->Text || (win->Text[0] == 0)) return;
 
-	len = tcslen(win->Text);
+	len = wcslen(win->Text);
 	if (len > rc.W - 4)
 	{
 		len = rc.W - 4;
@@ -177,7 +174,7 @@ TextviewPaintHook(void* w)
 			}
 			else if (index == data->SelY1)
 			{
-				ypos += TextviewShowLine(win, line, ypos - yscroll, data->SelX1, tcslen(line->Text), TRUE);
+				ypos += TextviewShowLine(win, line, ypos - yscroll, data->SelX1, wcslen(line->Text), TRUE);
 			}
 			else if (index == data->SelY2)
 			{
@@ -344,6 +341,8 @@ TextviewVScrollHook(void* w, int sbcode, int pos)
 	CUIWINDOW* win = (CUIWINDOW*) w;
 	CUIRECT rc;
 	int sbpos, range;
+	
+	CUI_USE_ARG(pos);
 
 	WindowGetClientRect(win, &rc);
 	sbpos = WindowGetVScrollPos(win);
@@ -473,7 +472,7 @@ TextviewLayoutHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-TextviewNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
+TextviewNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h,
            int id, int sflags, int cflags)
 {
 	if (parent)
@@ -526,7 +525,7 @@ TextviewNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 void
 TextviewSetSetFocusHook(CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 {
-        if (win && (tcscmp(win->Class, _T("TEXTVIEW")) == 0))
+        if (win && (wcscmp(win->Class, _T("TEXTVIEW")) == 0))
         {
                 ((TEXTVIEWDATA*)win->InstData)->SetFocusHook = proc;
                 ((TEXTVIEWDATA*)win->InstData)->SetFocusTarget = target;
@@ -542,7 +541,7 @@ TextviewSetSetFocusHook(CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* targ
 void
 TextviewSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-        if (win && (tcscmp(win->Class, _T("TEXTVIEW")) == 0))
+        if (win && (wcscmp(win->Class, _T("TEXTVIEW")) == 0))
         {
                 ((TEXTVIEWDATA*)win->InstData)->KillFocusHook = proc;
                 ((TEXTVIEWDATA*)win->InstData)->KillFocusTarget = target;
@@ -558,7 +557,7 @@ TextviewSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void
 TextviewSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("TEXTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("TEXTVIEW")) == 0))
 	{
 		((TEXTVIEWDATA*)win->InstData)->PreKeyHook = proc;
 		((TEXTVIEWDATA*)win->InstData)->PreKeyTarget = target;
@@ -574,7 +573,7 @@ TextviewSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* ta
 void
 TextviewSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("TEXTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("TEXTVIEW")) == 0))
 	{
 		((TEXTVIEWDATA*)win->InstData)->PostKeyHook = proc;
 		((TEXTVIEWDATA*)win->InstData)->PostKeyTarget = target;
@@ -590,7 +589,7 @@ TextviewSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* t
 void
 TextviewEnableWordWrap(CUIWINDOW* win, int enable)
 {
-        if (win && (tcscmp(win->Class, _T("TEXTVIEW")) == 0))
+        if (win && (wcscmp(win->Class, _T("TEXTVIEW")) == 0))
         {
 		if (((TEXTVIEWDATA*)win->InstData)->DoWordWrap != enable)
 		{
@@ -608,16 +607,16 @@ TextviewEnableWordWrap(CUIWINDOW* win, int enable)
  * ---------------------------------------------------------------------
  */
 void
-TextviewAdd(CUIWINDOW* win, const TCHAR* text)
+TextviewAdd(CUIWINDOW* win, const wchar_t* text)
 {
-	if (win && (tcscmp(win->Class, _T("TEXTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("TEXTVIEW")) == 0))
 	{
 		TEXTVIEWDATA* data = (TEXTVIEWDATA*)win->InstData;
 		TEXTLINE* line;
 		int len = TextviewLineLength(text);
 
 		line = (TEXTLINE*) malloc(sizeof(TEXTLINE));
-		line->Text = tcsdup(text);
+		line->Text = wcsdup(text);
 		line->Next = NULL;
 
 		if (data->FirstLine)
@@ -647,7 +646,7 @@ TextviewAdd(CUIWINDOW* win, const TCHAR* text)
 void
 TextviewClear(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("TEXTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("TEXTVIEW")) == 0))
 	{
 		TEXTVIEWDATA* data = (TEXTVIEWDATA*)win->InstData;
 		TEXTLINE* line;
@@ -674,14 +673,16 @@ TextviewClear(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 int
-TextviewRead(CUIWINDOW* win, const TCHAR* filename)
+TextviewRead(CUIWINDOW* win, const wchar_t* filename)
 {
-	if (win && (tcscmp(win->Class, _T("TEXTVIEW")) == 0))
+	int result = FALSE;
+
+	if (win && (wcscmp(win->Class, _T("TEXTVIEW")) == 0))
 	{
 		TEXTVIEWDATA* data = (TEXTVIEWDATA*)win->InstData;
 		TEXTLINE* line;
 
-		char* mbfile = TCHAR_dup_to_mbchar(filename);
+		char* mbfile = wchar_t_dup_to_mbchar(filename);
 		if (mbfile)
 		{
 			FILE* in = fopen(mbfile, "rt");
@@ -693,10 +694,10 @@ TextviewRead(CUIWINDOW* win, const TCHAR* filename)
 					int len;
 
 					line = (TEXTLINE*) malloc(sizeof(TEXTLINE));
-					line->Text = mbchar_dup_to_TCHAR(buffer);
+					line->Text = mbchar_dup_to_wchar_t(buffer);
 					line->Next = NULL;
 
-					len = tcslen(line->Text);
+					len = wcslen(line->Text);
 					if (len > 0)
 					{
 						if (line->Text[len-1] == _T('\n')) line->Text[len-1] = 0;
@@ -721,8 +722,10 @@ TextviewRead(CUIWINDOW* win, const TCHAR* filename)
 
 				TextviewCalculate(win);
 				TextviewUpdate(win);
+				result = TRUE;
 			}
 			free(mbfile);
+
 			return TRUE;
 		}
 	}
@@ -736,9 +739,9 @@ TextviewRead(CUIWINDOW* win, const TCHAR* filename)
  * ---------------------------------------------------------------------
  */
 int
-TextviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, int down)
+TextviewSearch(CUIWINDOW* win, const wchar_t* text, int wholeword, int casesens, int down)
 {
-	if (win && (tcscmp(win->Class, _T("TEXTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("TEXTVIEW")) == 0))
 	{
 		TEXTVIEWDATA* data = (TEXTVIEWDATA*)win->InstData;
 		TEXTLINE* line;
@@ -768,9 +771,9 @@ TextviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, i
 		if (!line) return FALSE;
 
 		pos = x;
-		if (pos >= (int)tcslen(line->Text))
+		if (pos >= (int)wcslen(line->Text))
 		{
-			pos = tcslen(line->Text) - 1;
+			pos = wcslen(line->Text) - 1;
 		}
 
 		/* search text */
@@ -778,9 +781,9 @@ TextviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, i
 		{
 			if (pos >= 0)
 			{
-				TCHAR  searchc = tolower(*text);
-				TCHAR* c = &line->Text[pos];
-				int   len = tcslen(line->Text);
+				wchar_t  searchc = tolower(*text);
+				wchar_t* c = &line->Text[pos];
+				int   len = wcslen(line->Text);
 
 				if (down)
 				{
@@ -790,7 +793,7 @@ TextviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, i
 						{
 							if (TextviewMatchWord(c,text,casesens))
 							{
-								TCHAR lastc = c[tcslen(text)];
+								wchar_t lastc = c[wcslen(text)];
 								if (!(wholeword && (pos > 0) && 
 								     (TextviewIsChar(line->Text[pos - 1]))))
 								{
@@ -799,7 +802,7 @@ TextviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, i
 										data->SelY1 = index;
 										data->SelY2 = index;
 										data->SelX1 = pos;
-										data->SelX2 = pos + tcslen(text);
+										data->SelX2 = pos + wcslen(text);
 										TextviewCheckSelectionPos(win);
 										TextviewUpdate(win);
 										return TRUE;
@@ -819,7 +822,7 @@ TextviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, i
 						{
 							if (TextviewMatchWord(c,text,casesens))
 							{
-								TCHAR lastc = c[tcslen(text)];
+								wchar_t lastc = c[wcslen(text)];
 								if (!(wholeword && (pos > 0) && (TextviewIsChar(line->Text[pos - 1]))))
 								{
 									if (!(wholeword && TextviewIsChar(lastc)))
@@ -827,7 +830,7 @@ TextviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, i
 										data->SelY1 = index;
 										data->SelY2 = index;
 										data->SelX1 = pos;
-										data->SelX2 = pos + tcslen(text);
+										data->SelX2 = pos + wcslen(text);
 										TextviewCheckSelectionPos(win);
 										TextviewUpdate(win);
 										return TRUE;
@@ -852,7 +855,7 @@ TextviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, i
 				line = line->Previous;
 				if (line)
 				{
-					pos = tcslen(line->Text) - 1;
+					pos = wcslen(line->Text) - 1;
 				}
 				index--;
 			}
@@ -870,7 +873,7 @@ TextviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, i
 int
 TextviewResetSearch(CUIWINDOW* win, int at_bottom)
 {
-	if (win && (tcscmp(win->Class, _T("TEXTVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("TEXTVIEW")) == 0))
 	{
 		TEXTVIEWDATA* data = (TEXTVIEWDATA*)win->InstData;
 
@@ -883,8 +886,8 @@ TextviewResetSearch(CUIWINDOW* win, int at_bottom)
 		}
 		else if (data->LastLine)
 		{
-			data->SelX1 = tcslen(data->LastLine->Text);
-			data->SelX2 = tcslen(data->LastLine->Text);
+			data->SelX1 = wcslen(data->LastLine->Text);
+			data->SelX2 = wcslen(data->LastLine->Text);
 			data->SelY1 = data->NumLines - 1;
 			data->SelY2 = data->NumLines - 1;
 		}
@@ -917,7 +920,7 @@ TextviewShowLine(CUIWINDOW* win, TEXTLINE* text, int ypos, int selpos1, int selp
 
 	xscroll = WindowGetHScrollPos(win);
 
-	len = tcslen(text->Text);
+	len = wcslen(text->Text);
 	if (do_print)
 	{
 		SetColor(w, win->Color.WndTxtColor, win->Color.WndColor, FALSE);
@@ -968,14 +971,14 @@ TextviewShowLine(CUIWINDOW* win, TEXTLINE* text, int ypos, int selpos1, int selp
 	}
 	else
 	{
-		TCHAR* start = &text->Text[0];
-		TCHAR* end = &text->Text[0];
-		TCHAR* next;
+		wchar_t* start = &text->Text[0];
+		wchar_t* end = &text->Text[0];
+		wchar_t* next;
 
 		while (*start != 0)
 		{
-			next = tcschr(start,_T(' '));
-			if (!next) next = &text->Text[tcslen(text->Text)];
+			next = wcschr(start,_T(' '));
+			if (!next) next = &text->Text[wcslen(text->Text)];
 
 			while ((next - start <= (rc.W - 2)))
 			{
@@ -983,8 +986,8 @@ TextviewShowLine(CUIWINDOW* win, TEXTLINE* text, int ypos, int selpos1, int selp
 
 				if (*next != 0)
 				{
-					next = tcschr(next + 1,_T(' '));
-					if (!next) next = &text->Text[tcslen(text->Text)];
+					next = wcschr(next + 1,_T(' '));
+					if (!next) next = &text->Text[wcslen(text->Text)];
 				}
 				else break;
 			}
@@ -1029,16 +1032,16 @@ TextviewShowLine(CUIWINDOW* win, TEXTLINE* text, int ypos, int selpos1, int selp
  * ---------------------------------------------------------------------
  */
 static int
-TextviewMatchWord(const TCHAR* s1, const TCHAR* s2, int casesens)
+TextviewMatchWord(const wchar_t* s1, const wchar_t* s2, int casesens)
 {
-	int len = tcslen(s2);
+	int len = wcslen(s2);
 	int i;
 
 	if (!casesens)
 	{
 		for (i = 0; i < len; i++)
 		{
-			if (totlower(*s1) != totlower(*s2))
+			if (towlower(*s1) != towlower(*s2))
 			{
 				return FALSE;
 			}
@@ -1069,9 +1072,9 @@ TextviewMatchWord(const TCHAR* s1, const TCHAR* s2, int casesens)
  * ---------------------------------------------------------------------
  */
 static int
-TextviewIsChar(TCHAR c)
+TextviewIsChar(wchar_t c)
 {
-	return istalnum(c);
+	return iswalnum(c);
 }
 
 
@@ -1155,7 +1158,7 @@ TextviewCheckSelectionPos(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 static int
-TextviewLineLength(const TCHAR* line)
+TextviewLineLength(const wchar_t* line)
 {
 	int pos = 0;
 	int len = 0;
@@ -1263,52 +1266,40 @@ TextviewCalculate(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 static char* 
-TCHAR_dup_to_mbchar(const TCHAR* str)
+wchar_t_dup_to_mbchar(const wchar_t* str)
 {
-#ifdef _UNICODE
 	int   len = mbchar_byte_len(str);
-	char* mbstr = (char*) malloc((len + 1) * sizeof(TCHAR));
+	char* mbstr = (char*) malloc((len + 1) * sizeof(wchar_t));
 	if (mbstr)
 	{
 		wcsrtombs(mbstr, &str, len + 1, NULL);	
 		return mbstr;
 	}
 	return NULL;
-#else
-	return strdup(str);
-#endif
 }
 
-static TCHAR* 
-mbchar_dup_to_TCHAR(const char* str)
+static wchar_t* 
+mbchar_dup_to_wchar_t(const char* str)
 {
-#ifdef _UNICODE
 	int    len = mbchar_char_len(str);
-	TCHAR* tstr = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+	wchar_t* tstr = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 	if (tstr)
 	{
 		mbsrtowcs(tstr, &str, len + 1, NULL);
 		return tstr;
 	}
 	return NULL;
-#else
-	return strdup(str);
-#endif
 }
 
-#ifdef _UNICODE
 static int
 mbchar_char_len(const char* s)
 {
 	return mbsrtowcs(NULL, &s, SIZE_MAX, NULL);
 }
-#endif
 
-#ifdef _UNICODE
 static int
-mbchar_byte_len(const TCHAR* s)
+mbchar_byte_len(const wchar_t* s)
 {
 	return wcsrtombs(NULL, &s, SIZE_MAX, NULL);
 }
-#endif
 

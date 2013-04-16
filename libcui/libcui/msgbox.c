@@ -6,7 +6,7 @@
 
 typedef struct MSGDATAStruct
 {
-	const TCHAR* Text;          /* text to be displayed */
+	const wchar_t* Text;          /* text to be displayed */
 	int          TextWidth;
 	int          TextHeight;
 	int          Flags;
@@ -19,7 +19,7 @@ typedef struct MSGDATAStruct
  * ---------------------------------------------------------------------
  */
 void
-MsgCalcTextSize(const TCHAR* text, int max, int* w, int* h)
+MsgCalcTextSize(const wchar_t* text, int max, int* w, int* h)
 {
 	int x = 0;
 	int y = 0;
@@ -27,7 +27,7 @@ MsgCalcTextSize(const TCHAR* text, int max, int* w, int* h)
 
 	*w = 0;
 	*h = 0;
-	len = tcslen(text);
+	len = wcslen(text);
 
 	for (i = 0; i < len; i++)
 	{
@@ -205,7 +205,7 @@ MsgDestroyHook(void* w)
 
 
 int 
-MessageBox(CUIWINDOW* parent, const TCHAR* text, const TCHAR* title, int flags)
+MessageBox(CUIWINDOW* parent, const wchar_t* text, const wchar_t* title, int flags)
 {
 	CUIWINDOW* msgwin;
 	int result = 0;

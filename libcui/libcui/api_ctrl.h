@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: api_ctrl.h 23497 2010-03-14 21:53:08Z dv $
+ * Last Update:  $Id: api_ctrl.h 33397 2013-04-02 20:48:05Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -30,46 +30,46 @@
 #define API_EDITSETTEXT 102
 #define API_EDITGETTEXT 103
 
-void ApiEditNew(int argc, const TCHAR* argv[]);
-void ApiEditSetCallback(int argc, const TCHAR* argv[]);
-void ApiEditSetText(int argc, const TCHAR* argv[]);
-void ApiEditGetText(int argc, const TCHAR* argv[]);
+void ApiEditNew(int argc, const wchar_t* argv[]);
+void ApiEditSetCallback(int argc, const wchar_t* argv[]);
+void ApiEditSetText(int argc, const wchar_t* argv[]);
+void ApiEditGetText(int argc, const wchar_t* argv[]);
 
 #define API_LABELNEW 110
 #define API_LABELSETCALLBACK 111
 
-void ApiLabelNew(int argc, const TCHAR* argv[]);
-void ApiLabelSetCallback(int argc, const TCHAR* argv[]);
+void ApiLabelNew(int argc, const wchar_t* argv[]);
+void ApiLabelSetCallback(int argc, const wchar_t* argv[]);
 
 #define API_BUTTONNEW 120
 #define API_BUTTONSETCALLBACK 121
 
-void ApiButtonNew(int argc, const TCHAR* argv[]);
-void ApiButtonSetCallback(int argc, const TCHAR* argv[]);
+void ApiButtonNew(int argc, const wchar_t* argv[]);
+void ApiButtonSetCallback(int argc, const wchar_t* argv[]);
 
 #define API_GROUPBOXNEW 125
 
-void ApiGroupboxNew(int argc, const TCHAR* argv[]);
+void ApiGroupboxNew(int argc, const wchar_t* argv[]);
 
 #define API_RADIONEW 130
 #define API_RADIOSETCALLBACK 131
 #define API_RADIOSETCHECK 132
 #define API_RADIOGETCHECK 133
 
-void ApiRadioNew(int argc, const TCHAR* argv[]);
-void ApiRadioSetCallback(int argc, const TCHAR* argv[]);
-void ApiRadioSetCheck(int argc, const TCHAR* argv[]);
-void ApiRadioGetCheck(int argc, const TCHAR* argv[]);
+void ApiRadioNew(int argc, const wchar_t* argv[]);
+void ApiRadioSetCallback(int argc, const wchar_t* argv[]);
+void ApiRadioSetCheck(int argc, const wchar_t* argv[]);
+void ApiRadioGetCheck(int argc, const wchar_t* argv[]);
 
 #define API_CHECKBOXNEW 135
 #define API_CHECKBOXSETCALLBACK 136
 #define API_CHECKBOXSETCHECK 137
 #define API_CHECKBOXGETCHECK 138
 
-void ApiCheckboxNew(int argc, const TCHAR* argv[]);
-void ApiCheckboxSetCallback(int argc, const TCHAR* argv[]);
-void ApiCheckboxSetCheck(int argc, const TCHAR* argv[]);
-void ApiCheckboxGetCheck(int argc, const TCHAR* argv[]);
+void ApiCheckboxNew(int argc, const wchar_t* argv[]);
+void ApiCheckboxSetCallback(int argc, const wchar_t* argv[]);
+void ApiCheckboxSetCheck(int argc, const wchar_t* argv[]);
+void ApiCheckboxGetCheck(int argc, const wchar_t* argv[]);
 
 #define API_LISTBOXNEW 140
 #define API_LISTBOXSETCALLBACK 141
@@ -84,18 +84,18 @@ void ApiCheckboxGetCheck(int argc, const TCHAR* argv[]);
 #define API_LISTBOXGETCOUNT 150
 #define API_LISTBOXSELECT 151
 
-void ApiListboxNew(int argc, const TCHAR* argv[]);
-void ApiListboxSetCallback(int argc, const TCHAR* argv[]);
-void ApiListboxAdd(int argc, const TCHAR* argv[]);
-void ApiListboxDelete(int argc, const TCHAR* argv[]);
-void ApiListboxGet(int argc, const TCHAR* argv[]);
-void ApiListboxSetData(int argc, const TCHAR* argv[]);
-void ApiListboxGetData(int argc, const TCHAR* argv[]);
-void ApiListboxSetSel(int argc, const TCHAR* argv[]);
-void ApiListboxGetSel(int argc, const TCHAR* argv[]);
-void ApiListboxClear(int argc, const TCHAR* argv[]);
-void ApiListboxGetCount(int argc, const TCHAR* argv[]);
-void ApiListboxSelect(int argc, const TCHAR* argv[]);
+void ApiListboxNew(int argc, const wchar_t* argv[]);
+void ApiListboxSetCallback(int argc, const wchar_t* argv[]);
+void ApiListboxAdd(int argc, const wchar_t* argv[]);
+void ApiListboxDelete(int argc, const wchar_t* argv[]);
+void ApiListboxGet(int argc, const wchar_t* argv[]);
+void ApiListboxSetData(int argc, const wchar_t* argv[]);
+void ApiListboxGetData(int argc, const wchar_t* argv[]);
+void ApiListboxSetSel(int argc, const wchar_t* argv[]);
+void ApiListboxGetSel(int argc, const wchar_t* argv[]);
+void ApiListboxClear(int argc, const wchar_t* argv[]);
+void ApiListboxGetCount(int argc, const wchar_t* argv[]);
+void ApiListboxSelect(int argc, const wchar_t* argv[]);
 
 #define API_COMBOBOXNEW 160
 #define API_COMBOBOXSETCALLBACK 161
@@ -110,18 +110,18 @@ void ApiListboxSelect(int argc, const TCHAR* argv[]);
 #define API_COMBOBOXGETCOUNT 170
 #define API_COMBOBOXSELECT 171
 
-void ApiComboboxNew(int argc, const TCHAR* argv[]);
-void ApiComboboxSetCallback(int argc, const TCHAR* argv[]);
-void ApiComboboxAdd(int argc, const TCHAR* argv[]);
-void ApiComboboxDelete(int argc, const TCHAR* argv[]);
-void ApiComboboxGet(int argc, const TCHAR* argv[]);
-void ApiComboboxSetData(int argc, const TCHAR* argv[]);
-void ApiComboboxGetData(int argc, const TCHAR* argv[]);
-void ApiComboboxSetSel(int argc, const TCHAR* argv[]);
-void ApiComboboxGetSel(int argc, const TCHAR* argv[]);
-void ApiComboboxClear(int argc, const TCHAR* argv[]);
-void ApiComboboxGetCount(int argc, const TCHAR* argv[]);
-void ApiComboboxSelect(int argc, const TCHAR* argv[]);
+void ApiComboboxNew(int argc, const wchar_t* argv[]);
+void ApiComboboxSetCallback(int argc, const wchar_t* argv[]);
+void ApiComboboxAdd(int argc, const wchar_t* argv[]);
+void ApiComboboxDelete(int argc, const wchar_t* argv[]);
+void ApiComboboxGet(int argc, const wchar_t* argv[]);
+void ApiComboboxSetData(int argc, const wchar_t* argv[]);
+void ApiComboboxGetData(int argc, const wchar_t* argv[]);
+void ApiComboboxSetSel(int argc, const wchar_t* argv[]);
+void ApiComboboxGetSel(int argc, const wchar_t* argv[]);
+void ApiComboboxClear(int argc, const wchar_t* argv[]);
+void ApiComboboxGetCount(int argc, const wchar_t* argv[]);
+void ApiComboboxSelect(int argc, const wchar_t* argv[]);
 
 #define API_PROGRESSBARNEW 180
 #define API_PROGRESSBARSETRANGE 181
@@ -129,11 +129,11 @@ void ApiComboboxSelect(int argc, const TCHAR* argv[]);
 #define API_PROGRESSBARGETRANGE 183
 #define API_PROGRESSBARGETPOS 184
 
-void ApiProgressbarNew(int argc, const TCHAR* argv[]);
-void ApiProgressbarSetRange(int argc, const TCHAR* argv[]);
-void ApiProgressbarSetPos(int argc, const TCHAR* argv[]);
-void ApiProgressbarGetRange(int argc, const TCHAR* argv[]);
-void ApiProgressbarGetPos(int argc, const TCHAR* argv[]);
+void ApiProgressbarNew(int argc, const wchar_t* argv[]);
+void ApiProgressbarSetRange(int argc, const wchar_t* argv[]);
+void ApiProgressbarSetPos(int argc, const wchar_t* argv[]);
+void ApiProgressbarGetRange(int argc, const wchar_t* argv[]);
+void ApiProgressbarGetPos(int argc, const wchar_t* argv[]);
 
 
 #define API_TEXTVIEWNEW 200
@@ -144,13 +144,13 @@ void ApiProgressbarGetPos(int argc, const TCHAR* argv[]);
 #define API_TEXTVIEWREAD 205
 #define API_TEXTVIEWSEARCH 206
 
-void ApiTextviewNew(int argc, const TCHAR* argv[]);
-void ApiTextviewSetCallback(int argc, const TCHAR* argv[]);
-void ApiTextviewEnableWordWrap(int argc, const TCHAR* argv[]);
-void ApiTextviewAdd(int argc, const TCHAR* argv[]);
-void ApiTextviewClear(int argc, const TCHAR* argv[]);
-void ApiTextviewRead(int argc, const TCHAR* argv[]);
-void ApiTextviewSearch(int argc, const TCHAR* argv[]);
+void ApiTextviewNew(int argc, const wchar_t* argv[]);
+void ApiTextviewSetCallback(int argc, const wchar_t* argv[]);
+void ApiTextviewEnableWordWrap(int argc, const wchar_t* argv[]);
+void ApiTextviewAdd(int argc, const wchar_t* argv[]);
+void ApiTextviewClear(int argc, const wchar_t* argv[]);
+void ApiTextviewRead(int argc, const wchar_t* argv[]);
+void ApiTextviewSearch(int argc, const wchar_t* argv[]);
 
 
 #define API_LISTVIEWNEW 210
@@ -170,22 +170,22 @@ void ApiTextviewSearch(int argc, const TCHAR* argv[]);
 #define API_LISTVIEWALPHASORT 224
 #define API_LISTVIEWNUMERICSORT 225
 
-void ApiListviewNew(int argc, const TCHAR* argv[]);
-void ApiListviewSetCallback(int argc, const TCHAR* argv[]);
-void ApiListviewAddColumn(int argc, const TCHAR* argv[]);
-void ApiListviewSetTitleAlignment(int argc, const TCHAR* argv[]);
-void ApiListviewClear(int argc, const TCHAR* argv[]);
-void ApiListviewAdd(int argc, const TCHAR* argv[]);
-void ApiListviewSetText(int argc, const TCHAR* argv[]);
-void ApiListviewGetText(int argc, const TCHAR* argv[]);
-void ApiListviewSetData(int argc, const TCHAR* argv[]);
-void ApiListviewGetData(int argc, const TCHAR* argv[]);
-void ApiListviewSetSel(int argc, const TCHAR* argv[]);
-void ApiListviewGetSel(int argc, const TCHAR* argv[]);
-void ApiListviewGetCount(int argc, const TCHAR* argv[]);
-void ApiListviewUpdate(int argc, const TCHAR* argv[]);
-void ApiListviewAlphaSort(int argc, const TCHAR* argv[]);
-void ApiListviewNumericSort(int argc, const TCHAR* argv[]);
+void ApiListviewNew(int argc, const wchar_t* argv[]);
+void ApiListviewSetCallback(int argc, const wchar_t* argv[]);
+void ApiListviewAddColumn(int argc, const wchar_t* argv[]);
+void ApiListviewSetTitleAlignment(int argc, const wchar_t* argv[]);
+void ApiListviewClear(int argc, const wchar_t* argv[]);
+void ApiListviewAdd(int argc, const wchar_t* argv[]);
+void ApiListviewSetText(int argc, const wchar_t* argv[]);
+void ApiListviewGetText(int argc, const wchar_t* argv[]);
+void ApiListviewSetData(int argc, const wchar_t* argv[]);
+void ApiListviewGetData(int argc, const wchar_t* argv[]);
+void ApiListviewSetSel(int argc, const wchar_t* argv[]);
+void ApiListviewGetSel(int argc, const wchar_t* argv[]);
+void ApiListviewGetCount(int argc, const wchar_t* argv[]);
+void ApiListviewUpdate(int argc, const wchar_t* argv[]);
+void ApiListviewAlphaSort(int argc, const wchar_t* argv[]);
+void ApiListviewNumericSort(int argc, const wchar_t* argv[]);
 
 
 #define API_TERMINALNEW 230
@@ -194,11 +194,11 @@ void ApiListviewNumericSort(int argc, const TCHAR* argv[]);
 #define API_TERMINALRUN 233
 #define API_TERMINALPIPEDATA 234
 
-void ApiTerminalNew(int argc, const TCHAR* argv[]);
-void ApiTerminalSetCallback(int argc, const TCHAR* argv[]);
-void ApiTerminalWrite(int argc, const TCHAR* argv[]);
-void ApiTerminalRun(int argc, const TCHAR* argv[]);
-void ApiTerminalPipeData(int argc, const TCHAR* argv[]);
+void ApiTerminalNew(int argc, const wchar_t* argv[]);
+void ApiTerminalSetCallback(int argc, const wchar_t* argv[]);
+void ApiTerminalWrite(int argc, const wchar_t* argv[]);
+void ApiTerminalRun(int argc, const wchar_t* argv[]);
+void ApiTerminalPipeData(int argc, const wchar_t* argv[]);
 
 
 #define API_MENUNEW 240
@@ -209,13 +209,13 @@ void ApiTerminalPipeData(int argc, const TCHAR* argv[]);
 #define API_MENUGETSELITEM 245
 #define API_MENUCLEAR 246
 
-void ApiMenuNew(int argc, const TCHAR* argv[]);
-void ApiMenuSetCallback(int argc, const TCHAR* argv[]);
-void ApiMenuAddItem(int argc, const TCHAR* argv[]);
-void ApiMenuAddSeparator(int argc, const TCHAR* argv[]);
-void ApiMenuSelectItem(int argc, const TCHAR* argv[]);
-void ApiMenuGetSelectedItem(int argc, const TCHAR* argv[]);
-void ApiMenuClear(int argc, const TCHAR* argv[]);
+void ApiMenuNew(int argc, const wchar_t* argv[]);
+void ApiMenuSetCallback(int argc, const wchar_t* argv[]);
+void ApiMenuAddItem(int argc, const wchar_t* argv[]);
+void ApiMenuAddSeparator(int argc, const wchar_t* argv[]);
+void ApiMenuSelectItem(int argc, const wchar_t* argv[]);
+void ApiMenuGetSelectedItem(int argc, const wchar_t* argv[]);
+void ApiMenuClear(int argc, const wchar_t* argv[]);
 
 
 #endif

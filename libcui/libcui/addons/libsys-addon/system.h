@@ -4,7 +4,7 @@
  * Copyright (C) 2009
  * Daniel Vogel, <daniel@eisfair.org>
  *
- * Last Update:  $Id: system.h 26614 2010-11-10 18:44:13Z dv $
+ * Last Update:  $Id: system.h 33397 2013-04-02 20:48:05Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -41,28 +41,28 @@
 
 typedef struct
 {
-	TCHAR* UserName;
-	TCHAR* UserId;
-	TCHAR* GroupName;
-	TCHAR* GroupId;
+	wchar_t* UserName;
+	wchar_t* UserId;
+	wchar_t* GroupName;
+	wchar_t* GroupId;
 	int    ValidPW;
-	TCHAR* RealName;
+	wchar_t* RealName;
 	void*  Next;
 } USER_T;
 
 typedef struct
 {
-	TCHAR* GroupName;
-	TCHAR* Password;
-	TCHAR* GroupId;
-	TCHAR* Members;
+	wchar_t* GroupName;
+	wchar_t* Password;
+	wchar_t* GroupId;
+	wchar_t* Members;
 	void*  Next;
 } GROUP_T;
 
 typedef struct
 {
-	TCHAR* UserName;
-	TCHAR* Password;
+	wchar_t* UserName;
+	wchar_t* Password;
 	void*  Next;
 } PASSWD_T;
 
@@ -79,9 +79,9 @@ void           SysInit           (void);
 USER_T*        SysGetUserList    (int query_flags);
 GROUP_T*       SysGetGroupList   (int query_flags);
 
-GROUP_T*       SysFindGroupById  (GROUP_T*  groups,  const TCHAR* groupid);
-GROUP_T*       SysFindGroupByName(GROUP_T*  groups,  const TCHAR* name);
-PASSWD_T*      SysFindPasswd     (PASSWD_T* passwds, const TCHAR* username);
+GROUP_T*       SysFindGroupById  (GROUP_T*  groups,  const wchar_t* groupid);
+GROUP_T*       SysFindGroupByName(GROUP_T*  groups,  const wchar_t* name);
+PASSWD_T*      SysFindPasswd     (PASSWD_T* passwds, const wchar_t* username);
 
 void           SysFreeUserList   (USER_T*   users);
 void           SysFreeGroupList  (GROUP_T*  groups);

@@ -33,7 +33,7 @@
 #endif
 
 /* private prototypes */
-static void XmlError(XMLFILE* xml, const TCHAR* errmsg, int is_warning);
+static void XmlError(XMLFILE* xml, const wchar_t* errmsg, int is_warning);
 static void XmlClosePreviousComment(XMLOBJECT* obj);
 static void XmlFreeObject(XMLOBJECT* ob);
 static void XmlFreeTypeHeader(XMLTYPEHEADER* type);
@@ -43,20 +43,20 @@ static void XmlReadOpeningTag(XMLFILE* xml, int* shorttag, XMLOBJECT* ob);
 static void XmlReadClosingTag(XMLFILE* xml, XMLOBJECT* ob);
 static void XmlReadAttribute(XMLFILE* xml, XMLOBJECT* ob);
 static void XmlRecover(XMLFILE* xml, int sym);
-static int  XmlIsSingleTag(XMLFILE* xml, const TCHAR* name);
+static int  XmlIsSingleTag(XMLFILE* xml, const wchar_t* name);
 static void XmlWriteObject(XMLOBJECT* ob, int level, FILE* out);
 static void XmlWriteSpace(int level, FILE* out);
-static void XmlWriteToFile(const TCHAR* text, FILE* out);
-static void XmlWriteLowcase(const TCHAR* text, FILE* out);
-static void XmlWriteData(const TCHAR* text, int len, FILE* out);
+static void XmlWriteToFile(const wchar_t* text, FILE* out);
+static void XmlWriteLowcase(const wchar_t* text, FILE* out);
+static void XmlWriteData(const wchar_t* text, int len, FILE* out);
 static void XmlWriteTypeHeader(XMLTYPEHEADER* type, FILE* out);
 static void XmlWriteStyleSheets(XMLSTYLESHEET* sheet, FILE* out);
 static int  XmlDeleteChild(XMLOBJECT* ob, XMLOBJECT* childob);
 static void XmlReadHeader(XMLFILE* xml);
 static void XmlReadTypeHeader(XMLFILE* xml);
 static void XmlReadStyleSheet(XMLFILE* xml);
-static int  XmlMatchTag(XMLOBJECT* xmlobj, const TCHAR* attrspec, int* tagidx);
-static XMLOBJECT* XmlFindNext(XMLOBJECT* xmlobj, const TCHAR* tagspec);
+static int  XmlMatchTag(XMLOBJECT* xmlobj, const wchar_t* attrspec, int* tagidx);
+static XMLOBJECT* XmlFindNext(XMLOBJECT* xmlobj, const wchar_t* tagspec);
 
 extern const char* EntityTable[][2];
 
@@ -69,13 +69,13 @@ extern const char* EntityTable[][2];
  * ---------------------------------------------------------------------
  */
 XMLFILE*   
-XmlCreate(const TCHAR* filename)
+XmlCreate(const wchar_t* filename)
 {
 	XMLFILE*   xml;
 	XMLOBJECT* ob;
 
 	xml = (XMLFILE*) malloc(sizeof(XMLFILE));
-	xml->FileName = tcsdup(filename);
+	xml->FileName = wcsdup(filename);
 	xml->ErrorOut = NULL;
 	xml->FirstSingle = NULL;
 	xml->PreserveNL = FALSE;
@@ -84,7 +84,7 @@ XmlCreate(const TCHAR* filename)
 	xml->LastSSheet = NULL;
 
 	ob = (XMLOBJECT*) malloc(sizeof(XMLOBJECT));
-	ob->Name = tcsdup(_T("$$ROOT$$"));
+	ob->Name = wcsdup(_T("$$ROOT$$"));
 	ob->FirstNode = NULL;
 	ob->LastNode = NULL;
 	ob->FirstAttr = NULL;
@@ -158,13 +158,13 @@ XmlSetErrorHook(XMLFILE* xml, ErrorCallback errout, void* instance)
  * ---------------------------------------------------------------------
  */
 void
-XmlAddSingleTag(XMLFILE* xml, const TCHAR* name)
+XmlAddSingleTag(XMLFILE* xml, const wchar_t* name)
 {
 	XMLSINGLETAG* stag;
 	if (!xml) return;
 
 	stag = (XMLSINGLETAG*) malloc(sizeof(XMLSINGLETAG));
-	stag->Name = tcsdup(name);
+	stag->Name = wcsdup(name);
 	stag->Next = xml->FirstSingle;
 	xml->FirstSingle = stag;
 }
@@ -299,9 +299,9 @@ XmlGetObjectTree(XMLFILE* xml)
  * ---------------------------------------------------------------------
  */
 XMLOBJECT*
-XmlSearch(XMLFILE* xml, const TCHAR* searchspec)
+XmlSearch(XMLFILE* xml, const wchar_t* searchspec)
 {
-	const TCHAR* p = searchspec;
+	const wchar_t* p = searchspec;
 	XMLOBJECT* obj = xml->RootObj;
 	
 	while (p && obj)
@@ -310,7 +310,7 @@ XmlSearch(XMLFILE* xml, const TCHAR* searchspec)
 		obj = XmlFindNext(obj, p);
 		if (obj)
 		{
-			p = tcschr(p, _T(':'));
+			p = wcschr(p, _T(':'));
 			if (p)
 			{
 				p++;
@@ -350,7 +350,7 @@ XmlCreateObject(XMLFILE* xml, XMLOBJECT* parent)
 	XMLNODE*   node;
 
 	ob = (XMLOBJECT*) malloc(sizeof(XMLOBJECT));
-	ob->Name = tcsdup(_T("noname"));
+	ob->Name = wcsdup(_T("noname"));
 	ob->FirstNode = NULL;
 	ob->LastNode = NULL;
 	ob->FirstAttr = NULL;
@@ -393,7 +393,7 @@ XmlCreateComment(XMLFILE* xml, XMLOBJECT* parent)
 	XMLNODE*   node;
 
 	ob = (XMLOBJECT*) malloc(sizeof(XMLOBJECT));
-	ob->Name = tcsdup(_T("noname"));
+	ob->Name = wcsdup(_T("noname"));
 	ob->FirstNode = NULL;
 	ob->LastNode = NULL;
 	ob->FirstAttr = NULL;
@@ -428,12 +428,12 @@ XmlCreateComment(XMLFILE* xml, XMLOBJECT* parent)
  * ---------------------------------------------------------------------
  */
 void
-XmlSetObjectName(XMLOBJECT* ob, const TCHAR* name)
+XmlSetObjectName(XMLOBJECT* ob, const wchar_t* name)
 {
 	if (!ob) return;
 
 	if (ob->Name) free(ob->Name);
-	ob->Name = tcsdup(name);
+	ob->Name = wcsdup(name);
 }
 
 /* ---------------------------------------------------------------------
@@ -442,7 +442,7 @@ XmlSetObjectName(XMLOBJECT* ob, const TCHAR* name)
  * ---------------------------------------------------------------------
  */
 void
-XmlSetObjectData(XMLOBJECT* ob, const TCHAR* data)
+XmlSetObjectData(XMLOBJECT* ob, const wchar_t* data)
 {
 	XMLNODE* datnode;
 	int newlen;
@@ -481,9 +481,9 @@ XmlSetObjectData(XMLOBJECT* ob, const TCHAR* data)
 
 	if (datnode->Data) free(datnode->Data);
 	
-	newlen = (tcslen(data) + 1) / DATAGROUTH + 1;
-	datnode->Data = (TCHAR*) malloc((newlen * DATAGROUTH) * sizeof(TCHAR));
-	tcscpy(datnode->Data,data);
+	newlen = (wcslen(data) + 1) / DATAGROUTH + 1;
+	datnode->Data = (wchar_t*) malloc((newlen * DATAGROUTH) * sizeof(wchar_t));
+	wcscpy(datnode->Data,data);
 
 	datnode->DataLen = newlen * DATAGROUTH;
 }
@@ -494,7 +494,7 @@ XmlSetObjectData(XMLOBJECT* ob, const TCHAR* data)
  * ---------------------------------------------------------------------
  */
 void
-XmlAddObjectData(XMLOBJECT* ob, const TCHAR* data)
+XmlAddObjectData(XMLOBJECT* ob, const wchar_t* data)
 {
 	XMLNODE* datnode;
 
@@ -536,16 +536,16 @@ XmlAddObjectData(XMLOBJECT* ob, const TCHAR* data)
 	}
 	else 
 	{
-		int newlen = (tcslen(datnode->Data) + tcslen(data) + 2) / DATAGROUTH + 1;
+		int newlen = (wcslen(datnode->Data) + wcslen(data) + 2) / DATAGROUTH + 1;
 		if (newlen * DATAGROUTH >= datnode->DataLen)
 		{
-			TCHAR* tmpbuf = (TCHAR*) malloc((newlen * DATAGROUTH) * sizeof(TCHAR));
-			tcscpy(tmpbuf,datnode->Data);
+			wchar_t* tmpbuf = (wchar_t*) malloc((newlen * DATAGROUTH) * sizeof(wchar_t));
+			wcscpy(tmpbuf,datnode->Data);
 			free(datnode->Data);
 			datnode->Data = tmpbuf;
 			datnode->DataLen = newlen * DATAGROUTH;
 		}
-		tcscat(datnode->Data,data);
+		wcscat(datnode->Data,data);
 	}
 }
 
@@ -555,7 +555,7 @@ XmlAddObjectData(XMLOBJECT* ob, const TCHAR* data)
  * ---------------------------------------------------------------------
  */
 void
-XmlSetObjectComment(XMLOBJECT* ob, const TCHAR* data)
+XmlSetObjectComment(XMLOBJECT* ob, const wchar_t* data)
 {
 	XMLNODE* datnode;
 	int newlen;
@@ -594,9 +594,9 @@ XmlSetObjectComment(XMLOBJECT* ob, const TCHAR* data)
 
 	if (datnode->Data) free(datnode->Data);
 	
-	newlen = (tcslen(data) + 1) / DATAGROUTH + 1;
-	datnode->Data = (TCHAR*) malloc((newlen * DATAGROUTH) * sizeof(TCHAR));
-	tcscpy(datnode->Data,data);
+	newlen = (wcslen(data) + 1) / DATAGROUTH + 1;
+	datnode->Data = (wchar_t*) malloc((newlen * DATAGROUTH) * sizeof(wchar_t));
+	wcscpy(datnode->Data,data);
 
 	datnode->DataLen = newlen * DATAGROUTH;
 }
@@ -607,7 +607,7 @@ XmlSetObjectComment(XMLOBJECT* ob, const TCHAR* data)
  * ---------------------------------------------------------------------
  */
 void
-XmlAddObjectComment(XMLOBJECT* ob, const TCHAR* data)
+XmlAddObjectComment(XMLOBJECT* ob, const wchar_t* data)
 {
 	XMLNODE* datnode;
 
@@ -649,20 +649,20 @@ XmlAddObjectComment(XMLOBJECT* ob, const TCHAR* data)
 	}
 	else 
 	{
-		int newlen = (tcslen(datnode->Data) + tcslen(data) + 2) / DATAGROUTH + 1;
+		int newlen = (wcslen(datnode->Data) + wcslen(data) + 2) / DATAGROUTH + 1;
 		if (newlen * DATAGROUTH >= datnode->DataLen)
 		{
-			TCHAR* tmpbuf = (TCHAR*) malloc((newlen * DATAGROUTH) * sizeof(TCHAR));
-			tcscpy(tmpbuf,datnode->Data);
+			wchar_t* tmpbuf = (wchar_t*) malloc((newlen * DATAGROUTH) * sizeof(wchar_t));
+			wcscpy(tmpbuf,datnode->Data);
 			free(datnode->Data);
 			datnode->Data = tmpbuf;
 			datnode->DataLen = newlen * DATAGROUTH;
 		}
 		if (datnode->Data[0] != 0) 
 		{
-			tcscat(datnode->Data,_T(" "));
+			wcscat(datnode->Data,_T(" "));
 		}
-		tcscat(datnode->Data,data);
+		wcscat(datnode->Data,data);
 	}
 }
 
@@ -672,14 +672,14 @@ XmlAddObjectComment(XMLOBJECT* ob, const TCHAR* data)
  * ---------------------------------------------------------------------
  */
 XMLATTRIBUTE*
-XmlCreateAttribute(XMLOBJECT* ob, const TCHAR* name)
+XmlCreateAttribute(XMLOBJECT* ob, const wchar_t* name)
 {
 	XMLATTRIBUTE* attr;
 
 	if (!ob) return NULL;
 
 	attr = (XMLATTRIBUTE*) malloc(sizeof(XMLATTRIBUTE));
-	attr->Name = tcsdup(name);
+	attr->Name = wcsdup(name);
 	attr->Value = NULL;
 	attr->Next = NULL;
 
@@ -696,11 +696,11 @@ XmlCreateAttribute(XMLOBJECT* ob, const TCHAR* name)
  * ---------------------------------------------------------------------
  */
 void 
-XmlSetAttributeValue(XMLATTRIBUTE* attr, const TCHAR* value)
+XmlSetAttributeValue(XMLATTRIBUTE* attr, const wchar_t* value)
 {
 	if (!attr) return;
 	if (attr->Value) free(attr->Value);
-	attr->Value = tcsdup(value);
+	attr->Value = wcsdup(value);
 }
 
 /* ---------------------------------------------------------------------
@@ -709,7 +709,7 @@ XmlSetAttributeValue(XMLATTRIBUTE* attr, const TCHAR* value)
  * ---------------------------------------------------------------------
  */
 XMLATTRIBUTE*
-XmlGetAttribute(XMLOBJECT* ob, const TCHAR* name)
+XmlGetAttribute(XMLOBJECT* ob, const wchar_t* name)
 {
 	XMLATTRIBUTE* seekptr;
 
@@ -718,7 +718,7 @@ XmlGetAttribute(XMLOBJECT* ob, const TCHAR* name)
 	seekptr = ob->FirstAttr;
 	while(seekptr)
 	{
-		if (tcscasecmp(seekptr->Name,name)==0)
+		if (wcscasecmp(seekptr->Name,name)==0)
 		{
 			return seekptr;
 		}
@@ -822,7 +822,7 @@ XmlDeleteChild(XMLOBJECT* ob, XMLOBJECT* childob)
  * ---------------------------------------------------------------------
  */
 static void
-XmlError(XMLFILE* xml, const TCHAR* errmsg, int is_warning)
+XmlError(XMLFILE* xml, const wchar_t* errmsg, int is_warning)
 {
 	if (xml->ErrorOut)
 	{
@@ -922,12 +922,12 @@ XmlFreeStyleSheet(XMLSTYLESHEET* sheet)
  * ---------------------------------------------------------------------
  */
 static int  
-XmlIsSingleTag(XMLFILE* xml, const TCHAR* name)
+XmlIsSingleTag(XMLFILE* xml, const wchar_t* name)
 {
 	XMLSINGLETAG* stag = xml->FirstSingle;
 	while(stag)
 	{
-		if (tcscasecmp(stag->Name,name)==0)
+		if (wcscasecmp(stag->Name,name)==0)
 		{
 			return TRUE;
 		}
@@ -955,15 +955,15 @@ XmlReadHeader(XMLFILE* xml)
 	}
 	else
 	{
-		TCHAR* text = XmlGetTextDup();
+		wchar_t* text = XmlGetTextDup();
 		if (text)
 		{
-			if (tcscasecmp(_T("xml"), XmlGetTextDup()) == 0)
+			if (wcscasecmp(_T("xml"), XmlGetTextDup()) == 0)
 			{
 				xml->Sym = XmlRead();
 				XmlReadTypeHeader(xml);
 			}
-			else if (tcscasecmp(_T("xml-stylesheet"), XmlGetTextDup()) == 0)
+			else if (wcscasecmp(_T("xml-stylesheet"), XmlGetTextDup()) == 0)
 			{
 				xml->Sym = XmlRead();
 				XmlReadStyleSheet(xml);
@@ -1006,8 +1006,8 @@ XmlReadTypeHeader(XMLFILE* xml)
 
 	while (xml->Sym == XML_IDENT)                     /* optional attributes */
 	{
-		TCHAR* attrname = NULL;
-		TCHAR* attrvalue = NULL;
+		wchar_t* attrname = NULL;
+		wchar_t* attrvalue = NULL;
 
 		attrname = XmlGetTextDup();
 		xml->Sym = XmlRead();
@@ -1032,15 +1032,15 @@ XmlReadTypeHeader(XMLFILE* xml)
 
 		if (type && attrname && attrvalue)
 		{
-			if (tcscasecmp(attrname, _T("version")) == 0)
+			if (wcscasecmp(attrname, _T("version")) == 0)
 			{
 				type->Version = attrvalue;
 			}
-			else if (tcscasecmp(attrname, _T("encoding")) == 0)
+			else if (wcscasecmp(attrname, _T("encoding")) == 0)
 			{
 				type->Encoding = attrvalue;
 			}
-			else if (tcscasecmp(attrname, _T("standalone")) == 0)
+			else if (wcscasecmp(attrname, _T("standalone")) == 0)
 			{
 				type->Standalone = attrvalue;
 			}
@@ -1100,8 +1100,8 @@ XmlReadStyleSheet(XMLFILE* xml)
 
 	while (xml->Sym == XML_IDENT)                     /* optional attributes */
 	{
-		TCHAR* attrname = NULL;
-		TCHAR* attrvalue = NULL;
+		wchar_t* attrname = NULL;
+		wchar_t* attrvalue = NULL;
 
 		attrname = XmlGetTextDup();
 		xml->Sym = XmlRead();
@@ -1126,27 +1126,27 @@ XmlReadStyleSheet(XMLFILE* xml)
 
 		if (sheet && attrname && attrvalue)
 		{
-			if (tcscasecmp(attrname, _T("href")) == 0)
+			if (wcscasecmp(attrname, _T("href")) == 0)
 			{
 				sheet->HRef = attrvalue;
 			}
-			else if (tcscasecmp(attrname, _T("type")) == 0)
+			else if (wcscasecmp(attrname, _T("type")) == 0)
 			{
 				sheet->Type = attrvalue;
 			}
-			else if (tcscasecmp(attrname, _T("title")) == 0)
+			else if (wcscasecmp(attrname, _T("title")) == 0)
 			{
 				sheet->Title = attrvalue;
 			}
-			else if (tcscasecmp(attrname, _T("media")) == 0)
+			else if (wcscasecmp(attrname, _T("media")) == 0)
 			{
 				sheet->Media = attrvalue;
 			}
-			else if (tcscasecmp(attrname, _T("charset")) == 0)
+			else if (wcscasecmp(attrname, _T("charset")) == 0)
 			{
 				sheet->CharSet = attrvalue;
 			}
-			else if (tcscasecmp(attrname, _T("alternate")) == 0)
+			else if (wcscasecmp(attrname, _T("alternate")) == 0)
 			{
 				sheet->Alternate = attrvalue;
 			}
@@ -1276,7 +1276,7 @@ XmlReadOpeningTag(XMLFILE* xml, int* shorttag, XMLOBJECT* ob)
 	}
 	else 
 	{
-		TCHAR* text = XmlGetTextDup();
+		wchar_t* text = XmlGetTextDup();
 		if (text)
 		{
 			XmlSetObjectName(ob, text);
@@ -1324,10 +1324,10 @@ XmlReadClosingTag(XMLFILE* xml, XMLOBJECT* ob)
 	}
 	else 
 	{
-		TCHAR* text = XmlGetTextDup();
+		wchar_t* text = XmlGetTextDup();
 		if (text)
 		{
-			if (tcscasecmp(ob->Name, text) != 0)
+			if (wcscasecmp(ob->Name, text) != 0)
 			{
 				XmlError(xml, _T("closing tag does not match opening tag"),FALSE);
 			}
@@ -1354,7 +1354,7 @@ static void
 XmlReadAttribute(XMLFILE* xml, XMLOBJECT* ob)
 {
 	XMLATTRIBUTE* attr;
-	TCHAR* text = XmlGetTextDup();
+	wchar_t* text = XmlGetTextDup();
 	if (text)
 	{
 		attr = XmlCreateAttribute(ob, text);
@@ -1372,7 +1372,7 @@ XmlReadAttribute(XMLFILE* xml, XMLOBJECT* ob)
 			}
 			else
 			{
-				TCHAR* text = XmlGetStringDup();
+				wchar_t* text = XmlGetStringDup();
 				if (text)
 				{
 					XmlSetAttributeValue(attr, text);
@@ -1488,8 +1488,8 @@ XmlWriteObject(XMLOBJECT* ob, int level, FILE* out)
 {
 	XMLATTRIBUTE* attrptr;
 	XMLNODE*      nodeptr;
-	TCHAR*        pos1;
-	TCHAR*        pos2;
+	wchar_t*        pos1;
+	wchar_t*        pos2;
 	int           total;
 
 	if (level >= 0)
@@ -1545,7 +1545,7 @@ XmlWriteObject(XMLOBJECT* ob, int level, FILE* out)
 			{
 				pos2++;
 			}  
-			pos2 = tcschr(pos2,_T(' '));
+			pos2 = wcschr(pos2,_T(' '));
 
 			while (pos2)
 			{
@@ -1571,9 +1571,9 @@ XmlWriteObject(XMLOBJECT* ob, int level, FILE* out)
 				{
 					pos2++;
 				}
-				pos2 = tcschr(pos2,_T(' '));
+				pos2 = wcschr(pos2,_T(' '));
 			}
-			XmlWriteData(pos1, tcslen(pos1), out);
+			XmlWriteData(pos1, wcslen(pos1), out);
 			fputs("\n", out);
 		}
 		nodeptr = (XMLNODE*) nodeptr->Next;
@@ -1610,13 +1610,14 @@ XmlWriteSpace(int level, FILE* out)
  * ---------------------------------------------------------------------
  */
 static void
-XmlWriteToFile(const TCHAR* text, FILE* out)
+XmlWriteToFile(const wchar_t* text, FILE* out)
 {
-#ifdef _UNICODE
-	mbstate_t state = {0};
-	char         buffer[128];
-	int          size = 0;
+	mbstate_t state;
+	char      buffer[128 + 1];
+	int       size = 0;
 
+	memset (&state, 0, sizeof(state));
+	
 	do
 	{
 		size = wcsrtombs(buffer, &text, 128, &state);
@@ -1626,9 +1627,6 @@ XmlWriteToFile(const TCHAR* text, FILE* out)
 		}
 	}
 	while ((size > 0) && (text != NULL));
-#else
-	fputs(text, out);
-#endif
 }
 
 /* ---------------------------------------------------------------------
@@ -1637,27 +1635,24 @@ XmlWriteToFile(const TCHAR* text, FILE* out)
  * ---------------------------------------------------------------------
  */
 static void
-XmlWriteLowcase(const TCHAR* text, FILE* out)
+XmlWriteLowcase(const wchar_t* text, FILE* out)
 {
-#ifdef _UNICODE
-	mbstate_t state = {0};
+	mbstate_t    state;
 	char         buffer[8];
 	int          size = 0;
-#endif
-	const TCHAR* p = text;
+	const wchar_t* p = text;
+	
+	memset (&state, 0, sizeof(state));
 
 	while (*p != 0)
 	{
-		TCHAR c = totlower(*p);
-#ifdef _UNICODE
+		wchar_t c = towlower(*p);
+
 		size = wcrtomb(buffer, c, &state);
 		if (size > 0)
 		{
 			fwrite(buffer, 1, size, out);
 		}
-#else
-		fputc(c, out);
-#endif
 		p++;
 	}
 }
@@ -1668,20 +1663,20 @@ XmlWriteLowcase(const TCHAR* text, FILE* out)
  * ---------------------------------------------------------------------
  */
 static void
-XmlWriteData(const TCHAR* text, int len, FILE* out)
+XmlWriteData(const wchar_t* text, int len, FILE* out)
 {
-#ifdef _UNICODE
-	mbstate_t    state = {0};
+	mbstate_t    state;
 	int          size = 0;
 	char         buffer[8];
-#endif
 	int          index;
-	const TCHAR* p = text;
+	const wchar_t* p = text;
+	
+	memset (&state, 0, sizeof(state));
 
 	while ((*p != 0) && (len > 0))
 	{
-		TCHAR c = totlower(*p);
-#ifdef _UNICODE
+		wchar_t c = towlower(*p);
+
 		size = wcrtomb(buffer, c, &state);
 		if (size > 0)
 		{
@@ -1710,22 +1705,6 @@ XmlWriteData(const TCHAR* text, int len, FILE* out)
 				}
 			}
 		}
-#else
-		index = 0;
-		while (EntityTable[index][0] != NULL)
-		{
-			if (c == EntityTable[index][1][0])
-			{
-				fputs(EntityTable[index][0] ,out);
-				break;
-			}
-			index++;
-		}
-		if (EntityTable[index][0] != NULL)
-		{
-			fputc(c, out);
-		}
-#endif
 		p++;
 		len--;
 	}
@@ -1739,10 +1718,10 @@ XmlWriteData(const TCHAR* text, int len, FILE* out)
  * ---------------------------------------------------------------------
  */
 static int
-XmlMatchTag(XMLOBJECT* xmlobj, const TCHAR* attrspec, int* tagidx)
+XmlMatchTag(XMLOBJECT* xmlobj, const wchar_t* attrspec, int* tagidx)
 {
-	TCHAR attrname[64 + 1];
-	TCHAR attrval[128 + 1];
+	wchar_t attrname[64 + 1];
+	wchar_t attrval[128 + 1];
 	int index = 0;
 	int result = TRUE;
 
@@ -1791,11 +1770,11 @@ XmlMatchTag(XMLOBJECT* xmlobj, const TCHAR* attrspec, int* tagidx)
 			attrval[index] = 0;
 		}
 		
-		if (tcscasecmp(attrname, _T("index")) == 0)
+		if (wcscasecmp(attrname, _T("index")) == 0)
 		{
-			TCHAR indexattr[32 + 1];
-			stprintf(indexattr, 32, _T("%i"), *tagidx);
-			if (tcscmp(attrval, indexattr) != 0)
+			wchar_t indexattr[32 + 1];
+			swprintf(indexattr, 32, _T("%i"), *tagidx);
+			if (wcscmp(attrval, indexattr) != 0)
 			{
 				result = FALSE;
 			}
@@ -1805,7 +1784,7 @@ XmlMatchTag(XMLOBJECT* xmlobj, const TCHAR* attrspec, int* tagidx)
 			XMLATTRIBUTE* attr = xmlobj->FirstAttr;
 			while (attr)
 			{
-				if (tcscasecmp(attrname, attr->Name) == 0)
+				if (wcscasecmp(attrname, attr->Name) == 0)
 				{
 					break;
 				}
@@ -1815,7 +1794,7 @@ XmlMatchTag(XMLOBJECT* xmlobj, const TCHAR* attrspec, int* tagidx)
 			{
 				return FALSE;
 			}
-			if (tcscasecmp(attrval, attr->Value) != 0)
+			if (wcscasecmp(attrval, attr->Value) != 0)
 			{
 				return FALSE;
 			}
@@ -1840,9 +1819,9 @@ XmlMatchTag(XMLOBJECT* xmlobj, const TCHAR* attrspec, int* tagidx)
  * ---------------------------------------------------------------------
  */
 static XMLOBJECT*
-XmlFindNext(XMLOBJECT* xmlobj, const TCHAR* tagspec)
+XmlFindNext(XMLOBJECT* xmlobj, const wchar_t* tagspec)
 {
-	TCHAR tagname[64 + 1];
+	wchar_t tagname[64 + 1];
 	int  index = 0;
 
 	tagname[0] = 0;
@@ -1866,7 +1845,7 @@ XmlFindNext(XMLOBJECT* xmlobj, const TCHAR* tagspec)
 			if (searchnode->Type == XML_OBJNODE)
 			{
 				XMLOBJECT* obj = (XMLOBJECT*) searchnode->Object;
-				if (obj && (tcscasecmp(obj->Name, tagname) == 0))
+				if (obj && (wcscasecmp(obj->Name, tagname) == 0))
 				{
 					if (*tagspec == _T('('))
 					{

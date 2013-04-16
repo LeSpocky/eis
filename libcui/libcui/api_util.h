@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: api_util.h 23497 2010-03-14 21:53:08Z dv $
+ * Last Update:  $Id: api_util.h 33397 2013-04-02 20:48:05Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,7 +29,7 @@
 #include "cui-util.h"
 
 typedef int (*ModuleInitProc)         (MODULEINIT_T* modinit);
-typedef int (*ModuleExecFunctionProc) (int func_nr, int argc, const TCHAR* argv[]);
+typedef int (*ModuleExecFunctionProc) (int func_nr, int argc, const wchar_t* argv[]);
 typedef int (*ModuleCloseProc)        (void);
 
 typedef struct
@@ -49,10 +49,10 @@ ADDON_MODULE* AddonGetModule(int nr);
 
 #define API_XMLREADTAG 500
 
-void ApiXmlReadTag(int argc, const TCHAR* argv[]);
+void ApiXmlReadTag(int argc, const wchar_t* argv[]);
 
 #define API_LOADADDON  999
 
-void ApiLoadAddon(int argc, const TCHAR* argv[]);
+void ApiLoadAddon(int argc, const wchar_t* argv[]);
 
 #endif

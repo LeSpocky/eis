@@ -53,8 +53,8 @@ ButtonPaintHook(void* w)
 	int   x;
 	int   len, i, cpos;
 	int   hkey_pos = -1;
-	TCHAR hkey = _T('\0');
-	TCHAR buffer[128+1];
+	wchar_t hkey = _T('\0');
+	wchar_t buffer[128+1];
 
 	WindowGetClientRect(win, &rc);
 	if (rc.W <= 0) return;
@@ -74,8 +74,8 @@ ButtonPaintHook(void* w)
 			buffer[rc.W - 2] = _T('>');
 		}
 	
-		len = tcslen(win->Text);
-		if (tcschr(win->Text, _T('&')) != NULL)
+		len = wcslen(win->Text);
+		if (wcschr(win->Text, _T('&')) != NULL)
 		{
 			x = (rc.W - (len - 1)) / 2;
 			if (x < 2) x = 2;
@@ -283,7 +283,7 @@ ButtonKillFocusHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-ButtonNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h, 
+ButtonNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h, 
           int id, int sflags, int cflags)
 {
 	if (parent)
@@ -325,7 +325,7 @@ ButtonNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 void 
 ButtonSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("BUTTON")) == 0))
+	if (win && (wcscmp(win->Class, _T("BUTTON")) == 0))
 	{
 		((BUTTONDATA*)win->InstData)->SetFocusHook = proc;
 		((BUTTONDATA*)win->InstData)->SetFocusTarget = target;
@@ -340,7 +340,7 @@ ButtonSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* targe
 void 
 ButtonSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("BUTTON")) == 0))
+	if (win && (wcscmp(win->Class, _T("BUTTON")) == 0))
 	{
 		((BUTTONDATA*)win->InstData)->KillFocusHook = proc;
 		((BUTTONDATA*)win->InstData)->KillFocusTarget = target;
@@ -355,7 +355,7 @@ ButtonSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void
 ButtonSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("BUTTON")) == 0))
+	if (win && (wcscmp(win->Class, _T("BUTTON")) == 0))
 	{
 		((BUTTONDATA*)win->InstData)->PreKeyHook = proc;
 		((BUTTONDATA*)win->InstData)->PreKeyTarget = target;
@@ -370,7 +370,7 @@ ButtonSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* targ
 void
 ButtonSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("BUTTON")) == 0))
+	if (win && (wcscmp(win->Class, _T("BUTTON")) == 0))
 	{
 		((BUTTONDATA*)win->InstData)->PostKeyHook = proc;
 		((BUTTONDATA*)win->InstData)->PostKeyTarget = target;
@@ -385,7 +385,7 @@ ButtonSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* tar
 void 
 ButtonSetClickedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("BUTTON")) == 0))
+	if (win && (wcscmp(win->Class, _T("BUTTON")) == 0))
 	{
 		((BUTTONDATA*)win->InstData)->ButtonClickedHook = proc;
 		((BUTTONDATA*)win->InstData)->ButtonClickedTarget = target;

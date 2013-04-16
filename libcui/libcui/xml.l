@@ -5,7 +5,7 @@
  * Copyright (C) 2006
  * Daniel Vogel, <daniel_vogel@t-online.de>
  * 
- * Last Update:  $Id: xml.l 24973 2010-07-11 11:53:27Z dv $
+ * Last Update:  $Id: xml.l 33447 2013-04-10 21:34:47Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -44,8 +44,8 @@
 ErrorCallback XmlErrorHook = NULL;
 void*         XmlErrorInst = NULL;
 int           XmlCurrentLine;
-TCHAR*        XmlInputFile = NULL;
-TCHAR*        XmlDataBuf = NULL;
+wchar_t*      XmlInputFile = NULL;
+wchar_t*      XmlDataBuf = NULL;
 int           XmlDataBufLen = 0;
 int           XmlDataBufPos = 0;
 int           XmlSpace = FALSE;
@@ -281,7 +281,7 @@ ANYCHAR         .
  * Open a file for reading and prepare the scanner
  * -----------------------------------------------------------------------
  */
-int XmlFileOpen(const TCHAR* filename, ErrorCallback errout, void* instance)
+int XmlFileOpen(const wchar_t* filename, ErrorCallback errout, void* instance)
 {
 	char* mbfilename = TCharToMbDup(filename); 
 	if (mbfilename)
@@ -289,12 +289,12 @@ int XmlFileOpen(const TCHAR* filename, ErrorCallback errout, void* instance)
 		xmlin = fopen(mbfilename, "rt");
 		if (xmlin)
 		{
-			XmlInputFile = tcsdup(filename);
+			XmlInputFile = wcsdup(filename);
 			XmlCurrentLine = 1;
 			XmlErrorHook = errout;
 			XmlErrorInst = instance;
 
-			XmlDataBuf = (TCHAR*) malloc((DATA_BLOCK + 1) * sizeof(TCHAR));
+			XmlDataBuf = (wchar_t*) malloc((DATA_BLOCK + 1) * sizeof(wchar_t));
 			XmlDataBufLen = DATA_BLOCK;
 			XmlDataBufPos = 0;
 			XmlClearData();
@@ -358,7 +358,7 @@ XmlParseNL(int state)
  * regular expression
  * -----------------------------------------------------------------------
  */
-TCHAR* 
+wchar_t* 
 XmlGetTextDup(void)
 {
 	return MbToTCharDup(xmltext); 
@@ -370,7 +370,7 @@ XmlGetTextDup(void)
  * Return the text read by the scanner yust after removing the quotes.
  * -----------------------------------------------------------------------
  */
-TCHAR*
+wchar_t*
 XmlGetStringDup(void)
 {
         int len = strlen(xmltext);
@@ -381,7 +381,7 @@ XmlGetStringDup(void)
         }
         else
         {
-                return tcsdup(_T(""));
+                return wcsdup(_T(""));
         }
 }
 
@@ -391,7 +391,7 @@ XmlGetStringDup(void)
  * Return the data read by the scanner. 
  * -----------------------------------------------------------------------
  */
-const TCHAR* 
+const wchar_t* 
 XmlGetDataBuf(void)
 {
 	if (XmlDataBufLen > 0)
@@ -424,7 +424,7 @@ XmlClearData(void)
  * Return the name of the file the scanner is processing
  * -----------------------------------------------------------------------
  */
-const TCHAR* 
+const wchar_t* 
 XmlGetFileName(void)
 {
 	return XmlInputFile;
@@ -489,11 +489,11 @@ XmlAddData(const char* text,int len)
 		if (XmlDataBufPos + len >= XmlDataBufLen)
 		{
 			int newlen = ((XmlDataBufPos + len) / DATA_BLOCK + 1) * DATA_BLOCK;
-			TCHAR* newstr = (TCHAR*) malloc((newlen + 1) * sizeof(TCHAR));
+			wchar_t* newstr = (wchar_t*) malloc((newlen + 1) * sizeof(wchar_t));
 
 			if (newstr)
 			{
-				tcscpy(newstr, XmlDataBuf);
+				wcscpy(newstr, XmlDataBuf);
 				free(XmlDataBuf);
 
 				XmlDataBuf = newstr;
@@ -504,11 +504,9 @@ XmlAddData(const char* text,int len)
 				return;
 			}
 		}
-#ifdef _UNICODE
+
 		mbsrtowcs(&XmlDataBuf[XmlDataBufPos], &text, len, NULL);
-#else
-		strncpy(&XmlDataBuf[XmlDataBufPos], text, len);
-#endif
+
 		XmlDataBufPos += len;
 		XmlDataBuf[XmlDataBufPos] = 0;
 	}

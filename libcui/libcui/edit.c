@@ -5,7 +5,7 @@
  * Copyright (C) 2006
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: edit.c 23497 2010-03-14 21:53:08Z dv $
+ * Last Update:  $Id: edit.c 33402 2013-04-02 21:32:17Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,7 +32,7 @@ typedef struct EDITDATAStruct
 	int    ScrollPos;           /* horizontal scroll offset */
 	int    FirstChar;           /* Is this the first charater entered? */
 	int    PasswChar;           /* Hide input character */
-	TCHAR* EditText;            /* Text data of edit control */
+	wchar_t* EditText;            /* Text data of edit control */
 
 	CustomHook1PtrProc      SetFocusHook;      /* Custom callback */
 	CustomHookProc          KillFocusHook;     /* Custom callback */
@@ -92,7 +92,7 @@ EditPaintHook(void* w)
 	WindowGetClientRect(win, &rc);
 	if (rc.W <= 0) return;
 
-	len = tcslen(data->EditText);
+	len = wcslen(data->EditText);
 	if (win->IsEnabled)
 	{
 		SetColor(win->Win, win->Color.SelTxtColor, win->Color.WndSelColor, TRUE);
@@ -134,7 +134,7 @@ EditKeyHook(void* w, int key)
 {
 	CUIWINDOW* win = (CUIWINDOW*) w;
 	EDITDATA* data = (EDITDATA*) win->InstData;
-	int       len  = tcslen(data->EditText);
+	int       len  = wcslen(data->EditText);
 
 	if (!data) return FALSE;
 
@@ -334,7 +334,7 @@ EditKillFocusHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-EditNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
+EditNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h,
         int len, int id, int sflags, int cflags)
 {
 	if (parent)
@@ -363,7 +363,7 @@ EditNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 		((EDITDATA*)edit->InstData)->PreKeyHook      = NULL;
 		((EDITDATA*)edit->InstData)->PostKeyHook     = NULL;
 		((EDITDATA*)edit->InstData)->EditChangedHook = NULL;
-		((EDITDATA*)edit->InstData)->EditText = malloc((len + 1) * sizeof(TCHAR));
+		((EDITDATA*)edit->InstData)->EditText = malloc((len + 1) * sizeof(wchar_t));
 
 		EditSetText(edit, text);
 
@@ -380,7 +380,7 @@ EditNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 void
 EditSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("EDIT")) == 0))
+	if (win && (wcscmp(win->Class, _T("EDIT")) == 0))
 	{
 		((EDITDATA*)win->InstData)->SetFocusHook = proc;
 		((EDITDATA*)win->InstData)->SetFocusTarget = target;
@@ -395,7 +395,7 @@ EditSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 void
 EditSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("EDIT")) == 0))
+	if (win && (wcscmp(win->Class, _T("EDIT")) == 0))
 	{
 		((EDITDATA*)win->InstData)->KillFocusHook = proc;
 		((EDITDATA*)win->InstData)->KillFocusTarget = target;
@@ -410,7 +410,7 @@ EditSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void
 EditSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("EDIT")) == 0))
+	if (win && (wcscmp(win->Class, _T("EDIT")) == 0))
 	{
 		((EDITDATA*)win->InstData)->PreKeyHook = proc;
 		((EDITDATA*)win->InstData)->PreKeyTarget = target;
@@ -425,7 +425,7 @@ EditSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target
 void
 EditSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("EDIT")) == 0))
+	if (win && (wcscmp(win->Class, _T("EDIT")) == 0))
 	{
 		((EDITDATA*)win->InstData)->PostKeyHook = proc;
 		((EDITDATA*)win->InstData)->PostKeyTarget = target;
@@ -440,7 +440,7 @@ EditSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* targe
 void
 EditSetChangedHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("EDIT")) == 0))
+	if (win && (wcscmp(win->Class, _T("EDIT")) == 0))
 	{
 		((EDITDATA*)win->InstData)->EditChangedHook = proc;
 		((EDITDATA*)win->InstData)->EditChangedTarget = target;
@@ -453,12 +453,12 @@ EditSetChangedHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
  * ---------------------------------------------------------------------
  */
 void
-EditSetText(CUIWINDOW* win, const TCHAR* text)
+EditSetText(CUIWINDOW* win, const wchar_t* text)
 {
-	if (win && (tcscmp(win->Class, _T("EDIT")) == 0))
+	if (win && (wcscmp(win->Class, _T("EDIT")) == 0))
 	{
 		EDITDATA* data = (EDITDATA*) win->InstData;
-		tcsncpy(data->EditText, text, data->Len);
+		wcsncpy(data->EditText, text, data->Len);
 		data->EditText[data->Len] = 0;
 		data->CursorPos = 0;
 		data->ScrollPos = 0;
@@ -476,13 +476,13 @@ EditSetText(CUIWINDOW* win, const TCHAR* text)
  * Get edit text
  * ---------------------------------------------------------------------
  */
-const TCHAR*
-EditGetText(CUIWINDOW* win, TCHAR* text, int len)
+const wchar_t*
+EditGetText(CUIWINDOW* win, wchar_t* text, int len)
 {
-	if (win && (tcscmp(win->Class, _T("EDIT")) == 0))
+	if (win && (wcscmp(win->Class, _T("EDIT")) == 0))
 	{
 		EDITDATA* data = (EDITDATA*) win->InstData;
-		tcsncpy(text, data->EditText, len);
+		wcsncpy(text, data->EditText, len);
 		return text;
 	}
 	return _T("");
@@ -497,7 +497,7 @@ EditGetText(CUIWINDOW* win, TCHAR* text, int len)
 void
 EditResetInput(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("EDIT")) == 0))
+	if (win && (wcscmp(win->Class, _T("EDIT")) == 0))
 	{
 		EDITDATA* data = (EDITDATA*) win->InstData;
 

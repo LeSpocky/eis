@@ -41,17 +41,17 @@
 #define XML_UNKNOWN         111
 
 
-int  XmlFileOpen(const TCHAR* filename, ErrorCallback errout, void* instance);
+int  XmlFileOpen(const wchar_t* filename, ErrorCallback errout, void* instance);
 int  XmlRead(void);
 void XmlClose(void);
 void XmlParseNL(int state);
 
-const TCHAR* XmlGetFileName(void);
-TCHAR*       XmlGetTextDup(void);
-TCHAR*       XmlGetStringDup(void);
-const TCHAR* XmlGetDataBuf(void);
-void         XmlClearData(void);
-int          XmlGetLineNumber(void);
-int          XmlRecoverFromError(int nextsym);
+const wchar_t* XmlGetFileName(void);
+wchar_t*       XmlGetTextDup(void);
+wchar_t*       XmlGetStringDup(void);
+const wchar_t* XmlGetDataBuf(void);
+void           XmlClearData(void);
+int            XmlGetLineNumber(void);
+int            XmlRecoverFromError(int nextsym);
 
 #endif

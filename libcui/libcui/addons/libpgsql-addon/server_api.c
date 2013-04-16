@@ -85,7 +85,7 @@ static int           PgApiDeleteConnection(SQLCONNECT* connection);
 static DBRESULT    * PgApiCreateResult(SQLRESULT* result);
 static int           PgApiCheckResult(SQLRESULT* result);
 static int           PgApiDeleteResult(SQLRESULT* result);
-static TCHAR*        PgApiSingleLineDup(const TCHAR* data);
+static wchar_t*        PgApiSingleLineDup(const wchar_t* data);
 
 /* ---------------------------------------------------------------------
  * PgApiInit
@@ -138,7 +138,7 @@ PgApiClear(void)
  * ---------------------------------------------------------------------
  */ 
 void 
-PgApiServerConnect(int argc, const TCHAR* argv[])
+PgApiServerConnect(int argc, const wchar_t* argv[])
 {
 	if (argc == 5)
 	{
@@ -165,13 +165,13 @@ PgApiServerConnect(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */ 
 void 
-PgApiServerDisconnect(int argc, const TCHAR* argv[])
+PgApiServerDisconnect(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (PgApiDeleteConnection((SQLCONNECT*)connr))
 		{
@@ -196,13 +196,13 @@ PgApiServerDisconnect(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiServerIsConnected(int argc, const TCHAR* argv[])
+PgApiServerIsConnected(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (PgApiCheckConnection((SQLCONNECT*)connr))
 		{
@@ -228,19 +228,19 @@ PgApiServerIsConnected(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiServerGetError(int argc, const TCHAR* argv[])
+PgApiServerGetError(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (PgApiCheckConnection((SQLCONNECT*)connr))
 		{
-			const TCHAR* str = PgServerGetError((SQLCONNECT*)connr);
+			const wchar_t* str = PgServerGetError((SQLCONNECT*)connr);
 
-			LibPqStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibPqStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibPqInsertInt (ERROR_SUCCESS);
 			LibPqInsertStr (str);
 			LibPqSendFrame ();
@@ -263,19 +263,19 @@ PgApiServerGetError(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiServerPasswd(int argc, const TCHAR* argv[])
+PgApiServerPasswd(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (PgApiCheckConnection((SQLCONNECT*)connr))
 		{
-			const TCHAR* str = PgServerPasswd((SQLCONNECT*)connr);
+			const wchar_t* str = PgServerPasswd((SQLCONNECT*)connr);
 
-			LibPqStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibPqStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibPqInsertInt (ERROR_SUCCESS);
 			LibPqInsertStr (str);
 			LibPqSendFrame ();
@@ -297,19 +297,19 @@ PgApiServerPasswd(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiServerUser(int argc, const TCHAR* argv[])
+PgApiServerUser(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (PgApiCheckConnection((SQLCONNECT*)connr))
 		{
-			const TCHAR* str = PgServerPasswd((SQLCONNECT*)connr);
+			const wchar_t* str = PgServerPasswd((SQLCONNECT*)connr);
 
-			LibPqStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibPqStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibPqInsertInt (ERROR_SUCCESS);
 			LibPqInsertStr (str);
 			LibPqSendFrame ();
@@ -331,19 +331,19 @@ PgApiServerUser(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiServerHost(int argc, const TCHAR* argv[])
+PgApiServerHost(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (PgApiCheckConnection((SQLCONNECT*)connr))
 		{
-			const TCHAR* str = PgServerPasswd((SQLCONNECT*)connr);
+			const wchar_t* str = PgServerPasswd((SQLCONNECT*)connr);
 
-			LibPqStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibPqStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibPqInsertInt (ERROR_SUCCESS);
 			LibPqInsertStr (str);
 			LibPqSendFrame ();
@@ -365,19 +365,19 @@ PgApiServerHost(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiServerPort(int argc, const TCHAR* argv[])
+PgApiServerPort(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (PgApiCheckConnection((SQLCONNECT*)connr))
 		{
-			const TCHAR* str = PgServerPort((SQLCONNECT*)connr);
+			const wchar_t* str = PgServerPort((SQLCONNECT*)connr);
 
-			LibPqStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibPqStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibPqInsertInt (ERROR_SUCCESS);
 			LibPqInsertStr (str);
 			LibPqSendFrame ();
@@ -399,13 +399,13 @@ PgApiServerPort(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiServerDupTo(int argc, const TCHAR* argv[])
+PgApiServerDupTo(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (PgApiCheckConnection((SQLCONNECT*)connr))
 		{
@@ -436,13 +436,13 @@ PgApiServerDupTo(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiQuerySQL(int argc, const TCHAR* argv[])
+PgApiQuerySQL(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (PgApiCheckConnection((SQLCONNECT*)connr))
 		{
@@ -473,13 +473,13 @@ PgApiQuerySQL(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiExecSQL(int argc, const TCHAR* argv[])
+PgApiExecSQL(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (PgApiCheckConnection((SQLCONNECT*)connr))
 		{
@@ -505,8 +505,10 @@ PgApiExecSQL(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiServerDefault(int argc, const TCHAR* argv[])
+PgApiServerDefault(int argc, const wchar_t* argv[])
 {
+	CUI_USE_ARG(argv);
+	
 	if (argc == 0)
 	{
 		SQLCONNECT* nc = PgServerDefault();
@@ -528,13 +530,13 @@ PgApiServerDefault(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiResultStatus(int argc, const TCHAR* argv[])
+PgApiResultStatus(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (PgApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -560,13 +562,13 @@ PgApiResultStatus(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiResultNumRows(int argc, const TCHAR* argv[])
+PgApiResultNumRows(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (PgApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -592,13 +594,13 @@ PgApiResultNumRows(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiResultNumColumns(int argc, const TCHAR* argv[])
+PgApiResultNumColumns(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (PgApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -624,7 +626,7 @@ PgApiResultNumColumns(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiResultColumnName(int argc, const TCHAR* argv[])
+PgApiResultColumnName(int argc, const wchar_t* argv[])
 
 {
 	if (argc == 2)
@@ -632,14 +634,14 @@ PgApiResultColumnName(int argc, const TCHAR* argv[])
 		unsigned long resnr;
 		int index;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
-		stscanf(argv[1], _T("%d"),  &index);
+		swscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[1], _T("%d"),  &index);
 
 		if (PgApiCheckResult((SQLRESULT*)resnr))
 		{
-			const TCHAR* str = PgResultColumnName((SQLRESULT*)resnr, index);
+			const wchar_t* str = PgResultColumnName((SQLRESULT*)resnr, index);
 
-			LibPqStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibPqStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibPqInsertInt (ERROR_SUCCESS);
 			LibPqInsertStr (str);
 			LibPqSendFrame ();
@@ -661,15 +663,15 @@ PgApiResultColumnName(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiResultColumnSize(int argc, const TCHAR* argv[])
+PgApiResultColumnSize(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		unsigned long resnr;
 		int           index;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		if (PgApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -695,13 +697,13 @@ PgApiResultColumnSize(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiResultFetch(int argc, const TCHAR* argv[])
+PgApiResultFetch(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (PgApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -728,13 +730,13 @@ PgApiResultFetch(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-PgApiResultFirst(int argc, const TCHAR* argv[])
+PgApiResultFirst(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (PgApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -761,13 +763,13 @@ PgApiResultFirst(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-PgApiResultPrevious(int argc, const TCHAR* argv[])
+PgApiResultPrevious(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (PgApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -794,13 +796,13 @@ PgApiResultPrevious(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-PgApiResultLast(int argc, const TCHAR* argv[])
+PgApiResultLast(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (PgApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -827,21 +829,21 @@ PgApiResultLast(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiResultData(int argc, const TCHAR* argv[])
+PgApiResultData(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		unsigned long resnr;
 		int index;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		if (PgApiCheckResult((SQLRESULT*)resnr))
 		{
-			const TCHAR* str = PgResultData((SQLRESULT*)resnr, index);
+			const wchar_t* str = PgResultData((SQLRESULT*)resnr, index);
 			
-			LibPqStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibPqStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibPqInsertInt (ERROR_SUCCESS);
 			LibPqInsertStr (str);
 			LibPqSendFrame ();
@@ -863,15 +865,15 @@ PgApiResultData(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiResultIsNull(int argc, const TCHAR* argv[])
+PgApiResultIsNull(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		unsigned long resnr;
 		int index;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		if (PgApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -897,13 +899,13 @@ PgApiResultIsNull(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-PgApiResultReset(int argc, const TCHAR* argv[])
+PgApiResultReset(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (PgApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -930,13 +932,13 @@ PgApiResultReset(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */  
 void 
-PgApiResultFree(int argc, const TCHAR* argv[])
+PgApiResultFree(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (PgApiDeleteResult((SQLRESULT*) resnr))
 		{
@@ -962,7 +964,7 @@ PgApiResultFree(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */  
 void 
-PgApiResultToList(int argc, const TCHAR* argv[])
+PgApiResultToList(int argc, const wchar_t* argv[])
 {
 	if (argc >= 2)
 	{
@@ -971,17 +973,17 @@ PgApiResultToList(int argc, const TCHAR* argv[])
 		unsigned long tmplong;
 		int           selindex = 0;
 		int           keycolumn = -1;
-		const TCHAR*  keyword = _T("");
+		const wchar_t*  keyword = _T("");
 
-		stscanf(argv[0], _T("%ld"), &tmplong);
+		swscanf(argv[0], _T("%ld"), &tmplong);
 		result = (SQLRESULT*) tmplong;
 		
-		stscanf(argv[1], _T("%ld"), &tmplong);
+		swscanf(argv[1], _T("%ld"), &tmplong);
 		listview = LibPqStubFind(tmplong);
 		
 		if (argc >= 3)
 		{
-			stscanf(argv[2], _T("%d"), &keycolumn);
+			swscanf(argv[2], _T("%d"), &keycolumn);
 		}
 		if (argc >= 4)
 		{
@@ -1005,14 +1007,14 @@ PgApiResultToList(int argc, const TCHAR* argv[])
 					{
 						if (!PgResultIsNull(result, i))
 						{
-							TCHAR* data;
+							wchar_t* data;
 							
 							data  = PgApiSingleLineDup(PgResultData(result, i));
 							if (data)
 							{
 								ListviewSetColumnText(rec, i, data);
 							
-								if ((i == keycolumn) && (tcscmp(data, keyword) == 0))
+								if ((i == keycolumn) && (wcscmp(data, keyword) == 0))
 								{
 									matched = TRUE;
 								}
@@ -1196,13 +1198,13 @@ PgApiDeleteResult(SQLRESULT* result)
  * removed
  * ---------------------------------------------------------------------
  */ 
-static TCHAR* 
-PgApiSingleLineDup(const TCHAR* data)
+static wchar_t* 
+PgApiSingleLineDup(const wchar_t* data)
 {
-	TCHAR* line = (TCHAR*) malloc((tcslen(data) + 1) * sizeof(TCHAR));
+	wchar_t* line = (wchar_t*) malloc((wcslen(data) + 1) * sizeof(wchar_t));
 	if (line)
 	{
-		TCHAR* l = line;
+		wchar_t* l = line;
 		while (*data != _T('\0'))
 		{
 			switch(*data)

@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: inputdlg.c 23497 2010-03-14 21:53:08Z dv $
+ * Last Update:  $Id: inputdlg.c 33402 2013-04-02 21:32:17Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -101,7 +101,7 @@ InputdlgDestroyHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-InputdlgNew(CUIWINDOW* parent, const TCHAR* title, int sflags, int cflags)
+InputdlgNew(CUIWINDOW* parent, const wchar_t* title, int sflags, int cflags)
 {
 	if (parent)
 	{
@@ -132,7 +132,7 @@ InputdlgNew(CUIWINDOW* parent, const TCHAR* title, int sflags, int cflags)
 INPUTDLGDATA*
 InputdlgGetData(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("INPUT_DLG")) == 0))
+	if (win && (wcscmp(win->Class, _T("INPUT_DLG")) == 0))
 	{
 		return (INPUTDLGDATA*) win->InstData;
 	}

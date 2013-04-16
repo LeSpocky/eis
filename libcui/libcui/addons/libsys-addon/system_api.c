@@ -55,7 +55,7 @@ extern StubFindProc      LibSysStubFind;
  * local prototypes
  * ---------------------------------------------------------------------
  */
-static int SysApiIsMember(const TCHAR* user, const TCHAR* members);
+static int SysApiIsMember(const wchar_t* user, const wchar_t* members);
 
 
 /* ---------------------------------------------------------------------
@@ -93,7 +93,7 @@ SysApiClear(void)
  * ---------------------------------------------------------------------
  */ 
 void 
-SysApiUsersToList(int argc, const TCHAR* argv[])
+SysApiUsersToList(int argc, const wchar_t* argv[])
 {
 	if (argc >= 2)
 	{
@@ -101,12 +101,12 @@ SysApiUsersToList(int argc, const TCHAR* argv[])
 		unsigned long tmplong;
 		int           flags;
 		int           selindex = 0;
-		const TCHAR*  keyword = _T("");
+		const wchar_t*  keyword = _T("");
 
-		stscanf(argv[0], _T("%ld"), &tmplong);
+		swscanf(argv[0], _T("%ld"), &tmplong);
 		listview = LibSysStubFind(tmplong);
 		
-		stscanf(argv[1], _T("%d"), &flags);
+		swscanf(argv[1], _T("%d"), &flags);
 		
 		if (argc >= 3)
 		{
@@ -143,7 +143,7 @@ SysApiUsersToList(int argc, const TCHAR* argv[])
 						ListviewSetColumnText(rec, 5, user->RealName);
 					
 						index = ListviewInsertRecord(listview->Window, rec);
-						if (tcscmp(user->UserName, keyword) == 0)
+						if (wcscmp(user->UserName, keyword) == 0)
 						{
 							selindex = index;
 						}
@@ -177,7 +177,7 @@ SysApiUsersToList(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */ 
 void 
-SysApiGroupsToList(int argc, const TCHAR* argv[])
+SysApiGroupsToList(int argc, const wchar_t* argv[])
 {
 	if (argc >= 2)
 	{
@@ -185,12 +185,12 @@ SysApiGroupsToList(int argc, const TCHAR* argv[])
 		unsigned long tmplong;
 		int           flags;
 		int           selindex = 0;
-		const TCHAR*  keyword = _T("");
+		const wchar_t*  keyword = _T("");
 
-		stscanf(argv[0], _T("%ld"), &tmplong);
+		swscanf(argv[0], _T("%ld"), &tmplong);
 		listview = LibSysStubFind(tmplong);
 		
-		stscanf(argv[1], _T("%d"), &flags);
+		swscanf(argv[1], _T("%d"), &flags);
 		
 		if (argc >= 3)
 		{
@@ -214,7 +214,7 @@ SysApiGroupsToList(int argc, const TCHAR* argv[])
 						ListviewSetColumnText(rec, 2, group->Members);
 					
 						index = ListviewInsertRecord(listview->Window, rec);
-						if (tcscmp(grouplist->GroupName, keyword) == 0)
+						if (wcscmp(grouplist->GroupName, keyword) == 0)
 						{
 							selindex = index;
 						}
@@ -248,7 +248,7 @@ SysApiGroupsToList(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */ 
 void
-SysApiGroupMemberSelection(int argc, const TCHAR* argv[])
+SysApiGroupMemberSelection(int argc, const wchar_t* argv[])
 {
 	if (argc == 3)
 	{
@@ -257,10 +257,10 @@ SysApiGroupMemberSelection(int argc, const TCHAR* argv[])
 		GROUP_T*      grouplist;
 		unsigned long tmplong;
 		
-		stscanf(argv[0], _T("%ld"), &tmplong);
+		swscanf(argv[0], _T("%ld"), &tmplong);
 		listbox1 = LibSysStubFind(tmplong);
 
-		stscanf(argv[1], _T("%ld"), &tmplong);
+		swscanf(argv[1], _T("%ld"), &tmplong);
 		listbox2 = LibSysStubFind(tmplong);
 
 		grouplist = SysGetGroupList(GROUPS_SHOW_ALL);
@@ -310,7 +310,7 @@ SysApiGroupMemberSelection(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */ 
 void
-SysApiSetGroupMembers(int argc, const TCHAR* argv[])
+SysApiSetGroupMembers(int argc, const wchar_t* argv[])
 {
 	int result = FALSE;
 	
@@ -328,7 +328,7 @@ SysApiSetGroupMembers(int argc, const TCHAR* argv[])
 				{
 					free(group->Members);
 				}
-				group->Members = tcsdup(argv[1]);
+				group->Members = wcsdup(argv[1]);
 				
 				if (SysWriteGroupList(grouplist))
 				{
@@ -358,14 +358,14 @@ SysApiSetGroupMembers(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 static int
-SysApiIsMember(const TCHAR* user, const TCHAR* members)
+SysApiIsMember(const wchar_t* user, const wchar_t* members)
 {
-	const TCHAR* p = tcsstr(members, user);
+	const wchar_t* p = wcsstr(members, user);
 	if (p)
 	{
 		if ((p == members) || (*(p - 1) == _T(',')))
 		{
-			if ((p[tcslen(user)] == _T(',')) || (p[tcslen(user)] == _T('\0')))
+			if ((p[wcslen(user)] == _T(',')) || (p[wcslen(user)] == _T('\0')))
 			{
 				return TRUE;
 			}

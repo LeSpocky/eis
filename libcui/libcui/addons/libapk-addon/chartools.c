@@ -28,7 +28,7 @@ int ModuleMbStrLen(const char* str)
 #endif
 }
 
-int ModuleMbByteLen(const TCHAR* str)
+int ModuleMbByteLen(const wchar_t* str)
 {
 #ifdef _UNICODE
 	return wcsrtombs(NULL, &str, SIZE_MAX, NULL);	
@@ -37,10 +37,10 @@ int ModuleMbByteLen(const TCHAR* str)
 #endif
 }
 
-TCHAR* ModuleMbToTCharDup(const char*  str)
+wchar_t* ModuleMbToTCharDup(const char*  str)
 {
 	int    len = ModuleMbStrLen(str);
-	TCHAR* tstr = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+	wchar_t* tstr = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 	if (tstr)
 	{
 #ifdef _UNICODE
@@ -53,7 +53,7 @@ TCHAR* ModuleMbToTCharDup(const char*  str)
 	return NULL;
 }
 
-char* ModuleTCharToMbDup(const TCHAR* str)
+char* ModuleTCharToMbDup(const wchar_t* str)
 {
 	int   len = ModuleMbByteLen(str);
 	char* mbstr = (char*) malloc((len + 1) * sizeof(char));

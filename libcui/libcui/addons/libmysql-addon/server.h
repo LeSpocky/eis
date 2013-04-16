@@ -5,7 +5,7 @@
  * Copyright (C) 2006
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: server.h 23497 2010-03-14 21:53:08Z dv $
+ * Last Update:  $Id: server.h 33397 2013-04-02 20:48:05Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,17 +29,18 @@
 #include "chartools.h"
 #include <mysql.h>
 
+
 typedef struct
 {
 	MYSQL      HConnect;
 
-	TCHAR*     User;
-	TCHAR*     Password;
-	TCHAR*     Database;
-	TCHAR*     Host;
-	TCHAR*     Port;
+	wchar_t*   User;
+	wchar_t*   Password;
+	wchar_t*   Database;
+	wchar_t*   Host;
+	wchar_t*   Port;
 
-	TCHAR*     ErrMsg;
+	wchar_t*   ErrMsg;
 	int        Connected;
 } SQLCONNECT;
 
@@ -51,44 +52,44 @@ typedef struct
 	int        NumColumns;
 	MYSQL_RES* Result;
 	MYSQL_ROW  Row;
-	TCHAR**    Columns;
-	TCHAR**    RowData;
+	wchar_t**  Columns;
+	wchar_t**  RowData;
 } SQLRESULT;
 
 
 typedef enum
 {
-        SQL_COMMAND_OK = 0,
-        SQL_DATA_READY = 1,
-        SQL_ERROR      = 2,
+	SQL_COMMAND_OK = 0,
+	SQL_DATA_READY = 1,
+	SQL_ERROR      = 2,
 } SQLEXECSTATUS;
 
 
-SQLCONNECT*    MyServerConnect(const TCHAR* host, const TCHAR* port, 
-                               const TCHAR* user, const TCHAR* passwd,
-                               const TCHAR* database);
+SQLCONNECT*    MyServerConnect(const wchar_t* host, const wchar_t* port, 
+                               const wchar_t* user, const wchar_t* passwd,
+                               const wchar_t* database);
 void           MyServerDisconnect(SQLCONNECT* con);
 int            MyServerIsConnected(SQLCONNECT* con);
-const TCHAR*   MyServerGetError(SQLCONNECT* con);
-const TCHAR*   MyServerPasswd(SQLCONNECT* con);
-const TCHAR*   MyServerUser(SQLCONNECT* con);
-const TCHAR*   MyServerHost(SQLCONNECT* con);
-const TCHAR*   MyServerPort(SQLCONNECT* con);
+const wchar_t* MyServerGetError(SQLCONNECT* con);
+const wchar_t* MyServerPasswd(SQLCONNECT* con);
+const wchar_t* MyServerUser(SQLCONNECT* con);
+const wchar_t* MyServerHost(SQLCONNECT* con);
+const wchar_t* MyServerPort(SQLCONNECT* con);
 
-SQLCONNECT*    MyServerDupTo(SQLCONNECT* con, const TCHAR* database);
+SQLCONNECT*    MyServerDupTo(SQLCONNECT* con, const wchar_t* database);
 
-SQLRESULT*     MyQuerySQL(SQLCONNECT* con, const TCHAR* sqlstmt);
-int            MyExecSQL(SQLCONNECT* con, const TCHAR* sqlstmt);
+SQLRESULT*     MyQuerySQL(SQLCONNECT* con, const wchar_t* sqlstmt);
+int            MyExecSQL(SQLCONNECT* con, const wchar_t* sqlstmt);
 
 SQLCONNECT*    MyServerDefault(void);
 
 SQLEXECSTATUS  MyResultStatus(SQLRESULT* result);
 int            MyResultNumRows(SQLRESULT* result);
 int            MyResultNumColumns(SQLRESULT* result);
-const TCHAR*   MyResultColumnName(SQLRESULT* result, int index);
+const wchar_t* MyResultColumnName(SQLRESULT* result, int index);
 int            MyResultColumnSize(SQLRESULT* result, int index);
 int            MyResultFetch(SQLRESULT* result);
-const TCHAR*   MyResultData(SQLRESULT* result, int index);
+const wchar_t* MyResultData(SQLRESULT* result, int index);
 int            MyResultIsNull(SQLRESULT* result, int index);
 void           MyResultReset(SQLRESULT* result);
 void           MyResultFree(SQLRESULT* result);

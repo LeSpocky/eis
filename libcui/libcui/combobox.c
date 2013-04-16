@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: combobox.c 23497 2010-03-14 21:53:08Z dv $
+ * Last Update:  $Id: combobox.c 33467 2013-04-14 16:23:14Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,7 +27,7 @@
 
 typedef struct COMBOBOXITEMStruct
 {       
-        TCHAR*        ItemText;
+        wchar_t*      ItemText;
         unsigned long ItemData;
         void*         Next;
         void*         Previous;
@@ -115,7 +115,7 @@ CbDropdownPaintHook(void* w)
 	{       
 		if ((index >= pos) && (index < pos + rc.H))
 		{       
-			len = tcslen(item->ItemText);
+			len = wcslen(item->ItemText);
 			if (index == data->SelIndex)
 			{       
 				SetColor(win->Win, win->Color.SelTxtColor, win->Color.WndSelColor, TRUE);
@@ -270,6 +270,9 @@ CbDropdownKeyHook(void* w, int key)
 static void
 CbDropdownSetFocusHook(void* w, void* lastfocus)
 {
+	CUI_USE_ARG(w);
+	CUI_USE_ARG(lastfocus);
+	
 	WindowCursorOn();
 }
  
@@ -397,6 +400,8 @@ CbDropdownVScrollHook(void* w, int sbcode, int pos)
 	CUIWINDOW* win = (CUIWINDOW*) w;
 	CUIRECT rc;
 	int sbpos, range;
+	
+	CUI_USE_ARG(pos);
         
 	WindowGetClientRect(win, &rc);
 	sbpos = WindowGetVScrollPos(win);
@@ -514,6 +519,8 @@ CbDropdownUpdate(CUIWINDOW* win)
 static int
 CbDropdownQueryChange(CUIWINDOW* win, COMBOBOXDATA* data)
 {
+	CUI_USE_ARG(win);
+	CUI_USE_ARG(data);
 	return TRUE;
 }
  
@@ -526,7 +533,9 @@ CbDropdownQueryChange(CUIWINDOW* win, COMBOBOXDATA* data)
 static void
 CbDropdownNotifyChange(CUIWINDOW* win, COMBOBOXDATA* data)
 {
-/* update parent window */
+	CUI_USE_ARG(win);
+	
+	/* update parent window */
 	ComboboxUpdate(data->Ctrl);
 }
 
@@ -553,7 +562,7 @@ ComboboxPaintHook(void* w)
 	int            x;
 	int            len;
 	int            index;
-	const TCHAR*   text = _T("");
+	const wchar_t*   text = _T("");
 
 	data = win->InstData;
 	if (!data) return;
@@ -571,7 +580,7 @@ ComboboxPaintHook(void* w)
 		}
 	}
 
-	len = tcslen(text);
+	len = wcslen(text);
 	if (win->IsEnabled)
 	{
 		SetColor(win->Win, win->Color.SelTxtColor, win->Color.WndSelColor, TRUE);
@@ -720,6 +729,10 @@ ComboboxMButtonHook(void* w, int x, int y, int flags)
 {
 	CUIWINDOW* win = (CUIWINDOW*) w;
 	COMBOBOXDATA* data = (COMBOBOXDATA*) win->InstData;
+	
+	CUI_USE_ARG(x);
+	CUI_USE_ARG(y);
+	
 	if ((flags & BUTTON1_CLICKED) || (flags & BUTTON1_DOUBLE_CLICKED))
 	{
 		ComboboxShowDropdown(win, data, FALSE);
@@ -792,7 +805,7 @@ ComboboxNew(CUIWINDOW* parent, int x, int y, int w, int h, int id, int sflags, i
 void 
 ComboboxSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{
 		((COMBOBOXDATA*)win->InstData)->SetFocusHook = proc;
 		((COMBOBOXDATA*)win->InstData)->SetFocusTarget = target;
@@ -807,7 +820,7 @@ ComboboxSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* tar
 void 
 ComboboxSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{
 		((COMBOBOXDATA*)win->InstData)->KillFocusHook = proc;
 		((COMBOBOXDATA*)win->InstData)->KillFocusTarget = target;
@@ -822,7 +835,7 @@ ComboboxSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void
 ComboboxSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{
 		((COMBOBOXDATA*)win->InstData)->PreKeyHook = proc;
 		((COMBOBOXDATA*)win->InstData)->PreKeyTarget = target;
@@ -838,7 +851,7 @@ ComboboxSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* ta
 void
 ComboboxSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{
 		((COMBOBOXDATA*)win->InstData)->PostKeyHook = proc;
 		((COMBOBOXDATA*)win->InstData)->PostKeyTarget = target;
@@ -853,7 +866,7 @@ ComboboxSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* t
 void 
 ComboboxSetCbChangedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {       
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{                                               
 		((COMBOBOXDATA*)win->InstData)->CbChangedHook = proc;
 		((COMBOBOXDATA*)win->InstData)->CbChangedTarget = target;
@@ -868,7 +881,7 @@ ComboboxSetCbChangedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target
 void 
 ComboboxSetCbChangingHook(CUIWINDOW* win, CustomBoolHookProc proc, CUIWINDOW* target)
 {       
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0)) 
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0)) 
 	{                                                
 		((COMBOBOXDATA*)win->InstData)->CbChangingHook = proc;
 		((COMBOBOXDATA*)win->InstData)->CbChangingTarget = target;
@@ -881,9 +894,9 @@ ComboboxSetCbChangingHook(CUIWINDOW* win, CustomBoolHookProc proc, CUIWINDOW* ta
  * ---------------------------------------------------------------------
  */
 int
-ComboboxAdd(CUIWINDOW* win, const TCHAR* text)
+ComboboxAdd(CUIWINDOW* win, const wchar_t* text)
 {       
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{       
 		int index = 0;
 		COMBOBOXDATA* data = (COMBOBOXDATA*) win->InstData;
@@ -891,7 +904,7 @@ ComboboxAdd(CUIWINDOW* win, const TCHAR* text)
                 
 		item->Next = NULL;
 		item->Previous = NULL;
-		item->ItemText = tcsdup(text);
+		item->ItemText = wcsdup(text);
 		item->ItemData = 0;
                 
 		if (data->Sorted)
@@ -900,7 +913,7 @@ ComboboxAdd(CUIWINDOW* win, const TCHAR* text)
 			COMBOBOXITEM* previous = NULL;
 			if (data->Descending)
 			{       
-				while (itemptr && (tcscmp(itemptr->ItemText, text) > 0))
+				while (itemptr && (wcscmp(itemptr->ItemText, text) > 0))
 				{       
 					index++;
 					previous = itemptr;
@@ -909,7 +922,7 @@ ComboboxAdd(CUIWINDOW* win, const TCHAR* text)
 			}
 			else
 			{       
-				while (itemptr && (tcscmp(itemptr->ItemText, text) < 0))
+				while (itemptr && (wcscmp(itemptr->ItemText, text) < 0))
 				{       
 					index++;
 					previous = itemptr;
@@ -976,7 +989,7 @@ ComboboxAdd(CUIWINDOW* win, const TCHAR* text)
 void
 ComboboxDelete(CUIWINDOW* win, int index)
 {
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{
 		COMBOBOXDATA* data = (COMBOBOXDATA*) win->InstData;
 		COMBOBOXITEM* item = ComboboxGetItem(data, index); 
@@ -1019,10 +1032,10 @@ ComboboxDelete(CUIWINDOW* win, int index)
  * Get item text of item 'index'
  * ---------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 ComboboxGet(CUIWINDOW* win, int index)
 {
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{
 		COMBOBOXDATA* data = (COMBOBOXDATA*) win->InstData;
 		COMBOBOXITEM* item = ComboboxGetItem(data, index); 
@@ -1042,7 +1055,7 @@ ComboboxGet(CUIWINDOW* win, int index)
 void
 ComboboxSetData(CUIWINDOW* win, int index, unsigned long udata)
 {
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{
 		COMBOBOXDATA* data = (COMBOBOXDATA*) win->InstData;
 		COMBOBOXITEM* item = ComboboxGetItem(data, index); 
@@ -1061,7 +1074,7 @@ ComboboxSetData(CUIWINDOW* win, int index, unsigned long udata)
 unsigned long
 ComboboxGetData(CUIWINDOW* win, int index)
 {
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{
 		COMBOBOXDATA* data = (COMBOBOXDATA*) win->InstData;
 		COMBOBOXITEM* item = ComboboxGetItem(data, index); 
@@ -1081,7 +1094,7 @@ ComboboxGetData(CUIWINDOW* win, int index)
 void
 ComboboxSetSel(CUIWINDOW* win, int index)
 {
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{
 		COMBOBOXDATA* data = (COMBOBOXDATA*) win->InstData;
 		if ((index < data->NumItems) && (index >= (-1))) 
@@ -1100,7 +1113,7 @@ ComboboxSetSel(CUIWINDOW* win, int index)
 int
 ComboboxGetSel(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{
 		COMBOBOXDATA* data = (COMBOBOXDATA*) win->InstData;
 		return data->CtrlSelIndex;
@@ -1116,7 +1129,7 @@ ComboboxGetSel(CUIWINDOW* win)
 void
 ComboboxClear(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{
 		COMBOBOXDATA* data = (COMBOBOXDATA*) win->InstData;
 		COMBOBOXITEM* item = data->FirstItem;
@@ -1143,7 +1156,7 @@ ComboboxClear(CUIWINDOW* win)
 int
 ComboboxGetCount(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{
 		COMBOBOXDATA* data = (COMBOBOXDATA*) win->InstData;
 		return data->NumItems;
@@ -1157,9 +1170,9 @@ ComboboxGetCount(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 int
-ComboboxSelect(CUIWINDOW* win, const TCHAR* text)
+ComboboxSelect(CUIWINDOW* win, const wchar_t* text)
 {
-	if (win && (tcscmp(win->Class, _T("COMBOBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("COMBOBOX")) == 0))
 	{
 		COMBOBOXDATA* data = (COMBOBOXDATA*) win->InstData;
 		COMBOBOXITEM* item = data->FirstItem;
@@ -1167,7 +1180,7 @@ ComboboxSelect(CUIWINDOW* win, const TCHAR* text)
 
 		while (item)
 		{
-			if (tcscmp(item->ItemText, text) == 0)
+			if (wcscmp(item->ItemText, text) == 0)
 			{
 				data->CtrlSelIndex = index;
 				ComboboxUpdate(win);

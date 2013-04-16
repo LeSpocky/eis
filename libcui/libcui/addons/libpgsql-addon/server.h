@@ -5,7 +5,7 @@
  * Copyright (C) 2006
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: server.h 28545 2011-06-13 19:27:26Z dv $
+ * Last Update:  $Id: server.h 33397 2013-04-02 20:48:05Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -34,13 +34,13 @@ typedef struct
 {
 	PGconn*   HConnect;
 
-	TCHAR*    User;
-	TCHAR*    Password;
-	TCHAR*    Database;
-	TCHAR*    Host;
-	TCHAR*    Port;
+	wchar_t*    User;
+	wchar_t*    Password;
+	wchar_t*    Database;
+	wchar_t*    Host;
+	wchar_t*    Port;
 
-	TCHAR*    ErrMsg;
+	wchar_t*    ErrMsg;
 } SQLCONNECT;
 
 
@@ -50,8 +50,8 @@ typedef struct
 	int       NumRows;
 	int       NumColumns;
 	PGresult* Result;
-	TCHAR**   Columns;
-	TCHAR**   RowData;
+	wchar_t**   Columns;
+	wchar_t**   RowData;
 } SQLRESULT;
 
 
@@ -63,34 +63,34 @@ typedef enum
 } SQLEXECSTATUS;
 
 
-SQLCONNECT*    PgServerConnect(const TCHAR* host, const TCHAR* port, 
-                               const TCHAR* user, const TCHAR* passwd,
-                               const TCHAR* database);
+SQLCONNECT*    PgServerConnect(const wchar_t* host, const wchar_t* port, 
+                               const wchar_t* user, const wchar_t* passwd,
+                               const wchar_t* database);
 void           PgServerDisconnect(SQLCONNECT* con);
 int            PgServerIsConnected(SQLCONNECT* con);
-const TCHAR*   PgServerGetError(SQLCONNECT* con);
-const TCHAR*   PgServerPasswd(SQLCONNECT* con);
-const TCHAR*   PgServerUser(SQLCONNECT* con);
-const TCHAR*   PgServerHost(SQLCONNECT* con);
-const TCHAR*   PgServerPort(SQLCONNECT* con);
+const wchar_t* PgServerGetError(SQLCONNECT* con);
+const wchar_t* PgServerPasswd(SQLCONNECT* con);
+const wchar_t* PgServerUser(SQLCONNECT* con);
+const wchar_t* PgServerHost(SQLCONNECT* con);
+const wchar_t* PgServerPort(SQLCONNECT* con);
 
-SQLCONNECT*    PgServerDupTo(SQLCONNECT* con, const TCHAR* database);
+SQLCONNECT*    PgServerDupTo(SQLCONNECT* con, const wchar_t* database);
 
-SQLRESULT*     PgQuerySQL(SQLCONNECT* con, const TCHAR* sqlstmt);
-int            PgExecSQL(SQLCONNECT* con, const TCHAR* sqlstmt);
+SQLRESULT*     PgQuerySQL(SQLCONNECT* con, const wchar_t* sqlstmt);
+int            PgExecSQL(SQLCONNECT* con, const wchar_t* sqlstmt);
 
 SQLCONNECT*    PgServerDefault(void);
 
 SQLEXECSTATUS  PgResultStatus(SQLRESULT* result);
 int            PgResultNumRows(SQLRESULT* result);
 int            PgResultNumColumns(SQLRESULT* result);
-const TCHAR*   PgResultColumnName(SQLRESULT* result, int index);
+const wchar_t* PgResultColumnName(SQLRESULT* result, int index);
 int            PgResultColumnSize(SQLRESULT* result, int index);
 int            PgResultFirst(SQLRESULT* result);
 int            PgResultPrevious(SQLRESULT* result);
 int            PgResultNext(SQLRESULT* result);
 int            PgResultLast(SQLRESULT* result);
-const TCHAR*   PgResultData(SQLRESULT* result, int index);
+const wchar_t* PgResultData(SQLRESULT* result, int index);
 int            PgResultIsNull(SQLRESULT* result, int index);
 void           PgResultReset(SQLRESULT* result);
 void           PgResultFree(SQLRESULT* result);

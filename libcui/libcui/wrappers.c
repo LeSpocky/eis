@@ -5,7 +5,7 @@
  * Copyright (C) 2008
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: wrappers.c 23497 2010-03-14 21:53:08Z dv $
+ * Last Update:  $Id: wrappers.c 33397 2013-04-02 20:48:05Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,7 +26,7 @@
 #include "cui-util.h"
 #include "global.h"
 
-FILE* FileOpen(const TCHAR *filename, const TCHAR *mode)
+FILE* FileOpen(const wchar_t *filename, const wchar_t *mode)
 {
 	char* mbfilename = TCharToMbDup(filename);
 	char* mbmode = TCharToMbDup(mode);
@@ -46,7 +46,7 @@ FILE* FileOpen(const TCHAR *filename, const TCHAR *mode)
 	return result;
 }
 
-int FileStat(const TCHAR *path, struct stat *buf)
+int FileStat(const wchar_t *path, struct stat *buf)
 {
 	char* mbpath = TCharToMbDup(path);
 	int result = -1;
@@ -58,7 +58,7 @@ int FileStat(const TCHAR *path, struct stat *buf)
 	return result;
 }
 
-int FileAccess(const TCHAR *filename, int mode)
+int FileAccess(const wchar_t *filename, int mode)
 {
 	char* mbfilename = TCharToMbDup(filename);
 	int result = -1;
@@ -70,7 +70,7 @@ int FileAccess(const TCHAR *filename, int mode)
 	return result;
 }
 
-int FileRemove(const TCHAR *filename)
+int FileRemove(const wchar_t *filename)
 {
 	char* mbfilename = TCharToMbDup(filename);
 	int result = -1;
@@ -82,7 +82,7 @@ int FileRemove(const TCHAR *filename)
 	return result;
 }
 
-DIR* OpenDirectory(const TCHAR *name)
+DIR* OpenDirectory(const wchar_t *name)
 {
 	char* mbname = TCharToMbDup(name);
 	DIR* result = NULL;
@@ -94,7 +94,7 @@ DIR* OpenDirectory(const TCHAR *name)
 	return result;
 }
 
-int CreateDirectory(const TCHAR *name, mode_t mode)
+int CreateDirectory(const wchar_t *name, mode_t mode)
 {
 	char* mbname = TCharToMbDup(name);
 	int result = -1;
@@ -106,7 +106,7 @@ int CreateDirectory(const TCHAR *name, mode_t mode)
 	return result;
 }
 
-int RemoveDirectory(const TCHAR *name)
+int RemoveDirectory(const wchar_t *name)
 {
 	char* mbname = TCharToMbDup(name);
 	int result = -1;
@@ -118,7 +118,7 @@ int RemoveDirectory(const TCHAR *name)
 	return result;
 }
 
-int ExecSysCmd(const TCHAR * cmd)
+int ExecSysCmd(const wchar_t * cmd)
 {
 	char* mbcmd = TCharToMbDup(cmd);
 	int result = -1;
@@ -130,7 +130,7 @@ int ExecSysCmd(const TCHAR * cmd)
 	return result;
 }
 
-int RegCompile(regex_t *preg, const TCHAR *regex, int cflags)
+int RegCompile(regex_t *preg, const wchar_t *regex, int cflags)
 {
 	char* mbregex = TCharToMbDup(regex);
 	int result = -1;
@@ -142,7 +142,7 @@ int RegCompile(regex_t *preg, const TCHAR *regex, int cflags)
 	return result;
 }
 
-int RegExec(const regex_t *preg, const TCHAR *string, size_t nmatch, regmatch_t pmatch[], int eflags)
+int RegExec(const regex_t *preg, const wchar_t *string, size_t nmatch, regmatch_t pmatch[], int eflags)
 {
 	char* mbstring = TCharToMbDup(string);
 	int result = -1;

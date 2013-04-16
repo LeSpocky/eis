@@ -96,7 +96,7 @@ PMApiClear(void)
  * ---------------------------------------------------------------------
  */ 
 void 
-PMApiReposToMenu(int argc, const TCHAR* argv[])
+PMApiReposToMenu(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
@@ -108,12 +108,12 @@ PMApiReposToMenu(int argc, const TCHAR* argv[])
 		struct apk_db_options dbopts;
 		struct apk_repository *repo;
 		
-		stscanf(argv[0], _T("%ld"), &tmplong);
+		swscanf(argv[0], _T("%ld"), &tmplong);
 		menu = LibPMStubFind(tmplong);
 		
 		if (menu && menu->Window)
 		{
-			TCHAR buffer[16];
+			wchar_t buffer[16];
 
 			memset(&dbopts, 0, sizeof(dbopts));
 			list_init(&dbopts.repository_list);
@@ -163,7 +163,7 @@ PMApiReposToMenu(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */ 
 void
-PMApiGetRepoById(int argc, const TCHAR* argv[])
+PMApiGetRepoById(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
@@ -173,9 +173,9 @@ PMApiGetRepoById(int argc, const TCHAR* argv[])
 		struct apk_database *pdb;
 		struct apk_db_options dbopts;
 		struct apk_repository *repo;
-		TCHAR buffer[16];
+		wchar_t buffer[16];
 		
-		stscanf(argv[0], _T("%ld"), &index);
+		swscanf(argv[0], _T("%ld"), &index);
 		if (index == 0)
 			return;
 		memset(&dbopts, 0, sizeof(dbopts));
@@ -195,7 +195,7 @@ PMApiGetRepoById(int argc, const TCHAR* argv[])
 		else
 			swprintf(buffer, 14, _T("" BLOB_FMT), BLOB_PRINTF(repo->description));
 		apk_db_close(&db);
-		LibPMStartFrame(_T('R'), 32 + tcslen(buffer) * sizeof(TCHAR));
+		LibPMStartFrame(_T('R'), 32 + wcslen(buffer) * sizeof(wchar_t));
 		LibPMInsertInt (ERROR_SUCCESS);
 		LibPMInsertStr (buffer);		
 		LibPMSendFrame ();
@@ -216,16 +216,16 @@ PMApiGetRepoById(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */ 
 void
-PMApiPackagesToList(int argc, const TCHAR* argv[])
+PMApiPackagesToList(int argc, const wchar_t* argv[])
 {
 	if (argc >= 2)
 	{
 		unsigned long  tmplong;
 		struct search_ctx *ictx = (struct search_ctx *)malloc(sizeof(struct search_ctx)) ;
 		
-		stscanf(argv[0], _T("%ld"), &tmplong);
+		swscanf(argv[0], _T("%ld"), &tmplong);
 		ictx->listview = LibPMStubFind(tmplong);
-		stscanf(argv[1], _T("%d"), &ictx->reponr);
+		swscanf(argv[1], _T("%d"), &ictx->reponr);
 		memset(ictx->searchtext, 0, sizeof(ictx->searchtext)); 
 		if (argc >= 3)
 			snprintf(ictx->searchtext, 127, "%ls", argv[2]);
@@ -271,17 +271,17 @@ PMApiPackagesToList(int argc, const TCHAR* argv[])
  * --------------------------------------------------------------------- 
  */ 
 void
-PMApiListInstalledPackages(int argc, const TCHAR* argv[])
+PMApiListInstalledPackages(int argc, const wchar_t* argv[])
 {
 	if (argc >= 2)
 	{
 		WINDOWSTUB    *listview;
-		const TCHAR   *keyword = NULL;
+		const wchar_t   *keyword = NULL;
 		unsigned long  tmplong;
 		char tmpname[64];
 		int showall = APK_VERSION_EQUAL;
 
-		stscanf(argv[0], _T("%ld"), &tmplong);
+		swscanf(argv[0], _T("%ld"), &tmplong);
 		listview = LibPMStubFind(tmplong);
 		
 		if (argc >= 3)
@@ -353,17 +353,17 @@ PMApiListInstalledPackages(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */ 
 void 
-PMApiInfoToTextView(int argc, const TCHAR* argv[])
+PMApiInfoToTextView(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB    *textview;
-		const TCHAR   *package = NULL;
+		const wchar_t   *package = NULL;
 		unsigned long  tmplong;
-		TCHAR buffer[512];
+		wchar_t buffer[512];
 		char tmpname[64];
 
-		stscanf(argv[0], _T("%ld"), &tmplong);
+		swscanf(argv[0], _T("%ld"), &tmplong);
 		textview = LibPMStubFind(tmplong);
 		
 		package = argv[1];
@@ -576,7 +576,7 @@ PMApiInfoToTextView(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */ 
 void 
-PMApiDelPackagesList(int argc, const TCHAR* argv[])
+PMApiDelPackagesList(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
@@ -586,8 +586,8 @@ PMApiDelPackagesList(int argc, const TCHAR* argv[])
 		struct apk_name *name;
 		struct apk_package *pkg;         		
 		char   tmpname[64];
-		TCHAR  str[55];
-		TCHAR  buffer[256];
+		wchar_t  str[55];
+		wchar_t  buffer[256];
 
 		memset(&buffer, 0, 256 );
 		memset(&dbopts, 0, sizeof(dbopts));
@@ -628,22 +628,22 @@ PMApiDelPackagesList(int argc, const TCHAR* argv[])
 					if (pkg0->depends->item[j].name != pkg->name)
 						continue;
                     swprintf(str, 54, _T("%s"), pkg0->name->name);
-                    n = tcslen(buffer);
+                    n = wcslen(buffer);
 					if (n < 200)
 				    {
-						tcscat(buffer, str); 
-						tcscat(buffer, _T(" ")); 
+						wcscat(buffer, str); 
+						wcscat(buffer, _T(" ")); 
                     } 
                     else
                     {
                     	if ( n < 254 )
-		    				tcscat(buffer, _T("."));                     
+		    				wcscat(buffer, _T("."));                     
                     }
                 	
 				}
 			}
 			apk_db_close(&db);
-			LibPMStartFrame(_T('R'), 32 + tcslen(buffer) * sizeof(TCHAR));
+			LibPMStartFrame(_T('R'), 32 + wcslen(buffer) * sizeof(wchar_t));
 			LibPMInsertInt (ERROR_SUCCESS);
 			LibPMInsertStr (buffer);		
 			LibPMSendFrame ();
@@ -677,7 +677,7 @@ PMApiDelPackagesList(int argc, const TCHAR* argv[])
 void 
 PMWritePackageListEntry(WINDOWSTUB *listview, int showall, struct apk_database *db, struct apk_package *pkg)
 {
-	TCHAR buffer[128];
+	wchar_t buffer[128];
 	struct apk_name *name;
 	apk_blob_t *latest = apk_blob_atomize(APK_BLOB_STR(""));
 	unsigned int latest_repos = 0;
@@ -740,7 +740,7 @@ PMMatchNames(apk_hash_item item, void *ctx)
 {
 	struct search_ctx *ictx = (struct search_ctx *) ctx;
 	struct apk_name *name = (struct apk_name *) item;
-	TCHAR buffer[128];
+	wchar_t buffer[128];
 	struct apk_package *pkg = NULL;
 	apk_blob_t *version = NULL;
 	struct tm *ts;

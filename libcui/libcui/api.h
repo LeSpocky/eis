@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: api.h 25003 2010-07-17 05:50:58Z dv $
+ * Last Update:  $Id: api.h 33397 2013-04-02 20:48:05Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -77,51 +77,51 @@
 
 CUIWINDOW* ApiLookupWindow(unsigned long nr);
 
-void ApiMessageBox(int argc, const TCHAR* argv[]);
-void ApiWindowNew(int argc, const TCHAR* argv[]);
-void ApiWindowCreate(int argc, const TCHAR* argv[]);
-void ApiWindowDestroy(int argc, const TCHAR* argv[]);
-void ApiWindowQuit(int argc, const TCHAR* argv[]);
-void ApiWindowModal(int argc, const TCHAR* argv[]);
-void ApiWindowClose(int argc, const TCHAR* argv[]);
-void ApiWindowSetHook(int argc, const TCHAR* argv[]);
+void ApiMessageBox(int argc, const wchar_t* argv[]);
+void ApiWindowNew(int argc, const wchar_t* argv[]);
+void ApiWindowCreate(int argc, const wchar_t* argv[]);
+void ApiWindowDestroy(int argc, const wchar_t* argv[]);
+void ApiWindowQuit(int argc, const wchar_t* argv[]);
+void ApiWindowModal(int argc, const wchar_t* argv[]);
+void ApiWindowClose(int argc, const wchar_t* argv[]);
+void ApiWindowSetHook(int argc, const wchar_t* argv[]);
 
-void ApiWindowGetCtrl(int argc, const TCHAR* argv[]);
-void ApiWindowGetDesktop(int argc, const TCHAR* argv[]);
-void ApiWindowMove(int argc, const TCHAR* argv[]);
-void ApiWindowGetWindowRect(int argc, const TCHAR* argv[]);
-void ApiWindowGetClientRect(int argc, const TCHAR* argv[]);
+void ApiWindowGetCtrl(int argc, const wchar_t* argv[]);
+void ApiWindowGetDesktop(int argc, const wchar_t* argv[]);
+void ApiWindowMove(int argc, const wchar_t* argv[]);
+void ApiWindowGetWindowRect(int argc, const wchar_t* argv[]);
+void ApiWindowGetClientRect(int argc, const wchar_t* argv[]);
 
-void ApiWindowSetTimer(int argc, const TCHAR* argv[]);
-void ApiWindowKillTimer(int argc, const TCHAR* argv[]);
+void ApiWindowSetTimer(int argc, const wchar_t* argv[]);
+void ApiWindowKillTimer(int argc, const wchar_t* argv[]);
 
-void ApiWindowAddColScheme(int argc, const TCHAR* argv[]);
-void ApiWindowHasColScheme(int argc, const TCHAR* argv[]);
-void ApiWindowColScheme(int argc, const TCHAR* argv[]);
+void ApiWindowAddColScheme(int argc, const wchar_t* argv[]);
+void ApiWindowHasColScheme(int argc, const wchar_t* argv[]);
+void ApiWindowColScheme(int argc, const wchar_t* argv[]);
 
-void ApiWindowSetText(int argc, const TCHAR* argv[]);
-void ApiWindowSetRText(int argc, const TCHAR* argv[]);
-void ApiWindowSetLText(int argc, const TCHAR* argv[]);
-void ApiWindowSetStatusText(int argc, const TCHAR* argv[]);
-void ApiWindowSetRStatusText(int argc, const TCHAR* argv[]);
-void ApiWindowSetLStatusText(int argc, const TCHAR* argv[]);
-void ApiWindowGetText(int argc, const TCHAR* argv[]);
+void ApiWindowSetText(int argc, const wchar_t* argv[]);
+void ApiWindowSetRText(int argc, const wchar_t* argv[]);
+void ApiWindowSetLText(int argc, const wchar_t* argv[]);
+void ApiWindowSetStatusText(int argc, const wchar_t* argv[]);
+void ApiWindowSetRStatusText(int argc, const wchar_t* argv[]);
+void ApiWindowSetLStatusText(int argc, const wchar_t* argv[]);
+void ApiWindowGetText(int argc, const wchar_t* argv[]);
 
-void ApiWindowToTop(int argc, const TCHAR* argv[]);
-void ApiWindowMaximize(int argc, const TCHAR* argv[]);
-void ApiWindowMinimize(int argc, const TCHAR* argv[]);
-void ApiWindowHide(int argc, const TCHAR* argv[]);
-void ApiWindowEnable(int argc, const TCHAR* argv[]);
-void ApiWindowSetFocus(int argc, const TCHAR* argv[]);
-void ApiWindowGetFocus(int argc, const TCHAR* argv[]);
+void ApiWindowToTop(int argc, const wchar_t* argv[]);
+void ApiWindowMaximize(int argc, const wchar_t* argv[]);
+void ApiWindowMinimize(int argc, const wchar_t* argv[]);
+void ApiWindowHide(int argc, const wchar_t* argv[]);
+void ApiWindowEnable(int argc, const wchar_t* argv[]);
+void ApiWindowSetFocus(int argc, const wchar_t* argv[]);
+void ApiWindowGetFocus(int argc, const wchar_t* argv[]);
 
-void ApiWindowInvalidate(int argc, const TCHAR* argv[]);
-void ApiWindowInvalidateLayout(int argc, const TCHAR* argv[]);
-void ApiWindowUpdate(int argc, const TCHAR* argv[]);
+void ApiWindowInvalidate(int argc, const wchar_t* argv[]);
+void ApiWindowInvalidateLayout(int argc, const wchar_t* argv[]);
+void ApiWindowUpdate(int argc, const wchar_t* argv[]);
 
-void ApiWindowCursesLeave(int argc, const TCHAR* argv[]);
-void ApiWindowCursesResume(int argc, const TCHAR* argv[]);
-void ApiWindowShellExecute(int argc, const TCHAR* argv[]);
+void ApiWindowCursesLeave(int argc, const wchar_t* argv[]);
+void ApiWindowCursesResume(int argc, const wchar_t* argv[]);
+void ApiWindowShellExecute(int argc, const wchar_t* argv[]);
 
 
 #endif

@@ -54,20 +54,20 @@ RadioPaintHook(void* w)
 	CUIWINDOW*  win = (CUIWINDOW*) w;
 	RADIODATA*  data = (RADIODATA*) win->InstData;
 	CUIRECT     rc;
-	int         i; //cpos, len;
-//	int         hkey_pos;
-//	TCHAR       hkey = _T('\0');
-	TCHAR       buffer[128 + 1];
+	int         i,len, cpos;
+	int         hkey_pos;
+	wchar_t       hkey = _T('\0');
+	wchar_t       buffer[128 + 1];
 
 	WindowGetClientRect(win, &rc);
 	if (rc.W <= 0) return;
 
-//	cpos = 0;
+	cpos = 0;
 	if (rc.W > 1) 
 	{
 		int    pos, n;
-		TCHAR* ch;
-		TCHAR* ch2;
+		wchar_t* ch;
+		wchar_t* ch2;
 
 		for (i = 0; i < rc.W; i++) buffer[i] = _T(' ');
 		buffer[i] = 0;
@@ -81,22 +81,22 @@ RadioPaintHook(void* w)
 
 		pos = 4;
 		ch  = win->Text;
-		ch2 = (TCHAR*) tcschr(ch, _T('&'));
+		ch2 = (wchar_t*) wcschr(ch, _T('&'));
 		while (ch2)
 		{
 			n = (pos + (ch2 - ch)) < 128 ? (ch2 - ch) : (128 - pos);
 
-			tcsncpy(&buffer[pos], ch, n);
+			wcsncpy(&buffer[pos], ch, n);
 			pos += (ch2 - ch);
-//			hkey_pos = pos;
+			hkey_pos = pos;
 
 			ch = ch2 + 1;
-//			hkey = *ch;
-			ch2 = (TCHAR*) tcschr(ch, _T('&'));
+			hkey = *ch;
+			ch2 = (wchar_t*) wcschr(ch, _T('&'));
 		}
 
-		n = (pos + tcslen(ch)) < 128 ? tcslen(ch) : (128 - pos);
-		tcsncpy(&buffer[pos], ch, n);
+		n = (pos + wcslen(ch)) < 128 ? (int)wcslen(ch) : (int)(128 - pos);
+		wcsncpy(&buffer[pos], ch, n);
 		buffer[128] = 0;
 	}
 	else 
@@ -104,7 +104,7 @@ RadioPaintHook(void* w)
 		buffer[0] = 0;
 	}
 
-//	len = tcslen(buffer);
+	len = wcslen(buffer);
 
 	if (win->IsEnabled)
 	{
@@ -164,7 +164,7 @@ RadioKeyHook(void* w, int key)
 				while (others)
 				{
 					if ((others != win) &&
-					    (tcscmp(others->Class, _T("RADIOBUTTON")) == 0))
+					    (wcscmp(others->Class, _T("RADIOBUTTON")) == 0))
 					{
 						((RADIODATA*) others->InstData)->Checked = FALSE;
 					}
@@ -202,6 +202,9 @@ RadioKeyHook(void* w, int key)
 static void
 RadioMButtonHook(void* w, int x, int y, int flags)
 {
+	CUI_USE_ARG(x);
+	CUI_USE_ARG(y);
+	
 	if ((flags & BUTTON1_CLICKED) || (flags & BUTTON1_DOUBLE_CLICKED) ||
 	    (flags & BUTTON1_TRIPLE_CLICKED) || (flags & BUTTON1_PRESSED))
 	{
@@ -271,7 +274,7 @@ RadioKillFocusHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-RadioNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h, 
+RadioNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h, 
          int id, int sflags, int cflags)
 {
 	if (parent)
@@ -314,7 +317,7 @@ RadioNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 int 
 RadioGetCheck(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("RADIOBUTTON")) == 0))
+	if (win && (wcscmp(win->Class, _T("RADIOBUTTON")) == 0))
 	{
 		return ((RADIODATA*)win->InstData)->Checked;
 	}
@@ -329,7 +332,7 @@ RadioGetCheck(CUIWINDOW* win)
 void
 RadioSetCheck(CUIWINDOW* win, int state)
 {
-	if (win && (tcscmp(win->Class, _T("RADIOBUTTON")) == 0))
+	if (win && (wcscmp(win->Class, _T("RADIOBUTTON")) == 0))
 	{
 		((RADIODATA*)win->InstData)->Checked = state;
 		RadioUpdate(win);
@@ -344,7 +347,7 @@ RadioSetCheck(CUIWINDOW* win, int state)
 void 
 RadioSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("RADIOBUTTON")) == 0))
+	if (win && (wcscmp(win->Class, _T("RADIOBUTTON")) == 0))
 	{
 		((RADIODATA*)win->InstData)->SetFocusHook = proc;
 		((RADIODATA*)win->InstData)->SetFocusTarget = target;
@@ -359,7 +362,7 @@ RadioSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target
 void 
 RadioSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("RADIOBUTTON")) == 0))
+	if (win && (wcscmp(win->Class, _T("RADIOBUTTON")) == 0))
 	{
 		((RADIODATA*)win->InstData)->KillFocusHook = proc;
 		((RADIODATA*)win->InstData)->KillFocusTarget = target;
@@ -374,7 +377,7 @@ RadioSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void
 RadioSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {  
-	if (win && (tcscmp(win->Class, _T("RADIOBUTTON")) == 0))
+	if (win && (wcscmp(win->Class, _T("RADIOBUTTON")) == 0))
 	{
 		((RADIODATA*)win->InstData)->PreKeyHook = proc;
 		((RADIODATA*)win->InstData)->PreKeyTarget = target;
@@ -390,7 +393,7 @@ RadioSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* targe
 void
 RadioSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {  
-	if (win && (tcscmp(win->Class, _T("RADIOBUTTON")) == 0))
+	if (win && (wcscmp(win->Class, _T("RADIOBUTTON")) == 0))
 	{
 		((RADIODATA*)win->InstData)->PostKeyHook = proc;
 		((RADIODATA*)win->InstData)->PostKeyTarget = target;
@@ -406,7 +409,7 @@ RadioSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* targ
 void 
 RadioSetClickedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("RADIOBUTTON")) == 0))
+	if (win && (wcscmp(win->Class, _T("RADIOBUTTON")) == 0))
 	{
 		((RADIODATA*)win->InstData)->ButtonClickedHook = proc;
 		((RADIODATA*)win->InstData)->ButtonClickedTarget = target;

@@ -1,4 +1,5 @@
 #include "cui.h"
+#include "cui-util.h"
 
 #define IDC_OK     1
 #define IDC_CANCEL 2
@@ -33,9 +34,9 @@ int ListKeyHook(void* w, void* c, int key)
 void ListTimerHook(void* c, int id)
 {
 	static int loop = 0;
-	TCHAR buffer[32 + 1];
+	wchar_t buffer[32 + 1];
 	
-	stprintf(buffer, 32, _T("Text%i"), loop);
+	swprintf(buffer, 32, _T("Text%i"), loop);
 	
 	LISTREC* rec = ListviewCreateRecord(c);
 	if (rec)
@@ -90,10 +91,10 @@ void CancelButtonHook(void* w, void* c)
 void TimerHook(void* w, int id)
 {
 	CUIWINDOW* win = (CUIWINDOW*) w;
-	TCHAR help[64];
+	wchar_t help[64];
 	static int count = 0;
 
-	stprintf(help, 63, _T("Timer %i"), count++);
+	swprintf(help, 63, _T("Timer %i"), count++);
 	WindowSetText(win, help);
 }
 
@@ -101,10 +102,10 @@ void MouseMoveHook(void* w, int x, int y)
 {
 	CUIWINDOW* win = (CUIWINDOW*) w;
 	CUIWINDOW* ctrl = WindowGetCtrl((CUIWINDOW*) w, IDC_LISTBOX1);
-	TCHAR help[64];
+	wchar_t help[64];
 	if (ctrl)
 	{
-		stprintf(help, 63, _T("Position: %i, %i"), x, y);
+		swprintf(help, 63, _T("Position: %i, %i"), x, y);
 		WindowSetText(win, help);
 		ListboxAdd(ctrl, help);
 	}
@@ -117,7 +118,7 @@ void MouseButtonHook(void* w, int x, int y, int state)
 	if (ctrl)
 	{
 		int index = 0;
-		TCHAR help[64];
+		wchar_t help[64];
 		switch(state)
 		{
 		case BUTTON1_PRESSED:          index = ListboxAdd(ctrl, _T("mouse button 1 down")); break;
@@ -155,26 +156,31 @@ void MouseButtonHook(void* w, int x, int y, int state)
 			WindowSetCapture(win);
 		}
 
-		stprintf(help, 63, _T("Position: %i, %i"), x, y);
+		swprintf(help, 63, _T("Position: %i, %i"), x, y);
 		WindowSetText(win, help);
 	}
 }
 
 
+#include <iconv.h>
+
 int main(void)
 {
-	CUIWINDOW* window;
-	CUIWINDOW* ctrl;
-	CUIWINDOW* group;
-
+	CUIWINDOW *window;
+	CUIWINDOW *ctrl;
+	CUIWINDOW *group;
+	wchar_t    buffer[128 + 1];
+	
+	CuuSetStdCodec("ISO-8859-15");
+	
 	WindowStart(TRUE, TRUE);
 	atexit(quit);
-
+	
 	window = WindowNew(WindowGetDesktop(), 10, 1, 60, 18, CWS_BORDER | CWS_POPUP);
-	WindowSetText(window, _T("Config Options"));
+	WindowSetText(window, CuuToUtf16(buffer, "Cünfig Options", sizeof(buffer)));
 	WindowColScheme(window, _T("DIALOG"));
 	WindowSetMButtonHook(window, MouseButtonHook);
-	WindowSetMMoveHook(window, MouseMoveHook);
+	WindowSetMMoveHook(window, MouseMoveHook);	
 	WindowSetTimerHook(window, TimerHook);
 	WindowCreate(window);
 

@@ -5,7 +5,7 @@
  * Copyright (C) 2009
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: chartools.c 23497 2010-03-14 21:53:08Z dv $
+ * Last Update:  $Id: chartools.c 33446 2013-04-10 21:12:27Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,52 +31,34 @@
 
 int ModuleMbStrLen(const char* str)
 {
-#ifdef _UNICODE
 	return mbsrtowcs(NULL, &str, SIZE_MAX, NULL);
-#else
-	return strlen(str);
-#endif
 }
 
-int ModuleMbByteLen(const TCHAR* str)
+int ModuleMbByteLen(const wchar_t* str)
 {
-#ifdef _UNICODE
 	return wcsrtombs(NULL, &str, SIZE_MAX, NULL);	
-#else
-	return strlen(str);
-#endif
 }
 
-TCHAR* ModuleMbToTCharDup(const char*  str)
+wchar_t* ModuleMbToTCharDup(const char*  str)
 {
 	int    len = ModuleMbStrLen(str);
-	TCHAR* tstr = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+	wchar_t* tstr = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 	if (tstr)
 	{
-#ifdef _UNICODE
 		mbsrtowcs(tstr, &str, len + 1, NULL);
-#else
-		strncpy(tstr, str, len + 1);
-#endif
 		return tstr;
 	}
 	return NULL;
 }
 
-char* ModuleTCharToMbDup(const TCHAR* str)
+char* ModuleTCharToMbDup(const wchar_t* str)
 {
 	int   len = ModuleMbByteLen(str);
 	char* mbstr = (char*) malloc((len + 1) * sizeof(char));
 	if (mbstr)
 	{
-#ifdef _UNICODE
 		wcsrtombs(mbstr, &str, len + 1, NULL);	
-#else
-		strncpy(mbstr, str, len + 1);
-#endif
 		return mbstr;
 	}
 	return NULL;
 }
-
-

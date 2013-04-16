@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: stub.c 25003 2010-07-17 05:50:58Z dv $
+ * Last Update:  $Id: stub.c 33402 2013-04-02 21:32:17Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -173,16 +173,16 @@ StubDelete(WINDOWSTUB* stub)
  * ---------------------------------------------------------------------
  */ 
 void
-StubSetProc(TCHAR** p, const TCHAR* procname)
+StubSetProc(wchar_t** p, const wchar_t* procname)
 {
 	if (*p)
 	{
 		free(*p);
 		*p = NULL;
 	}
-	if (procname && tcslen(procname))
+	if (procname && wcslen(procname))
 	{
-		*p = tcsdup(procname);
+		*p = wcsdup(procname);
 	}
 }
 
@@ -192,7 +192,7 @@ StubSetProc(TCHAR** p, const TCHAR* procname)
  * ---------------------------------------------------------------------
  */ 
 void
-StubSetHook(WINDOWSTUB* stub, HOOKTYPE hook, const TCHAR* procname)
+StubSetHook(WINDOWSTUB* stub, HOOKTYPE hook, const wchar_t* procname)
 {
 	switch(hook)
 	{
@@ -473,7 +473,7 @@ StubCreateHook(void* win)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->CreateHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->CreateHookProc) + 48);
+		BackendStartFrame(_T('H'), wcslen(winstub->CreateHookProc) + 48);
 		BackendInsertStr (winstub->CreateHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendExecFrame ();
@@ -493,7 +493,7 @@ StubDestroyHook(void* win)
 	{
 		if (winstub->DestroyHookProc)
 		{
-			BackendStartFrame(_T('H'), tcslen(winstub->DestroyHookProc) + 48);
+			BackendStartFrame(_T('H'), wcslen(winstub->DestroyHookProc) + 48);
 			BackendInsertStr (winstub->DestroyHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendExecFrame ();
@@ -515,11 +515,11 @@ StubCanCloseHook(void* win)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->CanCloseHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->CanCloseHookProc) + 48);
+		BackendStartFrame(_T('H'), wcslen(winstub->CanCloseHookProc) + 48);
 		BackendInsertStr (winstub->CanCloseHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendExecFrame ();
-		if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("0")) == 0))
+		if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("0")) == 0))
 		{
 			result = FALSE;
 		}
@@ -538,7 +538,7 @@ StubInitHook(void* win)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->InitHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->InitHookProc) + 48);
+		BackendStartFrame(_T('H'), wcslen(winstub->InitHookProc) + 48);
 		BackendInsertStr (winstub->InitHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendExecFrame ();
@@ -556,7 +556,7 @@ StubPaintHook(void* win)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->PaintHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->PaintHookProc) + 48);
+		BackendStartFrame(_T('H'), wcslen(winstub->PaintHookProc) + 48);
 		BackendInsertStr (winstub->PaintHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendExecFrame ();
@@ -574,7 +574,7 @@ StubNcPaintHook(void* win, int cx, int cy)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->NcPaintHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->NcPaintHookProc) + 64);
+		BackendStartFrame(_T('H'), wcslen(winstub->NcPaintHookProc) + 64);
 		BackendInsertStr (winstub->NcPaintHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendInsertInt (cx);
@@ -596,11 +596,11 @@ StubSizeHook(void* win)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->SizeHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->SizeHookProc) + 48);
+		BackendStartFrame(_T('H'), wcslen(winstub->SizeHookProc) + 48);
 		BackendInsertStr (winstub->SizeHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendExecFrame ();
-		if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+		if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 		{
 			result = TRUE;
 		}
@@ -621,7 +621,7 @@ StubSetFocusHook(void* win, void* oldfocus)
 	{
 		StubCheckStub((CUIWINDOW*)oldfocus);
 
-		BackendStartFrame(_T('H'), tcslen(winstub->SetFocusHookProc) + 64);
+		BackendStartFrame(_T('H'), wcslen(winstub->SetFocusHookProc) + 64);
 		BackendInsertStr (winstub->SetFocusHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendInsertLong((unsigned long) oldfocus);
@@ -640,7 +640,7 @@ StubKillFocusHook(void* win)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->KillFocusHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->KillFocusHookProc) + 48);
+		BackendStartFrame(_T('H'), wcslen(winstub->KillFocusHookProc) + 48);
 		BackendInsertStr (winstub->KillFocusHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendExecFrame ();
@@ -658,7 +658,7 @@ StubActivateHook(void* win)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->ActivateHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->ActivateHookProc) + 48);
+		BackendStartFrame(_T('H'), wcslen(winstub->ActivateHookProc) + 48);
 		BackendInsertStr (winstub->ActivateHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendExecFrame ();
@@ -676,7 +676,7 @@ StubDeactivateHook(void* win)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->DeactivateHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->DeactivateHookProc) + 48);
+		BackendStartFrame(_T('H'), wcslen(winstub->DeactivateHookProc) + 48);
 		BackendInsertStr (winstub->DeactivateHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendExecFrame ();
@@ -696,12 +696,12 @@ StubKeyHook(void* win, int key)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->KeyHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->KeyHookProc) + 64);
+		BackendStartFrame(_T('H'), wcslen(winstub->KeyHookProc) + 64);
 		BackendInsertStr (winstub->KeyHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendInsertInt (key);
 		BackendExecFrame ();
-		if ((BackendNumResultParams() > 0) && (tcscmp(BackendResultParam(0), _T("1")) == 0))
+		if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
 		{
 			result = TRUE;
 		}
@@ -720,7 +720,7 @@ StubMMoveHook(void* win, int x, int y)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->MMoveHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->MMoveHookProc) + 64);
+		BackendStartFrame(_T('H'), wcslen(winstub->MMoveHookProc) + 64);
 		BackendInsertStr (winstub->MMoveHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendInsertInt (x);
@@ -740,7 +740,7 @@ StubMButtonHook(void* win, int x, int y, int flags)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->MButtonHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->MButtonHookProc) + 96);
+		BackendStartFrame(_T('H'), wcslen(winstub->MButtonHookProc) + 96);
 		BackendInsertStr (winstub->MButtonHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendInsertInt (x);
@@ -761,7 +761,7 @@ StubVScrollHook(void* win, int sbcode, int pos)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->VScrollHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->VScrollHookProc) + 64);
+		BackendStartFrame(_T('H'), wcslen(winstub->VScrollHookProc) + 64);
 		BackendInsertStr (winstub->VScrollHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendInsertInt (sbcode);
@@ -781,7 +781,7 @@ StubHScrollHook(void* win, int sbcode, int pos)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->HScrollHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->HScrollHookProc) + 64);
+		BackendStartFrame(_T('H'), wcslen(winstub->HScrollHookProc) + 64);
 		BackendInsertStr (winstub->HScrollHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendInsertInt (sbcode);
@@ -801,7 +801,7 @@ StubTimerHook(void* win, int id)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->TimerHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->TimerHookProc) + 64);
+		BackendStartFrame(_T('H'), wcslen(winstub->TimerHookProc) + 64);
 		BackendInsertStr (winstub->TimerHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendInsertInt (id);
@@ -820,7 +820,7 @@ StubLayoutHook(void* win)
 	WINDOWSTUB* winstub = StubFind((unsigned long)win);
 	if (winstub && winstub->LayoutHookProc)
 	{
-		BackendStartFrame(_T('H'), tcslen(winstub->LayoutHookProc) + 48);
+		BackendStartFrame(_T('H'), wcslen(winstub->LayoutHookProc) + 48);
 		BackendInsertStr (winstub->LayoutHookProc);
 		BackendInsertLong((unsigned long) win);
 		BackendExecFrame ();

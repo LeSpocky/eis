@@ -85,7 +85,7 @@ static int           MyApiDeleteConnection(SQLCONNECT* connection);
 static DBRESULT    * MyApiCreateResult(SQLRESULT* result);
 static int           MyApiCheckResult(SQLRESULT* result);
 static int           MyApiDeleteResult(SQLRESULT* result);
-static TCHAR*        MyApiSingleLineDup(const TCHAR* data);
+static wchar_t*        MyApiSingleLineDup(const wchar_t* data);
 
 
 /* ---------------------------------------------------------------------
@@ -139,7 +139,7 @@ MyApiClear(void)
  * ---------------------------------------------------------------------
  */ 
 void 
-MyApiServerConnect(int argc, const TCHAR* argv[])
+MyApiServerConnect(int argc, const wchar_t* argv[])
 {
 	if (argc == 5)
 	{
@@ -166,13 +166,13 @@ MyApiServerConnect(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */ 
 void 
-MyApiServerDisconnect(int argc, const TCHAR* argv[])
+MyApiServerDisconnect(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (MyApiDeleteConnection((SQLCONNECT*)connr))
 		{
@@ -197,13 +197,13 @@ MyApiServerDisconnect(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiServerIsConnected(int argc, const TCHAR* argv[])
+MyApiServerIsConnected(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (MyApiCheckConnection((SQLCONNECT*)connr))
 		{
@@ -229,19 +229,19 @@ MyApiServerIsConnected(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiServerGetError(int argc, const TCHAR* argv[])
+MyApiServerGetError(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (MyApiCheckConnection((SQLCONNECT*)connr))
 		{
-			const TCHAR* str = MyServerGetError((SQLCONNECT*)connr);
+			const wchar_t* str = MyServerGetError((SQLCONNECT*)connr);
 
-			LibMyStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibMyStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibMyInsertInt (ERROR_SUCCESS);
 			LibMyInsertStr (str);
 			LibMySendFrame ();
@@ -264,19 +264,19 @@ MyApiServerGetError(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiServerPasswd(int argc, const TCHAR* argv[])
+MyApiServerPasswd(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (MyApiCheckConnection((SQLCONNECT*)connr))
 		{
-			const TCHAR* str = MyServerPasswd((SQLCONNECT*)connr);
+			const wchar_t* str = MyServerPasswd((SQLCONNECT*)connr);
 
-			LibMyStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibMyStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibMyInsertInt (ERROR_SUCCESS);
 			LibMyInsertStr (str);
 			LibMySendFrame ();
@@ -298,19 +298,19 @@ MyApiServerPasswd(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiServerUser(int argc, const TCHAR* argv[])
+MyApiServerUser(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (MyApiCheckConnection((SQLCONNECT*)connr))
 		{
-			const TCHAR* str = MyServerPasswd((SQLCONNECT*)connr);
+			const wchar_t* str = MyServerPasswd((SQLCONNECT*)connr);
 
-			LibMyStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibMyStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibMyInsertInt (ERROR_SUCCESS);
 			LibMyInsertStr (str);
 			LibMySendFrame ();
@@ -332,19 +332,19 @@ MyApiServerUser(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiServerHost(int argc, const TCHAR* argv[])
+MyApiServerHost(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (MyApiCheckConnection((SQLCONNECT*)connr))
 		{
-			const TCHAR* str = MyServerPasswd((SQLCONNECT*)connr);
+			const wchar_t* str = MyServerPasswd((SQLCONNECT*)connr);
 
-			LibMyStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibMyStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibMyInsertInt (ERROR_SUCCESS);
 			LibMyInsertStr (str);
 			LibMySendFrame ();
@@ -366,19 +366,19 @@ MyApiServerHost(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiServerPort(int argc, const TCHAR* argv[])
+MyApiServerPort(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (MyApiCheckConnection((SQLCONNECT*)connr))
 		{
-			const TCHAR* str = MyServerPort((SQLCONNECT*)connr);
+			const wchar_t* str = MyServerPort((SQLCONNECT*)connr);
 
-			LibMyStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibMyStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibMyInsertInt (ERROR_SUCCESS);
 			LibMyInsertStr (str);
 			LibMySendFrame ();
@@ -400,13 +400,13 @@ MyApiServerPort(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiServerDupTo(int argc, const TCHAR* argv[])
+MyApiServerDupTo(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (MyApiCheckConnection((SQLCONNECT*)connr))
 		{
@@ -437,13 +437,13 @@ MyApiServerDupTo(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiQuerySQL(int argc, const TCHAR* argv[])
+MyApiQuerySQL(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (MyApiCheckConnection((SQLCONNECT*)connr))
 		{
@@ -474,13 +474,13 @@ MyApiQuerySQL(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiExecSQL(int argc, const TCHAR* argv[])
+MyApiExecSQL(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		unsigned long connr;
 
-		stscanf(argv[0], _T("%ld"), &connr);
+		swscanf(argv[0], _T("%ld"), &connr);
 
 		if (MyApiCheckConnection((SQLCONNECT*)connr))
 		{
@@ -506,8 +506,10 @@ MyApiExecSQL(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiServerDefault(int argc, const TCHAR* argv[])
+MyApiServerDefault(int argc, const wchar_t* argv[])
 {
+	CUI_USE_ARG(argv);
+	
 	if (argc == 0)
 	{
 		SQLCONNECT* nc = MyServerDefault();
@@ -529,13 +531,13 @@ MyApiServerDefault(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiResultStatus(int argc, const TCHAR* argv[])
+MyApiResultStatus(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (MyApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -561,13 +563,13 @@ MyApiResultStatus(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiResultNumRows(int argc, const TCHAR* argv[])
+MyApiResultNumRows(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (MyApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -593,13 +595,13 @@ MyApiResultNumRows(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiResultNumColumns(int argc, const TCHAR* argv[])
+MyApiResultNumColumns(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (MyApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -625,7 +627,7 @@ MyApiResultNumColumns(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiResultColumnName(int argc, const TCHAR* argv[])
+MyApiResultColumnName(int argc, const wchar_t* argv[])
 
 {
 	if (argc == 2)
@@ -633,14 +635,14 @@ MyApiResultColumnName(int argc, const TCHAR* argv[])
 		unsigned long resnr;
 		int index;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
-		stscanf(argv[1], _T("%d"),  &index);
+		swscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[1], _T("%d"),  &index);
 
 		if (MyApiCheckResult((SQLRESULT*)resnr))
 		{
-			const TCHAR* str = MyResultColumnName((SQLRESULT*)resnr, index);
+			const wchar_t* str = MyResultColumnName((SQLRESULT*)resnr, index);
 
-			LibMyStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibMyStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibMyInsertInt (ERROR_SUCCESS);
 			LibMyInsertStr (str);
 			LibMySendFrame ();
@@ -662,15 +664,15 @@ MyApiResultColumnName(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiResultColumnSize(int argc, const TCHAR* argv[])
+MyApiResultColumnSize(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		unsigned long resnr;
 		int           index;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		if (MyApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -696,13 +698,13 @@ MyApiResultColumnSize(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiResultFetch(int argc, const TCHAR* argv[])
+MyApiResultFetch(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (MyApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -728,21 +730,21 @@ MyApiResultFetch(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiResultData(int argc, const TCHAR* argv[])
+MyApiResultData(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		unsigned long resnr;
 		int index;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		if (MyApiCheckResult((SQLRESULT*)resnr))
 		{
-			const TCHAR* str = MyResultData((SQLRESULT*)resnr, index);
+			const wchar_t* str = MyResultData((SQLRESULT*)resnr, index);
 			
-			LibMyStartFrame(_T('R'), 32 + tcslen(str) * sizeof(TCHAR));
+			LibMyStartFrame(_T('R'), 32 + wcslen(str) * sizeof(wchar_t));
 			LibMyInsertInt (ERROR_SUCCESS);
 			LibMyInsertStr (str);
 			LibMySendFrame ();
@@ -764,15 +766,15 @@ MyApiResultData(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiResultIsNull(int argc, const TCHAR* argv[])
+MyApiResultIsNull(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		unsigned long resnr;
 		int index;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
-		stscanf(argv[1], _T("%d"), &index);
+		swscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[1], _T("%d"), &index);
 
 		if (MyApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -798,13 +800,13 @@ MyApiResultIsNull(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-MyApiResultReset(int argc, const TCHAR* argv[])
+MyApiResultReset(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (MyApiCheckResult((SQLRESULT*)resnr))
 		{
@@ -831,13 +833,13 @@ MyApiResultReset(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */  
 void 
-MyApiResultFree(int argc, const TCHAR* argv[])
+MyApiResultFree(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		unsigned long resnr;
 
-		stscanf(argv[0], _T("%ld"), &resnr);
+		swscanf(argv[0], _T("%ld"), &resnr);
 
 		if (MyApiDeleteResult((SQLRESULT*) resnr))
 		{
@@ -863,7 +865,7 @@ MyApiResultFree(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */  
 void 
-MyApiResultToList(int argc, const TCHAR* argv[])
+MyApiResultToList(int argc, const wchar_t* argv[])
 {
 	if (argc >= 2)
 	{
@@ -872,17 +874,17 @@ MyApiResultToList(int argc, const TCHAR* argv[])
 		unsigned long tmplong;
 		int           selindex = 0;
 		int           keycolumn = -1;
-		const TCHAR*  keyword = _T("");
+		const wchar_t*  keyword = _T("");
 
-		stscanf(argv[0], _T("%ld"), &tmplong);
+		swscanf(argv[0], _T("%ld"), &tmplong);
 		result = (SQLRESULT*) tmplong;
 		
-		stscanf(argv[1], _T("%ld"), &tmplong);
+		swscanf(argv[1], _T("%ld"), &tmplong);
 		listview = LibMyStubFind(tmplong);
 		
 		if (argc >= 3)
 		{
-			stscanf(argv[2], _T("%d"), &keycolumn);
+			swscanf(argv[2], _T("%d"), &keycolumn);
 		}
 		if (argc >= 4)
 		{
@@ -906,14 +908,14 @@ MyApiResultToList(int argc, const TCHAR* argv[])
 					{
 						if (!MyResultIsNull(result, i))
 						{
-							TCHAR* data;
+							wchar_t* data;
 							
 							data  = MyApiSingleLineDup(MyResultData(result, i));
 							if (data)
 							{
 								ListviewSetColumnText(rec, i, data);
 							
-								if ((i == keycolumn) && (tcscmp(data, keyword) == 0))
+								if ((i == keycolumn) && (wcscmp(data, keyword) == 0))
 								{
 									matched = TRUE;
 								}
@@ -1097,13 +1099,13 @@ MyApiDeleteResult(SQLRESULT* result)
  * removed
  * ---------------------------------------------------------------------
  */ 
-static TCHAR* 
-MyApiSingleLineDup(const TCHAR* data)
+static wchar_t* 
+MyApiSingleLineDup(const wchar_t* data)
 {
-	TCHAR* line = (TCHAR*) malloc((tcslen(data) + 1) * sizeof(TCHAR));
+	wchar_t* line = (wchar_t*) malloc((wcslen(data) + 1) * sizeof(wchar_t));
 	if (line)
 	{
-		TCHAR* l = line;
+		wchar_t* l = line;
 		while (*data != _T('\0'))
 		{
 			switch(*data)

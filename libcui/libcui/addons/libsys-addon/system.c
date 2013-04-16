@@ -4,7 +4,7 @@
  * Copyright (C) 2009
  * Daniel Vogel, <daniel@eisfair.org>
  *
- * Last Update:  $Id: system.c 26614 2010-11-10 18:44:13Z dv $
+ * Last Update:  $Id: system.c 33468 2013-04-14 16:40:27Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,6 +22,7 @@
  * ---------------------------------------------------------------------
  */
 
+#include <cui.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -105,7 +106,7 @@ SysGetUserList(int query_flags)
 				if (group)
 				{
 					free(user->GroupName);
-					user->GroupName = tcsdup(group->GroupName);
+					user->GroupName = wcsdup(group->GroupName);
 				}
 				user = (USER_T*) user->Next;
 			}
@@ -221,11 +222,11 @@ SysFreePasswdList(PASSWD_T* passwds)
  * ---------------------------------------------------------------------
  */
 GROUP_T*
-SysFindGroupById(GROUP_T* groups, const TCHAR* groupid)
+SysFindGroupById(GROUP_T* groups, const wchar_t* groupid)
 {
 	while (groups)
 	{
-		if (tcscmp(groups->GroupId, groupid) == 0)
+		if (wcscmp(groups->GroupId, groupid) == 0)
 		{
 			return groups;
 		}
@@ -241,11 +242,11 @@ SysFindGroupById(GROUP_T* groups, const TCHAR* groupid)
  * ---------------------------------------------------------------------
  */
 GROUP_T*
-SysFindGroupByName(GROUP_T* groups, const TCHAR* name)
+SysFindGroupByName(GROUP_T* groups, const wchar_t* name)
 {
 	while (groups)
 	{
-		if (tcscmp(groups->GroupName, name) == 0)
+		if (wcscmp(groups->GroupName, name) == 0)
 		{
 			return groups;
 		}
@@ -261,11 +262,11 @@ SysFindGroupByName(GROUP_T* groups, const TCHAR* name)
  * ---------------------------------------------------------------------
  */
 PASSWD_T*
-SysFindPasswd(PASSWD_T* passwds, const TCHAR* username)
+SysFindPasswd(PASSWD_T* passwds, const wchar_t* username)
 {
 	while (passwds)
 	{
-		if (tcscmp(passwds->UserName, username) == 0)
+		if (wcscmp(passwds->UserName, username) == 0)
 		{
 			return passwds;
 		}
@@ -361,7 +362,7 @@ SysReadEtcPasswd(int query_flags)
 				memset(newuser, 0, sizeof(newuser));
 				newuser->Next      = NULL;
 				newuser->ValidPW   = FALSE;
-				newuser->GroupName = tcsdup(_T("unknown"));
+				newuser->GroupName = wcsdup(_T("unknown"));
 				
 				p = strchr(s, ':');
 				while (p)
@@ -384,13 +385,13 @@ SysReadEtcPasswd(int query_flags)
 				if ((loop >= 6) && (newuser->UserName[0] != _T('\0')))
 				{
 					int uid = 0;
-					stscanf(newuser->UserId, _T("%d"), &uid);
+					swscanf(newuser->UserId, _T("%d"), &uid);
 					
 					if (((query_flags & USERS_HIDE_SYSTEM) && (uid < SysMinUserId) && (uid > 0)) ||
 						((query_flags & USERS_HIDE_ROOT) && (uid == 0)) ||
 						((query_flags & USERS_HIDE_NOBODY) && (uid >= 65534)) ||
 						((query_flags & USERS_HIDE_MACHINES) && 
-						(newuser->UserName[tcslen(newuser->UserName) - 1] == _T('$'))))
+						(newuser->UserName[wcslen(newuser->UserName) - 1] == _T('$'))))
 					{
 						/* user is hidden */
 						SysFreeUserList(newuser);
@@ -432,6 +433,8 @@ SysReadEtcGroup(int query_flags)
 	GROUP_T* groups = NULL;
 	GROUP_T* last  = NULL;
 	char     buffer[256];
+	
+	CUI_USE_ARG(query_flags);
 	
 	FILE* in = fopen("/etc/group", "rt");
 	if (!in)
@@ -480,14 +483,14 @@ SysReadEtcGroup(int query_flags)
 				}
 				else
 				{
-					newgroup->Members   = tcsdup(_T(""));
+					newgroup->Members   = wcsdup(_T(""));
 				}
 				
 				if (loop >= 3)
 				{
 					int id = 0;
 					
-					stscanf(newgroup->GroupId, _T("%d"), &id);
+					swscanf(newgroup->GroupId, _T("%d"), &id);
 					
 					if (last)
 					{

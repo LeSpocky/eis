@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: api_util.c 23497 2010-03-14 21:53:08Z dv $
+ * Last Update:  $Id: api_util.c 33402 2013-04-02 21:32:17Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -85,7 +85,7 @@ AddonGetModule(int nr)
  * ---------------------------------------------------------------------
  */
 void
-ApiXmlReadTag(int argc, const TCHAR* argv[])
+ApiXmlReadTag(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -99,7 +99,7 @@ ApiXmlReadTag(int argc, const TCHAR* argv[])
 				{
 					XMLNODE* node;
 					int      len;
-					TCHAR*   result;
+					wchar_t*   result;
 
 					len = 0;
 					node = obj->FirstNode;
@@ -107,12 +107,12 @@ ApiXmlReadTag(int argc, const TCHAR* argv[])
 					{
 						if (node->Type == XML_DATANODE)
 						{
-							len += tcslen(node->Data) + 1;
+							len += wcslen(node->Data) + 1;
 						}
 						node = (XMLNODE*) node->Next;
 					}
 
-					result = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+					result = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 					if (result)
 					{
 						node = obj->FirstNode;
@@ -120,8 +120,8 @@ ApiXmlReadTag(int argc, const TCHAR* argv[])
 						{
 							if (node->Type == XML_DATANODE)
 							{
-								tcscat(result, node->Data);
-								tcscat(result, _T(" "));
+								wcscat(result, node->Data);
+								wcscat(result, _T(" "));
 							}
 							node = (XMLNODE*) node->Next;
 						}
@@ -161,13 +161,13 @@ ApiXmlReadTag(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiLoadAddon(int argc, const TCHAR* argv[])
+ApiLoadAddon(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		ADDON_MODULE* newaddon = NULL;
 		void* handle = NULL;
-//		int   err = 0;
+		int   err = 0;
 
 		if (AddonModuleNextNr < MAX_MODULES)
 		{
@@ -177,13 +177,15 @@ ApiLoadAddon(int argc, const TCHAR* argv[])
 				handle = dlopen(mbfilename, RTLD_NOW);
 				if (handle)
 				{
-//					err = 1;
+					err = 1;
+					
 					newaddon = (ADDON_MODULE*) malloc(sizeof(ADDON_MODULE));
 					if (newaddon)
 					{
 						MODULEINIT_T init;
-
-//						err = 2;
+						
+						err = 2;
+						
 						newaddon->ModuleHandle       = handle;
 						newaddon->ModuleInit         = dlsym(handle, "ModuleInit");
 						newaddon->ModuleExecFunction = dlsym(handle, "ModuleExecFunction");
@@ -207,12 +209,13 @@ ApiLoadAddon(int argc, const TCHAR* argv[])
 						if (!newaddon->ModuleInit  || !newaddon->ModuleExecFunction ||
 						    !newaddon->ModuleClose || !newaddon->ModuleInit(&init))
 						{
-//							err = 3;
+							err = 3;
+							
 							free(newaddon);
 							newaddon = NULL;
 						}
 					}
-/*					else
+					else
 					{
 						err = 4;
 					}
@@ -220,7 +223,6 @@ ApiLoadAddon(int argc, const TCHAR* argv[])
 				else
 				{
 					err = 5;
-*/
 				}
 				free(mbfilename);	
 			}

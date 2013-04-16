@@ -25,7 +25,7 @@
 
 typedef struct LISTBOXITEMStruct
 {
-	TCHAR*        ItemText;
+	wchar_t*      ItemText;
 	unsigned long ItemData;
 	void*         Next;
 	void*         Previous;
@@ -107,7 +107,7 @@ ListboxNcPaintHook(void* w, int size_x, int size_y)
 
 	if (!win->Text || (win->Text[0] == 0) || (!win->HasBorder)) return;
 
-	len = tcslen(win->Text);
+	len = wcslen(win->Text);
 	if (len > rc.W - 4)
 	{
 		len = rc.W - 4;
@@ -156,7 +156,7 @@ ListboxPaintHook(void* w)
 	{
 		if ((index >= pos) && (index < pos + rc.H))
 		{
-			len = tcslen(item->ItemText);
+			len = wcslen(item->ItemText);
 			if (index == data->SelIndex)
 			{
 				SetColor(win->Win, win->Color.SelTxtColor, win->Color.WndSelColor, TRUE);
@@ -392,6 +392,8 @@ ListboxVScrollHook(void* w, int sbcode, int pos)
 	CUIWINDOW* win = (CUIWINDOW*) w;
 	CUIRECT rc;
 	int sbpos, range;
+	
+	CUI_USE_ARG(pos);
 
 	WindowGetClientRect(win, &rc);
 	sbpos = WindowGetVScrollPos(win);
@@ -519,7 +521,7 @@ ListboxLayoutHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-ListboxNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h, 
+ListboxNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h, 
            int id, int sflags, int cflags)
 {
 	if (parent)
@@ -575,7 +577,7 @@ ListboxNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 void 
 ListboxSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		((LISTBOXDATA*)win->InstData)->SetFocusHook = proc;
 		((LISTBOXDATA*)win->InstData)->SetFocusTarget = target;
@@ -590,7 +592,7 @@ ListboxSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* targ
 void 
 ListboxSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		((LISTBOXDATA*)win->InstData)->KillFocusHook = proc;
 		((LISTBOXDATA*)win->InstData)->KillFocusTarget = target;
@@ -605,7 +607,7 @@ ListboxSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void
 ListboxSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		((LISTBOXDATA*)win->InstData)->PreKeyHook = proc;
 		((LISTBOXDATA*)win->InstData)->PreKeyTarget = target;
@@ -621,7 +623,7 @@ ListboxSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* tar
 void
 ListboxSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		((LISTBOXDATA*)win->InstData)->PostKeyHook = proc;
 		((LISTBOXDATA*)win->InstData)->PostKeyTarget = target;
@@ -637,7 +639,7 @@ ListboxSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* ta
 void 
 ListboxSetLbChangedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		((LISTBOXDATA*)win->InstData)->LbChangedHook = proc;
 		((LISTBOXDATA*)win->InstData)->LbChangedTarget = target;
@@ -653,7 +655,7 @@ ListboxSetLbChangedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void 
 ListboxSetLbChangingHook(CUIWINDOW* win, CustomBoolHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		((LISTBOXDATA*)win->InstData)->LbChangingHook = proc;
 		((LISTBOXDATA*)win->InstData)->LbChangingTarget = target;
@@ -669,7 +671,7 @@ ListboxSetLbChangingHook(CUIWINDOW* win, CustomBoolHookProc proc, CUIWINDOW* tar
 void
 ListboxSetLbClickedHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		((LISTBOXDATA*)win->InstData)->LbClickedHook = proc;
 		((LISTBOXDATA*)win->InstData)->LbClickedTarget = target;
@@ -683,9 +685,9 @@ ListboxSetLbClickedHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
  * ---------------------------------------------------------------------
  */
 int  
-ListboxAdd(CUIWINDOW* win, const TCHAR* text)
+ListboxAdd(CUIWINDOW* win, const wchar_t* text)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		int index = 0;
 		LISTBOXDATA* data = (LISTBOXDATA*) win->InstData;
@@ -693,7 +695,7 @@ ListboxAdd(CUIWINDOW* win, const TCHAR* text)
 
 		item->Next = NULL;
 		item->Previous = NULL;
-		item->ItemText = tcsdup(text);
+		item->ItemText = wcsdup(text);
 		item->ItemData = 0;
 
 		if (data->Sorted)
@@ -702,7 +704,7 @@ ListboxAdd(CUIWINDOW* win, const TCHAR* text)
 			LISTBOXITEM* previous = NULL;
 			if (data->Descending)
 			{
-				while (itemptr && (tcscmp(itemptr->ItemText, text) > 0))
+				while (itemptr && (wcscmp(itemptr->ItemText, text) > 0))
 				{
 					index++;
 					previous = itemptr;
@@ -711,7 +713,7 @@ ListboxAdd(CUIWINDOW* win, const TCHAR* text)
 			}
 			else
 			{
-				while (itemptr && (tcscmp(itemptr->ItemText, text) < 0))
+				while (itemptr && (wcscmp(itemptr->ItemText, text) < 0))
 				{
 					index++;
 					previous = itemptr;
@@ -782,7 +784,7 @@ ListboxAdd(CUIWINDOW* win, const TCHAR* text)
 void 
 ListboxDelete(CUIWINDOW* win, int index)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		LISTBOXDATA* data = (LISTBOXDATA*) win->InstData;
 		LISTBOXITEM* item = ListboxGetItem(data, index);
@@ -828,10 +830,10 @@ ListboxDelete(CUIWINDOW* win, int index)
  * Get item text of item 'index'
  * ---------------------------------------------------------------------
  */
-const TCHAR* 
+const wchar_t* 
 ListboxGet(CUIWINDOW* win, int index)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		LISTBOXDATA* data = (LISTBOXDATA*) win->InstData;
 		LISTBOXITEM* item = ListboxGetItem(data, index);
@@ -852,7 +854,7 @@ ListboxGet(CUIWINDOW* win, int index)
 void 
 ListboxSetData(CUIWINDOW* win, int index, unsigned long udata)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		LISTBOXDATA* data = (LISTBOXDATA*) win->InstData;
 		LISTBOXITEM* item = ListboxGetItem(data, index);
@@ -872,7 +874,7 @@ ListboxSetData(CUIWINDOW* win, int index, unsigned long udata)
 unsigned long 
 ListboxGetData(CUIWINDOW* win, int index)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		LISTBOXDATA* data = (LISTBOXDATA*) win->InstData;
 		LISTBOXITEM* item = ListboxGetItem(data, index);
@@ -893,7 +895,7 @@ ListboxGetData(CUIWINDOW* win, int index)
 void 
 ListboxSetSel(CUIWINDOW* win, int index)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		LISTBOXDATA* data = (LISTBOXDATA*) win->InstData;
 		if ((index < data->NumItems) && (index >= (-1)))
@@ -914,7 +916,7 @@ ListboxSetSel(CUIWINDOW* win, int index)
 int  
 ListboxGetSel(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		LISTBOXDATA* data = (LISTBOXDATA*) win->InstData;
 		return data->SelIndex;
@@ -931,7 +933,7 @@ ListboxGetSel(CUIWINDOW* win)
 void
 ListboxClear(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		LISTBOXDATA* data = (LISTBOXDATA*) win->InstData;
 		LISTBOXITEM* item = data->FirstItem;
@@ -959,7 +961,7 @@ ListboxClear(CUIWINDOW* win)
 int  
 ListboxGetCount(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		LISTBOXDATA* data = (LISTBOXDATA*) win->InstData;
 		return data->NumItems;
@@ -974,9 +976,9 @@ ListboxGetCount(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 int
-ListboxSelect(CUIWINDOW* win, const TCHAR* text)
+ListboxSelect(CUIWINDOW* win, const wchar_t* text)
 {
-	if (win && (tcscmp(win->Class, _T("LISTBOX")) == 0))
+	if (win && (wcscmp(win->Class, _T("LISTBOX")) == 0))
 	{
 		LISTBOXDATA* data = (LISTBOXDATA*) win->InstData;
 		LISTBOXITEM* item = data->FirstItem;
@@ -984,7 +986,7 @@ ListboxSelect(CUIWINDOW* win, const TCHAR* text)
 
 		while (item)
 		{
-			if (tcscmp(item->ItemText, text) == 0)
+			if (wcscmp(item->ItemText, text) == 0)
 			{
 				data->SelIndex = index;
 				ListboxCalcPos(win);

@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: backend.c 25206 2010-08-03 21:50:34Z dv $
+ * Last Update:  $Id: backend.c 33467 2013-04-14 16:23:14Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -34,7 +34,7 @@
 
 typedef struct
 {
-	TCHAR* BufPtr;
+	wchar_t* BufPtr;
 	int    BufSize;
 	void*  Previous;
 	void*  Next;
@@ -45,7 +45,7 @@ void StubInit(void);
 void StubClear(void);
 
 /* local prototypes */
-static const TCHAR* BackendGetParameter(TCHAR** pbuf);
+static const wchar_t* BackendGetParameter(wchar_t** pbuf);
 static int          BackendMakePipePath(void);
 static void         BackendPushBuffer(void);
 static void         BackendPopBuffer(void);
@@ -55,7 +55,7 @@ static void         BackendGrowBuffer(EXECBUFFER* buf);
 static int          PipeR = 0;
 static int          PipeW = 0;
 static COPROC*      Shell = NULL;
-static const TCHAR* Params[MAX_ARG];
+static const wchar_t* Params[MAX_ARG];
 static int          NumParams;
 static char         PipePath[128 + 1];
 static EXECBUFFER*  FirstBuffer = NULL;
@@ -63,7 +63,7 @@ static EXECBUFFER*  LastBuffer = NULL;
 static ApiProc      ExternalApi = NULL;
 static FILE*        DebugOut = NULL;
 
-static TCHAR*       BackendFrame = NULL;
+static wchar_t*       BackendFrame = NULL;
 static int          BackendFPos = 0;
 static int          BackendFSize = 0;
 
@@ -79,7 +79,7 @@ ScriptingInit(void)
 	AddonInit();
 
 	FirstBuffer = (EXECBUFFER*) malloc(sizeof(EXECBUFFER));
-	FirstBuffer->BufPtr   = (TCHAR*) malloc((BUFFER_BLOCK_SIZE + 1) * sizeof(TCHAR));
+	FirstBuffer->BufPtr   = (wchar_t*) malloc((BUFFER_BLOCK_SIZE + 1) * sizeof(wchar_t));
 	FirstBuffer->BufSize  = BUFFER_BLOCK_SIZE;
 	FirstBuffer->Previous = NULL;
 	FirstBuffer->Next     = NULL;
@@ -167,7 +167,7 @@ BackendRemovePipes(void)
  * ---------------------------------------------------------------------
  */ 
 int
-BackendOpen(const TCHAR* command, int debug)
+BackendOpen(const wchar_t* command, int debug)
 {
 	char    pipe1[128 + 32 + 1];
 	char    pipe2[128 + 32 + 1];
@@ -263,13 +263,13 @@ BackendClose(void)
  * ---------------------------------------------------------------------
  */
 void
-BackendStartFrame(TCHAR ctype, int size)
+BackendStartFrame(wchar_t ctype, int size)
 {
 	if (BackendFrame)
 	{
 		free(BackendFrame);
 	}
-	BackendFrame = (TCHAR*) malloc((size + 8) * sizeof(TCHAR));
+	BackendFrame = (wchar_t*) malloc((size + 8) * sizeof(wchar_t));
 	if (BackendFrame)
 	{
 		BackendFrame[0] = _T(':');
@@ -286,11 +286,11 @@ BackendStartFrame(TCHAR ctype, int size)
  * ---------------------------------------------------------------------
  */
 void
-BackendInsertStr(const TCHAR* str)
+BackendInsertStr(const wchar_t* str)
 {
 	if (BackendFrame)
 	{
-		TCHAR* p;
+		wchar_t* p;
 		int size;
 
 		BackendFrame[BackendFPos++] = _T('\t');
@@ -329,7 +329,7 @@ BackendInsertStr(const TCHAR* str)
 		}
 		*p = _T('\0');
 
-		BackendFPos += tcslen(&BackendFrame[BackendFPos]);
+		BackendFPos += wcslen(&BackendFrame[BackendFPos]);
 	}
 }
 
@@ -346,12 +346,12 @@ BackendInsertInt(int val)
 		BackendFrame[BackendFPos++] = _T('\t');
 		BackendFrame[BackendFPos++] = _T(':');
 
-		stprintf(&BackendFrame[BackendFPos], 
+		swprintf(&BackendFrame[BackendFPos], 
 			BackendFSize - BackendFPos,
 			_T("%i"), 
 			val);
 
-		BackendFPos += tcslen(&BackendFrame[BackendFPos]);
+		BackendFPos += wcslen(&BackendFrame[BackendFPos]);
 		BackendFrame[BackendFPos] = 0;
 	}
 }
@@ -369,12 +369,12 @@ BackendInsertLong(unsigned long val)
 		BackendFrame[BackendFPos++] = _T('\t');
 		BackendFrame[BackendFPos++] = _T(':');
 
-		stprintf(&BackendFrame[BackendFPos], 
+		swprintf(&BackendFrame[BackendFPos], 
 			BackendFSize - BackendFPos,
 			_T("%lu"), 
 			val);
 
-		BackendFPos += tcslen(&BackendFrame[BackendFPos]);
+		BackendFPos += wcslen(&BackendFrame[BackendFPos]);
 		BackendFrame[BackendFPos] = 0;
 	}
 }
@@ -390,15 +390,16 @@ BackendInsertLong(unsigned long val)
 void
 BackendSendFrame(void)
 {
-#ifdef _UNICODE
 	if (BackendFrame)
 	{
 		char         mbbuf[128 + 1];
-		mbstate_t    state = {0};
+		mbstate_t    state;
 		int          size = 0;
-		const TCHAR* p = BackendFrame;
+		const wchar_t* p = BackendFrame;
+		
+		memset (&state, 0, sizeof(state));
 
-		tcscat(BackendFrame, _T("\n"));
+		wcscat(BackendFrame, _T("\n"));
 
 		if (DebugOut)
 		{
@@ -426,22 +427,6 @@ BackendSendFrame(void)
 		free(BackendFrame);
 		BackendFrame = NULL;
 	}
-#else
-	if (BackendFrame)
-	{
-		tcscat(BackendFrame, _T("\n"));
-
-		write(PipeW, BackendFrame, tcslen(BackendFrame));
-        	if (DebugOut)
-	        {
-        	        fputs("-> ", DebugOut);
-                	fputs(BackendFrame, DebugOut);
-	                fflush(DebugOut);
-        	}
-		free(BackendFrame);
-		BackendFrame = NULL;
-	}
-#endif
 }
 
 /* ---------------------------------------------------------------------
@@ -482,9 +467,7 @@ int
 BackendExecFrame(void)
 {
 	EXECBUFFER* execbuf;
-#ifdef _UNICODE
 	char   mbbuf[128 + 1];
-#endif
 
 	if (!LastBuffer)
 	{
@@ -523,13 +506,14 @@ BackendExecFrame(void)
 		
 		execbuf->BufPtr[0] = 0;
 		
-#ifdef _UNICODE
 		{
-			mbstate_t   state = {0};
-			TCHAR*      t = execbuf->BufPtr;
+			mbstate_t   state;
+			wchar_t*      t = execbuf->BufPtr;
 			int         s;
 			const char* p;
 			c = 0;
+			
+			memset (&state, 0, sizeof(state));
 			
 			/* trace backend communication into file */
 			if (DebugOut)
@@ -596,45 +580,10 @@ BackendExecFrame(void)
 				fflush(DebugOut);
 			}
 		}
-#else
-		{
-			/* read input and resize buffer if required */
-			int size = 0;
-			for(;;)
-			{
-				c = read(PipeR, &execbuf->BufPtr[size], execbuf->BufSize - size);
-				if (c > 0)
-				{
-					size += c;
-				}
-				if (size == execbuf->BufSize)
-				{
-					BackendGrowBuffer(execbuf);
-				}
-				
-				/* really wait until complete data has been received */
-				if ((size > 0) && (execbuf->BufPtr[size-1] == _T('\n')))
-				{
-					break;
-				}
-			}
-			
-			/* copy size to count var */
-			c = size;
-			
-			/* do debug out (if required) */
-			if (DebugOut && (c > 0))
-			{
-				fputs("<- ", DebugOut);
-				fwrite(execbuf->BufPtr, 1, c, DebugOut);
-				fflush(DebugOut);
-			}
-		}		
-#endif
 		if (c > 0)
 		{
-			const TCHAR* frm;
-			TCHAR* rp = &execbuf->BufPtr[0];
+			const wchar_t* frm;
+			wchar_t* rp = &execbuf->BufPtr[0];
 
 			execbuf->BufPtr[c] = 0;
 			frm = BackendGetParameter(&rp);
@@ -658,12 +607,12 @@ BackendExecFrame(void)
 			{
 				int    func_nr;
 				int    argc = 0;
-				const  TCHAR* p[MAX_ARG];
+				const  wchar_t* p[MAX_ARG];
 
 				p[0] = BackendGetParameter(&rp);
 				argc = 0;
 
-				if (p[0] && (stscanf(p[0], _T("%d"), &func_nr) == 1))
+				if (p[0] && (swscanf(p[0], _T("%d"), &func_nr) == 1))
 				{
 					int module = func_nr / 10000;
 
@@ -1015,7 +964,7 @@ BackendNumResultParams(void)
  * Return a result parameter  
  * ---------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 BackendResultParam(int nr)
 {
 	return Params[nr];
@@ -1039,11 +988,11 @@ BackendSetExternalApi(ApiProc api)
  * Return the next parameter from the result string     
  * ---------------------------------------------------------------------
  */ 
-static const TCHAR*
-BackendGetParameter(TCHAR** pbuf)
+static const wchar_t*
+BackendGetParameter(wchar_t** pbuf)
 {
-	TCHAR* p = *pbuf;
-	const TCHAR* result;
+	wchar_t* p = *pbuf;
+	const wchar_t* result;
 
 	if (!p || (*p == _T('\0')))
 	{
@@ -1055,7 +1004,7 @@ BackendGetParameter(TCHAR** pbuf)
 	{
 		if (*p == _T('\\'))
 		{
-			tcscpy(p, p + 1);
+			wcscpy(p, p + 1);
 			switch(*p)
 			{
 			case _T('n'): *p = _T('\n'); break;
@@ -1132,7 +1081,7 @@ BackendPushBuffer(void)
 	if (LastBuffer->Next == NULL)
 	{
 		EXECBUFFER* newbuf = (EXECBUFFER*) malloc(sizeof(EXECBUFFER));
-		newbuf->BufPtr   = (TCHAR*) malloc((BUFFER_BLOCK_SIZE + 1) * sizeof(TCHAR));
+		newbuf->BufPtr   = (wchar_t*) malloc((BUFFER_BLOCK_SIZE + 1) * sizeof(wchar_t));
 		newbuf->BufSize  = BUFFER_BLOCK_SIZE;
 		newbuf->Previous = LastBuffer;
 		newbuf->Next = NULL;
@@ -1167,12 +1116,12 @@ BackendPopBuffer(void)
 static void
 BackendGrowBuffer(EXECBUFFER* buf)
 {
-	TCHAR* oldbuf  = buf->BufPtr;
+	wchar_t* oldbuf  = buf->BufPtr;
 	int    newsize = buf->BufSize + BUFFER_BLOCK_SIZE;
 	
-	buf->BufPtr  = (TCHAR*) malloc((newsize + 1) * sizeof(TCHAR));
+	buf->BufPtr  = (wchar_t*) malloc((newsize + 1) * sizeof(wchar_t));
 	
-	memcpy(buf->BufPtr, oldbuf, buf->BufSize * sizeof(TCHAR));
+	memcpy(buf->BufPtr, oldbuf, buf->BufSize * sizeof(wchar_t));
 	buf->BufSize = newsize;
 	
 	free(oldbuf);

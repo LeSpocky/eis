@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: api.c 25003 2010-07-17 05:50:58Z dv $
+ * Last Update:  $Id: api.c 33467 2013-04-14 16:23:14Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -53,7 +53,7 @@ ApiLookupWindow(unsigned long nr)
  * ---------------------------------------------------------------------
  */
 void
-ApiMessageBox(int argc, const TCHAR* argv[])
+ApiMessageBox(int argc, const wchar_t* argv[])
 {
 	if (argc == 4)
 	{
@@ -61,8 +61,8 @@ ApiMessageBox(int argc, const TCHAR* argv[])
 		int    res;
 		int    flags = MB_OK;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[3], _T("%d"), &flags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[3], _T("%d"), &flags);
 
 		res = MessageBox(ApiLookupWindow(wndnr), argv[1], argv[2], flags);
 
@@ -83,7 +83,7 @@ ApiMessageBox(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowNew(int argc, const TCHAR* argv[])
+ApiWindowNew(int argc, const wchar_t* argv[])
 {
 	if (argc == 6)
 	{
@@ -92,12 +92,12 @@ ApiWindowNew(int argc, const TCHAR* argv[])
 		int    x, y, w, h;
 		int    flags;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &x);
-		stscanf(argv[2], _T("%d"), &y);
-		stscanf(argv[3], _T("%d"), &w);
-		stscanf(argv[4], _T("%d"), &h);
-		stscanf(argv[5], _T("%d"), &flags);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &x);
+		swscanf(argv[2], _T("%d"), &y);
+		swscanf(argv[3], _T("%d"), &w);
+		swscanf(argv[4], _T("%d"), &h);
+		swscanf(argv[5], _T("%d"), &flags);
 
 		stub = StubCreate(WindowNew(ApiLookupWindow(wndnr), x, y, w, h, flags));
 		if (stub)
@@ -124,14 +124,14 @@ ApiWindowNew(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowCreate(int argc, const TCHAR* argv[])
+ApiWindowCreate(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*    winstub;
 		unsigned long  wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -159,14 +159,14 @@ ApiWindowCreate(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowDestroy(int argc, const TCHAR* argv[])
+ApiWindowDestroy(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*    winstub;
 		unsigned long  wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -194,13 +194,13 @@ ApiWindowDestroy(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowQuit(int argc, const TCHAR* argv[])
+ApiWindowQuit(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		int   exitcode;
 
-		stscanf(argv[0], _T("%d"), &exitcode);
+		swscanf(argv[0], _T("%d"), &exitcode);
 
 		WindowQuit(exitcode);
 
@@ -220,7 +220,7 @@ ApiWindowQuit(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowModal(int argc, const TCHAR* argv[])
+ApiWindowModal(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
@@ -228,7 +228,7 @@ ApiWindowModal(int argc, const TCHAR* argv[])
 		unsigned long  wndnr;
 		int            res;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -257,7 +257,7 @@ ApiWindowModal(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowClose(int argc, const TCHAR* argv[])
+ApiWindowClose(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -266,8 +266,8 @@ ApiWindowClose(int argc, const TCHAR* argv[])
 		int            exitcode;
 		int            res;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &exitcode);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &exitcode);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -296,7 +296,7 @@ ApiWindowClose(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowSetHook(int argc, const TCHAR* argv[])
+ApiWindowSetHook(int argc, const wchar_t* argv[])
 {
 	if (argc == 3)
 	{
@@ -304,8 +304,8 @@ ApiWindowSetHook(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           hook;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &hook);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &hook);
 
 		if ((hook >= HOOK_CREATE) && (hook <= HOOK_LAYOUT))
 		{
@@ -340,7 +340,7 @@ ApiWindowSetHook(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowGetCtrl(int argc, const TCHAR* argv[])
+ApiWindowGetCtrl(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -348,8 +348,8 @@ ApiWindowGetCtrl(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           id;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &id);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &id);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -386,8 +386,10 @@ ApiWindowGetCtrl(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowGetDesktop(int argc, const TCHAR* argv[])
+ApiWindowGetDesktop(int argc, const wchar_t* argv[])
 {
+	CUI_USE_ARG(argv);
+	
 	if (argc == 0)
 	{
 		WINDOWSTUB*   winstub;
@@ -419,7 +421,7 @@ ApiWindowGetDesktop(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowMove(int argc, const TCHAR* argv[])
+ApiWindowMove(int argc, const wchar_t* argv[])
 {
 	if (argc == 5)
 	{
@@ -427,11 +429,11 @@ ApiWindowMove(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           x, y, w, h;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &x);
-		stscanf(argv[2], _T("%d"), &y);
-		stscanf(argv[3], _T("%d"), &w);
-		stscanf(argv[4], _T("%d"), &h);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &x);
+		swscanf(argv[2], _T("%d"), &y);
+		swscanf(argv[3], _T("%d"), &w);
+		swscanf(argv[4], _T("%d"), &h);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -459,7 +461,7 @@ ApiWindowMove(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowGetWindowRect(int argc, const TCHAR* argv[])
+ApiWindowGetWindowRect(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
@@ -467,7 +469,7 @@ ApiWindowGetWindowRect(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		CUIRECT       rc;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -499,7 +501,7 @@ ApiWindowGetWindowRect(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowGetClientRect(int argc, const TCHAR* argv[])
+ApiWindowGetClientRect(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
@@ -507,7 +509,7 @@ ApiWindowGetClientRect(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		CUIRECT       rc;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -539,7 +541,7 @@ ApiWindowGetClientRect(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowSetTimer(int argc, const TCHAR* argv[])
+ApiWindowSetTimer(int argc, const wchar_t* argv[])
 {
 	if (argc == 3)
 	{
@@ -548,9 +550,9 @@ ApiWindowSetTimer(int argc, const TCHAR* argv[])
 		int           id;
 		int           time;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &id);
-		stscanf(argv[2], _T("%d"), &time);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &id);
+		swscanf(argv[2], _T("%d"), &time);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -578,7 +580,7 @@ ApiWindowSetTimer(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowKillTimer(int argc, const TCHAR* argv[])
+ApiWindowKillTimer(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -586,8 +588,8 @@ ApiWindowKillTimer(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           id;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &id);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &id);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -615,23 +617,23 @@ ApiWindowKillTimer(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowAddColScheme(int argc, const TCHAR* argv[])
+ApiWindowAddColScheme(int argc, const wchar_t* argv[])
 {
 	if (argc == 12)
 	{
 		CUIWINCOLOR   colrec;
 
-		stscanf(argv[1], _T("%d"), &colrec.WndColor);
-		stscanf(argv[2], _T("%d"), &colrec.WndSelColor);
-		stscanf(argv[3], _T("%d"), &colrec.SelTxtColor);
-		stscanf(argv[4], _T("%d"), &colrec.WndTxtColor);
-		stscanf(argv[5], _T("%d"), &colrec.InactTxtColor);
-		stscanf(argv[6], _T("%d"), &colrec.HilightColor);
-		stscanf(argv[7], _T("%d"), &colrec.TitleTxtColor);
-		stscanf(argv[8], _T("%d"), &colrec.TitleBkgndColor);
-		stscanf(argv[9], _T("%d"), &colrec.StatusTxtColor);
-		stscanf(argv[10], _T("%d"), &colrec.StatusBkgndColor);
-		stscanf(argv[11], _T("%d"), &colrec.BorderColor);
+		swscanf(argv[1], _T("%d"), &colrec.WndColor);
+		swscanf(argv[2], _T("%d"), &colrec.WndSelColor);
+		swscanf(argv[3], _T("%d"), &colrec.SelTxtColor);
+		swscanf(argv[4], _T("%d"), &colrec.WndTxtColor);
+		swscanf(argv[5], _T("%d"), &colrec.InactTxtColor);
+		swscanf(argv[6], _T("%d"), &colrec.HilightColor);
+		swscanf(argv[7], _T("%d"), &colrec.TitleTxtColor);
+		swscanf(argv[8], _T("%d"), &colrec.TitleBkgndColor);
+		swscanf(argv[9], _T("%d"), &colrec.StatusTxtColor);
+		swscanf(argv[10], _T("%d"), &colrec.StatusBkgndColor);
+		swscanf(argv[11], _T("%d"), &colrec.BorderColor);
 
 		WindowAddColScheme(argv[0], &colrec);
 
@@ -651,7 +653,7 @@ ApiWindowAddColScheme(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowHasColScheme(int argc, const TCHAR* argv[])
+ApiWindowHasColScheme(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
@@ -674,14 +676,14 @@ ApiWindowHasColScheme(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowColScheme(int argc, const TCHAR* argv[])
+ApiWindowColScheme(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -709,14 +711,14 @@ ApiWindowColScheme(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowSetText(int argc, const TCHAR* argv[])
+ApiWindowSetText(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -744,14 +746,14 @@ ApiWindowSetText(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowSetRText(int argc, const TCHAR* argv[])
+ApiWindowSetRText(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -779,14 +781,14 @@ ApiWindowSetRText(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowSetLText(int argc, const TCHAR* argv[])
+ApiWindowSetLText(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -814,14 +816,14 @@ ApiWindowSetLText(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowSetStatusText(int argc, const TCHAR* argv[])
+ApiWindowSetStatusText(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -849,14 +851,14 @@ ApiWindowSetStatusText(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowSetRStatusText(int argc, const TCHAR* argv[])
+ApiWindowSetRStatusText(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -884,14 +886,14 @@ ApiWindowSetRStatusText(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowSetLStatusText(int argc, const TCHAR* argv[])
+ApiWindowSetLStatusText(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -919,24 +921,24 @@ ApiWindowSetLStatusText(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowGetText(int argc, const TCHAR* argv[])
+ApiWindowGetText(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
 		{
-			TCHAR* result = (TCHAR*) malloc((1024 + 1) * sizeof(TCHAR));
+			wchar_t* result = (wchar_t*) malloc((1024 + 1) * sizeof(wchar_t));
 			if (result)
 			{
 				WindowGetText(winstub->Window, result, 1024);
 
-				BackendStartFrame(_T('R'), tcslen(result) + 32);
+				BackendStartFrame(_T('R'), wcslen(result) + 32);
 				BackendInsertInt (ERROR_SUCCESS);
 				BackendInsertStr (result);
 				BackendSendFrame ();
@@ -960,14 +962,14 @@ ApiWindowGetText(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowToTop(int argc, const TCHAR* argv[])
+ApiWindowToTop(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -995,7 +997,7 @@ ApiWindowToTop(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowMaximize(int argc, const TCHAR* argv[])
+ApiWindowMaximize(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -1003,8 +1005,8 @@ ApiWindowMaximize(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           state;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &state);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &state);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -1032,7 +1034,7 @@ ApiWindowMaximize(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowMinimize(int argc, const TCHAR* argv[])
+ApiWindowMinimize(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -1040,8 +1042,8 @@ ApiWindowMinimize(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           state;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &state);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &state);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -1069,7 +1071,7 @@ ApiWindowMinimize(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowHide(int argc, const TCHAR* argv[])
+ApiWindowHide(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -1077,8 +1079,8 @@ ApiWindowHide(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           state;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &state);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &state);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -1106,7 +1108,7 @@ ApiWindowHide(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowEnable(int argc, const TCHAR* argv[])
+ApiWindowEnable(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
@@ -1114,8 +1116,8 @@ ApiWindowEnable(int argc, const TCHAR* argv[])
 		unsigned long wndnr;
 		int           state;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
-		stscanf(argv[1], _T("%d"), &state);
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"), &state);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -1143,14 +1145,14 @@ ApiWindowEnable(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowSetFocus(int argc, const TCHAR* argv[])
+ApiWindowSetFocus(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -1178,8 +1180,10 @@ ApiWindowSetFocus(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowGetFocus(int argc, const TCHAR* argv[])
+ApiWindowGetFocus(int argc, const wchar_t* argv[])
 {
+	CUI_USE_ARG(argv);
+
 	if (argc == 0)
 	{
 		WINDOWSTUB*   winstub = NULL;
@@ -1211,14 +1215,14 @@ ApiWindowGetFocus(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowInvalidate(int argc, const TCHAR* argv[])
+ApiWindowInvalidate(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -1246,14 +1250,14 @@ ApiWindowInvalidate(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowInvalidateLayout(int argc, const TCHAR* argv[])
+ApiWindowInvalidateLayout(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{
 		WINDOWSTUB*   winstub;
 		unsigned long wndnr;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 
 		winstub = StubFind(wndnr);
 		if (winstub)
@@ -1281,8 +1285,10 @@ ApiWindowInvalidateLayout(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void 
-ApiWindowUpdate(int argc, const TCHAR* argv[])
+ApiWindowUpdate(int argc, const wchar_t* argv[])
 {
+	CUI_USE_ARG(argv);
+
 	if (argc == 0)
 	{
 		WindowUpdate();
@@ -1303,8 +1309,10 @@ ApiWindowUpdate(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowCursesLeave(int argc, const TCHAR* argv[])
+ApiWindowCursesLeave(int argc, const wchar_t* argv[])
 {
+	CUI_USE_ARG(argv);
+
 	if (argc == 0)
 	{
 		WindowLeaveCurses();
@@ -1325,8 +1333,10 @@ ApiWindowCursesLeave(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowCursesResume(int argc, const TCHAR* argv[])
+ApiWindowCursesResume(int argc, const wchar_t* argv[])
 {
+	CUI_USE_ARG(argv);
+
 	if (argc == 0)
 	{
 		WindowResumeCurses();
@@ -1347,7 +1357,7 @@ ApiWindowCursesResume(int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 void
-ApiWindowShellExecute(int argc, const TCHAR* argv[])
+ApiWindowShellExecute(int argc, const wchar_t* argv[])
 {
 	if (argc == 1)
 	{

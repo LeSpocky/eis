@@ -49,7 +49,7 @@ LabelPaintHook(void* w)
 	WindowGetClientRect(win, &rc);
 	if (rc.W <= 0) return;
 
-	len = tcslen(win->Text);
+	len = wcslen(win->Text);
 	if (win->IsEnabled)
 	{
 		SetColor(win->Win, win->Color.WndTxtColor, win->Color.WndColor, FALSE);
@@ -141,7 +141,7 @@ LabelDestroyHook(void* w)
  */
 
 CUIWINDOW*
-LabelNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h, 
+LabelNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h, 
          int id, int sflags, int cflags)
 {
 	if (parent)
@@ -177,7 +177,7 @@ LabelNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 void 
 LabelSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LABEL")) == 0))
+	if (win && (wcscmp(win->Class, _T("LABEL")) == 0))
 	{
 		((LABELDATA*)win->InstData)->SetFocusHook = proc;
 		((LABELDATA*)win->InstData)->SetFocusTarget = target;
@@ -192,7 +192,7 @@ LabelSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target
 void 
 LabelSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("LABEL")) == 0))
+	if (win && (wcscmp(win->Class, _T("LABEL")) == 0))
 	{
 		((LABELDATA*)win->InstData)->KillFocusHook = proc;
 		((LABELDATA*)win->InstData)->KillFocusTarget = target;

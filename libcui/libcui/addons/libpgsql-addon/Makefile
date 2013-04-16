@@ -2,7 +2,7 @@
 # Makefile for curses user interface programs on Eis/Fair
 #
 # Creation     : 13.03.2004
-# Last Modified: $Id: Makefile 28545 2011-06-13 19:27:26Z dv $
+# Last Modified: $Id: Makefile 33468 2013-04-14 16:40:27Z dv $
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,17 +19,27 @@ CC   = gcc
 FLEX = flex
 
 # unicode support
-CFLAGS_UNICODE     =  -Wall -Wstrict-prototypes -g 
+CFLAGS_UNICODE     =  -Wall -Wextra -Wstrict-prototypes -g 
 CFLAGS_UNICODE    += -D_XOPEN_SOURCE_EXTENDED 
 CFLAGS_UNICODE    += -D_UNICODE -D_GNU_SOURCE
 CFLAGS_UNICODE    += -std=c99
 CURSESLIB_UNICODE  = ncursesw
 
+# ascii support
+CFLAGS_ASCII       = -Wall -Wstrict-prototypes -g
+CURSESLIB_ASCII    = ncurses
+
 # additional library flags
 CLIBFLAGS = -fPIC
 
-CFLAGS=$(CFLAGS_UNICODE) 
-CURSESLIB=$(CURSESLIB_UNICODE)
+# check platform target
+#ifneq (,$(findstring UTF-8,$(LC_CTYPE)))
+    CFLAGS=$(CFLAGS_UNICODE) 
+    CURSESLIB=$(CURSESLIB_UNICODE)
+#else
+#    CFLAGS=$(CFLAGS_ASCII) 
+#    CURSESLIB=$(CURSESLIB_ASCII)
+#endif
 
 # linker
 LDFLAGS     = -lpq
@@ -41,9 +51,9 @@ LDFLAGS    += -l$(CURSESLIB)
 # ----------------------------------------------------------------------
 
 # output files
-LIB_VERSION        = 1.0.1
+LIB_VERSION        = 2.0.0
 LIB_NAME           = libpgsql-addon
-INC_NAME           = pgsqllib-1
+INC_NAME           = pgsqllib-2
 
 # files
 C_OBJECTS          =  libmain.o
@@ -58,7 +68,7 @@ C_OBJECTS         +=  server_api.o
 # compile targets
 $(LIB_NAME).so.$(LIB_VERSION): $(C_OBJECTS)
 	@echo "linking $@ ..."
-	@$(CC) -shared -Wl,-soname,$(LIB_NAME).so.1 -o $@ $^ $(LDFLAGS)
+	@$(CC) -shared -Wl,-soname,$(LIB_NAME).so.2 -o $@ $^ $(LDFLAGS)
 
 # include dependencies
 -include $(C_OBJECTS:.o=.d)
@@ -84,7 +94,7 @@ install: $(LIB_NAME).so.$(LIB_VERSION)
 	@echo "installing $(LIB_NAME) ..."
 	@mkdir -p $(DESTDIR)/usr/lib/cui-addons
 	@mkdir -p $(DESTDIR)/var/install/include
-	@strip -R .note -R .comment $(LIB_NAME).so.$(LIB_VERSION)
+	@strip $(LIB_NAME).so.$(LIB_VERSION)
 	@cp    $(LIB_NAME).so.$(LIB_VERSION) $(DESTDIR)/usr/lib/cui-addons
 	@cp    $(INC_NAME) $(DESTDIR)/var/install/include
 

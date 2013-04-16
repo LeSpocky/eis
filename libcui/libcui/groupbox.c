@@ -51,7 +51,7 @@ GroupboxNcPaintHook(void* w, int size_x, int size_y)
 
 		if (!win->Text) return;
 
-		len = tcslen(win->Text);
+		len = wcslen(win->Text);
 		if (len > rc.W - 4)
 		{
 			len = rc.W - 4;
@@ -85,6 +85,8 @@ static void
 GroupboxSetFocusHook(void* w, void* lastfocus)
 {
 	CUIWINDOW* win = (CUIWINDOW*) w;
+	
+	CUI_USE_ARG(lastfocus);
 
 	if (FocusMove > 0)
 	{
@@ -117,7 +119,7 @@ GroupboxSetFocusHook(void* w, void* lastfocus)
  */
 
 CUIWINDOW*
-GroupboxNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h, 
+GroupboxNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h, 
             int sflags, int cflags)
 {
 	if (parent)

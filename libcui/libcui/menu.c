@@ -32,7 +32,7 @@ typedef struct MENUDATAStruct
 	MENUITEM*     SelItem;
 	int           NumItems; 
 	int           DragMode;
-	TCHAR         InputBuffer[INPUT_SIZE + 1];
+	wchar_t         InputBuffer[INPUT_SIZE + 1];
 	int           InputPos;
 	
 	CustomHook1PtrProc      SetFocusHook;        /* Custom callback */
@@ -473,7 +473,7 @@ MenuKeyHook(void* w, int key)
 			if (data->InputPos > 0)
 			{
 				int   itemid;
-				TCHAR oldch;
+				wchar_t oldch;
 				MENUITEM* newsel;
 
 				data->InputPos--;
@@ -481,7 +481,7 @@ MenuKeyHook(void* w, int key)
 				data->InputBuffer[data->InputPos] = 0;
 				if (data->InputPos > 0)
 				{
-					stscanf(data->InputBuffer,_T("%d"),&itemid);
+					swscanf(data->InputBuffer,_T("%d"),&itemid);
 					newsel = MenuGetItemById(win, itemid);
 					if (newsel)
 					{
@@ -544,7 +544,7 @@ MenuKeyHook(void* w, int key)
 				data->InputBuffer[data->InputPos++] = key;
 				data->InputBuffer[data->InputPos] = 0;
 
-				stscanf(data->InputBuffer,_T("%d"),&itemid);
+				swscanf(data->InputBuffer,_T("%d"),&itemid);
 
 				newsel = MenuGetItemById(win, itemid);
 				if (newsel)
@@ -712,6 +712,8 @@ MenuVScrollHook(void* w, int sbcode, int pos)
 	CUIWINDOW* win = (CUIWINDOW*) w;
 	CUIRECT rc;
 	int sbpos, range;
+	
+	CUI_USE_ARG(pos);
 
 	WindowGetClientRect(win, &rc);
 	sbpos = WindowGetVScrollPos(win);
@@ -826,7 +828,7 @@ MenuKillFocusHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-MenuNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h, 
+MenuNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h, 
            int id, int sflags, int cflags)
 {
 	if (parent)
@@ -883,7 +885,7 @@ MenuNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 void 
 MenuSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		((MENUDATA*)win->InstData)->SetFocusHook = proc;
 		((MENUDATA*)win->InstData)->SetFocusTarget = target;
@@ -898,7 +900,7 @@ MenuSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 void 
 MenuSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		((MENUDATA*)win->InstData)->KillFocusHook = proc;
 		((MENUDATA*)win->InstData)->KillFocusTarget = target;
@@ -914,7 +916,7 @@ MenuSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void
 MenuSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		((MENUDATA*)win->InstData)->PreKeyHook = proc;
 		((MENUDATA*)win->InstData)->PreKeyTarget = target;
@@ -930,7 +932,7 @@ MenuSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target
 void
 MenuSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		((MENUDATA*)win->InstData)->PostKeyHook = proc;
 		((MENUDATA*)win->InstData)->PostKeyTarget = target;
@@ -946,7 +948,7 @@ MenuSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* targe
 void 
 MenuSetMenuChangedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		((MENUDATA*)win->InstData)->MenuChangedHook = proc;
 		((MENUDATA*)win->InstData)->MenuChangedTarget = target;
@@ -962,7 +964,7 @@ MenuSetMenuChangedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void 
 MenuSetMenuChangingHook(CUIWINDOW* win, CustomBoolHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		((MENUDATA*)win->InstData)->MenuChangingHook = proc;
 		((MENUDATA*)win->InstData)->MenuChangingTarget = target;
@@ -978,7 +980,7 @@ MenuSetMenuChangingHook(CUIWINDOW* win, CustomBoolHookProc proc, CUIWINDOW* targ
 void
 MenuSetMenuClickedHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		((MENUDATA*)win->InstData)->MenuClickedHook = proc;
 		((MENUDATA*)win->InstData)->MenuClickedTarget = target;
@@ -994,7 +996,7 @@ MenuSetMenuClickedHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void 
 MenuSetMenuEscapeHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		((MENUDATA*)win->InstData)->MenuEscapeHook = proc;
 		((MENUDATA*)win->InstData)->MenuEscapeTarget = target;
@@ -1008,14 +1010,14 @@ MenuSetMenuEscapeHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
  * ---------------------------------------------------------------------
  */
 void 
-MenuAddItem(CUIWINDOW* win, const TCHAR* text, unsigned long id, int moveable)
+MenuAddItem(CUIWINDOW* win, const wchar_t* text, unsigned long id, int moveable)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		MENUDATA* data = (MENUDATA*) win->InstData;
 		MENUITEM* newitem = (MENUITEM*) malloc(sizeof(MENUITEM));
 
-		newitem->ItemText = tcsdup(text);
+		newitem->ItemText = wcsdup(text);
 		newitem->IsSeparator = FALSE;
 		newitem->IsMoveable = moveable;
 		newitem->Next = NULL;
@@ -1048,7 +1050,7 @@ MenuAddItem(CUIWINDOW* win, const TCHAR* text, unsigned long id, int moveable)
 void 
 MenuAddSeparator(CUIWINDOW* win, int moveable)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		MENUDATA* data = (MENUDATA*) win->InstData;
 		MENUITEM* newitem = (MENUITEM*) malloc(sizeof(MENUITEM));
@@ -1086,7 +1088,7 @@ MenuAddSeparator(CUIWINDOW* win, int moveable)
 void
 MenuSelectItem(CUIWINDOW* win, unsigned long id)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		MENUDATA* data = (MENUDATA*) win->InstData;
 
@@ -1114,7 +1116,7 @@ MenuSelectItem(CUIWINDOW* win, unsigned long id)
 MENUITEM*
 MenuGetSelectedItem(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		MENUDATA* data = (MENUDATA*) win->InstData;
 		if (data->SelItem)
@@ -1134,7 +1136,7 @@ MenuGetSelectedItem(CUIWINDOW* win)
 MENUITEM* 
 MenuGetItems(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		MENUDATA* data = (MENUDATA*) win->InstData;
 		return data->FirstItem;
@@ -1152,7 +1154,7 @@ MenuGetItems(CUIWINDOW* win)
 void 
 MenuSetDragMode(CUIWINDOW* win, int state)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		MENUDATA* data = (MENUDATA*) win->InstData;
 		data->DragMode = state;
@@ -1169,7 +1171,7 @@ MenuSetDragMode(CUIWINDOW* win, int state)
 void 
 MenuClear(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("MENU")) == 0))
+	if (win && (wcscmp(win->Class, _T("MENU")) == 0))
 	{
 		MENUDATA* data = (MENUDATA*) win->InstData;
 		MENUITEM* item = data->FirstItem;
@@ -1210,7 +1212,7 @@ MenuMoveItems(MENUITEM* target, MENUITEM* source)
 		else
 		{
 			MENUITEM* workptr;
-			TCHAR* sourcetext = source->ItemText;
+			wchar_t* sourcetext = source->ItemText;
 			int   sourcetyp  = source->IsSeparator;
 			int   down = FALSE;
 
@@ -1348,11 +1350,11 @@ MenuShowLine(CUIWINDOW* win, MENUITEM* item, int ypos, CUIRECT* rc)
 	MENUDATA* data = (MENUDATA*) win->InstData;
 	WINDOW*   w = win->Win;
 	int       len, x;
-	TCHAR     id[INPUT_SIZE + 8 + 1];
+	wchar_t     id[INPUT_SIZE + 8 + 1];
 
 	if (item->IsSeparator) return;
 
-	len = tcslen(item->ItemText);
+	len = wcslen(item->ItemText);
 
 	SetColor(w, win->Color.WndTxtColor, win->Color.WndColor, FALSE);
 	if (item == data->SelItem)
@@ -1360,7 +1362,7 @@ MenuShowLine(CUIWINDOW* win, MENUITEM* item, int ypos, CUIRECT* rc)
 		SetColor(w, win->Color.SelTxtColor, win->Color.WndSelColor, TRUE);
 	}
 
-	stprintf(id, INPUT_SIZE + 8, _T("%lu"), item->ItemId);
+	swprintf(id, INPUT_SIZE + 8, _T("%lu"), item->ItemId);
 
 	if ((data->DragMode) && (item == data->SelItem))
 	{
@@ -1395,7 +1397,7 @@ MenuShowLine(CUIWINDOW* win, MENUITEM* item, int ypos, CUIRECT* rc)
 		{
 			if ((x > 0) && (x <= INPUT_SIZE))
 			{
-				if ((x - 1) < tcslen(id))
+				if ((x - 1) < (int)wcslen(id))
 				{
 					SetColor(w, win->Color.HilightColor, win->Color.WndColor, FALSE);
 					if (item == data->SelItem)
@@ -1438,13 +1440,13 @@ MenuShowInputField(CUIWINDOW* win, CUIRECT* rc)
 {
 	MENUDATA* data = (MENUDATA*) win->InstData;
 	WINDOW*   w = win->Win;
-	TCHAR     id[INPUT_SIZE + 8];
+	wchar_t     id[INPUT_SIZE + 8];
 	int       len;
 	int       x;
-	int       offset = tcslen(win->Text) + 3;
+	int       offset = wcslen(win->Text) + 3;
 
 	/* show title */
-	len = tcslen(win->Text);
+	len = wcslen(win->Text);
 	if (len > (rc->W - 2))
 	{
 		len = rc->W - 2;
@@ -1481,11 +1483,11 @@ MenuShowInputField(CUIWINDOW* win, CUIRECT* rc)
 	/* show number */
 	if (data->SelItem)
 	{
-		stprintf(id, INPUT_SIZE + 8, _T("%lu"), data->SelItem->ItemId);
+		swprintf(id, INPUT_SIZE + 8, _T("%lu"), data->SelItem->ItemId);
 	}
 	else id[0] = 0;
 
-	len = tcslen(id);
+	len = wcslen(id);
 
 	SetColor(w, win->Color.HilightColor, win->Color.WndColor, FALSE);
 

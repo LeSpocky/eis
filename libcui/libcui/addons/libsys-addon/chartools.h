@@ -5,7 +5,7 @@
  * Copyright (C) 2009
  * Daniel Vogel, <daniel@eisfair.org>
  *
- * Last Update:  $Id: chartools.h 23497 2010-03-14 21:53:08Z dv $
+ * Last Update:  $Id: chartools.h 33397 2013-04-02 20:48:05Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,8 +29,8 @@
 #include <cui-char.h>
 
 int    ModuleMbStrLen(const char* str);
-int    ModuleMbByteLen(const TCHAR* str);
-TCHAR* ModuleMbToTCharDup(const char*  str);
-char*  ModuleTCharToMbDup(const TCHAR* str);
+int    ModuleMbByteLen(const wchar_t* str);
+wchar_t* ModuleMbToTCharDup(const char*  str);
+char*  ModuleTCharToMbDup(const wchar_t* str);
 
 #endif

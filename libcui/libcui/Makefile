@@ -2,7 +2,7 @@
 # Makefile for curses user interface programs on Eis/Fair
 #
 # Creation     : 13.03.2004
-# Last Modified: $Id: Makefile 28705 2011-08-14 18:33:50Z dv $
+# Last Modified: $Id: Makefile 33478 2013-04-15 17:44:11Z dv $
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,17 +19,17 @@ CC=gcc
 FLEX=flex
 
 # unicode support
-CFLAGS_UNICODE  =  -Wall -Wstrict-prototypes -g -march=x86-64
-CFLAGS_UNICODE  += -D_XOPEN_SOURCE_EXTENDED 
-CFLAGS_UNICODE  += -D_UNICODE -D_GNU_SOURCE
-CFLAGS_UNICODE  += -std=c99
-CURSESLIB_UNICODE = ncursesw
+CFLAGS          = -Wall -Wextra
+CFLAGS         += -Wstrict-prototypes 
+CFLAGS         += -Wimplicit-function-declaration
+CFLAGS         += -D_XOPEN_SOURCE_EXTENDED 
+CFLAGS         += -D_UNICODE -D_GNU_SOURCE
+CFLAGS         += -std=c99
+CFLAGS         += -g
+CURSESLIB       = ncursesw
 
 # additional library flags
-CLIBFLAGS = -fPIC
-
-CFLAGS=$(CFLAGS_UNICODE)
-CURSESLIB=$(CURSESLIB_UNICODE)
+CLIBFLAGS       = -fPIC
 
 
 # ----------------------------------------------------------------------
@@ -37,7 +37,7 @@ CURSESLIB=$(CURSESLIB_UNICODE)
 # ----------------------------------------------------------------------
 
 # version
-CUI_VERSION   = 1.0.7
+CUI_VERSION   = 2.0.0
 
 # files for test aplication
 C_OBJECTS     =  main.o
@@ -92,11 +92,11 @@ test: test.cui
 
 test.cui: $(C_OBJECTS)
 	@echo "linking $@ ..."
-	@$(CC) -o $@ $^ -lcui
+	@$(CC) -o $@ $^ -lcui -lcui-util
 
 libcui.so.$(CUI_VERSION): $(C_CUI_OBJECTS)
 	@echo "linking $@ ..."
-	@$(CC) -shared -Wl,-soname,libcui.so.1 -o $@ $^ -l$(CURSESLIB)
+	@$(CC) -shared -Wl,-soname,libcui.so.2 -o $@ $^ -l$(CURSESLIB)
 
 libcui.a: $(C_CUI_OBJECTS)
 	@rm -f $@
@@ -104,7 +104,7 @@ libcui.a: $(C_CUI_OBJECTS)
 
 libcui-util.so.$(CUI_VERSION): $(C_CUI_UTIL_OBJECTS)
 	@echo "linking $@ ..."
-	@$(CC) -shared -Wl,-soname,libcui-util.so.1 -o $@ $^
+	@$(CC) -shared -Wl,-soname,libcui-util.so.2 -o $@ $^
 
 libcui-util.a: $(C_CUI_UTIL_OBJECTS)
 	@rm -f $@
@@ -112,7 +112,7 @@ libcui-util.a: $(C_CUI_UTIL_OBJECTS)
 	
 libcui-script.so.$(CUI_VERSION): $(C_CUI_SCRIPT_OBJECTS)
 	@echo "linking $@ ..."
-	@$(CC) -L./ -shared -Wl,-soname,libcui-script.so.1 -lcui -lcui-util -ldl -o $@ $^
+	@$(CC) -L./ -shared -Wl,-soname,libcui-script.so.2 -lcui -lcui-util -ldl -o $@ $^
 	
 libcui-script.a: $(C_CUI_SCRIPT_OBJECTS)
 	@rm -f $@
@@ -150,7 +150,7 @@ install: libcui-script.so.$(CUI_VERSION) libcui-util.so.$(CUI_VERSION) libcui.so
 	@cp libcui-script.so.$(CUI_VERSION) $(DESTDIR)/usr/lib
 	@cp libcui-util.so.$(CUI_VERSION) $(DESTDIR)/usr/lib
 	@cp libcui-script.a $(DESTDIR)/usr/lib
-	@cp libcui-util.a $(DESTDIR)/usr/lib
+	cp libcui-util.a $(DESTDIR)/usr/lib
 	@cp libcui.a $(DESTDIR)/usr/lib
 	@ldconfig -n $(DESTDIR)/usr/lib
 	@ln -s $(DESTDIR)/usr/lib/libcui.so.$(CUI_VERSION) libcui.so

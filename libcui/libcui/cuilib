@@ -1,3 +1,4 @@
+#! /bin/sh
 #------------------------------------------------------------------------------
 # /var/install/include/cuilib - script interface for libcui
 #

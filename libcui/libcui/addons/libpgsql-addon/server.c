@@ -5,7 +5,7 @@
  * Copyright (C) 2006
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: server.c 28545 2011-06-13 19:27:26Z dv $
+ * Last Update:  $Id: server.c 33455 2013-04-13 00:02:22Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -33,6 +33,9 @@
 #define TRUE  !FALSE
 #endif
 
+
+static const char *PgServerGetEncoding(char *buffer, int buflen);
+
 SQLCONNECT* DefaultConnect = NULL;
 
 
@@ -42,38 +45,38 @@ SQLCONNECT* DefaultConnect = NULL;
  * ---------------------------------------------------------------------
  */
 SQLCONNECT*
-PgServerConnect(const TCHAR* host, const TCHAR* port, 
-                const TCHAR* user, const TCHAR* passwd,
-                const TCHAR* database)
+PgServerConnect(const wchar_t* host, const wchar_t* port, 
+                const wchar_t* user, const wchar_t* passwd,
+                const wchar_t* database)
 {
 	SQLCONNECT* con = (SQLCONNECT*) malloc(sizeof(SQLCONNECT));
 	if (con)
 	{
-		TCHAR connstr[256 + 1];
+		wchar_t connstr[256 + 1];
 		char* mbstr;
 
-		tcscpy(connstr, _T("dbname='"));
-		tcscat(connstr, database);
-		tcscat(connstr, _T("' user='"));
-		tcscat(connstr, user);
-		tcscat(connstr, _T("'"));
-		if (tcslen(passwd))
+		wcscpy(connstr, _T("dbname='"));
+		wcscat(connstr, database);
+		wcscat(connstr, _T("' user='"));
+		wcscat(connstr, user);
+		wcscat(connstr, _T("'"));
+		if (wcslen(passwd))
 		{
-			tcscat(connstr, _T(" password='"));
-			tcscat(connstr, passwd);
-			tcscat(connstr, _T("'"));
+			wcscat(connstr, _T(" password='"));
+			wcscat(connstr, passwd);
+			wcscat(connstr, _T("'"));
 		}
-		if (tcslen(host))
+		if (wcslen(host))
 		{
-			tcscat(connstr, _T(" host='"));
-			tcscat(connstr, host);
-			tcscat(connstr, _T("'"));
+			wcscat(connstr, _T(" host='"));
+			wcscat(connstr, host);
+			wcscat(connstr, _T("'"));
 
-			if (tcslen(port))
+			if (wcslen(port))
 			{			
-				tcscat(connstr, _T(" port='"));
-				tcscat(connstr, port);
-				tcscat(connstr, _T("'"));
+				wcscat(connstr, _T(" port='"));
+				wcscat(connstr, port);
+				wcscat(connstr, _T("'"));
 			}
 		}
 
@@ -87,23 +90,32 @@ PgServerConnect(const TCHAR* host, const TCHAR* port,
 			{
 				if (PgServerIsConnected(con))
 				{
+					char encoding[64 + 1];
+				
 					if (!DefaultConnect)
 					{
 						DefaultConnect = con;
 					}					
-					
+
+					PgServerGetEncoding(encoding, 64);
+														
 					PgExecSQL(con, _T("SET client_min_messages = 'ERROR';"));
-#ifdef _UNICODE
-					PgExecSQL(con, _T("SET client_encoding = 'UNICODE';"));
-#else
-					PgExecSQL(con, _T("SET client_encoding = 'LATIN9';"));
-#endif
+					
+					if ((strcasecmp(encoding, "utf-8") == 0) ||
+					    (strcasecmp(encoding, "utf8")  == 0))
+					{
+						PgExecSQL(con, _T("SET client_encoding = 'UNICODE';"));
+					}
+					else
+					{
+						PgExecSQL(con, _T("SET client_encoding = 'LATIN9';"));
+					}
 				}
-				con->User     = tcsdup(user);
-				con->Database = tcsdup(database);
-				con->Password = tcsdup(passwd);
-				con->Host     = tcsdup(host);
-				con->Port     = tcsdup(port);
+				con->User     = wcsdup(user);
+				con->Database = wcsdup(database);
+				con->Password = wcsdup(passwd);
+				con->Host     = wcsdup(host);
+				con->Port     = wcsdup(port);
 				con->ErrMsg   = NULL;
 
 				return con;
@@ -160,7 +172,7 @@ PgServerDisconnect(SQLCONNECT* con)
  * Get last error message available on this connection
  * ---------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 PgServerGetError(SQLCONNECT* con)
 {
 	if (con)
@@ -184,7 +196,7 @@ PgServerGetError(SQLCONNECT* con)
  * Returns the password used to open the connection
  * ---------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 PgServerPasswd(SQLCONNECT* con)
 {
 	if (con)
@@ -200,7 +212,7 @@ PgServerPasswd(SQLCONNECT* con)
  * Returns the user used to open the connection
  * ---------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 PgServerUser(SQLCONNECT* con)
 {
 	if (con)
@@ -216,7 +228,7 @@ PgServerUser(SQLCONNECT* con)
  * Returns the host used to open the connection
  * ---------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 PgServerHost(SQLCONNECT* con)
 {
 	if (con)
@@ -232,7 +244,7 @@ PgServerHost(SQLCONNECT* con)
  * Returns the port used to open the connection
  * ---------------------------------------------------------------------
  */
-const TCHAR* 
+const wchar_t* 
 PgServerPort(SQLCONNECT* con)
 {
 	if (con)
@@ -250,38 +262,38 @@ PgServerPort(SQLCONNECT* con)
  * ---------------------------------------------------------------------
  */
 SQLCONNECT*
-PgServerDupTo(SQLCONNECT* con, const TCHAR* database)
+PgServerDupTo(SQLCONNECT* con, const wchar_t* database)
 {
 	if (con)
 	{
 		SQLCONNECT* con2 = (SQLCONNECT*) malloc(sizeof(SQLCONNECT));
 		if (con2)
 		{
-			TCHAR connstr[256 + 1];
+			wchar_t connstr[256 + 1];
 			char* mbstr;
 
-			tcscpy(connstr, _T("dbname='"));
-			tcscat(connstr, database);
-			tcscat(connstr, _T("' user='"));
-			tcscat(connstr, PgServerUser(con));
-			tcscat(connstr, _T("'"));
-			if (PgServerPasswd(con) && (tcslen(PgServerPasswd(con)) > 0))
+			wcscpy(connstr, _T("dbname='"));
+			wcscat(connstr, database);
+			wcscat(connstr, _T("' user='"));
+			wcscat(connstr, PgServerUser(con));
+			wcscat(connstr, _T("'"));
+			if (PgServerPasswd(con) && (wcslen(PgServerPasswd(con)) > 0))
 			{
-				tcscat(connstr, _T(" password='"));
-				tcscat(connstr, PgServerPasswd(con));
-				tcscat(connstr, _T("'"));
+				wcscat(connstr, _T(" password='"));
+				wcscat(connstr, PgServerPasswd(con));
+				wcscat(connstr, _T("'"));
 			}
-			if (PgServerHost(con) && (tcslen(PgServerHost(con)) > 0))
+			if (PgServerHost(con) && (wcslen(PgServerHost(con)) > 0))
 			{
-				tcscat(connstr, _T(" host='"));
-				tcscat(connstr, PgServerHost(con));
-				tcscat(connstr, _T("'"));
+				wcscat(connstr, _T(" host='"));
+				wcscat(connstr, PgServerHost(con));
+				wcscat(connstr, _T("'"));
 			}
-			if (PgServerPort(con) && (tcslen(PgServerPort(con)) > 0))
+			if (PgServerPort(con) && (wcslen(PgServerPort(con)) > 0))
 			{
-				tcscat(connstr, _T(" port='"));
-				tcscat(connstr, PgServerPort(con));
-				tcscat(connstr, _T("'"));
+				wcscat(connstr, _T(" port='"));
+				wcscat(connstr, PgServerPort(con));
+				wcscat(connstr, _T("'"));
 			}
 
 			mbstr = ModuleTCharToMbDup(connstr);
@@ -292,21 +304,32 @@ PgServerDupTo(SQLCONNECT* con, const TCHAR* database)
 
 				if (con2->HConnect)
 				{
+					char encoding[64 + 1];
+				
 					if (!DefaultConnect)
 					{
 						DefaultConnect = con2;
-					}
+					}					
+
+					PgServerGetEncoding(encoding, 64);
+
 					PgExecSQL(con2, _T("SET client_min_messages = 'ERROR';"));
-#ifdef _UNICODE
-					PgExecSQL(con2, _T("SET client_encoding = 'UNICODE';"));
-#else
-					PgExecSQL(con2, _T("SET client_encoding = 'LATIN9';"));
-#endif
-					con2->User     = tcsdup(PgServerUser(con));
-					con2->Database = tcsdup(database);
-					con2->Password = tcsdup(PgServerPasswd(con));
-					con2->Host     = tcsdup(PgServerHost(con));
-					con2->Port     = tcsdup(PgServerPort(con));
+
+					if ((strcasecmp(encoding, "utf-8") == 0) ||
+					    (strcasecmp(encoding, "utf8")  == 0))
+					{
+						PgExecSQL(con2, _T("SET client_encoding = 'UNICODE';"));
+					}
+					else
+					{
+						PgExecSQL(con2, _T("SET client_encoding = 'LATIN9';"));
+					}
+					
+					con2->User     = wcsdup(PgServerUser(con));
+					con2->Database = wcsdup(database);
+					con2->Password = wcsdup(PgServerPasswd(con));
+					con2->Host     = wcsdup(PgServerHost(con));
+					con2->Port     = wcsdup(PgServerPort(con));
 					con2->ErrMsg   = NULL;
 
 					return con2;
@@ -339,7 +362,7 @@ PgServerDefault(void)
  * ---------------------------------------------------------------------
  */
 SQLRESULT* 
-PgQuerySQL(SQLCONNECT* con, const TCHAR* sqlstmt)
+PgQuerySQL(SQLCONNECT* con, const wchar_t* sqlstmt)
 {
 	if (con && con->HConnect)
 	{
@@ -365,8 +388,8 @@ PgQuerySQL(SQLCONNECT* con, const TCHAR* sqlstmt)
 					{
 						int index;
 
-						result->Columns   = (TCHAR**) malloc(result->NumColumns * sizeof(TCHAR*));
-						result->RowData   = (TCHAR**) malloc(result->NumColumns * sizeof(TCHAR*));
+						result->Columns   = (wchar_t**) malloc(result->NumColumns * sizeof(wchar_t*));
+						result->RowData   = (wchar_t**) malloc(result->NumColumns * sizeof(wchar_t*));
 
 						for (index = 0; index < result->NumColumns; index++)
 						{
@@ -397,7 +420,7 @@ PgQuerySQL(SQLCONNECT* con, const TCHAR* sqlstmt)
  * ---------------------------------------------------------------------
  */
 int
-PgExecSQL(SQLCONNECT* con, const TCHAR* sqlstmt)
+PgExecSQL(SQLCONNECT* con, const wchar_t* sqlstmt)
 {
 	SQLRESULT* res = PgQuerySQL(con, sqlstmt);
 	if (res)
@@ -462,7 +485,7 @@ PgResultNumColumns(SQLRESULT* result)
  * Return the name of the specified column
  * ---------------------------------------------------------------------
  */
-const TCHAR* 
+const wchar_t* 
 PgResultColumnName(SQLRESULT* result, int index)
 {
 	if ((index >= 0) && (index < result->NumColumns))
@@ -644,7 +667,7 @@ PgResultLast(SQLRESULT* result)
  * Read the data from the result set.
  * ---------------------------------------------------------------------
  */
-const TCHAR* 
+const wchar_t* 
 PgResultData(SQLRESULT* result, int index)
 {
 	if ((result->RowIndex >= 0) && (index >= 0) && (index < result->NumColumns))
@@ -713,3 +736,27 @@ PgResultFree(SQLRESULT* result)
 	free(result);
 }
 
+
+/* ---------------------------------------------------------------------
+ * PgServerGetEncoding
+ * Copy contents of environment variable $LC_CTYPE into a memory buffer
+ * beginning with the char position right behind the fullstop
+ * ---------------------------------------------------------------------
+ */
+static const char *
+PgServerGetEncoding(char *buffer, int buflen)
+{
+	const char *env = getenv("LC_CTYPE");
+	
+	buffer[0] = '\0';
+	if (env)
+	{
+		env = strchr(env, '.');
+		if (env)
+		{
+			strncpy(buffer, env + 1, buflen);
+			buffer[buflen] = '\0';
+		}
+	}
+	return buffer;
+}

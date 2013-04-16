@@ -83,7 +83,7 @@ ModuleInit(MODULEINIT_T* modinit)
  * ---------------------------------------------------------------------
  */
 int
-ModuleExecFunction(int func_nr, int argc, const TCHAR* argv[])
+ModuleExecFunction(int func_nr, int argc, const wchar_t* argv[])
 {
 	switch (func_nr)
 	{

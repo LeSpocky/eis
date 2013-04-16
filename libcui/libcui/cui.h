@@ -25,11 +25,7 @@
 #ifndef CUI_H
 #define CUI_H
 
-#ifdef _UNICODE
-#include <ncurses.h>
-#else
 #include <curses.h>
-#endif
 #include <stdlib.h>
 #include <string.h>
 #include "cui-char.h"
@@ -39,6 +35,7 @@
 #define TRUE  !FALSE
 #endif
 
+#define CUI_USE_ARG(a) (a) = (a)
 
 /* ---------------------------------------------------------------------
  * color constants
@@ -233,7 +230,7 @@ typedef struct
 	WINDOW* Win;            /* curses window handle for client area */
 	WINDOW* Frame;          /* curses window handle for non client area */
 	CUIRECT Position;       /* window position */
-	const TCHAR* Class;     /* window class name */
+	const wchar_t* Class;     /* window class name */
 
 	                        /* window appearance set on win. creation */
 	int     HasCaption;     /* win. has a cation -> WS_CAPTION */
@@ -300,13 +297,13 @@ typedef struct
 
 	void*              InstData;       /* instance data of this window instance */
 
-	TCHAR*             Text;           /* normal window text */
-	TCHAR*             RText;          /* right aligned window title text */
-	TCHAR*             LText;          /* left aligned window title text */
+	wchar_t*           Text;           /* normal window text */
+	wchar_t*           RText;          /* right aligned window title text */
+	wchar_t*           LText;          /* left aligned window title text */
 
-	TCHAR*             RStatusText;    /* right aligned status text */
-	TCHAR*             StatusText;     /* centered status text */
-	TCHAR*             LStatusText;    /* left aligned status text */
+	wchar_t*           RStatusText;    /* right aligned status text */
+	wchar_t*           StatusText;     /* centered status text */
+	wchar_t*           LStatusText;    /* left aligned status text */
 
 	int                Id;             /* control id */
 	char               HotKey;         /* the windows hot-key (from &text) */
@@ -363,13 +360,13 @@ void WindowInvalidateScreen(void);
 int  WindowMove(CUIWINDOW* win, int x, int y, int w, int h);
 int  WindowMaximize(CUIWINDOW* win, int state);
 int  WindowMinimize(CUIWINDOW* win, int state);
-void WindowSetText(CUIWINDOW* win, const TCHAR* text);
-void WindowSetRText(CUIWINDOW* win, const TCHAR* text);
-void WindowSetLText(CUIWINDOW* win, const TCHAR* text);
-void WindowSetStatusText(CUIWINDOW* win, const TCHAR* text);
-void WindowSetRStatusText(CUIWINDOW* win, const TCHAR* text);
-void WindowSetLStatusText(CUIWINDOW* win, const TCHAR* text);
-const TCHAR* WindowGetText(CUIWINDOW* win, TCHAR* text, int len);
+void WindowSetText(CUIWINDOW* win, const wchar_t* text);
+void WindowSetRText(CUIWINDOW* win, const wchar_t* text);
+void WindowSetLText(CUIWINDOW* win, const wchar_t* text);
+void WindowSetStatusText(CUIWINDOW* win, const wchar_t* text);
+void WindowSetRStatusText(CUIWINDOW* win, const wchar_t* text);
+void WindowSetLStatusText(CUIWINDOW* win, const wchar_t* text);
+const wchar_t* WindowGetText(CUIWINDOW* win, wchar_t* text, int len);
 void WindowHide(CUIWINDOW* win, int state);
 void WindowEnable(CUIWINDOW* win, int state);
 void WindowSetId(CUIWINDOW* win, int id);
@@ -399,9 +396,9 @@ void WindowReleaseCapture(void);
  * color schemes
  * ---------------------------------------------------------------------
  */
-void WindowAddColScheme(const TCHAR* name, CUIWINCOLOR* colrec);
-int  WindowHasColScheme(const TCHAR* name);
-void WindowColScheme(CUIWINDOW* win, const TCHAR* name);
+void WindowAddColScheme(const wchar_t* name, CUIWINCOLOR* colrec);
+int  WindowHasColScheme(const wchar_t* name);
+void WindowColScheme(CUIWINDOW* win, const wchar_t* name);
 
 /* ---------------------------------------------------------------------
  * scroll bar functions
@@ -483,22 +480,22 @@ void WindowPaintStatusBar(CUIWINDOW* win, int size_x, int size_y);
  * edit control
  * ---------------------------------------------------------------------
  */
-CUIWINDOW* EditNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* EditNew(CUIWINDOW* parent, const wchar_t* text,
                    int x, int y, int w, int h, int len, int id, int sflags, int cflags);
 void EditSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target);
 void EditSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
 void EditSetPreKeyHook   (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target);
 void EditSetPostKeyHook  (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target);
 void EditSetChangedHook  (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
-void EditSetText         (CUIWINDOW* win, const TCHAR* text);
-const TCHAR* EditGetText (CUIWINDOW* win, TCHAR* text, int len);
+void EditSetText         (CUIWINDOW* win, const wchar_t* text);
+const wchar_t* EditGetText (CUIWINDOW* win, wchar_t* text, int len);
 void EditResetInput      (CUIWINDOW* win);
 
 /* ---------------------------------------------------------------------
  * label control
  * ---------------------------------------------------------------------
  */
-CUIWINDOW* LabelNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* LabelNew(CUIWINDOW* parent, const wchar_t* text,
                    int x, int y, int w, int h, int id, int sflags, int cflags);
 void LabelSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target);
 void LabelSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
@@ -507,7 +504,7 @@ void LabelSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* targe
  * button control
  * ---------------------------------------------------------------------
  */
-CUIWINDOW* ButtonNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* ButtonNew(CUIWINDOW* parent, const wchar_t* text,
                    int x, int y, int w, int h, int id, int sflags, int cflags);
 void ButtonSetSetFocusHook  (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target);
 void ButtonSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
@@ -519,7 +516,7 @@ void ButtonSetClickedHook   (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* tar
  * radio button control
  * ---------------------------------------------------------------------
  */
-CUIWINDOW* RadioNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* RadioNew(CUIWINDOW* parent, const wchar_t* text,
                    int x, int y, int w, int h, int id, int sflags, int cflags);
 void RadioSetSetFocusHook  (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target);
 void RadioSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
@@ -533,7 +530,7 @@ int  RadioGetCheck(CUIWINDOW* win);
  * checkbox control
  * ---------------------------------------------------------------------
  */
-CUIWINDOW* CheckboxNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* CheckboxNew(CUIWINDOW* parent, const wchar_t* text,
                    int x, int y, int w, int h, int id, int sflags, int cflags);
 void CheckboxSetSetFocusHook  (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target);
 void CheckboxSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
@@ -547,14 +544,14 @@ int  CheckboxGetCheck(CUIWINDOW* win);
  * groupbox control
  * ---------------------------------------------------------------------
  */
-CUIWINDOW* GroupboxNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* GroupboxNew(CUIWINDOW* parent, const wchar_t* text,
                    int x, int y, int w, int h, int sflags, int cflags);
 
 /* ---------------------------------------------------------------------
  * listbox control
  * ---------------------------------------------------------------------
  */
-CUIWINDOW* ListboxNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* ListboxNew(CUIWINDOW* parent, const wchar_t* text,
                    int x, int y, int w, int h, int id, int sflags, int cflags);
 void ListboxSetSetFocusHook  (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target);
 void ListboxSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
@@ -563,16 +560,16 @@ void ListboxSetPostKeyHook   (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWI
 void ListboxSetLbChangedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
 void ListboxSetLbChangingHook(CUIWINDOW* win, CustomBoolHookProc proc, CUIWINDOW* target);
 void ListboxSetLbClickedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
-int  ListboxAdd              (CUIWINDOW* win, const TCHAR* text);
+int  ListboxAdd              (CUIWINDOW* win, const wchar_t* text);
 void ListboxDelete           (CUIWINDOW* win, int index);
-const TCHAR* ListboxGet      (CUIWINDOW* win, int index);
+const wchar_t* ListboxGet      (CUIWINDOW* win, int index);
 void ListboxSetData          (CUIWINDOW* win, int index, unsigned long data);
 unsigned long ListboxGetData (CUIWINDOW* win, int index);
 void ListboxSetSel           (CUIWINDOW* win, int index);
 int  ListboxGetSel           (CUIWINDOW* win);
 void ListboxClear            (CUIWINDOW* win);
 int  ListboxGetCount         (CUIWINDOW* win);
-int  ListboxSelect           (CUIWINDOW* win, const TCHAR* text);
+int  ListboxSelect           (CUIWINDOW* win, const wchar_t* text);
 
 /* ---------------------------------------------------------------------
  * combobox control
@@ -586,22 +583,22 @@ void ComboboxSetPreKeyHook    (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIW
 void ComboboxSetPostKeyHook   (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target);
 void ComboboxSetCbChangedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
 void ComboboxSetCbChangingHook(CUIWINDOW* win, CustomBoolHookProc proc, CUIWINDOW* target);
-int  ComboboxAdd              (CUIWINDOW* win, const TCHAR* text);
+int  ComboboxAdd              (CUIWINDOW* win, const wchar_t* text);
 void ComboboxDelete           (CUIWINDOW* win, int index);
-const TCHAR* ComboboxGet      (CUIWINDOW* win, int index);
+const wchar_t* ComboboxGet      (CUIWINDOW* win, int index);
 void ComboboxSetData          (CUIWINDOW* win, int index, unsigned long data);
 unsigned long ComboboxGetData (CUIWINDOW* win, int index);
 void ComboboxSetSel           (CUIWINDOW* win, int index);
 int  ComboboxGetSel           (CUIWINDOW* win);
 void ComboboxClear            (CUIWINDOW* win);
 int  ComboboxGetCount         (CUIWINDOW* win);
-int  ComboboxSelect           (CUIWINDOW* win, const TCHAR* text);
+int  ComboboxSelect           (CUIWINDOW* win, const wchar_t* text);
 
 /* ---------------------------------------------------------------------
  * progress bar
  * ---------------------------------------------------------------------
  */
-CUIWINDOW* ProgressbarNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* ProgressbarNew(CUIWINDOW* parent, const wchar_t* text,
                    int x, int y, int w, int h, int id, int sflags, int cflags);
 void ProgressbarSetRange(CUIWINDOW* win, int range);
 void ProgressbarSetPos(CUIWINDOW* win, int pos);
@@ -612,17 +609,17 @@ int  ProgressbarGetPos(CUIWINDOW* win);
  * text view
  * ---------------------------------------------------------------------
  */
-CUIWINDOW* TextviewNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* TextviewNew(CUIWINDOW* parent, const wchar_t* text,
                    int x, int y, int w, int h, int id, int sflags, int cflags);
 void TextviewSetSetFocusHook  (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target);
 void TextviewSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
 void TextviewSetPreKeyHook    (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target);
 void TextviewSetPostKeyHook   (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target);
 void TextviewEnableWordWrap   (CUIWINDOW* win, int enable);
-void TextviewAdd              (CUIWINDOW* win, const TCHAR* text);
+void TextviewAdd              (CUIWINDOW* win, const wchar_t* text);
 void TextviewClear            (CUIWINDOW* win);
-int  TextviewRead             (CUIWINDOW* win, const TCHAR* filename);
-int  TextviewSearch           (CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, int down);
+int  TextviewRead             (CUIWINDOW* win, const wchar_t* filename);
+int  TextviewSearch           (CUIWINDOW* win, const wchar_t* text, int wholeword, int casesens, int down);
 int  TextviewResetSearch      (CUIWINDOW* win, int at_bottom);
 
 /* ---------------------------------------------------------------------
@@ -638,7 +635,7 @@ typedef enum
 
 typedef struct LISTREC_S
 {
-	TCHAR           **ColumnText;        /* char array with text data */
+	wchar_t         **ColumnText;        /* char array with text data */
 	int              *ColumnWidth;       /* Width of column */
 	ALIGNMENT_T      *ColumnAlignment;   /* Alignment of column text */
 	int               NumColumns;        /* Numer of columns */
@@ -647,7 +644,7 @@ typedef struct LISTREC_S
 	CUIWINDOW        *Owner;             /* Pointer to control window */
 } LISTREC;
 
-CUIWINDOW* ListviewNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* ListviewNew(CUIWINDOW* parent, const wchar_t* text,
            int x, int y, int w, int h, int num_cols, int id, int sflags, int cflags);
 void ListviewSetSetFocusHook  (CUIWINDOW* win, CustomHook1PtrProc     proc, CUIWINDOW* target);
 void ListviewSetKillFocusHook (CUIWINDOW* win, CustomHookProc         proc, CUIWINDOW* target);
@@ -656,13 +653,13 @@ void ListviewSetPostKeyHook   (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIW
 void ListviewSetLbChangedHook (CUIWINDOW* win, CustomHookProc         proc, CUIWINDOW* target);
 void ListviewSetLbChangingHook(CUIWINDOW* win, CustomBoolHookProc     proc, CUIWINDOW* target);
 void ListviewSetLbClickedHook (CUIWINDOW* win, CustomHookProc         proc, CUIWINDOW* target);
-void ListviewAddColumn        (CUIWINDOW* win, int colnr, const TCHAR* text);
+void ListviewAddColumn        (CUIWINDOW* win, int colnr, const wchar_t* text);
 void ListviewSetTitleAlignment(CUIWINDOW* win, int colnr, ALIGNMENT_T  align);
 void ListviewClear            (CUIWINDOW* win);
 LISTREC* ListviewCreateRecord (CUIWINDOW* win);
 int  ListviewInsertRecord     (CUIWINDOW* win, LISTREC* newrec);
-void ListviewSetColumnText    (LISTREC* rec, int colnr, const TCHAR* text);
-const TCHAR* ListviewGetColumnText(LISTREC* rec, int colnr);
+void ListviewSetColumnText    (LISTREC* rec, int colnr, const wchar_t* text);
+const wchar_t* ListviewGetColumnText(LISTREC* rec, int colnr);
 void ListviewSetSel           (CUIWINDOW* win, int index);
 int  ListviewGetSel           (CUIWINDOW* win);
 LISTREC* ListviewGetRecord    (CUIWINDOW* win, int index);
@@ -674,16 +671,16 @@ void ListviewNumericSort      (CUIWINDOW* win, int colnr, int up);
  * terminal window
  * ---------------------------------------------------------------------
  */
-CUIWINDOW* TerminalNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* TerminalNew(CUIWINDOW* parent, const wchar_t* text,
            int x, int y, int w, int h, int id, int sflags, int cflags);
 void TerminalSetSetFocusHook  (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target);
 void TerminalSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
 void TerminalSetPreKeyHook    (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target);
 void TerminalSetPostKeyHook   (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target);
 void TerminalSetCoProcExitHook(CUIWINDOW* win, CustomHook1IntProc proc, CUIWINDOW* target);
-void TerminalWrite            (CUIWINDOW* win, const TCHAR* text, int numchar);
-int  TerminalRun              (CUIWINDOW* win, const TCHAR* cmd);
-void TerminalPipeData         (CUIWINDOW* win, const TCHAR* data);
+void TerminalWrite            (CUIWINDOW* win, const wchar_t* text, int numchar);
+int  TerminalRun              (CUIWINDOW* win, const wchar_t* cmd);
+void TerminalPipeData         (CUIWINDOW* win, const wchar_t* data);
 int  TerminalRunning          (CUIWINDOW* win);
 void TerminalUpdateView       (CUIWINDOW* win);
 
@@ -694,7 +691,7 @@ void TerminalUpdateView       (CUIWINDOW* win);
  */
 typedef struct
 {
-	TCHAR*        ItemText;
+	wchar_t*      ItemText;
 	int           IsSeparator;
 	int           IsMoveable;
 	unsigned long ItemId;
@@ -702,7 +699,7 @@ typedef struct
 	void*         Previous;
 } MENUITEM;
 
-CUIWINDOW* MenuNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* MenuNew(CUIWINDOW* parent, const wchar_t* text,
            int x, int y, int w, int h, int id, int sflags, int cflags);
 void MenuSetSetFocusHook    (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target);
 void MenuSetKillFocusHook   (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
@@ -712,7 +709,7 @@ void MenuSetMenuChangedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* tar
 void MenuSetMenuChangingHook(CUIWINDOW* win, CustomBoolHookProc proc, CUIWINDOW* target);
 void MenuSetMenuClickedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
 void MenuSetMenuEscapeHook  (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
-void MenuAddItem            (CUIWINDOW* win, const TCHAR* text, unsigned long id, int moveable);
+void MenuAddItem            (CUIWINDOW* win, const wchar_t* text, unsigned long id, int moveable);
 void MenuAddSeparator       (CUIWINDOW* win, int moveable);
 void MenuSelectItem         (CUIWINDOW* win, unsigned long id);
 MENUITEM* MenuGetSelectedItem(CUIWINDOW* win);
@@ -735,13 +732,13 @@ void MenuClear              (CUIWINDOW* win);
 
 typedef struct
 {
-	TCHAR Keyword[128 + 1];
+	wchar_t Keyword[128 + 1];
 	int   WholeWords;
 	int   CaseSens;
 	int   Direction;
 } FINDDLGDATA;
 
-CUIWINDOW*   FinddlgNew(CUIWINDOW* parent, const TCHAR* title, int sflags, int cflags);
+CUIWINDOW*   FinddlgNew(CUIWINDOW* parent, const wchar_t* title, int sflags, int cflags);
 FINDDLGDATA* FinddlgGetData(CUIWINDOW* win);
 
 /* ---------------------------------------------------------------------
@@ -752,10 +749,10 @@ FINDDLGDATA* FinddlgGetData(CUIWINDOW* win);
 
 typedef struct
 {
-	TCHAR Text[MAX_INPUT_SIZE + 1];
+	wchar_t Text[MAX_INPUT_SIZE + 1];
 } INPUTDLGDATA;
 
-CUIWINDOW* InputdlgNew(CUIWINDOW* parent, const TCHAR* title, int sflags, int cflags);
+CUIWINDOW* InputdlgNew(CUIWINDOW* parent, const wchar_t* title, int sflags, int cflags);
 INPUTDLGDATA* InputdlgGetData(CUIWINDOW* win);
 
 /* ---------------------------------------------------------------------
@@ -766,17 +763,17 @@ INPUTDLGDATA* InputdlgGetData(CUIWINDOW* win);
 
 typedef struct
 {
-	TCHAR Password[MAX_PASSWD_SIZE + 1];
+	wchar_t Password[MAX_PASSWD_SIZE + 1];
 } PASSWDDLGDATA;
 
-CUIWINDOW* PasswddlgNew(CUIWINDOW* parent, const TCHAR* title, int sflags, int cflags);
+CUIWINDOW* PasswddlgNew(CUIWINDOW* parent, const wchar_t* title, int sflags, int cflags);
 PASSWDDLGDATA* PasswddlgGetData(CUIWINDOW* win);
 
 /* ---------------------------------------------------------------------
  * message box
  * ---------------------------------------------------------------------
  */
-int MessageBox(CUIWINDOW* parent, const TCHAR* text, const TCHAR* title, int flags);
+int MessageBox(CUIWINDOW* parent, const wchar_t* text, const wchar_t* title, int flags);
 
 
 #endif
