@@ -54,15 +54,12 @@ RadioPaintHook(void* w)
 	CUIWINDOW*  win = (CUIWINDOW*) w;
 	RADIODATA*  data = (RADIODATA*) win->InstData;
 	CUIRECT     rc;
-	int         i,len, cpos;
-	int         hkey_pos;
-	wchar_t       hkey = _T('\0');
-	wchar_t       buffer[128 + 1];
+	int         i;
+	wchar_t     buffer[128 + 1];
 
 	WindowGetClientRect(win, &rc);
 	if (rc.W <= 0) return;
 
-	cpos = 0;
 	if (rc.W > 1) 
 	{
 		int    pos, n;
@@ -88,10 +85,8 @@ RadioPaintHook(void* w)
 
 			wcsncpy(&buffer[pos], ch, n);
 			pos += (ch2 - ch);
-			hkey_pos = pos;
 
 			ch = ch2 + 1;
-			hkey = *ch;
 			ch2 = (wchar_t*) wcschr(ch, _T('&'));
 		}
 
@@ -103,8 +98,6 @@ RadioPaintHook(void* w)
 	{
 		buffer[0] = 0;
 	}
-
-	len = wcslen(buffer);
 
 	if (win->IsEnabled)
 	{
@@ -122,12 +115,8 @@ RadioPaintHook(void* w)
 		SetColor(win->Win, win->Color.InactTxtColor, win->Color.WndColor, FALSE);
 	}
 
-	MOVEYX(win->Win, 0, 0); PRINT(win->Win, buffer);
-/*	if ((hkey != _T('\0')) && (win->IsEnabled) && (win != WindowGetFocus()))
-	{
-		SetColor(win->Win, win->Color.HilightColor, win->Color.WndColor, FALSE);
-		MOVEYX(win->Win, 0, hkey_pos); PRINTN(win->Win, &hkey, 1);
-	}*/
+	MOVEYX(win->Win, 0, 0); 
+	PRINT (win->Win, buffer);
 
 	WindowSetCursor(win, 1, 0);
 }

@@ -1,14 +1,14 @@
 # Contributor:
 # Maintainer:team@eisfair.org
 pkgname=cuimenu
-pkgver=1.0.7
-pkgrel=10
+pkgver=2.0.0
+pkgrel=0
 pkgdesc="Eisfair CUI basis menu"
 url="http://www.eisfair.org"
 arch="all"
 license="GPL"
 depends="libcui bash syslog-ng"
-depends_dev=""
+depends_dev="libcui-dev>=2.0.0-r0"
 makedepends=""
 install="$pkgname.pre-install $pkgname.pre-upgrade $pkgname.post-install"
 subpackages=""

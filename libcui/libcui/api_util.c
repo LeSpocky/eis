@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: api_util.c 33402 2013-04-02 21:32:17Z dv $
+ * Last Update:  $Id: api_util.c 33485 2013-04-16 20:48:23Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -167,7 +167,6 @@ ApiLoadAddon(int argc, const wchar_t* argv[])
 	{
 		ADDON_MODULE* newaddon = NULL;
 		void* handle = NULL;
-		int   err = 0;
 
 		if (AddonModuleNextNr < MAX_MODULES)
 		{
@@ -177,14 +176,10 @@ ApiLoadAddon(int argc, const wchar_t* argv[])
 				handle = dlopen(mbfilename, RTLD_NOW);
 				if (handle)
 				{
-					err = 1;
-					
 					newaddon = (ADDON_MODULE*) malloc(sizeof(ADDON_MODULE));
 					if (newaddon)
 					{
 						MODULEINIT_T init;
-						
-						err = 2;
 						
 						newaddon->ModuleHandle       = handle;
 						newaddon->ModuleInit         = dlsym(handle, "ModuleInit");
@@ -209,20 +204,10 @@ ApiLoadAddon(int argc, const wchar_t* argv[])
 						if (!newaddon->ModuleInit  || !newaddon->ModuleExecFunction ||
 						    !newaddon->ModuleClose || !newaddon->ModuleInit(&init))
 						{
-							err = 3;
-							
 							free(newaddon);
 							newaddon = NULL;
 						}
 					}
-					else
-					{
-						err = 4;
-					}
-				}
-				else
-				{
-					err = 5;
 				}
 				free(mbfilename);	
 			}

@@ -725,11 +725,9 @@ TextviewRead(CUIWINDOW* win, const wchar_t* filename)
 				result = TRUE;
 			}
 			free(mbfile);
-
-			return TRUE;
 		}
 	}
-	return FALSE;
+	return result;
 }
 
 

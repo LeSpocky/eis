@@ -54,7 +54,7 @@ CheckboxPaintHook(void* w)
 	CUIWINDOW*     win = (CUIWINDOW*) w;
 	CHECKBOXDATA*  data = (CHECKBOXDATA*) win->InstData;
 	CUIRECT        rc;
-	int            i,len, cpos;
+	int            i;
 	int            hkey_pos;
 	wchar_t          hkey = _T('\0');
 	wchar_t          buffer[128 + 1];
@@ -62,7 +62,6 @@ CheckboxPaintHook(void* w)
 	WindowGetClientRect(win, &rc);
 	if (rc.W <= 0) return;
 
-	cpos = 0;
 	if (rc.W > 1) 
 	{
 		int   pos, n;
@@ -103,8 +102,6 @@ CheckboxPaintHook(void* w)
 	{
 		buffer[0] = 0;
 	}
-
-	len = wcslen(buffer);
 
 	if (win->IsEnabled)
 	{

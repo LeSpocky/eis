@@ -5,7 +5,7 @@
  * Copyright (C) 2004
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: listview.c 33467 2013-04-14 16:23:14Z dv $
+ * Last Update:  $Id: listview.c 33485 2013-04-16 20:48:23Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1111,15 +1111,15 @@ ListviewAlphaSort(CUIWINDOW* win, int colnr, int up)
 
 						data = workptr->Data;
 						workptr->Data = cmpptr->Data;
-						cmpptr->Data = workptr->Data;
+						cmpptr->Data  = data;
 
 						width = workptr->ColumnWidth;
 						workptr->ColumnWidth = cmpptr->ColumnWidth;
-						cmpptr->ColumnWidth = width;
+						cmpptr->ColumnWidth  = width;
 
 						num = workptr->NumColumns;
 						workptr->NumColumns = cmpptr->NumColumns;
-						cmpptr->NumColumns = num;
+						cmpptr->NumColumns  = num;
 					}
 					workptr = (LISTREC*) workptr->Next;
 					i++;
@@ -1175,15 +1175,15 @@ ListviewNumericSort(CUIWINDOW* win, int colnr, int up)
 
 						data = workptr->Data;
 						workptr->Data = cmpptr->Data;
-						cmpptr->Data = workptr->Data;
+						cmpptr->Data  = data;
 
 						width = workptr->ColumnWidth;
 						workptr->ColumnWidth = cmpptr->ColumnWidth;
-						cmpptr->ColumnWidth = width;
+						cmpptr->ColumnWidth  = width;
 
 						num = workptr->NumColumns;
 						workptr->NumColumns = cmpptr->NumColumns;
-						cmpptr->NumColumns = num;
+						cmpptr->NumColumns  = num;
 					}
 					workptr = (LISTREC*) workptr->Next;
 					i++;
