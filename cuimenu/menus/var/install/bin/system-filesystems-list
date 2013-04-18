@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/bin/system-filesystems-list - list filesystems
 #
