@@ -1,0 +1,95 @@
+# Use separate constants for file and shared memory permissions
+--- a/src/jrd/isc_sync.cpp
++++ b/src/jrd/isc_sync.cpp
+@@ -132,7 +132,18 @@ static UCHAR *next_shared_memory;
+ #endif
+ 
+ #define FTOK_KEY	15
+-#define PRIV		0666
++
++#define FILE_PERM       0660
++#if defined(SEM_R) && defined(SEM_A)
++#define SEM_PERM        SEM_R | (SEM_R>>3) | SEM_A | (SEM_A>>3)
++#else
++#define SEM_PERM        FILE_PERM
++#endif
++#if defined(SHM_R) && defined(SHM_W)
++#define SHM_PERM        SHM_R | (SHM_R>>3) | SHM_W | (SHM_W>>3)
++#else
++#define SHM_PERM        FILE_PERM
++#endif
+ 
+ #ifndef SHMEM_DELTA
+ #define SHMEM_DELTA	(1 << 22)
+@@ -2284,7 +2295,7 @@ UCHAR* ISC_map_file(ISC_STATUS* status_v
+ 
+ 	struct shmid_ds buf;
+ 	SLONG shmid;
+-	if ((shmid = shmget(key, length, IPC_CREAT | PRIV)) == -1)
++	if ((shmid = shmget(key, length, IPC_CREAT | SHM_PERM)) == -1)
+ #ifdef SUPERSERVER
+ 		if (errno == EINVAL) {
+ 			/* There are two cases when shmget() returns EINVAL error:
+@@ -2331,7 +2342,7 @@ UCHAR* ISC_map_file(ISC_STATUS* status_v
+ 			   way to get shmid is to attach to the segment with zero
+ 			   length
+ 			 */
+-			if ((shmid = shmget(key, 0, PRIV)) == -1) {
++			if ((shmid = shmget(key, 0, SHM_PERM)) == -1) {
+ 				error(status_vector, "shmget", errno);
+ 				fclose(fp);
+ 				return NULL;
+@@ -2349,7 +2360,7 @@ UCHAR* ISC_map_file(ISC_STATUS* status_v
+ 			   we use IPC_EXCL flag to get an error if by some miracle
+ 			   the sagment with the same key is already exists
+ 			 */
+-			if ((shmid = shmget(key, length, IPC_CREAT | IPC_EXCL | PRIV)) ==
++			if ((shmid = shmget(key, length, IPC_CREAT | IPC_EXCL | SHM_PERM)) ==
+ 				-1)
+ 			{
+ 				error(status_vector, "shmget", errno);
+@@ -2395,7 +2406,7 @@ UCHAR* ISC_map_file(ISC_STATUS* status_v
+ 				return NULL;
+ 			}
+ 
+-			if ((shmid = shmget(key, length, IPC_CREAT | IPC_EXCL | PRIV)) ==
++			if ((shmid = shmget(key, length, IPC_CREAT | IPC_EXCL | SHM_PERM)) ==
+ 				-1)
+ 			{
+ 				error(status_vector, "shmget", errno);
+@@ -2405,7 +2416,7 @@ UCHAR* ISC_map_file(ISC_STATUS* status_v
+ 		}
+ 		else {
+ 			length = buf.shm_segsz;
+-			if ((shmid = shmget(key, length, PRIV)) == -1) {
++			if ((shmid = shmget(key, length, SHM_PERM)) == -1) {
+ 				error(status_vector, "shmget", errno);
+ 				fclose(fp);
+ 				return NULL;
+@@ -2426,7 +2437,7 @@ UCHAR* ISC_map_file(ISC_STATUS* status_v
+ 
+ 		/* Now remap with the new-found length */
+ 
+-		if ((shmid = shmget(key, length, PRIV)) == -1) {
++		if ((shmid = shmget(key, length, SHM_PERM)) == -1) {
+ 			error(status_vector, "shmget", errno);
+ 			fclose(fp);
+ 			return NULL;
+@@ -4326,7 +4337,7 @@ static SLONG find_key(ISC_STATUS * statu
+ /* Produce shared memory key for file */
+ 
+ 	if ((key = ftok(filename, FTOK_KEY)) == -1) {
+-		if ((fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, PRIV)) == -1) {
++		if ((fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, FILE_PERM)) == -1) {
+ 			error(status_vector, "open", errno);
+ 			return 0L;
+ 		}
+@@ -4429,7 +4440,7 @@ static SLONG create_semaphores(
+ 		}
+ 		
+ 		// Try to create new semaphore set
+-		semid = semget(key, semaphores, IPC_CREAT | IPC_EXCL | PRIV);
++		semid = semget(key, semaphores, IPC_CREAT | IPC_EXCL | SEM_PERM);
+ 		if (semid != -1)
+ 		{
+ 			// We want to limit access to semaphores, created here

@@ -1,0 +1,11 @@
+--- a/src/utilities/ibmgr/srvrmgr.cpp
++++ b/src/utilities/ibmgr/srvrmgr.cpp
+@@ -272,7 +272,7 @@ void SRVRMGR_msg_get( USHORT number, TEX
+ 		rs = "can not quit now, use shut -ign";
+ 		break;
+ 	case MSG_STARTERR:
+-		rs = "check $FIREBIRD/firebird.log file for errors";
++		rs = "check /var/log/firebird.log file for errors";
+ 		break;
+ 	case MSG_STARTFAIL:
+ 		rs = "can not start server";

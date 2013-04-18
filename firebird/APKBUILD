@@ -1,0 +1,153 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
+pkgname=firebird
+pkgver=2.1.5
+pkgrel=0
+pkgdesc="Firebird SQL SuperServer"
+url="http://www.firebirdsql.org"
+arch="all"
+license="GNU"
+depends=""
+depends_dev=""
+makedepends="$depends_dev"
+install="$pkgname.pre-install $pkgname.post-install"
+subpackages="$pkgname-libs $pkgname-doc"
+source="http://downloads.sourceforge.net/project/firebird/firebird/2.1.5-Release/Firebird-2.1.5.18497-0.tar.bz2
+	firebird.initd
+	firebird.confd
+	firebird-libio.patch
+	firebird-innetgr.patch
+    firebird-honour-buildflags.patch
+    firebird-cppflags.patch
+    firebird-gcc-4.7.patch
+    firebird-file-perms.patch
+    firebird-log-path.patch
+    firebird-charp-conversion.patch
+    firebird-no-static-link.patch"
+
+_builddir="$srcdir/Firebird-2.1.5.18497-0"
+
+prepare() {
+	local i
+	cd ${_builddir}
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i ${srcdir}/$i || return 1;;
+		esac
+	done
+	sleep 1
+}
+
+build() {
+	cd ${_builddir}
+
+	./configure --prefix=/usr/lib/firebird \
+	--enable-superserver \
+	--datadir=/var/firebird \
+	--includedir=/usr/include \
+	--disable-static || return 1
+	sleep 1
+	make -j1 || return 1
+}
+
+package() {
+	cd ${_builddir}
+
+	install -m 0755 -D ${srcdir}/$pkgname.initd \
+		${pkgdir}/etc/init.d/$pkgname || return 1
+	install -m 0640 -D ${srcdir}/$pkgname.confd \
+		${pkgdir}/etc/conf.d/$pkgname || return 1
+
+    # superserver
+	for f in fbserver fbguard fb_lock_print fbmgr.bin; do
+        strip -R .note -R .comment ${_builddir}/gen/firebird/bin/$f 
+        install -m 0755 -D ${_builddir}/gen/firebird/bin/$f \
+			${pkgdir}/usr/lib/firebird/bin/$f || return 1    
+	done
+
+    # UDFs
+    install -m 0644 -D ${_builddir}/gen/firebird/UDF/fbudf.so \
+		${pkgdir}/usr/lib/firebird/UDF/fbudf.so || return 1    
+    install -m 0644 -D ${_builddir}/gen/firebird/UDF/ib_udf.so \
+		${pkgdir}/usr/lib/firebird/UDF/ib_udf.so || return 1    
+    install -m 0644 -D ${_builddir}/src/extlib/fbudf/fbudf.sql \
+		${pkgdir}/usr/lib/firebird/UDF/fbudf.sql || return 1    
+    install -m 0644 -D ${_builddir}/src/extlib/ib_udf.sql \
+		${pkgdir}/usr/lib/firebird/UDF/ib_udf.sql || return 1    
+    install -m 0644 -D ${_builddir}/src/extlib/ib_udf2.sql \
+		${pkgdir}/usr/lib/firebird/UDF/ib_udf2.sql || return 1
+
+	# defaults         
+    install -m 0644 ${_builddir}/gen/firebird/security2.fdb \
+		${pkgdir}/usr/lib/firebird/security2.fdb.default || return 1
+    install -m 0644 ${_builddir}/gen/firebird/de_DE.msg \
+		${pkgdir}/usr/lib/firebird/de_DE.msg || return 1
+    install -m 0644 ${_builddir}/gen/firebird/firebird.msg \
+		${pkgdir}/usr/lib/firebird/firebird.msg || return 1
+    install -m 0644 ${_builddir}/gen/firebird/fr_FR.msg \
+		${pkgdir}/usr/lib/firebird/fr_FR.msg || return 1
+    install -m 0644 -D ${_builddir}/gen/firebird/help/help.fdb \
+		${pkgdir}/usr/lib/firebird/help/help.fdb || return 1
+
+    # utils
+    mkdir -p ${pkgdir}/usr/bin
+    cd ${pkgdir}/usr/bin    
+    for f in gbak gdef gfix gpre qli gsec gstat isql nbackup;
+    do
+        strip -R .note -R .comment ${_builddir}/gen/firebird/bin/$f
+        install -m 0755 -D ${_builddir}/gen/firebird/bin/$f \
+			${pkgdir}/usr/lib/firebird/bin/$f || return 1          
+        target="$f"
+        if [ "$f" = "gstat" ]
+        then
+            target="fbstat"
+        elif [ "$f" = "isql" ]
+        then
+            target="isql-fb"
+        fi
+        ln -sf ../lib/firebird/bin/$f ${pkgdir}/usr/bin/$target
+    done
+	cd ${_builddir}
+
+	strip -R .note -R .comment ${_builddir}/gen/firebird/intl/libfbintl.so
+    install -m 0644 -D ${_builddir}/gen/firebird/intl/libfbintl.so \
+		${pkgdir}/usr/lib/firebird/intl/libfbintl.so || return 1
+    install -m 0644 -D ${_builddir}/gen/firebird/misc/fbintl.conf \
+		${pkgdir}/usr/lib/firebird/intl/fbintl.conf || return 1
+    install -m 0644 -D ${_builddir}/gen/firebird/misc/firebird.conf \
+		${pkgdir}/usr/lib/firebird/firebird.conf || return 1
+         
+    strip -R .note -R .comment ${_builddir}/gen/firebird/lib/*.so.*
+    mkdir -p ${pkgdir}/usr/lib/firebird/lib
+    rm -f ${_builddir}/gen/firebird/lib/*.a
+    cp -f ${_builddir}/gen/firebird/lib/* ${pkgdir}/usr/lib/firebird/lib/
+    rm -f ${pkgdir}/usr/lib/firebird/lib/libfbclient*
+}
+
+libs() {
+	pkgdesc="Firebird SQL client library"
+	install -m 0644 -D ${_builddir}/gen/firebird/lib/libfbclient.so.$pkgver \
+		${subpkgdir}/usr/lib/libfbclient.so.$pkgver || return 1
+	cd ${subpkgdir}/usr/lib
+	ln -sf libfbclient.so.$pkgver libfbclient.so.2
+}
+
+doc() {
+	pkgdesc="Firebird SQL doc"
+	install -m 0644 -D ${_builddir}/doc/Firebird_conf.txt \
+		${subpkgdir}/usr/share/doc/firebird/Firebird_conf.txt || return 1
+	cp -f ${_builddir}/doc/sql.extensions/* ${subpkgdir}/usr/share/doc/firebird/	
+}
+
+md5sums="70e1071fe030f00ae04c372082653eb4  Firebird-2.1.5.18497-0.tar.bz2
+7a9afd5ea9d117188fa3f38a7a95faf6  firebird.initd
+0315686c9910445e89a16f2a6b9e6a34  firebird.confd
+c58e789176a992a64ad6cff7b26b547a  firebird-libio.patch
+5ae2806faec1fa6cac241367de6d368a  firebird-innetgr.patch
+b2a434c67234e789a5d744de67a04931  firebird-honour-buildflags.patch
+ca7c2cc442ab4bfccd3c404c5b5c27ff  firebird-cppflags.patch
+399b739975be4c01f26e799111501009  firebird-gcc-4.7.patch
+3542effab077c1eb65df32792b729664  firebird-file-perms.patch
+16f4cf5559e7fa174032db858ba3db50  firebird-log-path.patch
+957d017e62a49e610b643484cf14b9c6  firebird-charp-conversion.patch
+7e2b683acb9a6c5e5f8175d9893b2488  firebird-no-static-link.patch"

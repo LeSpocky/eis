@@ -1,0 +1,27 @@
+#!/sbin/runscript
+# firebird init.d file for alpine linux.
+
+daemon=/usr/lib/firebird/bin/fbmgr.bin
+FB_OPTS="-pidfile /var/run/firebird.pid -start -forever"
+export ISC_USER ISC_PASSWORD
+export FIREBIRD=${FIREBIRD:-/usr/lib/firebird}
+
+depend() {
+	need net
+	after firewall
+}
+
+start() {
+	ebegin "Starting Firebird SQL"
+		start-stop-daemon --oknodo --start \
+			--pidfile /var/run/firebird.pid \
+			--chuid firebird --startas ${daemon} -- ${FB_OPTS}
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping Firebird SQL"
+		start-stop-daemon --stop --pidfile /var/run/firebird.pid \
+			--oknodo
+	eend $?
+}

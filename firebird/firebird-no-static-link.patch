@@ -1,0 +1,13 @@
+# Avoid static linking with the C++ support library.
+# use dynamic linking instead
+--- a/builds/posix/make.defaults
++++ b/builds/posix/make.defaults
+@@ -270,7 +270,7 @@ LINK_EMPTY_SYMBOLS = $(LIB_LINK_MAPFILE)
+ FB_SUPER_SERVER	= $(BIN)/fbserver$(EXEC_EXT)
+ FB_CLASSIC_SERVER = $(BIN)/fb_inet_server$(EXEC_EXT)
+ 
+-STATIC_CXXSUPPORT_LIB = -lsupc++ -lgcc_eh
++STATIC_CXXSUPPORT_LIB = -lstdc++ -lgcc_s -lgcc_eh
+ 
+ # From utilities 
+ CREATE_DB	= $(BIN)/create_db$(EXEC_EXT)
