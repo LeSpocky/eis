@@ -1,0 +1,120 @@
+#------------------------------------------------------------------------------
+# /var/install/include/apklib-2 - script interface for apk install tool
+#
+# Copyright (c) 2013 eisfair-Team
+#
+# Creation:    2010-04-08 dv
+# Last update: $Id: apklib 23987 2013-02-25 17:33:07Z jv $
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+
+PM_API_REPOSTOMENU=10
+PM_API_GETREPOBYID=11
+PM_API_PACKAGESTOLIST=12
+PM_API_INFOTOTEXTVIEW=13
+PM_API_INSTALLED_TOLIST=14
+PM_API_DELPACKAGES_TOLIST=15
+
+pm_module_offs="99000"
+
+#------------------------------------------------------------------------------
+# Load pm module
+# Expects: <nothing>
+# Returns: <nothing> but success or failure
+#------------------------------------------------------------------------------
+function pm_initmodule()
+{
+    cui_load_addon "/usr/lib/cui-addons/libapk-addon.so.1.0.0"
+    if [ "$p2" != 0 ]
+    then
+        pm_module_offs="$p2"
+        return 0
+    else
+        return 1
+    fi
+}
+
+#------------------------------------------------------------------------------
+# Transfer repositories to menu window
+# Expects: $1  <-- Handle         : menu window handle
+# Returns: nothing
+#------------------------------------------------------------------------------
+function pm_repos_tomenu()
+{
+    cui_send "C" "$[${pm_module_offs} + ${PM_API_REPOSTOMENU}]" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Resolve index into a repository name
+# Expects: $1  <-- Id         : repository id (menu index)
+# Returns: $p2 repository name
+#------------------------------------------------------------------------------
+function pm_get_repo_by_id()
+{
+    cui_send "C" "$[${pm_module_offs} + ${PM_API_GETREPOBYID}]" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Transfer packages to listview window
+# Expects: $1  <-- Handle         : listview window handle
+#          $2  <-- Section        : Name of section or empty string
+# Returns: nothing
+#------------------------------------------------------------------------------
+function pm_packages_tolist()
+{
+    cui_send "C" "$[${pm_module_offs} + ${PM_API_PACKAGESTOLIST}]" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Transfer package info into a text view control
+# Expects: $1  <-- Handle         : text view window handle
+#          $2  <-- Package        : Name of package
+#          $3  <-- Section        : Name of section or empty string
+#          $4  <-- Version        : Package version or empty string
+# Returns: nothing
+#------------------------------------------------------------------------------
+function pm_info_totext()
+{
+    cui_send "C" "$[${pm_module_offs} + ${PM_API_INFOTOTEXTVIEW}]" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Transfer packages to listview window
+# Expects: $1  <-- Handle         : listview window handle
+#          $2  <-- Section        : Name of section or empty string
+# Returns: nothing
+#------------------------------------------------------------------------------
+function pm_installed_tolist()
+{
+    cui_send "C" "$[${pm_module_offs} + ${PM_API_INSTALLED_TOLIST}]" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Return list of required packages
+# Expects: $1  <-- Package        : Name of package
+# Returns: $p2 required from
+#------------------------------------------------------------------------------
+function pm_delpackage_tolist()
+{
+    cui_send "C" "$[${pm_module_offs} + ${PM_API_DELPACKAGES_TOLIST}]" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#----------------------------------------------------------------------------
+# End
+#----------------------------------------------------------------------------
