@@ -1,17 +1,18 @@
-#!/bin/sh
-# ============================================================================
-# /... - Script for ...
+#! /bin/bash
+# ----------------------------------------------------------------------------
+# checkForChanges.sh - Check which package should be build and trigger
+#                      the corresponding build job
 #
-# Copyright (c) 2012 The eisfair Team, team(at)eisfair(dot)org
-#
-# Creation:    2013-04-18 starwarsfan
+# Creation   :  2013-04-19  starwarsfan
 # Last Update:
+#
+# Copyright (c) 2013 the eisfair team, team(at)eisfair(dot)org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# ============================================================================
+# ----------------------------------------------------------------------------
 
 #exec 2> /tmp/checkForChanges$$.log
 #set -x
