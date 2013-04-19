@@ -3,7 +3,7 @@
 # /var/install/config.d/phpmyadmin-update.sh - parameter update script
 #
 # Creation:     2006-09-15 starwarsfan
-# Last Update:  $Id: phpmyadmin-update.sh 23545 2010-03-19 23:02:06Z starwarsfan $
+# Last Update:  
 #
 # Copyright (c) 2006-2009 The eisfair Team, <team(at)eisfair(dot)org>
 # Maintained by Y. Schumann <yves(at)eisfair(dot)org>

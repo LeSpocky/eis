@@ -1,5 +1,5 @@
 <!-- Creation:     2006-09-15  starwarsfan -->
-<!-- Last Update:  $Id: phpmyadmin 16803 2008-09-18 21:12:21Z starwarsfan $ -->
+<!-- Last Update:   -->
 
 <help name="START_PHPMYADMIN">
   Soll phpMyAdmin verfuegbar sein oder nicht.<br/>

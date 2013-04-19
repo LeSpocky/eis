@@ -3,7 +3,7 @@
 # /var/install/config.d/phpmyadmin.sh   phpMyAdmin configuration
 #
 # Creation:     2006-09-15 starwarsfan
-# Last Update:  $Id: phpmyadmin.sh 32665 2013-01-10 15:45:51Z starwarsfan $
+# Last Update:  
 #
 # Copyright (c) 2006--2009 The eisfair Team, <team(at)eisfair(dot)org>
 # Maintained by Yves Schumann <yves(at)eisfair(dot)org>

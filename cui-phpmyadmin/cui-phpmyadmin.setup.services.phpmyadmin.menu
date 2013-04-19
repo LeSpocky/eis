@@ -1,6 +1,6 @@
 <!-- /var/install/menu/setup.services.phpmyadmin.menu -->
 <!-- Creation:         2006-09-15 starwarsfan -->
-<!-- Last Update:     $Id: setup.services.phpmyadmin.menu 21479 2009-10-05 21:34:14Z starwarsfan $ -->
+<!-- Last Update:      -->
 <package>phpmyadmin</package>
 <title>phpMyAdmin Administration</title>
 <doc file="/usr/share/doc/phpmyadmin/phpmyadmin.txt">View short package documentation</doc>
