@@ -80,18 +80,24 @@ getPackageFolders ()
 # Checks if the given job folder exists. If not found, create it. Afterwards
 # call the next step to handle the main job config file.
 #
-# $1 .. The name of the folder aka the name of the job
+# $1 .. Job name prefix as configured in settings.txt
+# $2 .. Package name
+# $3 .. Job name suffix as configured in settings.txt
 #
 # Set's the global variable $createdNewJob=true if a new job was created.
 handleJobFolder ()
 {
-    local givenJobFolder=$1
+    local jobNamePrefix=$1
+    local currentCheckedPackage=$2
+    local jobNameSuffix=$3
+    local givenJobFolder=${jobNamePrefix}${currentCheckedPackage}${jobNameSuffix}
+
     if [ -d $givenJobFolder ] ; then
         # Directory for job exists, check if there's a config file
         if [ ! -f $givenJobFolder/config.xml ] ; then
             # Config file not found, create it
             echo -n "Job folder for $givenJobFolder found, creating config file... "
-            createJobConfig $givenJobFolder
+            createJobConfig ${jobNamePrefix} ${currentCheckedPackage} ${jobNameSuffix}
             createdNewJob=true
             echo "Done"
         fi
@@ -99,7 +105,7 @@ handleJobFolder ()
         # Job not configured, create folder and config file
         echo -n "Creating job folder and configuration for $givenJobFolder... "
         mkdir $givenJobFolder
-        createJobConfig $givenJobFolder
+        createJobConfig ${jobNamePrefix} ${currentCheckedPackage} ${jobNameSuffix}
         createdNewJob=true
         echo "Done"
     fi
@@ -112,17 +118,12 @@ handleJobFolder ()
 # if he wants to see all packages or only packages of one section
 checkJobFolders ()
 {
-    local jobName1
-    local jobName2
     createdNewJob=false
     for currentCheckedPackage in $packageFolders
     do
-        jobName1=${jobNamePrefix1}$currentCheckedPackage${jobNameSuffix1}
-        jobName2=${jobNamePrefix2}$currentCheckedPackage${jobNameSuffix2}
         echo "Checking jenkins job for package $currentCheckedPackage"
-
-        handleJobFolder $jobName1
-        handleJobFolder $jobName2
+        handleJobFolder $jobNamePrefix1 $currentCheckedPackage $jobNameSuffix1
+        handleJobFolder $jobNamePrefix2 $currentCheckedPackage $jobNameSuffix2
     done
 
     if $createdNewJob ; then
@@ -135,9 +136,21 @@ checkJobFolders ()
 
 # ============================================================================
 # Create jenkins config file for package using new pkg build style
+#
+# $1 .. Job name prefix as configured in settings.txt
+# $2 .. Package name
+# $3 .. Job name suffix as configured in settings.txt
 createJobConfig ()
 {
-    echo TODO
+    local jobNamePrefix=$1
+    local currentCheckedPackage=$2
+    local jobNameSuffix=$3
+    local givenJobFolder=${jobNamePrefix}${currentCheckedPackage}${jobNameSuffix}
+    if [ -f ${jobNamePrefix}TEMPLATE${jobNameSuffix}/config.xml ] ; then
+        sed "s/TEMPLATE/${currentCheckedPackage}/g" ${jobNamePrefix}TEMPLATE${jobNameSuffix}/config.xml > ${jobNamePrefix}${currentCheckedPackage}${jobNameSuffix}/config.xml
+    else
+        echo "'${jobNamePrefix}TEMPLATE${jobNameSuffix}/config.xml' not found! Unable to create build job for package '$currentCheckedPackage'"
+    fi
 }
 
 
