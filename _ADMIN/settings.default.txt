@@ -1,0 +1,49 @@
+# ----------------------------------------------------------------------------
+# settings.txt - This file stores all the settings for the configuration
+#                of an alpeis continuous integration server based on
+#                jenkins. See http://jenkins-ci.org
+#
+# Creation   : 2013-04-19 starwarsfan
+# Last Update:
+#
+# Copyright (c) 2013 the eisfair team, team(at)eisfair(dot)org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# ----------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------
+# Folder on the build master where jenkins stores the jobs
+jobsFolder=/home/jenkins/jobs
+
+# ----------------------------------------------------------------------------
+# Name of existing build jobs, which will be used as templates. These jobs can
+# be configured via jenkins and will be copied to setup new build jobs if a
+# new package was found on the repository.
+templateJobName1=alpeis__TEMPLATE_x86
+templateJobName2=alpeis__TEMPLATE_x86_64
+
+# ----------------------------------------------------------------------------
+# Folder where the build results temporarily stored after their creation.
+# After a package is created it will be copied here. A separate job moves
+# the packages from this folder to the proper location on the eislist
+# folder. So the package build can use a separate build node.
+tempResultFolder=/tmp/buildResults
+
+# ----------------------------------------------------------------------------
+# Settings to access jenkins for api calls
+jenkinsUrl=https://foo.bar.org/jenkins
+jenkinsUser=jenkins
+jenkinsCliJar=/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar
+
+# ----------------------------------------------------------------------------
+# This file should be readable only by the user which runs jenkins,
+# so 'chmod 600' it!
+jenkinsPasswordFile=/var/lib/jenkins/.ssh/ci-password
+
+# ----------------------------------------------------------------------------
+# Use the debug mode: 'true' or 'false'
+# If you switch this to 'true', the scripts will produce a lot of output...
+debug=false
