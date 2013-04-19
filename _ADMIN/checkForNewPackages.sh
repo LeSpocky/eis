@@ -26,10 +26,6 @@ cd `dirname $0`
 scriptDir=`pwd`
 scriptName=`basename $0`
 
-# Go into the repo root folder for the next steps
-cd ..
-pwd
-
 
 
 # -----------------------------
@@ -178,6 +174,14 @@ if [ ! -d $jobsFolder ] ; then
     echo "Jenkins job folder '$jobsFolder' not existing! Exiting."
     exit 1
 fi
+
+
+
+# Go into the repo root folder for the next steps
+cd $scriptDir/..
+pwd
+
+
 
 getPackageFolders
 cd $jobsFolder
