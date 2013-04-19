@@ -29,7 +29,7 @@ scriptName=`basename $0`
 
 
 # -----------------------------
-# check if settings file exists
+# Check if settings file exists
 if [ -f "settings.txt" ] ; then
     # ----------------------------------------------------------------
     # This should be the normal case: settings.txt exists, so load it.
