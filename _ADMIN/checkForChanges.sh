@@ -95,6 +95,7 @@ if [ -e /tmp/determinedFolders-$$.txt ] ; then
     while read packageToTrigger ; do
         echo -n "Triggering build of package '$packageToTrigger'... "
         triggerBuildJob ${jobNamePrefix1}${packageToTrigger}${jobNameSuffix1}
+        triggerBuildJob ${jobNamePrefix2}${packageToTrigger}${jobNameSuffix2}
         echo "Done"
     done < /tmp/determinedFoldersUnique-$$.txt
 
