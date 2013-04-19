@@ -19,11 +19,16 @@
 jobsFolder=/home/jenkins/jobs
 
 # ----------------------------------------------------------------------------
+# The prefix to use for the created jobs. It is also used as prefix on the
+# used job templates.
+jobNamePrefix=alpeis__
+
+# ----------------------------------------------------------------------------
 # Name of existing build jobs, which will be used as templates. These jobs can
 # be configured via jenkins and will be copied to setup new build jobs if a
 # new package was found on the repository.
-templateJobName1=alpeis__TEMPLATE_x86
-templateJobName2=alpeis__TEMPLATE_x86_64
+templateJobName1=${jobNamePrefix}TEMPLATE_x86
+templateJobName2=${jobNamePrefix}TEMPLATE_x86_64
 
 # ----------------------------------------------------------------------------
 # Folder where the build results temporarily stored after their creation.

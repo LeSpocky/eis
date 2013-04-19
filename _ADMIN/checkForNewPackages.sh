@@ -34,7 +34,7 @@ if [ -f "settings.txt" ] ; then
     # ----------------------------------------------------------------
     # This should be the normal case: settings.txt exists, so load it.
     . settings.txt
-    myecho "Settings loaded."
+    echo "Settings loaded."
 elif [ -f "settings.default.txt" ] ; then
     echo ""
     echo "Settings file not existing, creating new one out of default file."
@@ -79,7 +79,7 @@ checkJobs ()
     createdNewJob=false
     for currentCheckedPackage in $packageFolders
     do
-        myecho "Checking jenkins job for package $currentCheckedPackage"
+        echo "Checking jenkins job for package $currentCheckedPackage"
         if [ -d $currentCheckedPackage ] ; then
             # Directory for job exists, check if there's a config file
             if [ ! -f $currentCheckedPackage/config.xml ] ; then
@@ -92,7 +92,7 @@ checkJobs ()
         else
             # Job not configured, create folder and config file
             echo -n "Creating job folder and configuration for $currentCheckedPackage... "
-            mkdir $currentCheckedPackage
+            mkdir $jobNamePrefix$currentCheckedPackage
             createJobConfig
             createdNewJob=true
             echo "Done"
