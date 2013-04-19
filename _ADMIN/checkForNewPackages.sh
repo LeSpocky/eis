@@ -121,14 +121,16 @@ checkJobFolders ()
     createdNewJob=false
     for currentCheckedPackage in $packageFolders
     do
-        echo "Checking jenkins job for package $currentCheckedPackage"
+        echo "Checking jenkins job for package '$currentCheckedPackage'"
         handleJobFolder $jobNamePrefix1 $currentCheckedPackage $jobNameSuffix1
         handleJobFolder $jobNamePrefix2 $currentCheckedPackage $jobNameSuffix2
     done
 
     if $createdNewJob ; then
-        echo "Created at least one new job, initiating jenkins restart"
+        echo "Created at least one new job, initiating jenkins restart."
         restartJenkins
+    else
+        echo "Every package has it's build job, nothing to do."
     fi
 }
 
