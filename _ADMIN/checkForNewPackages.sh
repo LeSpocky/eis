@@ -97,7 +97,7 @@ handleJobFolder ()
         if [ ! -f $givenJobFolder/config.xml ] ; then
             # Config file not found, create it
             echo -n "Job folder for $givenJobFolder found, creating config file... "
-            createJobConfig ${jobNamePrefix} ${currentCheckedPackage} ${jobNameSuffix}
+            createJobConfig "${jobNamePrefix}" "${currentCheckedPackage}" "${jobNameSuffix}"
             createdNewJob=true
             echo "Done"
         fi
@@ -105,7 +105,7 @@ handleJobFolder ()
         # Job not configured, create folder and config file
         echo -n "Creating job folder and configuration for $givenJobFolder... "
         mkdir $givenJobFolder
-        createJobConfig ${jobNamePrefix} ${currentCheckedPackage} ${jobNameSuffix}
+        createJobConfig "${jobNamePrefix}" "${currentCheckedPackage}" "${jobNameSuffix}"
         createdNewJob=true
         echo "Done"
     fi
@@ -122,8 +122,8 @@ checkJobFolders ()
     for currentCheckedPackage in $packageFolders
     do
         echo "Checking jenkins job for package '$currentCheckedPackage'"
-        handleJobFolder $jobNamePrefix1 $currentCheckedPackage $jobNameSuffix1
-        handleJobFolder $jobNamePrefix2 $currentCheckedPackage $jobNameSuffix2
+        handleJobFolder "$jobNamePrefix1" "$currentCheckedPackage" "$jobNameSuffix1"
+        handleJobFolder "$jobNamePrefix2" "$currentCheckedPackage" "$jobNameSuffix2"
     done
 
     if $createdNewJob ; then
