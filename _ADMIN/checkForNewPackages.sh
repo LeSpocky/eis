@@ -61,6 +61,11 @@ fi
 
 
 
+# ============================================================================
+# Get all folders on local working copy. In fact every folder represents a
+# package (except folder _ADMIN).
+#
+# Returns the package names on global variable $packageFolders
 getPackageFolders ()
 {
     packageFolders=''
@@ -72,31 +77,52 @@ getPackageFolders ()
 
 
 # ============================================================================
-# List all known packages out of folder list file by asking the user
-# if he wants to see all packages or only packages of one section
-checkJobs ()
+# Checks if the given job folder exists. If not found, create it. Afterwards
+# call the next step to handle the main job config file.
+#
+# $1 .. The name of the folder aka the name of the job
+#
+# Set's the global variable $createdNewJob=true if a new job was created.
+handleJobFolder ()
 {
-    createdNewJob=false
-    for currentCheckedPackage in $packageFolders
-    do
-        echo "Checking jenkins job for package $currentCheckedPackage"
-        if [ -d $currentCheckedPackage ] ; then
-            # Directory for job exists, check if there's a config file
-            if [ ! -f $currentCheckedPackage/config.xml ] ; then
-                # Config file not found, create it
-                echo -n "Job folder for $currentCheckedPackage found, creating config file... "
-                createJobConfig
-                createdNewJob=true
-                echo "Done"
-            fi
-        else
-            # Job not configured, create folder and config file
-            echo -n "Creating job folder and configuration for $currentCheckedPackage... "
-            mkdir $jobNamePrefix$currentCheckedPackage
-            createJobConfig
+    local givenJobFolder=$1
+    if [ -d $givenJobFolder ] ; then
+        # Directory for job exists, check if there's a config file
+        if [ ! -f $givenJobFolder/config.xml ] ; then
+            # Config file not found, create it
+            echo -n "Job folder for $givenJobFolder found, creating config file... "
+            createJobConfig $givenJobFolder
             createdNewJob=true
             echo "Done"
         fi
+    else
+        # Job not configured, create folder and config file
+        echo -n "Creating job folder and configuration for $givenJobFolder... "
+        mkdir $givenJobFolder
+        createJobConfig $givenJobFolder
+        createdNewJob=true
+        echo "Done"
+    fi
+}
+
+
+
+# ============================================================================
+# List all known packages out of folder list file by asking the user
+# if he wants to see all packages or only packages of one section
+checkJobFolders ()
+{
+    local jobName1
+    local jobName2
+    createdNewJob=false
+    for currentCheckedPackage in $packageFolders
+    do
+        jobName1=${jobNamePrefix1}$currentCheckedPackage${jobNameSuffix1}
+        jobName2=${jobNamePrefix2}$currentCheckedPackage${jobNameSuffix2}
+        echo "Checking jenkins job for package $currentCheckedPackage"
+
+        handleJobFolder $jobName1
+        handleJobFolder $jobName2
     done
 
     if $createdNewJob ; then
@@ -185,9 +211,7 @@ pwd
 
 getPackageFolders
 cd $jobsFolder
-checkJobs
-
-exit $rtc
+checkJobFolders
 
 # ============================================================================
 # End
