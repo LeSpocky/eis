@@ -1,17 +1,19 @@
 How to build alpeis packages using Jenkins
-==========================================
+==============================================================================
 
 This document describes how the automated build of alpeis packages can be
-setup using the continuous integration tool 'Jenkins' [1].
+performed using the continuous integration tool 'Jenkins' [1].
 
+Steps to do:
+------------------------------------------------------------------------------
 1. Install Jenkins
 
 2. Setup the following six build jobs:
 
 2.1 '_alpeis__checkBuildJobs'
 This job checks periodically if for every package on the repository the
-corresponding build jobs exists. At the moment two jobs per package are
-supportet, so you can build x86 and x86_64 version of the packages.
+corresponding build jobs exist. At the moment two jobs per package are
+supportet, so you can build x86 and x86_64 versions of the packages.
 Here the relevant settings for this job:
 - Freestyle job
 - Name: '_alpeis__checkBuildJobs'
