@@ -105,7 +105,7 @@ createJob ()
         echo "Calling jenkins api to create job '$jobName'"
         java -Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl get-job $templateJobName --username jenkins --password-file /var/lib/jenkins/.ssh/ci-password | \
             sed "s/TEMPLATE/$currentPackage/g" | \
-            java --Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl create-job $jobName --username jenkins --password-file /var/lib/jenkins/.ssh/ci-password
+            java -Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl create-job $jobName --username jenkins --password-file /var/lib/jenkins/.ssh/ci-password
         currentRtc=$?
         if [ $currentRtc != 0 ] ; then
             echo "ERROR: Something went wrong during creation of build-job '$jobName'"
