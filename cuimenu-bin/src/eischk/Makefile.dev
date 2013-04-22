@@ -1,0 +1,54 @@
+#----------------------------------------------------------------------------
+#  unix/Makefile
+#
+#  Copyright (c) 2001 Frank Meyer
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  Creation:       03.05.2000  fm
+#  Last Update:    $Id: Makefile.dev 12467 2006-11-16 13:43:46Z tobig $
+#----------------------------------------------------------------------------
+
+CFLAGS := -DDATE=\"$(shell date +%Y-%m-%d)\" \
+	  -g -Wall -Wmissing-prototypes -Wstrict-prototypes
+
+VERBOSE=@
+
+#LDLIBS := -lefence
+
+EXEEXT:=
+EXECUTABLES:=mkfli4l imonc regexp flicp/flicp squeeze tar-filter \
+		     gen_init_cpio gen_init_tar
+
+include Makefile.inc
+
+LEX=flex
+YFLAGS=-d -t -v
+LFLAGS=-d
+DEP_MESSAGE=@echo "  ... Building dependencies for $<"
+
+svn: grammar.c lex.c
+	svn commit -m 'C source generated from grammar.y and lex.l' grammar.c lex.c y.tab.h
+
+grammar.c: grammar.y parse.h tree.h tree_debug.h str.h var.h log.h
+
+lex.c: lex.l y.tab.h tree.h str.h log.h
+
+lex.cfg.c: cfg.h cfg.l
+	flex -d -Pcfg cfg.l
+
+squeeze.c: squeeze.l
+	flex -d -o squeeze.c squeeze.l
+
+%.d: %.c
+	$(DEP_MESSAGE)
+	$(VERBOSE)$(SHELL) -ec "$(CC) -MM $(CFLAGS) $*.c | \
+	sed 's;^$*.o[ :]*;$@ $(OBJDIR)&;g'" > $@
+
+ifeq (${NODEP},)
+-include $(patsubst %.c,$(OBJDIR)%.d,$(SOURCES)))
+endif
+

@@ -3,7 +3,7 @@
 # /var/install/bin/userman.cui.grous.module.sh - module for eisfair user mananger
 #
 # Creation:     2008-03-09 dv
-# Last update:  $Id: userman.cui.groups.module.sh 30298 2012-03-16 22:12:52Z dv $
+# Last update:  $Id: userman.cui.groups.module.sh 32221 2012-11-16 21:49:12Z dv $
 #
 # Copyright (c) 2001-2007 the eisfair team, team(at)eisfair(dot)org
 #
@@ -152,21 +152,21 @@ function groupsdlg_create_hook()
         cui_window_create     "$p2"
     fi
 
-    cui_edit_new "$dlg" "" 17 1 11 1 8 $IDC_GROUPSDLG_EDNAME $CWS_NONE $CWS_NONE && ctrl="$p2"
+    cui_edit_new "$dlg" "" 17 1 21 1 32 $IDC_GROUPSDLG_EDNAME $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "${groupsdlg_groupname}"
     fi
 
-    cui_button_new "$dlg" "&OK" 5 3 10 1 $IDC_GROUPSDLG_BUTOK $CWS_DEFOK $CWS_NONE && ctrl="$p2"
+    cui_button_new "$dlg" "&OK" 10 3 10 1 $IDC_GROUPSDLG_BUTOK $CWS_DEFOK $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" groupsdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
       
-    cui_button_new "$dlg" "&Cancel" 16 3 10 1 $IDC_GROUPSDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE && ctrl="$p2"
+    cui_button_new "$dlg" "&Cancel" 21 3 10 1 $IDC_GROUPSDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" groupsdlg_cancel_clicked
@@ -471,7 +471,7 @@ function groups_editgroup_dialog()
 
             local orig_groupname="${groupsdlg_groupname}"
 
-            cui_window_new "$win" 0 0 32 7 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
+            cui_window_new "$win" 0 0 42 7 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle "$dlg"
             then
                 cui_window_setcolors "$dlg" "DIALOG"
@@ -527,7 +527,7 @@ function groups_creategroup_dialog()
     
     groupsdlg_groupname=""
 
-    cui_window_new "$win" 0 0 32 7 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
+    cui_window_new "$win" 0 0 42 7 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
     if cui_valid_handle "$dlg"
     then
         cui_window_setcolors "$dlg" "DIALOG"

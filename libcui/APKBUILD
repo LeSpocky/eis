@@ -54,6 +54,8 @@ package() {
 }
 
 dev(){
+    pkgdesc="CUI lib devel package"
+    depends="libcui>=2.0.0"
     rm -rf ${pkgdir}/usr/include
     rm -f ${pkgdir}/usr/lib/*.a
     mkdir -p ${subpkgdir}/usr/lib || return 1
@@ -66,9 +68,9 @@ dev(){
     # Don't strip libcui*.a files!
 #    strip -R .note -R .comment ${subpkgdir}/usr/lib/*.a
     cd ${subpkgdir}/usr/lib
-    ln -s libcui.so.${pkgver} libcui.so  || return 1
-    ln -s libcui-script.so.${pkgver} libcui-script.so  || return 1
-    ln -s libcui-util.so.${pkgver} libcui-util.so  || return 1
+    ln -sf libcui.so.${pkgver} libcui.so  || return 1
+    ln -sf libcui-script.so.${pkgver} libcui-script.so  || return 1
+    ln -sf libcui-util.so.${pkgver} libcui-util.so  || return 1
 }
 
 addonmysql(){

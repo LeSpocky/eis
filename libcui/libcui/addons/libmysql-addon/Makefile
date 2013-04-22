@@ -2,7 +2,7 @@
 # Makefile for curses user interface programs on Eis/Fair
 #
 # Creation     : 11.10.2009
-# Last Modified: $Id: Makefile 33468 2013-04-14 16:40:27Z dv $
+# Last Modified: $Id: Makefile 33522 2013-04-21 09:04:24Z dv $
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,33 +18,20 @@
 CC   = gcc
 FLEX = flex
 
-# unicode support
-CFLAGS_UNICODE     =  -Wall -Wextra -Wstrict-prototypes -g 
-CFLAGS_UNICODE    += -D_XOPEN_SOURCE_EXTENDED 
-CFLAGS_UNICODE    += -D_UNICODE -D_GNU_SOURCE
-CFLAGS_UNICODE    += -std=c99
-CURSESLIB_UNICODE  = ncursesw
-
-# ascii support
-CFLAGS_ASCII       = -Wall -Wstrict-prototypes -g
-CURSESLIB_ASCII    = ncurses
+# compile options
+CFLAGS     = -Wall -Wextra -Wstrict-prototypes -g 
+CFLAGS    += -D_XOPEN_SOURCE_EXTENDED 
+CFLAGS    += -D_UNICODE -D_GNU_SOURCE
+CFLAGS    += -std=c99
+CFLAGS    += -I/usr/include/mysql
 
 # additional library flags
-CLIBFLAGS = -fPIC
-
-# check platform target
-#ifneq (,$(findstring UTF-8,$(LC_CTYPE)))
-    CFLAGS=$(CFLAGS_UNICODE) -I/usr/include/mysql
-    CURSESLIB=$(CURSESLIB_UNICODE)
-#else
-#    CFLAGS=$(CFLAGS_ASCII) -I/usr/include/mysql
-#    CURSESLIB=$(CURSESLIB_ASCII)
-#endif
+CLIBFLAGS  = -fPIC
 
 # linker
 LDFLAGS     = /usr/lib/libmysqlclient.so.18 
 LDFLAGS    += -lcui -lcui-util -lcui-script
-LDFLAGS    += -l$(CURSESLIB)
+LDFLAGS    += -lncursesw
 
 # ----------------------------------------------------------------------
 # Objetcs to build

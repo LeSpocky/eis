@@ -1,0 +1,66 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: team@eisfair.org
+pkgname=cuimenu-bin
+pkgver=2.0.0
+pkgrel=0
+pkgdesc="Eisfair CUI basis menu - binary files"
+url="http://www.eisfair.org"
+arch="all"
+license="GNU"
+depends="libcui>=2.0.0"
+depends_dev="libcui-dev>=2.0.0"
+makedepends="$depends_dev"
+install="$pkgname.pre-install $pkgname.post-install"
+subpackages=""
+source=""
+
+_builddir="$srcdir"
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+	cp -rf ${startdir}/source/* ${_builddir}/
+}
+
+build() {
+	mkdir -p ${pkgdir}/var/install/bin
+	mkdir -p ${pkgdir}/var/install/include
+	cd ${_builddir}/ask.cui
+	make -j1 -s || return 1
+	cd ${_builddir}/edit-conf.cui
+	make -j1 -s || return 1
+	cd ${_builddir}/eischk
+	make -j1 eischk || return 1
+	cd ${_builddir}/list-files.cui
+	make -j1 -s || return 1 
+	cd ${_builddir}/shellrun.cui
+	make -j1 -s || return 1
+	cd ${_builddir}/show-doc.cui
+	make -j1 -s || return 1
+	cd ${_builddir}/show-menu.cui
+	make -j1 -s || return 1
+}
+
+package() {
+	cd ${_builddir}/ask.cui
+	make -j1 DESTDIR="$pkgdir" install || return 1
+	cd ${_builddir}/edit-conf.cui
+	make -j1 DESTDIR="$pkgdir" install || return 1
+	cp ${_builddir}/eischk/eischk ${pkgdir}/var/install/bin/
+	cd ${_builddir}/list-files.cui
+	make -j1 DESTDIR="$pkgdir" install || return 1
+	cd ${_builddir}/shellrun.cui
+	make -j1 DESTDIR="$pkgdir" install || return 1
+	cd ${_builddir}/show-doc.cui
+	make -j1 DESTDIR="$pkgdir" install || return 1
+	cd ${_builddir}/show-menu.cui
+	make -j1 DESTDIR="$pkgdir" install || return 1
+	chmod 0644 ${pkgdir}/var/install/include/*
+}
+
+md5sums=""

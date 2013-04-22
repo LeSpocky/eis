@@ -3,7 +3,7 @@
 # /var/install/bin/userman.cui.sh - eisfair user mananger
 #
 # Creation:     2008-03-09 dv
-# Last update:  $Id: userman.cui.sh 30298 2012-03-16 22:12:52Z dv $
+# Last update:  $Id: userman.cui.sh 33444 2013-04-10 20:41:15Z dv $
 #
 # Copyright (c) 2001-2007 the eisfair team, team(at)eisfair(dot)org
 #
@@ -14,7 +14,7 @@
 #----------------------------------------------------------------------------
 
 . /var/install/include/cuilib
-. /var/install/include/syslib-1
+. /var/install/include/syslib-2
 
 #============================================================================
 # global constants
@@ -492,7 +492,7 @@ function init()
         cui_window_setcolors      "$mainwin" "DESKTOP"
         cui_window_settext        "$mainwin" "eisfair User Manager"
         cui_window_setlstatustext "$mainwin" "Commands: F10=Exit"
-        cui_window_setrstatustext "$mainwin" "V1.0.2"
+        cui_window_setrstatustext "$mainwin" "V2.0.0"
         cui_window_sethook        "$mainwin" "$HOOK_CREATE"  mainwin_create_hook
         cui_window_sethook        "$mainwin" "$HOOK_INIT"    mainwin_init_hook
         cui_window_sethook        "$mainwin" "$HOOK_KEY"     mainwin_key_hook

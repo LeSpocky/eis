@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 #include <unistd.h>
+#include <endian.h>
 #include "apk_defines.h"
 #include "apk_database.h"
 #include "apk_package.h"
@@ -56,7 +57,8 @@ struct apk_score {
 	};
 };
 
-#define SCORE_MAX		(struct apk_score) { .unsatisfied = -1 }
+/* #define SCORE_MAX		(struct apk_score) { .unsatisfied = -1 }*/
+#define SCORE_MAX		-1
 #define SCORE_FMT		"{%d/%d/%d,%d}"
 #define SCORE_PRINTF(s)		(s)->unsatisfied, (s)->non_preferred_actions, (s)->non_preferred_pinnings, (s)->preference
 
@@ -309,10 +311,9 @@ static int get_topology_score(
 	unsigned int preferred_repos, allowed_repos;
 	int score_locked = TRUE, sticky_installed = FALSE;
 
-	score = (struct apk_score) {
-		.unsatisfied = ps->unsatisfied,
-		.preference = ps->preference,
-	};
+	memset(&score, 0, sizeof(score));
+	score.unsatisfied = ps->unsatisfied;
+	score.preference  = ps->preference;
 
 	if (ss->solver_flags & APK_SOLVERF_AVAILABLE) {
 		/* available preferred */
@@ -555,10 +556,9 @@ static int install_if_missing(struct apk_solver_state *ss, struct apk_package *p
 
 static void get_unassigned_score(struct apk_name *name, struct apk_score *score)
 {
-	*score = (struct apk_score){
-		.unsatisfied = name->ss.requirers,
-		.preference = name->providers->num,
-	};
+	memset(score, 0, sizeof(score[0]));
+	score->unsatisfied = name->ss.requirers;
+	score->preference  = name->providers->num;
 }
 
 static void promote_name(struct apk_solver_state *ss, struct apk_name *name)
@@ -1139,7 +1139,10 @@ static int reconsider_name(struct apk_solver_state *ss, struct apk_name *name)
 	struct apk_provider *next_p = NULL, *best_p = NULL;
 	unsigned int next_topology = 0, options = 0;
 	int i, j, score_locked = FALSE;
-	struct apk_score best_score = SCORE_MAX;
+	struct apk_score best_score;
+	
+	memset(&best_score, 0, sizeof(best_score));
+	best_score.unsatisfied = SCORE_MAX;
 
 	if (!name->ss.none_excluded) {
 		struct apk_score minscore;
@@ -1532,7 +1535,10 @@ int apk_solver_solve(struct apk_database *db,
 	ss->db = db;
 	ss->solver_flags = solver_flags;
 	ss->topology_position = -1;
-	ss->best_score = SCORE_MAX;
+	
+	memset(&ss->best_score, 0, sizeof(ss->best_score));
+	ss->best_score.unsatisfied = SCORE_MAX;
+	
 	list_init(&ss->unsolved_list_head);
 
 	for (i = 0; i < world->num; i++) {

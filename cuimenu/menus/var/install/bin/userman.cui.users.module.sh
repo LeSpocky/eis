@@ -3,7 +3,7 @@
 # /var/install/bin/userman.cui.users.module.sh - users module for eisfair user mananger
 #
 # Creation:     2008-03-09 dv
-# Last update:  $Id: userman.cui.users.module.sh 30298 2012-03-16 22:12:52Z dv $
+# Last update:  $Id: userman.cui.users.module.sh 31617 2012-09-17 12:29:15Z dv $
 #
 # Copyright (c) 2001-2007 the eisfair team, team(at)eisfair(dot)org
 #
@@ -39,19 +39,6 @@ IDC_ADDGROUPS_BUTADD='14'
 IDC_ADDGROUPS_BUTREMOVE='15'
 
 
-#============================================================================
-# global functionality
-#============================================================================
-# check if package inet is installed
-if [ -f /etc/config.d/inet ]
-then
-    . /etc/config.d/inet
-    has_inet='TRUE' 
-else
-    ftp_default='n/a'                # not applicable
-    has_inet='FALSE'
-fi
-  
 #============================================================================
 # helper functions for user management
 #============================================================================
@@ -858,6 +845,7 @@ function users_deleteuser_dialog()
     local win="$1"
     local ctrl
     local index
+    local result
 
     cui_window_getctrl "$win" "$IDC_USERS_LIST" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
@@ -872,21 +860,23 @@ function users_deleteuser_dialog()
             then
                 if [ "$p2" == "$IDYES" ]
                 then
-                    /var/install/bin/remove-user "${usersdlg_userlogin}" y
+                    result=$(/var/install/bin/remove-user "${usersdlg_userlogin}" y)
                 else
-                    /var/install/bin/remove-user "${usersdlg_userlogin}" n
+                    result=$(/var/install/bin/remove-user "${usersdlg_userlogin}" n)
                 fi
                 
-                case "$?" in
-                0) return 0
-                   ;;
-                1) cui_message "$win" "Error: user can't be deleted" "Error" "$MB_ERROR"
-                   return 1
-                   ;;
-                2) cui_message "$win" "Error: you can't delete system users" "Error" "$MB_ERROR"
-                   return 1
-                   ;;
-                esac
+                if [ "$?" == 0 ]
+                then
+                    return 0
+                else
+                    if [ "$result" == "" ]
+                    then
+                        cui_message "$win" "Error: user can't be deleted" "Error" "$MB_ERROR"
+                    else
+                        cui_message "$win" "$result" "Error" "$MB_ERROR"
+                    fi
+                    return 1
+                fi
                 
                 return 1
             fi

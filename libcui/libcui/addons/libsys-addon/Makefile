@@ -2,7 +2,7 @@
 # Makefile for curses user interface programs on Eis/Fair
 #
 # Creation     : 21.09.2009
-# Last Modified: $Id: Makefile 33468 2013-04-14 16:40:27Z dv $
+# Last Modified: $Id: Makefile 33522 2013-04-21 09:04:24Z dv $
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,32 +18,18 @@
 CC   = gcc
 FLEX = flex
 
-# unicode support
-CFLAGS_UNICODE     =  -Wall -Wextra -Wstrict-prototypes -g 
-CFLAGS_UNICODE    += -D_XOPEN_SOURCE_EXTENDED 
-CFLAGS_UNICODE    += -D_UNICODE -D_GNU_SOURCE
-CFLAGS_UNICODE    += -std=c99
-CURSESLIB_UNICODE  = ncursesw
-
-# ascii support
-CFLAGS_ASCII       = -Wall -Wstrict-prototypes -g
-CURSESLIB_ASCII    = ncurses
+# compile options
+CFLAGS      =  -Wall -Wextra -Wstrict-prototypes -g 
+CFLAGS     += -D_XOPEN_SOURCE_EXTENDED 
+CFLAGS     += -D_UNICODE -D_GNU_SOURCE
+CFLAGS     += -std=c99
 
 # additional library flags
-CLIBFLAGS = -fPIC
-
-# check platform target
-#ifneq (,$(findstring UTF-8,$(LC_CTYPE)))
-    CFLAGS=$(CFLAGS_UNICODE) 
-    CURSESLIB=$(CURSESLIB_UNICODE)
-#else
-#    CFLAGS=$(CFLAGS_ASCII) 
-#    CURSESLIB=$(CURSESLIB_ASCII)
-#endif
+CLIBFLAGS   = -fPIC
 
 # linker
 LDFLAGS     = -lcui -lcui-util -lcui-script
-LDFLAGS    += -l$(CURSESLIB)
+LDFLAGS    += -lncursesw
 
 # ----------------------------------------------------------------------
 # Objetcs to build
@@ -92,6 +78,7 @@ $(LIB_NAME).so.$(LIB_VERSION): $(C_OBJECTS)
 install: $(LIB_NAME).so.$(LIB_VERSION)
 	@echo "installing $(LIB_NAME) ..."
 	@mkdir -p $(DESTDIR)/usr/lib/cui-addons
+	@mkdir -p $(DESTDIR)/var/install/include
 	@strip $(LIB_NAME).so.$(LIB_VERSION)
 	@cp    $(LIB_NAME).so.$(LIB_VERSION) $(DESTDIR)/usr/lib/cui-addons
 	@cp    $(INC_NAME) $(DESTDIR)/var/install/include

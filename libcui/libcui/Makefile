@@ -2,7 +2,7 @@
 # Makefile for curses user interface programs on Eis/Fair
 #
 # Creation     : 13.03.2004
-# Last Modified: $Id: Makefile 33478 2013-04-15 17:44:11Z dv $
+# Last Modified: $Id: Makefile 33516 2013-04-21 08:35:55Z dv $
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ test: test.cui
 
 test.cui: $(C_OBJECTS)
 	@echo "linking $@ ..."
-	@$(CC) -o $@ $^ -lcui -lcui-util -liconv
+	@$(CC) -o $@ $^ -lcui -lcui-util
 
 libcui.so.$(CUI_VERSION): $(C_CUI_OBJECTS)
 	@echo "linking $@ ..."
@@ -150,8 +150,11 @@ install: libcui-script.so.$(CUI_VERSION) libcui-util.so.$(CUI_VERSION) libcui.so
 	@cp libcui-script.so.$(CUI_VERSION) $(DESTDIR)/usr/lib
 	@cp libcui-util.so.$(CUI_VERSION) $(DESTDIR)/usr/lib
 	@cp libcui-script.a $(DESTDIR)/usr/lib
-	cp libcui-util.a $(DESTDIR)/usr/lib
+	@cp libcui-util.a $(DESTDIR)/usr/lib
 	@cp libcui.a $(DESTDIR)/usr/lib
+	@rm -f $(DESTDIR)/usr/lib/libcui.so
+	@rm -f $(DESTDIR)/usr/lib/libcui-script.so
+	@rm -f $(DESTDIR)/usr/lib/libcui-util.so
 	@ldconfig -n $(DESTDIR)/usr/lib
 	@ln -s $(DESTDIR)/usr/lib/libcui.so.$(CUI_VERSION) libcui.so
 	@ln -s $(DESTDIR)/usr/lib/libcui-script.so.$(CUI_VERSION) libcui-script.so

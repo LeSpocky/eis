@@ -1,0 +1,12 @@
+Sources für Unix/Linux
+===============================================================================
+
+Makefile                Makefile
+
+mkfli4l.c               Programm zum Erzeugen der Dateiliste fürs opt-Archiv
+                        Siehe ../src/fli4l/doc/README
+
+imonc.c                 Client imonc für Unix/linux
+                        Siehe ../doc/...
+
+Frank Meyer                                         mailto: frank@fli4l.de

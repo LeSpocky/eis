@@ -1,0 +1,23 @@
+show-doc.cui-2.0.3 (released in update 1.7.5)
+=============================================
+- added support for --noframe command line swith
+  to turn of the surrounding frame around the text
+  view window.
+- added support for lzma and zx compressed text files.
+- fixed -t command line switch
+
+show-doc.cui-2.0.2 (released in update 1.7.0)
+=============================================
+- modified to match new api interface of libcui
+
+show-doc.cui-2.0.1 (released in update 1.5.1)
+=============================================
+- fixed buffer allocation for first zero sized line buffer
+
+show-doc.cui-2.0.0 (released in update 1.5.0)
+=============================================
+- separated from cui source tree
+- pager and tail functionality
+- port to libcui
+- optional unicode build target
+

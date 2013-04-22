@@ -14,7 +14,7 @@
 #----------------------------------------------------------------------------
 
 . /var/install/include/cuilib
-. /var/install/include/apklib
+. /var/install/include/apklib-2
 
 #----------------------------------------------------------------------------
 # global constants
