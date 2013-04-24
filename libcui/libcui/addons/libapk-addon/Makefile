@@ -54,7 +54,6 @@ C_OBJECTS         +=  common.o
 C_OBJECTS         +=  database.o
 C_OBJECTS         +=  package.o
 C_OBJECTS         +=  archive.o
-C_OBJECTS         +=  audit.o
 C_OBJECTS         +=  version.o
 C_OBJECTS         +=  io.o
 C_OBJECTS         +=  url.o
