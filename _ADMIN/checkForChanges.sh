@@ -84,7 +84,7 @@ triggerBuildJob ()
 
 for currentFile in `git diff --name-only @{1}..` ; do
     # Check for changes but skip files on repo root and skip folder _ADMIN
-    if [ "${currentFile%/*}" != "${currentFile}" -a "${currentFile%/*}" != '_ADMIN' ] ; then
+    if [ "${currentFile%%/*}" != "${currentFile}" -a "${currentFile%/*}" != '_ADMIN' ] ; then
         echo ${currentFile%/*} >> /tmp/determinedFolders-$$.txt
     fi
 done
