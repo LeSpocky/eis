@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: main.c 23498 2010-03-14 21:57:47Z dv $
+ * Last Update:  $Id: main.c 33469 2013-04-14 17:32:04Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -108,10 +108,14 @@ GetBasename(const char* name)
  * ---------------------------------------------------------------------
  */
 static void
-ErrorOut(void* w, const TCHAR* errmsg, const TCHAR* filename,
+ErrorOut(void* w, const wchar_t* errmsg, const wchar_t* filename,
              int linenr, int is_warning)
 {
 	char* mberror = TCharToMbDup(errmsg);
+	
+	CUI_USE_ARG(w);
+	CUI_USE_ARG(filename);
+	
 	if (mberror)
 	{
 		if (is_warning)
@@ -135,27 +139,27 @@ ErrorOut(void* w, const TCHAR* errmsg, const TCHAR* filename,
  * ---------------------------------------------------------------------
  */
 static int
-TranslateColor(CONFIG* cfg, const TCHAR* option, const TCHAR* defval)
+TranslateColor(CONFIG* cfg, const wchar_t* option, const wchar_t* defval)
 {
-	const TCHAR* color = ConfigGetString(cfg, NULL, option, OPTIONAL, defval, NULL);
+	const wchar_t* color = ConfigGetString(cfg, NULL, option, OPTIONAL, defval, NULL);
 
 	int col = BLACK;
-	if (tcscasecmp(color, _T("BLACK")) == 0)             col = BLACK;
-	else if (tcscasecmp(color, _T("RED")) == 0)          col = RED;
-	else if (tcscasecmp(color, _T("GREEN")) == 0)        col = GREEN;
-	else if (tcscasecmp(color, _T("BROWN")) == 0)        col = BROWN;
-	else if (tcscasecmp(color, _T("BLUE")) == 0)         col = BLUE;
-	else if (tcscasecmp(color, _T("MAGENTA")) == 0)      col = MAGENTA;
-	else if (tcscasecmp(color, _T("CYAN")) == 0)         col = CYAN;
-	else if (tcscasecmp(color, _T("LIGHTGRAY")) == 0)    col = LIGHTGRAY;
-	else if (tcscasecmp(color, _T("DARKGRAY")) == 0)     col = DARKGRAY;
-	else if (tcscasecmp(color, _T("LIGHTRED")) == 0)     col = LIGHTRED;
-	else if (tcscasecmp(color, _T("LIGHTGREEN")) == 0)   col = LIGHTGREEN;
-	else if (tcscasecmp(color, _T("YELLOW")) == 0)       col = YELLOW;
-	else if (tcscasecmp(color, _T("LIGHTBLUE")) == 0)    col = LIGHTBLUE;
-	else if (tcscasecmp(color, _T("LIGHTMAGENTA")) == 0) col = LIGHTMAGENTA;
-	else if (tcscasecmp(color, _T("LIGHTCYAN")) == 0)    col = LIGHTCYAN;
-	else if (tcscasecmp(color, _T("WHITE")) == 0)        col = WHITE;
+	if (wcscasecmp(color, _T("BLACK")) == 0)             col = BLACK;
+	else if (wcscasecmp(color, _T("RED")) == 0)          col = RED;
+	else if (wcscasecmp(color, _T("GREEN")) == 0)        col = GREEN;
+	else if (wcscasecmp(color, _T("BROWN")) == 0)        col = BROWN;
+	else if (wcscasecmp(color, _T("BLUE")) == 0)         col = BLUE;
+	else if (wcscasecmp(color, _T("MAGENTA")) == 0)      col = MAGENTA;
+	else if (wcscasecmp(color, _T("CYAN")) == 0)         col = CYAN;
+	else if (wcscasecmp(color, _T("LIGHTGRAY")) == 0)    col = LIGHTGRAY;
+	else if (wcscasecmp(color, _T("DARKGRAY")) == 0)     col = DARKGRAY;
+	else if (wcscasecmp(color, _T("LIGHTRED")) == 0)     col = LIGHTRED;
+	else if (wcscasecmp(color, _T("LIGHTGREEN")) == 0)   col = LIGHTGREEN;
+	else if (wcscasecmp(color, _T("YELLOW")) == 0)       col = YELLOW;
+	else if (wcscasecmp(color, _T("LIGHTBLUE")) == 0)    col = LIGHTBLUE;
+	else if (wcscasecmp(color, _T("LIGHTMAGENTA")) == 0) col = LIGHTMAGENTA;
+	else if (wcscasecmp(color, _T("LIGHTCYAN")) == 0)    col = LIGHTCYAN;
+	else if (wcscasecmp(color, _T("WHITE")) == 0)        col = WHITE;
 	else
 	{
 		CONFENTRY* entry = ConfigGetEntry(cfg, NULL, option, NULL);
@@ -175,87 +179,47 @@ TranslateColor(CONFIG* cfg, const TCHAR* option, const TCHAR* defval)
  * ---------------------------------------------------------------------
  */
 static int
-ReadColorRec(CONFIG* cfg, const TCHAR* name, CUIWINCOLOR* colrec)
+ReadColorRec(CONFIG* cfg, const wchar_t* name, CUIWINCOLOR* colrec)
 {
-	TCHAR option[128 + 1];
+	wchar_t option[128 + 1];
 
-#ifdef _UNICODE
-	stprintf(option, 128, _T("CUI_%ls_WND_COLOR"), name);
+	swprintf(option, 128, _T("CUI_%ls_WND_COLOR"), name);
 	if (ConfigGetEntry(cfg, NULL, option, NULL))
 	{
 		colrec->WndColor = TranslateColor(cfg, option, _T("BLUE"));
 
-		stprintf(option, 128, _T("CUI_%ls_WND_SEL_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_WND_SEL_COLOR"), name);
 		colrec->WndSelColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
 
-		stprintf(option, 128, _T("CUI_%ls_WND_TXT_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_WND_TXT_COLOR"), name);
 		colrec->WndTxtColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
 
-		stprintf(option, 128, _T("CUI_%ls_SEL_TXT_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_SEL_TXT_COLOR"), name);
 		colrec->SelTxtColor = TranslateColor(cfg, option, _T("BLACK"));
 
-		stprintf(option, 128, _T("CUI_%ls_INACT_TXT_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_INACT_TXT_COLOR"), name);
 		colrec->InactTxtColor = TranslateColor(cfg, option, _T("DARKGRAY"));
 
-		stprintf(option, 128, _T("CUI_%ls_HILIGHT_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_HILIGHT_COLOR"), name);
 		colrec->HilightColor = TranslateColor(cfg, option, _T("YELLOW"));
 
-		stprintf(option,128,  _T("CUI_%ls_TITLE_TXT_COLOR"), name);
+		swprintf(option,128,  _T("CUI_%ls_TITLE_TXT_COLOR"), name);
 		colrec->TitleTxtColor = TranslateColor(cfg, option, _T("BLACK"));
 
-		stprintf(option,128,  _T("CUI_%ls_TITLE_BKG_COLOR"), name);
+		swprintf(option,128,  _T("CUI_%ls_TITLE_BKG_COLOR"), name);
 		colrec->TitleBkgndColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
 
-		stprintf(option, 128, _T("CUI_%ls_STATUS_TXT_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_STATUS_TXT_COLOR"), name);
 		colrec->StatusTxtColor = TranslateColor(cfg, option, _T("BLACK"));
 
-		stprintf(option, 128, _T("CUI_%ls_STATUS_BKG_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_STATUS_BKG_COLOR"), name);
 		colrec->StatusBkgndColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
 
-		stprintf(option, 128, _T("CUI_%ls_BORDER_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_BORDER_COLOR"), name);
 		colrec->BorderColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
 
 		return TRUE;
 	}
-#else
-	stprintf(option, 128, _T("CUI_%s_WND_COLOR"), name);
-	if (ConfigGetEntry(cfg, NULL, option, NULL))
-	{
-		colrec->WndColor = TranslateColor(cfg, option, _T("BLUE"));
-
-		stprintf(option, 128, _T("CUI_%s_WND_SEL_COLOR"), name);
-		colrec->WndSelColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
-
-		stprintf(option, 128, _T("CUI_%s_WND_TXT_COLOR"), name);
-		colrec->WndTxtColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
-
-		stprintf(option, 128, _T("CUI_%s_SEL_TXT_COLOR"), name);
-		colrec->SelTxtColor = TranslateColor(cfg, option, _T("BLACK"));
-
-		stprintf(option, 128, _T("CUI_%s_INACT_TXT_COLOR"), name);
-		colrec->InactTxtColor = TranslateColor(cfg, option, _T("DARKGRAY"));
-
-		stprintf(option, 128, _T("CUI_%s_HILIGHT_COLOR"), name);
-		colrec->HilightColor = TranslateColor(cfg, option, _T("YELLOW"));
-
-		stprintf(option,128,  _T("CUI_%s_TITLE_TXT_COLOR"), name);
-		colrec->TitleTxtColor = TranslateColor(cfg, option, _T("BLACK"));
-
-		stprintf(option,128,  _T("CUI_%s_TITLE_BKG_COLOR"), name);
-		colrec->TitleBkgndColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
-
-		stprintf(option, 128, _T("CUI_%s_STATUS_TXT_COLOR"), name);
-		colrec->StatusTxtColor = TranslateColor(cfg, option, _T("BLACK"));
-
-		stprintf(option, 128, _T("CUI_%s_STATUS_BKG_COLOR"), name);
-		colrec->StatusBkgndColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
-
-		stprintf(option, 128, _T("CUI_%s_BORDER_COLOR"), name);
-		colrec->BorderColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
-
-		return TRUE;
-	}
-#endif
 	return FALSE;
 }
 
@@ -266,7 +230,7 @@ ReadColorRec(CONFIG* cfg, const TCHAR* name, CUIWINCOLOR* colrec)
  * ---------------------------------------------------------------------
  */
 static int
-ReadConfig(const TCHAR* filename)
+ReadConfig(const wchar_t* filename)
 {
 	CONFIG*     cfg;
 	CUIWINCOLOR colrec;
@@ -594,173 +558,129 @@ ReadCommandLine(int argc, char *argv[])
 
 	if (Config.DefaultExtention)
 	{
-		len = tcslen(Config.CheckFileBase)  +
-			tcslen(Config.ConfigName) +
-			tcslen(Config.DefaultExtention) + 3;
+		len = wcslen(Config.CheckFileBase)  +
+			wcslen(Config.ConfigName) +
+			wcslen(Config.DefaultExtention) + 3;
 
-		Config.CheckFileName = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-		stprintf(Config.CheckFileName,
+		Config.CheckFileName = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+		swprintf(Config.CheckFileName,
 			len,
-#ifdef _UNICODE
 			_T("%ls/%ls.%ls"),
-#else
-			_T("%s/%s.%s"),
-#endif
 			Config.CheckFileBase,
 			Config.ConfigName,
 			Config.DefaultExtention);
 
-		len = tcslen(Config.ConfigFileBase) +
-			tcslen(Config.ConfigName) +
-			tcslen(Config.DefaultExtention) + 3;
+		len = wcslen(Config.ConfigFileBase) +
+			wcslen(Config.ConfigName) +
+			wcslen(Config.DefaultExtention) + 3;
 
-		Config.ConfFileName = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-		stprintf(Config.ConfFileName,
+		Config.ConfFileName = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+		swprintf(Config.ConfFileName,
 			len,
-#ifdef _UNICODE
 			_T("%ls/%ls.%ls"),
-#else
-			_T("%s/%s.%s"),
-#endif
 			Config.ConfigFileBase,
 			Config.ConfigName,
 			Config.DefaultExtention);
 
-		len = tcslen(Config.DefaultFileBase) +
-			tcslen(Config.ConfigName) +
-			tcslen(Config.DefaultExtention) + 3;
+		len = wcslen(Config.DefaultFileBase) +
+			wcslen(Config.ConfigName) +
+			wcslen(Config.DefaultExtention) + 3;
 
-		Config.DefaultFileName = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-		stprintf(Config.DefaultFileName,
+		Config.DefaultFileName = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+		swprintf(Config.DefaultFileName,
 			len,
-#ifdef _UNICODE
 			_T("%ls/%ls.%ls"),
-#else
-			_T("%s/%s.%s"),
-#endif
 			Config.DefaultFileBase,
 			Config.ConfigName,
 			Config.DefaultExtention);
 
-		len = tcslen(Config.HelpFileBase) +
-			tcslen(Config.ConfigName) +
-			tcslen(Config.DefaultExtention) + 3;
+		len = wcslen(Config.HelpFileBase) +
+			wcslen(Config.ConfigName) +
+			wcslen(Config.DefaultExtention) + 3;
 
-		Config.HelpFileName = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-		stprintf(Config.HelpFileName,
+		Config.HelpFileName = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+		swprintf(Config.HelpFileName,
 			len,
-#ifdef _UNICODE
 			_T("%ls/%ls.%ls"),
-#else
-			_T("%s/%s.%s"),
-#endif
 			Config.HelpFileBase,
 			Config.ConfigName,
 			Config.DefaultExtention);
 
-		len = tcslen(_T("/tmp/")) +
-			tcslen(Config.ConfigName) +
-			tcslen(Config.DefaultExtention) + 3 + 32;
+		len = wcslen(_T("/tmp/")) +
+			wcslen(Config.ConfigName) +
+			wcslen(Config.DefaultExtention) + 3 + 32;
 
-		Config.TempConfFileName = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-		stprintf(Config.TempConfFileName,
+		Config.TempConfFileName = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+		swprintf(Config.TempConfFileName,
 			len,
-#ifdef _UNICODE
 			_T("/tmp/ece%li/%ls.%ls"),
-#else
-			_T("/tmp/ece%li/%s.%s"),
-#endif
 			(unsigned long)getpid(),
 			Config.ConfigName,
 			Config.DefaultExtention);
         }
 	else
 	{
-		len = tcslen(Config.CheckFileBase) +
-			tcslen(Config.ConfigName) + 2;
+		len = wcslen(Config.CheckFileBase) +
+			wcslen(Config.ConfigName) + 2;
 
-		Config.CheckFileName = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-		stprintf(Config.CheckFileName,
+		Config.CheckFileName = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+		swprintf(Config.CheckFileName,
 			len,
-#ifdef _UNICODE
 			_T("%ls/%ls"),
-#else
-			_T("%s/%s"),
-#endif
 			Config.CheckFileBase,
 			Config.ConfigName);
 
-		len = tcslen(Config.ConfigFileBase) +
-			tcslen(Config.ConfigName) + 2;
+		len = wcslen(Config.ConfigFileBase) +
+			wcslen(Config.ConfigName) + 2;
 
-		Config.ConfFileName = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-		stprintf(Config.ConfFileName,
+		Config.ConfFileName = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+		swprintf(Config.ConfFileName,
 			len,
-#ifdef _UNICODE
 			_T("%ls/%ls"),
-#else
-			_T("%s/%s"),
-#endif
 			Config.ConfigFileBase,
 			Config.ConfigName);
 
-		len = tcslen(Config.DefaultFileBase) +
-			tcslen(Config.ConfigName) + 2;
+		len = wcslen(Config.DefaultFileBase) +
+			wcslen(Config.ConfigName) + 2;
 
-		Config.DefaultFileName = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-		stprintf(Config.DefaultFileName,
+		Config.DefaultFileName = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+		swprintf(Config.DefaultFileName,
 			len,
-#ifdef _UNICODE
 			_T("%ls/%ls"),
-#else
-			_T("%s/%s"),
-#endif
 			Config.DefaultFileBase,
 			Config.ConfigName);
 
-		len = tcslen(Config.HelpFileBase) +
-			tcslen(Config.ConfigName) + 2;
+		len = wcslen(Config.HelpFileBase) +
+			wcslen(Config.ConfigName) + 2;
 
-		Config.HelpFileName = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-		stprintf(Config.HelpFileName,
+		Config.HelpFileName = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+		swprintf(Config.HelpFileName,
 			len,
-#ifdef _UNICODE
 			_T("%ls/%ls"),
-#else
-			_T("%s/%s"),
-#endif
 			Config.HelpFileBase,
 			Config.ConfigName);
 
-		len = tcslen(_T("/tmp/")) +
-			tcslen(Config.ConfigName) + 1 + 32;
+		len = wcslen(_T("/tmp/")) +
+			wcslen(Config.ConfigName) + 1 + 32;
 
-		Config.TempConfFileName = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-		stprintf(Config.TempConfFileName,
+		Config.TempConfFileName = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+		swprintf(Config.TempConfFileName,
 			len,
-#ifdef _UNICODE
 			_T("/tmp/ece%li/%ls"),
-#else
-			_T("/tmp/ece%li/%s"),
-#endif
 			(unsigned long)getpid(),Config.ConfigName);
         }
 
-	len = tcslen(Config.CheckFileBase) +
-		tcslen(Config.ConfigName) + 2 + 4;
+	len = wcslen(Config.CheckFileBase) +
+		wcslen(Config.ConfigName) + 2 + 4;
 
-	Config.ExpFileName = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-	stprintf(Config.ExpFileName,
+	Config.ExpFileName = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+	swprintf(Config.ExpFileName,
 		len,
-#ifdef _UNICODE
 		_T("%ls/%ls.exp"),
-#else
-		_T("%s/%s.exp"),
-#endif
 		Config.CheckFileBase,
 		Config.ConfigName);
 
-	if (tcscasecmp(Config.ConfigName, _T("environment")) == 0)
+	if (wcscasecmp(Config.ConfigName, _T("environment")) == 0)
 	{
 		Config.BeTolerant = TRUE;
 	}

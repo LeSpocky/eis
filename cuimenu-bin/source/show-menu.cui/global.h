@@ -18,13 +18,13 @@
 #include <unistd.h>
 
 
-#define VERSION     2
+#define VERSION     3
 #define SUBVERSION  0
-#define PATCHLEVEL  9
+#define PATCHLEVEL  0
 #define BUILD       0
 
-#define  VERSIONSTR "2.0.9"
-#define  BUILDSTR   "(0) tail"
+#define  VERSIONSTR "3.0.0"
+#define  BUILDSTR   "(0) unicode"
 
 
 #endif

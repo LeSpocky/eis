@@ -16,13 +16,13 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define VERSION     2
+#define VERSION     3
 #define SUBVERSION  0
-#define PATCHLEVEL  4
+#define PATCHLEVEL  0
 #define BUILD       0
 
-#define  VERSIONSTR "2.0.4"
-#define  BUILDSTR   "(0) noframe"
+#define  VERSIONSTR "3.0.0"
+#define  BUILDSTR   "(0) unicode"
 
 
 #endif

@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: shelldlg.c 26996 2010-12-19 11:24:25Z dv $
+ * Last Update:  $Id: shelldlg.c 33482 2013-04-15 17:50:31Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -37,20 +37,23 @@
 static void 
 ShellDlgCoProcExitHook(void* w, void* c, int code)
 {
-	TCHAR buffer[128 + 1];
+	wchar_t buffer[128 + 1];
+	
+	CUI_USE_ARG(w);
+	CUI_USE_ARG(code);
 
 #ifdef BE_VERBOSE
-	stprintf(buffer, 128, _T("Terminated with exit code %i"), code);
+	swprintf(buffer, 128, _T("Terminated with exit code %i"), code);
 
-	TerminalWrite((CUIWINDOW*) c, _T("\033[33m\033[1m"), tcslen(_T("\033[33m\033[1m")));
-	TerminalWrite((CUIWINDOW*) c, buffer, tcslen(buffer));
-	TerminalWrite((CUIWINDOW*) c, _T("\033[0m\n"), tcslen(_T("\033[0m\n")));
+	TerminalWrite((CUIWINDOW*) c, _T("\033[33m\033[1m"), wcslen(_T("\033[33m\033[1m")));
+	TerminalWrite((CUIWINDOW*) c, buffer, wcslen(buffer));
+	TerminalWrite((CUIWINDOW*) c, _T("\033[0m\n"), wcslen(_T("\033[0m\n")));
 #endif
 
-	tcscpy(buffer, _T("Press ENTER to continue"));
-	TerminalWrite((CUIWINDOW*) c, _T("\033[33m\033[1m"), tcslen(_T("\033[33m\033[1m")));
-	TerminalWrite((CUIWINDOW*) c, buffer, tcslen(buffer));
-	TerminalWrite((CUIWINDOW*) c, _T("\033[0m"), tcslen(_T("\033[0m")));
+	wcscpy(buffer, _T("Press ENTER to continue"));
+	TerminalWrite((CUIWINDOW*) c, _T("\033[33m\033[1m"), wcslen(_T("\033[33m\033[1m")));
+	TerminalWrite((CUIWINDOW*) c, buffer, wcslen(buffer));
+	TerminalWrite((CUIWINDOW*) c, _T("\033[0m"), wcslen(_T("\033[0m")));
 }
 
 
@@ -73,9 +76,9 @@ ShellDlgCreateHook(void* w)
 	WindowCreate(ctrl);
 	TerminalSetCoProcExitHook(ctrl, ShellDlgCoProcExitHook, win);
 	
-	TerminalWrite(ctrl, _T("\033[32m"), tcslen(_T("\033[32m")));
-	TerminalWrite(ctrl, data->Command, tcslen(data->Command));
-	TerminalWrite(ctrl, _T("\033[0m\n"), tcslen(_T("\033[0m\n")));
+	TerminalWrite(ctrl, _T("\033[32m"), wcslen(_T("\033[32m")));
+	TerminalWrite(ctrl, data->Command, wcslen(data->Command));
+	TerminalWrite(ctrl, _T("\033[0m\n"), wcslen(_T("\033[0m\n")));
 	TerminalRun(ctrl, data->Command);
 }
 
@@ -175,7 +178,7 @@ ShellDlgNew(CUIWINDOW* parent, CUIRECT* rc, int sflags, int cflags)
 SHELLDLGDATA*
 ShellDlgGetData(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("SHELL_DLG")) == 0))
+	if (win && (wcscmp(win->Class, _T("SHELL_DLG")) == 0))
 	{
 		return (SHELLDLGDATA*) win->InstData;
 	}

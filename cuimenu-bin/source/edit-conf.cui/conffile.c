@@ -29,26 +29,26 @@
 #define COMMENT_COL 40
 
 static void       ConfFileDeleteItemNode   (CONFITEM* item);
-static void       ConfFileAddItemCheck     (CONFITEM* item, const TCHAR* chkname);
-static int        ConfFileAddItemValue     (CONFITEM* item, const TCHAR* name, const TCHAR* value);
-static int        ConfFileAddItemDefault   (CONFITEM* item, const TCHAR* name, const TCHAR* value);
-static void       ConfFileAddItemComment   (CONFITEM* item, const TCHAR* name, const TCHAR* value);
+static void       ConfFileAddItemCheck     (CONFITEM* item, const wchar_t* chkname);
+static int        ConfFileAddItemValue     (CONFITEM* item, const wchar_t* name, const wchar_t* value);
+static int        ConfFileAddItemDefault   (CONFITEM* item, const wchar_t* name, const wchar_t* value);
+static void       ConfFileAddItemComment   (CONFITEM* item, const wchar_t* name, const wchar_t* value);
 static void       ConfFileUseFooterComment (CONFFILE* conf);
-static void       ConfFileAddHeaderComment (CONFFILE* conf, const TCHAR* value);
+static void       ConfFileAddHeaderComment (CONFFILE* conf, const wchar_t* value);
 static void       ConfFileReorderTree      (CONFFILE* conf);
 static void       ConfFileReorderChildren  (CONFITEM* item);
 static void       ConfFileWrite            (CONFFILE* conf, FILE* out);
 static int        ConfFileWriteValueByIndex(CONFITEM* item, int level, short* index, FILE* out);
-static int        ConfFileIsNodeName       (const TCHAR* nodename, const TCHAR* name);
+static int        ConfFileIsNodeName       (const wchar_t* nodename, const wchar_t* name);
 static unsigned char ConfFileGetHash       (short* index, int numindex);
-static CONFITEM*  ConfFileFindItemByName   (CONFITEM* item, const TCHAR* name);
+static CONFITEM*  ConfFileFindItemByName   (CONFITEM* item, const wchar_t* name);
 static CONFITEM*  ConfFileFindItemByIndex  (CONFITEM* item, int level, int* line, int lineindex, short* index);
 static CONFITEM*  ConfFileFindItemByOptNode(CONFITEM* item, CONFITEM* optnode);
 static int        ConfFileFindIndexByIndex (CONFITEM* item, int level, int* line, int lineindex, short* index);
 static int        ConfFileFindLineIndex    (CONFITEM* item, CONFITEM* cmpitem, int level,
                                             int* line, short* cmpindex, short* index);
 static CONFVALUE* ConfFileFindValueByIndex (CONFITEM* item, int level, int* line, int lineindex, short* index);
-static CONFVALUE* ConfFileFindValueByName  (CONFITEM* item, int level, const TCHAR* name, short* index);
+static CONFVALUE* ConfFileFindValueByName  (CONFITEM* item, int level, const wchar_t* name, short* index);
 static void       ConfFileCreateValueByIndex(CONFITEM* item, int level, int* line, int lineindex,
                                             short* index, int expand);
 static int        ConfFileDeleteValueByIndex(CONFITEM* item, int level, int* line, int lineindex,
@@ -58,8 +58,8 @@ static void       ConfFileRemoveValueFromTable(CONFITEM* item, short* index, int
 static void       ConfFileInsertValueIntoTable(CONFITEM* item, int numindex, CONFVALUE* valptr);
 static void       ConfFileSwapValueIndex   (CONFITEM* item, short* index1, short* index2);
 
-static const TCHAR* ConfFileGetItemDefaultValue(CONFITEM* item);
-static void       ConfFileWriteToFile(const TCHAR* text, FILE* out);
+static const wchar_t* ConfFileGetItemDefaultValue(CONFITEM* item);
+static void       ConfFileWriteToFile(const wchar_t* text, FILE* out);
 
 static int        ConfFileShowOptional = FALSE;
 
@@ -189,7 +189,7 @@ ConfFileNumOptional(CONFFILE* conf)
  * ----------------------------------------------------------------------
  */
 void
-ConfFileReadCheck(CONFFILE* conf, const TCHAR* filename, EXPFILE* expfile)
+ConfFileReadCheck(CONFFILE* conf, const wchar_t* filename, EXPFILE* expfile)
 {
 	if (!conf || !conf->ErrorOut)
 	{
@@ -226,11 +226,11 @@ ConfFileReadCheck(CONFFILE* conf, const TCHAR* filename, EXPFILE* expfile)
 			{
 				CONFITEM* nnode = NULL;
 				CONFITEM* optnode = NULL;
-				TCHAR  name  [128 + 1];
-				TCHAR  optvar[128 + 1];
-				TCHAR  nvar  [128 + 1];
-				TCHAR  check [128 + 1];
-				TCHAR* regex;
+				wchar_t  name  [128 + 1];
+				wchar_t  optvar[128 + 1];
+				wchar_t  nvar  [128 + 1];
+				wchar_t  check [128 + 1];
+				wchar_t* regex;
 				int    invert = FALSE;
 
 				CheckGetTextCpy(name, 128);
@@ -301,7 +301,7 @@ ConfFileReadCheck(CONFFILE* conf, const TCHAR* filename, EXPFILE* expfile)
 							conf->Instance);
 						ExpSetCurrentFileName(expfile,NULL);
 
-						tcsncpy(check, name, 128);
+						wcsncpy(check, name, 128);
 						check[128] = 0;
 						free(regex);
 					}
@@ -437,8 +437,8 @@ ConfFileReadCheck(CONFFILE* conf, const TCHAR* filename, EXPFILE* expfile)
  * -----------------------------------------------------------------------
  */
 void
-ConfFileReadConfig(CONFFILE* conf, const TCHAR* filename,
-                   const TCHAR* chkbase, int tolerant)
+ConfFileReadConfig(CONFFILE* conf, const wchar_t* filename,
+                   const wchar_t* chkbase, int tolerant)
 {
 	if (!conf || !conf->ErrorOut)
 	{
@@ -456,7 +456,7 @@ ConfFileReadConfig(CONFFILE* conf, const TCHAR* filename,
 		{
 			if (sym == CFG_IDENT)
 			{
-				TCHAR optname[128 + 1];
+				wchar_t optname[128 + 1];
 
 				CfgGetTextCpy(optname, 128);
 
@@ -508,7 +508,7 @@ ConfFileReadConfig(CONFFILE* conf, const TCHAR* filename,
 						}
 						if (item)
 						{
-							TCHAR* str = CfgGetStringDup();
+							wchar_t* str = CfgGetStringDup();
 							if (str)
 							{
 								if (!ConfFileAddItemValue(item,optname,str))
@@ -525,16 +525,12 @@ ConfFileReadConfig(CONFFILE* conf, const TCHAR* filename,
 						}
 						else
 						{
-							TCHAR buffer[300 + 1];
-#ifdef _UNICODE
-							stprintf(buffer, 300, _T("'%ls' not found in check file! ")
-							               _T("Every option needs to have a corresponding entry ")
-                                                                       _T("within the file under '%ls'!"), optname, chkbase);
-#else
-							stprintf(buffer, 300, _T("'%s' not found in check file! ")
-							               _T("Every option needs to have a corresponding entry ")
-                                                                       _T("within the file under '%s'!"), optname, chkbase);
-#endif
+							wchar_t buffer[300 + 1];
+							swprintf(buffer, 300, 
+								_T("'%ls' not found in check file! ")
+								_T("Every option needs to have a corresponding entry ")
+								_T("within the file under '%ls'!"), 
+								optname, chkbase);
 							conf->ErrorOut(conf->Instance,
 								buffer,
 								CfgGetFileName(),
@@ -567,8 +563,8 @@ ConfFileReadConfig(CONFFILE* conf, const TCHAR* filename,
  * -----------------------------------------------------------------------
  */
 void
-ConfFileReadDefault(CONFFILE* conf, const TCHAR* filename,
-                    const TCHAR* chkbase, int tolerant)
+ConfFileReadDefault(CONFFILE* conf, const wchar_t* filename,
+                    const wchar_t* chkbase, int tolerant)
 {
 	if (!conf || !conf->ErrorOut)
 	{
@@ -595,7 +591,7 @@ ConfFileReadDefault(CONFFILE* conf, const TCHAR* filename,
 		{
 			if (sym == CFG_IDENT)
 			{
-				TCHAR optname[128 + 1];
+				wchar_t optname[128 + 1];
 
 				CfgGetTextCpy(optname, 128);
 
@@ -636,7 +632,7 @@ ConfFileReadDefault(CONFFILE* conf, const TCHAR* filename,
 						}
 						if (item)
 						{
-							TCHAR* str = CfgGetStringDup();
+							wchar_t* str = CfgGetStringDup();
 							if (str)
 							{
 								if (!ConfFileAddItemDefault(item,optname,str))
@@ -657,16 +653,12 @@ ConfFileReadDefault(CONFFILE* conf, const TCHAR* filename,
 						}
 						else
 						{
-							TCHAR buffer[300 + 1];
-#ifdef _UNICODE
-							stprintf(buffer, 300, _T("'%ls' not found in check file! "
-							               "Every option needs to have a corresponding entry "
-                                                                       "within the file under '%ls'!"),optname,chkbase);
-#else
-							stprintf(buffer, 300, _T("'%s' not found in check file! "
-							               "Every option needs to have a corresponding entry "
-                                                                       "within the file under '%s'!"),optname,chkbase);
-#endif
+							wchar_t buffer[300 + 1];
+							swprintf(buffer, 300, 
+								_T("'%ls' not found in check file! ")
+								_T("Every option needs to have a corresponding entry ")
+								_T("within the file under '%ls'!"),
+								optname, chkbase);
 							conf->ErrorOut(conf->Instance,
 								buffer,
 								CfgGetFileName(),
@@ -734,7 +726,7 @@ ConfFileReadDefault(CONFFILE* conf, const TCHAR* filename,
  * -----------------------------------------------------------------------
  */
 void
-ConfFileWriteConfig(CONFFILE* conf, const TCHAR* filename)
+ConfFileWriteConfig(CONFFILE* conf, const wchar_t* filename)
 {
 	FILE* out;
 
@@ -774,7 +766,7 @@ ConfFileWriteConfig(CONFFILE* conf, const TCHAR* filename)
  * ---------------------------------------------------------------------
  */
 void
-ConfFileAddItem(CONFFILE* conf, const TCHAR* name, const TCHAR* check, CONFITEM* nnode,
+ConfFileAddItem(CONFFILE* conf, const wchar_t* name, const wchar_t* check, CONFITEM* nnode,
              CONFITEM* optnode, int invert, CONFITEM* appnode, int type, int isvirtual)
 {
 	CONFITEM* newitem;
@@ -786,7 +778,7 @@ ConfFileAddItem(CONFFILE* conf, const TCHAR* name, const TCHAR* check, CONFITEM*
 
 		newitem = (CONFITEM*) malloc(sizeof(CONFITEM));
 
-		newitem->Name = tcsdup(name);
+		newitem->Name = wcsdup(name);
 		newitem->Type = type;
 		newitem->Config = conf;
 		newitem->OptNode = optnode;
@@ -802,9 +794,9 @@ ConfFileAddItem(CONFFILE* conf, const TCHAR* name, const TCHAR* check, CONFITEM*
 		newitem->NumBlockComments = 0;
 		newitem->SequenceNr = 0;
 		newitem->IsVirtual = isvirtual;
-		newitem->IsMasked = (tcscasecmp(check, _T("PASSWD")) == 0);
-		newitem->IsHidden = (tcscasecmp(check, _T("HIDDEN")) == 0);
-		newitem->IsReadOnly = (tcscasecmp(check, _T("READONLY")) == 0);
+		newitem->IsMasked = (wcscasecmp(check, _T("PASSWD")) == 0);
+		newitem->IsHidden = (wcscasecmp(check, _T("HIDDEN")) == 0);
+		newitem->IsReadOnly = (wcscasecmp(check, _T("READONLY")) == 0);
 		newitem->IsInvertOpt = invert;
 		newitem->DefaultValue = NULL;
 
@@ -817,18 +809,18 @@ ConfFileAddItem(CONFFILE* conf, const TCHAR* name, const TCHAR* check, CONFITEM*
 
 		/* create check entry */
 		newitem->FirstCheck = (CONFCHECK*) malloc(sizeof(CONFCHECK));
-		newitem->FirstCheck->Name = tcsdup(check);
+		newitem->FirstCheck->Name = wcsdup(check);
 		newitem->FirstCheck->Next = NULL;
 		newitem->LastCheck = newitem->FirstCheck;
 
 		/* build mask value from name */
-		for (i = 0; i < tcslen(newitem->Name); i++)
+		for (i = 0; i < (int)wcslen(newitem->Name); i++)
 		{
 			if (newitem->Name[i] == '%') count++;
 		}
-		newitem->ReadMask = (TCHAR*) malloc((tcslen(newitem->Name) + count + 1) * sizeof(TCHAR));
-		newitem->WriteMask = (TCHAR*) malloc((tcslen(newitem->Name) + count + 1) * sizeof(TCHAR));
-		for (i = 0; i < tcslen(newitem->Name); i++)
+		newitem->ReadMask = (wchar_t*) malloc((wcslen(newitem->Name) + count + 1) * sizeof(wchar_t));
+		newitem->WriteMask = (wchar_t*) malloc((wcslen(newitem->Name) + count + 1) * sizeof(wchar_t));
+		for (i = 0; i < (int)wcslen(newitem->Name); i++)
 		{
 			newitem->ReadMask[pos] = newitem->Name[i];
 			newitem->WriteMask[pos] = newitem->Name[i];
@@ -1003,7 +995,7 @@ ConfFileDeleteItem(CONFFILE* conf, CONFITEM* item)
  * ---------------------------------------------------------------------
  */
 CONFITEM*
-ConfFileFindItem(CONFFILE* conf, const TCHAR* name)
+ConfFileFindItem(CONFFILE* conf, const wchar_t* name)
 {
 	if (conf)
 	{
@@ -1028,7 +1020,7 @@ ConfFileFindItem(CONFFILE* conf, const TCHAR* name)
  * ---------------------------------------------------------------------
  */
 CONFVALUE*
-ConfFileFindValue(CONFFILE* conf, const TCHAR* name)
+ConfFileFindValue(CONFFILE* conf, const wchar_t* name)
 {
 	CONFITEM* workptr;
 	CONFVALUE* result = NULL;
@@ -1239,13 +1231,15 @@ ConfFileLookupBlockComment(CONFITEM* item, short* index, int numindex, CONFCOMME
  * Note: Only five dimensions are implemented right now!
  * ---------------------------------------------------------------------
  */
-const TCHAR*
-ConfFileArrayLookupName(CONFITEM* item, short* index, int numindex, TCHAR* buffer, int len)
+const wchar_t*
+ConfFileArrayLookupName(CONFITEM* item, short* index, int numindex, wchar_t* buffer, int len)
 {
+	CUI_USE_ARG(numindex);
+	
 	buffer[0] = 0;
 	if (item)
 	{
-		stprintf(buffer, len, item->WriteMask, index[0], index[1], index[2], index[3], index[4]);
+		swprintf(buffer, len, item->WriteMask, index[0], index[1], index[2], index[3], index[4]);
 		buffer[len] = 0;
 	}
 	return buffer;
@@ -1287,8 +1281,8 @@ ConfFileArrayLookupVisible(CONFITEM* item, short* index, int numindex)
 			CONFVALUE* val = ConfFileArrayLookupValue(workptr,index,numindex);
 			if (val)
 			{
-				if (((!invert) && (tcscasecmp(val->Value, _T("no"))==0)) ||
-				    ((invert) && (tcscasecmp(val->Value, _T("yes"))==0)))
+				if (((!invert) && (wcscasecmp(val->Value, _T("no"))==0)) ||
+				    ((invert) && (wcscasecmp(val->Value, _T("yes"))==0)))
 				{
 					return FALSE;
 				}
@@ -1459,7 +1453,7 @@ ConfFileDragValueDown(CONFFILE* conf, int* newlineindex)
 			int maxindex;
 			int actindex;
 
-			stscanf(val->Value, _T("%d"), &maxindex);
+			swscanf(val->Value, _T("%d"), &maxindex);
 			actindex = conf->DragIndex[level];
 
 			if (actindex < maxindex)
@@ -1614,7 +1608,7 @@ ConfFileDeleteArrayElement(CONFFILE* conf, int lineindex, int* newlineindex)
 			{
 				int   cursor = lineindex;
 				int   tmpval;
-				TCHAR buffer[48 + 1];
+				wchar_t buffer[48 + 1];
 
 				if (ConfFileStartDrag(conf, lineindex))
 				{
@@ -1622,14 +1616,14 @@ ConfFileDeleteArrayElement(CONFFILE* conf, int lineindex, int* newlineindex)
 					while (ConfFileDragValueDown(conf, &lineindex));
 
 					/* decrement parent value */
-					stscanf(value->Value, _T("%d"), &tmpval);
+					swscanf(value->Value, _T("%d"), &tmpval);
 					if (tmpval > 0)
 					{
 					        tmpval--;
 					}
-					stprintf(buffer, 48, _T("%i"), tmpval);
+					swprintf(buffer, 48, _T("%i"), tmpval);
 					free(value->Value);
-					value->Value = tcsdup(buffer);
+					value->Value = wcsdup(buffer);
 
 					/* ok, that's it. Now we need to know where to place the cursor */
 					if (newlineindex)
@@ -1691,7 +1685,7 @@ ConfFileIsModified(CONFFILE* conf)
  * ---------------------------------------------------------------------
  */
 void
-ConfFileAddBlockComment(CONFFILE* conf, const TCHAR* value)
+ConfFileAddBlockComment(CONFFILE* conf, const wchar_t* value)
 {
 	CONFCOMMENT* newcomment;
 
@@ -1699,7 +1693,7 @@ ConfFileAddBlockComment(CONFFILE* conf, const TCHAR* value)
 
 	newcomment = (CONFCOMMENT*) malloc(sizeof(CONFCOMMENT));
 	newcomment->Name = NULL;
-	newcomment->Text = tcsdup(value);
+	newcomment->Text = wcsdup(value);
 	newcomment->Next = NULL;
 
 	if (!conf->FirstTmpComment)
@@ -1722,7 +1716,7 @@ ConfFileAddBlockComment(CONFFILE* conf, const TCHAR* value)
  * ---------------------------------------------------------------------
  */
 void
-ConfFileUseBlockComment(CONFFILE* conf, CONFITEM* item, const TCHAR* name)
+ConfFileUseBlockComment(CONFFILE* conf, CONFITEM* item, const wchar_t* name)
 {
 	if (!conf||!item||!name) return;
 
@@ -1767,7 +1761,7 @@ ConfFileUseBlockComment(CONFFILE* conf, CONFITEM* item, const TCHAR* name)
  * ---------------------------------------------------------------------
  */
 static int
-ConfFileIsNodeName(const TCHAR* nodename, const TCHAR* name)
+ConfFileIsNodeName(const wchar_t* nodename, const wchar_t* name)
 {
 	int pos1, pos2;
 
@@ -1932,23 +1926,23 @@ ConfFileDeleteItemNode(CONFITEM* item)
  * ---------------------------------------------------------------------
  */
 static void
-ConfFileAddItemCheck(CONFITEM* item, const TCHAR* chkname)
+ConfFileAddItemCheck(CONFITEM* item, const wchar_t* chkname)
 {
 	if (!item) return;
 	item->LastCheck->Next = (CONFCHECK*) malloc(sizeof(CONFCHECK));
 	item->LastCheck = (CONFCHECK*) item->LastCheck->Next;
 	item->LastCheck->Next = NULL;
-	item->LastCheck->Name = tcsdup(chkname);
+	item->LastCheck->Name = wcsdup(chkname);
 
-	if (tcscasecmp(chkname, _T("PASSWD")) == 0)
+	if (wcscasecmp(chkname, _T("PASSWD")) == 0)
 	{
 		item->IsMasked = TRUE;
 	}
-	else if (tcscasecmp(chkname, _T("HIDDEN")) == 0)
+	else if (wcscasecmp(chkname, _T("HIDDEN")) == 0)
 	{
 		item->IsHidden = TRUE;
 	}
-	else if (tcscasecmp(chkname, _T("READONLY")) == 0)
+	else if (wcscasecmp(chkname, _T("READONLY")) == 0)
 	{
 		item->IsReadOnly = TRUE;
 	}
@@ -1968,7 +1962,7 @@ ConfFileAddItemCheck(CONFITEM* item, const TCHAR* chkname)
  * ---------------------------------------------------------------------
  */
 static int
-ConfFileAddItemValue(CONFITEM* item, const TCHAR* name, const TCHAR* value)
+ConfFileAddItemValue(CONFITEM* item, const wchar_t* name, const wchar_t* value)
 {
 	if (item)
 	{
@@ -1976,10 +1970,10 @@ ConfFileAddItemValue(CONFITEM* item, const TCHAR* name, const TCHAR* value)
 		int num;
 
 		CONFVALUE* newvalue = (CONFVALUE*) malloc(sizeof(CONFVALUE));
-		newvalue->Value = tcsdup(value);
-		newvalue->Name = tcsdup(name);
+		newvalue->Value = wcsdup(value);
+		newvalue->Name = wcsdup(name);
 
-		num = stscanf(name,item->ReadMask,&newvalue->Index[0],
+		num = swscanf(name,item->ReadMask,&newvalue->Index[0],
 			&newvalue->Index[1],&newvalue->Index[2],
 			&newvalue->Index[3],&newvalue->Index[4]);
 
@@ -2008,7 +2002,7 @@ ConfFileAddItemValue(CONFITEM* item, const TCHAR* name, const TCHAR* value)
  * ---------------------------------------------------------------------
  */
 static int
-ConfFileAddItemDefault (CONFITEM* item, const TCHAR* name, const TCHAR* value)
+ConfFileAddItemDefault (CONFITEM* item, const wchar_t* name, const wchar_t* value)
 {
 	if (item)
 	{
@@ -2016,10 +2010,10 @@ ConfFileAddItemDefault (CONFITEM* item, const TCHAR* name, const TCHAR* value)
 		int num;
 
 		CONFVALUE* newvalue = (CONFVALUE*) malloc(sizeof(CONFVALUE));
-		newvalue->Value = tcsdup(value);
-		newvalue->Name = tcsdup(name);
+		newvalue->Value = wcsdup(value);
+		newvalue->Name = wcsdup(name);
 
-		num = stscanf(name,item->ReadMask,&newvalue->Index[0],
+		num = swscanf(name,item->ReadMask,&newvalue->Index[0],
 			&newvalue->Index[1],&newvalue->Index[2],
 			&newvalue->Index[3],&newvalue->Index[4]);
 
@@ -2073,18 +2067,18 @@ ConfFileAddItemDefault (CONFITEM* item, const TCHAR* name, const TCHAR* value)
  * ---------------------------------------------------------------------
  */
 static void
-ConfFileAddItemComment (CONFITEM* item, const TCHAR* name, const TCHAR* value)
+ConfFileAddItemComment (CONFITEM* item, const wchar_t* name, const wchar_t* value)
 {
 	if (item)
 	{
 		int num;
 
 		CONFCOMMENT* newcomment = (CONFCOMMENT*) malloc(sizeof(CONFCOMMENT));
-		newcomment->Name = tcsdup(name);
-		newcomment->Text = tcsdup(value);
+		newcomment->Name = wcsdup(name);
+		newcomment->Text = wcsdup(value);
 		newcomment->Next = NULL;
 
-		num = stscanf(name,item->ReadMask,&newcomment->Index[0],
+		num = swscanf(name,item->ReadMask,&newcomment->Index[0],
 			&newcomment->Index[1],&newcomment->Index[2],
 			&newcomment->Index[3],&newcomment->Index[4]);
 
@@ -2120,7 +2114,7 @@ ConfFileUseFooterComment(CONFFILE* conf)
  * ---------------------------------------------------------------------
  */
 static void
-ConfFileAddHeaderComment(CONFFILE* conf, const TCHAR* value)
+ConfFileAddHeaderComment(CONFFILE* conf, const wchar_t* value)
 {
 	CONFCOMMENT* newcomment;
 
@@ -2128,7 +2122,7 @@ ConfFileAddHeaderComment(CONFFILE* conf, const TCHAR* value)
 
 	newcomment = (CONFCOMMENT*) malloc(sizeof(CONFCOMMENT));
 	newcomment->Name = NULL;
-	newcomment->Text = tcsdup(value);
+	newcomment->Text = wcsdup(value);
 	newcomment->Next = NULL;
 
 	if (!conf->FirstHeaderComment)
@@ -2323,12 +2317,13 @@ ConfFileReorderChildren(CONFITEM* item)
  * ---------------------------------------------------------------------
  */
 static void
-ConfFileWriteToFile(const TCHAR* text, FILE* out)
+ConfFileWriteToFile(const wchar_t* text, FILE* out)
 {
-#ifdef _UNICODE
-	mbstate_t state = {0};
-	char         buffer[128];
-	int          size = 0;
+	mbstate_t state;
+	char      buffer[128 + 1];
+	int       size = 0;
+	
+	memset(&state, 0, sizeof(state));
 
 	do
 	{
@@ -2339,9 +2334,6 @@ ConfFileWriteToFile(const TCHAR* text, FILE* out)
 		}
 	}
 	while ((size > 0) && (text != NULL));
-#else
-	fputs(text, out);
-#endif
 }
 
 /* ---------------------------------------------------------------------
@@ -2419,9 +2411,9 @@ ConfFileWriteValueByIndex(CONFITEM* item, int level, short* index, FILE* out)
 
 			while (valcomment)
 			{
-				TCHAR  buffer[128 + 1];
+				wchar_t  buffer[128 + 1];
 
-				stprintf(buffer, 128, valcomment->Text,
+				swprintf(buffer, 128, valcomment->Text,
 				         index[0],index[1],index[2],index[3],index[4]);
 				buffer[128] = 0;
 
@@ -2435,11 +2427,11 @@ ConfFileWriteValueByIndex(CONFITEM* item, int level, short* index, FILE* out)
 
 		if (valptr->Name && valptr->Value)
 		{
-			writepos += tcslen(valptr->Name);
-			writepos += tcslen(valptr->Value);
+			writepos += wcslen(valptr->Name);
+			writepos += wcslen(valptr->Value);
 			writepos += 3;
 
-			if (tcschr(valptr->Value,_T('\'')) != NULL)
+			if (wcschr(valptr->Value,_T('\'')) != NULL)
 			{
 				ConfFileWriteToFile(valptr->Name, out);
 				fputs("=\"",out);
@@ -2487,7 +2479,7 @@ ConfFileWriteValueByIndex(CONFITEM* item, int level, short* index, FILE* out)
 	{
 		int count;
 		int i;
-		stscanf(valptr->Value, _T("%d"), &count);
+		swscanf(valptr->Value, _T("%d"), &count);
 
 		/* we use count + 10 to preserve 10 additional values */
 		/* that are possible used as sample entries without */
@@ -2526,7 +2518,7 @@ ConfFileWriteValueByIndex(CONFITEM* item, int level, short* index, FILE* out)
  * ---------------------------------------------------------------------
  */
 static CONFITEM*
-ConfFileFindItemByName(CONFITEM* item, const TCHAR* name)
+ConfFileFindItemByName(CONFITEM* item, const wchar_t* name)
 {
 	if (item)
 	{
@@ -2573,7 +2565,7 @@ ConfFileFindItemByIndex(CONFITEM* item, int level, int* line, int lineindex, sho
 	{
 		int count;
 		int i;
-		stscanf(valptr->Value, _T("%d"), &count);
+		swscanf(valptr->Value, _T("%d"), &count);
 
 		for (i = 1; i <= count; i++)
 		{
@@ -2622,7 +2614,7 @@ ConfFileFindValueByIndex(CONFITEM* item, int level, int* line, int lineindex, sh
 	{
 		int count;
 		int i;
-		stscanf(valptr->Value, _T("%d"), &count);
+		swscanf(valptr->Value, _T("%d"), &count);
 
 		for (i = 1; i <= count; i++)
 		{
@@ -2649,7 +2641,7 @@ ConfFileFindValueByIndex(CONFITEM* item, int level, int* line, int lineindex, sh
  * ---------------------------------------------------------------------
  */
 static CONFVALUE*
-ConfFileFindValueByName(CONFITEM* item, int level, const TCHAR* name, short* index)
+ConfFileFindValueByName(CONFITEM* item, int level, const wchar_t* name, short* index)
 {
 	CONFVALUE* valptr;
 	CONFITEM*  workptr;
@@ -2657,7 +2649,7 @@ ConfFileFindValueByName(CONFITEM* item, int level, const TCHAR* name, short* ind
 	if (level > 4) return NULL;         /* limit iteration depth */
 
 	valptr = ConfFileArrayLookupValue(item, index, level);
-	if (valptr && (tcscmp(valptr->Name, name) == 0))
+	if (valptr && (wcscmp(valptr->Name, name) == 0))
 	{
 		return valptr;
 	}
@@ -2666,7 +2658,7 @@ ConfFileFindValueByName(CONFITEM* item, int level, const TCHAR* name, short* ind
 	{
 		int count;
 		int i;
-		stscanf(valptr->Value, _T("%d"), &count);
+		swscanf(valptr->Value, _T("%d"), &count);
 
 		for (i = 1; i <= count; i++)
 		{
@@ -2743,7 +2735,7 @@ ConfFileFindIndexByIndex(CONFITEM* item, int level, int* line, int lineindex, sh
 	{
 		int count;
 		int i;
-		stscanf(valptr->Value, _T("%d"),&count);
+		swscanf(valptr->Value, _T("%d"),&count);
 
 		for (i = 1; i <= count; i++)
 		{
@@ -2789,7 +2781,7 @@ ConfFileFindLineIndex(CONFITEM* item, CONFITEM* cmpitem, int level,
 	{
 		int count;
 		int i;
-		stscanf(valptr->Value, _T("%d"), &count);
+		swscanf(valptr->Value, _T("%d"), &count);
 
 		for (i = 1; i <= count; i++)
 		{
@@ -2832,8 +2824,8 @@ ConfFileCreateValueByIndex(CONFITEM* item, int level, int* line,
 		(*line == lineindex)))
 	{
 		/* create and initialize */
-		TCHAR        buffer[128 + 1];
-		const TCHAR* value   = _T("");
+		wchar_t        buffer[128 + 1];
+		const wchar_t* value   = _T("");
 
 		if (item->DefaultValue)
 		{
@@ -2883,7 +2875,7 @@ ConfFileCreateValueByIndex(CONFITEM* item, int level, int* line,
 	{
 		int count;
 		int i;
-		stscanf(valptr->Value, _T("%d"), &count);
+		swscanf(valptr->Value, _T("%d"), &count);
 
 		for (i = 1; i <= count; i++)
 		{
@@ -2961,7 +2953,7 @@ ConfFileDeleteValueByIndex(CONFITEM* item, int level, int* line, int lineindex, 
 		{
 			int count;
 			int i;
-			stscanf(valptr->Value, _T("%d"), &count);
+			swscanf(valptr->Value, _T("%d"), &count);
 
 			for (i = 1; i <= count; i++)
 			{
@@ -3064,10 +3056,10 @@ ConfFileSwapValueIndex(CONFITEM* item, short* index1, short* index2)
 
 		if (valptr1)
 		{
-			int    len  = tcslen(valptr1->Name) + 1 + 5;
-			TCHAR* name = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+			int    len  = wcslen(valptr1->Name) + 1 + 5;
+			wchar_t* name = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 
-			stprintf(name, len, childitem->WriteMask, index2[0], index2[1],
+			swprintf(name, len, childitem->WriteMask, index2[0], index2[1],
 				index2[2], index2[3], index2[4]);
 
 			free(valptr1->Name);
@@ -3079,10 +3071,10 @@ ConfFileSwapValueIndex(CONFITEM* item, short* index1, short* index2)
 
 		if (valptr2)
 		{
-			int    len  = tcslen(valptr2->Name) + 1 + 5;
-			TCHAR* name = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+			int    len  = wcslen(valptr2->Name) + 1 + 5;
+			wchar_t* name = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 
-			stprintf(name, len, childitem->WriteMask, index1[0], index1[1],
+			swprintf(name, len, childitem->WriteMask, index1[0], index1[1],
 				index1[2], index1[3], index1[4]);
 
 			free(valptr2->Name);
@@ -3106,11 +3098,11 @@ ConfFileSwapValueIndex(CONFITEM* item, short* index1, short* index2)
 
 			if (valptr1)
 			{
-				stscanf(valptr1->Value, _T("%d"), &count1);
+				swscanf(valptr1->Value, _T("%d"), &count1);
 			}
 			if (valptr2)
 			{
-				stscanf(valptr2->Value, _T("%d"), &count2);
+				swscanf(valptr2->Value, _T("%d"), &count2);
 			}
 			if (count2 > count1)
 			{
@@ -3138,53 +3130,53 @@ ConfFileSwapValueIndex(CONFITEM* item, short* index1, short* index2)
  * returned is invalid
  * ---------------------------------------------------------------------
  */
-static const TCHAR*
+static const wchar_t*
 ConfFileGetItemDefaultValue(CONFITEM* item)
 {
 	CONFCHECK* check = item->FirstCheck;
 	if (check)
 	{
-		if (tcscasecmp(check->Name, _T("NONE"))==0)         return _T("");
-		if (tcscasecmp(check->Name, _T("NOTEMPTY"))==0)     return _T("value");
-		if (tcscasecmp(check->Name, _T("NOBLANK"))==0)      return _T("value");
-		if (tcscasecmp(check->Name, _T("ENOBLANK"))==0)     return _T("");
-		if (tcscasecmp(check->Name, _T("NUMERIC"))==0)      return _T("0");
-		if (tcscasecmp(check->Name, _T("ENUMERIC"))==0)     return _T("");
-		if (tcscasecmp(check->Name, _T("DOT_NUMERIC"))==0)  return _T("0.0");
-		if (tcscasecmp(check->Name, _T("EDOT_NUMERIC"))==0) return _T("");
-		if (tcscasecmp(check->Name, _T("NUM_HEX"))==0)      return _T("0x00");
-		if (tcscasecmp(check->Name, _T("NUM_ANY"))==0)      return _T("0");
-		if (tcscasecmp(check->Name, _T("YESNO"))==0)        return _T("no");
-		if (tcscasecmp(check->Name, _T("MACADDR"))==0)      return _T("00:00:00:00:00:00");
-		if (tcscasecmp(check->Name, _T("HOSTNAME"))==0)     return _T("host");
-		if (tcscasecmp(check->Name, _T("DOMAIN"))==0)       return _T("domain.lan");
-		if (tcscasecmp(check->Name, _T("EDOMAIN"))==0)      return _T("");
-		if (tcscasecmp(check->Name, _T("FQDN"))==0)         return _T("host.domain.lan");
-		if (tcscasecmp(check->Name, _T("EFQDN"))==0)        return _T("");
-		if (tcscasecmp(check->Name, _T("OCTET"))==0)        return _T("000");
-		if (tcscasecmp(check->Name, _T("IPADDR"))==0)       return _T("192.168.0.1");
-		if (tcscasecmp(check->Name, _T("IPADDRESSES"))==0)  return _T("192.168.0.1 192.168.0.2");
-		if (tcscasecmp(check->Name, _T("EIPADDR"))==0)      return _T("");
-		if (tcscasecmp(check->Name, _T("EIPADDRESSES"))==0) return _T("");
-		if (tcscasecmp(check->Name, _T("IP_ROUTE"))==0)     return _T("192.168.0.0 255.255.255.0 192.168.1.0");
-		if (tcscasecmp(check->Name, _T("DNS_SPEC"))==0)     return _T("domain 192.168.0.1");
-		if (tcscasecmp(check->Name, _T("MASK"))==0)         return _T("255.255.255.0");
-		if (tcscasecmp(check->Name, _T("NETWORK"))==0)      return _T("192.168.0.0/24");
-		if (tcscasecmp(check->Name, _T("NETWORKS"))==0)     return _T("192.168.0.0/24");
-		if (tcscasecmp(check->Name, _T("ENETWORKS"))==0)    return _T("");
-		if (tcscasecmp(check->Name, _T("MULTIPLE_NETWORKS"))==0)  return _T("192.168.0.0/24 192.168.1.0/24");
-		if (tcscasecmp(check->Name, _T("EMULTIPLE_NETWORKS"))==0) return _T("");
-		if (tcscasecmp(check->Name, _T("IPADDR_NETWORK"))==0)     return _T("192.168.0.1");
-		if (tcscasecmp(check->Name, _T("EIPADDR_NETWORK"))==0)    return _T("");
-		if (tcscasecmp(check->Name, _T("MAILADDR"))==0)     return _T("name@domain");
-		if (tcscasecmp(check->Name, _T("EMAILADDR"))==0)    return _T("");
-		if (tcscasecmp(check->Name, _T("CRONTAB"))==0)      return _T("3 5 * * *");
-		if (tcscasecmp(check->Name, _T("REL_PATH"))==0)     return _T("../path");
-		if (tcscasecmp(check->Name, _T("E_REL_PATH"))==0)   return _T("");
-		if (tcscasecmp(check->Name, _T("ABS_PATH"))==0)     return _T("/path");
-		if (tcscasecmp(check->Name, _T("E_ABS_PATH"))==0)   return _T("");
-		if (tcscasecmp(check->Name, _T("LOG_INTERVAL"))==0) return _T("daily");
-		if (tcscasecmp(check->Name, _T("PORT"))==0)         return _T("1024");
+		if (wcscasecmp(check->Name, _T("NONE"))==0)         return _T("");
+		if (wcscasecmp(check->Name, _T("NOTEMPTY"))==0)     return _T("value");
+		if (wcscasecmp(check->Name, _T("NOBLANK"))==0)      return _T("value");
+		if (wcscasecmp(check->Name, _T("ENOBLANK"))==0)     return _T("");
+		if (wcscasecmp(check->Name, _T("NUMERIC"))==0)      return _T("0");
+		if (wcscasecmp(check->Name, _T("ENUMERIC"))==0)     return _T("");
+		if (wcscasecmp(check->Name, _T("DOT_NUMERIC"))==0)  return _T("0.0");
+		if (wcscasecmp(check->Name, _T("EDOT_NUMERIC"))==0) return _T("");
+		if (wcscasecmp(check->Name, _T("NUM_HEX"))==0)      return _T("0x00");
+		if (wcscasecmp(check->Name, _T("NUM_ANY"))==0)      return _T("0");
+		if (wcscasecmp(check->Name, _T("YESNO"))==0)        return _T("no");
+		if (wcscasecmp(check->Name, _T("MACADDR"))==0)      return _T("00:00:00:00:00:00");
+		if (wcscasecmp(check->Name, _T("HOSTNAME"))==0)     return _T("host");
+		if (wcscasecmp(check->Name, _T("DOMAIN"))==0)       return _T("domain.lan");
+		if (wcscasecmp(check->Name, _T("EDOMAIN"))==0)      return _T("");
+		if (wcscasecmp(check->Name, _T("FQDN"))==0)         return _T("host.domain.lan");
+		if (wcscasecmp(check->Name, _T("EFQDN"))==0)        return _T("");
+		if (wcscasecmp(check->Name, _T("OCTET"))==0)        return _T("000");
+		if (wcscasecmp(check->Name, _T("IPADDR"))==0)       return _T("192.168.0.1");
+		if (wcscasecmp(check->Name, _T("IPADDRESSES"))==0)  return _T("192.168.0.1 192.168.0.2");
+		if (wcscasecmp(check->Name, _T("EIPADDR"))==0)      return _T("");
+		if (wcscasecmp(check->Name, _T("EIPADDRESSES"))==0) return _T("");
+		if (wcscasecmp(check->Name, _T("IP_ROUTE"))==0)     return _T("192.168.0.0 255.255.255.0 192.168.1.0");
+		if (wcscasecmp(check->Name, _T("DNS_SPEC"))==0)     return _T("domain 192.168.0.1");
+		if (wcscasecmp(check->Name, _T("MASK"))==0)         return _T("255.255.255.0");
+		if (wcscasecmp(check->Name, _T("NETWORK"))==0)      return _T("192.168.0.0/24");
+		if (wcscasecmp(check->Name, _T("NETWORKS"))==0)     return _T("192.168.0.0/24");
+		if (wcscasecmp(check->Name, _T("ENETWORKS"))==0)    return _T("");
+		if (wcscasecmp(check->Name, _T("MULTIPLE_NETWORKS"))==0)  return _T("192.168.0.0/24 192.168.1.0/24");
+		if (wcscasecmp(check->Name, _T("EMULTIPLE_NETWORKS"))==0) return _T("");
+		if (wcscasecmp(check->Name, _T("IPADDR_NETWORK"))==0)     return _T("192.168.0.1");
+		if (wcscasecmp(check->Name, _T("EIPADDR_NETWORK"))==0)    return _T("");
+		if (wcscasecmp(check->Name, _T("MAILADDR"))==0)     return _T("name@domain");
+		if (wcscasecmp(check->Name, _T("EMAILADDR"))==0)    return _T("");
+		if (wcscasecmp(check->Name, _T("CRONTAB"))==0)      return _T("3 5 * * *");
+		if (wcscasecmp(check->Name, _T("REL_PATH"))==0)     return _T("../path");
+		if (wcscasecmp(check->Name, _T("E_REL_PATH"))==0)   return _T("");
+		if (wcscasecmp(check->Name, _T("ABS_PATH"))==0)     return _T("/path");
+		if (wcscasecmp(check->Name, _T("E_ABS_PATH"))==0)   return _T("");
+		if (wcscasecmp(check->Name, _T("LOG_INTERVAL"))==0) return _T("daily");
+		if (wcscasecmp(check->Name, _T("PORT"))==0)         return _T("1024");
 	}
 	return _T("");
 }

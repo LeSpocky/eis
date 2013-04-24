@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: index.c 30935 2012-05-27 14:32:42Z dv $
+ * Last Update:  $Id: index.c 33442 2013-04-10 20:39:40Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,7 +32,7 @@
  * ---------------------------------------------------------------------
  */
 INDEX* 
-IndexReadFile(const TCHAR* filename, ErrorCallback errout, void* instance)
+IndexReadFile(const wchar_t* filename, ErrorCallback errout, void* instance)
 {
 	INDEX* index = (INDEX*) malloc(sizeof(INDEX));
 	if (index)
@@ -57,14 +57,14 @@ IndexReadFile(const TCHAR* filename, ErrorCallback errout, void* instance)
 					
 					if (title)
 					{
-						index->Title = tcsdup(title->Value);
+						index->Title = wcsdup(title->Value);
 					}
 					while (node)
 					{
 						if (node->Type == XML_OBJNODE)
 						{
 							XMLOBJECT* entryobj = (XMLOBJECT*) node->Object;
-							if (tcscasecmp(entryobj->Name, _T("entry")) == 0)
+							if (wcscasecmp(entryobj->Name, _T("entry")) == 0)
 							{
 								XMLATTRIBUTE* lineattr = XmlGetAttribute(entryobj, _T("line"));
 								XMLATTRIBUTE* levelattr = XmlGetAttribute(entryobj, _T("level"));
@@ -75,15 +75,15 @@ IndexReadFile(const TCHAR* filename, ErrorCallback errout, void* instance)
 									{
 										if (entryobj->FirstNode->Data)
 										{
-											newentry->Description = tcsdup(entryobj->FirstNode->Data);
+											newentry->Description = wcsdup(entryobj->FirstNode->Data);
 										}
 										else
 										{
-											newentry->Description = tcsdup(_T(""));
+											newentry->Description = wcsdup(_T(""));
 										}
 										if (lineattr && lineattr->Value)
 										{
-											stscanf(lineattr->Value, _T("%ld"), &newentry->LineNumber);
+											swscanf(lineattr->Value, _T("%ld"), &newentry->LineNumber);
 										}
 										else
 										{
@@ -91,7 +91,7 @@ IndexReadFile(const TCHAR* filename, ErrorCallback errout, void* instance)
 										}
 										if (levelattr && levelattr->Value)
 										{
-											stscanf(levelattr->Value, _T("%d"), &newentry->Level);
+											swscanf(levelattr->Value, _T("%d"), &newentry->Level);
 										}
 										else
 										{

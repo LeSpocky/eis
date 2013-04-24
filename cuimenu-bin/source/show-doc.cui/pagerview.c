@@ -40,7 +40,7 @@ typedef struct
 	long         FirstPos;
 	long         LastPos;
 	PAGERFILE*   File;
-	TCHAR*       Filter;
+	wchar_t*       Filter;
 
 	CustomHook1PtrProc      SetFocusHook;      /* Custom callback */
 	CustomHookProc          KillFocusHook;     /* Custom callback */
@@ -55,16 +55,16 @@ typedef struct
 
 /* local prototypes */
 
-static void PagerviewShowLine(CUIWINDOW* win, const TCHAR* text, int ypos, int selpos1, int selpos2, int do_print);
+static void PagerviewShowLine(CUIWINDOW* win, const wchar_t* text, int ypos, int selpos1, int selpos2, int do_print);
 static void PagerviewUpdate(CUIWINDOW* win);
 static void PagerviewCalculate(CUIWINDOW* win);
-static int  PagerviewLineLength(const TCHAR* line);
-static int  PagerviewMatchWord(PAGERFILE* pfile, int c, const TCHAR* s2, int casesens);
-static int  PagerviewIsChar(TCHAR c);
+static int  PagerviewLineLength(const wchar_t* line);
+static int  PagerviewMatchWord(PAGERFILE* pfile, int c, const wchar_t* s2, int casesens);
+static int  PagerviewIsChar(wchar_t c);
 static void PagerviewCheckSelectionPos(CUIWINDOW* win);
 static void PagerviewGotoEnd(CUIWINDOW* win, int force);
-static long PagerviewNextLine(PAGERVIEWDATA* data, long pos, TCHAR** lbuffer);
-static long PagerviewPrevLine(PAGERVIEWDATA* data, long pos, TCHAR** lbuffer);
+static long PagerviewNextLine(PAGERVIEWDATA* data, long pos, wchar_t** lbuffer);
+static long PagerviewPrevLine(PAGERVIEWDATA* data, long pos, wchar_t** lbuffer);
 
 
 /* ---------------------------------------------------------------------
@@ -104,7 +104,7 @@ PagerviewNcPaintHook(void* w, int size_x, int size_y)
 		/* title text */
 		if (!win->Text || (win->Text[0] == 0)) return;
 
-		len = tcslen(win->Text);
+		len = wcslen(win->Text);
 		if (len > rc.W - 4)
 		{
 			len = rc.W - 4;
@@ -152,7 +152,7 @@ PagerviewPaintHook(void* w)
 	int           yscroll;
 	int           ypos;
 	int           index;
-	TCHAR*        lbuffer;
+	wchar_t*        lbuffer;
 
 	data = (PAGERVIEWDATA*) win->InstData;
 	if (!data) return;
@@ -185,7 +185,7 @@ PagerviewPaintHook(void* w)
 			else if (data->SelPos1 >= lastpos)
 			{
 				PagerviewShowLine(win, lbuffer, ypos, 
-				   data->SelPos1 - lastpos, tcslen(lbuffer), TRUE);
+				   data->SelPos1 - lastpos, wcslen(lbuffer), TRUE);
 			}
 			else if (data->SelPos2 <= pos)
 			{
@@ -195,7 +195,7 @@ PagerviewPaintHook(void* w)
 			else
 			{
 				PagerviewShowLine(win, lbuffer, ypos, 
-				   0, tcslen(lbuffer), TRUE);
+				   0, wcslen(lbuffer), TRUE);
 			}
 			ypos++;
 
@@ -240,7 +240,7 @@ PagerviewKeyHook(void* w, int key)
 	CUIRECT        rc;
 	int            xscroll;
 	int            xrange;
-	TCHAR*         lbuffer;
+	wchar_t*         lbuffer;
 
 	if (!data) return FALSE;
 
@@ -378,7 +378,7 @@ PagerviewVScrollHook(void* w, int sbcode, int pos)
 	CUIWINDOW*     win = (CUIWINDOW*) w;
 	PAGERVIEWDATA* data = (PAGERVIEWDATA*) win->InstData;
 	CUIRECT        rc;
-	TCHAR*         lbuffer;
+	wchar_t*         lbuffer;
 
 	WindowGetClientRect(win, &rc);
 
@@ -530,7 +530,7 @@ PagerviewTimerHook(void* w, int id)
 {
 	CUIWINDOW*     win = (CUIWINDOW*) w;
 	PAGERVIEWDATA* data = (PAGERVIEWDATA*) win->InstData;
-	TCHAR*         lbuffer;
+	wchar_t*         lbuffer;
 
 	if ((id == IDC_TAILTIMER) && (data->File))
 	{
@@ -555,7 +555,7 @@ PagerviewTimerHook(void* w, int id)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-PagerviewNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
+PagerviewNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h,
            int id, int sflags, int cflags)
 {
 	if (parent)
@@ -609,7 +609,7 @@ PagerviewNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 void
 PagerviewSetSetFocusHook(CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("PAGERVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("PAGERVIEW")) == 0))
 	{
 		((PAGERVIEWDATA*)win->InstData)->SetFocusHook = proc;
 		((PAGERVIEWDATA*)win->InstData)->SetFocusTarget = target;
@@ -625,7 +625,7 @@ PagerviewSetSetFocusHook(CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* tar
 void
 PagerviewSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("PAGERVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("PAGERVIEW")) == 0))
 	{
 		((PAGERVIEWDATA*)win->InstData)->KillFocusHook = proc;
 		((PAGERVIEWDATA*)win->InstData)->KillFocusTarget = target;
@@ -641,7 +641,7 @@ PagerviewSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target
 void
 PagerviewSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("PAGERVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("PAGERVIEW")) == 0))
 	{
 		((PAGERVIEWDATA*)win->InstData)->PreKeyHook = proc;
 		((PAGERVIEWDATA*)win->InstData)->PreKeyTarget = target;
@@ -657,7 +657,7 @@ PagerviewSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* t
 void
 PagerviewSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("PAGERVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("PAGERVIEW")) == 0))
 	{
 		((PAGERVIEWDATA*)win->InstData)->PostKeyHook = proc;
 		((PAGERVIEWDATA*)win->InstData)->PostKeyTarget = target;
@@ -673,7 +673,7 @@ PagerviewSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* 
 void
 PagerviewEnableWordWrap(CUIWINDOW* win, int enable)
 {
-	if (win && (tcscmp(win->Class, _T("PAGERVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("PAGERVIEW")) == 0))
 	{
 		if (((PAGERVIEWDATA*)win->InstData)->DoWordWrap != enable)
 		{
@@ -693,7 +693,7 @@ PagerviewEnableWordWrap(CUIWINDOW* win, int enable)
 void
 PagerviewClear(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("PAGERVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("PAGERVIEW")) == 0))
 	{
 		PAGERVIEWDATA* data = (PAGERVIEWDATA*)win->InstData;
 
@@ -717,16 +717,16 @@ PagerviewClear(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 int
-PagerviewSetFile(CUIWINDOW* win, const TCHAR* filename)
+PagerviewSetFile(CUIWINDOW *win, const wchar_t *filename, const wchar_t *encoding)
 {
-	if (win && (tcscmp(win->Class, _T("PAGERVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("PAGERVIEW")) == 0))
 	{
 		PAGERVIEWDATA* data = (PAGERVIEWDATA*)win->InstData;
 		if (data->File)
 		{
 			PagerFileClose(data->File);
 		}
-		data->File = PagerFileOpen(filename);
+		data->File = PagerFileOpen(filename, encoding);
 		data->FirstPos = 0;
 		data->LastPos = 0;
 
@@ -745,9 +745,9 @@ PagerviewSetFile(CUIWINDOW* win, const TCHAR* filename)
  * ---------------------------------------------------------------------
  */
 int
-PagerviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, int down)
+PagerviewSearch(CUIWINDOW* win, const wchar_t* text, int wholeword, int casesens, int down)
 {
-	if (win && (tcscmp(win->Class, _T("PAGERVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("PAGERVIEW")) == 0))
 	{
 		PAGERVIEWDATA* data = (PAGERVIEWDATA*)win->InstData;
 		long pos;
@@ -790,7 +790,7 @@ PagerviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, 
 							int  lastc = EOI;
 							int  firstc = EOI;
 
-							if (PagerFileSeek(data->File, oldpos + tcslen(text)) == 0)
+							if (PagerFileSeek(data->File, oldpos + wcslen(text)) == 0)
 							{
 								lastc = PagerFileGet(data->File);
 							}
@@ -805,7 +805,7 @@ PagerviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, 
 								    !PagerviewIsChar(firstc))
 								{
 									data->SelPos1 = oldpos;
-									data->SelPos2 = data->SelPos1 + tcslen(text);
+									data->SelPos2 = data->SelPos1 + wcslen(text);
 									PagerviewCheckSelectionPos(win);
 									PagerviewUpdate(win);
 									return TRUE;
@@ -831,7 +831,7 @@ PagerviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, 
 							int  lastc = EOI;
 							int  firstc = EOI;
 
-							if (PagerFileSeek(data->File, oldpos + tcslen(text)) == 0)
+							if (PagerFileSeek(data->File, oldpos + wcslen(text)) == 0)
 							{
 								lastc = PagerFileGet(data->File);
 							}
@@ -846,7 +846,7 @@ PagerviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, 
 								    !PagerviewIsChar(firstc))
 								{
 									data->SelPos1 = oldpos;
-									data->SelPos2 = data->SelPos1 + tcslen(text);
+									data->SelPos2 = data->SelPos1 + wcslen(text);
 									PagerviewCheckSelectionPos(win);
 									PagerviewUpdate(win);
 									return TRUE;
@@ -876,7 +876,7 @@ PagerviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, 
 void  
 PagerviewResetSearch(CUIWINDOW* win, int at_bottom)
 {
-	if (win && (tcscmp(win->Class, _T("PAGERVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("PAGERVIEW")) == 0))
 	{
 		PAGERVIEWDATA* data = (PAGERVIEWDATA*)win->InstData;
 
@@ -902,7 +902,7 @@ PagerviewResetSearch(CUIWINDOW* win, int at_bottom)
 void 
 PagerviewEnableTail(CUIWINDOW* win, int enable)
 {
-	if (win && (tcscmp(win->Class, _T("PAGERVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("PAGERVIEW")) == 0))
 	{
 		PAGERVIEWDATA* data = (PAGERVIEWDATA*)win->InstData;
 
@@ -928,10 +928,10 @@ PagerviewEnableTail(CUIWINDOW* win, int enable)
 long 
 PagerviewResolveLine(CUIWINDOW* win, int linenr)
 {
-	if (win && (tcscmp(win->Class, _T("PAGERVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("PAGERVIEW")) == 0))
 	{
 		long  pos = 0;
-		TCHAR* buf;
+		wchar_t* buf;
 		PAGERVIEWDATA* data = (PAGERVIEWDATA*)win->InstData;
 
 		while ((linenr > 1) && (pos != NOPOS))
@@ -953,7 +953,7 @@ PagerviewResolveLine(CUIWINDOW* win, int linenr)
 void 
 PagerviewJumpTo(CUIWINDOW* win, long filepos)
 {
-	if (win && (tcscmp(win->Class, _T("PAGERVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("PAGERVIEW")) == 0))
 	{
 		PAGERVIEWDATA* data = (PAGERVIEWDATA*)win->InstData;
 		if (filepos != NOPOS)
@@ -972,11 +972,11 @@ PagerviewJumpTo(CUIWINDOW* win, long filepos)
  * ---------------------------------------------------------------------
  */
 void  
-PagerviewSetFilter(CUIWINDOW* win, const TCHAR* filter)
+PagerviewSetFilter(CUIWINDOW* win, const wchar_t* filter)
 {
-	if (win && (tcscmp(win->Class, _T("PAGERVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("PAGERVIEW")) == 0))
 	{
-		TCHAR buffer[64 + 1];
+		wchar_t buffer[64 + 1];
 		PAGERVIEWDATA* data = (PAGERVIEWDATA*)win->InstData;
 
 		if (data->Filter)
@@ -984,14 +984,10 @@ PagerviewSetFilter(CUIWINDOW* win, const TCHAR* filter)
 			free(data->Filter);
 			data->Filter = NULL;
 		}
-		if (filter && (tcslen(filter) > 0))
+		if (filter && (wcslen(filter) > 0))
 		{
-			data->Filter = tcsdup(filter);
-#ifdef _UNICODE
-			stprintf(buffer, 64, _T("[VIEW-FILTER=%ls]"), filter);
-#else
-			stprintf(buffer, 64, _T("[VIEW-FILTER=%s]"), filter);
-#endif
+			data->Filter = wcsdup(filter);
+			swprintf(buffer, 64, _T("[VIEW-FILTER=%ls]"), filter);
 			buffer[64] = 0;
 
 			WindowSetText(win, buffer);
@@ -1015,7 +1011,7 @@ PagerviewSetFilter(CUIWINDOW* win, const TCHAR* filter)
  * ---------------------------------------------------------------------
  */
 static void
-PagerviewShowLine(CUIWINDOW* win, const TCHAR* text, int ypos, int selpos1, int selpos2, int do_print)
+PagerviewShowLine(CUIWINDOW* win, const wchar_t* text, int ypos, int selpos1, int selpos2, int do_print)
 {
 	CUIRECT       rc;
 	WINDOW*       w = win->Win;
@@ -1027,7 +1023,7 @@ PagerviewShowLine(CUIWINDOW* win, const TCHAR* text, int ypos, int selpos1, int 
 
 	xscroll = WindowGetHScrollPos(win);
 
-	len = tcslen(text);
+	len = wcslen(text);
 	if (do_print)
 	{
 		SetColor(w, win->Color.WndTxtColor, win->Color.WndColor, FALSE);
@@ -1081,9 +1077,9 @@ PagerviewShowLine(CUIWINDOW* win, const TCHAR* text, int ypos, int selpos1, int 
  * ---------------------------------------------------------------------
  */
 static int
-PagerviewMatchWord(PAGERFILE* pfile, int c, const TCHAR* s2, int casesens)
+PagerviewMatchWord(PAGERFILE* pfile, int c, const wchar_t* s2, int casesens)
 {
-	int len = tcslen(s2);
+	int len = wcslen(s2);
 	int i;
 	long oldpos = PagerFilePos(pfile);
 
@@ -1091,7 +1087,7 @@ PagerviewMatchWord(PAGERFILE* pfile, int c, const TCHAR* s2, int casesens)
 	{
 		for (i = 0; i < len; i++)
 		{
-			if (totlower(c) != totlower(*s2))
+			if (towlower(c) != towlower(*s2))
 			{
 				PagerFileSeek(pfile, oldpos);
 				return FALSE;
@@ -1125,9 +1121,9 @@ PagerviewMatchWord(PAGERFILE* pfile, int c, const TCHAR* s2, int casesens)
  * ---------------------------------------------------------------------
  */
 static int
-PagerviewIsChar(TCHAR c)
+PagerviewIsChar(wchar_t c)
 {
-	return istalnum(c);
+	return iswalnum(c);
 }
 
 
@@ -1206,7 +1202,7 @@ PagerviewCheckSelectionPos(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 static int 
-PagerviewLineLength(const TCHAR* line)
+PagerviewLineLength(const wchar_t* line)
 {
 	int pos = 0;
 	int len = 0;
@@ -1265,7 +1261,7 @@ PagerviewCalculate(CUIWINDOW* win)
 
 	if (data->File)
 	{
-		TCHAR* lbuffer;
+		wchar_t* lbuffer;
 		int    ypos = 0;
 		long   pos = PagerviewNextLine(data, data->FirstPos, &lbuffer);
 		while ((pos != NOPOS) && (ypos < (rc.H - 1)))
@@ -1338,7 +1334,7 @@ PagerviewGotoEnd(CUIWINDOW* win, int force)
 {
 	PAGERVIEWDATA* data = (PAGERVIEWDATA*)win->InstData;
 	CUIRECT rc;
-	TCHAR*  lbuffer;
+	wchar_t*  lbuffer;
 
 	WindowGetClientRect(win, &rc);
 	if (data->File) 
@@ -1372,14 +1368,14 @@ PagerviewGotoEnd(CUIWINDOW* win, int force)
  * ---------------------------------------------------------------------
  */
 static long
-PagerviewNextLine(PAGERVIEWDATA* data, long pos, TCHAR** lbuffer)
+PagerviewNextLine(PAGERVIEWDATA* data, long pos, wchar_t** lbuffer)
 {
 	pos = PagerForwRawLine(data->File, pos, lbuffer);
 	while (pos != NOPOS)
 	{
 		if (!data->Filter ||
-		   (tcslen(data->Filter) == 0) ||
-		   (tcsstr(*lbuffer, data->Filter) != NULL))
+		   (wcslen(data->Filter) == 0) ||
+		   (wcsstr(*lbuffer, data->Filter) != NULL))
 		{
 			return pos;
 		}
@@ -1394,14 +1390,14 @@ PagerviewNextLine(PAGERVIEWDATA* data, long pos, TCHAR** lbuffer)
  * ---------------------------------------------------------------------
  */
 static long
-PagerviewPrevLine(PAGERVIEWDATA* data, long pos, TCHAR** lbuffer)
+PagerviewPrevLine(PAGERVIEWDATA* data, long pos, wchar_t** lbuffer)
 {
 	pos = PagerBackRawLine(data->File, pos, lbuffer);
 	while ((pos != NOPOS) && (pos > ZEROPOS))
 	{
 		if (!data->Filter ||
-		   (tcslen(data->Filter) == 0) ||
-		   (tcsstr(*lbuffer, data->Filter) != NULL))
+		   (wcslen(data->Filter) == 0) ||
+		   (wcsstr(*lbuffer, data->Filter) != NULL))
 		{
 			return pos;
 		}

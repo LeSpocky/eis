@@ -37,15 +37,15 @@
 #define EXP_NL              109
 #define EXP_UNKNOWN         110
 
-int  ExpFileOpen(const TCHAR* filename, ErrorCallback errout, void* instance);
+int  ExpFileOpen(const wchar_t* filename, ErrorCallback errout, void* instance);
 int  ExpRead(void);
 void ExpClose(void);
 
-TCHAR*       ExpGetTextDup(void);
-const TCHAR* ExpGetTextCpy(TCHAR* buffer, int buflen);
-const TCHAR* ExpGetFileName(void);
-const TCHAR* ExpGetString(void);
-int          ExpGetLineNumber(void);
-int          ExpRecoverFromError(void);
+wchar_t*       ExpGetTextDup(void);
+const wchar_t* ExpGetTextCpy(wchar_t* buffer, int buflen);
+const wchar_t* ExpGetFileName(void);
+const wchar_t* ExpGetString(void);
+int            ExpGetLineNumber(void);
+int            ExpRecoverFromError(void);
 
 #endif

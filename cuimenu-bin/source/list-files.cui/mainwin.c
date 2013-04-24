@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Jens Vehlhaber, <jvehlhaber@buchenwald.de>
  *
- * Last Update:  $Id: mainwin.c 24870 2010-07-04 11:04:52Z dv $
+ * Last Update:  $Id: mainwin.c 33470 2013-04-14 17:38:17Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -33,18 +33,18 @@
 /* prototypes */
 static void MainwinReadUsersAndGroups(CUIWINDOW* win, MAINWINDATA* data);
 static void MainwinReadData(CUIWINDOW* win, MAINWINDATA* data);
-static void MainwinError(void* w, const TCHAR* errmsg, const TCHAR* filename,
+static void MainwinError(void* w, const wchar_t* errmsg, const wchar_t* filename,
                          int linenr, int is_warning);
 static void MainwinReadHelp(CUIWINDOW* win);
 static void MainwinUpdateHelp(CUIWINDOW* win, MAINWINDATA* data);
 static void MainwinToggleHelp(CUIWINDOW* win);
 
 static struct stat* GetEntryStat(PROGRAM_CONFIG* config, const char *s, struct stat* status);
-static const TCHAR* GetFTime(struct stat* st, TCHAR* buf, int buflen);
-static const TCHAR* GetFSize(struct stat* st, TCHAR* buf, int buflen);
-static const TCHAR* GetFMode(struct stat* st, TCHAR* buf, int buflen);
-static const TCHAR* GetFUser(struct stat* st, TCHAR* buf, int buflen, MAINWINDATA* data);
-static const TCHAR* GetFromId(TCHAR** cidlist, const int* nidlist, int maxid, int id);
+static const wchar_t* GetFTime(struct stat* st, wchar_t* buf, int buflen);
+static const wchar_t* GetFSize(struct stat* st, wchar_t* buf, int buflen);
+static const wchar_t* GetFMode(struct stat* st, wchar_t* buf, int buflen);
+static const wchar_t* GetFUser(struct stat* st, wchar_t* buf, int buflen, MAINWINDATA* data);
+static const wchar_t* GetFromId(wchar_t** cidlist, const int* nidlist, int maxid, int id);
 static int          CheckFileExtension(PROGRAM_CONFIG* config, const char *s);
 static int          CheckEntryType(PROGRAM_CONFIG* config, const char *s );
 
@@ -63,20 +63,20 @@ MainListClickedHook(void* w, void* c)
 	CUIWINDOW*   ctrl = (CUIWINDOW*) c;
 	CUIWINDOW*   win  = (CUIWINDOW*) w;
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
-	const TCHAR* pselect;
+	const wchar_t* pselect;
 
 	pselect = ListviewGetColumnText(
 		ListviewGetRecord(ctrl, ListviewGetSel(ctrl)), 0);
 
-	if (data->Config && pselect && (tcslen(pselect) > 0))
+	if (data->Config && pselect && (wcslen(pselect) > 0))
 	{
 		if (data->Config->Question)
 		{
-			int    len = tcslen(data->Config->Question) + tcslen(pselect) + 64;
-			TCHAR* msg = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+			int    len = wcslen(data->Config->Question) + wcslen(pselect) + 64;
+			wchar_t* msg = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 			if (msg)
 			{
-				stprintf(msg, len, data->Config->Question, pselect);
+				swprintf(msg, len, data->Config->Question, pselect);
 				if (MessageBox(win, msg, _T("Question"), MB_YESNO) != IDYES)
 				{
 					pselect = NULL;
@@ -89,21 +89,13 @@ MainListClickedHook(void* w, void* c)
 		{
 			if (data->Config->ScriptFile)
 			{
-				int len = tcslen(data->Config->ScriptFile) + tcslen(pselect) + 4;
-				data->Config->ShellCommand = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-#ifdef _UNICODE
-				stprintf(data->Config->ShellCommand,
+				int len = wcslen(data->Config->ScriptFile) + wcslen(pselect) + 4;
+				data->Config->ShellCommand = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+				swprintf(data->Config->ShellCommand,
 					len,
 					_T("%ls %ls"),
 					data->Config->ScriptFile,
 					pselect);
-#else
-				stprintf(data->Config->ShellCommand,
-					len,
-					_T("%s %s"),
-					data->Config->ScriptFile,
-					pselect);
-#endif
 			}
 			WindowQuit(EXIT_SUCCESS);
 		}
@@ -143,10 +135,10 @@ MainCreateHook(void* w)
 	CUIWINDOW*   win = (CUIWINDOW*) w;
 	CUIWINDOW*   ctrl;
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
-	TCHAR        version[32 + 1];
+	wchar_t        version[32 + 1];
 	int          n;
 
-	stprintf(version, 32, _T("V%i.%i.%i"), VERSION, SUBVERSION, PATCHLEVEL);
+	swprintf(version, 32, _T("V%i.%i.%i"), VERSION, SUBVERSION, PATCHLEVEL);
 	WindowSetRStatusText(win, version);
 	WindowSetLStatusText(win, _T("'F1'=Help 'ENTER'=Select 'F10'=Exit"));
 
@@ -346,7 +338,7 @@ MainKeyHook(void* w, int key)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-MainwinNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
+MainwinNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h,
            int sflags, int cflags)
 {
 	if (parent)
@@ -388,18 +380,14 @@ MainwinNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
  * ---------------------------------------------------------------------
  */
 XMLOBJECT*
-MainwinFindHelpEntry(CUIWINDOW* win, const TCHAR* topic)
+MainwinFindHelpEntry(CUIWINDOW* win, const wchar_t* topic)
 {
-	if (win && (tcscmp(win->Class, _T("LIST-FILES.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("LIST-FILES.CUI")) == 0))
 	{
-		TCHAR searchstr[128 + 1];
+		wchar_t searchstr[128 + 1];
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 
-#ifdef _UNICODE
-		stprintf(searchstr, 128, _T("help(name=%ls)"), topic);
-#else
-		stprintf(searchstr, 128, _T("help(name=%s)"), topic);
-#endif
+		swprintf(searchstr, 128, _T("help(name=%ls)"), topic);
 		searchstr[128] = 0;
 
 		if (data->HelpData)
@@ -418,7 +406,7 @@ MainwinFindHelpEntry(CUIWINDOW* win, const TCHAR* topic)
 void
 MainwinSetConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg)
 {
-	if (win && (tcscmp(win->Class, _T("LIST-FILES.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("LIST-FILES.CUI")) == 0))
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 		data->Config     = cfg;
@@ -433,7 +421,7 @@ MainwinSetConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg)
 void
 MainwinFreeMessage(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("LIST-FILES.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("LIST-FILES.CUI")) == 0))
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 		if (data->ErrorMsg)
@@ -450,25 +438,21 @@ MainwinFreeMessage(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 void
-MainwinAddMessage(CUIWINDOW* win, const TCHAR* msg)
+MainwinAddMessage(CUIWINDOW* win, const wchar_t* msg)
 {
-	if (win && (tcscmp(win->Class, _T("LIST-FILES.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("LIST-FILES.CUI")) == 0))
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 		if (!data->ErrorMsg)
 		{
-			data->ErrorMsg = tcsdup(msg);
+			data->ErrorMsg = wcsdup(msg);
 		}
 		else
 		{
-			int    len = tcslen(data->ErrorMsg) + tcslen(msg) + 2;
-			TCHAR* err = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+			int    len = wcslen(data->ErrorMsg) + wcslen(msg) + 2;
+			wchar_t* err = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 
-#ifdef _UNICODE
-			stprintf(err, len, _T("%ls\n%ls"), data->ErrorMsg, msg);
-#else
-			stprintf(err, len, _T("%s\n%s"), data->ErrorMsg, msg);
-#endif
+			swprintf(err, len, _T("%ls\n%ls"), data->ErrorMsg, msg);
 			free(data->ErrorMsg);
 			data->ErrorMsg = err;
 		}
@@ -484,33 +468,28 @@ MainwinAddMessage(CUIWINDOW* win, const TCHAR* msg)
  * ---------------------------------------------------------------------
  */
 static void
-MainwinError(void* w, const TCHAR* errmsg, const TCHAR* filename,
+MainwinError(void* w, const wchar_t* errmsg, const wchar_t* filename,
              int linenr, int is_warning)
 {
 	CUIWINDOW* win = (CUIWINDOW*) w;
+	
+	CUI_USE_ARG(filename);
+	
 	if (win)
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 
 		if ((data->NumErrors + data->NumWarnings) < 8)
 		{
-			TCHAR err[512 + 1];
+			wchar_t err[512 + 1];
 			if (is_warning)
 			{
-#ifdef _UNICODE
-				stprintf(err, 512, _T("WARNING: (%i): %ls"), linenr, errmsg);
-#else
-				stprintf(err, 512, _T("WARNING: (%i): %s"), linenr, errmsg);
-#endif
+				swprintf(err, 512, _T("WARNING: (%i): %ls"), linenr, errmsg);
 				MainwinAddMessage(win, err);
 			}
 			else
 			{
-#ifdef _UNICODE
-				stprintf(err, 512, _T("ERROR: (%i): %ls"), linenr, errmsg);
-#else
-				stprintf(err, 512, _T("ERROR: (%i): %s"), linenr, errmsg);
-#endif
+				swprintf(err, 512, _T("ERROR: (%i): %ls"), linenr, errmsg);
 				MainwinAddMessage(win, err);
 			}
 		}
@@ -555,19 +534,15 @@ MainwinReadHelp(CUIWINDOW* win)
 
 		if (data->NumErrors || data->NumWarnings)
 		{
-			TCHAR buffer[128 + 1];
+			wchar_t buffer[128 + 1];
 
 			MainwinAddMessage(win, _T(""));
 
-			stprintf(buffer, 128, _T("%i error(s), %i warning(s)"),
+			swprintf(buffer, 128, _T("%i error(s), %i warning(s)"),
 				data->NumErrors, data->NumWarnings);
 			MainwinAddMessage(win, buffer);
 
-#ifdef _UNICODE
-			stprintf(buffer, 128, _T("file: %ls"), data->Config->HelpFile);
-#else
-			stprintf(buffer, 128, _T("file: %s"), data->Config->HelpFile);
-#endif
+			swprintf(buffer, 128, _T("file: %ls"), data->Config->HelpFile);
 
 			MainwinAddMessage(win, buffer);
 
@@ -664,6 +639,8 @@ MainwinReadUsersAndGroups(CUIWINDOW* win, MAINWINDATA* data)
 	struct group  *grp;
 	int           index;
 
+	CUI_USE_ARG(win);
+
 	/* process user list from /etc/passwd: */
 	/* count user entries */
 	data->NumUid = 0;
@@ -675,9 +652,9 @@ MainwinReadUsersAndGroups(CUIWINDOW* win, MAINWINDATA* data)
 
 	/* allocate memory */
 	data->NumUid++;
-	data->CUidList    = (TCHAR**) malloc(data->NumUid * sizeof(TCHAR*));
+	data->CUidList    = (wchar_t**) malloc(data->NumUid * sizeof(wchar_t*));
 	data->NUidList    = (int*)    malloc(data->NumUid * sizeof(int));
-	data->CUidList[0] = tcsdup(_T("?"));
+	data->CUidList[0] = wcsdup(_T("?"));
 	data->NUidList[0] = 0;
 
 	/* read user entries */
@@ -702,9 +679,9 @@ MainwinReadUsersAndGroups(CUIWINDOW* win, MAINWINDATA* data)
 
 	/* allocate memory */
 	data->NumGid++;
-	data->CGidList    = (TCHAR**) malloc(data->NumGid * sizeof(TCHAR*));
+	data->CGidList    = (wchar_t**) malloc(data->NumGid * sizeof(wchar_t*));
 	data->NGidList    = (int*)    malloc(data->NumGid * sizeof(int));
-	data->CGidList[0] = tcsdup(_T("?"));
+	data->CGidList[0] = wcsdup(_T("?"));
 	data->NGidList[0] = 0;
 
 	/* read group entries */
@@ -747,7 +724,7 @@ MainwinReadData(CUIWINDOW* win, MAINWINDATA* data)
 				    (data->Config->FileTypeN == CheckEntryType(data->Config, (char *)dp->d_name)))
 				{
 					int      n = 0;
-					TCHAR    buffer[256 + 1];
+					wchar_t    buffer[256 + 1];
 					LISTREC* rec;
 
 					rec = ListviewCreateRecord(listview);
@@ -755,12 +732,10 @@ MainwinReadData(CUIWINDOW* win, MAINWINDATA* data)
 					{
 						struct stat status;
 						const char* p = dp->d_name;
-#ifdef _UNICODE
+
 						mbsrtowcs(buffer, &p, 256, NULL);
-#else
-						strncpy(buffer, p, 256);
-#endif
 						buffer[256] = 0;
+						
 						ListviewSetColumnText(rec, 0, buffer);
 
 						if (data->NumColumns > 1)
@@ -834,12 +809,12 @@ GetEntryStat(PROGRAM_CONFIG* config, const char *s, struct stat* status)
  *  return the time from stat structure of entry
  *  ---------------------------------------------------------------------
  */
-static const TCHAR*
-GetFTime(struct stat* st, TCHAR* buf, int buflen)
+static const wchar_t*
+GetFTime(struct stat* st, wchar_t* buf, int buflen)
 {
 	struct tm *tm = gmtime(&st->st_mtime);
 
-	stprintf(buf, buflen, _T(" %04i-%02i-%02i  %02i:%02i:%02i "),
+	swprintf(buf, buflen, _T(" %04i-%02i-%02i  %02i:%02i:%02i "),
 		tm->tm_year + 1900,
 		tm->tm_mon + 1,
 		tm->tm_mday,
@@ -856,10 +831,10 @@ GetFTime(struct stat* st, TCHAR* buf, int buflen)
  *  return the size from stat structure of entry
  *  ---------------------------------------------------------------------
  */
-static const TCHAR*
-GetFSize(struct stat* st, TCHAR* buf, int buflen)
+static const wchar_t*
+GetFSize(struct stat* st, wchar_t* buf, int buflen)
 {
-	stprintf(buf, buflen, _T(" %7ld "), st->st_size ) ;
+	swprintf(buf, buflen, _T(" %7ld "), st->st_size ) ;
 	buf[buflen] = 0;
 	return buf;
 }
@@ -869,8 +844,8 @@ GetFSize(struct stat* st, TCHAR* buf, int buflen)
  *  return the mode from stat structure of entry
  *  ---------------------------------------------------------------------
  */
-static const TCHAR*
-GetFMode(struct stat* st, TCHAR* buf, int buflen)
+static const wchar_t*
+GetFMode(struct stat* st, wchar_t* buf, int buflen)
 {
 	int   stm;
 
@@ -880,7 +855,7 @@ GetFMode(struct stat* st, TCHAR* buf, int buflen)
 		return buf;
 	}
 
-	tcscpy(buf, _T("            \0"));
+	wcscpy(buf, _T("            \0"));
 
 	stm = st->st_mode;
 	switch (stm & S_IFMT)
@@ -933,18 +908,12 @@ GetFMode(struct stat* st, TCHAR* buf, int buflen)
  *  return user and group from stat structure of entry
  *  ---------------------------------------------------------------------
  */
-static const TCHAR*
-GetFUser(struct stat* st, TCHAR* buf, int buflen, MAINWINDATA* data)
+static const wchar_t*
+GetFUser(struct stat* st, wchar_t* buf, int buflen, MAINWINDATA* data)
 {
-#ifdef _UNICODE
-	stprintf( buf, buflen, _T(" %-8ls %-8ls "),
+	swprintf( buf, buflen, _T(" %-8ls %-8ls "),
 		GetFromId(data->CUidList, data->NUidList, data->NumUid, st->st_uid),
 		GetFromId(data->CGidList, data->NGidList, data->NumGid, st->st_gid) );
-#else
-	stprintf( buf, buflen, _T(" %-8s %-8s "),
-		GetFromId(data->CUidList, data->NUidList, data->NumUid, st->st_uid),
-		GetFromId(data->CGidList, data->NGidList, data->NumGid, st->st_gid) );
-#endif
 	return buf;
 }
 
@@ -1018,8 +987,8 @@ CheckEntryType(PROGRAM_CONFIG* config, const char *s)
  *  convert id to name
  *  ---------------------------------------------------------------------
  */
-static const TCHAR*
-GetFromId(TCHAR** cidlist, const int* nidlist, int maxid, int id)
+static const wchar_t*
+GetFromId(wchar_t** cidlist, const int* nidlist, int maxid, int id)
 {
 	int i;
 	for (i = 1; i < maxid; i++)

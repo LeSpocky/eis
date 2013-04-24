@@ -20,13 +20,13 @@
 #include <dirent.h>
 #include <time.h>
 
-#define VERSION     2
+#define VERSION     3
 #define SUBVERSION  0
-#define PATCHLEVEL  5
+#define PATCHLEVEL  0
 #define BUILD       0
 
-#define  VERSIONSTR "2.0.5"
-#define  BUILDSTR   "(0) no doupdates"
+#define  VERSIONSTR "3.0.0"
+#define  BUILDSTR   "(0) unicode"
 
 
 #endif

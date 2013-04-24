@@ -31,24 +31,23 @@ int MenuLevel = 0;
 
 /* local prototypes */
 
-static void   EisMenuClear(EISMENU* eismenu);
-static void   EisMenuInit(EISMENU* eismenu);
-/* static void   EisMenuDataFromFile(const TCHAR* filename, TCHAR* data, int len); */
-static void   EisMenuKernelVersion(TCHAR* version, int len);
-static int    EisMenuGetNextMenu(const TCHAR* filename, TCHAR* menuname, int len);
-static TCHAR* EisMenuKillSpaces(TCHAR* buffer);
-static void   EisMenuReadClassicNode(EISMENU* eismenu, XMLNODE* node, int first);
-static void   EisMenuCopyAttr(EISMENUITEM* item, XMLOBJECT* obj, const TCHAR* name);
-static TCHAR* EisMenuGetObjectData(EISMENU* eismenu, XMLOBJECT* ob);
-static void   EisMenuReadXmlNode(EISMENU* eismenu, XMLNODE* node);
-static int    EisMenuCheckUI(const TCHAR *uistr);
-static void   EisMenuSwapItems(EISMENUITEM* item1, EISMENUITEM* item2);
-static TCHAR* EisMenuLowerStr(const TCHAR* str, TCHAR* buffer);
-static void   EisMenuWriteToFile(const TCHAR* text, FILE* out);
-static void   EisMenuGetFileData(const TCHAR* filename, TCHAR* data, int len);
-static void   EisMenuRemoveLoginInfo(TCHAR* url);
-static void   EisMenuUpdateVersionTitle(EISMENU* eismenu);
-static void   EisMenuUpdateUrlTitle(EISMENU* eismenu);
+static void     EisMenuClear(EISMENU* eismenu);
+static void     EisMenuInit(EISMENU* eismenu);
+static void     EisMenuKernelVersion(wchar_t* version, int len);
+static int      EisMenuGetNextMenu(const wchar_t* filename, wchar_t* menuname, int len);
+static wchar_t* EisMenuKillSpaces(wchar_t* buffer);
+static void     EisMenuReadClassicNode(EISMENU* eismenu, XMLNODE* node, int first);
+static void     EisMenuCopyAttr(EISMENUITEM* item, XMLOBJECT* obj, const wchar_t* name);
+static wchar_t* EisMenuGetObjectData(EISMENU* eismenu, XMLOBJECT* ob);
+static void     EisMenuReadXmlNode(EISMENU* eismenu, XMLNODE* node);
+static int      EisMenuCheckUI(const wchar_t *uistr);
+static void     EisMenuSwapItems(EISMENUITEM* item1, EISMENUITEM* item2);
+static wchar_t* EisMenuLowerStr(const wchar_t* str, wchar_t* buffer);
+static void     EisMenuWriteToFile(const wchar_t* text, FILE* out);
+static void     EisMenuGetFileData(const wchar_t* filename, wchar_t* data, int len);
+static void     EisMenuRemoveLoginInfo(wchar_t* url);
+static void     EisMenuUpdateVersionTitle(EISMENU* eismenu);
+static void     EisMenuUpdateUrlTitle(EISMENU* eismenu);
 
 
 /* public functions */
@@ -124,7 +123,7 @@ EisMenuDelete(EISMENU* eismenu)
  * ---------------------------------------------------------------------
  */
 void
-EisMenuReadFile(EISMENU* eismenu, const TCHAR* filename, 
+EisMenuReadFile(EISMENU* eismenu, const wchar_t* filename, 
                 ErrorCallback errout, void* instance)
 {
 	XMLFILE* menufile;
@@ -134,7 +133,7 @@ EisMenuReadFile(EISMENU* eismenu, const TCHAR* filename,
 
 	if (!eismenu->Filename)
 	{
-		eismenu->Filename = tcsdup(filename);
+		eismenu->Filename = wcsdup(filename);
 	}
 
 	if (FileStat(filename, &filestat) == 0)
@@ -169,7 +168,7 @@ EisMenuReadFile(EISMENU* eismenu, const TCHAR* filename,
 			EISMENUCMMT* cmmt = (EISMENUCMMT*) malloc(sizeof(EISMENUCMMT));
 			if (cmmt)
 			{
-				cmmt->Data = tcsdup(node->Data);
+				cmmt->Data = wcsdup(node->Data);
 				cmmt->Next = NULL;
 
 				if (eismenu->LastComment)
@@ -196,7 +195,7 @@ EisMenuReadFile(EISMENU* eismenu, const TCHAR* filename,
 void
 EisMenuWriteFile(EISMENU* eismenu, ErrorCallback errout, void* instance)
 {
-	TCHAR buffer[256+1];
+	wchar_t buffer[256+1];
 	struct stat filestat;
 	FILE* out;
 
@@ -224,7 +223,7 @@ EisMenuWriteFile(EISMENU* eismenu, ErrorCallback errout, void* instance)
 		}
 		if (eismenu->SubTitle)
 		{
-			if (tcsstr(eismenu->SubTitle, _T("URL:")) == eismenu->SubTitle)
+			if (wcsstr(eismenu->SubTitle, _T("URL:")) == eismenu->SubTitle)
 			{
 				fputs("<url></url>\n", out);
 			}
@@ -245,10 +244,10 @@ EisMenuWriteFile(EISMENU* eismenu, ErrorCallback errout, void* instance)
 		{
 			if (item->IsClassic)
 			{
-	                        attr = item->FirstAttr;
-	                        while (attr)
-	                        {
-					if (tcscasecmp(attr->Name, _T("SCRIPT"))==0)
+				attr = item->FirstAttr;
+				while (attr)
+				{
+					if (wcscasecmp(attr->Name, _T("SCRIPT"))==0)
 					{
 						EisMenuWriteToFile(attr->Value, out);
 						fputs(" ", out);
@@ -256,8 +255,8 @@ EisMenuWriteFile(EISMENU* eismenu, ErrorCallback errout, void* instance)
 						fputs("\n", out);
 						break;
 					}
-	                                attr = (EISMENUATTR*) attr->Next;
-	                        }
+					attr = (EISMENUATTR*) attr->Next;
+				}
 			}
 			else
 			{
@@ -339,7 +338,7 @@ EisMenuUpdate(EISMENU* eismenu, ErrorCallback errout, void* instance)
 	{
 		if (eismenu->SubTitle)
 		{
-			if (tcsstr(eismenu->SubTitle, _T("URL:")) == eismenu->SubTitle)
+			if (wcsstr(eismenu->SubTitle, _T("URL:")) == eismenu->SubTitle)
 			{
 				EisMenuUpdateUrlTitle(eismenu);
 			}
@@ -358,14 +357,14 @@ EisMenuUpdate(EISMENU* eismenu, ErrorCallback errout, void* instance)
  * ---------------------------------------------------------------------
  */
 EISMENUITEM*
-EisMenuAddItem(EISMENU* eismenu, const TCHAR* name, int type)
+EisMenuAddItem(EISMENU* eismenu, const wchar_t* name, int type)
 {
 	if (eismenu)
 	{
 		EISMENUITEM* item = (EISMENUITEM*) malloc(sizeof(EISMENUITEM));
 		if (item)
 		{
-			item->Name      = tcsdup(name);
+			item->Name      = wcsdup(name);
 			item->Type      = type;
 			item->Next      = NULL;
 			item->FirstAttr = NULL;
@@ -394,7 +393,7 @@ EisMenuAddItem(EISMENU* eismenu, const TCHAR* name, int type)
  * ---------------------------------------------------------------------
  */
 EISMENUATTR*
-EisMenuAddAttribute(EISMENUITEM* item, const TCHAR* name, const TCHAR* value)
+EisMenuAddAttribute(EISMENUITEM* item, const wchar_t* name, const wchar_t* value)
 {
 	if (item)
 	{
@@ -403,8 +402,8 @@ EisMenuAddAttribute(EISMENUITEM* item, const TCHAR* name, const TCHAR* value)
 		{
 			attr->Name = NULL;
 			attr->Value = NULL;
-			if (name)  attr->Name = tcsdup(name);
-			if (value) attr->Value = tcsdup(value);
+			if (name)  attr->Name = wcsdup(name);
+			if (value) attr->Value = wcsdup(value);
 			attr->Next = NULL;
 			if (item->LastAttr)
 			{
@@ -427,12 +426,12 @@ EisMenuAddAttribute(EISMENUITEM* item, const TCHAR* name, const TCHAR* value)
  * ---------------------------------------------------------------------
  */
 void
-EisMenuAssignPackage(EISMENU* eismenu, const TCHAR* package)
+EisMenuAssignPackage(EISMENU* eismenu, const wchar_t* package)
 {
 	if (eismenu && package)
 	{
 		if (eismenu->Package) free(eismenu->Package);
-		eismenu->Package = tcsdup(package);
+		eismenu->Package = wcsdup(package);
 	}
 }
 
@@ -442,7 +441,7 @@ EisMenuAssignPackage(EISMENU* eismenu, const TCHAR* package)
  * 'SubTitle'-entry.
  * ---------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 EisMenuGetSubTitle(EISMENU* eismenu)
 {
 	EISMENU* workptr = eismenu;
@@ -462,14 +461,14 @@ EisMenuGetSubTitle(EISMENU* eismenu)
  * ---------------------------------------------------------------------
  */
 EISMENUATTR*
-EisMenuGetAttr(EISMENUITEM* item, const TCHAR* name)
+EisMenuGetAttr(EISMENUITEM* item, const wchar_t* name)
 {
 	if (item)
 	{
 		EISMENUATTR* workptr = item->FirstAttr;
 		while (workptr)
 		{
-			if (tcscasecmp(workptr->Name,name) == 0) 
+			if (wcscasecmp(workptr->Name,name) == 0) 
 			{
 				return workptr;
 			}
@@ -617,7 +616,7 @@ EisMenuGetItem(EISMENU* eismenu, int index)
  * ---------------------------------------------------------------------
  */
 EISMENUITEM* 
-EisMenuMakeFirstItem(EISMENU* eismenu, const TCHAR* name)
+EisMenuMakeFirstItem(EISMENU* eismenu, const wchar_t* name)
 {
 	EISMENUITEM* workptr;
 	if (eismenu)
@@ -625,7 +624,7 @@ EisMenuMakeFirstItem(EISMENU* eismenu, const TCHAR* name)
 		workptr = eismenu->FirstItem;
 		while (workptr)
 		{
-			if ((workptr->IsVisible) && (tcscmp(workptr->Name, name) == 0))
+			if ((workptr->IsVisible) && (wcscmp(workptr->Name, name) == 0))
 			{
 				if (workptr != eismenu->FirstItem)
 				{
@@ -646,7 +645,7 @@ EisMenuMakeFirstItem(EISMENU* eismenu, const TCHAR* name)
  * ---------------------------------------------------------------------
  */
 EISMENUITEM* 
-EisMenuMakeNextItem(EISMENUITEM* pos, const TCHAR* name)
+EisMenuMakeNextItem(EISMENUITEM* pos, const wchar_t* name)
 {
 	EISMENUITEM* workptr;
 	if (pos)
@@ -654,7 +653,7 @@ EisMenuMakeNextItem(EISMENUITEM* pos, const TCHAR* name)
 		workptr = (EISMENUITEM*) pos->Next;
 		while (workptr)
 		{
-			if ((workptr->IsVisible) && (tcscmp(workptr->Name, name) == 0))
+			if ((workptr->IsVisible) && (wcscmp(workptr->Name, name) == 0))
 			{
 				if (workptr != pos->Next)
 				{
@@ -687,8 +686,8 @@ EisMenuInit(EISMENU* eismenu)
 	eismenu->MaxWidth     = 0;
 	eismenu->NumVisItems  = 0;
 	eismenu->SubTitle     = NULL;
-	eismenu->Title        = tcsdup(_T("unknown"));
-	eismenu->Package      = tcsdup(_T("unknown"));
+	eismenu->Title        = wcsdup(_T("unknown"));
+	eismenu->Package      = wcsdup(_T("unknown"));
 }
 
 /* ---------------------------------------------------------------------
@@ -742,14 +741,14 @@ EisMenuClear(EISMENU* eismenu)
  * Convert to lower case letters
  * ---------------------------------------------------------------------
  */
-static TCHAR* 
-EisMenuLowerStr(const TCHAR* str, TCHAR* buffer)
+static wchar_t* 
+EisMenuLowerStr(const wchar_t* str, wchar_t* buffer)
 {
-	int len = tcslen(str);
+	int len = wcslen(str);
 	int i;
 	for (i = 0; i < len; i++)
 	{
-		buffer[i] = totlower(str[i]);
+		buffer[i] = towlower(str[i]);
 	}
 	buffer[len] = 0;
 	return buffer;
@@ -765,7 +764,7 @@ EisMenuSwapItems(EISMENUITEM* item1, EISMENUITEM* item2)
 {
 	if (item1 && item2)
 	{
-		TCHAR*       Name = item1->Name;
+		wchar_t*       Name = item1->Name;
 		int          Type = item1->Type;
 		int          IsClassic = item1->IsClassic;
 		int          IsVisible = item1->IsVisible;
@@ -795,13 +794,15 @@ EisMenuSwapItems(EISMENUITEM* item1, EISMENUITEM* item2)
  * ---------------------------------------------------------------------
  */
 static void 
-EisMenuGetFileData(const TCHAR* filename, TCHAR* data, int len)
+EisMenuGetFileData(const wchar_t* filename, wchar_t* data, int len)
 {
-        FILE* in;
+	FILE* in;
 	char  buffer[256 + 1];
 
-	if (len <= 0) 
+	if (len <= 0)
+	{
 		return;
+	}
 
 	data[0] = 0;
 
@@ -811,12 +812,13 @@ EisMenuGetFileData(const TCHAR* filename, TCHAR* data, int len)
 		if (fgets(buffer, 256, in)) 
 		{
 			char* pos = strrchr(buffer,'\n');
-			if (pos) *pos = 0;
-#ifdef _UNICODE
+			if (pos) 
+			{
+				*pos = 0;
+			}
+
 			mbstowcs(data, buffer, len);
-#else
-			strncpy(data, buffer, len);
-#endif
+
 			data[len] = 0;
 		}
 		FileClose(in);
@@ -830,7 +832,7 @@ EisMenuGetFileData(const TCHAR* filename, TCHAR* data, int len)
  * ---------------------------------------------------------------------
  */
 static void 
-EisMenuKernelVersion(TCHAR* version, int len)
+EisMenuKernelVersion(wchar_t* version, int len)
 {
 	FILE* in;
 	char  buffer[256 + 1];
@@ -846,7 +848,10 @@ EisMenuKernelVersion(TCHAR* version, int len)
 		{
 			char* pos2;
 			char* pos1 = strrchr(buffer,'\n');
-			if (pos1) *pos1 = 0;
+			if (pos1) 
+			{
+				*pos1 = 0;
+			}
 
 			pos1 = strstr(buffer,"<version>");
 			pos2 = strstr(buffer,"</version>");
@@ -854,11 +859,9 @@ EisMenuKernelVersion(TCHAR* version, int len)
 			{
 				pos1 += 9;
 				*pos2 = 0;
-#ifdef _UNICODE
+
 				mbstowcs(version, pos1, len);
-#else
-				strncpy(version, pos1, len);
-#endif
+
 				version[len] = 0;
 				break;
 			}
@@ -873,14 +876,14 @@ EisMenuKernelVersion(TCHAR* version, int len)
  * ---------------------------------------------------------------------
  */
 static void
-EisMenuRemoveLoginInfo(TCHAR* url)
+EisMenuRemoveLoginInfo(wchar_t* url)
 {
-	TCHAR* pos1 = tcsstr(url, _T("//"));
-	TCHAR* pos2 = tcschr(url, _T('@'));
+	wchar_t* pos1 = wcsstr(url, _T("//"));
+	wchar_t* pos2 = wcschr(url, _T('@'));
 	
 	if (pos1 && pos2 && (pos1 < pos2))
 	{
-		tcscpy(&pos1[2], &pos2[1]);
+		wcscpy(&pos1[2], &pos2[1]);
 	}
 }
 
@@ -894,12 +897,15 @@ EisMenuRemoveLoginInfo(TCHAR* url)
  * ---------------------------------------------------------------------
  */
 static int
-EisMenuGetNextMenu(const TCHAR* filename, TCHAR* menuname, int len)
+EisMenuGetNextMenu(const wchar_t* filename, wchar_t* menuname, int len)
 {
 	int   result = FALSE;
 	FILE* in;
 
-	if (len <= 0) return FALSE;
+	if (len <= 0) 
+	{
+		return FALSE;
+	}
 	menuname[0] = 0;
 
 	in = FileOpen(filename, _T("rt"));
@@ -915,7 +921,10 @@ EisMenuGetNextMenu(const TCHAR* filename, TCHAR* menuname, int len)
 
 			/* remove trailing newline character */	
 			pos = strrchr(buffer,'\n');
-			if (pos) *pos = 0;
+			if (pos) 
+			{
+				*pos = 0;
+			}
 
 			/* remove leading spaces and tabs */
 			pos = buffer;
@@ -960,11 +969,9 @@ EisMenuGetNextMenu(const TCHAR* filename, TCHAR* menuname, int len)
 						if (endpos)
 						{
 							*endpos = 0;
-#ifdef _UNICODE
+
 							mbstowcs(menuname, pos, len);
-#else
-							strncpy(menuname, pos, len);
-#endif
+
 							menuname[len] = 0;
 						}
 		
@@ -988,10 +995,10 @@ EisMenuGetNextMenu(const TCHAR* filename, TCHAR* menuname, int len)
  * Remove leading spaces from character arrays
  * ---------------------------------------------------------------------
  */
-static TCHAR*
-EisMenuKillSpaces(TCHAR* buffer)
+static wchar_t*
+EisMenuKillSpaces(wchar_t* buffer)
 {
-	TCHAR* result = buffer;
+	wchar_t* result = buffer;
 
 	while ((*result==_T(' '))||(*result==_T('\t'))) 
 	{
@@ -1006,18 +1013,18 @@ EisMenuKillSpaces(TCHAR* buffer)
  * ---------------------------------------------------------------------
  */
 static void
-EisMenuCopyAttr(EISMENUITEM* item, XMLOBJECT* obj, const TCHAR* name)
+EisMenuCopyAttr(EISMENUITEM* item, XMLOBJECT* obj, const wchar_t* name)
 {
 	XMLATTRIBUTE* attr = XmlGetAttribute(obj,name);
 	if (attr)
 	{
 		EISMENUATTR* newattr = (EISMENUATTR*) malloc(sizeof(EISMENUATTR));
 		newattr->Next = NULL;
-		newattr->Name = tcsdup(name);
+		newattr->Name = wcsdup(name);
 		newattr->Value = NULL;
 		if (attr->Value)
 		{
-			newattr->Value = tcsdup(attr->Value);
+			newattr->Value = wcsdup(attr->Value);
 		}
 		if (item->FirstAttr)
 		{
@@ -1036,7 +1043,7 @@ EisMenuCopyAttr(EISMENUITEM* item, XMLOBJECT* obj, const TCHAR* name)
  * Find first occurence of object data 
  * ---------------------------------------------------------------------
  */
-static TCHAR*
+static wchar_t*
 EisMenuGetObjectData(EISMENU* eismenu, XMLOBJECT* ob)
 {
 	if (ob)
@@ -1046,27 +1053,27 @@ EisMenuGetObjectData(EISMENU* eismenu, XMLOBJECT* ob)
 		{
 			if ((node->Type == XML_DATANODE) && (node->Data))
 			{
-				const TCHAR* pos = tcsstr(node->Data, _T("$PACKAGE"));
+				const wchar_t* pos = wcsstr(node->Data, _T("$PACKAGE"));
 				if (pos && eismenu->Package)
 				{
-					TCHAR* buffer = (TCHAR*) malloc((tcslen(node->Data) +
-						tcslen(eismenu->Package) + 1) * sizeof(TCHAR));
+					wchar_t* buffer = (wchar_t*) malloc((wcslen(node->Data) +
+						wcslen(eismenu->Package) + 1) * sizeof(wchar_t));
 
-					tcsncpy(buffer,node->Data,pos - node->Data);
+					wcsncpy(buffer,node->Data,pos - node->Data);
 					buffer[pos - node->Data] = 0;
-					tcscat(buffer,eismenu->Package);
-					tcscat(buffer,pos + 8);
+					wcscat(buffer,eismenu->Package);
+					wcscat(buffer,pos + 8);
 					return buffer;
 				}
 				else
 				{
-					return tcsdup(node->Data);
+					return wcsdup(node->Data);
 				}
 			}
 			node = (XMLNODE*) node->Next;
 		}
 	}
-	return tcsdup(_T(""));
+	return wcsdup(_T(""));
 }
 
 /* ---------------------------------------------------------------------
@@ -1080,7 +1087,7 @@ EisMenuReadXmlNode(EISMENU* eismenu, XMLNODE* node)
 	XMLOBJECT* object = node->Object;
 	EISMENUITEM* newitem;
 
-	if (tcscasecmp(object->Name, _T("TITLE")) == 0)
+	if (wcscasecmp(object->Name, _T("TITLE")) == 0)
 	{
 		if (eismenu->Title) 
 		{
@@ -1088,12 +1095,12 @@ EisMenuReadXmlNode(EISMENU* eismenu, XMLNODE* node)
 		}
 		eismenu->Title = EisMenuGetObjectData(eismenu,object);
 
-		if ((tcslen(eismenu->Title)) > eismenu->MaxWidth) 
+		if ((int)(wcslen(eismenu->Title)) > eismenu->MaxWidth) 
 		{
-			eismenu->MaxWidth = tcslen(eismenu->Title);
+			eismenu->MaxWidth = wcslen(eismenu->Title);
 		}
 	}
-	else if (tcscasecmp(object->Name, _T("PACKAGE")) == 0)
+	else if (wcscasecmp(object->Name, _T("PACKAGE")) == 0)
 	{
 		if (eismenu->Package) 
 		{
@@ -1101,11 +1108,11 @@ EisMenuReadXmlNode(EISMENU* eismenu, XMLNODE* node)
 		}
 		eismenu->Package = EisMenuGetObjectData(eismenu,object);
 	}
-	else if (tcscasecmp(object->Name, _T("VERSION")) == 0)
+	else if (wcscasecmp(object->Name, _T("VERSION")) == 0)
 	{
 		EisMenuUpdateVersionTitle(eismenu);
 	}
-	else if (tcscasecmp(object->Name,_T("URL")) == 0)
+	else if (wcscasecmp(object->Name,_T("URL")) == 0)
 	{
 		EisMenuUpdateUrlTitle(eismenu);
 	}
@@ -1134,31 +1141,32 @@ EisMenuReadXmlNode(EISMENU* eismenu, XMLNODE* node)
 		EisMenuCopyAttr(newitem,object,_T("PRE"));
 		EisMenuCopyAttr(newitem,object,_T("POST"));
 
-		if (tcscasecmp(object->Name, _T("MENU")) == 0)
+		if (wcscasecmp(object->Name, _T("MENU")) == 0)
 		{
 			EisMenuCopyAttr(newitem,object,_T("FILE"));
 			EisMenuCopyAttr(newitem,object,_T("PACKAGE"));
 			newitem->Type = ITEMTYPE_MENU;
 		}
-		else if (tcscasecmp(object->Name, _T("DOC")) == 0)
+		else if (wcscasecmp(object->Name, _T("DOC")) == 0)
 		{
 			EisMenuCopyAttr(newitem,object,_T("FILE"));
 			EisMenuCopyAttr(newitem,object,_T("TAIL"));
+			EisMenuCopyAttr(newitem,object,_T("ENCODING"));
 			newitem->Type = ITEMTYPE_DOC;
 		}
-		else if (tcscasecmp(object->Name, _T("EDIT")) == 0)
+		else if (wcscasecmp(object->Name, _T("EDIT")) == 0)
 		{
 			EisMenuCopyAttr(newitem,object, _T("PACKAGE"));
 			EisMenuCopyAttr(newitem,object, _T("STOPSTART"));
 			newitem->Type = ITEMTYPE_EDIT;
 		}
-		else if (tcscasecmp(object->Name, _T("INIT")) == 0)
+		else if (wcscasecmp(object->Name, _T("INIT")) == 0)
 		{
 			EisMenuCopyAttr(newitem,object, _T("TASK"));
 			EisMenuCopyAttr(newitem,object, _T("PACKAGE"));
 			newitem->Type = ITEMTYPE_INIT;
 		}
-		else if (tcscasecmp(object->Name, _T("SCRIPT")) == 0)
+		else if (wcscasecmp(object->Name, _T("SCRIPT")) == 0)
 		{
 			EisMenuCopyAttr(newitem,object, _T("FILE"));
 			newitem->Type = ITEMTYPE_SCRIPT;
@@ -1182,9 +1190,9 @@ EisMenuReadXmlNode(EISMENU* eismenu, XMLNODE* node)
 		{
 			eismenu->NumVisItems++;
 			
-			if (tcslen(newitem->Name) > eismenu->MaxWidth) 
+			if ((int)wcslen(newitem->Name) > eismenu->MaxWidth) 
 			{
-				eismenu->MaxWidth = tcslen(newitem->Name);
+				eismenu->MaxWidth = wcslen(newitem->Name);
 			}
 		}
 	}
@@ -1198,13 +1206,13 @@ EisMenuReadXmlNode(EISMENU* eismenu, XMLNODE* node)
 static void
 EisMenuReadClassicNode(EISMENU* eismenu, XMLNODE* node, int first)
 {
-	TCHAR  buffer[256+1];
+	wchar_t  buffer[256+1];
 
-	TCHAR* pos1 = EisMenuKillSpaces(node->Data);
-	TCHAR* pos2;
+	wchar_t* pos1 = EisMenuKillSpaces(node->Data);
+	wchar_t* pos2;
 	int   len;
 
-	pos2 = tcschr(pos1,_T('\n'));
+	pos2 = wcschr(pos1,_T('\n'));
 	while(pos1)
 	{
 		if (pos2)
@@ -1213,15 +1221,15 @@ EisMenuReadClassicNode(EISMENU* eismenu, XMLNODE* node, int first)
 		}
 		else
 		{
-			len = tcslen(pos1);
+			len = wcslen(pos1);
 		}
 		if (len > 255) len = 255;
 
 		if (len > 0)
 		{
-			TCHAR* split;
+			wchar_t* split;
 
-			tcsncpy(buffer,pos1,len);
+			wcsncpy(buffer,pos1,len);
 			buffer[len] = 0;
 
 			if (first)
@@ -1230,48 +1238,48 @@ EisMenuReadClassicNode(EISMENU* eismenu, XMLNODE* node, int first)
 				{
 					free(eismenu->Title);
 				}
-				eismenu->Title = tcsdup(buffer);
+				eismenu->Title = wcsdup(buffer);
 
-				if ((tcslen(eismenu->Title)) > eismenu->MaxWidth) 
+				if ((int)(wcslen(eismenu->Title)) > eismenu->MaxWidth) 
 				{
-					eismenu->MaxWidth = tcslen(eismenu->Title);
+					eismenu->MaxWidth = wcslen(eismenu->Title);
 				}
 
 				first = FALSE;
 			}
 			else
 			{
-				split = tcschr(buffer,_T(' '));
+				split = wcschr(buffer,_T(' '));
 				if (split)
 				{
-					TCHAR menuname[256+1];
+					wchar_t menuname[256+1];
 					EISMENUITEM* newitem;
 		
 					*split = 0; 
 					split = EisMenuKillSpaces(split + 1);
 
 					newitem = (EISMENUITEM*) malloc(sizeof(EISMENUITEM));
-					newitem->Name      = tcsdup(split);
+					newitem->Name      = wcsdup(split);
 					newitem->Next      = NULL;
 					newitem->IsClassic = TRUE;
 					newitem->IsVisible = TRUE;
 					newitem->FirstAttr = (EISMENUATTR*) malloc(sizeof(EISMENUATTR));
-					newitem->FirstAttr->Name = tcsdup(_T("SCRIPT"));
-					newitem->FirstAttr->Value = tcsdup(buffer);
+					newitem->FirstAttr->Name = wcsdup(_T("SCRIPT"));
+					newitem->FirstAttr->Value = wcsdup(buffer);
 					newitem->FirstAttr->Next  = (EISMENUATTR*) malloc(sizeof(EISMENUATTR));
 					newitem->LastAttr = newitem->FirstAttr->Next;
-					newitem->LastAttr->Name = tcsdup(_T("FILE"));
+					newitem->LastAttr->Name = wcsdup(_T("FILE"));
 					newitem->LastAttr->Next = NULL;
 					
 					if (EisMenuGetNextMenu(buffer,menuname,255))
 					{
 						newitem->Type = ITEMTYPE_MENU;
-						newitem->LastAttr->Value = tcsdup(menuname);
+						newitem->LastAttr->Value = wcsdup(menuname);
 					}
 					else
 					{
 						newitem->Type = ITEMTYPE_SCRIPT;
-						newitem->LastAttr->Value = tcsdup(buffer);
+						newitem->LastAttr->Value = wcsdup(buffer);
 					}
 
 					if (!eismenu->LastItem) 
@@ -1284,9 +1292,9 @@ EisMenuReadClassicNode(EISMENU* eismenu, XMLNODE* node, int first)
 					}
 					eismenu->LastItem = newitem;
 			
-					if (tcslen(newitem->Name) > eismenu->MaxWidth) 
+					if ((int)wcslen(newitem->Name) > eismenu->MaxWidth) 
 					{
-						eismenu->MaxWidth = tcslen(newitem->Name);
+						eismenu->MaxWidth = wcslen(newitem->Name);
 					}
 					eismenu->NumVisItems++;
 				}
@@ -1296,7 +1304,7 @@ EisMenuReadClassicNode(EISMENU* eismenu, XMLNODE* node, int first)
 		if (pos2)
 		{
 			pos1 = EisMenuKillSpaces(pos2 + 1);
-			pos2 = tcschr(pos1, _T('\n'));
+			pos2 = wcschr(pos1, _T('\n'));
 		}
 		else 
 		{
@@ -1315,22 +1323,22 @@ EisMenuReadClassicNode(EISMENU* eismenu, XMLNODE* node, int first)
  * ---------------------------------------------------------------------
  */
 static int
-EisMenuCheckUI(const TCHAR *uistr)
+EisMenuCheckUI(const wchar_t *uistr)
 {
-	TCHAR *tmpstr = tcsdup(uistr);
+	wchar_t *tmpstr = wcsdup(uistr);
 	if (tmpstr)
 	{
-		TCHAR *sp;
-		TCHAR *tok = tcstok(tmpstr, _T(" ,"), &sp);
+		wchar_t *sp;
+		wchar_t *tok = wcstok(tmpstr, _T(" ,"), &sp);
 		
 		while (tok != NULL)
 		{
-			if (tcscasecmp(tok, _T("cui")) == 0)
+			if (wcscasecmp(tok, _T("cui")) == 0)
 			{
 				free(tmpstr);
 				return TRUE;
 			}
-			tok = tcstok(NULL, _T(" ,"), &sp);
+			tok = wcstok(NULL, _T(" ,"), &sp);
 		}
 		free(tmpstr);
 	}
@@ -1344,12 +1352,13 @@ EisMenuCheckUI(const TCHAR *uistr)
  * ---------------------------------------------------------------------
  */
 static void
-EisMenuWriteToFile(const TCHAR* text, FILE* out)
+EisMenuWriteToFile(const wchar_t* text, FILE* out)
 {
-#ifdef _UNICODE
-	mbstate_t state = {0};
-	char         buffer[128];
+	mbstate_t state;
+	char         buffer[128 + 1];
 	int          size = 0;
+	
+	memset(&state, 0, sizeof(state));
 
 	do
 	{
@@ -1360,9 +1369,6 @@ EisMenuWriteToFile(const TCHAR* text, FILE* out)
 		}
 	}
 	while ((size > 0) && (text != NULL));
-#else
-	fputs(text, out);
-#endif
 }
 
 /* ---------------------------------------------------------------------
@@ -1373,31 +1379,24 @@ EisMenuWriteToFile(const TCHAR* text, FILE* out)
 static void
 EisMenuUpdateVersionTitle(EISMENU* eismenu)
 {
-	TCHAR kernel[64 + 1];
-	TCHAR base[64 + 1];
+	wchar_t kernel[64 + 1];
+	wchar_t base[64 + 1];
 	int len;
 
-//	EisMenuKernelVersion(kernel, 64);
-	EisMenuGetFileData(_T("/etc/alpine-release"), base, 64);
+	EisMenuKernelVersion(kernel, 64);
+	EisMenuGetFileData(_T("/etc/version"), base, 64);
 
 	if (eismenu->SubTitle) 
 	{
 		free(eismenu->SubTitle);
 	}
-	len = tcslen(kernel) + tcslen(base) + 25;
-	eismenu->SubTitle = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+	len = wcslen(kernel) + wcslen(base) + 25;
+	eismenu->SubTitle = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 
-	stprintf(eismenu->SubTitle,
+	swprintf(eismenu->SubTitle,
 		len,
-#ifdef _UNICODE
-//		_T("Release: %ls  eiskernel: %ls"),
-		_T("Release: %ls"),		
-#else
-//		_T("Release: %s  eiskernel: %s"),
-		_T("Release: %s),		
-#endif
-//		base,kernel);
-		base);		
+		_T("base: %ls  eiskernel: %ls"),
+		base,kernel);
 }
 
 /* ---------------------------------------------------------------------
@@ -1408,7 +1407,7 @@ EisMenuUpdateVersionTitle(EISMENU* eismenu)
 static void
 EisMenuUpdateUrlTitle(EISMENU* eismenu)
 {
-	TCHAR url[512 + 1];
+	wchar_t url[512 + 1];
 	int len;
 
 	EisMenuGetFileData(_T("/var/install/url"), url, 512);
@@ -1418,13 +1417,9 @@ EisMenuUpdateUrlTitle(EISMENU* eismenu)
 	{
 		free(eismenu->SubTitle);
 	}
-	len = tcslen(url) + 10;
-	eismenu->SubTitle = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+	len = wcslen(url) + 10;
+	eismenu->SubTitle = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 
-#ifdef _UNICODE
-	stprintf(eismenu->SubTitle, len, _T("URL: %ls"), url);
-#else
-	stprintf(eismenu->SubTitle, len, _T("URL: %s"), url);
-#endif
+	swprintf(eismenu->SubTitle, len, _T("URL: %ls"), url);
 }
 

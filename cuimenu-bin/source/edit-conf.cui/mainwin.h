@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: mainwin.h 23498 2010-03-14 21:57:47Z dv $
+ * Last Update:  $Id: mainwin.h 33437 2013-04-10 20:37:24Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -50,21 +50,21 @@ typedef struct
 	int            NumErrors;
 	int            NumWarnings;
 
-	TCHAR*         ConfigName;
-	TCHAR*         CheckFileName;
-	TCHAR*         TempConfFileName;
-	TCHAR*         ExpFileName;
-	TCHAR*         ConfFileName;
-	TCHAR*         DefaultFileName;
-	TCHAR*         HelpFileName;
-	TCHAR*         LogFileName;
-	TCHAR*         ConfigFileBase;   /* base directory for config files */
-	TCHAR*         CheckFileBase;    /* base directory for check files */
-	TCHAR*         DefaultFileBase;  /* base directory for default cfg files */
-	TCHAR*         HelpFileBase;     /* base directory for help files */
-	TCHAR*         DefaultExtention; /* default extension for cfg files */
-	TCHAR*         MenuConfigFile;   /* config file for colors and style */
-	TCHAR*         DialogPath;       /* path where to file dialog scripts */
+	wchar_t*       ConfigName;
+	wchar_t*       CheckFileName;
+	wchar_t*       TempConfFileName;
+	wchar_t*       ExpFileName;
+	wchar_t*       ConfFileName;
+	wchar_t*       DefaultFileName;
+	wchar_t*       HelpFileName;
+	wchar_t*       LogFileName;
+	wchar_t*       ConfigFileBase;   /* base directory for config files */
+	wchar_t*       CheckFileBase;    /* base directory for check files */
+	wchar_t*       DefaultFileBase;  /* base directory for default cfg files */
+	wchar_t*       HelpFileBase;     /* base directory for help files */
+	wchar_t*       DefaultExtention; /* default extension for cfg files */
+	wchar_t*       MenuConfigFile;   /* config file for colors and style */
+	wchar_t*       DialogPath;       /* path where to file dialog scripts */
 } PROGRAM_CONFIG;
 
 typedef struct
@@ -72,20 +72,20 @@ typedef struct
 	PROGRAM_CONFIG* Config;
 	int             ShowHelp;
 	XMLFILE*        HelpData;
-	TCHAR*          ErrorMsg;
+	wchar_t*        ErrorMsg;
 	FINDDLGDATA     FindData;
 } MAINWINDATA;
 
-CUIWINDOW* MainwinNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
+CUIWINDOW* MainwinNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h,
            int sflags, int cflags);
 
-XMLOBJECT* MainwinFindHelpEntry(CUIWINDOW* win, const TCHAR* topic);
+XMLOBJECT* MainwinFindHelpEntry(CUIWINDOW* win, const wchar_t* topic);
 void       MainwinSetConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg);
 
 void       MainwinFreeMessage(CUIWINDOW* win);
-void       MainwinAddMessage(CUIWINDOW* win, const TCHAR* msg);
+void       MainwinAddMessage(CUIWINDOW* win, const wchar_t* msg);
 
-int        MainwinCopyFile(const TCHAR* sfile, const TCHAR* tfile);
+int        MainwinCopyFile(const wchar_t* sfile, const wchar_t* tfile);
 
 int        MainwinReadExpressions(CUIWINDOW* win, PROGRAM_CONFIG* cfg, ErrorCallback errout);
 int        MainwinReadConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg, ErrorCallback errout);

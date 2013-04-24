@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: mainwin.c 30935 2012-05-27 14:32:42Z dv $
+ * Last Update:  $Id: mainwin.c 33481 2013-04-15 17:48:41Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -40,8 +40,8 @@ static void MainToggleTailFunction(CUIWINDOW* win, MAINWINDATA* data);
 static void MainShowIndex(CUIWINDOW* win, MAINWINDATA* data);
 static void MainReadIndex(CUIWINDOW* win);
 static void MainJumpToIndex(CUIWINDOW* win, INDEXENTRY* entry);
-static void MainError(void* w, const TCHAR* errmsg, 
-                      const TCHAR* filename,
+static void MainError(void* w, const wchar_t* errmsg, 
+                      const wchar_t* filename,
                       int linenr, int is_warning);
 
 
@@ -56,6 +56,8 @@ static void
 MainListClickedHook(void* w, void* c)
 {
 	CUIWINDOW* ctrl = (CUIWINDOW*) c;
+	
+	CUI_USE_ARG(w);
 
 	WindowClose(ctrl, IDOK);
 }
@@ -69,6 +71,8 @@ static int
 MainListPreKeyHook(void* w, void* c, int key)
 {
 	CUIWINDOW* ctrl = (CUIWINDOW*) c;
+
+	CUI_USE_ARG(w);
 
 	switch(key)
 	{
@@ -110,9 +114,9 @@ MainCreateHook(void* w)
 	CUIWINDOW*   win  = (CUIWINDOW*) w;
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 	CUIWINDOW*   ctrl;
-	TCHAR        version[32 + 1];
+	wchar_t        version[32 + 1];
 
-	stprintf(version, 32, _T("V%i.%i.%i"), VERSION, SUBVERSION, PATCHLEVEL);
+	swprintf(version, 32, _T("V%i.%i.%i"), VERSION, SUBVERSION, PATCHLEVEL);
 	WindowSetRStatusText(win, version);
 
 	WindowSetLStatusText(win, STATUS_TAILOFF);
@@ -141,58 +145,42 @@ MainInitHook(void* w)
 	CUIWINDOW*   ctrl;
 	CUIWINDOW*   win  = (CUIWINDOW*) w;
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
-	int          len = tcslen(data->Config->Filename) + 128;
-	TCHAR*       cmd;
+	int          len = wcslen(data->Config->Filename) + 128;
+	wchar_t*       cmd;
 	
 	data->Config->TmpFile = FALSE;
 
 	/* check if file is an archive */
-	cmd = malloc((len + 1) * sizeof(TCHAR));
+	cmd = malloc((len + 1) * sizeof(wchar_t));
 	if (cmd)
 	{
-		TCHAR* p = tcsstr(data->Config->Filename, _T(".gz"));
+		wchar_t* p = wcsstr(data->Config->Filename, _T(".gz"));
 		if ((p != NULL) && (p[3] == 0))
 		{
-#ifdef _UNICODE
-			stprintf(cmd, len, _T("gunzip -c %ls > /tmp/tmpfile%i"), data->Config->Filename, (int) getpid());
-#else
-			stprintf(cmd, len, _T("gunzip -c %s > /tmp/tmpfile%i"), data->Config->Filename, (int) getpid());
-#endif
+			swprintf(cmd, len, _T("gunzip -c %ls > /tmp/tmpfile%i"), data->Config->Filename, (int) getpid());
 			ExecSysCmd(cmd);
 
 			data->Config->TmpFile = TRUE;
 		}
 		else
 		{
-			if (((p = tcsstr(data->Config->Filename, _T(".bz2"))) != NULL) && (p[4] == 0))
+			if (((p = wcsstr(data->Config->Filename, _T(".bz2"))) != NULL) && (p[4] == 0))
 			{
-#ifdef _UNICODE
-				stprintf(cmd, len, _T("bunzip2 -c %ls > /tmp/tmpfile%i"), data->Config->Filename, (int) getpid());
-#else
-				stprintf(cmd, len, _T("bunzip2 -c %s > /tmp/tmpfile%i"), data->Config->Filename, (int) getpid());
-#endif
+				swprintf(cmd, len, _T("bunzip2 -c %ls > /tmp/tmpfile%i"), data->Config->Filename, (int) getpid());
 				ExecSysCmd(cmd);
 
 				data->Config->TmpFile = TRUE;
 			}
-			else if (((p = tcsstr(data->Config->Filename, _T(".lzma"))) != NULL) && (p[5] == 0))
+			else if (((p = wcsstr(data->Config->Filename, _T(".lzma"))) != NULL) && (p[5] == 0))
 			{
-#ifdef _UNICODE
-				stprintf(cmd, len, _T("unlzma -c %ls > /tmp/tmpfile%i"), data->Config->Filename, (int) getpid());
-#else
-				stprintf(cmd, len, _T("unlzma -c %s > /tmp/tmpfile%i"), data->Config->Filename, (int) getpid());
-#endif
+				swprintf(cmd, len, _T("unlzma -c %ls > /tmp/tmpfile%i"), data->Config->Filename, (int) getpid());
 				ExecSysCmd(cmd);
 
 				data->Config->TmpFile = TRUE;
 			}
-			else if (((p = tcsstr(data->Config->Filename, _T(".xz"))) != NULL) && (p[3] == 0))
+			else if (((p = wcsstr(data->Config->Filename, _T(".xz"))) != NULL) && (p[3] == 0))
 			{
-#ifdef _UNICODE
-				stprintf(cmd, len, _T("unxz -c %ls > /tmp/tmpfile%i"), data->Config->Filename, (int) getpid());
-#else
-				stprintf(cmd, len, _T("unxz -c %s > /tmp/tmpfile%i"), data->Config->Filename, (int) getpid());
-#endif
+				swprintf(cmd, len, _T("unxz -c %ls > /tmp/tmpfile%i"), data->Config->Filename, (int) getpid());
 				ExecSysCmd(cmd);
 
 				data->Config->TmpFile = TRUE;
@@ -205,23 +193,20 @@ MainInitHook(void* w)
 	if (data->Config->TmpFile)
 	{
 		free(data->Config->Filename);
-		data->Config->Filename = (TCHAR*) malloc((64 + 1) * sizeof(TCHAR));
+		data->Config->Filename = (wchar_t*) malloc((64 + 1) * sizeof(wchar_t));
 
-		stprintf(data->Config->Filename, 64, _T("/tmp/tmpfile%i"), (int) getpid());
+		swprintf(data->Config->Filename, 64, _T("/tmp/tmpfile%i"), (int) getpid());
 	}
 
 	/* open file in pager view */
 	ctrl = WindowGetCtrl(win, IDC_TEXTVIEW);
 	if (ctrl)
 	{
-		if (!PagerviewSetFile(ctrl, data->Config->Filename))
+		if (!PagerviewSetFile(ctrl, data->Config->Filename, data->Config->Encoding))
 		{
-			TCHAR message[255 + 1];
-#ifdef _UNICODE
-			stprintf(message,255, _T("File '%ls' not found!"), data->Config->Filename);
-#else
-			stprintf(message,255, _T("File '%s' not found!"), data->Config->Filename);
-#endif
+			wchar_t message[255 + 1];
+
+			swprintf(message,255, _T("File '%ls' not found!"), data->Config->Filename);
 			message[255] = 0;
 
 			MessageBox(win, message, _T("Error"), MB_ERROR);
@@ -254,7 +239,7 @@ MainDestroyHook(void* w)
 	ctrl = WindowGetCtrl(win, IDC_TEXTVIEW);
 	if (ctrl)
 	{
-		PagerviewSetFile(ctrl, _T(""));
+		PagerviewSetFile(ctrl, _T(""), _T(""));
 	}
 
 	/* remove temporary file */
@@ -355,7 +340,7 @@ MainKeyHook(void* w, int key)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-MainwinNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h, 
+MainwinNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h, 
            int sflags, int cflags)
 {
 	if (parent)
@@ -400,18 +385,16 @@ MainwinNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
  * ---------------------------------------------------------------------
  */
 XMLOBJECT* 
-MainwinFindHelpEntry(CUIWINDOW* win, const TCHAR* topic)
+MainwinFindHelpEntry(CUIWINDOW* win, const wchar_t* topic)
 {
-	if (win && (tcscmp(win->Class, _T("SHOW-DOC.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("SHOW-DOC.CUI")) == 0))
 	{
-		TCHAR searchstr[128 + 1];
+		wchar_t searchstr[128 + 1];
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
-#ifdef _UNICODE
-		stprintf(searchstr, 128, _T("help(name=%ls)"), topic);
-#else
-		stprintf(searchstr, 128, _T("help(name=%s)"), topic);
-#endif
+
+		swprintf(searchstr, 128, _T("help(name=%ls)"), topic);
 		searchstr[128] = 0;
+		
 		if (data->HelpData)
 		{
 			return XmlSearch(data->HelpData, searchstr);
@@ -429,7 +412,7 @@ MainwinFindHelpEntry(CUIWINDOW* win, const TCHAR* topic)
 void
 MainwinSetConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg)
 {
-	if (win && (tcscmp(win->Class, _T("SHOW-DOC.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("SHOW-DOC.CUI")) == 0))
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 		data->Config = cfg;
@@ -442,31 +425,31 @@ MainwinSetConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg)
  * Derive the name of an index file from a known file name
  * ---------------------------------------------------------------------
  */
-TCHAR*
-MainwinMakeIndexFile(const TCHAR* file)
+wchar_t*
+MainwinMakeIndexFile(const wchar_t* file)
 {
-	TCHAR* pos1;
-	TCHAR* pos2;
-	TCHAR* idxfile;
+	wchar_t* pos1;
+	wchar_t* pos2;
+	wchar_t* idxfile;
 
-	idxfile = (TCHAR*) malloc((tcslen(file) + 5) * sizeof(TCHAR));
+	idxfile = (wchar_t*) malloc((wcslen(file) + 5) * sizeof(wchar_t));
 	if (idxfile)
 	{
-		tcscpy(idxfile, file);
-		pos1 = tcsrchr(idxfile, _T('.'));
-		pos2 = tcsrchr(idxfile, _T('/'));
+		wcscpy(idxfile, file);
+		pos1 = wcsrchr(idxfile, _T('.'));
+		pos2 = wcsrchr(idxfile, _T('/'));
 
 		if (pos2 && pos1 && (pos2 < pos1))
 		{
-			tcscpy(pos1, _T(".toc"));
+			wcscpy(pos1, _T(".toc"));
 		}
 		else if (pos1 && !pos2)
 		{
-			tcscpy(pos1, _T(".toc"));
+			wcscpy(pos1, _T(".toc"));
 		}
 		else
 		{
-			tcscat(idxfile, _T(".toc"));
+			wcscat(idxfile, _T(".toc"));
 		}
 
 		/* check if the file exists */
@@ -501,23 +484,21 @@ MainwinFreeMessage(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 void
-MainwinAddMessage(CUIWINDOW* win, const TCHAR* msg)
+MainwinAddMessage(CUIWINDOW* win, const wchar_t* msg)
 {
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 	if (!data->ErrorMsg)
 	{
-		data->ErrorMsg = tcsdup(msg);
+		data->ErrorMsg = wcsdup(msg);
 	}
 	else
 	{
-		int    len = tcslen(data->ErrorMsg) + tcslen(msg) + 2;
-		TCHAR* err = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-#ifdef _UNICODE
-		stprintf(err, len, _T("%ls\n%ls"), data->ErrorMsg, msg);
-#else
-		stprintf(err, len, _T("%s\n%s"), data->ErrorMsg, msg);
-#endif
+		int    len = wcslen(data->ErrorMsg) + wcslen(msg) + 2;
+		wchar_t* err = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+
+		swprintf(err, len, _T("%ls\n%ls"), data->ErrorMsg, msg);
 		free(data->ErrorMsg);
+
 		data->ErrorMsg = err;
 	}
 }
@@ -531,7 +512,7 @@ MainwinAddMessage(CUIWINDOW* win, const TCHAR* msg)
  * ---------------------------------------------------------------------
  */
 static void
-MainError(void* w, const TCHAR* errmsg, const TCHAR* filename,
+MainError(void* w, const wchar_t* errmsg, const wchar_t* filename,
              int linenr, int is_warning)
 {
 	CUIWINDOW* win = (CUIWINDOW*) w;
@@ -541,23 +522,15 @@ MainError(void* w, const TCHAR* errmsg, const TCHAR* filename,
 
 		if ((data->NumErrors + data->NumWarnings) < 8)
 		{
-			TCHAR err[512 + 1];
+			wchar_t err[512 + 1];
 			if (is_warning)
 			{
-#ifdef _UNICODE
-				stprintf(err, 512, _T("WARNING: %ls (%i): %ls"),filename, linenr,errmsg);
-#else
-				stprintf(err, 512, _T("WARNING: %s (%i): %s"),filename, linenr,errmsg);
-#endif
+				swprintf(err, 512, _T("WARNING: %ls (%i): %ls"),filename, linenr,errmsg);
 				MainwinAddMessage(win, err);
 			}
 			else
 			{
-#ifdef _UNICODE
-				stprintf(err, 512, _T("ERROR: %ls (%i): %ls"),filename, linenr,errmsg);
-#else
-				stprintf(err, 512, _T("ERROR: %s (%i): %s"),filename, linenr,errmsg);
-#endif
+				swprintf(err, 512, _T("ERROR: %ls (%i): %ls"),filename, linenr,errmsg);
 				MainwinAddMessage(win, err);
 			}
 		}
@@ -586,6 +559,9 @@ static void
 MainSetFilter(CUIWINDOW* win, MAINWINDATA* data)
 {
 	CUIWINDOW* ctrl = WindowGetCtrl(win, IDC_TEXTVIEW);
+	
+	CUI_USE_ARG(data);
+
 	if (ctrl)
 	{
 		CUIWINDOW* dlg = InputdlgNew(win, _T("View Filter"), CWS_NONE, CWS_NONE);
@@ -703,7 +679,7 @@ MainShowIndex(CUIWINDOW* win, MAINWINDATA* data)
 			{
 				int index;
 				int level;
-				TCHAR buffer[256 + 1];
+				wchar_t buffer[256 + 1];
 
 				level = (entry->Level < 8) ? entry->Level : 8;
 				level = (level > 0) ? level : 1;
@@ -711,10 +687,10 @@ MainShowIndex(CUIWINDOW* win, MAINWINDATA* data)
 				buffer[0] = 0;
 				for (index = 1; index < level; index++)
 				{
-					tcscat(buffer, _T("   "));
+					wcscat(buffer, _T("   "));
 				}
 
-				tcsncpy(&buffer[(level - 1) * 3], entry->Description, 200);
+				wcsncpy(&buffer[(level - 1) * 3], entry->Description, 200);
 				buffer[256] = 0; 
 
 				ListboxAdd(list, buffer);
@@ -787,20 +763,16 @@ MainReadIndex(CUIWINDOW* win)
 
 			if (data->NumErrors || data->NumWarnings)
 			{
-				TCHAR buffer[128 + 1];
+				wchar_t buffer[128 + 1];
 
 				MainwinAddMessage(win, _T(""));
 
-				stprintf(buffer, 128, _T("%i error(s), %i warning(s)"),
+				swprintf(buffer, 128, _T("%i error(s), %i warning(s)"),
 				    data->NumErrors, data->NumWarnings);
 
 				MainwinAddMessage(win, buffer);
 
-#ifdef _UNICODE
-				stprintf(buffer, 128, _T("file: %ls"), data->Config->Indexfile);
-#else
-				stprintf(buffer, 128, _T("file: %s"), data->Config->Indexfile);
-#endif
+				swprintf(buffer, 128, _T("file: %ls"), data->Config->Indexfile);
 
 				MainwinAddMessage(win, buffer);
 

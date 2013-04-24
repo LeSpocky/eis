@@ -33,12 +33,12 @@
 #endif
 
 /* private prototypes */
-static void ExpErrorMsg   (EXPFILE* expfile, const TCHAR* errmsg,
+static void ExpErrorMsg   (EXPFILE* expfile, const wchar_t* errmsg,
                            int is_warning);
-static int  ExpValidateExpression(EXPFILE* expfile, const TCHAR* expr);
-static int  ExpTestCompile       (EXPFILE* expfile, const TCHAR* name);
-static EXPENTRY* ExpGetEntry     (EXPFILE* expfile, const TCHAR* name);
-static void ExpGetReferenceName  (const TCHAR* expr, TCHAR* buffer, int bufsize);
+static int  ExpValidateExpression(EXPFILE* expfile, const wchar_t* expr);
+static int  ExpTestCompile       (EXPFILE* expfile, const wchar_t* name);
+static EXPENTRY* ExpGetEntry     (EXPFILE* expfile, const wchar_t* name);
+static void ExpGetReferenceName  (const wchar_t* expr, wchar_t* buffer, int bufsize);
 
 
 /* public functions */
@@ -95,8 +95,8 @@ ExpDelete(EXPFILE* expfile)
  * ---------------------------------------------------------------------
  */
 void
-ExpAddSingleExpression(EXPFILE* expfile, const TCHAR* name,
-                       const TCHAR* expr, const TCHAR* errmsg,
+ExpAddSingleExpression(EXPFILE* expfile, const wchar_t* name,
+                       const wchar_t* expr, const wchar_t* errmsg,
                        int expcombine, ErrorCallback error,
                        void* instance)
 {
@@ -137,39 +137,27 @@ ExpAddSingleExpression(EXPFILE* expfile, const TCHAR* name,
 	}
 	else if (orgexp)
 	{
-		TCHAR* oldexpr = orgexp->Expression;
-		TCHAR* olderrmsg = orgexp->ErrorMsg;
-		int   len = tcslen(oldexpr) + tcslen(expr) + 6;
+		wchar_t* oldexpr = orgexp->Expression;
+		wchar_t* olderrmsg = orgexp->ErrorMsg;
+		int   len = wcslen(oldexpr) + wcslen(expr) + 6;
 
-		orgexp->Expression = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-#ifdef _UNICODE
-		stprintf(orgexp->Expression, len, _T("(%ls)|(%ls)"), oldexpr, expr);
-#else
-		stprintf(orgexp->Expression, len, _T("(%s)|(%s)"), oldexpr, expr);
-#endif
+		orgexp->Expression = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+		swprintf(orgexp->Expression, len, _T("(%ls)|(%ls)"), oldexpr, expr);
 		free(oldexpr);
 
-		if (tcslen(errmsg) > 0)
+		if (wcslen(errmsg) > 0)
 		{
-			len = tcslen(olderrmsg) + tcslen(errmsg) + 2;
+			len = wcslen(olderrmsg) + wcslen(errmsg) + 2;
 
-			orgexp->ErrorMsg = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+			orgexp->ErrorMsg = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 
 			if (orgexp->Extentable && !expcombine)
 			{
-#ifdef _UNICODE
-				stprintf(orgexp->ErrorMsg, len, _T("%ls %ls"), errmsg, olderrmsg);
-#else
-				stprintf(orgexp->ErrorMsg, len, _T("%s %s"), errmsg, olderrmsg);
-#endif
+				swprintf(orgexp->ErrorMsg, len, _T("%ls %ls"), errmsg, olderrmsg);
 			}
 			else
 			{
-#ifdef _UNICODE
-				stprintf(orgexp->ErrorMsg, len, _T("%ls %ls"), olderrmsg, errmsg);
-#else
-				stprintf(orgexp->ErrorMsg, len, _T("%s %s"), olderrmsg, errmsg);
-#endif
+				swprintf(orgexp->ErrorMsg, len, _T("%ls %ls"), olderrmsg, errmsg);
 			}
 			free(olderrmsg);
 		}
@@ -183,9 +171,9 @@ ExpAddSingleExpression(EXPFILE* expfile, const TCHAR* name,
 	{
 		/* add expression */
 		newexp = (EXPENTRY*) malloc(sizeof(EXPENTRY));
-		newexp->Name = tcsdup(name);
-		newexp->Expression = tcsdup(expr);
-		newexp->ErrorMsg = tcsdup(errmsg);
+		newexp->Name = wcsdup(name);
+		newexp->Expression = wcsdup(expr);
+		newexp->ErrorMsg = wcsdup(errmsg);
 		newexp->Next = expfile->FirstExp;
 		newexp->Extentable = expcombine;
 
@@ -209,7 +197,7 @@ ExpAddSingleExpression(EXPFILE* expfile, const TCHAR* name,
  * ---------------------------------------------------------------------
  */
 int
-ExpAddFile(EXPFILE* expfile, const TCHAR* filename,
+ExpAddFile(EXPFILE* expfile, const wchar_t* filename,
            ErrorCallback error, void * instance)
 {
 	int sym;
@@ -246,9 +234,9 @@ ExpAddFile(EXPFILE* expfile, const TCHAR* filename,
 
 		if (sym == EXP_IDENT)
 		{
-			TCHAR  expname[128 + 1];
-			TCHAR* expr = NULL;
-			TCHAR* errmsg = NULL;
+			wchar_t  expname[128 + 1];
+			wchar_t* expr = NULL;
+			wchar_t* errmsg = NULL;
 
 			ExpGetTextCpy(expname, 128);
 
@@ -269,7 +257,7 @@ ExpAddFile(EXPFILE* expfile, const TCHAR* filename,
 				}
 				else
 				{
-					expr = tcsdup(ExpGetString());
+					expr = wcsdup(ExpGetString());
 
 					sym = ExpRead();
 					if (sym != EXP_COLON)
@@ -287,7 +275,7 @@ ExpAddFile(EXPFILE* expfile, const TCHAR* filename,
 						}
 						else
 						{
-							errmsg = tcsdup(ExpGetString());
+							errmsg = wcsdup(ExpGetString());
 
 							ExpSetCurrentFilePos(expfile,ExpGetLineNumber());
 
@@ -328,7 +316,7 @@ ExpAddFile(EXPFILE* expfile, const TCHAR* filename,
  * ---------------------------------------------------------------------
  */
 int
-ExpHasExpression(EXPFILE* expfile, const TCHAR* name)
+ExpHasExpression(EXPFILE* expfile, const wchar_t* name)
 {
 	return (ExpGetEntry(expfile, name) != NULL);
 }
@@ -340,11 +328,11 @@ ExpHasExpression(EXPFILE* expfile, const TCHAR* name)
  * ---------------------------------------------------------------------
  */
 int
-ExpGetExpressionSize(EXPFILE* expfile, const TCHAR* name)
+ExpGetExpressionSize(EXPFILE* expfile, const wchar_t* name)
 {
 	int       size = 0;
-	TCHAR*    pos;
-	TCHAR*    oldpos = NULL;
+	wchar_t*    pos;
+	wchar_t*    oldpos = NULL;
 	EXPENTRY* entry;
 
 	if (!expfile) return 0;
@@ -352,23 +340,23 @@ ExpGetExpressionSize(EXPFILE* expfile, const TCHAR* name)
 	entry = ExpGetEntry(expfile,name);
 	if (!entry) return 0;
 
-	pos = tcsstr(entry->Expression, _T("RE:"));
+	pos = wcsstr(entry->Expression, _T("RE:"));
 	oldpos = entry->Expression;
 
 	while (pos)
 	{
-		TCHAR tmpname[64 + 1];
+		wchar_t tmpname[64 + 1];
 
 		ExpGetReferenceName(pos + 3, tmpname, 64);
 
 		size += (pos - oldpos);
 		size += ExpGetExpressionSize(expfile, tmpname);
 
-		pos += tcslen(tmpname) + 3;
+		pos += wcslen(tmpname) + 3;
 		oldpos = pos;
-		pos = tcsstr(pos, _T("RE:"));
+		pos = wcsstr(pos, _T("RE:"));
 	}
-	size += tcslen(oldpos);
+	size += wcslen(oldpos);
 
 	return size;
 }
@@ -383,12 +371,12 @@ ExpGetExpressionSize(EXPFILE* expfile, const TCHAR* name)
  * behind the last inserted character.
  * ---------------------------------------------------------------------
  */
-TCHAR*
-ExpGetExpressionData(EXPFILE* expfile, const TCHAR* name, TCHAR* buffer)
+wchar_t*
+ExpGetExpressionData(EXPFILE* expfile, const wchar_t* name, wchar_t* buffer)
 {
-	TCHAR* pos;
-	TCHAR* oldpos = NULL;
-	TCHAR* bufpos = buffer;
+	wchar_t* pos;
+	wchar_t* oldpos = NULL;
+	wchar_t* bufpos = buffer;
 	EXPENTRY* entry;
 
 	if (!expfile) return bufpos;
@@ -396,29 +384,29 @@ ExpGetExpressionData(EXPFILE* expfile, const TCHAR* name, TCHAR* buffer)
 	entry = ExpGetEntry(expfile,name);
 	if (!entry) return bufpos;
 
-	pos = tcsstr(entry->Expression, _T("RE:"));
+	pos = wcsstr(entry->Expression, _T("RE:"));
 	oldpos = entry->Expression;
 
 	bufpos[0] = 0;
 	while (pos)
 	{
-		TCHAR tmpname[64 + 1];
+		wchar_t tmpname[64 + 1];
 
 		ExpGetReferenceName(pos + 3, tmpname, 64);
 
-		tcsncpy(bufpos, oldpos, (pos - oldpos));
+		wcsncpy(bufpos, oldpos, (pos - oldpos));
 		bufpos += (pos - oldpos);
 
 		*bufpos = 0;
 
 		bufpos = ExpGetExpressionData(expfile,tmpname,bufpos);
 
-		pos += (tcslen(tmpname) + 3);
+		pos += (wcslen(tmpname) + 3);
 		oldpos = pos;
-		pos = tcsstr(pos,_T("RE:"));
+		pos = wcsstr(pos,_T("RE:"));
 	}
-	tcscat(bufpos,oldpos);
-	bufpos += tcslen(oldpos);
+	wcscat(bufpos,oldpos);
+	bufpos += wcslen(oldpos);
 
 	return bufpos;
 }
@@ -431,7 +419,7 @@ ExpGetExpressionData(EXPFILE* expfile, const TCHAR* name, TCHAR* buffer)
  * ---------------------------------------------------------------------
  */
 int
-ExpMatch(EXPFILE* expfile, const TCHAR* name, const TCHAR* string)
+ExpMatch(EXPFILE* expfile, const wchar_t* name, const wchar_t* string)
 {
 	int result = EXP_ERROR;
 	int size = ExpGetExpressionSize(expfile, name);
@@ -439,12 +427,12 @@ ExpMatch(EXPFILE* expfile, const TCHAR* name, const TCHAR* string)
 	{
 		regex_t expr;
 		int     res;
-		TCHAR*  data = (TCHAR*) malloc((size + 1 + 4) * sizeof(TCHAR));
+		wchar_t*  data = (wchar_t*) malloc((size + 1 + 4) * sizeof(wchar_t));
 		if (data)
 		{
-			tcscpy(data,_T("^("));
+			wcscpy(data,_T("^("));
 	                ExpGetExpressionData(expfile, name, &data[2]);
-	                tcscat(data, _T(")$"));
+	                wcscat(data, _T(")$"));
 
 			res = RegCompile(&expr, data, REG_EXTENDED | REG_NOSUB | REG_NEWLINE); 
 			if (res == 0)
@@ -475,8 +463,8 @@ ExpMatch(EXPFILE* expfile, const TCHAR* name, const TCHAR* string)
  * behind the last inserted character.
  * ---------------------------------------------------------------------
  */
-TCHAR*
-ExpGetExpressionError(EXPFILE* expfile, const TCHAR* name)
+wchar_t*
+ExpGetExpressionError(EXPFILE* expfile, const wchar_t* name)
 {
 	EXPENTRY* entry;
 
@@ -500,13 +488,13 @@ ExpGetExpressionError(EXPFILE* expfile, const TCHAR* name)
  * ---------------------------------------------------------------------
  */
 void
-ExpSetCurrentFileName(EXPFILE* expfile, const TCHAR* filename)
+ExpSetCurrentFileName(EXPFILE* expfile, const wchar_t* filename)
 {
 	if (expfile->CurrentFile)
 	{
 		free(expfile->CurrentFile);
 	}
-	expfile->CurrentFile = filename ? tcsdup(filename) : NULL;
+	expfile->CurrentFile = filename ? wcsdup(filename) : NULL;
 }
 
 
@@ -532,7 +520,7 @@ ExpSetCurrentFilePos(EXPFILE* expfile, int lineno)
  * ---------------------------------------------------------------------
  */
 static void
-ExpErrorMsg(EXPFILE* expfile, const TCHAR* errmsg, int is_warning)
+ExpErrorMsg(EXPFILE* expfile, const wchar_t* errmsg, int is_warning)
 {
 	if (expfile->ErrorOut)
 	{
@@ -565,30 +553,27 @@ ExpErrorMsg(EXPFILE* expfile, const TCHAR* errmsg, int is_warning)
  * ---------------------------------------------------------------------
  */
 static int
-ExpValidateExpression(EXPFILE* expfile, const TCHAR* expr)
+ExpValidateExpression(EXPFILE* expfile, const wchar_t* expr)
 {
-	TCHAR* pos;
+	wchar_t* pos;
 
 	/* resolve expression */
-	pos = tcsstr(expr, _T("RE:"));
+	pos = wcsstr(expr, _T("RE:"));
 	while(pos)
 	{
-		TCHAR tmpname[64 + 1];
+		wchar_t tmpname[64 + 1];
 		ExpGetReferenceName(pos + 3, tmpname, 64);
 		if (!ExpHasExpression(expfile, tmpname))
 		{
-			TCHAR errmsg[128 + 1];
-#ifdef _UNICODE
-			stprintf(errmsg, 128, _T("unable to resolve reference '%ls'"), tmpname);
-#else
-			stprintf(errmsg, 128, _T("unable to resolve reference '%s'"), tmpname);
-#endif
+			wchar_t errmsg[128 + 1];
+
+			swprintf(errmsg, 128, _T("unable to resolve reference '%ls'"), tmpname);
 			ExpErrorMsg(expfile, errmsg, FALSE);
 			return FALSE;
 		}
 
-		pos += tcslen(tmpname) + 3;
-		pos = tcsstr(pos, _T("RE:"));
+		pos += wcslen(tmpname) + 3;
+		pos = wcsstr(pos, _T("RE:"));
 	}
 	return TRUE;
 }
@@ -599,7 +584,7 @@ ExpValidateExpression(EXPFILE* expfile, const TCHAR* expr)
  * ---------------------------------------------------------------------
  */
 static int
-ExpTestCompile(EXPFILE* expfile, const TCHAR* name)
+ExpTestCompile(EXPFILE* expfile, const wchar_t* name)
 {
 	int result = TRUE;
 
@@ -611,18 +596,18 @@ ExpTestCompile(EXPFILE* expfile, const TCHAR* name)
 		int     res;
 		int     len = size + 1 + 4;
 
-		TCHAR*  data = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+		wchar_t*  data = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 		if (data)
 		{
-			tcscpy(data, _T("^("));
+			wcscpy(data, _T("^("));
 	                ExpGetExpressionData(expfile, name, &data[2]);
-	                tcscat(data, _T(")$"));
+	                wcscat(data, _T(")$"));
 
 			res = RegCompile(&expr, data, REG_EXTENDED | REG_NOSUB | REG_NEWLINE);
 			if (res != 0)
 			{
 				char   err_buf[256];
-				TCHAR* err_msg;
+				wchar_t* err_msg;
 
 				regerror (res, &expr, err_buf, 255);
 
@@ -649,17 +634,17 @@ ExpTestCompile(EXPFILE* expfile, const TCHAR* name)
  * ---------------------------------------------------------------------
  */
 static EXPENTRY*
-ExpGetEntry   (EXPFILE* expfile, const TCHAR* name)
+ExpGetEntry   (EXPFILE* expfile, const wchar_t* name)
 {
 	EXPENTRY* workptr = expfile->FirstExp;
 
-	const TCHAR* cmpname = name;
+	const wchar_t* cmpname = name;
 
-	if (tcsstr(name, _T("WARN_")) == name) cmpname += 5;  /* ignore "WARN_" prefix */
+	if (wcsstr(name, _T("WARN_")) == name) cmpname += 5;  /* ignore "WARN_" prefix */
 
 	while (workptr)
 	{
-		if (tcscasecmp(workptr->Name, cmpname) == 0)
+		if (wcscasecmp(workptr->Name, cmpname) == 0)
 		{
 			return workptr;
 		}
@@ -674,12 +659,12 @@ ExpGetEntry   (EXPFILE* expfile, const TCHAR* name)
  * ---------------------------------------------------------------------
  */
 static void
-ExpGetReferenceName(const TCHAR* expr, TCHAR* buffer, int bufsize)
+ExpGetReferenceName(const wchar_t* expr, wchar_t* buffer, int bufsize)
 {
 	int len = 0;
 
 	buffer[0] = 0;
-	while ((*expr != 0) && (istalpha(*expr) || istdigit(*expr) || (*expr == _T('_'))))
+	while ((*expr != 0) && (iswalpha(*expr) || iswdigit(*expr) || (*expr == _T('_'))))
 	{
 		if (len < (bufsize-1))
 		{

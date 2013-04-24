@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: mainwin.h 28311 2011-05-06 20:36:21Z dv $
+ * Last Update:  $Id: mainwin.h 33459 2013-04-13 10:13:16Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -40,37 +40,38 @@ typedef struct
 	int            Version;
 	int            Follow;
 	int            TmpFile;
-	TCHAR*         Filename;
-	TCHAR*         Indexfile;
-	TCHAR*         Title;
+	wchar_t       *Filename;
+	wchar_t       *Indexfile;
+	wchar_t       *Title;
+	wchar_t       *Encoding;
 } PROGRAM_CONFIG;
 
 typedef struct
 {
-	PROGRAM_CONFIG* Config;
-	INDEX*          FileIndex;
-	XMLFILE*        HelpData;
-	TCHAR*          ErrorMsg;
+	PROGRAM_CONFIG *Config;
+	INDEX          *FileIndex;
+	XMLFILE        *HelpData;
+	wchar_t        *ErrorMsg;
 	int             NumErrors;
 	int             NumWarnings;
 	int             TailOn;
 	int             LastIndexChoice;
-	CUIWINDOW*      TextWin;
+	CUIWINDOW      *TextWin;
 	FINDDLGDATA     FindData;
 } MAINWINDATA;
 
-CUIWINDOW* MainwinNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h, 
+CUIWINDOW *MainwinNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h, 
            int sflags, int cflags);
 
-XMLOBJECT* MainwinFindHelpEntry(CUIWINDOW* win, const TCHAR* topic);
-void       MainwinSetConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg);
+XMLOBJECT *MainwinFindHelpEntry(CUIWINDOW* win, const wchar_t* topic);
+void       MainwinSetConfig    (CUIWINDOW* win, PROGRAM_CONFIG* cfg);
 
-void       MainwinFreeMessage(CUIWINDOW* win);
-void       MainwinAddMessage(CUIWINDOW* win, const TCHAR* msg);
+void       MainwinFreeMessage  (CUIWINDOW* win);
+void       MainwinAddMessage   (CUIWINDOW* win, const wchar_t* msg);
 
-int        MainwinShellExecute(CUIWINDOW* win, const TCHAR* cmd, const TCHAR* title);
+int        MainwinShellExecute (CUIWINDOW* win, const wchar_t* cmd, const wchar_t* title);
 
-TCHAR*     MainwinMakeIndexFile(const TCHAR* file); 
+wchar_t   *MainwinMakeIndexFile(const wchar_t* file); 
 
 #endif
 

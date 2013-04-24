@@ -2,7 +2,7 @@
 # Makefile for curses user interface programs on Eis/Fair
 #
 # Creation     : 13.03.2004
-# Last Modified: $Id: Makefile 25004 2010-07-17 06:24:06Z dv $
+# Last Modified: $Id: Makefile 33544 2013-04-21 13:12:20Z dv $
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,18 +18,17 @@
 CC   = gcc
 FLEX = flex
 
-# unicode support
-CFLAGS_UNICODE     =  -Wall -Wstrict-prototypes -g 
-CFLAGS_UNICODE    += -D_XOPEN_SOURCE_EXTENDED 
-CFLAGS_UNICODE    += -D_UNICODE -D_GNU_SOURCE
-CFLAGS_UNICODE    += -std=c99
-CURSESLIB_UNICODE  = ncursesw
-
-CFLAGS=$(CFLAGS_UNICODE)
-CURSESLIB=$(CURSESLIB_UNICODE)
+# compile options
+CFLAGS     =  -Wall -Wextra -Wstrict-prototypes -g 
+CFLAGS    += -D_XOPEN_SOURCE_EXTENDED 
+CFLAGS    += -D_GNU_SOURCE
+CFLAGS    += -std=c99
 
 # linker
-LDFLAGS_SHARED     = -lcui -lcui-util -ldl -l$(CURSESLIB)
+LDFLAGS_SHARED     = -lcui -lcui-util -ldl -lncursesw
+LDFLAGS_STATIC     = /usr/lib/libcui.a /usr/lib/libcui-util.a
+LDFLAGS_STATIC    += -ldl
+LDFLAGS_STATIC    += -lncursesw
 
 # ----------------------------------------------------------------------
 # Objetcs to build
@@ -37,6 +36,7 @@ LDFLAGS_SHARED     = -lcui -lcui-util -ldl -l$(CURSESLIB)
 
 # output files
 OUTPUT_SHARED      = show-menu.cui
+OUTPUT_STATIC      = show-menu.static.cui
 
 # files
 C_OBJECTS          =  main.o
@@ -49,11 +49,15 @@ C_OBJECTS         +=  eismenu.o
 # ----------------------------------------------------------------------
 
 # compile targets
-all:  $(OUTPUT_SHARED) 
+all:  $(OUTPUT_SHARED)
 
 $(OUTPUT_SHARED): $(C_OBJECTS)
 	@echo "linking $@ ..."
 	@$(CC) -o $@ $^ $(LDFLAGS_SHARED)
+
+$(OUTPUT_STATIC): $(C_OBJECTS)
+	@echo "linking $@ ..."
+	@$(CC) -o $@ $^ $(LDFLAGS_STATIC)
 
 # include dependencies
 -include $(C_OBJECTS:.o=.d)
@@ -70,10 +74,17 @@ $(OUTPUT_SHARED): $(C_OBJECTS)
 	@rm -f $*.d.tmp
 
 # install and uninstall
-install: $(OUTPUT_SHARED) 
+install: $(OUTPUT_SHARED)
 	@echo "installing $(OUTPUT_SHARED)..."
+	@mkdir -p $(DESTDIR)/var/install/bin
 	@strip -R .note -R .comment $(OUTPUT_SHARED)
 	@cp $(OUTPUT_SHARED) $(DESTDIR)/var/install/bin
+
+install_static: $(OUTPUT_SHARED) $(OUTPUT_STATIC)
+	@echo "installing $(OUTPUT_STATIC)..."
+	@mkdir -p $(DESTDIR)/var/install/bin
+	@strip $(OUTPUT_STATIC)
+	@cp $(OUTPUT_STATIC) $(DESTDIR)/var/install/bin
 
 # clean build directory
 clean :

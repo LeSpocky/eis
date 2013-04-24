@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: mainwin.c 24869 2010-07-04 11:03:59Z dv $
+ * Last Update:  $Id: mainwin.c 33469 2013-04-14 17:32:04Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -49,8 +49,8 @@
 
 
 /* prototypes */
-static void       MainwinError(void* w, const TCHAR* errmsg,
-                         const TCHAR* filename,
+static void       MainwinError(void* w, const wchar_t* errmsg,
+                         const wchar_t* filename,
                          int linenr, int is_warning);
 static void       MainwinRunOut(const char* buffer,
                          int source,
@@ -73,8 +73,8 @@ static int        MainwinCheckOptions(CUIWINDOW* win, MAINWINDATA* data);
 static CONFCHECK* MainwinCheckUserDialog(CUIWINDOW* win, MAINWINDATA* data, CONFITEM* item);
 static void       MainwinToggleOptView(CUIWINDOW* win);
 static void       MainwinShowStatusBar(CUIWINDOW* win);
-static int        MainwinApi(int func_nr, int argc, const TCHAR* argv[]);
-static void       MainwinApiGetValue(int argc, const TCHAR* argv[]);
+static int        MainwinApi(int func_nr, int argc, const wchar_t* argv[]);
+static void       MainwinApiGetValue(int argc, const wchar_t* argv[]);
 
 
 /* Custom callback hooks from index config view */
@@ -87,6 +87,8 @@ static void       MainwinApiGetValue(int argc, const TCHAR* argv[]);
 static int
 MainConfPreKeyHook(void* w, void* c, int key)
 {
+	CUI_USE_ARG(c);
+	
 	switch(key)
 	{
 	case KEY_ESC:
@@ -116,6 +118,8 @@ MainConfPreKeyHook(void* w, void* c, int key)
 static void
 MainConfClickedHook(void* w, void* c)
 {
+	CUI_USE_ARG(c);
+
 	MainwinEditLocation((CUIWINDOW*) w);
 }
 
@@ -196,9 +200,9 @@ MainCreateHook(void* w)
 	CUIRECT      rc;
 	CUIWINDOW*   win = (CUIWINDOW*) w;
 	CUIWINDOW*   ctrl;
-	TCHAR        version[32 + 1];
+	wchar_t        version[32 + 1];
 
-	stprintf(version, 32, _T("V%i.%i.%i"), VERSION, SUBVERSION, PATCHLEVEL);
+	swprintf(version, 32, _T("V%i.%i.%i"), VERSION, SUBVERSION, PATCHLEVEL);
 	WindowSetRStatusText(win, version);
 
 	MainwinShowStatusBar(win);
@@ -247,11 +251,11 @@ MainInitHook(void* w)
 
 		if (data->Config->NumErrors || data->Config->NumWarnings)
 		{
-			TCHAR buffer[128 + 1];
+			wchar_t buffer[128 + 1];
 
 			MainwinAddMessage(win, _T(""));
 
-			stprintf(buffer, 128, _T("%i error(s), %i warning(s)"),
+			swprintf(buffer, 128, _T("%i error(s), %i warning(s)"),
 			    data->Config->NumErrors, data->Config->NumWarnings);
 
 			MainwinAddMessage(win, buffer);
@@ -417,7 +421,7 @@ MainKeyHook(void* w, int key)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-MainwinNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
+MainwinNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h,
            int sflags, int cflags)
 {
 	if (parent)
@@ -459,17 +463,14 @@ MainwinNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
  * ---------------------------------------------------------------------
  */
 XMLOBJECT*
-MainwinFindHelpEntry(CUIWINDOW* win, const TCHAR* topic)
+MainwinFindHelpEntry(CUIWINDOW* win, const wchar_t* topic)
 {
-	if (win && (tcscmp(win->Class, _T("EDIT-CONF.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("EDIT-CONF.CUI")) == 0))
 	{
-		TCHAR searchstr[128 + 1];
+		wchar_t searchstr[128 + 1];
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
-#ifdef _UNICODE
-		stprintf(searchstr, 128, _T("help(name=%ls)"), topic);
-#else
-		stprintf(searchstr, 128, _T("help(name=%s)"), topic);
-#endif
+
+		swprintf(searchstr, 128, _T("help(name=%ls)"), topic);
 		searchstr[128] = 0;
 
 		if (data->HelpData)
@@ -489,7 +490,7 @@ MainwinFindHelpEntry(CUIWINDOW* win, const TCHAR* topic)
 void
 MainwinSetConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg)
 {
-	if (win && (tcscmp(win->Class, _T("EDIT-CONF.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("EDIT-CONF.CUI")) == 0))
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 		data->Config = cfg;
@@ -505,7 +506,7 @@ MainwinSetConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg)
 void
 MainwinFreeMessage(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("EDIT-CONF.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("EDIT-CONF.CUI")) == 0))
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 		if (data->ErrorMsg)
@@ -522,26 +523,23 @@ MainwinFreeMessage(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 void
-MainwinAddMessage(CUIWINDOW* win, const TCHAR* msg)
+MainwinAddMessage(CUIWINDOW* win, const wchar_t* msg)
 {
-	if (win && (tcscmp(win->Class, _T("EDIT-CONF.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("EDIT-CONF.CUI")) == 0))
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 		if (!data->ErrorMsg)
 		{
-			data->ErrorMsg = tcsdup(msg);
+			data->ErrorMsg = wcsdup(msg);
 		}
 		else
 		{
-			int len = tcslen(data->ErrorMsg) + tcslen(msg) + 2;
+			int len = wcslen(data->ErrorMsg) + wcslen(msg) + 2;
 
-			TCHAR* err = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+			wchar_t* err = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 
-#ifdef _UNICODE
-			stprintf(err, len, _T("%ls\n%ls"), data->ErrorMsg, msg);
-#else
-			stprintf(err, len, _T("%s\n%s"), data->ErrorMsg, msg);
-#endif
+			swprintf(err, len, _T("%ls\n%ls"), data->ErrorMsg, msg);
+
 			free(data->ErrorMsg);
 			data->ErrorMsg = err;
 		}
@@ -554,7 +552,7 @@ MainwinAddMessage(CUIWINDOW* win, const TCHAR* msg)
  * ---------------------------------------------------------------------
  */
 int
-MainwinCopyFile(const TCHAR* sfile, const TCHAR* tfile)
+MainwinCopyFile(const wchar_t* sfile, const wchar_t* tfile)
 {
 	int result = FALSE;
 
@@ -599,12 +597,9 @@ MainwinReadExpressions(CUIWINDOW* win, PROGRAM_CONFIG* cfg, ErrorCallback errout
 	DIR *    dirp;
 	struct   dirent * dp;
 	int      len;
-	TCHAR    base_exp[256 + 1];
-#ifdef _UNICODE
-	stprintf(base_exp, 256, _T("%ls/base.exp"), cfg->CheckFileBase);
-#else
-	stprintf(base_exp, 256, _T("%s/base.exp"), cfg->CheckFileBase);
-#endif
+	wchar_t    base_exp[256 + 1];
+
+	swprintf(base_exp, 256, _T("%ls/base.exp"), cfg->CheckFileBase);
 	base_exp[256] = 0;
 
 	if (cfg->RegExpData)
@@ -627,11 +622,8 @@ MainwinReadExpressions(CUIWINDOW* win, PROGRAM_CONFIG* cfg, ErrorCallback errout
 				    strcasecmp (dp->d_name, "base.txt"))
 				{
 					dp->d_name[len - 4] = '\0';
-#ifdef _UNICODE
-					stprintf(base_exp, 256, _T("%ls/%s.exp"), cfg->ConfigFileBase, dp->d_name);
-#else
-					stprintf(base_exp, 256, _T("%s/%s.exp"), cfg->ConfigFileBase, dp->d_name);
-#endif
+
+					swprintf(base_exp, 256, _T("%ls/%s.exp"), cfg->ConfigFileBase, dp->d_name);
 					base_exp[256] = 0;
 
 					if (FileAccess(base_exp, R_OK) == 0)
@@ -651,7 +643,7 @@ MainwinReadExpressions(CUIWINDOW* win, PROGRAM_CONFIG* cfg, ErrorCallback errout
 	{
 		if ((cfg->NumErrors == 0) && (FileAccess(cfg->ExpFileName, R_OK) == 0))
 		{
-			if (tcscmp(cfg->ExpFileName, base_exp) != 0)
+			if (wcscmp(cfg->ExpFileName, base_exp) != 0)
 			{
 				ExpAddFile(cfg->RegExpData, cfg->ExpFileName, errout, win);
 			}
@@ -719,7 +711,7 @@ MainwinReadConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg, ErrorCallback errout)
  * ---------------------------------------------------------------------
  */
 static void
-MainwinError(void* w, const TCHAR* errmsg, const TCHAR* filename,
+MainwinError(void* w, const wchar_t* errmsg, const wchar_t* filename,
              int linenr, int is_warning)
 {
 	CUIWINDOW* win = (CUIWINDOW*) w;
@@ -729,23 +721,15 @@ MainwinError(void* w, const TCHAR* errmsg, const TCHAR* filename,
 
 		if ((data->Config->NumErrors + data->Config->NumWarnings) < 8)
 		{
-			TCHAR err[512 + 1];
+			wchar_t err[512 + 1];
 			if (is_warning)
 			{
-#ifdef _UNICODE
-				stprintf(err, 512, _T("WARNING: %ls (%i): %ls"),filename, linenr,errmsg);
-#else
-				stprintf(err, 512, _T("WARNING: %s (%i): %s"),filename, linenr,errmsg);
-#endif
+				swprintf(err, 512, _T("WARNING: %ls (%i): %ls"),filename, linenr,errmsg);
 				MainwinAddMessage(win, err);
 			}
 			else
 			{
-#ifdef _UNICODE
-				stprintf(err, 512, _T("ERROR: %ls (%i): %ls"),filename, linenr,errmsg);
-#else
-				stprintf(err, 512, _T("ERROR: %s (%i): %s"),filename, linenr,errmsg);
-#endif
+				swprintf(err, 512, _T("ERROR: %s (%i): %s"),filename, linenr,errmsg);
 				MainwinAddMessage(win, err);
 			}
 		}
@@ -774,12 +758,15 @@ static void
 MainwinRunOut(const char* buffer, int source, void* instance)
 {
 	CUIWINDOW* win = (CUIWINDOW*) instance;
+	
+	CUI_USE_ARG(source);
+
 	if (win)
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 		if (data->Config->NumErrors < 20)
 		{
-			TCHAR* tbuffer = MbToTCharDup(buffer);
+			wchar_t* tbuffer = MbToTCharDup(buffer);
 			if (tbuffer)
 			{
 				MainwinAddMessage(win, tbuffer);
@@ -817,19 +804,15 @@ MainwinReadHelp(CUIWINDOW* win)
 
 	if (data->Config->NumErrors || data->Config->NumWarnings)
 	{
-		TCHAR buffer[128 + 1];
+		wchar_t buffer[128 + 1];
 
 		MainwinAddMessage(win, _T(""));
 
-		stprintf(buffer, 128, _T("%i error(s), %i warning(s)"),
+		swprintf(buffer, 128, _T("%i error(s), %i warning(s)"),
 			data->Config->NumErrors, data->Config->NumWarnings);
 		MainwinAddMessage(win, buffer);
 
-#ifdef _UNICODE
-		stprintf(buffer, 128, _T("file: %ls"),
-#else
-		stprintf(buffer, 128, _T("file: %s"),
-#endif
+		swprintf(buffer, 128, _T("file: %ls"),
 			data->Config->HelpFileName);
 		MainwinAddMessage(win, buffer);
 
@@ -959,6 +942,8 @@ MainwinExit(CUIWINDOW* win, int escape)
 {
 	CUIWINDOW* ctrl;
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
+	
+	CUI_USE_ARG(escape);
 
 	ctrl = WindowGetCtrl(win, IDC_CONFVIEW);
 	if (!data->Config || !data->Config->ConfData)
@@ -1104,17 +1089,17 @@ MainwinEditLocation(CUIWINDOW* win)
 				}
 			}
 
-			if (value && tcscasecmp(item->FirstCheck->Name, _T("YESNO"))==0)
+			if (value && wcscasecmp(item->FirstCheck->Name, _T("YESNO"))==0)
 			{
-				if (tcscasecmp(value->Value, _T("yes"))==0)
+				if (wcscasecmp(value->Value, _T("yes"))==0)
 				{
 					free(value->Value);
-					value->Value = tcsdup(_T("no"));
+					value->Value = wcsdup(_T("no"));
 				}
 				else
 				{
 					free(value->Value);
-					value->Value = tcsdup(_T("yes"));
+					value->Value = wcsdup(_T("yes"));
 				}
 				ConfFileSetModified(data->Config->ConfData, TRUE);
 				ConfviewUpdateData(ctrl);
@@ -1127,15 +1112,12 @@ MainwinEditLocation(CUIWINDOW* win)
 					int  exitloop = FALSE;
 					if (BackendCreatePipes())
 					{
-						int    len = tcslen(item->Name)
-							+ tcslen(data->Config->DialogPath)
+						int    len = wcslen(item->Name)
+							+ wcslen(data->Config->DialogPath)
 							+ 48;
-						TCHAR* command = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-#ifdef _UNICODE
-						stprintf(command, len, _T("%ls/%ls.sh CUISHELL %i"),
-#else
-						stprintf(command, len, _T("%s/%s.sh CUISHELL %i"),
-#endif
+						wchar_t* command = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+
+						swprintf(command, len, _T("%ls/%ls.sh CUISHELL %i"),
 						data->Config->DialogPath, c->Name, getpid());
 
 						ScriptingInit();
@@ -1143,21 +1125,21 @@ MainwinEditLocation(CUIWINDOW* win)
 						BackendSetExternalApi(MainwinApi);
 						if (BackendOpen(command, data->Config->Debug))
 						{
-							BackendStartFrame(_T('H'), tcslen(value->Value) + 32);
+							BackendStartFrame(_T('H'), wcslen(value->Value) + 32);
 							BackendInsertStr (_T("setdata"));
 							BackendInsertStr (value->Value);
 							BackendExecFrame ();
 
 							while (!exitloop)
 							{
-								BackendStartFrame(_T('H'), tcslen(value->Name) + 48);
+								BackendStartFrame(_T('H'), wcslen(value->Name) + 48);
 								BackendInsertStr (_T("exec_dialog"));
 								BackendInsertLong((unsigned long) win);
 								BackendInsertStr (value->Name);
 								BackendExecFrame ();
 
 								if ((BackendNumResultParams() > 0) &&
-								    (tcscmp(BackendResultParam(0), _T("1")) == 0))
+								    (wcscmp(BackendResultParam(0), _T("1")) == 0))
 								{
 									int valid = TRUE;
 									CONFCHECK* chkptr = item->FirstCheck;
@@ -1168,14 +1150,14 @@ MainwinEditLocation(CUIWINDOW* win)
 
 									if (BackendNumResultParams() > 0)
 									{
-										const TCHAR* newvalue = BackendResultParam(0);
+										const wchar_t* newvalue = BackendResultParam(0);
 
 										while (chkptr && valid)
 										{
 											int res = ExpMatch(data->Config->RegExpData, chkptr->Name, newvalue);
 											if ((res == EXP_NOMATCH) || (res == EXP_ERROR))
 											{
-												int is_warning = (tcsstr(chkptr->Name,_T("WARN_")) == chkptr->Name);
+												int is_warning = (wcsstr(chkptr->Name,_T("WARN_")) == chkptr->Name);
 
 												MainwinShowCheckError(win, chkptr, res, is_warning);
 												if (!is_warning || (res == EXP_ERROR))
@@ -1188,11 +1170,11 @@ MainwinEditLocation(CUIWINDOW* win)
 
 										if (valid)
 										{
-											if (tcscmp(value->Value, newvalue) != 0)
+											if (wcscmp(value->Value, newvalue) != 0)
 											{
 												free (value->Value);
 
-												value->Value = tcsdup(newvalue);
+												value->Value = wcsdup(newvalue);
 
 												if (item->Child)
 												{
@@ -1246,7 +1228,7 @@ MainwinEditLocation(CUIWINDOW* win)
 					dlgdata = PasswddlgGetData(dlg);
 					if (dlgdata)
 					{
-						tcsncpy(dlgdata->Password, value->Value, MAX_PASSWD_SIZE);
+						wcsncpy(dlgdata->Password, value->Value, MAX_PASSWD_SIZE);
 						dlgdata->Password[MAX_PASSWD_SIZE] = 0;
 					}
 
@@ -1263,7 +1245,7 @@ MainwinEditLocation(CUIWINDOW* win)
 								int res = ExpMatch(data->Config->RegExpData, chkptr->Name, dlgdata->Password);
 								if ((res == EXP_NOMATCH) || (res == EXP_ERROR))
 								{
-									int is_warning = (tcsstr(chkptr->Name, _T("WARN_")) == chkptr->Name);
+									int is_warning = (wcsstr(chkptr->Name, _T("WARN_")) == chkptr->Name);
 
 									WindowHide(dlg, TRUE);
 									MainwinShowCheckError(win, chkptr, res, is_warning);
@@ -1278,10 +1260,10 @@ MainwinEditLocation(CUIWINDOW* win)
 
 							if (valid)
 							{
-								if (tcscmp(value->Value, dlgdata->Password) != 0)
+								if (wcscmp(value->Value, dlgdata->Password) != 0)
 								{
 									free (value->Value);
-									value->Value = tcsdup(dlgdata->Password);
+									value->Value = wcsdup(dlgdata->Password);
 
 									if (item->Child)
 									{
@@ -1318,7 +1300,7 @@ MainwinEditLocation(CUIWINDOW* win)
 					dlgdata = InputdlgGetData(dlg);
 					if (dlgdata)
 					{
-						tcsncpy(dlgdata->Text, value->Value, MAX_INPUT_SIZE);
+						wcsncpy(dlgdata->Text, value->Value, MAX_INPUT_SIZE);
 						dlgdata->Text[MAX_INPUT_SIZE] = 0;
 					}
 
@@ -1335,7 +1317,7 @@ MainwinEditLocation(CUIWINDOW* win)
 								int res = ExpMatch(data->Config->RegExpData, chkptr->Name, dlgdata->Text);
 								if ((res == EXP_NOMATCH) || (res == EXP_ERROR))
 								{
-									int is_warning = (tcsstr(chkptr->Name, _T("WARN_")) == chkptr->Name);
+									int is_warning = (wcsstr(chkptr->Name, _T("WARN_")) == chkptr->Name);
 
 									WindowHide(dlg, TRUE);
 									MainwinShowCheckError(win, chkptr, res, is_warning);
@@ -1350,10 +1332,10 @@ MainwinEditLocation(CUIWINDOW* win)
 
 							if (valid)
 							{
-								if (tcscmp(value->Value, dlgdata->Text) != 0)
+								if (wcscmp(value->Value, dlgdata->Text) != 0)
 								{
 									free (value->Value);
-									value->Value = tcsdup(dlgdata->Text);
+									value->Value = wcsdup(dlgdata->Text);
 
 									if (item->Child)
 									{
@@ -1484,9 +1466,9 @@ MainwinIncDecLocation(CUIWINDOW* win, int do_increment)
 			if (value)
 			{
 				int tmpval;
-				TCHAR buffer[48 + 1];
+				wchar_t buffer[48 + 1];
 
-				stscanf(value->Value, _T("%d"),&tmpval);
+				swscanf(value->Value, _T("%d"),&tmpval);
 				if (do_increment && tmpval < 999)
 				{
 					tmpval++;
@@ -1496,9 +1478,9 @@ MainwinIncDecLocation(CUIWINDOW* win, int do_increment)
 					tmpval--;
 				}
 
-				stprintf(buffer, 48, _T("%i"),tmpval);
+				swprintf(buffer, 48, _T("%i"),tmpval);
 				free(value->Value);
-				value->Value = tcsdup(buffer);
+				value->Value = wcsdup(buffer);
 
 				ConfFileCreateValue(data->Config->ConfData, ConfviewGetSel(ctrl));
 				ConfFileSetModified(data->Config->ConfData, TRUE);
@@ -1622,7 +1604,7 @@ MainwinShowCheckError(CUIWINDOW* win, CONFCHECK* chkptr, int res, int is_warning
 
 	if (res == EXP_NOMATCH)
 	{
-		const TCHAR* message;
+		const wchar_t* message;
 		MainwinFreeMessage(win);
 
 		if (is_warning)
@@ -1637,16 +1619,16 @@ MainwinShowCheckError(CUIWINDOW* win, CONFCHECK* chkptr, int res, int is_warning
 		message = ExpGetExpressionError(data->Config->RegExpData, chkptr->Name);
 		if (message)
 		{
-			const TCHAR* start = &message[0];
-			const TCHAR* end = &message[0];
-			const TCHAR* next;
-			TCHAR buffer[128 + 1];
+			const wchar_t* start = &message[0];
+			const wchar_t* end = &message[0];
+			const wchar_t* next;
+			wchar_t buffer[128 + 1];
 			int width = 65;
 
 			while (*start != 0)
 			{
-				next = tcschr(start, _T(' '));
-				if (!next) next = &message[tcslen(message)];
+				next = wcschr(start, _T(' '));
+				if (!next) next = &message[wcslen(message)];
 
 				while ((next - start <= width))
 				{
@@ -1654,8 +1636,8 @@ MainwinShowCheckError(CUIWINDOW* win, CONFCHECK* chkptr, int res, int is_warning
 
 					if (*next != 0)
 					{
-						next = tcschr(next + 1, _T(' '));
-						if (!next) next = &message[tcslen(message)];
+						next = wcschr(next + 1, _T(' '));
+						if (!next) next = &message[wcslen(message)];
 					}
 					else break;
 				}
@@ -1665,8 +1647,8 @@ MainwinShowCheckError(CUIWINDOW* win, CONFCHECK* chkptr, int res, int is_warning
 					end += width;
 				}
 
-				tcscpy(buffer, _T("    "));
-				tcsncpy(&buffer[4], start, end - start);
+				wcscpy(buffer, _T("    "));
+				wcsncpy(&buffer[4], start, end - start);
 				buffer[end - start + 4] = 0;
 
 				MainwinAddMessage(win, buffer);
@@ -1714,9 +1696,9 @@ MainwinSaveOptions(CUIWINDOW* win, MAINWINDATA* data)
 
 	if (data->Config->NumErrors || data->Config->NumWarnings)
 	{
-		TCHAR buffer[128];
+		wchar_t buffer[128];
 
-		stprintf(buffer, 128, _T("%i error(s), %i warning(s) writing file"),
+		swprintf(buffer, 128, _T("%i error(s), %i warning(s) writing file"),
 			data->Config->NumErrors, data->Config->NumWarnings);
 		MainwinAddMessage(win, buffer);
 		MessageBox(win, data->ErrorMsg, _T("Error"), MB_ERROR);
@@ -1740,11 +1722,11 @@ static int
 MainwinCheckOptions(CUIWINDOW* win, MAINWINDATA* data)
 {
 	int    result = CHECK_OK;
-	TCHAR  tmppath[64 + 1];
-	const  TCHAR* p[11];
-	TCHAR* win_name;
-	TCHAR* coproc_name;
-	TCHAR  logfile[64 + 1];
+	wchar_t  tmppath[64 + 1];
+	const  wchar_t* p[11];
+	wchar_t* win_name;
+	wchar_t* coproc_name;
+	wchar_t  logfile[64 + 1];
 	int    status;
 	int    msgflags = MB_ERROR;
 
@@ -1753,12 +1735,12 @@ MainwinCheckOptions(CUIWINDOW* win, MAINWINDATA* data)
 	data->Config->NumWarnings = 0;
 
 	/* execute eischk to make sure everyting is all right */
-	stprintf(logfile, 64, _T("/tmp/edit-conf%li.log"), (unsigned long)getpid());
+	swprintf(logfile, 64, _T("/tmp/edit-conf%li.log"), (unsigned long)getpid());
 
 	/* create temp-path encoded with our project id
 	   we don't care about errors here, since it becomes
 	   obvious lateron */
-	stprintf(tmppath, 64, _T("/tmp/ece%li"),(unsigned long)getpid());
+	swprintf(tmppath, 64, _T("/tmp/ece%li"),(unsigned long)getpid());
 
 	CreateDirectory(tmppath, 0700);
 
@@ -1824,7 +1806,7 @@ MainwinCheckOptions(CUIWINDOW* win, MAINWINDATA* data)
 		data->Config->NumWarnings = 0;
 
 		if ((data->Config->NumErrors == 0) &&
-			RunCoProcess(coproc_name, (TCHAR**) p, MainwinRunOut, win, &status))
+			RunCoProcess(coproc_name, (wchar_t**) p, MainwinRunOut, win, &status))
 		{
 			if ((data->Config->NumErrors > 0) &&
 				((status != 0) ||
@@ -1895,16 +1877,14 @@ static CONFCHECK*
 MainwinCheckUserDialog(CUIWINDOW* win, MAINWINDATA* data, CONFITEM* item)
 {
 	CONFCHECK* check;
-	TCHAR tmpfile[255 + 1];
+	wchar_t tmpfile[255 + 1];
+	
+	CUI_USE_ARG(win);
 
 	check = item->FirstCheck;
 	while (check)
 	{
-#ifdef _UNICODE
-		stprintf(tmpfile, 255, _T("%ls/%ls.sh"), data->Config->DialogPath, check->Name);
-#else
-		stprintf(tmpfile, 255, _T("%s/%s.sh"), data->Config->DialogPath, check->Name);
-#endif
+		swprintf(tmpfile, 255, _T("%ls/%ls.sh"), data->Config->DialogPath, check->Name);
 		tmpfile[255] = 0;
 
 		if (FileAccess(tmpfile, R_OK) == 0)
@@ -1957,7 +1937,7 @@ MainwinShowStatusBar(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 static int
-MainwinApi(int func_nr, int argc, const TCHAR* argv[])
+MainwinApi(int func_nr, int argc, const wchar_t* argv[])
 {
 	switch(func_nr)
 	{
@@ -1975,19 +1955,19 @@ MainwinApi(int func_nr, int argc, const TCHAR* argv[])
  * ---------------------------------------------------------------------
  */
 static void
-MainwinApiGetValue(int argc, const TCHAR* argv[])
+MainwinApiGetValue(int argc, const wchar_t* argv[])
 {
 	if (argc == 2)
 	{
 		WINDOWSTUB*   mainwin;
 		unsigned long wndnr;
-		const TCHAR*   valname;
+		const wchar_t*   valname;
 
-		stscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[0], _T("%ld"), &wndnr);
 		valname = argv[1];
 
 		mainwin = StubFind(wndnr);
-		if (mainwin && mainwin->Window && (tcscmp(mainwin->Window->Class, _T("EDIT-CONF.CUI")) == 0))
+		if (mainwin && mainwin->Window && (wcscmp(mainwin->Window->Class, _T("EDIT-CONF.CUI")) == 0))
 		{
 			MAINWINDATA* data = (MAINWINDATA*) mainwin->Window->InstData;
 			if (data)
@@ -1995,7 +1975,7 @@ MainwinApiGetValue(int argc, const TCHAR* argv[])
 				CONFVALUE* val = ConfFileFindValue(data->Config->ConfData, valname);
 				if (val)
 				{
-					BackendStartFrame(_T('R'), tcslen(val->Value) + 32);
+					BackendStartFrame(_T('R'), wcslen(val->Value) + 32);
 					BackendInsertInt (ERROR_SUCCESS);
 					BackendInsertStr (val->Value);
 					BackendSendFrame ();

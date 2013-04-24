@@ -41,7 +41,7 @@
 ErrorCallback CheckError = NULL;
 void*         CheckErrorInst = NULL;
 int           CheckCurrentLine;
-TCHAR*        CheckInputFile = NULL;
+wchar_t*        CheckInputFile = NULL;
 
 %}
 
@@ -121,12 +121,12 @@ ANYCHAR         .
  * Open a file for reading and prepare the scanner
  * -----------------------------------------------------------------------
  */
-int CheckFileOpen(const TCHAR* filename, ErrorCallback errout, void* instance)
+int CheckFileOpen(const wchar_t* filename, ErrorCallback errout, void* instance)
 {
 	checkin = FileOpen(filename, _T("rt"));
 	if (checkin)
 	{
-		CheckInputFile = tcsdup(filename);
+		CheckInputFile = wcsdup(filename);
 		CheckCurrentLine = 1;
 		CheckError = errout;
 		CheckErrorInst = instance;
@@ -170,7 +170,7 @@ void CheckClose()
  * regular expression
  * -----------------------------------------------------------------------
  */
-TCHAR* 
+wchar_t* 
 CheckGetTextDup(void)
 {
 	return MbToTCharDup(checktext); 
@@ -182,14 +182,10 @@ CheckGetTextDup(void)
  * regular expression
  * -----------------------------------------------------------------------
  */
-const TCHAR* 
-CheckGetTextCpy(TCHAR* buffer, int buflen)
+const wchar_t* 
+CheckGetTextCpy(wchar_t* buffer, int buflen)
 {
-#ifdef _UNICODE
 	mbstowcs(buffer, checktext, buflen);
-#else
-	strncpy(buffer, checktext, buflen);
-#endif
 	buffer[buflen] = 0;
 	return buffer;
 }
@@ -199,7 +195,7 @@ CheckGetTextCpy(TCHAR* buffer, int buflen)
  * Return the text read by the scanner yust after removing the quotes. 
  * -----------------------------------------------------------------------
  */
-TCHAR* 
+wchar_t* 
 CheckGetStringDup(void)
 {
 	int len = strlen(checktext);
@@ -210,7 +206,7 @@ CheckGetStringDup(void)
 	}
 	else
 	{
-		return tcsdup(_T(""));
+		return wcsdup(_T(""));
 	}
 }
 
@@ -219,7 +215,7 @@ CheckGetStringDup(void)
  * Return the name of the file the scanner is processing
  * -----------------------------------------------------------------------
  */
-const TCHAR* 
+const wchar_t* 
 CheckGetFileName(void)
 {
 	return CheckInputFile;

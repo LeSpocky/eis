@@ -1,3 +1,9 @@
+show-doc.cui-3.0.0 
+=============================================
+- only unicode build
+- changed all TCHAR to wchar_t
+- removed conditional compilation of _UNICODE
+
 show-doc.cui-2.0.3 (released in update 1.7.5)
 =============================================
 - added support for --noframe command line swith

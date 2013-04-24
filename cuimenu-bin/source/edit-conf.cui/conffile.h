@@ -38,8 +38,8 @@
 typedef struct
 {
 	short         Index[NUM_DIM];    /* Multidimensional index */
-	TCHAR*        Name;              /* Name of config variable this comment is related to */
-	TCHAR*        Text;              /* Textline */
+	wchar_t*      Name;              /* Name of config variable this comment is related to */
+	wchar_t*      Text;              /* Textline */
 
 	void*         Next;
 } CONFCOMMENT;
@@ -48,8 +48,8 @@ typedef struct
 typedef struct
 {
 	short         Index[NUM_DIM];    /* Multidimensional index */
-	TCHAR*        Name;              /* associated name */
-	TCHAR*        Value;             /* associated value */
+	wchar_t*      Name;              /* associated name */
+	wchar_t*      Value;             /* associated value */
 
 	void*         Next;              /* next array value */
 } CONFVALUE;
@@ -57,7 +57,7 @@ typedef struct
 
 typedef struct
 {
-	TCHAR*        Name;              /* Name of regular expression used for data validation */
+	wchar_t*      Name;              /* Name of regular expression used for data validation */
 
 	void*         Next;              /* next entry for data validation */
 } CONFCHECK;
@@ -65,10 +65,10 @@ typedef struct
 
 typedef struct
 {
-	TCHAR*        Name;              /* Name of config variable i.e. START_XYZ (from check.d) */
-	TCHAR*        WriteMask;         /* printf format string: i.e. OPTION_% -> OPTION_%i */
-	TCHAR*        ReadMask;          /* sscanf format string */
-	TCHAR*        DefaultValue;      /* default value read from check file (fli4l) */
+	wchar_t*      Name;              /* Name of config variable i.e. START_XYZ (from check.d) */
+	wchar_t*      WriteMask;         /* printf format string: i.e. OPTION_% -> OPTION_%i */
+	wchar_t*      ReadMask;          /* sscanf format string */
+	wchar_t*      DefaultValue;      /* default value read from check file (fli4l) */
 	int           Type;              /* TYPE_REQUIRED / TYPE_OPTIONAL / TYPE_OPTARRAY */
 	int           SequenceNr;        /* sequence number for item order correction */
 	int           Level;             /* Hierarchical level the item is placed on */
@@ -136,25 +136,25 @@ CONFFILE* ConfFileCreate (ErrorCallback errout, void* instance);
 void  ConfFileDelete     (CONFFILE* conf);
 
 void  ConfFileReadCheck  (CONFFILE* conf,
-                          const TCHAR* filename,
+                          const wchar_t* filename,
                           EXPFILE* expfile);
 void  ConfFileReadConfig (CONFFILE* conf,
-                          const TCHAR* filename,
-                          const TCHAR* chkbase,
+                          const wchar_t* filename,
+                          const wchar_t* chkbase,
                           int tolerant);
 void  ConfFileReadDefault(CONFFILE* conf,
-                          const TCHAR* filename,
-                          const TCHAR* chkbase,
+                          const wchar_t* filename,
+                          const wchar_t* chkbase,
                           int tolerant);
 void  ConfFileWriteConfig(CONFFILE* conf,
-                          const TCHAR* filename);
+                          const wchar_t* filename);
 
 
 
 
 void         ConfFileAddItem(CONFFILE* conf,
-                          const TCHAR* name,
-                          const TCHAR* check,
+                          const wchar_t* name,
+                          const wchar_t* check,
                           CONFITEM* nnode,
                           CONFITEM* optnode,
                           int invert,
@@ -162,8 +162,8 @@ void         ConfFileAddItem(CONFFILE* conf,
                           int type,
                           int isvirtual);
 void         ConfFileDeleteItem        (CONFFILE* conf, CONFITEM* item);
-CONFITEM*    ConfFileFindItem          (CONFFILE* conf, const TCHAR* name);
-CONFVALUE*   ConfFileFindValue         (CONFFILE* conf, const TCHAR* name);
+CONFITEM*    ConfFileFindItem          (CONFFILE* conf, const wchar_t* name);
+CONFVALUE*   ConfFileFindValue         (CONFFILE* conf, const wchar_t* name);
 CONFITEM*    ConfFileGetItem           (CONFFILE* conf, int lineindex);
 CONFVALUE*   ConfFileGetValue          (CONFFILE* conf, int lineindex);
 int          ConfFileGetIndex          (CONFFILE* conf, int lineindex, short* index);
@@ -178,7 +178,7 @@ CONFVALUE*   ConfFileArrayLookupValue  (CONFITEM* item, short* index, int numind
 CONFVALUE*   ConfFileArrayLookupDefault(CONFITEM* item, short* index, int numindex);
 CONFCOMMENT* ConfFileArrayLookupComment(CONFITEM* item, short* index, int numindex, CONFCOMMENT* last);
 CONFCOMMENT* ConfFileLookupBlockComment(CONFITEM* item, short* index, int numindex, CONFCOMMENT* last);
-const TCHAR* ConfFileArrayLookupName   (CONFITEM* item, short* index, int numindex, TCHAR* buffer, int len);
+const wchar_t* ConfFileArrayLookupName   (CONFITEM* item, short* index, int numindex, wchar_t* buffer, int len);
 int          ConfFileArrayLookupVisible(CONFITEM* item, short* index, int numindex);
 void         ConfFileArrayDeleteValue  (CONFITEM* item, short* index, int numindex);
 
@@ -187,8 +187,8 @@ int          ConfFileDragValueUp       (CONFFILE* conf, int* newlineindex);
 int          ConfFileDragValueDown     (CONFFILE* conf, int* newlineindex);
 void         ConfFileEndDrag           (CONFFILE* conf);
 
-void         ConfFileAddBlockComment   (CONFFILE* conf, const TCHAR* value);
-void         ConfFileUseBlockComment   (CONFFILE* conf, CONFITEM* item, const TCHAR* name);
+void         ConfFileAddBlockComment   (CONFFILE* conf, const wchar_t* value);
+void         ConfFileUseBlockComment   (CONFFILE* conf, CONFITEM* item, const wchar_t* name);
 
 int          ConfFileNumOptional       (CONFFILE* conf);
 

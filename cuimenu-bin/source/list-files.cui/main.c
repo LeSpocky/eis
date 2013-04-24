@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Jens Vehlhaber, <jvehlhaber@buchenwald.de>
  *
- * Last Update:  $Id: main.c 23498 2010-03-14 21:57:47Z dv $
+ * Last Update:  $Id: main.c 33470 2013-04-14 17:38:17Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -102,10 +102,14 @@ GetBasename(const char* name)
  * ---------------------------------------------------------------------
  */
 static void
-ErrorOut(void* w, const TCHAR* errmsg, const TCHAR* filename,
+ErrorOut(void* w, const wchar_t* errmsg, const wchar_t* filename,
              int linenr, int is_warning)
 {
 	char* mberror = TCharToMbDup(errmsg);
+	
+	CUI_USE_ARG(w);
+	CUI_USE_ARG(filename);
+	
 	if (mberror)
 	{
 		if (is_warning)
@@ -129,27 +133,27 @@ ErrorOut(void* w, const TCHAR* errmsg, const TCHAR* filename,
  * ---------------------------------------------------------------------
  */
 static int
-TranslateColor(CONFIG* cfg, const TCHAR* option, const TCHAR* defval)
+TranslateColor(CONFIG* cfg, const wchar_t* option, const wchar_t* defval)
 {
-	const TCHAR* color = ConfigGetString(cfg, NULL, option, OPTIONAL, defval, NULL);
+	const wchar_t* color = ConfigGetString(cfg, NULL, option, OPTIONAL, defval, NULL);
 
 	int col = BLACK;
-	if (tcscasecmp(color, _T("BLACK")) == 0)             col = BLACK;
-	else if (tcscasecmp(color, _T("RED")) == 0)          col = RED;
-	else if (tcscasecmp(color, _T("GREEN")) == 0)        col = GREEN;
-	else if (tcscasecmp(color, _T("BROWN")) == 0)        col = BROWN;
-	else if (tcscasecmp(color, _T("BLUE")) == 0)         col = BLUE;
-	else if (tcscasecmp(color, _T("MAGENTA")) == 0)      col = MAGENTA;
-	else if (tcscasecmp(color, _T("CYAN")) == 0)         col = CYAN;
-	else if (tcscasecmp(color, _T("LIGHTGRAY")) == 0)    col = LIGHTGRAY;
-	else if (tcscasecmp(color, _T("DARKGRAY")) == 0)     col = DARKGRAY;
-	else if (tcscasecmp(color, _T("LIGHTRED")) == 0)     col = LIGHTRED;
-	else if (tcscasecmp(color, _T("LIGHTGREEN")) == 0)   col = LIGHTGREEN;
-	else if (tcscasecmp(color, _T("YELLOW")) == 0)       col = YELLOW;
-	else if (tcscasecmp(color, _T("LIGHTBLUE")) == 0)    col = LIGHTBLUE;
-	else if (tcscasecmp(color, _T("LIGHTMAGENTA")) == 0) col = LIGHTMAGENTA;
-	else if (tcscasecmp(color, _T("LIGHTCYAN")) == 0)    col = LIGHTCYAN;
-	else if (tcscasecmp(color, _T("WHITE")) == 0)        col = WHITE;
+	if (wcscasecmp(color, _T("BLACK")) == 0)             col = BLACK;
+	else if (wcscasecmp(color, _T("RED")) == 0)          col = RED;
+	else if (wcscasecmp(color, _T("GREEN")) == 0)        col = GREEN;
+	else if (wcscasecmp(color, _T("BROWN")) == 0)        col = BROWN;
+	else if (wcscasecmp(color, _T("BLUE")) == 0)         col = BLUE;
+	else if (wcscasecmp(color, _T("MAGENTA")) == 0)      col = MAGENTA;
+	else if (wcscasecmp(color, _T("CYAN")) == 0)         col = CYAN;
+	else if (wcscasecmp(color, _T("LIGHTGRAY")) == 0)    col = LIGHTGRAY;
+	else if (wcscasecmp(color, _T("DARKGRAY")) == 0)     col = DARKGRAY;
+	else if (wcscasecmp(color, _T("LIGHTRED")) == 0)     col = LIGHTRED;
+	else if (wcscasecmp(color, _T("LIGHTGREEN")) == 0)   col = LIGHTGREEN;
+	else if (wcscasecmp(color, _T("YELLOW")) == 0)       col = YELLOW;
+	else if (wcscasecmp(color, _T("LIGHTBLUE")) == 0)    col = LIGHTBLUE;
+	else if (wcscasecmp(color, _T("LIGHTMAGENTA")) == 0) col = LIGHTMAGENTA;
+	else if (wcscasecmp(color, _T("LIGHTCYAN")) == 0)    col = LIGHTCYAN;
+	else if (wcscasecmp(color, _T("WHITE")) == 0)        col = WHITE;
 	else
 	{
 		CONFENTRY* entry = ConfigGetEntry(cfg, NULL, option, NULL);
@@ -169,87 +173,47 @@ TranslateColor(CONFIG* cfg, const TCHAR* option, const TCHAR* defval)
  * ---------------------------------------------------------------------
  */
 static int
-ReadColorRec(CONFIG* cfg, const TCHAR* name, CUIWINCOLOR* colrec)
+ReadColorRec(CONFIG* cfg, const wchar_t* name, CUIWINCOLOR* colrec)
 {
-	TCHAR option[128 + 1];
+	wchar_t option[128 + 1];
 
-#ifdef _UNICODE
-	stprintf(option, 128, _T("CUI_%ls_WND_COLOR"), name);
+	swprintf(option, 128, _T("CUI_%ls_WND_COLOR"), name);
 	if (ConfigGetEntry(cfg, NULL, option, NULL))
 	{
 		colrec->WndColor = TranslateColor(cfg, option, _T("BLUE"));
 
-		stprintf(option, 128, _T("CUI_%ls_WND_SEL_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_WND_SEL_COLOR"), name);
 		colrec->WndSelColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
 
-		stprintf(option, 128, _T("CUI_%ls_WND_TXT_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_WND_TXT_COLOR"), name);
 		colrec->WndTxtColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
 
-		stprintf(option, 128, _T("CUI_%ls_SEL_TXT_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_SEL_TXT_COLOR"), name);
 		colrec->SelTxtColor = TranslateColor(cfg, option, _T("BLACK"));
 
-		stprintf(option, 128, _T("CUI_%ls_INACT_TXT_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_INACT_TXT_COLOR"), name);
 		colrec->InactTxtColor = TranslateColor(cfg, option, _T("DARKGRAY"));
 
-		stprintf(option, 128, _T("CUI_%ls_HILIGHT_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_HILIGHT_COLOR"), name);
 		colrec->HilightColor = TranslateColor(cfg, option, _T("YELLOW"));
 
-		stprintf(option,128,  _T("CUI_%ls_TITLE_TXT_COLOR"), name);
+		swprintf(option,128,  _T("CUI_%ls_TITLE_TXT_COLOR"), name);
 		colrec->TitleTxtColor = TranslateColor(cfg, option, _T("BLACK"));
 
-		stprintf(option,128,  _T("CUI_%ls_TITLE_BKG_COLOR"), name);
+		swprintf(option,128,  _T("CUI_%ls_TITLE_BKG_COLOR"), name);
 		colrec->TitleBkgndColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
 
-		stprintf(option, 128, _T("CUI_%ls_STATUS_TXT_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_STATUS_TXT_COLOR"), name);
 		colrec->StatusTxtColor = TranslateColor(cfg, option, _T("BLACK"));
 
-		stprintf(option, 128, _T("CUI_%ls_STATUS_BKG_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_STATUS_BKG_COLOR"), name);
 		colrec->StatusBkgndColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
 
-		stprintf(option, 128, _T("CUI_%ls_BORDER_COLOR"), name);
+		swprintf(option, 128, _T("CUI_%ls_BORDER_COLOR"), name);
 		colrec->BorderColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
 
 		return TRUE;
 	}
-#else
-	stprintf(option, 128, _T("CUI_%s_WND_COLOR"), name);
-	if (ConfigGetEntry(cfg, NULL, option, NULL))
-	{
-		colrec->WndColor = TranslateColor(cfg, option, _T("BLUE"));
-
-		stprintf(option, 128, _T("CUI_%s_WND_SEL_COLOR"), name);
-		colrec->WndSelColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
-
-		stprintf(option, 128, _T("CUI_%s_WND_TXT_COLOR"), name);
-		colrec->WndTxtColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
-
-		stprintf(option, 128, _T("CUI_%s_SEL_TXT_COLOR"), name);
-		colrec->SelTxtColor = TranslateColor(cfg, option, _T("BLACK"));
-
-		stprintf(option, 128, _T("CUI_%s_INACT_TXT_COLOR"), name);
-		colrec->InactTxtColor = TranslateColor(cfg, option, _T("DARKGRAY"));
-
-		stprintf(option, 128, _T("CUI_%s_HILIGHT_COLOR"), name);
-		colrec->HilightColor = TranslateColor(cfg, option, _T("YELLOW"));
-
-		stprintf(option,128,  _T("CUI_%s_TITLE_TXT_COLOR"), name);
-		colrec->TitleTxtColor = TranslateColor(cfg, option, _T("BLACK"));
-
-		stprintf(option,128,  _T("CUI_%s_TITLE_BKG_COLOR"), name);
-		colrec->TitleBkgndColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
-
-		stprintf(option, 128, _T("CUI_%s_STATUS_TXT_COLOR"), name);
-		colrec->StatusTxtColor = TranslateColor(cfg, option, _T("BLACK"));
-
-		stprintf(option, 128, _T("CUI_%s_STATUS_BKG_COLOR"), name);
-		colrec->StatusBkgndColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
-
-		stprintf(option, 128, _T("CUI_%s_BORDER_COLOR"), name);
-		colrec->BorderColor = TranslateColor(cfg, option, _T("LIGHTGRAY"));
-
-		return TRUE;
-	}
-#endif
 	return FALSE;
 }
 
@@ -260,7 +224,7 @@ ReadColorRec(CONFIG* cfg, const TCHAR* name, CUIWINCOLOR* colrec)
  * ---------------------------------------------------------------------
  */
 static int
-ReadConfig(const TCHAR* filename)
+ReadConfig(const wchar_t* filename)
 {
 	CONFIG*     cfg;
 	CUIWINCOLOR colrec;

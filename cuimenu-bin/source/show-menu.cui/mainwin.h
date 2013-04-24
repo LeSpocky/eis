@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: mainwin.h 23498 2010-03-14 21:57:47Z dv $
+ * Last Update:  $Id: mainwin.h 33435 2013-04-09 23:14:26Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,16 +38,16 @@ typedef struct
 	int            NoMouse;
 	int            Help;
 	int            Version;
-	TCHAR*         MenuFile;
+	wchar_t*       MenuFile;
 } PROGRAM_CONFIG;
 
 typedef struct
 {
 	PROGRAM_CONFIG* Config;
 	XMLFILE*        HelpData;
-	TCHAR*          ErrorMsg;
-	TCHAR*          User;
-	TCHAR*          Hostname;
+	wchar_t*        ErrorMsg;
+	wchar_t*        User;
+	wchar_t*        Hostname;
 	int             NumErrors;
 	int             NumWarnings;
 	int             DragMode;
@@ -56,16 +56,16 @@ typedef struct
 	EISMENU*        LastMenu;
 } MAINWINDATA;
 
-CUIWINDOW* MainwinNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h, 
+CUIWINDOW* MainwinNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h, 
            int sflags, int cflags);
 
-XMLOBJECT* MainwinFindHelpEntry(CUIWINDOW* win, const TCHAR* topic);
+XMLOBJECT* MainwinFindHelpEntry(CUIWINDOW* win, const wchar_t* topic);
 void       MainwinSetConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg);
 
 void       MainwinFreeMessage(CUIWINDOW* win);
-void       MainwinAddMessage(CUIWINDOW* win, const TCHAR* msg);
+void       MainwinAddMessage(CUIWINDOW* win, const wchar_t* msg);
 
-int        MainwinShellExecute(CUIWINDOW* win, const TCHAR* cmd, const TCHAR* title);
+int        MainwinShellExecute(CUIWINDOW* win, const wchar_t* cmd, const wchar_t* title);
 
 #endif
 

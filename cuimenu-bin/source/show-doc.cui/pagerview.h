@@ -26,20 +26,19 @@
 
 #include <cui.h>
 
-CUIWINDOW* PagerviewNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* PagerviewNew(CUIWINDOW *parent, const wchar_t *text,
                    int x, int y, int w, int h, int id, int sflags, int cflags);
-void PagerviewSetSetFocusHook  (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target);
-void PagerviewSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
-void PagerviewSetPreKeyHook    (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target);
-void PagerviewSetPostKeyHook   (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target);
-/* void PagerviewEnableWordWrap   (CUIWINDOW* win, int enable); */
-void PagerviewClear            (CUIWINDOW* win);
-int  PagerviewSetFile          (CUIWINDOW* win, const TCHAR* filename);
-int  PagerviewSearch           (CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, int down);
-void PagerviewResetSearch      (CUIWINDOW* win, int at_bottom);
-void PagerviewEnableTail       (CUIWINDOW* win, int enable);
-long PagerviewResolveLine      (CUIWINDOW* win, int linenr);
-void PagerviewJumpTo           (CUIWINDOW* win, long filepos);
-void PagerviewSetFilter        (CUIWINDOW* win, const TCHAR* filter);
+void PagerviewSetSetFocusHook  (CUIWINDOW *win, CustomHook1PtrProc proc, CUIWINDOW *target);
+void PagerviewSetKillFocusHook (CUIWINDOW *win, CustomHookProc proc, CUIWINDOW *target);
+void PagerviewSetPreKeyHook    (CUIWINDOW *win, CustomBoolHook1IntProc proc, CUIWINDOW *target);
+void PagerviewSetPostKeyHook   (CUIWINDOW *win, CustomBoolHook1IntProc proc, CUIWINDOW *target);
+void PagerviewClear            (CUIWINDOW *win);
+int  PagerviewSetFile          (CUIWINDOW *win, const wchar_t *filename, const wchar_t *encoding);
+int  PagerviewSearch           (CUIWINDOW *win, const wchar_t *text, int wholeword, int casesens, int down);
+void PagerviewResetSearch      (CUIWINDOW *win, int at_bottom);
+void PagerviewEnableTail       (CUIWINDOW *win, int enable);
+long PagerviewResolveLine      (CUIWINDOW *win, int linenr);
+void PagerviewJumpTo           (CUIWINDOW *win, long filepos);
+void PagerviewSetFilter        (CUIWINDOW *win, const wchar_t *filter);
 
 #endif

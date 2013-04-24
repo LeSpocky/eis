@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Jens Vehlhaber, <jvehlhaber@buchenwald.de>
  *
- * Last Update:  $Id: mainwin.h 23498 2010-03-14 21:57:47Z dv $
+ * Last Update:  $Id: mainwin.h 33438 2013-04-10 20:37:52Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,8 +38,8 @@ typedef struct
 	int            NoMouse;
 	int            Help;
 	int            Version;
-	TCHAR*         Title;
-	TCHAR*         Column;
+	wchar_t*         Title;
+	wchar_t*         Column;
 	char*          Path;
 	char*          Filter[MAX_ARGS];
 	int            FileTypeFilter;
@@ -47,39 +47,39 @@ typedef struct
 	int            ColumnMode;
 	int            ColumnSize;
 	int            ColumnUser;
-	TCHAR*         Question;
-	TCHAR*         ScriptFile;
-	TCHAR*         HelpFile;
-	TCHAR*         HelpName;
+	wchar_t*         Question;
+	wchar_t*         ScriptFile;
+	wchar_t*         HelpFile;
+	wchar_t*         HelpName;
 	int            ShowHelp;
 	int            FileTypeN;
 	int            Wait;
-	TCHAR*         ShellCommand;
+	wchar_t*         ShellCommand;
 } PROGRAM_CONFIG;
 
 typedef struct
 {
 	PROGRAM_CONFIG* Config;
 	XMLFILE*        HelpData;
-	TCHAR*          ErrorMsg;
+	wchar_t*          ErrorMsg;
 	int             NumErrors;
 	int             NumWarnings;
-	TCHAR**         CUidList;
+	wchar_t**         CUidList;
 	int*            NUidList;
 	int             NumUid;
-	TCHAR**         CGidList;
+	wchar_t**         CGidList;
 	int*            NGidList;
 	int             NumGid;
 	int             NumColumns;
 } MAINWINDATA;
 
-CUIWINDOW* MainwinNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
+CUIWINDOW* MainwinNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h,
            int sflags, int cflags);
 
-XMLOBJECT* MainwinFindHelpEntry(CUIWINDOW* win, const TCHAR* topic);
+XMLOBJECT* MainwinFindHelpEntry(CUIWINDOW* win, const wchar_t* topic);
 void       MainwinSetConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg);
 
 void       MainwinFreeMessage(CUIWINDOW* win);
-void       MainwinAddMessage(CUIWINDOW* win, const TCHAR* msg);
+void       MainwinAddMessage(CUIWINDOW* win, const wchar_t* msg);
 
 #endif

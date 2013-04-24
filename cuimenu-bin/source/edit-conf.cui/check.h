@@ -40,16 +40,16 @@
 #define CHECK_NL              110
 #define CHECK_UNKNOWN         200
 
-int  CheckFileOpen(const TCHAR* filename, ErrorCallback errout, void* instance);
+int  CheckFileOpen(const wchar_t* filename, ErrorCallback errout, void* instance);
 int  CheckRead(void);
 void CheckClose(void);
 
-TCHAR*       CheckGetTextDup(void);
-const TCHAR* CheckGetTextCpy(TCHAR* buffer, int buflen);
-TCHAR*       CheckGetStringDup(void);
-const TCHAR* CheckGetFileName(void);
-int          CheckGetLineNumber(void);
-int          CheckRecoverFromError(void);
+wchar_t*       CheckGetTextDup(void);
+const wchar_t* CheckGetTextCpy(wchar_t* buffer, int buflen);
+wchar_t*       CheckGetStringDup(void);
+const wchar_t* CheckGetFileName(void);
+int            CheckGetLineNumber(void);
+int            CheckRecoverFromError(void);
 
 #endif
 

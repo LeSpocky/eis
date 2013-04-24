@@ -36,17 +36,17 @@
 #define CFG_NL              109
 #define CFG_UNKNOWN         110
 
-int  CfgFileOpen(const TCHAR* filename, ErrorCallback errout, void* instance);
+int  CfgFileOpen(const wchar_t* filename, ErrorCallback errout, void* instance);
 int  CfgRead(void);
 void CfgClose(void);
 
-const TCHAR* CfgGetFileName(void);
-const TCHAR* CfgGetComment(void);
-TCHAR*       CfgGetTextDup(void);
-const TCHAR* CfgGetTextCpy(TCHAR* buffer, int buflen);
-TCHAR*       CfgGetStringDup(void);
-int          CfgGetLineNumber(void);
-int          CfgRecoverFromError(void);
+const wchar_t* CfgGetFileName(void);
+const wchar_t* CfgGetComment(void);
+wchar_t*       CfgGetTextDup(void);
+const wchar_t* CfgGetTextCpy(wchar_t* buffer, int buflen);
+wchar_t*       CfgGetStringDup(void);
+int            CfgGetLineNumber(void);
+int            CfgRecoverFromError(void);
 
 #endif
 

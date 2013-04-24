@@ -33,11 +33,11 @@
 
 typedef struct EXPENTRYStruct
 {
-	TCHAR*  Name;            /* Name of the expression */
-	TCHAR*  Expression;      /* Buffer containing the expression */
-	TCHAR*  ErrorMsg;        /* Buffer containing the error message */
-	int     Extentable;      /* Is this entry extentable? */
-	void*   Next;
+	wchar_t*  Name;            /* Name of the expression */
+	wchar_t*  Expression;      /* Buffer containing the expression */
+	wchar_t*  ErrorMsg;        /* Buffer containing the error message */
+	int       Extentable;      /* Is this entry extentable? */
+	void*     Next;
 } EXPENTRY;
 
 
@@ -46,7 +46,7 @@ typedef struct EXPFILEStruct
 	EXPENTRY*     FirstExp; /* First Expression in the list of expressions */
 	ErrorCallback ErrorOut; /* Callback function for errors */
 	void*         Instance; /* Instance handle for error callback */
-	TCHAR*        CurrentFile;   /* Current filename or NULL */
+	wchar_t*      CurrentFile;   /* Current filename or NULL */
 	int           CurrentLineNo; /* Position within current file */
 	int           Errors;   /* Number of errors found reading file */
 } EXPFILE;
@@ -54,19 +54,19 @@ typedef struct EXPFILEStruct
 
 EXPFILE*   ExpCreate             (void);
 void       ExpDelete             (EXPFILE* expfile);
-void       ExpAddSingleExpression(EXPFILE* expfile, const TCHAR* name,
-                                  const TCHAR* expr, const TCHAR* errmsg,
+void       ExpAddSingleExpression(EXPFILE* expfile, const wchar_t* name,
+                                  const wchar_t* expr, const wchar_t* errmsg,
                                   int expcombine, ErrorCallback error,
                                   void* instance);
-int        ExpAddFile            (EXPFILE* expfile, const TCHAR* filename,
+int        ExpAddFile            (EXPFILE* expfile, const wchar_t* filename,
                                   ErrorCallback error, void* instance);
-int        ExpHasExpression      (EXPFILE* expfile, const TCHAR* name);
-int        ExpGetExpressionSize  (EXPFILE* expfile, const TCHAR* name);
-TCHAR*     ExpGetExpressionData  (EXPFILE* expfile, const TCHAR* name, TCHAR* buffer);
-TCHAR*     ExpGetExpressionError (EXPFILE* expfile, const TCHAR* name);
-int        ExpMatch              (EXPFILE* expfile, const TCHAR* name, const TCHAR* string);
+int        ExpHasExpression      (EXPFILE* expfile, const wchar_t* name);
+int        ExpGetExpressionSize  (EXPFILE* expfile, const wchar_t* name);
+wchar_t*   ExpGetExpressionData  (EXPFILE* expfile, const wchar_t* name, wchar_t* buffer);
+wchar_t*   ExpGetExpressionError (EXPFILE* expfile, const wchar_t* name);
+int        ExpMatch              (EXPFILE* expfile, const wchar_t* name, const wchar_t* string);
 
-void       ExpSetCurrentFileName (EXPFILE* expfile, const TCHAR* filename);
+void       ExpSetCurrentFileName (EXPFILE* expfile, const wchar_t* filename);
 void       ExpSetCurrentFilePos  (EXPFILE* expfile, int lineno);
 
 #endif

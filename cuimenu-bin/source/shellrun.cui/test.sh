@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/sh
 #------------------------------------------------------------------------------
 # /var/install/bin/test.sh - test script for libcui interface
 #

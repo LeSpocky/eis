@@ -1,3 +1,9 @@
+show-shellrun.cui-2.0.0 
+=============================================
+- only unicode build
+- changed all TCHAR to wchar_t
+- removed conditional compilation of _UNICODE
+
 shellrun.cui-1.0.7 (released in update 1.7.0)
 =============================================
 - modified to match new api interface of libcui.

@@ -35,14 +35,14 @@
 
 typedef struct EISMENUATTRStruct
 {
-	TCHAR*         Name;             /* Name of attribute */
-	TCHAR*         Value;            /* value of attribute */
+	wchar_t*       Name;             /* Name of attribute */
+	wchar_t*       Value;            /* value of attribute */
 	void*          Next;             /* Next attribute */
 } EISMENUATTR;
 
 typedef struct EISMENUITEMStruct
 {
-	TCHAR*         Name;             /* Name to display in menu */
+	wchar_t*       Name;             /* Name to display in menu */
 	int            Type;             /* Type of menu item */
 	EISMENUATTR*   FirstAttr;        /* First attribute */
 	EISMENUATTR*   LastAttr;         /* Last attribute */
@@ -53,49 +53,49 @@ typedef struct EISMENUITEMStruct
 
 typedef struct EISMENUCMMTStruct
 {
-	TCHAR*        Data;              /* Comment data */
-	void*         Next;              /* Next comment entry */
+	wchar_t*       Data;              /* Comment data */
+	void*          Next;              /* Next comment entry */
 } EISMENUCMMT;
 
 typedef struct EISMENUPOSTStruct
 {
-	TCHAR*        ScriptFile;        /* Execute when the menu is closed */
-	TCHAR*        PackageName;       /* Name of package(s) */
-	TCHAR*        MenuFile;          /* Menu file name */
+	wchar_t*        ScriptFile;        /* Execute when the menu is closed */
+	wchar_t*        PackageName;       /* Name of package(s) */
+	wchar_t*        MenuFile;          /* Menu file name */
 } EISMENUPOST;
         
 typedef struct EISFAIRMENUStruct
 {
-	EISMENUITEM*  FirstItem;        /* First menu item */
-	EISMENUITEM*  LastItem;         /* Last menu item */
+	EISMENUITEM*    FirstItem;        /* First menu item */
+	EISMENUITEM*    LastItem;         /* Last menu item */
 
-	EISMENUCMMT*  FirstComment;     /* First comment entry */
-	EISMENUCMMT*  LastComment;      /* Last comment entry */
+	EISMENUCMMT*    FirstComment;     /* First comment entry */
+	EISMENUCMMT*    LastComment;      /* Last comment entry */
 
-	EISMENUPOST*  PostProcess;      /* Post process information */
+	EISMENUPOST*    PostProcess;      /* Post process information */
 
-	TCHAR*        Filename;         /* Name of the menu file */
-	time_t        Filetime;         /* Modification time of the file */
+	wchar_t*        Filename;         /* Name of the menu file */
+	time_t          Filetime;         /* Modification time of the file */
 
-	TCHAR*        Title;            /* Title of menu */
-	TCHAR*        SubTitle;         /* Subtitle (version etc.) */
-	TCHAR*        Package;          /* Name of package this menu belongs to */
+	wchar_t*        Title;            /* Title of menu */
+	wchar_t*        SubTitle;         /* Subtitle (version etc.) */
+	wchar_t*        Package;          /* Name of package this menu belongs to */
 
-	int           MaxWidth;         /* Max. Width required by menu items */
-	int           NumVisItems;      /* Number of visible items in menu */
-	int           Level;            /* Hierarchical level of menu */
+	int             MaxWidth;         /* Max. Width required by menu items */
+	int             NumVisItems;      /* Number of visible items in menu */
+	int             Level;            /* Hierarchical level of menu */
 
-	CUIWINDOW*    Menu;             /* Associated curses menu */
-	int           LastChoice;       /* Index of currently selected item */
+	CUIWINDOW*      Menu;             /* Associated curses menu */
+	int             LastChoice;       /* Index of currently selected item */
 
-	void*         Next;             /* Next menu level = child menu */
-	void*         Previous;         /* Previous menu level = parent menu */
+	void*           Next;             /* Next menu level = child menu */
+	void*           Previous;         /* Previous menu level = parent menu */
 } EISMENU;
                                                                                                        
 
 EISMENU*     EisMenuCreate(void);
 void         EisMenuReadFile(EISMENU* eismenu, 
-                             const TCHAR* filename, 
+                             const wchar_t* filename, 
                              ErrorCallback errout,
                              void* instance);
 void         EisMenuWriteFile(EISMENU* eismenu, 
@@ -105,19 +105,19 @@ int          EisMenuUpdate(EISMENU* eismenu,
                              ErrorCallback errout,
                              void* instance);
 
-void         EisMenuAssignPackage(EISMENU* eismenu, const TCHAR* package);
-EISMENUITEM* EisMenuAddItem(EISMENU* eismenu, const TCHAR* name, int type);
-EISMENUATTR* EisMenuAddAttribute(EISMENUITEM* item, const TCHAR* name, const TCHAR* value);
+void         EisMenuAssignPackage(EISMENU* eismenu, const wchar_t* package);
+EISMENUITEM* EisMenuAddItem(EISMENU* eismenu, const wchar_t* name, int type);
+EISMENUATTR* EisMenuAddAttribute(EISMENUITEM* item, const wchar_t* name, const wchar_t* value);
 void         EisMenuDelete(EISMENU* eismenu);
-const TCHAR* EisMenuGetSubTitle(EISMENU* eismenu);
-EISMENUATTR* EisMenuGetAttr(EISMENUITEM* item, const TCHAR* name);
+const wchar_t* EisMenuGetSubTitle(EISMENU* eismenu);
+EISMENUATTR* EisMenuGetAttr(EISMENUITEM* item, const wchar_t* name);
 
 CUIWINDOW*   EisMenuBuildGUI(EISMENU* eismenu, CUIWINDOW* parent, CUIWINDOW* mainwin);
 void         EisMenuResize(CUIWINDOW* menu, EISMENU* eismenu, CUIWINDOW* mainwin);
 
 EISMENUITEM* EisMenuGetItem(EISMENU* eismenu, int index);
-EISMENUITEM* EisMenuMakeFirstItem(EISMENU* eismenu, const TCHAR* name);
-EISMENUITEM* EisMenuMakeNextItem(EISMENUITEM* pos, const TCHAR* name);
+EISMENUITEM* EisMenuMakeFirstItem(EISMENU* eismenu, const wchar_t* name);
+EISMENUITEM* EisMenuMakeNextItem(EISMENUITEM* pos, const wchar_t* name);
 
 #endif
 

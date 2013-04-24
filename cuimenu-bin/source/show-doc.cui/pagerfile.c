@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: pagerfile.c 28336 2011-05-08 18:32:34Z dv $
+ * Last Update:  $Id: pagerfile.c 33481 2013-04-15 17:48:41Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -37,7 +37,7 @@ static int  PagerFileExpandLinebuf(PAGERFILE* pfile);
  * ---------------------------------------------------------------------
  */
 PAGERFILE* 
-PagerFileOpen(const TCHAR* filename)
+PagerFileOpen(const wchar_t* filename, const wchar_t *encoding)
 {
 	FILE* in = FileOpen(filename, _T("rt"));
 	if (in)
@@ -55,6 +55,20 @@ PagerFileOpen(const TCHAR* filename)
 			pfile->LineBufferSize = LINEBUFSIZE;
 			pfile->WcLineBuffer = NULL;
 			pfile->WcLineBufferSize = 0;
+			pfile->IConvHandle = (iconv_t) -1;
+			
+			/* try to initialize codec for selected text encoding. If this fails,
+			   the system default configuration is used, since iconv_open returns
+			   NULL */
+			if (wcslen(encoding) > 0)
+			{
+				char *tmpstr = TCharToMbDup(encoding);
+				if (tmpstr)
+				{
+					pfile->IConvHandle = iconv_open ("UCS-4LE", tmpstr);
+					free(tmpstr);
+				}
+			}
 
 			if (pfile->FileSize < 0)
 			{
@@ -87,7 +101,16 @@ PagerFileClose(PAGERFILE* pfile)
 	{
 		free(pfile->WcLineBuffer);
 	}
-	fclose(pfile->FileStream);
+	
+	if (pfile->FileStream)
+	{
+		fclose(pfile->FileStream);
+	}
+	if ((int)pfile->IConvHandle >= 0)
+	{
+		iconv_close(pfile->IConvHandle);
+	}
+	
 	free(pfile->LineBuffer);
 	free(pfile);
 }
@@ -262,7 +285,7 @@ PagerFileSeek(PAGERFILE* pfile, long pos)
  * ---------------------------------------------------------------------
  */
 long
-PagerForwRawLine(PAGERFILE* pfile, long pos, TCHAR** lbuffer)
+PagerForwRawLine(PAGERFILE* pfile, long pos, wchar_t** lbuffer)
 {
 	register int n;
 	register int c;
@@ -301,23 +324,46 @@ PagerForwRawLine(PAGERFILE* pfile, long pos, TCHAR** lbuffer)
 	pfile->LineBuffer[n] = '\0';
 	if (lbuffer != NULL)
 	{
-		const char* s = pfile->LineBuffer;
-		int len = MbStrLen(s);
+		int len = strlen(pfile->LineBuffer) + 1;
 
+		/* check length of line buffer */
 		if ((len > pfile->WcLineBufferSize) || (!pfile->WcLineBuffer))
 		{
 			if (pfile->WcLineBuffer)
 			{
 				free(pfile->WcLineBuffer);
 			}
-			pfile->WcLineBuffer = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+			pfile->WcLineBuffer = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 			pfile->WcLineBufferSize = len;
 		}
-#ifdef _UNICODE
-		mbsrtowcs(pfile->WcLineBuffer, &s, len + 1, NULL);
-#else
-		strncpy(pfile->WcLineBuffer, s, len + 1);
-#endif
+		
+		/* convert string ... */
+		if ((int)pfile->IConvHandle >= 0)
+		{
+			char  *in  = (char*) pfile->LineBuffer;
+			char  *out = (char*) pfile->WcLineBuffer;
+			size_t inlen  = len;
+			size_t outlen = (pfile->WcLineBufferSize * sizeof(wchar_t));
+			size_t numc;
+			
+			/* ... using iconv with a specified encoding*/
+			pfile->WcLineBuffer[0] = 0;
+			numc = iconv (
+				pfile->IConvHandle, 
+				&in,  &inlen, 
+				&out, &outlen);
+			if (outlen >= sizeof(wchar_t))
+			{
+				*((wchar_t*)out) = 0;
+			}
+		}
+		else
+		{
+			const char *s = pfile->LineBuffer;
+			
+			/* ... using system settings */
+			mbsrtowcs(pfile->WcLineBuffer, &s, len, NULL);
+		}
 		*lbuffer = pfile->WcLineBuffer;
 	}
 	return (new_pos);
@@ -329,7 +375,7 @@ PagerForwRawLine(PAGERFILE* pfile, long pos, TCHAR** lbuffer)
  * ---------------------------------------------------------------------
  */
 long
-PagerBackRawLine(PAGERFILE* pfile, long pos, TCHAR** lbuffer)
+PagerBackRawLine(PAGERFILE* pfile, long pos, wchar_t** lbuffer)
 {
 	register int n;
 	register int c;
@@ -395,14 +441,12 @@ PagerBackRawLine(PAGERFILE* pfile, long pos, TCHAR** lbuffer)
 			{
 				free(pfile->WcLineBuffer);
 			}
-			pfile->WcLineBuffer = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
+			pfile->WcLineBuffer = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 			pfile->WcLineBufferSize = len;
 		}
-#ifdef _UNICODE
+		
+		/* TODO: convert text using specific encoding */
 		mbsrtowcs(pfile->WcLineBuffer, &s, len + 1, NULL);
-#else
-		strncpy(pfile->WcLineBuffer, s, len + 1);
-#endif
 		*lbuffer = pfile->WcLineBuffer;
 	}
 	return (new_pos);
@@ -420,35 +464,33 @@ PagerBackRawLine(PAGERFILE* pfile, long pos, TCHAR** lbuffer)
 static int
 PagerFileReadBlock(PAGERFILE* pfile)
 {
-    struct stat info;
+	struct stat info;
     long pos = pfile->FileBlock * PAGE_BLOCKSIZE + pfile->FirstBlock->DataSize;
-    int n;
+	int n;
 
-    if (pos != pfile->FilePos)
-    {
-        if (fseek(pfile->FileStream, pos, SEEK_SET) != 0)
-        {
-            return FALSE;
-        }
-        pfile->FilePos = pos;
-    }
+	if (pos != pfile->FilePos)
+	{
+		if (fseek(pfile->FileStream, pos, SEEK_SET) != 0)
+		{
+			return FALSE;
+		}
+		pfile->FilePos = pos;
+	} 
 
     /* compare file size and force position change if size has changed */
-    fstat(fileno(pfile->FileStream), &info);
-    if (info.st_size != pfile->FileSize)
-    {
-        fseek(pfile->FileStream, 0, SEEK_END);
-        if (fseek(pfile->FileStream, pos, SEEK_SET) != 0)
-        {
-            return FALSE;
-        }
-        pfile->FileSize = info.st_size;
-    }
-
-    n = fread(&pfile->FirstBlock->Data[pfile->FirstBlock->DataSize],
-        1,
-        PAGE_BLOCKSIZE - pfile->FirstBlock->DataSize,
-        pfile->FileStream); 
+	fstat(fileno(pfile->FileStream), &info);
+	if (info.st_size != pfile->FileSize)
+	{
+		fseek(pfile->FileStream, 0, SEEK_END);
+		if (fseek(pfile->FileStream, pos, SEEK_SET) != 0)
+		{
+			return FALSE;
+		}
+		pfile->FileSize = info.st_size;
+	} 
+	n = fread(&pfile->FirstBlock->Data[pfile->FirstBlock->DataSize], 1,
+		PAGE_BLOCKSIZE - pfile->FirstBlock->DataSize, 
+		pfile->FileStream);
 		
 	if (n < 0)
 	{

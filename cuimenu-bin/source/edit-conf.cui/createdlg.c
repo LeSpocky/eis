@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: createdlg.c 23498 2010-03-14 21:57:47Z dv $
+ * Last Update:  $Id: createdlg.c 33437 2013-04-10 20:37:24Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -110,7 +110,7 @@ CreatedlgDestroyHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-CreatedlgNew(CUIWINDOW* parent, const TCHAR* title, int sflags, int cflags)
+CreatedlgNew(CUIWINDOW* parent, const wchar_t* title, int sflags, int cflags)
 {
 	if (parent)
 	{
@@ -142,7 +142,7 @@ CreatedlgNew(CUIWINDOW* parent, const TCHAR* title, int sflags, int cflags)
 CREATEDLGDATA*
 CreatedlgGetData(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("CREATE_DLG")) == 0))
+	if (win && (wcscmp(win->Class, _T("CREATE_DLG")) == 0))
 	{
 		return (CREATEDLGDATA*) win->InstData;
 	}
@@ -163,7 +163,7 @@ CreatedlgCheckInput(CUIWINDOW* win)
 	CREATEDLGDATA* data = (CREATEDLGDATA*) win->InstData;
 	int level = 0;
 
-	if (tcslen(data->Name))
+	if (wcslen(data->Name))
 	{
 		regex_t expr;
 		int     res;
@@ -185,12 +185,12 @@ CreatedlgCheckInput(CUIWINDOW* win)
 		else
 		{
 			int cnt = 0;
-			int len = tcslen(data->Name);
+			int len = wcslen(data->Name);
 			int i;
 
 			for (i = 0; i < len; i++)
 			{
-				data->Name[i] = totupper(data->Name[i]);
+				data->Name[i] = towupper(data->Name[i]);
 				if (data->Name[i] == _T('%'))
 				{
 					cnt++;

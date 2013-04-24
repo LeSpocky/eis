@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: createdlg.h 23498 2010-03-14 21:57:47Z dv $
+ * Last Update:  $Id: createdlg.h 33437 2013-04-10 20:37:24Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -33,11 +33,11 @@
 
 typedef struct
 {
-	TCHAR     Name[MAX_ITEM_SIZE + 1];
+	wchar_t   Name[MAX_ITEM_SIZE + 1];
 	CONFFILE* ConfData;
 } CREATEDLGDATA;
 
-CUIWINDOW* CreatedlgNew(CUIWINDOW* parent, const TCHAR* title, int sflags, int cflags);
+CUIWINDOW* CreatedlgNew(CUIWINDOW* parent, const wchar_t* title, int sflags, int cflags);
 CREATEDLGDATA* CreatedlgGetData(CUIWINDOW* win);
 
 #endif

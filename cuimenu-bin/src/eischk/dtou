@@ -1,3 +1,0 @@
-#! /bin/sh
-/usr/bin/sed 's/\r\r*$//g' < $1 > /tmp/$$            # strip CRs at end of lines
-mv /tmp/$$ $1

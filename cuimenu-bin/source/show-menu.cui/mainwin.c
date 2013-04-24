@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: mainwin.c 28313 2011-05-06 20:58:29Z dv $
+ * Last Update:  $Id: mainwin.c 33482 2013-04-15 17:50:31Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -37,24 +37,24 @@
 static void  MainMenuClickedHook( void* w, void* c );
 static int   MainMenuPreKeyHook ( void* w, void* c, int key );
 
-static TCHAR* GetAbsolutePath   ( int type, 
-                                  const TCHAR* relpath, 
-                                  const TCHAR* package, 
-                                  TCHAR* abspath, 
+static wchar_t* GetAbsolutePath   ( int type, 
+                                  const wchar_t* relpath, 
+                                  const wchar_t* package, 
+                                  wchar_t* abspath, 
                                   int len );
 
-static int   GetSinglePackage   ( const TCHAR** ppchar, TCHAR* pname, int size );
+static int   GetSinglePackage   ( const wchar_t** ppchar, wchar_t* pname, int size );
 
 static int   RunPrePostScript   ( CUIWINDOW* win,
-                                  const TCHAR* script, const TCHAR* task, const TCHAR* package,
-                                  const TCHAR* action, const TCHAR* param1, const TCHAR* param2);
+                                  const wchar_t* script, const wchar_t* task, const wchar_t* package,
+                                  const wchar_t* action, const wchar_t* param1, const wchar_t* param2);
 
 static void  UpdateMenuStack    ( CUIWINDOW* win );
 
 
 static void  MainwinErrorOut    ( void* w, 
-                                  const TCHAR* errmsg, 
-                                  const TCHAR* filename,
+                                  const wchar_t* errmsg, 
+                                  const wchar_t* filename,
                                   int linenr, 
                                   int is_warning );
 
@@ -83,7 +83,7 @@ MainCreateHook(void* w)
 {
 	CUIWINDOW*   win = (CUIWINDOW*) w;
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
-	TCHAR        version[32 + 1];
+	wchar_t        version[32 + 1];
 	char         tmp[64 + 1];
 
 	/* read hostname */
@@ -98,10 +98,10 @@ MainCreateHook(void* w)
 	}
 	else
 	{
-		data->User = tcsdup(_T("unknown"));
+		data->User = wcsdup(_T("unknown"));
 	}
 
-	stprintf(version, 32, _T("V%i.%i.%i"), VERSION, SUBVERSION, PATCHLEVEL);
+	swprintf(version, 32, _T("V%i.%i.%i"), VERSION, SUBVERSION, PATCHLEVEL);
 	WindowSetRStatusText(win, version);
 
 	WindowSetLStatusText(win, IDLE_STATUS_TEXT);
@@ -118,7 +118,7 @@ MainInitHook(void* w)
 {
 	CUIWINDOW*   win = (CUIWINDOW*) w;
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
-	TCHAR        buffer[512 + 1];
+	wchar_t        buffer[512 + 1];
 
 	data->FirstMenu = EisMenuCreate();
 	data->LastMenu  = data->FirstMenu;
@@ -135,15 +135,11 @@ MainInitHook(void* w)
 	{
 		MainwinAddMessage(win, _T(""));
 
-		stprintf(buffer, 512, _T("%i error(s), %i warning(s)"),
+		swprintf(buffer, 512, _T("%i error(s), %i warning(s)"),
 		        data->NumErrors, data->NumWarnings);
 		MainwinAddMessage(win, buffer);
 
-#ifdef _UNICODE
-		stprintf(buffer, 512, _T("file: %ls"), data->Config->MenuFile);
-#else
-		stprintf(buffer, 512, _T("file: %s"), data->Config->MenuFile);
-#endif
+		swprintf(buffer, 512, _T("file: %ls"), data->Config->MenuFile);
 
 		MainwinAddMessage(win, buffer);
 
@@ -273,6 +269,8 @@ MainSetFocusHook(void* w, void* old)
 {
 	CUIWINDOW* win = (CUIWINDOW*) w;
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
+	
+	CUI_USE_ARG(old);
 
 	if (!data || !data->LastMenu || !data->LastMenu->Menu) 
 	{
@@ -331,7 +329,7 @@ MainMenuPreKeyHook(void* w, void* c, int key)
 			}
 			else if (key == KEY_ESC)
 			{
-				if ((data->User == NULL) || (tcscmp(data->User, _T("eis")) != 0))
+				if ((data->User == NULL) || (wcscmp(data->User, _T("eis")) != 0))
 				{
 					WindowQuit(EXIT_SUCCESS);
 				}
@@ -418,7 +416,7 @@ void MainMenuClickedHook(void* w, void* c)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-MainwinNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h, 
+MainwinNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h, 
            int sflags, int cflags)
 {
 	if (parent)
@@ -462,17 +460,14 @@ MainwinNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
  * ---------------------------------------------------------------------
  */
 XMLOBJECT* 
-MainwinFindHelpEntry(CUIWINDOW* win, const TCHAR* topic)
+MainwinFindHelpEntry(CUIWINDOW* win, const wchar_t* topic)
 {
-	if (win && (tcscmp(win->Class, _T("SHOW-MENU.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("SHOW-MENU.CUI")) == 0))
 	{
-		TCHAR searchstr[128 + 1];
+		wchar_t searchstr[128 + 1];
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
-#ifdef _UNICODE
-		stprintf(searchstr, 128, _T("help(name=%ls)"), topic);
-#else
-		stprintf(searchstr, 128, _T("help(name=%s)"), topic);
-#endif
+
+		swprintf(searchstr, 128, _T("help(name=%ls)"), topic);
 		searchstr[128] = 0;
 
 		if (data->HelpData)
@@ -492,7 +487,7 @@ MainwinFindHelpEntry(CUIWINDOW* win, const TCHAR* topic)
 void
 MainwinSetConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg)
 {
-	if (win && (tcscmp(win->Class, _T("SHOW-MENU.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("SHOW-MENU.CUI")) == 0))
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 		data->Config = cfg;
@@ -508,7 +503,7 @@ MainwinSetConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg)
 void
 MainwinFreeMessage(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("SHOW-MENU.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("SHOW-MENU.CUI")) == 0))
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 		if (data->ErrorMsg)
@@ -525,24 +520,22 @@ MainwinFreeMessage(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 void
-MainwinAddMessage(CUIWINDOW* win, const TCHAR* msg)
+MainwinAddMessage(CUIWINDOW* win, const wchar_t* msg)
 {
-	if (win && (tcscmp(win->Class, _T("SHOW-MENU.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("SHOW-MENU.CUI")) == 0))
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 		if (!data->ErrorMsg)
 		{
-			data->ErrorMsg = tcsdup(msg);
+			data->ErrorMsg = wcsdup(msg);
 		}
 		else
 		{
-			int    len = tcslen(data->ErrorMsg) + tcslen(msg) + 2;
-			TCHAR* err = (TCHAR*) malloc((len + 1) * sizeof(TCHAR));
-#ifdef _UNICODE
-			stprintf(err, len, _T("%ls\n%ls"), data->ErrorMsg, msg);
-#else
-			stprintf(err, len, _T("%s\n%s"), data->ErrorMsg, msg);
-#endif
+			int    len = wcslen(data->ErrorMsg) + wcslen(msg) + 2;
+			wchar_t* err = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
+
+			swprintf(err, len, _T("%ls\n%ls"), data->ErrorMsg, msg);
+
 			free(data->ErrorMsg);
 			data->ErrorMsg = err;
 		}
@@ -555,9 +548,9 @@ MainwinAddMessage(CUIWINDOW* win, const TCHAR* msg)
  * ---------------------------------------------------------------------
  */
 int
-MainwinShellExecute(CUIWINDOW* win, const TCHAR* cmd, const TCHAR* title)
+MainwinShellExecute(CUIWINDOW* win, const wchar_t* cmd, const wchar_t* title)
 {
-	if (win && (tcscmp(win->Class, _T("SHOW-MENU.CUI")) == 0))
+	if (win && (wcscmp(win->Class, _T("SHOW-MENU.CUI")) == 0))
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 		CUIRECT rc = {0, 0, 40, 10};
@@ -576,10 +569,10 @@ MainwinShellExecute(CUIWINDOW* win, const TCHAR* cmd, const TCHAR* title)
 			SHELLDLGDATA* dlgdata = ShellDlgGetData(data->Terminal);
 			if (dlgdata)
 			{
-				tcsncpy(dlgdata->Command, cmd, 256);
+				wcsncpy(dlgdata->Command, cmd, 256);
 				dlgdata->Command[256] = 0;
 
-				tcsncpy(dlgdata->Title, title, 128);
+				wcsncpy(dlgdata->Title, title, 128);
 				dlgdata->Title[128] = 0;
 			}
 			WindowCreate(data->Terminal);
@@ -603,12 +596,15 @@ static void
 MainwinRunOut(const char* buffer, int source, void* instance)
 {
 	CUIWINDOW* win = (CUIWINDOW*) instance;
+	
+	CUI_USE_ARG(source);
+
 	if (win)
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;			
 		if (data->NumErrors < 20)
 		{
-			TCHAR* buf = MbToTCharDup(buffer);
+			wchar_t* buf = MbToTCharDup(buffer);
 			if (buf)
 			{
 				MainwinAddMessage(win, buf);
@@ -632,10 +628,10 @@ MainwinRunOut(const char* buffer, int source, void* instance)
  * ---------------------------------------------------------------------
  */
 static int
-GetSinglePackage(const TCHAR** ppchar, TCHAR* pname, int size)
+GetSinglePackage(const wchar_t** ppchar, wchar_t* pname, int size)
 {
-	const TCHAR* pos1 = *ppchar;
-	const TCHAR* pos2;
+	const wchar_t* pos1 = *ppchar;
+	const wchar_t* pos2;
 	int len;
 
 	while (*pos1 == _T(' '))
@@ -649,10 +645,10 @@ GetSinglePackage(const TCHAR** ppchar, TCHAR* pname, int size)
 		return FALSE;
 	}
 
-	pos2 = tcschr(pos1, _T(' '));
+	pos2 = wcschr(pos1, _T(' '));
 	if (!pos2)
 	{
-		pos2 = pos1 + tcslen(pos1);
+		pos2 = pos1 + wcslen(pos1);
 	}
 
 	len = pos2 - pos1;
@@ -660,7 +656,7 @@ GetSinglePackage(const TCHAR** ppchar, TCHAR* pname, int size)
 	{
 		len = size;
 	}
-	tcsncpy(pname, pos1, len);
+	wcsncpy(pname, pos1, len);
 	pname[len] = 0;
 
 	*ppchar = pos2;
@@ -678,7 +674,7 @@ GetSinglePackage(const TCHAR** ppchar, TCHAR* pname, int size)
  * ---------------------------------------------------------------------
  */
 static int
-GetInterpreter(const TCHAR* file, TCHAR* interpreter, int c)
+GetInterpreter(const wchar_t* file, wchar_t* interpreter, int c)
 {
 	int result = FALSE;
 	FILE* in;
@@ -716,17 +712,14 @@ GetInterpreter(const TCHAR* file, TCHAR* interpreter, int c)
 						{
 							ch++;
 						}
-#ifdef _UNICODE
+
 						mbstowcs(interpreter, ch, c);
-#else
-						strncpy(interpreter, ch, c);
-#endif
 						interpreter[c] = 0;
 					}
 				}
 				if (interpreter[0] == 0)
 				{
-					tcsncpy(interpreter, _T("/bin/sh"), c);
+					wcsncpy(interpreter, _T("/bin/sh"), c);
 					interpreter[c] = 0;
 				}
 				result = TRUE;
@@ -747,15 +740,15 @@ GetInterpreter(const TCHAR* file, TCHAR* interpreter, int c)
  */
 static int
 RunPrePostScript(CUIWINDOW* win,
-                 const TCHAR* script, const TCHAR* task, const TCHAR* package,
-                 const TCHAR* action, const TCHAR* param1, const TCHAR* param2)
+                 const wchar_t* script, const wchar_t* task, const wchar_t* package,
+                 const wchar_t* action, const wchar_t* param1, const wchar_t* param2)
 {
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 	int   result = TRUE;
 	int   status;
-	TCHAR scriptfile[512 + 1];
-	TCHAR interpreter[128 + 1];
-	const TCHAR* p[8];
+	wchar_t scriptfile[512 + 1];
+	wchar_t interpreter[128 + 1];
+	const wchar_t* p[8];
 
 	GetAbsolutePath(ITEMTYPE_SCRIPT, script, _T(""), scriptfile, 512);
 
@@ -780,7 +773,7 @@ RunPrePostScript(CUIWINDOW* win,
 		p[7] = NULL;
 
 		/* execute */
-		result = RunCoProcess(interpreter, (TCHAR**) p, MainwinRunOut, win, &status);
+		result = RunCoProcess(interpreter, (wchar_t**) p, MainwinRunOut, win, &status);
 	}
 	else
 	{
@@ -794,7 +787,7 @@ RunPrePostScript(CUIWINDOW* win,
 		p[6] = 0;
 
 		/* execute */
-		result = RunCoProcess(scriptfile, (TCHAR**) p, MainwinRunOut, win, &status);
+		result = RunCoProcess(scriptfile, (wchar_t**) p, MainwinRunOut, win, &status);
 	}
 
 	if (result && (status != 0))
@@ -851,64 +844,44 @@ UpdateMenuStack(CUIWINDOW* win)
  * the data to the abspath buffer without modification.
  * ---------------------------------------------------------------------
  */
-static TCHAR*
-GetAbsolutePath( int type, const TCHAR* relpath, const TCHAR* package, 
-                 TCHAR* abspath, int len )
+static wchar_t*
+GetAbsolutePath( int type, const wchar_t* relpath, const wchar_t* package, 
+                 wchar_t* abspath, int len )
 {
 	if (len > 0)
 	{
 		abspath[0] = 0;
 		if (relpath[0] != _T('/'))
 		{
-			TCHAR* format = NULL;
+			wchar_t* format = NULL;
 			switch(type)
 			{
 			case ITEMTYPE_MENU:
-#ifdef _UNICODE
 				format = _T("/var/install/menu/%ls");
-#else
-				format = _T("/var/install/menu/%s");
-#endif
-				stprintf(abspath,len,format,relpath);
+				swprintf(abspath,len,format,relpath);
 				break;
 			case ITEMTYPE_DOC:
-#ifdef _UNICODE
 				format = _T("/usr/share/doc/%ls/%ls");
-#else
-				format = _T("/usr/share/doc/%s/%s");
-#endif
-				stprintf(abspath,len,format,package,relpath);
+				swprintf(abspath,len,format,package,relpath);
 				break;
 			case ITEMTYPE_EDIT:
-#ifdef _UNICODE
 				format = _T("/etc/config.d/%ls");
-#else
-				format = _T("/etc/config.d/%s");
-#endif
-				stprintf(abspath,len,format,package);
+				swprintf(abspath,len,format,package);
 				break;
 			case ITEMTYPE_INIT:
-#ifdef _UNICODE
 				format = _T("/etc/init.d/%ls");
-#else
-				format = _T("/etc/init.d/%s");
-#endif
-				stprintf(abspath,len,format,package);
+				swprintf(abspath,len,format,package);
 				break;
 			case ITEMTYPE_SCRIPT:
-#ifdef _UNICODE
 				format = _T("/var/install/bin/%ls");
-#else
-				format = _T("/var/install/bin/%s");
-#endif
-				stprintf(abspath,len,format,relpath);
+				swprintf(abspath,len,format,relpath);
 				break;
 			}
 			abspath[len] = 0;
 		}
 		else
 		{
-			tcsncpy(abspath, relpath, len);
+			wcsncpy(abspath, relpath, len);
 			abspath[len] = 0;
 		}
 	}
@@ -921,33 +894,28 @@ GetAbsolutePath( int type, const TCHAR* relpath, const TCHAR* package,
  * ---------------------------------------------------------------------
  */
 static void
-MainwinErrorOut(void* w, const TCHAR* errmsg, const TCHAR* filename,
+MainwinErrorOut(void* w, const wchar_t* errmsg, const wchar_t* filename,
              int linenr, int is_warning)
 {
 	CUIWINDOW* win = (CUIWINDOW*) w;
+	
+	CUI_USE_ARG(filename);
+
 	if (win)
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 
 		if ((data->NumErrors + data->NumWarnings) < 8)
 		{
-			TCHAR err[512 + 1];
+			wchar_t err[512 + 1];
 			if (is_warning)
 			{
-#ifdef _UNICODE
-				stprintf(err, 512, _T("WARNING: (%i): %ls"), linenr, errmsg);
-#else
-				stprintf(err, 512, _T("WARNING: (%i): %s"), linenr, errmsg);
-#endif
+				swprintf(err, 512, _T("WARNING: (%i): %ls"), linenr, errmsg);
 				MainwinAddMessage(win, err);
 			}
 			else
 			{
-#ifdef _UNICODE
-				stprintf(err, 512, _T("ERROR: (%i): %ls"), linenr, errmsg);
-#else
-				stprintf(err, 512, _T("ERROR: (%i): %s"), linenr, errmsg);
-#endif
+				swprintf(err, 512, _T("ERROR: (%i): %ls"), linenr, errmsg);
 				MainwinAddMessage(win, err);
 			}
 		}
@@ -975,13 +943,11 @@ static void
 MainUpdateTitle (CUIWINDOW* win, EISMENU* menu)
 {
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
-	TCHAR ttext[128 + 1];
+	wchar_t ttext[128 + 1];
 
-#ifdef _UNICODE
-	stprintf(ttext, 128, _T("%ls@%ls"), data->User, data->Hostname);
-#else
-	stprintf(ttext, 128, _T("%s@%s"), data->User, data->Hostname);
-#endif
+	CUI_USE_ARG(menu);
+
+	swprintf(ttext, 128, _T("%ls@%ls"), data->User, data->Hostname);
 	ttext[128] = 0;
 
 	WindowSetLText(win, ttext);
@@ -1055,8 +1021,8 @@ MainExecuteSubmenu(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 	EISMENUATTR* package = EisMenuGetAttr(item, _T("PACKAGE"));
 	EISMENUATTR* preprocess = EisMenuGetAttr(item, _T("PRE"));
 	EISMENUATTR* postprocess = EisMenuGetAttr(item, _T("POST"));
-	TCHAR  menufile[512 + 1];
-	TCHAR* packname = NULL;
+	wchar_t  menufile[512 + 1];
+	wchar_t* packname = NULL;
 
 	if (file)
 	{
@@ -1093,17 +1059,17 @@ MainExecuteSubmenu(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 
 			if (data->NumErrors || data->NumWarnings)
 			{
-				TCHAR buffer[128 + 1];
+				wchar_t buffer[128 + 1];
 
 				MainwinAddMessage(win, _T(""));
 
-				stprintf(buffer, 128, _T("%i error(s), %i warning(s)"),
+				swprintf(buffer, 128, _T("%i error(s), %i warning(s)"),
 				        data->NumErrors, data->NumWarnings);
 				MainwinAddMessage(win, buffer);
 #ifdef _UNICDE
-				stprintf(buffer, 128, _T("file: %ls"), data->Config->MenuFile);
+				swprintf(buffer, 128, _T("file: %ls"), data->Config->MenuFile);
 #else
-				stprintf(buffer, 128, _T("file: %s"), data->Config->MenuFile);
+				swprintf(buffer, 128, _T("file: %s"), data->Config->MenuFile);
 #endif
 				MainwinAddMessage(win, buffer);
 
@@ -1116,9 +1082,9 @@ MainExecuteSubmenu(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
                         if (postprocess)
                         {
                                 newmenu->PostProcess = (EISMENUPOST*) malloc(sizeof(EISMENUPOST));
-                                newmenu->PostProcess->ScriptFile = tcsdup(postprocess->Value);
-                                newmenu->PostProcess->PackageName = tcsdup(packname);
-                                newmenu->PostProcess->MenuFile = tcsdup(menufile);
+                                newmenu->PostProcess->ScriptFile = wcsdup(postprocess->Value);
+                                newmenu->PostProcess->PackageName = wcsdup(packname);
+                                newmenu->PostProcess->MenuFile = wcsdup(menufile);
                         }
 
 			if (data->NumErrors == 0)
@@ -1128,7 +1094,7 @@ MainExecuteSubmenu(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 				data->LastMenu->Next = newmenu;
 				newmenu->Previous = data->LastMenu;
 
-				if (tcscmp(file->Value, _T("setup.system.base.menu"))==0)
+				if (wcscmp(file->Value, _T("setup.system.base.menu"))==0)
 				{
 					EISMENUITEM* item = EisMenuAddItem(newmenu, _T("Menu and color settings"), ITEMTYPE_MENU);
 					EisMenuAddAttribute(item, _T("FILE"), _T("setup.system.base.cui.menu"));
@@ -1164,13 +1130,14 @@ MainExecuteDocument(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 	EISMENUATTR* package     = EisMenuGetAttr(item,  _T("PACKAGE"));
 	EISMENUATTR* file        = EisMenuGetAttr(item,  _T("FILE"));
 	EISMENUATTR* tailattr    = EisMenuGetAttr(item,  _T("TAIL"));
+	EISMENUATTR* encoding    = EisMenuGetAttr(item,  _T("ENCODING"));
 	EISMENUATTR* preprocess  = EisMenuGetAttr(item,  _T("PRE"));
 	EISMENUATTR* postprocess = EisMenuGetAttr(item,  _T("POST"));
 
-	TCHAR* packname = NULL;
-	TCHAR  document[128 + 1];
-	TCHAR  shellcmd[256 + 1];
-	TCHAR  tailcmd [8 + 1];
+	wchar_t* packname = NULL;
+	wchar_t  document[128 + 1];
+	wchar_t  shellcmd[256 + 1];
+	wchar_t  tailcmd [8 + 1];
 
 	/* get package name */
 	packname = data->LastMenu->Package;
@@ -1181,20 +1148,17 @@ MainExecuteDocument(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 
 	/* check if tail attribute is set */
 	tailcmd[0] = _T('\0');
-	if (tailattr && (tcscasecmp(tailattr->Value, _T("yes")) == 0))
+	if (tailattr && (wcscasecmp(tailattr->Value, _T("yes")) == 0))
 	{
-		tcscpy(tailcmd, _T("-f"));
+		wcscpy(tailcmd, _T("-f"));
 	}
 
 	/* get absolute file path */
 	if (!file)
 	{
-		TCHAR tmpdocname[64 + 1];
-#ifdef _UNICODE
-		stprintf(tmpdocname, 64, _T("%ls.txt"), packname);
-#else
-		stprintf(tmpdocname, 64, _T("%s.txt"), packname);
-#endif
+		wchar_t tmpdocname[64 + 1];
+
+		swprintf(tmpdocname, 64, _T("%ls.txt"), packname);
 		tmpdocname[64] = 0;
 		GetAbsolutePath(ITEMTYPE_DOC, tmpdocname, packname, document, 128);
 	}
@@ -1212,17 +1176,22 @@ MainExecuteDocument(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 			document, 
 			NULL) )
 	{
-#ifdef _UNICODE
-		stprintf(shellcmd, 256, 
-			_T("/var/install/bin/show-doc.cui %ls %ls"), 
-			tailcmd,
-			document);
-#else
-		stprintf(shellcmd, 256, 
-			_T("/var/install/bin/show-doc.cui %s %s"), 
-			tailcmd,
-			document);
-#endif
+		if (encoding && (wcslen(encoding->Value) > 0))
+		{
+			swprintf(shellcmd, 256, 
+				_T("/var/install/bin/show-doc.cui -e \"%ls\" %ls %ls"), 
+				encoding->Value,
+				tailcmd,
+				document);
+		}
+		else
+		{
+			swprintf(shellcmd, 256, 
+				_T("/var/install/bin/show-doc.cui %ls %ls"), 
+				tailcmd,
+				document);
+		}
+			
 		WindowLeaveCurses();
 		{
 			ExecSysCmd(shellcmd);
@@ -1259,10 +1228,10 @@ MainExecuteConfig(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 	EISMENUATTR* stopstart = EisMenuGetAttr(item, _T("STOPSTART"));
 	EISMENUATTR* preprocess = EisMenuGetAttr(item, _T("PRE"));
 	EISMENUATTR* postprocess = EisMenuGetAttr(item, _T("POST"));
-	const TCHAR* strrestart = NULL;
-	TCHAR* packname = NULL;
-	TCHAR  config[128 + 1];
-	TCHAR  shellcmd[256 + 1];
+	const wchar_t* strrestart = NULL;
+	wchar_t* packname = NULL;
+	wchar_t  config[128 + 1];
+	wchar_t  shellcmd[256 + 1];
 
 	packname = data->LastMenu->Package;
 	if (package)
@@ -1294,19 +1263,11 @@ MainExecuteConfig(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
         {
 		if (stopstart)
 		{
-#ifdef _UNICODE
-			stprintf(shellcmd, 256, _T("/var/install/bin/edit -apply-stopstart %ls"), config);
-#else
-			stprintf(shellcmd, 256, _T("/var/install/bin/edit -apply-stopstart %s"), config);
-#endif
+			swprintf(shellcmd, 256, _T("/var/install/bin/edit -apply-stopstart %ls"), config);
 		}
 		else
 		{
-#ifdef _UNICODE
-			stprintf(shellcmd, 256, _T("/var/install/bin/edit -apply %ls"), config);
-#else
-			stprintf(shellcmd, 256, _T("/var/install/bin/edit -apply %s"), config);
-#endif
+			swprintf(shellcmd, 256, _T("/var/install/bin/edit -apply %ls"), config);
 		}
 
 		WindowLeaveCurses();
@@ -1342,15 +1303,15 @@ MainExecuteService(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 	EISMENUATTR* task = EisMenuGetAttr(item, _T("TASK"));
 	EISMENUATTR* preprocess = EisMenuGetAttr(item, _T("PRE"));
 	EISMENUATTR* postprocess = EisMenuGetAttr(item, _T("POST"));
-	TCHAR* plist = NULL;              /* pointer to list of package names */
-	TCHAR  slist  [256 + 1];
-	TCHAR  cmd    [512 + 1];
-	TCHAR  service[128 + 1];          /* name of service to execute */
-	TCHAR  pname  [64 + 1];           /* one single package name */
+	wchar_t* plist = NULL;              /* pointer to list of package names */
+	wchar_t  slist  [256 + 1];
+	wchar_t  cmd    [512 + 1];
+	wchar_t  service[128 + 1];          /* name of service to execute */
+	wchar_t  pname  [64 + 1];           /* one single package name */
 
 	if (task)
 	{
-		const TCHAR* pchar;
+		const wchar_t* pchar;
 
                 /* retreive package list */
 		plist = data->LastMenu->Package;
@@ -1365,18 +1326,18 @@ MainExecuteService(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 		while (GetSinglePackage(&pchar, pname, 64))
 		{
 			/* add space character */
-			if ((slist[0] != _T('\0')) && (tcslen(slist) + 1 < 255))
+			if ((slist[0] != _T('\0')) && (wcslen(slist) + 1 < 255))
 			{
-				tcscat(slist, _T(" "));
+				wcscat(slist, _T(" "));
 			}
 
 			/* get absolute file path */
 			GetAbsolutePath(ITEMTYPE_INIT, _T(""), pname, service, 128);
 
 			/* add to list of init scripts */
-			if ((tcslen(slist) + tcslen(service)) < 255)
+			if ((wcslen(slist) + wcslen(service)) < 255)
 			{
-				tcscat(slist, service);
+				wcscat(slist, service);
 			}
 		}
 
@@ -1395,20 +1356,20 @@ MainExecuteService(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 			while (GetSinglePackage(&pchar, pname, 64))
 			{
 				/* add space character */
-				if ((cmd[0] != _T('\0')) && (tcslen(cmd) + 1 < 512))
+				if ((cmd[0] != _T('\0')) && (wcslen(cmd) + 1 < 512))
 				{
-					tcscat(cmd, _T(";"));
+					wcscat(cmd, _T(";"));
 				}
 
 				/* get absolute file path */
 				GetAbsolutePath(ITEMTYPE_INIT, _T(""), pname, service, 128);
 
 				/* build command line */
-				if ((tcslen(cmd) + tcslen(service) + tcslen(task->Value) + 1) < 512)
+				if ((wcslen(cmd) + wcslen(service) + wcslen(task->Value) + 1) < 512)
 				{
-					tcscat(cmd, service);
-					tcscat(cmd, _T(" "));
-					tcscat(cmd, task->Value);
+					wcscat(cmd, service);
+					wcscat(cmd, _T(" "));
+					wcscat(cmd, task->Value);
 				}
 			}
 
@@ -1444,11 +1405,11 @@ MainExecuteScript(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 	EISMENUATTR* preprocess = EisMenuGetAttr(item, _T("PRE"));
 	EISMENUATTR* postprocess = EisMenuGetAttr(item, _T("POST"));
 	static char  package_name[128 + 1];
-	TCHAR*       packname = NULL;
+	wchar_t*       packname = NULL;
 
 	if (file)
 	{
-		TCHAR shellcmd[256 + 1];
+		wchar_t shellcmd[256 + 1];
 		int   rc;
 
 		packname = data->LastMenu->Package;
@@ -1459,11 +1420,7 @@ MainExecuteScript(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 
 		if (packname)
 		{
-#ifdef _UNICODE
 			wcstombs(package_name, packname, 128);
-#else
-			strncpy(package_name, packname, 128);
-#endif
 			package_name[128] = 0;
 			if (setenv("PACKAGE", package_name, TRUE) != 0)
 			{
@@ -1625,19 +1582,16 @@ MainCloseDragMode(CUIWINDOW* win)
 		EisMenuWriteFile(data->LastMenu, MainwinErrorOut, win);
 		if (data->NumErrors || data->NumWarnings)
 		{
-			TCHAR buffer[128 + 1];
+			wchar_t buffer[128 + 1];
 
 			MainwinAddMessage(win, _T(""));
 
-			stprintf(buffer, 128, _T("%i error(s), %i warning(s)"),
+			swprintf(buffer, 128, _T("%i error(s), %i warning(s)"),
 				data->NumErrors, data->NumWarnings);
 			MainwinAddMessage(win, buffer);
 
-#ifdef _UNICODE
-			stprintf(buffer, 128, _T("file: %ls"), data->Config->MenuFile);
-#else
-			stprintf(buffer, 128, _T("file: %s"), data->Config->MenuFile);
-#endif
+			swprintf(buffer, 128, _T("file: %ls"), data->Config->MenuFile);
+
 			MainwinAddMessage(win, buffer);
 
 			MessageBox(win, data->ErrorMsg, _T("Error"), MB_ERROR);
@@ -1650,4 +1604,3 @@ MainCloseDragMode(CUIWINDOW* win)
 	data->DragMode = FALSE;
 	WindowSetLStatusText(win, IDLE_STATUS_TEXT);
 }
-

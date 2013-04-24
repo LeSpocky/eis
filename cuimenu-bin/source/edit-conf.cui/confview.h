@@ -27,7 +27,7 @@
 #include <cui.h>
 #include "conffile.h"
 
-CUIWINDOW* ConfviewNew(CUIWINDOW* parent, const TCHAR* text,
+CUIWINDOW* ConfviewNew(CUIWINDOW* parent, const wchar_t* text,
                    int x, int y, int w, int h, int id, int sflags, int cflags);
 void ConfviewSetSetFocusHook  (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target);
 void ConfviewSetKillFocusHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
@@ -45,7 +45,7 @@ void ConfviewToggleDrag       (CUIWINDOW* win);
 void ConfviewToggleOptView    (CUIWINDOW* win);
 int  ConfviewIsInDrag         (CUIWINDOW* win);
 
-int  ConfviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, int down);
+int  ConfviewSearch(CUIWINDOW* win, const wchar_t* text, int wholeword, int casesens, int down);
 
 
 #endif

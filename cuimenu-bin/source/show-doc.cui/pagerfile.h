@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: pagerfile.h 23498 2010-03-14 21:57:47Z dv $
+ * Last Update:  $Id: pagerfile.h 33459 2013-04-13 10:13:16Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,6 +27,7 @@
 #define PAGERFILE_H
 
 #include "global.h"
+#include <iconv.h>
 
 #define	MAX_BLOCKS	32
 #define PAGE_BLOCKSIZE  8192
@@ -54,10 +55,11 @@ typedef struct
 	long           FileBlock;
 	int            BlockOffset;
 	PAGERBLOCK*    FirstBlock;
-	TCHAR*         WcLineBuffer;
+	wchar_t*         WcLineBuffer;
 	int            WcLineBufferSize;
 	char*          LineBuffer;
 	int            LineBufferSize;
+	iconv_t        IConvHandle;
 } PAGERFILE;
 
 
@@ -66,14 +68,14 @@ typedef struct
 	  pfile->BlockOffset < pfile->FirstBlock->DataSize) ? \
 	  pfile->FirstBlock->Data[pfile->BlockOffset] : PagerFileGetF(pfile))
 
-PAGERFILE* PagerFileOpen(const TCHAR* filename);
+PAGERFILE* PagerFileOpen(const wchar_t *filename, const wchar_t *encoding);
 void       PagerFileClose(PAGERFILE* pfile);
 int        PagerFileGetF(PAGERFILE* pfile);
 int        PagerFileForwGet(PAGERFILE* pfile);
 int        PagerFileBackGet(PAGERFILE* pfile);
 long       PagerFilePos(PAGERFILE* pfile);
 int        PagerFileSeek(PAGERFILE* pfile, long pos);
-long       PagerForwRawLine(PAGERFILE* pfile, long pos, TCHAR** lbuffer);
-long       PagerBackRawLine(PAGERFILE* pfile, long pos, TCHAR** lbuffer);
+long       PagerForwRawLine(PAGERFILE* pfile, long pos, wchar_t** lbuffer);
+long       PagerBackRawLine(PAGERFILE* pfile, long pos, wchar_t** lbuffer);
 
 #endif

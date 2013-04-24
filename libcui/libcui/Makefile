@@ -156,9 +156,9 @@ install: libcui-script.so.$(CUI_VERSION) libcui-util.so.$(CUI_VERSION) libcui.so
 	@rm -f $(DESTDIR)/usr/lib/libcui-script.so
 	@rm -f $(DESTDIR)/usr/lib/libcui-util.so
 	@ldconfig -n $(DESTDIR)/usr/lib
-	@ln -s $(DESTDIR)/usr/lib/libcui.so.$(CUI_VERSION) libcui.so
-	@ln -s $(DESTDIR)/usr/lib/libcui-script.so.$(CUI_VERSION) libcui-script.so
-	@ln -s $(DESTDIR)/usr/lib/libcui-util.so.$(CUI_VERSION) libcui-util.so
+	@ln -s libcui.so.$(CUI_VERSION) $(DESTDIR)/usr/lib/libcui.so
+	@ln -s libcui-script.so.$(CUI_VERSION) $(DESTDIR)/usr/lib/libcui-script.so
+	@ln -s libcui-util.so.$(CUI_VERSION) $(DESTDIR)/usr/lib/libcui-util.so
 	@cp cui.h $(DESTDIR)/usr/include
 	@cp cui-char.h $(DESTDIR)/usr/include
 	@cp cui-util.h $(DESTDIR)/usr/include

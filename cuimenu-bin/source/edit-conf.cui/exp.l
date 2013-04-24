@@ -42,8 +42,8 @@
 ErrorCallback ExpError = NULL;
 void*         ExpErrorInst = NULL;
 int           ExpCurrentLine;
-TCHAR*        ExpInputFile = NULL;
-TCHAR*        ExpStringBuf = NULL;
+wchar_t*        ExpInputFile = NULL;
+wchar_t*        ExpStringBuf = NULL;
 int           ExpStringBufLen = 0;
 int           ExpStringBufPos = 0;
 int           ExpStringML = FALSE;
@@ -224,17 +224,17 @@ ANYCHAR         .
  * Open a file for reading and prepare the scanner
  * -----------------------------------------------------------------------
  */
-int ExpFileOpen(const TCHAR* filename, ErrorCallback errout, void* instance)
+int ExpFileOpen(const wchar_t* filename, ErrorCallback errout, void* instance)
 {
 	expin = FileOpen(filename, _T("rt"));
 	if (expin)
 	{
-		ExpInputFile = tcsdup(filename);
+		ExpInputFile = wcsdup(filename);
 		ExpCurrentLine = 1;
 		ExpError = errout;
 		ExpErrorInst = instance;
 
-		ExpStringBuf = (TCHAR*) malloc((STRING_BLOCK + 1) * sizeof(TCHAR));
+		ExpStringBuf = (wchar_t*) malloc((STRING_BLOCK + 1) * sizeof(wchar_t));
 		ExpStringBufLen = STRING_BLOCK;
 		ExpStringBufPos = 0;
 	}
@@ -283,7 +283,7 @@ void ExpClose()
  * regular expression
  * -----------------------------------------------------------------------
  */
-TCHAR*
+wchar_t*
 ExpGetTextDup(void)
 {
 	return MbToTCharDup(exptext);
@@ -296,14 +296,10 @@ ExpGetTextDup(void)
  * regular expression
  * -----------------------------------------------------------------------
  */
-const TCHAR*
-ExpGetTextCpy(TCHAR* buffer, int buflen)
+const wchar_t*
+ExpGetTextCpy(wchar_t* buffer, int buflen)
 {
-#ifdef _UNICODE
 	mbstowcs(buffer, exptext, buflen);
-#else
-	strncpy(buffer, exptext, buflen);
-#endif
 	buffer[buflen] = 0;
 	return buffer;
 }
@@ -314,7 +310,7 @@ ExpGetTextCpy(TCHAR* buffer, int buflen)
  * Return the text read by the scanner yust after removing the quotes.
  * -----------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 ExpGetString(void)
 {
 	if (ExpStringBufLen > 0)
@@ -333,7 +329,7 @@ ExpGetString(void)
  * Return the name of the file the scanner is processing
  * -----------------------------------------------------------------------
  */
-const TCHAR*
+const wchar_t*
 ExpGetFileName(void)
 {
 	return ExpInputFile;
@@ -398,11 +394,11 @@ ExpAddString(const char* text,int len)
 		if (ExpStringBufPos + len >= ExpStringBufLen)
 		{
 			int newlen = ((ExpStringBufPos + len) / STRING_BLOCK + 1) * STRING_BLOCK;
-			TCHAR* newstr = (TCHAR*) malloc((newlen + 1) * sizeof(TCHAR));
+			wchar_t* newstr = (wchar_t*) malloc((newlen + 1) * sizeof(wchar_t));
 
 			if (newstr)
 			{
-				tcscpy(newstr, ExpStringBuf);
+				wcscpy(newstr, ExpStringBuf);
 				free(ExpStringBuf);
 
 				ExpStringBuf = newstr;
@@ -413,11 +409,7 @@ ExpAddString(const char* text,int len)
 				return;
 			}
 		}
-#ifdef _UNICODE
 		mbsrtowcs(&ExpStringBuf[ExpStringBufPos], &text, len, NULL);
-#else
-		strncpy(&ExpStringBuf[ExpStringBufPos], text, len);
-#endif
 		ExpStringBufPos += len;
 		ExpStringBuf[ExpStringBufPos] = 0;
 	}

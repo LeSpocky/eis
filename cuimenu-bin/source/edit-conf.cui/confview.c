@@ -26,7 +26,7 @@
 
 typedef struct
 {
-	const TCHAR* Keyword;
+	const wchar_t* Keyword;
 	int          WholeWords;
 	int          CaseSens;
 } ECESEARCH;
@@ -69,10 +69,10 @@ static void ConfviewUpdate(CUIWINDOW* win);
 static int  ConfviewQueryChange(CUIWINDOW* win, CONFVIEWDATA* data);
 static void ConfviewNotifyChange(CUIWINDOW* win, CONFVIEWDATA* data);
 
-static void ConfviewShowComment(CUIWINDOW* win, const TCHAR* text, int ypos);
+static void ConfviewShowComment(CUIWINDOW* win, const wchar_t* text, int ypos);
 static int  ConfviewShowItem(CUIWINDOW* win, CONFVIEWDATA* data, CONFITEM* item,
                  int level, int line, int drag, int* ypos, short* index);
-static int  ConfviewShowLine(CUIWINDOW* win, const TCHAR* name, const TCHAR* value, int ypos,
+static int  ConfviewShowLine(CUIWINDOW* win, const wchar_t* name, const wchar_t* value, int ypos,
                  int level, int line, int drag, int readonly, int do_print);
 static void ConfviewUpdateListMetrics(CUIWINDOW* win, CONFVIEWDATA* data);
 static void ConfviewUpdateItemMetrics(CUIWINDOW* win, CONFITEM* item, int level, short* index);
@@ -80,9 +80,9 @@ static int  ConfviewSearchValueByIndexD(CONFITEM* item, int level, int* line,
                  int lineindex, short* index, ECESEARCH* sdata);
 static int  ConfviewSearchValueByIndexU(CONFITEM* item, int level, int* line, 
                  int lineindex, short* index, ECESEARCH* sdata);
-static int  ConfviewIsChar(TCHAR c);
-static int  ConfviewMatchWord(const TCHAR* text, ECESEARCH* sdata);
-static int  ConfviewMatch(const TCHAR* text, ECESEARCH* sdata);
+static int  ConfviewIsChar(wchar_t c);
+static int  ConfviewMatchWord(const wchar_t* text, ECESEARCH* sdata);
+static int  ConfviewMatch(const wchar_t* text, ECESEARCH* sdata);
 
 
 /* ---------------------------------------------------------------------
@@ -120,7 +120,7 @@ ConfviewNcPaintHook(void* w, int size_x, int size_y)
 	/* title text */
 	if (!win->Text || (win->Text[0] == 0) || (!win->HasBorder)) return;
 
-	len = tcslen(win->Text);
+	len = wcslen(win->Text);
 	if (len > rc.W - 4)
 	{
 		len = rc.W - 4;
@@ -350,84 +350,11 @@ ConfviewKeyHook(void* w, int key)
 static void
 ConfviewVScrollHook(void* w, int sbcode, int pos)
 {
-/*	CUIWINDOW* win = (CUIWINDOW*) w;
-	PAGERVIEWDATA* data = (PAGERVIEWDATA*) win->InstData;
-	CUIRECT rc;
-
-	WindowGetClientRect(win, &rc);
-
-	switch(sbcode)
-	{
-	case SB_LINEUP:
-		if (data->File)
-		{
-			long pos = PagerBackRawLine(data->File, data->FirstPos, NULL);
-			if (pos != NOPOS)
-			{
-				data->FirstPos = pos;
-				PagerviewCalculate(win);
-				PagerviewUpdate(win);
-			}
-		}
-		break;
-	case SB_LINEDOWN:
-		if (data->File)
-		{
-			long pos = PagerForwRawLine(data->File, data->FirstPos, NULL);
-			if (pos != NOPOS)
-			{
-				data->FirstPos = pos;
-				PagerviewCalculate(win);
-				PagerviewUpdate(win);
-			}
-		}
-		break;
-	case SB_PAGEUP:
-		if (data->File)
-		{
-			int  ypos = 0;
-			long pos = PagerBackRawLine(data->File, data->FirstPos, NULL);
-			if (pos != NOPOS)
-			{
-				while ((pos != NOPOS) && (ypos < (rc.H - 1)))
-				{
-					data->FirstPos = pos;
-					pos = PagerBackRawLine(data->File, data->FirstPos, NULL);
-					ypos++;
-				}
-				PagerviewCalculate(win);
-				PagerviewUpdate(win);
-			}
-		}
-		break;
-	case SB_PAGEDOWN:
-		if (data->File)
-		{
-			int  ypos = 0;
-			long pos = PagerForwRawLine(data->File, data->FirstPos, NULL);
-			if (pos != NOPOS)
-			{
-				while ((pos != NOPOS) && (ypos < (rc.H - 1)))
-				{
-					data->FirstPos = pos;
-					pos = PagerForwRawLine(data->File, data->FirstPos, NULL);
-					ypos++;
-				}
-				PagerviewCalculate(win);
-				PagerviewUpdate(win);
-			}
-		}
-		break;
-	case SB_THUMBTRACK:
-		if (data->File)
-		{
-			data->FirstPos = (data->File->FileSize * pos) / 100;
-			data->FirstPos = PagerBackRawLine(data->File, data->FirstPos, NULL);
-			PagerviewCalculate(win);
-			PagerviewUpdate(win);
-		}
-		break;
-	}*/
+	CUI_USE_ARG(w);
+	CUI_USE_ARG(sbcode);
+	CUI_USE_ARG(pos);
+	
+	/* not implemented right now */
 }
 
 /* ---------------------------------------------------------------------
@@ -439,9 +366,6 @@ static void
 ConfviewDestroyHook(void* w)
 {
 	CUIWINDOW*   win = (CUIWINDOW*) w;
-
-/*	WindowKillTimer(win, IDC_TAILTIMER);
-	PagerviewClear(win);*/
 
 	free (win->InstData);
 }
@@ -496,7 +420,7 @@ ConfviewKillFocusHook(void* w)
  * ---------------------------------------------------------------------
  */
 CUIWINDOW*
-ConfviewNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
+ConfviewNew(CUIWINDOW* parent, const wchar_t* text, int x, int y, int w, int h,
            int id, int sflags, int cflags)
 {
 	if (parent)
@@ -549,7 +473,7 @@ ConfviewNew(CUIWINDOW* parent, const TCHAR* text, int x, int y, int w, int h,
 void
 ConfviewSetSetFocusHook(CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		((CONFVIEWDATA*)win->InstData)->SetFocusHook = proc;
 		((CONFVIEWDATA*)win->InstData)->SetFocusTarget = target;
@@ -564,7 +488,7 @@ ConfviewSetSetFocusHook(CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* targ
 void
 ConfviewSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		((CONFVIEWDATA*)win->InstData)->KillFocusHook = proc;
 		((CONFVIEWDATA*)win->InstData)->KillFocusTarget = target;
@@ -580,7 +504,7 @@ ConfviewSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void
 ConfviewSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		((CONFVIEWDATA*)win->InstData)->PreKeyHook = proc;
 		((CONFVIEWDATA*)win->InstData)->PreKeyTarget = target;
@@ -595,7 +519,7 @@ ConfviewSetPreKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* ta
 void
 ConfviewSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		((CONFVIEWDATA*)win->InstData)->PostKeyHook = proc;
 		((CONFVIEWDATA*)win->InstData)->PostKeyTarget = target;
@@ -610,7 +534,7 @@ ConfviewSetPostKeyHook(CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* t
 void
 ConfviewSetLbChangedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		((CONFVIEWDATA*)win->InstData)->LbChangedHook = proc;
 		((CONFVIEWDATA*)win->InstData)->LbChangedTarget = target;
@@ -625,7 +549,7 @@ ConfviewSetLbChangedHook (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target
 void
 ConfviewSetLbChangingHook(CUIWINDOW* win, CustomBoolHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		((CONFVIEWDATA*)win->InstData)->LbChangingHook = proc;
 		((CONFVIEWDATA*)win->InstData)->LbChangingTarget = target;
@@ -640,7 +564,7 @@ ConfviewSetLbChangingHook(CUIWINDOW* win, CustomBoolHookProc proc, CUIWINDOW* ta
 void
 ConfviewSetLbClickedHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		((CONFVIEWDATA*)win->InstData)->LbClickedHook = proc;
 		((CONFVIEWDATA*)win->InstData)->LbClickedTarget = target;
@@ -655,7 +579,7 @@ ConfviewSetLbClickedHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target)
 void
 ConfviewSetData(CUIWINDOW* win, CONFFILE* confdata)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		CONFVIEWDATA* data = (CONFVIEWDATA*)win->InstData;
 
@@ -681,7 +605,7 @@ ConfviewSetData(CUIWINDOW* win, CONFFILE* confdata)
 void
 ConfviewUpdateData(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		ConfviewCalculate(win);
 		ConfviewUpdate(win);
@@ -697,7 +621,7 @@ ConfviewUpdateData(CUIWINDOW* win)
 int
 ConfviewGetSel(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		CONFVIEWDATA* data = (CONFVIEWDATA*)win->InstData;
 
@@ -717,7 +641,7 @@ ConfviewGetSel(CUIWINDOW* win)
 void
 ConfviewSetSel(CUIWINDOW* win, int selindex)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		CONFVIEWDATA* data = (CONFVIEWDATA*)win->InstData;
 
@@ -742,7 +666,7 @@ ConfviewSetSel(CUIWINDOW* win, int selindex)
 void 
 ConfviewToggleOptView(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		CONFVIEWDATA* data = (CONFVIEWDATA*)win->InstData;
 		CONFITEM*     selitem = NULL;
@@ -786,7 +710,7 @@ ConfviewToggleOptView(CUIWINDOW* win)
 void
 ConfviewToggleDrag(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		CONFVIEWDATA* data = (CONFVIEWDATA*)win->InstData;
 
@@ -815,7 +739,7 @@ ConfviewToggleDrag(CUIWINDOW* win)
 int
 ConfviewIsInDrag(CUIWINDOW* win)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		return ((CONFVIEWDATA*)win->InstData)->IsDragging;
 	}
@@ -828,9 +752,9 @@ ConfviewIsInDrag(CUIWINDOW* win)
  * ---------------------------------------------------------------------
  */
 int
-ConfviewSearch(CUIWINDOW* win, const TCHAR* text, int wholeword, int casesens, int down)
+ConfviewSearch(CUIWINDOW* win, const wchar_t* text, int wholeword, int casesens, int down)
 {
-	if (win && (tcscmp(win->Class, _T("CONFVIEW")) == 0))
+	if (win && (wcscmp(win->Class, _T("CONFVIEW")) == 0))
 	{
 		CONFVIEWDATA* data = (CONFVIEWDATA*)win->InstData;
 		ECESEARCH     sdata;
@@ -1046,7 +970,7 @@ ConfviewUpdateItemMetrics(CUIWINDOW* win, CONFITEM* item, int level, short* inde
 	}
 	else
 	{
-		TCHAR buffer[128 + 1];
+		wchar_t buffer[128 + 1];
 		ConfFileArrayLookupName(item, index, level, buffer, 128);
 		numlines = ConfviewShowLine(win,
 			buffer,
@@ -1072,7 +996,7 @@ ConfviewUpdateItemMetrics(CUIWINDOW* win, CONFITEM* item, int level, short* inde
 	{
 		int count;
 		int i;
-		stscanf(valptr->Value, _T("%d"), &count);
+		swscanf(valptr->Value, _T("%d"), &count);
 
 		for (i = 1; i <= count; i++)
 		{
@@ -1115,21 +1039,21 @@ ConfviewUpdateItemMetrics(CUIWINDOW* win, CONFITEM* item, int level, short* inde
  * ---------------------------------------------------------------------
  */
 static void
-ConfviewShowComment(CUIWINDOW* win, const TCHAR* text, int ypos)
+ConfviewShowComment(CUIWINDOW* win, const wchar_t* text, int ypos)
 {
 	CUIRECT rc;
 	int len;
 	int seperator = FALSE;
 
 	WindowGetClientRect(win, &rc);
-	len = tcslen(text);
+	len = wcslen(text);
 	if (len > (rc.W - 1))
 	{
 		len = rc.W - 1;
 	}
 
 	/* is it a seperator line */
-	if (tcsstr(text,_T("---------------------------")))
+	if (wcsstr(text,_T("---------------------------")))
 	{
 		seperator = TRUE;
 		len = rc.W;
@@ -1175,7 +1099,7 @@ ConfviewShowComment(CUIWINDOW* win, const TCHAR* text, int ypos)
  * ---------------------------------------------------------------------
  */
 static int
-ConfviewShowLine(CUIWINDOW* win, const TCHAR* name, const TCHAR* value, int ypos,
+ConfviewShowLine(CUIWINDOW* win, const wchar_t* name, const wchar_t* value, int ypos,
                int level, int line, int drag, int readonly, int do_print)
 {
 	CUIRECT rc;
@@ -1186,7 +1110,7 @@ ConfviewShowLine(CUIWINDOW* win, const TCHAR* name, const TCHAR* value, int ypos
 	int     num_lines = 0;                      /* number of lines for the value */
 	int     namelines = 0;                      /* number of lines needed for the name */
 	int     selected;
-	const TCHAR *start, *end, *next;
+	const wchar_t *start, *end, *next;
 
 	WindowGetClientRect(win, &rc);
 
@@ -1196,8 +1120,8 @@ ConfviewShowLine(CUIWINDOW* win, const TCHAR* name, const TCHAR* value, int ypos
 
 	if (rwidth <= 0) return 1;
 
-	len1 = tcslen(name);
-	len2 = tcslen(value);
+	len1 = wcslen(name);
+	len2 = wcslen(value);
 
 	/* show value name */
 
@@ -1206,10 +1130,10 @@ ConfviewShowLine(CUIWINDOW* win, const TCHAR* name, const TCHAR* value, int ypos
 
 	while (*start != 0)
 	{
-		next = tcschr(start, _T('_'));
+		next = wcschr(start, _T('_'));
 		if (!next)
 		{
-			next = &name[tcslen(name)];
+			next = &name[wcslen(name)];
 		}
 
 		while ((next - start) <= (lwidth - 2 * level))
@@ -1218,8 +1142,8 @@ ConfviewShowLine(CUIWINDOW* win, const TCHAR* name, const TCHAR* value, int ypos
 
 			if (*next != 0)
 			{
-				next = tcschr(next + 1,'_');
-				if (!next) next = &name[tcslen(name)];
+				next = wcschr(next + 1,'_');
+				if (!next) next = &name[wcslen(name)];
 			}
 			else break;
 		}
@@ -1331,10 +1255,10 @@ ConfviewShowLine(CUIWINDOW* win, const TCHAR* name, const TCHAR* value, int ypos
 
 	while ((*start != 0) || (num_lines < namelines))
 	{
-		next = tcschr(start, _T(' '));
+		next = wcschr(start, _T(' '));
 		if (!next)
 		{
-			next = &value[tcslen(value)];
+			next = &value[wcslen(value)];
 		}
 
 		while ((next - start <= rwidth))
@@ -1343,8 +1267,8 @@ ConfviewShowLine(CUIWINDOW* win, const TCHAR* name, const TCHAR* value, int ypos
 
 			if (*next != 0)
 			{
-				next = tcschr(next + 1, _T(' '));
-				if (!next) next = &value[tcslen(value)];
+				next = wcschr(next + 1, _T(' '));
+				if (!next) next = &value[wcslen(value)];
 			}
 			else break;
 		}
@@ -1420,11 +1344,11 @@ ConfviewShowItem(CUIWINDOW* win, CONFVIEWDATA* data, CONFITEM* item,
 		}
 		while (valcmmt)
 		{
-			TCHAR  buffer[128 + 1];
-			TCHAR* p = valcmmt->Text;
+			wchar_t  buffer[128 + 1];
+			wchar_t* p = valcmmt->Text;
 			while (*p == _T('#')) p++;
 
-			stprintf(buffer, 128, p, index[0], index[1], index[2], index[3], index[4]);
+			swprintf(buffer, 128, p, index[0], index[1], index[2], index[3], index[4]);
 			buffer[128] = 0;
 
 			ConfviewShowComment(win, buffer, *ypos);
@@ -1477,7 +1401,7 @@ ConfviewShowItem(CUIWINDOW* win, CONFVIEWDATA* data, CONFITEM* item,
 	}
 	else
 	{
-		TCHAR buffer[128 + 1];
+		wchar_t buffer[128 + 1];
 		*ypos += ConfviewShowLine(win,
 			ConfFileArrayLookupName(item, index, level, buffer, 128),
 			_T("<<< no value >>>"),
@@ -1496,7 +1420,7 @@ ConfviewShowItem(CUIWINDOW* win, CONFVIEWDATA* data, CONFITEM* item,
 		int i;
 		int dragchild;
 
-		stscanf(valptr->Value, _T("%d"), &count);
+		swscanf(valptr->Value, _T("%d"), &count);
 
 		for (i = 1; i <= count; i++)
 		{
@@ -1626,7 +1550,7 @@ ConfviewSearchValueByIndexD (CONFITEM* item, int level, int* line, int lineindex
 	{
 		int count;
 		int i;
-		stscanf(valptr->Value, _T("%d"), &count);
+		swscanf(valptr->Value, _T("%d"), &count);
 
 		for (i = 1; i <= count; i++)
 		{
@@ -1667,7 +1591,7 @@ ConfviewSearchValueByIndexU (CONFITEM* item, int level, int* line, int lineindex
 	{
 		int count;
 		int i;
-		stscanf(valptr->Value, _T("%d"), &count);
+		swscanf(valptr->Value, _T("%d"), &count);
 
 		for (i = count; i > 0; i--)
 		{
@@ -1709,9 +1633,9 @@ ConfviewSearchValueByIndexU (CONFITEM* item, int level, int* line, int lineindex
  * ---------------------------------------------------------------------
  */
 static int
-ConfviewIsChar(TCHAR c)
+ConfviewIsChar(wchar_t c)
 {
-	return istalnum(c);
+	return iswalnum(c);
 }
 
 /* ---------------------------------------------------------------------
@@ -1720,18 +1644,18 @@ ConfviewIsChar(TCHAR c)
  * ---------------------------------------------------------------------
  */
 static int
-ConfviewMatchWord(const TCHAR* text, ECESEARCH* sdata)
+ConfviewMatchWord(const wchar_t* text, ECESEARCH* sdata)
 {
-	const TCHAR* s1 = text;
-	const TCHAR* s2 = sdata->Keyword;
-	int len = tcslen(s2);
+	const wchar_t* s1 = text;
+	const wchar_t* s2 = sdata->Keyword;
+	int len = wcslen(s2);
 	int i;
 
 	if (!sdata->CaseSens)
 	{
 		for (i = 0; i < len; i++)
 		{
-			if (totlower(*s1) != totlower(*s2))
+			if (towlower(*s1) != towlower(*s2))
 			{
 				return FALSE;
 			}
@@ -1760,18 +1684,18 @@ ConfviewMatchWord(const TCHAR* text, ECESEARCH* sdata)
  * ---------------------------------------------------------------------
  */
 static int
-ConfviewMatch(const TCHAR* text, ECESEARCH* sdata)
+ConfviewMatch(const wchar_t* text, ECESEARCH* sdata)
 {
-	TCHAR        searchc = totlower(sdata->Keyword[0]);
-	const TCHAR* c = text;
+	wchar_t        searchc = towlower(sdata->Keyword[0]);
+	const wchar_t* c = text;
 
 	while (*c)
 	{
-		if (totlower(*c) == searchc)
+		if ((wchar_t)towlower(*c) == searchc)
 		{
 			if (ConfviewMatchWord(c,sdata))
 			{
-				TCHAR lastc = c[tcslen(sdata->Keyword)];
+				wchar_t lastc = c[wcslen(sdata->Keyword)];
 				if (!(sdata->WholeWords && (c > text) && (ConfviewIsChar(*(c - 1)))))
 				{
 					if (!(sdata->WholeWords && ConfviewIsChar(lastc)))

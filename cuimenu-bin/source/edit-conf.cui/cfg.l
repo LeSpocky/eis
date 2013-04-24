@@ -43,8 +43,8 @@
 ErrorCallback CfgError = NULL;
 void*         CfgErrorInst = NULL;
 int           CfgCurrentLine;
-TCHAR*        CfgInputFile = NULL;
-TCHAR*        CfgComment = NULL;
+wchar_t*        CfgInputFile = NULL;
+wchar_t*        CfgComment = NULL;
 int           CfgCommentLen = 0;
 int           CfgCommentPos = 0;
 
@@ -140,17 +140,17 @@ ANYCHAR         .
  * Open a file for reading and prepare the scanner
  * -----------------------------------------------------------------------
  */
-int CfgFileOpen(const TCHAR* filename, ErrorCallback errout, void* instance)
+int CfgFileOpen(const wchar_t* filename, ErrorCallback errout, void* instance)
 {
 	cfgin = FileOpen(filename, _T("rt"));
 	if (cfgin)
 	{
-		CfgInputFile = tcsdup(filename);
+		CfgInputFile = wcsdup(filename);
 		CfgCurrentLine = 1;
 		CfgError = errout;
 		CfgErrorInst = instance;
 
-		CfgComment = (TCHAR*) malloc((COMMENT_BLOCK + 1) * sizeof(TCHAR));
+		CfgComment = (wchar_t*) malloc((COMMENT_BLOCK + 1) * sizeof(wchar_t));
 		CfgCommentLen = COMMENT_BLOCK;
 		CfgCommentPos = 0;
 	}
@@ -198,7 +198,7 @@ void CfgClose()
  * regular expression
  * -----------------------------------------------------------------------
  */
-TCHAR* 
+wchar_t* 
 CfgGetTextDup(void)
 {
 	return MbToTCharDup(cfgtext); 
@@ -211,14 +211,10 @@ CfgGetTextDup(void)
  * regular expression
  * -----------------------------------------------------------------------
  */
-const TCHAR*
-CfgGetTextCpy(TCHAR* buffer, int buflen)
+const wchar_t*
+CfgGetTextCpy(wchar_t* buffer, int buflen)
 {
-#ifdef _UNICODE
 	mbstowcs(buffer, cfgtext, buflen);
-#else
-	strncpy(buffer, cfgtext, buflen);
-#endif
 	buffer[buflen] = 0;
 	return buffer;
 }
@@ -229,7 +225,7 @@ CfgGetTextCpy(TCHAR* buffer, int buflen)
  * Return the text read by the scanner yust after removing the quotes. 
  * -----------------------------------------------------------------------
  */
-TCHAR* 
+wchar_t* 
 CfgGetStringDup(void)
 {
 	int len = strlen(cfgtext);
@@ -240,7 +236,7 @@ CfgGetStringDup(void)
 	}
 	else
 	{
-		return tcsdup(_T(""));
+		return wcsdup(_T(""));
 	}
 }
 
@@ -250,7 +246,7 @@ CfgGetStringDup(void)
  * Return the comment read by the scanner.
  * -----------------------------------------------------------------------
  */
-const TCHAR* 
+const wchar_t* 
 CfgGetComment(void)
 {
 	return CfgComment;
@@ -262,7 +258,7 @@ CfgGetComment(void)
  * Return the name of the file the scanner is processing
  * -----------------------------------------------------------------------
  */
-const TCHAR* 
+const wchar_t* 
 CfgGetFileName(void)
 {
 	return CfgInputFile;
@@ -327,11 +323,11 @@ CfgAddComment(const char* text, int len)
 		if (CfgCommentPos + len >= CfgCommentLen)
 		{
 			int newlen = ((CfgCommentPos + len) / COMMENT_BLOCK + 1) * COMMENT_BLOCK;
-			TCHAR* newcmt = (TCHAR*) malloc((newlen + 1) * sizeof(TCHAR));
+			wchar_t* newcmt = (wchar_t*) malloc((newlen + 1) * sizeof(wchar_t));
 
 			if (newcmt)
 			{		
-				tcscpy(newcmt, CfgComment);
+				wcscpy(newcmt, CfgComment);
 				free(CfgComment);
 
 				CfgComment = newcmt;
@@ -342,11 +338,7 @@ CfgAddComment(const char* text, int len)
 				return;
 			}
 		}
-#ifdef _UNICODE
 		mbsrtowcs(&CfgComment[CfgCommentPos], &text, len, NULL);
-#else
-		strncpy(&CfgComment[CfgCommentPos], text, len);
-#endif
 		CfgCommentPos += len;
 		CfgComment[CfgCommentPos] = 0;
 	}

@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: index.h 30935 2012-05-27 14:32:42Z dv $
+ * Last Update:  $Id: index.h 33442 2013-04-10 20:39:40Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,7 +31,7 @@
 
 typedef struct
 {
-	TCHAR*         Description;
+	wchar_t*         Description;
 	int            Level;
 	long           LineNumber;
 	long           FilePosition;
@@ -42,13 +42,13 @@ typedef struct
 
 typedef struct
 {
-	TCHAR         *Title;
+	wchar_t         *Title;
 	INDEXENTRY    *FirstEntry;
 	INDEXENTRY    *LastEntry;
 } INDEX;
 
 
-INDEX*     IndexReadFile(const TCHAR* filename, ErrorCallback errout, void* instance);
+INDEX*     IndexReadFile(const wchar_t* filename, ErrorCallback errout, void* instance);
 void       IndexDelete(INDEX* index);
 
 #endif
