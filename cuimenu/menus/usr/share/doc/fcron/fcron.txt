@@ -3,21 +3,21 @@
 
   Features
   --------
-  Fcron ist ein Dienst, der zeitgesteürt Programme und Skripte ausführen
-  kann. Zusätzlich zu den Unterverzeichnissen in etc/periodic können 
-  weitere wiederkehrende Aufträge und Programme zu bestimmten Zeiten 
-  ausgeführt werden.
+  Fcron ist ein Dienst, der zeitgesteuert Programme und Skripte ausfuehren
+  kann. Zusaetzlich zu den Unterverzeichnissen in etc/periodic koennen 
+  weitere wiederkehrende Auftraege und Programme zu bestimmten Zeiten 
+  ausgefuehrt werden.
 
 
   Konfigurationsdatei
   -------------------
 
   START_FCRON
-     Für die Aktivierung zur Abarbeitung dieser configuration muss
+     Fuer die Aktivierung zur Abarbeitung dieser configuration muss
      diese Variable lediglich auf den Wert 'yes' gestellt werden.
      Die Einstellung 'no' schaltet die Abarbeitung dieser Configuration aus.
 
-     Gültige Werte: yes, no
+     Gueltige Werte: yes, no
 
      Standard-Einstellung: START_CRON='yes'
 
@@ -25,7 +25,7 @@
      Bei diesem Parameter wird angegeben, wieviele Cron Jobs
      konfiguriert werden sollen.
 
-     Gültige Werte: Zahl
+     Gueltige Werte: Zahl
 
      Standard-Einstellung: FCRON_N='1'
 
@@ -33,13 +33,13 @@
      Ueber diesen Parameter wird eingestellt, ob der Datensatz
      aktiv sein soll.
 
-     Gültige Werte: yes, no
+     Gueltige Werte: yes, no
 
      Standard-Einstellung: FCRON_%_ACTIVE'='yes'
 
   FCRON_%_TIMES
      (komplexe Definition): Legt fest, zu welchen Zeitpunkten dieser
-     Cronjob ausgeführt wird. Die einzelnen Werte sind durch
+     Cronjob ausgefuehrt wird. Die einzelnen Werte sind durch
      Leerzeichen voneinander getrennt. Das Format setzt sich wie
      folgt zusammen:
      Minute Stunde Tag_im_Monat Monat Wochentag
@@ -53,38 +53,38 @@
             Wert von 1 bis 12
      Wochentag:
             Wert von 0 bis 7, wobei 0 und 7 Sonntag sind
-     Ein Cronjob wird nur ausgeführt, wenn alle Kriterien zutreffen
+     Ein Cronjob wird nur ausgefuehrt, wenn alle Kriterien zutreffen
      (logisches UND); so wird ein Cronjob mit der Definition
      23 12 1 * 1
-     nur um 12.23 Uhr eines jeden Monatsersten ausgeführt, der
+     nur um 12.23 Uhr eines jeden Monatsersten ausgefuehrt, der
      zugleich ein Montag ist.
 
-     Einzelne Werte können mit Kommata getrennt gruppiert werden;
+     Einzelne Werte koennen mit Kommata getrennt gruppiert werden;
      sie werden dann wie ein logisches ODER betrachtet. Beispiel:
-     0,27 * * * * führt jeweils zur vollen Stunde und 27 Minuten
+     0,27 * * * * fuehrt jeweils zur vollen Stunde und 27 Minuten
      danach einen Job aus; dieser Eintrag ist equivalent zu den
      beiden folgenden (zusammen betrachtet): 0 * * * * und 27 * * * *
-     Periodische Einträge können durch die Angabe einer Basis und
+     Periodische Eintraege koennen durch die Angabe einer Basis und
      des Intervalls angegeben werden. So wird 0 0/2 * * *
-     immer zu jeder geraden vollen Stunde ausgeführt.
+     immer zu jeder geraden vollen Stunde ausgefuehrt.
 
-     Gültige Werte: m s T M W (25 23 * * *)
+     Gueltige Werte: m s T M W (25 23 * * *)
 
      Standard-Einstellung: FCRON_%_TIMES='0 0 * * *'
 
   FCRON_%_USER
      Der unter FCRON_%_COMMAND eingetragene Befehl kann auch unter
-     nicht root-Benutzer ausgeführt werden.
+     nicht root-Benutzer ausgefuehrt werden.
 
-     Gültige Werte: alle Systembenutzer
+     Gueltige Werte: alle Systembenutzer
 
      Standard-Einstellung: FCRON_%_USER='root'
 
   FCRON_%_COMMAND
-     (Befehl): Der Befehl, der zu der angegebenen Zeit ausgeführt
+     (Befehl): Der Befehl, der zu der angegebenen Zeit ausgefuehrt
      werden soll; es sollten immer komplette Pfade angegeben werden.
 
-     Gültige Werte: Fast Alles
+     Gueltige Werte: Fast Alles
 
      Standard-Einstellung: FCRON_%_COMMAND='/usr/bin/foo /etc/foo.conf'
 

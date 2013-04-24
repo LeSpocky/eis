@@ -34,7 +34,7 @@ SSH - secure shell (general settings)
           Gueltige Werte: yes,no
 
    SSHD_USEDNS
-          Legt fest, ob Clientanfrage mit DNS aufgelöst werden oder nur
+          Legt fest, ob Clientanfrage mit DNS aufgeloest werden oder nur
           die IP-Adresse verwendet wird.
 
           Gueltige Werte: yes,no
@@ -43,9 +43,9 @@ SSH - secure shell (general settings)
 
 SSH - secure shell (public key settings for user root)
 
-   Die fuer Public Key Authentication des Users root benötigte Datei
+   Die fuer Public Key Authentication des Users root benoetigte Datei
    /root/.ssh/authorized_keys wird aus den Informationen der
-   Konfiguration generiert. Dazu muessen die öffentlichen Teile der
+   Konfiguration generiert. Dazu muessen die oeffentlichen Teile der
    mittels ssh-keygen generierten Schluesselpaare (identity.pub) in der
    Konfiguration angegeben werden. Das kann auf zwei Arten geschehen:
 
@@ -57,14 +57,14 @@ SSH - secure shell (public key settings for user root)
        Konfiguration wird eine Referenz auf die Datei in Form eines
        absoluten Pfadnamens (beginnend mit '/') angegeben.
 
-   Bei Uebernahme einer Konfigurationsänderung extrahiert das
+   Bei Uebernahme einer Konfigurationsaenderung extrahiert das
    Konfigurationsscript die Schluessel aus der Konfiguration bzw. den dort
    referenzierten Dateien und erstellt die Datei authorized_keys neu.
 
    ACHTUNG
    Hat SSHD_PUBLIC_KEY_N den Wert '0', so wird die Datei
-   /root/.ssh/authorized_keys gelöscht. Wurde diese Datei unter Umgehung
-   der eisfair Konfigurationsprozesse geändert, so gehen diese Aenderungen
+   /root/.ssh/authorized_keys geloescht. Wurde diese Datei unter Umgehung
+   der eisfair Konfigurationsprozesse geaendert, so gehen diese Aenderungen
    verloren.
 
    SSHD_PUBLIC_KEY_N
@@ -81,22 +81,22 @@ SSH - secure shell (log level settings)
           Stufe der Ausfuehrlichkeit, mit der der sshd Meldungen in die
           zentrale Logdatei schreibt.
 
-          Es sind folgende Werte möglich: QUIET FATAL ERROR INFO VERBOSE
+          Es sind folgende Werte moeglich: QUIET FATAL ERROR INFO VERBOSE
           DEBUG DEBUG1 DEBUG2 DEBUG3.
 
           Default: INFO
 
           Bitte beachten: Wird hier eine DEBUG-Stufe eingestellt, so
           werden ggf. Informationen mitgeschrieben, die in den
-          Privatbereich eines User fallen können. Eine solche
+          Privatbereich eines User fallen koennen. Eine solche
           Ausfuehrlichkeit sollte nur wenn unbedingt notwendig
           eingeschaltet werden.
 
           Die Menge der Informationen, die mitgeschrieben werden, steigt
-          ggf. in gewaltige Größenordnungen.
+          ggf. in gewaltige Groessenordnungen.
 
-          Gültige Werte:
+          Gueltige Werte:
           QUIET,FATAL,ERROR,INFO,VERBOSE,DEBUG,DEBUG1,DEBUG2,DEBUG3
 
 
-Ansgar Püster 2007-06-23
+Ansgar Puester 2007-06-23
