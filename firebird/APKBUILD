@@ -3,7 +3,7 @@
 pkgname=firebird
 pkgver=2.1.5
 pkgrel=0
-pkgdesc="Firebird SQL SuperServer"
+pkgdesc="SQL SuperServer, based on InterBase 6.0 code"
 url="http://www.firebirdsql.org"
 arch="all"
 license="GNU"
@@ -17,13 +17,13 @@ source="http://downloads.sourceforge.net/project/firebird/firebird/2.1.5-Release
 	firebird.confd
 	firebird-libio.patch
 	firebird-innetgr.patch
-    firebird-honour-buildflags.patch
-    firebird-cppflags.patch
-    firebird-gcc-4.7.patch
-    firebird-file-perms.patch
-    firebird-log-path.patch
-    firebird-charp-conversion.patch
-    firebird-no-static-link.patch"
+	firebird-honour-buildflags.patch
+	firebird-cppflags.patch
+	firebird-gcc-4.7.patch
+	firebird-file-perms.patch
+	firebird-log-path.patch
+	firebird-charp-conversion.patch
+	firebird-no-static-link.patch"
 
 _builddir="$srcdir/Firebird-2.1.5.18497-0"
 
@@ -45,7 +45,9 @@ build() {
 	--enable-superserver \
 	--datadir=/var/firebird \
 	--includedir=/usr/include \
-	--disable-static || return 1
+	--disable-static \
+	--without-system-editline \
+	--without-system-icu || return 1
 	sleep 1
 	make -j1 || return 1
 }
