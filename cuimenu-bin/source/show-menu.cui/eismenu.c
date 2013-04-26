@@ -1379,24 +1379,19 @@ EisMenuWriteToFile(const wchar_t* text, FILE* out)
 static void
 EisMenuUpdateVersionTitle(EISMENU* eismenu)
 {
-	wchar_t kernel[64 + 1];
 	wchar_t base[64 + 1];
 	int len;
 
-	EisMenuKernelVersion(kernel, 64);
-	EisMenuGetFileData(_T("/etc/version"), base, 64);
+	EisMenuGetFileData(_T("/etc/alpine-release"), base, 64);
 
 	if (eismenu->SubTitle) 
 	{
 		free(eismenu->SubTitle);
 	}
-	len = wcslen(kernel) + wcslen(base) + 25;
+	len = wcslen(base) + 25;
 	eismenu->SubTitle = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 
-	swprintf(eismenu->SubTitle,
-		len,
-		_T("base: %ls  eiskernel: %ls"),
-		base,kernel);
+	swprintf(eismenu->SubTitle, len, _T("Release: %ls"), base);
 }
 
 /* ---------------------------------------------------------------------
