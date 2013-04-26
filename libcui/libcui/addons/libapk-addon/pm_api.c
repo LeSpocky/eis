@@ -749,9 +749,10 @@ PMMatchNames(apk_hash_item item, void *ctx)
 
 	for (i = 0; i < name->providers->num; i++)
 	{
-		if (version == NULL || apk_version_compare_blob(*name->providers->item[i].version, *version) == APK_VERSION_GREATER)
+		if ( version == NULL || apk_version_compare_blob(*name->providers->item[i].version, *version) == APK_VERSION_GREATER)
 			pkg = name->providers->item[i].pkg;
 	}
+
 	if ( pkg )
 	{
 		if ( ictx->reponr > 0 ) {

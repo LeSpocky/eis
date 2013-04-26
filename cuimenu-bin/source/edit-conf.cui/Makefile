@@ -96,7 +96,7 @@ install: $(OUTPUT_SHARED)
 	@mkdir -p $(DESTDIR)/var/install/bin
 	@strip -R .note -R .comment $(OUTPUT_SHARED)
 	@cp $(OUTPUT_SHARED) $(DESTDIR)/var/install/bin
-	
+
 install_static: $(OUTPUT_SHARED) $(OUTPUT_STATIC)
 	@echo "installing $(OUTPUT_STATIC)..."
 	@mkdir -p $(DESTDIR)/var/install/bin

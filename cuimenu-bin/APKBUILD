@@ -10,7 +10,7 @@ license="GNU"
 depends="libcui>=2.0.0"
 depends_dev="libcui-dev>=2.0.0"
 makedepends="$depends_dev"
-install="$pkgname.pre-install $pkgname.post-install"
+install=""
 subpackages=""
 source=""
 
@@ -34,6 +34,7 @@ build() {
 	echo ""
 	cd ${_builddir}/edit-conf.cui
 	make -j1 -s || return 1
+	install -D -m644 ${_builddir}/edit-conf.cui/ecelib ${pkgdir}/var/install/include/ecelib
 	echo ""
 	cd ${_builddir}/eischk
 	make -j1 eischk || return 1
