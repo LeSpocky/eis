@@ -4,8 +4,8 @@ description="Sets a font for the consoles."
 
 depend()
 {
-	need localmount termencoding
-	after hotplug bootmisc
+	need localmount
+	before hostname
 	keyword -openvz -prefix -uml -vserver -xenu -lxc
 }
 
@@ -16,13 +16,7 @@ start()
 #	unicodemap=${unicodemap:-${UNICODEMAP}}
 #	consoletranslation=${consoletranslation:-${CONSOLETRANSLATION}}
 #	unicodemap="lat1u.uni"
-	consoletranslation="8859-1_to_uni.trans"
-
-	if [ -z "$CONSOLEFONT" ]; then
-		ebegin "Using the default console font"
-		eend 0
-		return 0
-	fi
+#	consoletranslation="8859-1_to_uni.trans"
 
 	if [ "$ttyn" = 0 ]; then
 		ebegin "Skipping font setup (rc_tty_number == 0)"
@@ -31,6 +25,7 @@ start()
 	fi
 
 	local x= param= sf_param= retval=0 ttydev=/dev/tty
+	[ -d /dev/vc ] && ttydev=/dev/vc/
 
 	# Get additional parameters
 	if [ -n "$consoletranslation" ]; then
@@ -40,12 +35,24 @@ start()
 		param="$param -u $unicodemap"
 	fi
 
+	# force setup unicode mode
+	ebegin "Setting terminal encoding [UTF-8]"
+	x=1
+	while [ $x -le $ttyn ]
+    do
+		kbd_mode -u -C ${ttydev}${x}
+		printf "\033%G" >${ttydev}${x}
+		: $(( x += 1 ))
+	done
+	eend 0
+
 	# Set the console font
 	ebegin "Setting console font [$CONSOLEFONT]"
-	[ -d /dev/vc ] && ttydev=/dev/vc/
 	x=1
-	while [ $x -le $ttyn ]; do
-		if ! setfont $CONSOLEFONT $param -C $ttydev$x >/dev/null; then
+	while [ $x -le $ttyn ]
+    do
+		if ! setfont $CONSOLEFONT $param -C $ttydev$x 
+        then
 			retval=1
 			break
 		fi
@@ -53,15 +60,6 @@ start()
 	done
 	eend $retval
 	
-	# force setup unicode mode
-	x=1
-	while [ $x -le $ttyn ]; do
-		printf '\033%G' >${ttydev}${x}
-		kbd_mode -u <${ttydev}${x}
-		: $(( x += 1 ))
-	done
-	printf '\033%G' >/dev/console
-	kbd_mode -u </dev/console
 
 	# Set console blank time ESC 9 and VESA powerdown ESC 14
 	if [ "0$CONSOLE_BLANK_TIME" -eq 0 ]

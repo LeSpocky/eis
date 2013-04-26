@@ -76,4 +76,4 @@ package() {
 }
 
 md5sums="34c71feead8ab9c01ec638acea8cd877  kbd-1.15.5.tar.gz
-0d861fdc787a4f4626c462f9dd241ec2  kbd-mini.initd"
+48991f1e81b2825dd3a7af515916147f  kbd-mini.initd"
