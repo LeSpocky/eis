@@ -7,6 +7,7 @@ extra_started_commands="reload"
 
 depend() {
     need clock hostname localmount
+    before net
     provide logger
 }
 
