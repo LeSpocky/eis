@@ -103,7 +103,7 @@ KEYMAP='de-latin1-nodeadkeys'              # load german keymap
 # Console setup
 #------------------------------------------------------------------------------
 
-CONSOLEFONT='Lat15-TerminusBold16'
+CONSOLEFONT='8x16bold'
 
 CONSOLE_BLANK_TIME='30'
 
