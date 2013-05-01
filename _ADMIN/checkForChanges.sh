@@ -89,6 +89,7 @@ for currentFile in `git diff --name-only @{1}..` ; do
     fi
 done
 
+echo "=============================================================================="
 if [ -e /tmp/determinedFolders-$$.txt ] ; then
     # Wipe out duplicate folder entries
     sort -u /tmp/determinedFolders-$$.txt > /tmp/determinedFoldersUnique-$$.txt
@@ -104,3 +105,4 @@ if [ -e /tmp/determinedFolders-$$.txt ] ; then
 else
     echo "No changes on at least one of the package directories"
 fi
+echo "=============================================================================="

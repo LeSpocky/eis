@@ -70,6 +70,7 @@ fi
 iteratePackageFolders ()
 {
     cd $jobsFolder
+	echo "=============================================================================="
     for currentFolder in `ls -d $workspaceFolder/*/ | grep -v "_ADMIN"` ; do
         # Cut last '/' and everything beyond
         currentCheckedPackage="${currentFolder%/*}"
@@ -80,6 +81,7 @@ iteratePackageFolders ()
         createJob "$jobNamePrefix1" "$currentCheckedPackage" "$jobNameSuffix1" "$templateJobName1"
         createJob "$jobNamePrefix2" "$currentCheckedPackage" "$jobNameSuffix2" "$templateJobName2"
     done
+	echo "=============================================================================="
 }
 
 

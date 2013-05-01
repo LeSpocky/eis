@@ -26,7 +26,7 @@ Im Folgenden werden die Moeglichkeiten des Setups erlaeutert.
      bei Verwendung der Default-Einstellungen nach der Installation des
      Paketes unter
 
-         http://<your-URL>/phpmyadmin/Documentation.html
+       http://<your-URL>/phpmyadmin/Documentation.html
 
      aufrufen laesst.
 
