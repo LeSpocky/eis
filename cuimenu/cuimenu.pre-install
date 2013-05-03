@@ -4,6 +4,7 @@ rm -f /etc/check.d/*.apk-new
 rm -f /etc/config.d/*.apk-new
 rm -f /etc/default.d/*.apk-new
 
+rm -f /etc/check.d/apk-repositories
 rm -f /etc/check.d/base
 rm -f /etc/check.d/base.exp
 rm -f /etc/check.d/base.ext
@@ -11,6 +12,7 @@ rm -f /etc/check.d/cron
 rm -f /etc/check.d/cui
 rm -f /etc/check.d/environment
 rm -f /etc/check.d/sshd
+rm -f /etc/default.d/apk-repositories
 rm -f /etc/default.d/base
 rm -f /etc/default.d/cron
 rm -f /etc/default.d/cui

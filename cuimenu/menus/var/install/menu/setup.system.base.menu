@@ -2,7 +2,5 @@
 <title>Base configuration</title>
 <edit package="base">Edit base configuration</edit>
 <edit package="environment">Edit environment configuration</edit>
-<edit package="apk-repositories">Edit apk repository configuration</edit>
 <menu package="base" file="setup.services.advancedconfig.menu">Advanced base configuration file handling</menu>
-<menu package="apk-repositories" file="setup.services.advancedconfig.menu">Advanced apk repository configuration file handling</menu>
 <menu package="environment" file="setup.services.advancedconfig.menu">Advanced environment configuration file handling</menu>

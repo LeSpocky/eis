@@ -6,3 +6,5 @@
 <url/>
 <script file="packages-installed.cui.sh">List installed packages</script>
 <script file="packages-all.cui.sh">Install new packages</script>
+<edit package="apk-repositories">Edit apk repository configuration</edit>
+<menu package="apk-repositories" file="setup.services.advancedconfig.menu">Advanced apk repository configuration file handling</menu>
