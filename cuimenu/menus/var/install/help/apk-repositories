@@ -1,0 +1,40 @@
+<!-- Creation:     2013-05-03  starwarsfan -->
+
+<help name="APK_REPOSITORY_N">
+  Hier wird die Anzahl der zu konfigurierenden apk Repositories eingestellt<br/>
+<br/>
+  Gueltige Werte: Zahlen<br/> 
+  Standard-Einstellung: APK_REPOSITORY_N='3'<br/>
+<br/>
+</help>
+
+
+<help name="APK_REPOSITORY_%_NAME">
+  Hier kann ein Name oder eine Bezeichnung fuer dieses Repository eingegeben
+  werden. Dieser Name dient nur der Uebersicht und wird nicht weiter 
+  ausgewertet.<br/>
+<br/>
+  Gueltige Werte: keine Einschraenkung<br/> 
+  Standard-Einstellung: APK_REPOSITORY_%_NAME=''<br/>
+<br/>
+</help>
+
+
+<help name="APK_REPOSITORY_%_ACTIVE">
+  Hier kann ein Repository deaktiviert werden. Dabei bleiben die Einstellungen
+  fuer eine eventuelle Reaktivierung erhalten, werden aber nicht in die 
+  native Konfiguration geschrieben.<br/>
+<br/>
+  Gueltige Werte: yes, no<br/> 
+  Standard-Einstellung: APK_REPOSITORY_%_ACTIVE='no'<br/>
+<br/>
+</help>
+
+
+<help name="APK_REPOSITORY_%_URL">
+  Hier wird die vollstaendige URL zum Repository angegeben.<br/>
+<br/>
+  Gueltige Werte: vollstaendige URL<br/>
+  Standard-Einstellung: APK_REPOSITORY_%_URL='http://download.eisfair.org/v2.4'<br/>
+<br/>
+</help>

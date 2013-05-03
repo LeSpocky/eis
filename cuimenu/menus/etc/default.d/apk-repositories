@@ -1,0 +1,37 @@
+# ----------------------------------------------------------------------------
+# /etc/default.d/apk-repositories - check table for configuration parameters
+#
+# Creation: 2013-05-03 starwarsfan
+#
+# Copyright (c) 2013 The alpeis-team <team(at)eisfair(dot)org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# ----------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------
+# Apk repository configuration
+# ----------------------------------------------------------------------------
+
+APK_REPOSITORY_N='3'                   # Number of repositories to configure
+APK_REPOSITORY_1_NAME='cd rom'         # Use a name what ever you want. The
+                                       # entered value is only for your overview
+APK_REPOSITORY_1_ACTIVE='no'           # Should this repository be used at the
+                                       # moment? Use: yes or no
+APK_REPOSITORY_1_URL='/media/cdrom/apks'
+                                       # URL to access the repository
+
+APK_REPOSITORY_2_NAME='alpine packages'
+APK_REPOSITORY_2_ACTIVE='yes'
+APK_REPOSITORY_2_URL='http://nl.alpinelinux.org/alpine/v2.4/main'
+
+APK_REPOSITORY_3_NAME='alpeis packages'
+APK_REPOSITORY_3_ACTIVE='yes'
+APK_REPOSITORY_3_URL='http://download.eisfair.org/v2.4'
+
+# ----------------------------------------------------------------------------
+# End
+# ----------------------------------------------------------------------------
