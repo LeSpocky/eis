@@ -1,0 +1,58 @@
+# Contributor: starwarsfan <yves@eisfair.org>
+# Maintainer: starwarsfan <yves@eisfair.org>
+pkgname=cui-phpmyadmin
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="CUI Setup for phpMyAdmin"
+url="http://www.eisfair.org"
+arch="all"
+license="GPL"
+depends="cuimenu phpmyadmin"
+depends_dev=""
+makedepends="$depends_dev"
+install=""
+subpackages=""
+source="${pkgname}.txt
+        ${pkgname}.sh
+        ${pkgname}-update.sh
+        ${pkgname}.help
+        ${pkgname}.setup.services.phpmyadmin.menu
+        ${pkgname}.setup.services.phpmyadmin.tools.menu
+"
+
+_builddir=
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+}
+
+package() {
+	cd "$_builddir"
+	cd ${startdir}/dialog.d
+	for currentDialogScript in `ls`
+	do
+		install -D -m755 $currentDialogScript ${pkgdir}/var/install/dialog.d/$currentDialogScript || return 1
+	done
+	cd -
+	install -D -m744 ${srcdir}/${pkgname}.txt                                  ${pkgdir}/usr/share/doc/phpmyadmin/phpmyadmin.txt || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh                                   ${pkgdir}/var/install/config.d/phpmyadmin.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh                            ${pkgdir}/var/install/config.d/phpmyadmin-update.sh || return 1
+	install -D -m744 ${srcdir}/${pkgname}.help                                 ${pkgdir}/var/install/help/phpmyadmin || return 1
+	install -D -m744 ${srcdir}/${pkgname}.setup.services.phpmyadmin.menu       ${pkgdir}/var/install/menu/setup.services.phpmyadmin.menu || return 1
+	install -D -m744 ${srcdir}/${pkgname}.setup.services.phpmyadmin.tools.menu ${pkgdir}/var/install/menu/setup.services.phpmyadmin.tools.menu || return 1
+}
+md5sums="2021f0d6dba1adc4ddd673fc033f469b  cui-phpmyadmin.txt
+64131047af673e1d3e471857f89d4595  cui-phpmyadmin.sh
+c3bed013f8d63637df5ecddfa5c2ddf7  cui-phpmyadmin-update.sh
+e2989706e4a1b5fb82db94cf24dfc30e  cui-phpmyadmin.help
+5c32ba40b28f6dbb663131a3e6c67167  cui-phpmyadmin.setup.services.phpmyadmin.menu
+6ce8dfde8ba2e32c7e13726c9be362e8  cui-phpmyadmin.setup.services.phpmyadmin.tools.menu"
