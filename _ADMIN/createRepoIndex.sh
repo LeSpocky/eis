@@ -111,7 +111,6 @@ EOF
 
 while [ $# -ne 0 ]
 do
-
     case $1 in
         -help|--help)
             # print usage
@@ -128,9 +127,9 @@ do
             ;;
 
         * )
-            shift
             ;;
     esac
+    shift
 done
 
 # Now do the job :-)
