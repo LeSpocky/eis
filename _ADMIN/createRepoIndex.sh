@@ -76,12 +76,13 @@ createRepoIndex ()
         rm -f $signingWorkDir
     fi
     mkdir $signingWorkDir
+    cd $signingWorkDir
 
     # See http://wiki.alpinelinux.org/wiki/Apkindex_format
-    apk index -f -o $signingWorkDir/APKINDEX.unsigned.tar.gz -d "$apkRepoQualifier" $repoPath/*.apk
-    openssl dgst -sha1 -sign ~/.abuild/${signingPrivateKey} -out $signingWorkDir/.SIGN.RSA.${signingPublicKey} $signingWorkDir/APKINDEX.unsigned.tar.gz
-    tar -c $signingWorkDir/.SIGN.RSA.${signingPublicKey} | abuild-tar --cut | gzip -9 > $signingWorkDir/signature.tar.gz
-    cat $signingWorkDir/signature.tar.gz $signingWorkDir/APKINDEX.unsigned.tar.gz > $repoPath/APKINDEX.tar.gz
+    apk index -f -o APKINDEX.unsigned.tar.gz -d "$apkRepoQualifier" $repoPath/*.apk
+    openssl dgst -sha1 -sign ~/.abuild/${signingPrivateKey} -out .SIGN.RSA.${signingPublicKey} APKINDEX.unsigned.tar.gz
+    tar -c .SIGN.RSA.${signingPublicKey} | abuild-tar --cut | gzip -9 > signature.tar.gz
+    cat signature.tar.gz APKINDEX.unsigned.tar.gz > $repoPath/APKINDEX.tar.gz
 
     # Cleanup
 #    rm -f $signingWorkDir
