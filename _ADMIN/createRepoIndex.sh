@@ -75,6 +75,7 @@ createRepoIndex ()
     if [ -d $signingWorkDir ] ; then
         rm -f $signingWorkDir
     fi
+    mkdir $signingWorkDir
 
     # See http://wiki.alpinelinux.org/wiki/Apkindex_format
     apk index -f -o $signingWorkDir/APKINDEX.unsigned.tar.gz -d "$apkRepoQualifier" $repoPath/*.apk
@@ -83,7 +84,7 @@ createRepoIndex ()
     cat $signingWorkDir/signature.tar.gz $signingWorkDir/APKINDEX.unsigned.tar.gz > $repoPath/APKINDEX.tar.gz
 
     # Cleanup
-    rm -f $signingWorkDir
+#    rm -f $signingWorkDir
 }
 
 
