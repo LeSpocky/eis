@@ -26,6 +26,7 @@ scriptDir=`pwd`
 scriptName=`basename $0`
 
 rtc=0
+signingWorkDir=~/repoSigning
 
 # -----------------------------
 # Check if settings file exists
@@ -60,11 +61,29 @@ fi
 
 
 
+# Set default repo to update
+repoPath=$apkRepositoryFolder2
+
+
+
 # ============================================================================
 #
 createRepoIndex ()
 {
     echo 'Creating repository index'
+
+    if [ -d $signingWorkDir ] ; then
+        rm -f $signingWorkDir
+    fi
+
+    # See http://wiki.alpinelinux.org/wiki/Apkindex_format
+    apk index -f -o $signingWorkDir/APKINDEX.unsigned.tar.gz -d "$apkRepoQualifier" $repoPath/*.apk
+    openssl dgst -sha1 -sign ~/.abuild/${signingPrivateKey} -out $signingWorkDir/.SIGN.RSA.${signingPublicKey} $signingWorkDir/APKINDEX.unsigned.tar.gz
+    tar -c $signingWorkDir/.SIGN.RSA.${signingPublicKey} | abuild-tar --cut | gzip -9 > $signingWorkDir/signature.tar.gz
+    cat $signingWorkDir/signature.tar.gz $signingWorkDir/APKINDEX.unsigned.tar.gz > $repoPath/APKINDEX.tar.gz
+
+    # Cleanup
+    rm -f $signingWorkDir
 }
 
 
@@ -78,9 +97,13 @@ usage ()
     cat <<EOF
 
   Usage:
-  ${0}
+  ${0} [options]
         This script creates the repository index file using the configured
         keypair and stores it on the configured path.
+  Options:
+  -1|--repo1|-2|--repo2
+        Create the index either for configured repository 1 or 2. Default is
+        repository 2 which is in most cases the x86_64 version.
 
 EOF
 }
@@ -95,6 +118,15 @@ do
             usage
             exit 1
             ;;
+
+        -1|--repo1)
+            repoPath=$apkRepositoryFolder1
+            ;;
+
+        -2|--repo2)
+            repoPath=$apkRepositoryFolder2
+            ;;
+
         * )
             shift
             ;;

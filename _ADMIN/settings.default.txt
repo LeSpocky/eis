@@ -52,6 +52,15 @@ jenkinsCliJar=/var/cache/jenkins/war/WEB-INF/jenkins-cli.jar
 jenkinsPasswordFile=/var/lib/jenkins/.ssh/ci-password
 
 # ----------------------------------------------------------------------------
+# Configuration part for repository signing and repository creation.
+# The private key must be located in ~/.abuild/
+signingPrivateKey=YourPrivateKey
+signingPublicKey=${signingPrivateKey}.pub
+apkRepoQualifier=alpeis-ci
+apkRepositoryFolder1=/path/to/repository/v2.4/x86/
+apkRepositoryFolder2=/path/to/repository/v2.4/x86_64/
+
+# ----------------------------------------------------------------------------
 # Use the debug mode: 'true' or 'false'
 # If you switch this to 'true', the scripts will produce a lot of output...
 debug=false
