@@ -20,6 +20,30 @@ package_name=apk-repositories
 
 . /etc/config.d/$package_name
 
+
+
+# ----------------------------------------------------------------------------
+# Busybox wget can't handle https:// urls, so give the user a hint to install
+# gnu wget.
+# ----------------------------------------------------------------------------
+checkHttps ()
+{
+    local givenHost=$1
+    case $givenHost in
+        https*)
+            if ! apk info wget >/dev/null 2>&1 ; then
+                echo "Busybox wget does not suppoert https:// urls! Please install gnu wget."
+                echo "Url $givenHost will be deactivated."
+                commentCharacter='#'
+            fi
+            ;;
+        *)
+            ;;
+    esac
+}
+
+
+
 # ----------------------------------------------------------------------------
 # Create apk repo configuration /etc/apk/repositories
 # ----------------------------------------------------------------------------
@@ -40,12 +64,13 @@ EOF
     while [ "${idx}" -le "${APK_REPOSITORY_N}" ] ; do
 
         eval active='${APK_REPOSITORY_'${idx}'_ACTIVE}'
+        eval host='${APK_REPOSITORY_'${idx}'_URL}'
         if [ "${active}" = 'yes' ] ; then
             commentCharacter=''
+            checkHttps $host
         else
             commentCharacter='#'
         fi
-        eval host='${APK_REPOSITORY_'${idx}'_URL}'
 
         echo ${commentCharacter}${host} >> /etc/apk/repositories
 
