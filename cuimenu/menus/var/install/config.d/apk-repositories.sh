@@ -31,7 +31,7 @@ checkHttps ()
     local givenHost=$1
     case $givenHost in
         https*)
-            if ! apk info wget >/dev/null 2>&1 ; then
+            if ! apk info --installed wget >/dev/null 2>&1 ; then
                 echo "Busybox wget does not suppoert https:// urls! Please install gnu wget."
                 echo "Url $givenHost will be deactivated."
                 commentCharacter='#'
