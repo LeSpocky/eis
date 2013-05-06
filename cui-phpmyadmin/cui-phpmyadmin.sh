@@ -16,11 +16,11 @@
 
 phpMyAdminVersion='3.5.5'
 
-#exec 2>/public/phpmyadmin-trace$$.log
+#exec 2>/tmp/phpmyadmin-trace$$.log
 #set -x
 
 . /etc/config.d/phpmyadmin
-#. /etc/config.d/apache2_php5
+. /etc/config.d/apache2_php5
 . /var/install/bin/phpmyadmin-helpers.sh
 . /var/install/include/eislib
 
