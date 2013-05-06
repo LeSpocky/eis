@@ -3,7 +3,7 @@
 pkgname=cuimenu
 pkgver=2.0.0
 pkgrel=1
-pkgdesc="Eisfair CUI basis menu"
+pkgdesc="Eisfair CUI base menu"
 url="http://www.eisfair.org"
 arch="all"
 license="GPL"
@@ -28,6 +28,6 @@ package() {
 	cp -r ${startdir}/menus/* ${pkgdir}/
 	chmod 0755 ${pkgdir}/usr/sbin/*
 	chmod 0755 ${pkgdir}/var/install/bin/*
+	chmod 0755 ${pkgdir}/var/install/config.d/*
 	chmod 0644 ${pkgdir}/var/install/include/*
 }
-
