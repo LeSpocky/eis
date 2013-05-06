@@ -3,9 +3,8 @@
 # /var/install/config.d/phpmyadmin-update.sh - parameter update script
 #
 # Creation:     2006-09-15 starwarsfan
-# Last Update:  
 #
-# Copyright (c) 2006-2009 The eisfair Team, <team(at)eisfair(dot)org>
+# Copyright (c) 2006-2013 The eisfair Team, <team(at)eisfair(dot)org>
 # Maintained by Y. Schumann <yves(at)eisfair(dot)org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,15 +14,13 @@
 # ----------------------------------------------------------------------------
 
 
-#exec 2>/public/phpmyadmin-update-trace$$.log
+#exec 2>/tmp/phpmyadmin-update-trace$$.log
 #set -x
 
 package_name=phpmyadmin
 
 # include configlib for using printvar
 . /var/install/include/configlib
-# include apache2 config
-. /etc/config.d/apache2
 
 # ----------------------------------------------------------------------------
 # Set the default values for configuration
@@ -201,7 +198,7 @@ createConfigFile()
     internal_conf_file=${1}
     (
     #-------------------------------------------------------------------------
-    printgpl -conf ${package_name} "2006-09-15" "starwarsfan" "2006-2009 Yves Schumann <yves(at)eisfair(dot)org>"
+    printgpl -conf ${package_name} "2006-09-15" "starwarsfan" "2006-2013 Yves Schumann <yves(at)eisfair(dot)org>"
     #-------------------------------------------------------------------------
 
     #-------------------------------------------------------------------------
@@ -429,7 +426,7 @@ createConfigFile()
 createCheckFile()
 {
     #-------------------------------------------------------------------------
-    printgpl -check ${package_name} "2006-09-15" "starwarsfan" "2006-2009 Yves Schumann <yves(at)eisfair(dot)org>" >/etc/check.d/${package_name}
+    printgpl -check ${package_name} "2006-09-15" "starwarsfan" "2006-2013 Yves Schumann <yves(at)eisfair(dot)org>" >/etc/check.d/${package_name}
     #-------------------------------------------------------------------------
     cat >>/etc/check.d/${package_name} <<EOF
 # Variable                               OPT_VARIABLE                            VARIABLE_N                          VALUE
@@ -557,7 +554,7 @@ EOF
 createExpFile()
 {
     #-------------------------------------------------------------------------
-    printgpl -check_exp ${package_name} "2006-09-16" "starwarsfan" "2006-2009 Yves Schumann <yves(at)eisfair(dot)org>" >/etc/check.d/${package_name}.exp
+    printgpl -check_exp ${package_name} "2006-09-16" "starwarsfan" "2006-2013 Yves Schumann <yves(at)eisfair(dot)org>" >/etc/check.d/${package_name}.exp
     #-------------------------------------------------------------------------
     cat >>/etc/check.d/${package_name}.exp <<EOF
 
@@ -629,7 +626,7 @@ EOF
 createExtFile()
 {
     #-------------------------------------------------------------------------
-    printgpl -check_ext ${package_name} "2006-09-16" "starwarsfan" "2006-2009 Yves Schumann <yves(at)eisfair(dot)org>" >/etc/check.d/${package_name}.ext
+    printgpl -check_ext ${package_name} "2006-09-16" "starwarsfan" "2006-2013 Yves Schumann <yves(at)eisfair(dot)org>" >/etc/check.d/${package_name}.ext
     #-------------------------------------------------------------------------
     cat >>/etc/check.d/${package_name}.ext <<EOF
 
