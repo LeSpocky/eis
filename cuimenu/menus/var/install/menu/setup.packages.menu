@@ -1,10 +1,8 @@
-<!-- /var/install/menu/setup.packages.section.menu -->
+<!-- /var/install/menu/setup.packages.menu -->
 <!-- Creation:     long time ago fm -->
-<!-- Last Update:  $Id: setup.packages.menu 31308 2012-07-24 10:54:48Z jv $ -->
-<package>base</package>
+<package>apk-repositories</package>
 <title>Package administration</title>
-<url/>
 <script file="packages-installed.cui.sh">List installed packages</script>
 <script file="packages-all.cui.sh">Install new packages</script>
-<edit package="apk-repositories">Edit apk repository configuration</edit>
-<menu package="apk-repositories" file="setup.services.advancedconfig.menu">Advanced apk repository configuration file handling</menu>
+<edit>Edit apk repository configuration</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced apk repository configuration file handling</menu>
