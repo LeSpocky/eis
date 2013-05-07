@@ -2,12 +2,12 @@
 # Maintainer: starwarsfan <yves@eisfair.org>
 pkgname=cui-phpmyadmin
 pkgver=1.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="CUI Setup for phpMyAdmin"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
-depends="cuimenu cui-apache2 phpmyadmin"
+depends="cuimenu cui-apache2 cui-php-apache2 phpmyadmin"
 depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.post-install $pkgname.post-deinstall"
