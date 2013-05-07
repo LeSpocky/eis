@@ -1,10 +1,5 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
-# /var/install/bin/edit - ask user for edit
-#
-# Creation   :  2003-07-19 fm
-# Last Update:  $Id: edit 27036 2012-11-08 17:24:49Z jv $
-#
 # Copyright (c) 2001-2011 the eisfair team, team@eisfair(dot)org
 #
 # usage: edit [--apply|--apply-stopstart] file
@@ -12,14 +7,11 @@
 #
 #----------------------------------------------------------------------------
 
-# include configuration
-. /etc/config.d/setup
-
 # include backup
 . /var/install/bin/config_shlib
 
 apply=''
-case "${1}" in
+case "$1" in
     --apply|-apply)
         apply='restart'
         shift
@@ -85,9 +77,9 @@ fi
 # call apply-script if exists
 apply_script()
 {
-    if [ -f /var/install/config.d/$1.sh ]
+    if [ -f /var/install/config.d/${1}.sh ]
     then
-        sh /var/install/config.d/$1.sh
+        sh /var/install/config.d/${1}.sh
     else
         return 0
     fi
@@ -144,6 +136,8 @@ then
                             /sbin/rc-update -q del $current_package                    
                         fi
                     fi
+                else
+                    apply_script "$current_package"
                 fi
             done
             sleep 1
