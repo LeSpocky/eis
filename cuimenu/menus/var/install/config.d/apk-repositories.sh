@@ -63,6 +63,5 @@ while [ "${idx}" -le "${APK_REPOSITORY_N}" ] : do
 done
 
 echo "Apk repository configuration written."
-echo
 
 exit 0
