@@ -48,8 +48,7 @@ idx=1
 while [ "${idx}" -le "${APK_REPOSITORY_N}" ] : do
     eval active='${APK_REPOSITORY_'${idx}'_ACTIVE}'
     eval host='${APK_REPOSITORY_'${idx}'_URL}'
-    if [ "${active}" = 'yes' ] 
-    then
+    if [ "${active}" = 'yes' ] ; then
         commentCharacter=''
         checkHttps ${host}
     else
