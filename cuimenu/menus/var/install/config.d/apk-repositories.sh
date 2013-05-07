@@ -45,7 +45,7 @@ EOF
 
 # Begin idx -le ${APK_REPOSITORY_N}
 idx=1
-while [ "${idx}" -le "${APK_REPOSITORY_N}" ] : do
+while [ "${idx}" -le "${APK_REPOSITORY_N}" ] ; do
     eval active='${APK_REPOSITORY_'${idx}'_ACTIVE}'
     eval host='${APK_REPOSITORY_'${idx}'_URL}'
     if [ "${active}" = 'yes' ] ; then
