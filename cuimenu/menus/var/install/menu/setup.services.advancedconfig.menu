@@ -1,6 +1,3 @@
-<!-- /var/install/menu/setup.services.advancedconfig.menu -->
-<!-- Creation:     12.03.2005  ap -->
-<!-- Last Update:  $Id: setup.services.advancedconfig.menu 24471 2010-06-10 21:14:01Z schlotze $ -->
 <title>Advanced $PACKAGE-configuration file handling</title>
 <script file="template-restore-dconf">Restore configuration file from default directory</script>
 <script file="template-restore-bconf">Restore configuration file from backup directory</script>

@@ -1,6 +1,3 @@
-<!-- /var/install/menu/setup.users.menu -->
-<!-- Creation:     05.04.2005  jed -->
-<!-- Last Update:  $Id: setup.users.menu 24471 2010-06-10 21:14:01Z schlotze $ -->
 <package>base</package>
 <title>User administration</title>
 <script file="list-users">List users</script>

@@ -1,6 +1,3 @@
-<!-- /var/install/menu/setup.system.cron.menu    -->
-<!-- Creation:     2005-06-03  max               -->
-<!-- Last Update:  $Id: setup.system.cron.menu 24471 2010-06-10 21:14:01Z schlotze $ -->
 <package>fcron</package>
 <title>Cron administration</title>
 <doc>View documentation</doc>

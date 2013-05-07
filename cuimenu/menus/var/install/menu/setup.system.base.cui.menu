@@ -1,5 +1,3 @@
-<!-- Creation:     2005-08-10  dv -->
-<!-- Last Update:  $Id: setup.system.base.cui.menu 24471 2010-06-10 21:14:01Z schlotze $ -->
 <package>cui</package>
 <title>Menu and color settings</title>
 <script file="system-base-set-menu-colors">Select predefined style</script>

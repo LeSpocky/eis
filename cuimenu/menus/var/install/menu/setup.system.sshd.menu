@@ -1,6 +1,3 @@
-<!-- /var/install/menu/setup.system.cron.menu    -->
-<!-- Creation:     2007-11-20 jv                 -->
-<!-- Last Update:  $Id: setup.system.ssh.menu 24471 2010-06-10 21:14:01Z schlotze $ -->
 <package>sshd</package>
 <title>SSH administration</title>
 <doc>View documentation</doc>
