@@ -1,13 +1,12 @@
 
                      Quassel-Core - Distributed IRC Client
 
-   Version 0.1.3 - Stand 04.10.2011
-   © Marcel Weiler, <marcel(at)eisfair(dot)org>
-   © 2001-2011 The Eisfair Team, <team(at)eisfair(dot)org>
+   Marcel Weiler, <marcel(at)eisfair(dot)org>
+   2001-2013 The eisfair team, <team(at)eisfair(dot)org>
 
                                    Einleitung
 
-   Dieses Paket enthaelt den Kern des Quassel-IRC Clients (Version 0.7.3).
+   Dieses Paket enthaelt den Kern des Quassel-IRC Clients.
 
    Quassel basiert auf dem Client-Server-Modell: Die Kern-Anwendung kann
    auf einem immer mit dem Internet verbundenen Server ausgefuehrt werden
@@ -53,11 +52,11 @@
 
                                 Voraussetzungen
 
-   Dieses Paket benoetigt mindestens die Base 1.6.5 sowie das CERTS Paket.
+   Dieses Paket benoetigt ... (todo)
 
                               Sicherung der Daten
 
-   Es wird empfohlen die Daten unter /data/packages/quassel-core/ in
+   Es wird empfohlen die Daten unter ... (todo) in
    regelmaessigem Abstand zu sichern, da dort die SQLite Datenbank, sowie
    das Zertifikat und die Konfiguration gespeichert werden. Dies kann z.B.
    mit dem Paket rsnapshot o.ae. erledigt werden.
@@ -150,12 +149,9 @@
 
           Standardeinstellung: QUASSEL_CORE_LOG_INTERVAL='weekly'
 
-   Hinweis: Alle weiteren Einstellungen werden direkt ueber den Client in
-   der SQLite Datenbank konfiguriert.
-
-    Last Update:
-    $Id: quassel-core.txt 28880 2011-10-04 11:57:24Z marwe $
-     __________________________________________________________________
+    Hinweis: Alle weiteren Einstellungen werden direkt ueber den Client in
+    der SQLite Datenbank konfiguriert.
+    __________________________________________________________________
 
     Marcel Weiler 2011-10-04
 

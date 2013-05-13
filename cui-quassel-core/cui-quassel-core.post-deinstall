@@ -1,0 +1,5 @@
+#!/bin/sh
+
+/var/install/bin/del-menu setup.services.menu setup.services.quassel-core.menu
+rm -f /etc/backup.d/quassel-core*
+exit 0

@@ -1,5 +1,4 @@
 <!-- Creation:     2009-12-14 Marcel Weiler  -->
-<!-- Last Update:  $Id: quassel-core 22412 2009-12-25 18:12:08Z marwe $ -->
 
 <help name="START_QUASSEL_CORE">
     Fuer die Aktivierung von 'QUASSEL_CORE' muss diese Variable

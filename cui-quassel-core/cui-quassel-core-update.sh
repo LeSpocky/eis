@@ -3,9 +3,8 @@
 # /var/install/config.d/quassel-core-update.sh - paramater update script
 #
 # Creation   : 2009-12-14 Marcel Weiler
-# Last update: $Id: quassel-core-update.sh 32624 2013-01-09 20:39:54Z starwarsfan $
 #
-# Copyright (c) 2001-2010 The eisfair Team, <team(at)eisfair(dot)org>
+# Copyright (c) 2001-2013 The eisfair Team, <team(at)eisfair(dot)org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

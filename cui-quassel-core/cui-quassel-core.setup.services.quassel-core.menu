@@ -1,6 +1,5 @@
 <!-- /var/install/menu/setup.services.quassel-core.menu -->
 <!-- Creation:      2009-12-22  marwe -->
-<!-- Last Update:   $Id: setup.services.quassel-core.menu 22392 2009-12-23 18:49:11Z marwe $ -->
 <package>quassel-core</package>
 <title>Quassel-Core administration</title>
 <doc>View documentation</doc>
