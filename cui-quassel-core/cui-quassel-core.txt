@@ -1,0 +1,165 @@
+
+                     Quassel-Core - Distributed IRC Client
+
+   Version 0.1.3 - Stand 04.10.2011
+   © Marcel Weiler, <marcel(at)eisfair(dot)org>
+   © 2001-2011 The Eisfair Team, <team(at)eisfair(dot)org>
+
+                                   Einleitung
+
+   Dieses Paket enthaelt den Kern des Quassel-IRC Clients (Version 0.7.3).
+
+   Quassel basiert auf dem Client-Server-Modell: Die Kern-Anwendung kann
+   auf einem immer mit dem Internet verbundenen Server ausgefuehrt werden
+   und ein oder mehrere Clients verbinden sich mit dem Kern. Auf diese
+   Weise kann die Verbindung zum IRC aufrechterhalten werden, auch wenn
+   die Clients beendet wurden. Vorbilder fuer diese Funktionalitaet waren
+   die Kombination aus Screen und textbasierten IRC-Clients wie Irssi oder
+   WeeChat, teils IRC-Bouncer.
+
+   Der Quassel-Client kann fuer Windows, Linux und MacOS unter folgender
+   Adresse heruntergeladen werden: [1]http://quassel-irc.org/downloads
+
+                                   Funktionen
+
+   Quassel ermoeglicht die gleichzeitige Verbindung zu mehreren
+   IRC-Servern. Fuer die Verwaltung von Spitznamen, Abwesenheitsgrund etc.
+   koennen unterschiedliche Identitaeten angelegt werden. Um die Eingabe
+   haeufig verwendeter Befehle zu erleichtern, ist es moeglich Aliase
+   anzulegen. Erweiterte Funktionen sind der Chat-Monitor, in welchem die
+   Unterhaltungen einer (konfigurierbaren) Auswahl an Kanaelen sowie eine
+   Webseitenvorschau fuer URLs in der Unterhaltung angezeigt werden.
+
+   Quassel speichert den Gespraechsverlauf sowie die Benutzer und
+   Passwoerter in einer SQLite-Datenbank. Beim Hochscrollen des
+   Chatfensters werden aeltere Ausschnitte des Verlaufs automatisch
+   geladen. Auf diese Weise ist ein nahtloses Betrachten des
+   zurueckliegenden Gespraechs moeglich.
+
+   Der Verlauf kann jedoch noch nicht direkt exportiert werden; ebenso
+   gibt es im Moment keine einfache Moeglichkeit, laenger zurueckliegende
+   Gespraeche zu durchsuchen.
+
+   Die Verbindung zwischen Client und Kern kann per SSL verschluesselt
+   werden.
+
+   Die Einrichtung des Clients wird auf folgender Webseite inkl.
+   Screenshots erklaert:
+   [2]http://bugs.quassel-irc.org/wiki/quassel-irc#Connecting-to-the-core
+
+   Zum Anlegen neuer Benutzer und Aendern der Passwoerter bereits
+   existierender Benutzer gibt es ein eigenes Untermenue im eisfair
+   Setup-Programm.
+
+                                Voraussetzungen
+
+   Dieses Paket benoetigt mindestens die Base 1.6.5 sowie das CERTS Paket.
+
+                              Sicherung der Daten
+
+   Es wird empfohlen die Daten unter /data/packages/quassel-core/ in
+   regelmaessigem Abstand zu sichern, da dort die SQLite Datenbank, sowie
+   das Zertifikat und die Konfiguration gespeichert werden. Dies kann z.B.
+   mit dem Paket rsnapshot o.ae. erledigt werden.
+
+                                  Installation
+
+   Das quassel-core Paket wird ueber das Setup-Menue installiert. Wird
+   eine aeltere Paket-Version vorgefunden, so wird deren Konfiguration
+   gesichert und das alte Paket deinstalliert bevor die neuen
+   Programmdateien installiert und die Konfiguration uebernommen wird.
+
+   Bei einer Erstinstallation muss der quassel-core ueber einen Client
+   konfiguriert werden. Dazu fragt der Client bei der ersten Verbindung
+   die noetigen Daten (Admin-User etc.) ab.
+
+                            Menues im Setup-Programm
+
+   Das Hauptmenue besteht aus den folgenden Punkten:
+
+   1.
+          View documentation: Zeigt diese Dokumentation an
+   2.
+          Edit configuration: Oeffnet den Konfigurationseditor
+   3.
+          Advanced configuration file handling: Verwalten von
+          Konfigurationen
+   4.
+          Quassel-Core status: Zeigt an, ob der quassel-core laeuft
+   5.
+          Start Quassel-Core: Startet den quassel-core
+   6.
+          Stop Quassel-Core: Beendet den quassel-core
+   7.
+          Restart Quassel-Core: Startet den quassel-core neu
+   8.
+          User Management: Untermenue zum anlegen neuer Benutzer
+          und aendern von Passwoertern bestehender Benutzer
+   0.
+          Exit
+
+   Das Untermenue User Management besteht aus den folgenden Punkten:
+
+   1.
+          Add User to Database: Anlegen eines neuen Benutzers
+   2.
+          Change Password of User: Das Passwort eines bestehenden Users
+          aendern
+   0.
+          Exit
+
+                            Die Konfigurationsdatei
+
+   In der Konfigurationsdatei, die ueber das Menue zugaenglich ist, sind
+   folgende Parameter vorhanden; wer sie von Hand editieren will findet
+   sie unter /etc/config.d/quassel-core.
+
+   START_QUASSEL_CORE
+          Sorgt dafuer, das der quassel-core gestartet wird.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: START_QUASSEL_CORE='no'
+
+   QUASSEL_CORE_PORT
+          Hier wird der Port eingestellt auf dem quassel-core laufen soll
+
+          Gueltige Werte: Port
+
+          Standardeinstellung: QUASSEL_CORE_PORT='4242'
+
+   QUASSEL_CORE_LOG_LEVEL
+          Mit diesem Parameter wird das Loglevel eingestellt.
+
+          Gueltige Werte: debug, info, warning, error
+
+          Standardeinstellung: QUASSEL_CORE_LOG_LEVEL='info'
+
+   QUASSEL_CORE_LOG_COUNT
+          Anzahl der Logfiles, die gespeichert werden sollen.
+
+          Gueltige Werte: Zahl
+
+          Standardeinstellung: QUASSEL_CORE_LOG_COUNT='4'
+
+   QUASSEL_CORE_LOG_INTERVAL
+          Hiermit wird festgelegt in welchem Intervall die Logfiles
+          rotiert werden sollen.
+
+          Gueltige Werte: daily, weekly, monthly
+
+          Standardeinstellung: QUASSEL_CORE_LOG_INTERVAL='weekly'
+
+   Hinweis: Alle weiteren Einstellungen werden direkt ueber den Client in
+   der SQLite Datenbank konfiguriert.
+
+    Last Update:
+    $Id: quassel-core.txt 28880 2011-10-04 11:57:24Z marwe $
+     __________________________________________________________________
+
+    Marcel Weiler 2011-10-04
+
+Verweise
+
+   1. http://quassel-irc.org/downloads
+   2. http://bugs.quassel-irc.org/wiki/quassel-irc#Connecting-to-the-core

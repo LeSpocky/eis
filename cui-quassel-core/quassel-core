@@ -1,0 +1,145 @@
+#!/bin/bash
+# ----------------------------------------------------------------------------
+# /var/install/deinstall/quassel-core - deinstall script
+#
+# Creation   : 2009-12-14 Marcel Weiler
+# Last update: $Id: quassel-core 32624 2013-01-09 20:39:54Z starwarsfan $
+#
+# Copyright (c) 2001-2010 The eisfair Team, <team(at)eisfair(dot)org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# ----------------------------------------------------------------------------
+
+# include eislib
+. /var/install/include/eislib
+
+# Set package name
+packageName=quassel-core
+
+# Set filelist
+filelist=/etc/filelist.d/${packageName}-files.txt
+
+# Stop reagardless if update or not
+# (will be restarted in case START_QUASSEL_CORE='yes')
+/etc/init.d/${packageName} stop
+
+# Check if this is an update
+if [ "${1}" == "update" ] ; then
+    mecho -info "Updating package '${packageName}' (removing previous version)"
+    update=true
+
+    # ----------------------------------------------------------------------
+    # Add everything to this list what should _not_ be removed during an
+    # update. This can be folders too, but let the bash expand their content
+    # using an '*' like 'foo/bar/*'. The entries listet here must be given
+    # on the file list of the package. All other stuff must be remove by hand
+    # using an additional line like 'rm /foo/bar/foobar.txt'.
+    filesToLeave="etc/config.d/${packageName}
+                  etc/backup.d/${packageName}*
+                  etc/filelist.d/${packageName}-files.txt
+                  var/install/deinstall/${packageName}
+                  var/install/menu/setup.services.${packageName}*"
+else
+    mecho -info "Removing package '${packageName}'"
+    update=false
+    filesToLeave=''
+fi
+
+# ----------------------------------------------------------------------------
+# Remove package content except some special files if it's an update
+# instead of a deinstallation
+# ----------------------------------------------------------------------------
+while read id perm user group package file
+do
+    # ------------------------------------------------
+    # Remove file only if it is not on the ignore list
+    removeCurrentFile=true
+    for currentFileToLeave in ${filesToLeave} ; do
+        if [ "${currentFileToLeave}" == "${file}" ] ; then
+            removeCurrentFile=false
+            break
+        fi
+    done
+
+    if ${removeCurrentFile} ; then
+        case ${id} in
+            b|u)
+                if [ "${file}" != "tmp/install.sh" -a "${file}" != "tmp/preinstall.sh" ] ; then
+                    rm -f /${file}
+                fi
+            ;;
+
+            f)
+                # Remove directories
+                rmdir --ignore-fail-on-non-empty /${file}
+            ;;
+        esac
+    fi
+done < ${filelist}
+
+
+
+# ----------------------------------------------------------------------------
+# Check files and default config must be removed separately because they
+# are not on the file list if the package is used as it was created by
+# create-package-new.sh, they are created dynamically during installation.
+# ----------------------------------------------------------------------------
+rm -f /etc/check.d/${packageName}*
+rm -f /etc/default.d/${packageName}*
+rm -f /etc/logrotate.d/${packageName}*
+
+
+# ----------------------------------------------------------------------------
+# Stop remove for update only
+# ----------------------------------------------------------------------------
+if ${update} ; then
+    exit 0
+fi
+
+
+# ----------------------------------------------------------------------------
+# Remove User and Group
+# ----------------------------------------------------------------------------
+/var/install/bin/remove-user -f quasselcore n
+/var/install/bin/remove-group -f quassel
+
+# ----------------------------------------------------------------------------
+# Ask User to remove SQLite Database, Certificate and Core Config
+# ----------------------------------------------------------------------------
+if /var/install/bin/ask 'Do you want to remove the SQLite Database, Certificate and Core Config as well (purge)?' ; then
+    rm -rf /data/packages/${packageName}*
+fi
+
+# ----------------------------------------------------------------------------
+# Remove rc.d files
+# ----------------------------------------------------------------------------
+rm -f /etc/rc2.d/S??${packageName}
+rm -f /etc/rc2.d/K??${packageName}
+
+# ----------------------------------------------------------------------------
+# Remove logfiles
+# ----------------------------------------------------------------------------
+rm -rf /var/log/${packageName}*
+
+# ----------------------------------------------------------------------------
+# Remove package from menu system / remove all menu and config files
+# ----------------------------------------------------------------------------
+/var/install/bin/del-menu setup.services.menu setup.services.${packageName}.menu
+
+# ----------------------------------------------------------------------------
+# Remove config file
+# ----------------------------------------------------------------------------
+rm -f /etc/config.d/${packageName}
+rm -f /etc/backup.d/${packageName}*
+rm -f /etc/filelist.d/${packageName}-files.txt
+
+# ----------------------------------------------------------------------------
+# Remove deinstall script
+# ----------------------------------------------------------------------------
+rm -f /var/install/deinstall/${packageName}
+
+# ----------------------------------------------------------------------------
+exit 0
