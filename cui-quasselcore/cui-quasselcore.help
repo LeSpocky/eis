@@ -12,7 +12,7 @@
 
 
 <help name="QUASSEL_CORE_PORT">
-    Hier wird der Port eingestellt auf dem quassel-core laufen soll.<br/>
+    Hier wird der Port eingestellt auf dem quasselcore laufen soll.<br/>
 <br/>
     Standard-Einstellung: QUASSEL_CORE_PORT='4242'<br/>
 </help>

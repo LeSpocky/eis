@@ -1,6 +1,6 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# /tmp/install.sh - quassel-core installation
+# /tmp/install.sh - quasselcore installation
 #
 # Creation   : 2009-12-14 Marcel Weiler
 # Last update: $Id: install.sh 32624 2013-01-09 20:39:54Z starwarsfan $
@@ -13,22 +13,22 @@
 # (at your option) any later version.
 # ----------------------------------------------------------------------------
 
-#exec 2> /tmp/quassel-core-install-trace_$$.log
+#exec 2> /tmp/quasselcore-install-trace_$$.log
 #set -x
 
 # include eislib
 . /var/install/include/eislib
 
 # set package name
-packageName=quassel-core
+packageName=quasselcore
 
 # some variables
 QUASSEL_GROUP=quassel
 QUASSEL_GROUP_ID=179
 QUASSEL_USER=quasselcore
 QUASSEL_USER_ID=179
-QUASSEL_HOME=/data/packages/quassel-core
-QUASSEL_LOG=/var/log/quassel-core
+QUASSEL_HOME=/data/packages/quasselcore
+QUASSEL_LOG=/var/log/quasselcore
 QUASSEL_CERT=${QUASSEL_HOME}/quasselCert.pem
 
 # ----------------------------------------------------------------------------
@@ -43,7 +43,7 @@ fi
 # Add Group and User
 # ----------------------------------------------------------------------------
 /var/install/bin/add-group ${QUASSEL_GROUP} ${QUASSEL_GROUP_ID} >/dev/null
-/var/install/bin/add-user ${QUASSEL_USER} '*' ${QUASSEL_USER_ID} ${QUASSEL_GROUP_ID} "System User for quassel-core" ${QUASSEL_HOME} /bin/false >/dev/null
+/var/install/bin/add-user ${QUASSEL_USER} '*' ${QUASSEL_USER_ID} ${QUASSEL_GROUP_ID} "System User for quasselcore" ${QUASSEL_HOME} /bin/false >/dev/null
 
 # ----------------------------------------------------------------------------
 # Change rights of QUASSEL_HOME
@@ -72,23 +72,23 @@ fi
 
 # Check if there is already a certificate or a link to one,
 # if not, then create it
-if [ ! -L /usr/local/ssl/certs/quassel-core.pem -a \
-     ! -f /usr/local/ssl/certs/quassel-core.pem ] ; then
-    mecho -info "Creating quassel-core.pem"
+if [ ! -L /usr/local/ssl/certs/quasselcore.pem -a \
+     ! -f /usr/local/ssl/certs/quasselcore.pem ] ; then
+    mecho -info "Creating quasselcore.pem"
     mecho -warn "Notice: The Common Name (you will type it in a moment) has to be the ServerName!"
-    /var/install/bin/certs-create-tls-certs client batch "quassel-core"
+    /var/install/bin/certs-create-tls-certs client batch "quasselcore"
 fi
 
 # Now create a link to the certificate in the quassel data directory
 if [ ! -L ${QUASSEL_CERT} -a \
      ! -f ${QUASSEL_CERT} ] ; then
-    ln -s /usr/local/ssl/certs/quassel-core.pem ${QUASSEL_CERT}
+    ln -s /usr/local/ssl/certs/quasselcore.pem ${QUASSEL_CERT}
 fi
 
 # ----------------------------------------------------------------------------
 # Add menu
 # ----------------------------------------------------------------------------
-/var/install/bin/add-menu setup.services.menu setup.services.${packageName}.menu "Quassel-Core"
+/var/install/bin/add-menu setup.services.menu setup.services.${packageName}.menu "Quasselcore"
 
 # ----------------------------------------------------------------------------
 # Create default config or update current config

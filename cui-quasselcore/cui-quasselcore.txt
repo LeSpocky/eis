@@ -1,5 +1,5 @@
 
-                     Quassel-Core - Distributed IRC Client
+                     Quasselcore - Distributed IRC Client
 
    Marcel Weiler, <marcel(at)eisfair(dot)org>
    2001-2013 The eisfair team, <team(at)eisfair(dot)org>
@@ -63,12 +63,12 @@
 
                                   Installation
 
-   Das quassel-core Paket wird ueber das Setup-Menue installiert. Wird
+   Das quasselcore Paket wird ueber das Setup-Menue installiert. Wird
    eine aeltere Paket-Version vorgefunden, so wird deren Konfiguration
    gesichert und das alte Paket deinstalliert bevor die neuen
    Programmdateien installiert und die Konfiguration uebernommen wird.
 
-   Bei einer Erstinstallation muss der quassel-core ueber einen Client
+   Bei einer Erstinstallation muss der quasselcore ueber einen Client
    konfiguriert werden. Dazu fragt der Client bei der ersten Verbindung
    die noetigen Daten (Admin-User etc.) ab.
 
@@ -84,13 +84,13 @@
           Advanced configuration file handling: Verwalten von
           Konfigurationen
    4.
-          Quassel-Core status: Zeigt an, ob der quassel-core laeuft
+          Quasselcore status: Zeigt an, ob der quasselcore laeuft
    5.
-          Start Quassel-Core: Startet den quassel-core
+          Start Quasselcore: Startet den quasselcore
    6.
-          Stop Quassel-Core: Beendet den quassel-core
+          Stop Quasselcore: Beendet den quasselcore
    7.
-          Restart Quassel-Core: Startet den quassel-core neu
+          Restart Quasselcore: Startet den quasselcore neu
    8.
           User Management: Untermenue zum anlegen neuer Benutzer
           und aendern von Passwoertern bestehender Benutzer
@@ -111,17 +111,17 @@
 
    In der Konfigurationsdatei, die ueber das Menue zugaenglich ist, sind
    folgende Parameter vorhanden; wer sie von Hand editieren will findet
-   sie unter /etc/config.d/quassel-core.
+   sie unter /etc/config.d/quasselcore.
 
    START_QUASSEL_CORE
-          Sorgt dafuer, das der quassel-core gestartet wird.
+          Sorgt dafuer, das der quasselcore gestartet wird.
 
           Gueltige Werte: yes, no
 
           Standardeinstellung: START_QUASSEL_CORE='no'
 
    QUASSEL_CORE_PORT
-          Hier wird der Port eingestellt auf dem quassel-core laufen soll
+          Hier wird der Port eingestellt auf dem quasselcore laufen soll
 
           Gueltige Werte: Port
 

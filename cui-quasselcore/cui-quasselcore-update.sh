@@ -1,6 +1,6 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# /var/install/config.d/quassel-core-update.sh - paramater update script
+# /var/install/config.d/quasselcore-update.sh - paramater update script
 #
 # Creation   : 2009-12-14 Marcel Weiler
 #
@@ -12,11 +12,11 @@
 # (at your option) any later version.
 # ----------------------------------------------------------------------------
 
-#exec 2> /tmp/quassel-core-update-trace$$.log
+#exec 2> /tmp/quasselcore-update-trace$$.log
 #set -x
 
 # set packages name
-packageName=quassel-core
+packageName=quasselcore
 
 # include configlib for using printvar
 . /var/install/include/configlib
@@ -64,7 +64,7 @@ makeConfigFile()
     printgroup "Basic configuration"
     # ------------------------------------------------------------------------
     printvar 'START_QUASSEL_CORE'          'Use: yes or no'
-    printvar 'QUASSEL_CORE_PORT'           'Port for quassel-core'
+    printvar 'QUASSEL_CORE_PORT'           'Port for quasselcore'
 
     # --------------------------------------------------------------
     printgroup 'Log settings'

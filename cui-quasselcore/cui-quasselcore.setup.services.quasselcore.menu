@@ -1,0 +1,12 @@
+<!-- /var/install/menu/setup.services.quasselcore.menu -->
+<!-- Creation:      2009-12-22  marwe -->
+<package>quasselcore</package>
+<title>Quasselcore administration</title>
+<doc>View documentation</doc>
+<edit>Edit configuration</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
+<init task="status">Quasselcore status</init>
+<init task="start">Start Quasselcore</init>
+<init task="stop">Stop Quasselcore</init>
+<init task="restart">Restart Quasselcore</init>
+<menu file="setup.services.quasselcore.user">User Management</menu>
