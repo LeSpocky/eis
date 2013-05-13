@@ -1,9 +1,9 @@
 # Contributor: starwarsfan <yves@eisfair.org>
 # Maintainer: team@eisfair.org
-pkgname=quassel-core
+pkgname=quasselcore
 pkgver=1.0.0
 pkgrel=0
-pkgdesc="Quassel core binary files"
+pkgdesc="Quasselcore binary files"
 url="http://www.quassel-irc.org/downloads"
 arch="all"
 license="GNU"
@@ -12,7 +12,8 @@ depends_dev=""
 makedepends="$depends_dev"
 install=""
 subpackages=""
-source="http://www.quassel-irc.org/pub/quassel-0.9.0.tar.bz2"
+source="http://www.quassel-irc.org/pub/quassel-0.9.0.tar.bz2
+    ${pkgname}.initd"
 
 _builddir="$srcdir/quassel-0.9.0"
 
@@ -37,6 +38,7 @@ package() {
 	cd ${_builddir}
 	cp quasselcore ${pkgdir}/usr/bin/
 #	make -j1 DESTDIR="$pkgdir" install || return 1
+	install -m 0755 -D ${srcdir}/$pkgname.initd ${pkgdir}/etc/init.d/$pkgname || return 1
 }
 
 md5sums="29b843f18d703abfadb8fc729ca1df11  quassel-0.9.0.tar.bz2"
