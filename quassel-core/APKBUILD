@@ -1,6 +1,6 @@
 # Contributor: starwarsfan <yves@eisfair.org>
 # Maintainer: team@eisfair.org
-pkgname=quassel
+pkgname=quassel-core
 pkgver=1.0.0
 pkgrel=0
 pkgdesc="Quassel core binary files"
