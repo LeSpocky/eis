@@ -41,4 +41,30 @@
 <br/>
     Standard-Einstellung: QUASSEL_CORE_LOG_INTERVAL='weekly'<br/>
 </help>
-		
+
+
+<help name="QUASSEL_CORE_LOG_FILE">
+     Hiermit wird festgelegt, wo und mit welchem Namen das Logfile abgelegt werden soll.<br/>
+<br/>
+     Gueltige Werte: Logfile mit gueltigem Pfad, welches der User 'quassel' schreiben darf.<br/>
+<br/>
+     Standard-Einstellung: QUASSEL_CORE_LOG_FILE='/var/log/quassel/quasselcore.log'<br/>
+</help>
+
+
+<help name="QUASSEL_CORE_DATADIR">
+     Hiermit wird festgelegt, in welchem Verzeichnis die SQLite-DB abgelegt werden soll.<br/>
+<br/>
+     Gueltige Werte: Gueltiges Verzeichnis, in welches der User 'quassel' schreiben darf.<br/>
+<br/>
+     Standard-Einstellung: QUASSEL_CORE_DATADIR='/usr/local/quasselcore'<br/>
+</help>
+
+
+<help name="QUASSEL_CORE_DAEMON_OPTS">
+     Hiermit koennen beim Start des Core optional weitere Parameter uebergeben werden.<br/>
+<br/>
+     Gueltige Werte: <br/>
+<br/>
+     Standard-Einstellung: QUASSEL_CORE_DAEMON_OPTS=''<br/>
+</help>

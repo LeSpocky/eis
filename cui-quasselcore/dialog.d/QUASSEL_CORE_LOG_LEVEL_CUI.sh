@@ -3,9 +3,8 @@
 # /var/install/dialog.d/QUASSEL_CORE_LOG_LEVEL_CUI.sh - script dialog for ece
 #
 # Creation:     2009-12-26 Marcel Weiler
-# Last update:  $Id: QUASSEL_CORE_LOG_LEVEL_CUI.sh 23575 2010-03-22 21:06:57Z marwe $
 #
-# Copyright (c) 2001-2010 The eisfair Team, <team(at)eisfair(dot)org>
+# Copyright (c) 2001-2013 The eisfair Team, <team(at)eisfair(dot)org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

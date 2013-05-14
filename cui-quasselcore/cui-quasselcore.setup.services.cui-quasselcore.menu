@@ -1,4 +1,4 @@
-<!-- /var/install/menu/setup.services.quasselcore.menu -->
+<!-- /var/install/menu/setup.services.cui-quasselcore.menu -->
 <!-- Creation:      2009-12-22  marwe -->
 <package>quasselcore</package>
 <title>Quasselcore administration</title>
@@ -9,4 +9,4 @@
 <init task="start">Start Quasselcore</init>
 <init task="stop">Stop Quasselcore</init>
 <init task="restart">Restart Quasselcore</init>
-<menu file="setup.services.quasselcore.user">User Management</menu>
+<menu file="setup.services.cui-quasselcore.user">User Management</menu>
