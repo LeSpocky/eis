@@ -37,9 +37,8 @@ build() {
 
 package() {
 	cd ${_builddir}
-	cp quasselcore ${pkgdir}/usr/bin/
-#	make -j1 DESTDIR="$pkgdir" install || return 1
-	install -m 0755 -D ${srcdir}/$pkgname.initd ${pkgdir}/etc/init.d/$pkgname || return 1
+	install -m 0755 -D ${_builddir}/${pkgname} ${pkgdir}/usr/bin/${pkgname} || return 1
+	install -m 0755 -D ${srcdir}/$pkgname.initd ${pkgdir}/etc/init.d/${pkgname} || return 1
 }
 
 md5sums="29b843f18d703abfadb8fc729ca1df11  quassel-0.9.0.tar.bz2"
