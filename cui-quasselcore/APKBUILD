@@ -3,11 +3,11 @@
 pkgname=cui-quasselcore
 pkgver=1.0.0
 pkgrel=2
-pkgdesc="CUI Setup for quassel core"
+pkgdesc="CUI Setup for quasselcore"
 url="http://www.quassel-irc.org"
 arch="noarch"
 license="GPL"
-depends="cuimenu quassel"
+depends="cuimenu quasselcore"
 depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.post-deinstall"
