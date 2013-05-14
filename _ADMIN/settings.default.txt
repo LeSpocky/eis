@@ -30,8 +30,8 @@ jobNameSuffix2=_x86_64
 # Name of existing build jobs, which will be used as templates. These jobs can
 # be configured via jenkins and will be copied to setup new build jobs if a
 # new package was found on the repository.
-templateJobName1=${jobNamePrefix1}TEMPLATE${jobNameSuffix1}
-templateJobName2=${jobNamePrefix2}TEMPLATE${jobNameSuffix2}
+templateJobName1=_${jobNamePrefix1}TEMPLATE${jobNameSuffix1}
+templateJobName2=_${jobNamePrefix2}TEMPLATE${jobNameSuffix2}
 
 # ----------------------------------------------------------------------------
 # Folder where the build results temporarily stored after their creation.
