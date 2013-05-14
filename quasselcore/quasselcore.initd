@@ -10,15 +10,15 @@ depend() {
 }
 
 start() {
-	ebegin "Starting quassel core"
+	ebegin "Starting quasselcore"
 		start-stop-daemon --oknodo --start \
 			--pidfile /var/run/quasselcore.pid \
-			--chuid quasselcore --startas ${daemon} -- ${FB_OPTS}
+			--chuid quassel --startas ${daemon} -- ${FB_OPTS}
 	eend $?
 }
 
 stop() {
-	ebegin "Stopping quassel core"
+	ebegin "Stopping quasselcore"
 		start-stop-daemon --stop --pidfile /var/run/quasselcore.pid \
 			--oknodo
 	eend $?
