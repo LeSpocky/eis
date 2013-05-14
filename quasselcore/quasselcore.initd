@@ -1,12 +1,17 @@
 #!/sbin/runscript
 # quasselcore init.d file for alpine linux.
 
+QUASSEL_CONFIG=/etc/config.d/quasselcore
 DAEMON=/usr/bin/quasselcore
-LOGFILE=/var/log/quassel/core.log
-QUASSEL_CORE_LOG_LEVEL=info
-DATADIR=/tmp/quasselcore
-QUASSEL_CORE_PORT=4242
-DAEMON_OPTS=''
+PID=/var/run/quasselcore.pid
+
+# Load defaults
+. /etc/default.d/quasselcore
+
+# Load specific configuration
+if [ -e $QUASSEL_CONFIG ] ; then
+    . $QUASSEL_CONFIG
+fi
 
 depend() {
     need net
@@ -16,21 +21,21 @@ depend() {
 start() {
     ebegin "Starting quasselcore"
         start-stop-daemon --start \
-            --pidfile /var/run/quasselcore.pid \
+            --pidfile $PID \
             --make-pidfile \
             --background \
             --user quassel \
             --exec ${DAEMON} -- \
-                --logfile=${LOGFILE} \
+                --logfile=${QUASSEL_CORE_LOG_FILE} \
                 --loglevel=${QUASSEL_CORE_LOG_LEVEL} \
-                --configdir=${DATADIR} \
+                --configdir=${QUASSEL_CORE_DATADIR} \
                 --port=${QUASSEL_CORE_PORT} \
-                ${DAEMON_OPTS}
+                ${QUASSEL_CORE_DAEMON_OPTS}
     eend $?
 }
 
 stop() {
     ebegin "Stopping quasselcore"
-        start-stop-daemon --stop --pidfile /var/run/quasselcore.pid
+        start-stop-daemon --stop --pidfile $PID
     eend $?
 }

@@ -1,0 +1,14 @@
+# Quasselcore default configuration
+
+START_QUASSEL_CORE='no'
+
+QUASSEL_CORE_PORT='4242'
+
+QUASSEL_CORE_LOG_LEVEL='info'
+QUASSEL_CORE_LOG_COUNT='4'
+QUASSEL_CORE_LOG_INTERVAL='weekly'
+QUASSEL_CORE_LOG_FILE=/var/log/quassel/quasselcore.log
+
+QUASSEL_CORE_DATADIR=/usr/local/quasselcore
+
+QUASSEL_CORE_DAEMON_OPTS=''

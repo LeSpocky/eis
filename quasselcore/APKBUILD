@@ -13,6 +13,7 @@ makedepends="$depends_dev"
 install="$pkgname.pre-install"
 subpackages=""
 source="http://www.quassel-irc.org/pub/quassel-0.9.0.tar.bz2
+    ${pkgname}.defaultd
     ${pkgname}.initd
 "
 
@@ -38,6 +39,7 @@ build() {
 package() {
 	cd ${_builddir}
 	install -m 0755 -D ${_builddir}/${pkgname} ${pkgdir}/usr/bin/${pkgname} || return 1
+	install -m 0644 -D ${srcdir}/$pkgname.defaultd ${pkgdir}/etc/default.d/${pkgname} || return 1
 	install -m 0755 -D ${srcdir}/$pkgname.initd ${pkgdir}/etc/init.d/${pkgname} || return 1
 }
 
