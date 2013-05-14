@@ -1,0 +1,6 @@
+#!/bin/sh
+# add something which happends before install
+
+adduser -S -h /usr/lib/quassel -s /bin/false -D quassel 2>/dev/null
+
+exit 0
