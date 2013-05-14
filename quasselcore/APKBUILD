@@ -10,11 +10,10 @@ license="GNU"
 depends=""
 depends_dev="qt-dev"
 makedepends="$depends_dev"
-install=""
+install="$pkgname.pre-install"
 subpackages=""
 source="http://www.quassel-irc.org/pub/quassel-0.9.0.tar.bz2
     ${pkgname}.initd
-    ${pkgname}.pre-install
 "
 
 _builddir="$srcdir/quassel-0.9.0"
