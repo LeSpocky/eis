@@ -41,4 +41,5 @@ package() {
 	install -m 0755 -D ${srcdir}/$pkgname.initd ${pkgdir}/etc/init.d/$pkgname || return 1
 }
 
-md5sums="29b843f18d703abfadb8fc729ca1df11  quassel-0.9.0.tar.bz2"
+md5sums="29b843f18d703abfadb8fc729ca1df11  quassel-0.9.0.tar.bz2
+7ad3ff01e9741b42b3fb4812e38c2559  quasselcore.initd"
