@@ -1,5 +1,5 @@
 <!-- /var/install/menu/setup.services.cui-quasselcore.menu -->
-<!-- Creation:      2009-12-22  marwe -->
+<!-- Creation: 2009-12-22  marwe -->
 <package>quasselcore</package>
 <title>Quasselcore administration</title>
 <doc>View documentation</doc>

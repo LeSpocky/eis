@@ -1,10 +1,11 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# /var/install/bin/cui-quasselcore-add-user - add user to quasselcore database
+# /var/install/bin/cui-quasselcore-change-userpass.sh - change password of a
+# quasselcore user
 #
-# Copyright (c) 2001-2013 The Eisfair Team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2010 The Eisfair Team, team(at)eisfair(dot)org
 #
-# Creation:     23.12.2009  marwe
+# Creation: 2009-12-23 marwe
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,5 +19,7 @@
 # defaults
 QUASSEL_CORE_CONFIGDIR=/data/packages/quasselcore/
 
-# start add-user function of core, its interactive
-/usr/local/quasselcore/bin/quasselcore --add-user -c ${QUASSEL_CORE_CONFIGDIR}
+# ask for username and call change-pass function with it
+USER_INPUT=`/var/install/bin/ask "Name of User to change Password" "" "+"`
+
+/usr/local/quasselcore/bin/quasselcore --change-userpass=${USER_INPUT} -c ${QUASSEL_CORE_CONFIGDIR}

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------------
 # /var/install/config.d/cui-quasselcore-update.sh - paramater update script
 #
-# Creation   : 2009-12-14 Marcel Weiler
+# Creation: 2009-12-14 Marcel Weiler
 #
 # Copyright (c) 2001-2013 The eisfair Team, <team(at)eisfair(dot)org>
 #

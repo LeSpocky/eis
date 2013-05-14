@@ -1,5 +1,5 @@
 <!-- /var/install/menu/setup.services.cui-quasselcore.menu -->
-<!-- Creation:      2009-12-23  marwe -->
+<!-- Creation: 2009-12-23  marwe -->
 <package>cui-quasselcore</package>
 <title>Quasselcore User Management</title>
 <script file="quasselcore-add-user">Add User to Database</script>
