@@ -35,7 +35,7 @@ QUASSEL_CERT=${QUASSEL_HOME}/quasselCert.pem
 # Creating Data Directory
 # ----------------------------------------------------------------------------
 if [ ! -d ${QUASSEL_HOME} ] ; then
-    mecho -info "Creating data directory in ${QUASSEL_HOME}"
+    mecho --info "Creating data directory in ${QUASSEL_HOME}"
     mkdir -p ${QUASSEL_HOME}
 fi
 
@@ -55,7 +55,7 @@ chmod 755 ${QUASSEL_HOME}
 # Creating Log Directory
 # ----------------------------------------------------------------------------
 if [ ! -d ${QUASSEL_LOG} ] ; then
-    mecho -info "Creating log directory in ${QUASSEL_LOG}"
+    mecho --info "Creating log directory in ${QUASSEL_LOG}"
     mkdir -p ${QUASSEL_LOG}
     chown ${QUASSEL_USER}:${QUASSEL_GROUP} -R ${QUASSEL_LOG}
 fi
@@ -66,7 +66,7 @@ fi
 
 # If there is no CA-Certifcate, then create one
 if [ ! -f /usr/local/ssl/certs/ca.pem ] ; then
-    mecho -info "Creating CA for SSL ..."
+    mecho --info "Creating CA for SSL ..."
     /var/install/bin/certs-create-tls-certs ca batch
 fi
 
@@ -74,8 +74,8 @@ fi
 # if not, then create it
 if [ ! -L /usr/local/ssl/certs/quasselcore.pem -a \
      ! -f /usr/local/ssl/certs/quasselcore.pem ] ; then
-    mecho -info "Creating quasselcore.pem"
-    mecho -warn "Notice: The Common Name (you will type it in a moment) has to be the ServerName!"
+    mecho --info "Creating quasselcore.pem"
+    mecho --warn "Notice: The Common Name (you will type it in a moment) has to be the ServerName!"
     /var/install/bin/certs-create-tls-certs client batch "quasselcore"
 fi
 

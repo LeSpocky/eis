@@ -172,31 +172,31 @@ EOFG
 # ----------------------------------------------------------------------------
 # Write default config file
 if [ -f /etc/config.d/${packageName} ] ; then
-    mecho -info -n 'Updating configuration ...'
+    mecho --info -n 'Updating configuration ...'
 else
-    mecho -info -n 'Creating configuration ...'
+    mecho --info -n 'Creating configuration ...'
     askForEdit=true
 fi
 
 makeConfigFile /etc/default.d/${packageName}
 
 # Update from old version
-mecho -info -n '.'
+mecho --info -n '.'
 renameOldVariables
 
 # Write new config file
-mecho -info -n '.'
+mecho --info -n '.'
 makeConfigFile /etc/config.d/${packageName}
 
 # Write check.d file
-mecho -info -n '.'
+mecho --info -n '.'
 makeCheckFile
 
 # Write logrotate file
-#mecho -info -n '.'
+#mecho --info -n '.'
 #makeLogrotateFile
 
-mecho -info ' Finished.'
+mecho --info ' Finished.'
 
 # Write configuration, either after editing config or automatically when
 # this is an update or config variables changed
