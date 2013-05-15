@@ -54,10 +54,10 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.user.menu   ${pkgdir}/var/install/menu/setup.services.${pkgname}.user.menu || return 1
 }
 md5sums="4b65b9d04448537f2ef298bf280b9bb6  cui-quasselcore.help
-1d947f08bceb5e85edf4b9489358bbe2  cui-quasselcore.setup.services.menu
-8d6de5e15cb6a988c145023e49878639  cui-quasselcore.setup.services.user.menu
+2675f7bb7b7dcc75cbf8b13cebd68269  cui-quasselcore.setup.services.menu
+583dc8dc348f706b0a39d73232ce8cee  cui-quasselcore.setup.services.user.menu
 0713354028648ea41e75bfc36def804f  cui-quasselcore.sh
 d35595bba5b78c7abbf8388dfb9aacc6  cui-quasselcore.txt
-218c14b870a11100743bb44930d6ca71  cui-quasselcore-add-user.sh
-e2568525ea74d6627aa7baa3762d3ced  cui-quasselcore-change-userpass.sh
+cc4e016cc432d99a33d50f6d7769c097  cui-quasselcore-add-user.sh
+d5b23293014bb68a989a554e92d6c9c8  cui-quasselcore-change-userpass.sh
 0c1a3aaa273e466097e2ea19c273af21  cui-quasselcore-update.sh"
