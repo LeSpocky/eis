@@ -13,11 +13,9 @@
 # (at your option) any later version.
 # ----------------------------------------------------------------------------
 
-# read eislib
+# Load eislib and quasselcore configuration
 . /var/install/include/eislib
-
-# defaults
-QUASSEL_CORE_CONFIGDIR=/data/packages/quasselcore/
+. /etc/config.d/quasselcore
 
 # start add-user function of core, its interactive
-/usr/local/quasselcore/bin/quasselcore --add-user -c ${QUASSEL_CORE_CONFIGDIR}
+/usr/local/quasselcore/bin/quasselcore --add-user -c ${QUASSEL_CORE_DATADIR}

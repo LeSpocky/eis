@@ -13,13 +13,11 @@
 # (at your option) any later version.
 # ----------------------------------------------------------------------------
 
-# read eislib
+# Load eislib and quasselcore configuration
 . /var/install/include/eislib
-
-# defaults
-QUASSEL_CORE_CONFIGDIR=/data/packages/quasselcore/
+. /etc/config.d/quasselcore
 
 # ask for username and call change-pass function with it
 USER_INPUT=`/var/install/bin/ask "Name of User to change Password" "" "+"`
 
-/usr/local/quasselcore/bin/quasselcore --change-userpass=${USER_INPUT} -c ${QUASSEL_CORE_CONFIGDIR}
+/usr/local/quasselcore/bin/quasselcore --change-userpass=${USER_INPUT} -c ${QUASSEL_CORE_DATADIR}
