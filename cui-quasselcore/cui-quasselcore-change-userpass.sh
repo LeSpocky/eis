@@ -20,4 +20,4 @@
 # ask for username and call change-pass function with it
 USER_INPUT=`/var/install/bin/ask "Name of User to change Password" "" "+"`
 
-/usr/local/quasselcore/bin/quasselcore --change-userpass=${USER_INPUT} -c ${QUASSEL_CORE_DATADIR}
+/usr/bin/quasselcore --change-userpass=${USER_INPUT} -c ${QUASSEL_CORE_DATADIR}
