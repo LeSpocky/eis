@@ -139,7 +139,7 @@ EOFG
 
 makeLogrotateFile()
 {
-    creationTime=`date --iso-8601='seconds'`
+    creationTime=`date -Iseconds`
 
     {
         echo '# ----------------------------------------------------------------------------'

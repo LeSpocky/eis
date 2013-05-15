@@ -34,7 +34,7 @@ packageNameBinary=quasselcore
 # ----------------------------------------------------------------------
 _edit_logrotate_file()
 {
-    creationTime=`date --iso-8601='seconds'`
+    creationTime=`date -Iseconds`
 
     {
         echo '# ----------------------------------------------------------------------------'

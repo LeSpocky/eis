@@ -15,7 +15,7 @@
 
 # Load eislib and quasselcore configuration
 . /var/install/include/eislib
-. /etc/config.d/quasselcore
+. /etc/config.d/cui-quasselcore
 
 # start add-user function of core, its interactive
 /usr/local/quasselcore/bin/quasselcore --add-user -c ${QUASSEL_CORE_DATADIR}
