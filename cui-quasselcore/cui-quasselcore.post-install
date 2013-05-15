@@ -1,0 +1,4 @@
+#!/bin/sh
+
+/var/install/bin/add-menu setup.services.menu setup.services.cui-quasselcore.menu "Quasselcore administration"
+exit 0
