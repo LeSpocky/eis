@@ -61,11 +61,6 @@ fi
 
 
 
-# Set default repo to update
-repoPath=$apkRepositoryFolder2
-
-
-
 # ============================================================================
 #
 createRepoIndex ()
@@ -99,17 +94,23 @@ usage ()
     cat <<EOF
 
   Usage:
-  ${0} [options]
+  ${0} -v <version> -a <architecture>
         This script creates the repository index file using the configured
         keypair and stores it on the configured path.
-  Options:
-  -1|--repo1|-2|--repo2
-        Create the index either for configured repository 1 or 2. Default is
-        repository 2 which is in most cases the x86_64 version.
+
+  Parameters:
+  -v <version>
+        .. The version of the system, for which the repository index should
+           be created. Example: v2.4
+  -a <architecture>
+        .. The architecture of the system, for which the repository index
+           should be created. Example: x86_64
 
 EOF
 }
 
+version=''
+arch=''
 
 while [ $# -ne 0 ]
 do
@@ -120,12 +121,20 @@ do
             exit 1
             ;;
 
-        -1|--repo1)
-            repoPath=$apkRepositoryFolder1
+        -v)
+            if [ $# -ge 2 ]
+            then
+                version=$2
+                shift
+            fi
             ;;
 
-        -2|--repo2)
-            repoPath=$apkRepositoryFolder2
+        -a)
+            if [ $# -ge 2 ]
+            then
+                arch=$2
+                shift
+            fi
             ;;
 
         * )
@@ -133,6 +142,13 @@ do
     esac
     shift
 done
+
+if [ -z "$version" -o -z "$arch" ] ; then
+    echo "Parameters -v and -a must be used!"
+    exit 1
+fi
+
+repoPath=${apkRepositoryBaseFolder}/${version}/${arch}
 
 # Now do the job :-)
 createRepoIndex

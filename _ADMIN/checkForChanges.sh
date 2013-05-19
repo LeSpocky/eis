@@ -61,27 +61,6 @@ fi
 
 
 
-# ============================================================================
-# Call api pages to trigger given build job
-# $1 .. Build job to trigger
-triggerBuildJob ()
-{
-    local buildJobToTrigger=$1
-    if [ ! -f "$jenkinsPasswordFile" ] ; then
-        echo ""
-        echo "File $jenkinsPasswordFile with the password for user $jenkinsUser does not exist!"
-        echo ""
-    elif [ ! -f "$jenkinsCliJar" ] ; then
-        echo ""
-        echo "File $jenkinsCliJar not found!"
-        echo ""
-    else
-        java -jar $jenkinsCliJar -s $jenkinsUrl build $buildJobToTrigger --username $jenkinsUser --password-file $jenkinsPasswordFile
-    fi
-}
-
-
-
 for currentFile in `git diff --name-only @{1}..` ; do
     # Check for changes but skip files on repo root and skip folder _ADMIN
     if [ "${currentFile%%/*}" != "${currentFile}" -a "${currentFile%%/*}" != '_ADMIN' ] ; then
@@ -91,17 +70,32 @@ done
 
 echo "=============================================================================="
 if [ -e /tmp/determinedFolders-$$.txt ] ; then
-    # Wipe out duplicate folder entries
-    sort -u /tmp/determinedFolders-$$.txt > /tmp/determinedFoldersUnique-$$.txt
+    if [ ! -f "$jenkinsPasswordFile" ] ; then
+        echo ""
+        echo "File $jenkinsPasswordFile with the password for user $jenkinsUser does not exist!"
+        echo ""
+    elif [ ! -f "$jenkinsCliJar" ] ; then
+        echo ""
+        echo "File $jenkinsCliJar not found!"
+        echo ""
+    else
+        # Wipe out duplicate folder entries
+        sort -u /tmp/determinedFolders-$$.txt > /tmp/determinedFoldersUnique-$$.txt
 
-    while read packageToTrigger ; do
-        echo -n "Triggering build of package '$packageToTrigger'... "
-        triggerBuildJob ${jobNamePrefix1}${packageToTrigger}${jobNameSuffix1}
-        triggerBuildJob ${jobNamePrefix2}${packageToTrigger}${jobNameSuffix2}
-        echo "Done"
-    done < /tmp/determinedFoldersUnique-$$.txt
+        while read packageToTrigger ; do
+            echo "Triggering build of package '$packageToTrigger':"
+            buildJobNamePrefix=${jobNamePrefix}__${packageToTrigger}__
+            jobTemplates=`java -Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl list-jobs --username $jenkinsUser --password-file $jenkinsPasswordFile | grep $buildJobNamePrefix | tr '\n' ' '`
+            for currentBuildJob in $jobTemplates ; do
+                echo -n " - Job $currentBuildJob"
+                java -jar $jenkinsCliJar -s $jenkinsUrl build $currentBuildJob --username $jenkinsUser --password-file $jenkinsPasswordFile
+                echo " - Done"
+            done
+            echo "Finished triggering '$packageToTrigger'"
+        done < /tmp/determinedFoldersUnique-$$.txt
 
-    rm -f /tmp/determinedFoldersUnique-$$.txt /tmp/determinedFolders-$$.txt
+        rm -f /tmp/determinedFoldersUnique-$$.txt /tmp/determinedFolders-$$.txt
+    fi
 else
     echo "No changes on at least one of the package directories"
 fi

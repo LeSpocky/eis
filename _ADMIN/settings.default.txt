@@ -21,17 +21,15 @@ jobsFolder=/home/jenkins/jobs
 # ----------------------------------------------------------------------------
 # The pre- and suffixes to use for the created jobs. Also used for accessing
 # already existing jobs.
-jobNamePrefix1=alpeis__
-jobNamePrefix2=alpeis__
-jobNameSuffix1=_x86
-jobNameSuffix2=_x86_64
-
-# ----------------------------------------------------------------------------
-# Name of existing build jobs, which will be used as templates. These jobs can
-# be configured via jenkins and will be copied to setup new build jobs if a
-# new package was found on the repository.
-templateJobName1=_${jobNamePrefix1}TEMPLATE${jobNameSuffix1}
-templateJobName2=_${jobNamePrefix2}TEMPLATE${jobNameSuffix2}
+# Build job templates must be constructed using the following name convention:
+# ${templateJobPrefix}${jobNamePrefix}__${templateJobPlaceholder}__<some-text>
+# Please note the mandatory double underlines before and after
+# $templateJobPlaceholder! Examples:
+# _alpeis__TEMPLATE__v2.6_x86
+# _alpeis__TEMPLATE__v2.6_x86_64
+templateJobPrefix=_
+jobNamePrefix=alpeis
+templateJobPlaceholder=TEMPLATE
 
 # ----------------------------------------------------------------------------
 # Folder where the build results temporarily stored after their creation.
@@ -57,8 +55,7 @@ jenkinsPasswordFile=/var/lib/jenkins/.ssh/ci-password
 signingPrivateKey=YourPrivateKey
 signingPublicKey=${signingPrivateKey}.pub
 apkRepoQualifier=alpeis-ci
-apkRepositoryFolder1=/path/to/repository/v2.4/x86/
-apkRepositoryFolder2=/path/to/repository/v2.4/x86_64/
+apkRepositoryBaseFolder=/path/to/repository/
 
 # ----------------------------------------------------------------------------
 # Use the debug mode: 'true' or 'false'

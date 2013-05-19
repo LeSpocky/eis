@@ -64,6 +64,16 @@ fi
 
 
 # ============================================================================
+# Extract the list of template jobs out of the list of all build jobs
+getTemplateJobs ()
+{
+    local jobsToFind=${templateJobPrefix}${jobNamePrefix}__${templateJobPlaceholder}__
+    jobTemplates=`java -Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl list-jobs --username $jenkinsUser --password-file $jenkinsPasswordFile | grep $jobsToFind | tr '\n' ' '`
+}
+
+
+
+# ============================================================================
 # Iterate over all folders on local working copy. In fact every folder
 # represents a package (except folder _ADMIN), so for every folder the
 # corresponding build jobs must exist or will be created.
@@ -78,8 +88,10 @@ iteratePackageFolders ()
         currentCheckedPackage=${currentCheckedPackage##*/}
 
         echo "Checking jenkins jobs for package '$currentCheckedPackage'"
-        createJob "$jobNamePrefix1" "$currentCheckedPackage" "$jobNameSuffix1" "$templateJobName1"
-        createJob "$jobNamePrefix2" "$currentCheckedPackage" "$jobNameSuffix2" "$templateJobName2"
+        for currentJobTemplate in $jobTemplates ; do
+            # $currentJobTemplate is something like '_alpeis__TEMPLATE__v2.4_x86'
+            createJob "$currentCheckedPackage" "$currentJobTemplate"
+        done
     done
 	echo "=============================================================================="
 }
@@ -89,19 +101,15 @@ iteratePackageFolders ()
 # ============================================================================
 # Create new jenkins job using the jenkins-cli
 #
-# $1 .. Job name prefix as configured in settings.txt
-# $2 .. Package name
-# $3 .. Job name suffix as configured in settings.txt
-# $4 .. Name of the template-job which should be used
+# $1 .. Package name
+# $3 .. Name of the template-job which should be used
 #       as the base for the new job
 createJob ()
 {
-    local jobNamePrefix=$1
-    local currentPackage=$2
-    local jobNameSuffix=$3
-    local templateJobName=$4
+    local currentPackage=$1
+    local templateJobName=$2
     local currentRtc=0
-    local jobName=${jobNamePrefix}${currentPackage}${jobNameSuffix}
+    local jobName=${jobNamePrefix}__${currentPackage}__${currentJobTemplate##*__}
     if [ ! -d $jobName -o ! -f $jobName/config.xml ] ; then
         # Config file not found, create it
         echo "Calling jenkins api to create job '$jobName'"
@@ -163,6 +171,7 @@ cd $scriptDir/..
 workspaceFolder=`pwd`
 
 # Now do the job :-)
+getTemplateJobs
 iteratePackageFolders
 
 exit $rtc
