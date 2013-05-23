@@ -6,15 +6,16 @@ extra_commands="update"
 extra_started_commands="reload"
 
 depend() {
-    need clock hostname localmount
-    before net
-    provide logger
+	need hostname localmount
+	before net
+	provide logger
 }
 
 start() {
-    ebegin "Starting syslog-ng" 
-    start-stop-daemon --start --quiet --exec /usr/sbin/syslog-ng --pidfile /var/run/syslog-ng.pid 
-    eend $?
+	[ ! -f /etc/syslog-ng/syslog.conf ] && update
+	ebegin "Starting syslog-ng"
+	start-stop-daemon --start --quiet --exec /usr/sbin/syslog-ng --pidfile /var/run/syslog-ng.pid
+	eend $?
 }
 
 stop() {
@@ -48,7 +49,7 @@ grep_syslog_conf_entries() {
 }
 
 update() {
-	local fname='/etc/syslog-ng/syslog-ng.conf' 
+	local fname='/etc/syslog-ng/syslog-ng.conf'
 	local f_tmp="/etc/syslog-ng/syslog-ng.conf.$$"
 	for ng_std in options source destination filter log
 	do

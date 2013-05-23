@@ -1,5 +1,5 @@
-# Contributor:
-# Maintainer: jens@eisfair.org
+# Contributor: jv jens@eisfair.org
+# Maintainer: jv jens@eisfair.org
 pkgname=libeventlog
 pkgver=0.2.12
 pkgrel=0
@@ -12,18 +12,12 @@ depends_dev=""
 makedepends="$depends_dev"
 install=""
 subpackages="$pkgname-dev"
-source="http://www.balabit.com/downloads/files?path=/syslog-ng/sources/3.3.7/source/eventlog_${pkgver}.tar.gz"
+source="http://www.balabit.com/downloads/files?path=/syslog-ng/sources/3.3.9/source/eventlog_${pkgver}.tar.gz"
 
 _builddir="$srcdir/eventlog-$pkgver"
 
 prepare() {
-	local i
 	cd "$_builddir"
-	for i in $source; do
-		case $i in
-		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
-		esac
-	done
 }
 
 build() {
@@ -36,8 +30,8 @@ package() {
 	cd "$_builddir"
 	make -j1 DESTDIR="$pkgdir" install || return 1
 	rm -f  ${pkgdir}/usr/lib/*.la
-    strip -R .note -R .comment ${pkgdir}/usr/lib/*.so.* 
-    return 0	
+	strip -R .note -R .comment ${pkgdir}/usr/lib/*.so.*
+	return 0
 }
 
 md5sums="7d95392a6618437a0404a3fadb49f53e  eventlog_0.2.12.tar.gz"
