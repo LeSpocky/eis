@@ -26,7 +26,8 @@ cd `dirname $0`
 scriptDir=`pwd`
 scriptName=`basename $0`
 
-
+javaMinHeap='256M'
+javaMaxHeap='512M'
 
 # -----------------------------
 # Check if settings file exists
