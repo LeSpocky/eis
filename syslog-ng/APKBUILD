@@ -3,18 +3,18 @@
 pkgname=syslog-ng
 pkgver=2.1.4
 pkgrel=0
-pkgdesc="Syslog-NG"
+pkgdesc="Next generation logging daemon"
 url="http://www.balabit.com"
 arch="all"
-license="GNU"
-depends="glib libeventlog"
+license="GPLv2"
+depends=""
 depends_dev="glib-dev libeventlog-dev"
 makedepends="$depends_dev"
 install="$pkgname.pre-install $pkgname.post-install $pkgname.pre-deinstall $pkgname.pre-upgrade $pkgname.post-upgrade"
 subpackages=""
 
 source="http://www.balabit.com/downloads/files/syslog-ng/open-source-edition/${pkgver}/source/syslog-ng_${pkgver}.tar.gz
-	syslog.logrotate
+	syslog-ng.logrotate
 	syslog-ng.initd
 	syslog-ng-destination.std
 	syslog-ng-filter.std
@@ -53,11 +53,11 @@ package() {
 	install -D -m644 "$srcdir"/syslog-ng-log.std ${pkgdir}/etc/syslog-ng/syslog-ng-log.std || return 1
 	install -D -m644 "$srcdir"/syslog-ng-options.std ${pkgdir}/etc/syslog-ng/syslog-ng-options.std || return 1
 	install -D -m644 "$srcdir"/syslog-ng-source.std ${pkgdir}/etc/syslog-ng/syslog-ng-source.std || return 1
-	install -D -m644 "$srcdir"/syslog.logrotate ${pkgdir}/etc/logrotate.d/syslog || return 1
+	install -D -m644 "$srcdir"/syslog-ng.logrotate ${pkgdir}/etc/logrotate.d/syslog-ng || return 1
 }
 
 md5sums="17c4c7725d2eab62b588395f1ed93f32  syslog-ng_2.1.4.tar.gz
-8916d55f8213d2746e8c2a6a89c29d6c  syslog.logrotate
+8916d55f8213d2746e8c2a6a89c29d6c  syslog-ng.logrotate
 aca6b42ddecec1fbf7cebdf158496feb  syslog-ng.initd
 f0b4a0b530e269c51bc63f5b9d817c9b  syslog-ng-destination.std
 13654597e779e4ae072f93fe9a5647bc  syslog-ng-filter.std

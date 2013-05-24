@@ -2,6 +2,5 @@
 
 /etc/init.d/syslog-ng stop
 /sbin/rc-update del syslog-ng boot
-/sbin/rc-update add syslog boot
-/sbin/rc-update add sysctl boot
-/etc/init.d/syslog start
+echo "please activate a syslog service, example:"
+echo "rc-update add syslog boot"
