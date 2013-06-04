@@ -68,7 +68,7 @@ createRepoIndex ()
     echo 'Creating repository index'
 
     if [ -d $signingWorkDir ] ; then
-        rm -f $signingWorkDir
+        rm -rf $signingWorkDir
     fi
     mkdir $signingWorkDir
     cd $signingWorkDir
