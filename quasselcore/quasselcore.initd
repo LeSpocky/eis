@@ -3,14 +3,15 @@
 
 QUASSEL_CONFIG=/etc/config.d/quasselcore
 DAEMON=/usr/bin/quasselcore
+ACCOUNT=quassel
 PID=/var/run/quasselcore.pid
 
 # Load defaults
 . /etc/default.d/quasselcore
 
 # Load specific configuration
-if [ -e $QUASSEL_CONFIG ] ; then
-    . $QUASSEL_CONFIG
+if [ -e ${QUASSEL_CONFIG} ] ; then
+    . ${QUASSEL_CONFIG}
 fi
 
 depend() {
@@ -21,10 +22,10 @@ depend() {
 start() {
     ebegin "Starting quasselcore"
         start-stop-daemon --start \
-            --pidfile $PID \
+            --pidfile ${PID} \
             --make-pidfile \
             --background \
-            --user quassel \
+            --user ${ACCOUNT} \
             --exec ${DAEMON} -- \
                 --logfile=${QUASSEL_CORE_LOG_FILE} \
                 --loglevel=${QUASSEL_CORE_LOG_LEVEL} \
@@ -36,6 +37,6 @@ start() {
 
 stop() {
     ebegin "Stopping quasselcore"
-        start-stop-daemon --stop --pidfile $PID
+        start-stop-daemon --stop --pidfile ${PID}
     eend $?
 }
