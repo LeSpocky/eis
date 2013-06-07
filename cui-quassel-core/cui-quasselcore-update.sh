@@ -60,33 +60,33 @@ renameOldVariables()
 # ----------------------------------------------------------------------------
 makeConfigFile()
 {
-    internal_conf_file=${1}
+    local internal_conf_file=${1}
     {
-    # ------------------------------------------------------------------------
-    printgpl -conf ${packageName} '2009-12-14' 'Marcel Weiler'
-    # ------------------------------------------------------------------------
+        # --------------------------------------------------------------------
+        printgpl -conf ${packageName} '2009-12-14' 'Marcel Weiler'
+        # --------------------------------------------------------------------
 
-    # ------------------------------------------------------------------------
-    printgroup "Basic configuration"
-    # ------------------------------------------------------------------------
-    printvar 'START_QUASSEL_CORE'          'Use: yes or no'
-    printvar 'QUASSEL_CORE_PORT'           'Port for quasselcore'
+        # --------------------------------------------------------------------
+        printgroup "Basic configuration"
+        # --------------------------------------------------------------------
+        printvar 'START_QUASSEL_CORE'          'Use: yes or no'
+        printvar 'QUASSEL_CORE_PORT'           'Port for quasselcore'
 
-    # --------------------------------------------------------------
-    printgroup 'Log settings'
-    # --------------------------------------------------------------
-    printvar 'QUASSEL_CORE_LOG_LEVEL'      'Loglevel (debug,info,warning,error)'
-    printvar 'QUASSEL_CORE_LOG_COUNT'      'Number of log files to save'
-    printvar 'QUASSEL_CORE_LOG_INTERVAL'   'Interval: daily, weekly, monthly'
-    printvar 'QUASSEL_CORE_LOG_FILE'       'Default: /var/log/quassel/quasselcore.log'
+        # --------------------------------------------------------------------
+        printgroup 'Log settings'
+        # --------------------------------------------------------------------
+        printvar 'QUASSEL_CORE_LOG_LEVEL'      'Loglevel (debug,info,warning,error)'
+        printvar 'QUASSEL_CORE_LOG_COUNT'      'Number of log files to save'
+        printvar 'QUASSEL_CORE_LOG_INTERVAL'   'Interval: daily, weekly, monthly'
+        printvar 'QUASSEL_CORE_LOG_FILE'       'Default: /var/log/quassel/quasselcore.log'
 
-    printvar 'QUASSEL_CORE_DATADIR'        'Default: /usr/local/quasselcore'
+        printvar 'QUASSEL_CORE_DATADIR'        'Default: /usr/local/quasselcore'
 
-    printvar 'QUASSEL_CORE_DAEMON_OPTS'    'Default: empty'
+        printvar 'QUASSEL_CORE_DAEMON_OPTS'    'Default: empty'
 
-    # ------------------------------------------------------------------------
-    printend
-    # ------------------------------------------------------------------------
+        # --------------------------------------------------------------------
+        printend
+        # --------------------------------------------------------------------
 
     } > ${internal_conf_file}
     # Set rights
