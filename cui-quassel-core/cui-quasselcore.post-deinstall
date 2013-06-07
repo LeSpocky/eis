@@ -1,6 +1,0 @@
-#!/bin/sh
-
-/var/install/bin/del-menu setup.services.menu setup.services.cui-quasselcore.menu
-
-rm -f /etc/backup.d/cui-quasselcore*
-exit 0

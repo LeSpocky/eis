@@ -1,0 +1,12 @@
+<!-- /var/install/menu/setup.services.cui-quassel-core.menu -->
+<!-- Creation: 2009-12-22  marwe -->
+<package>cui-quassel-core</package>
+<title>Quassel-core administration</title>
+<doc>View documentation</doc>
+<edit>Edit configuration</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
+<init package="quassel-core" task="status">Quassel-core status</init>
+<init package="quassel-core" task="start">Start Quassel-core</init>
+<init package="quassel-core" task="stop">Stop Quassel-core</init>
+<init package="quassel-core" task="restart">Restart Quassel-core</init>
+<menu file="setup.services.cui-quassel-core.user.menu">User Management</menu>

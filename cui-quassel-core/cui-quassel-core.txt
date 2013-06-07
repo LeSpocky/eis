@@ -1,12 +1,13 @@
 
-                     Quasselcore - Distributed IRC Client
+                     Quassel-core - Distributed IRC Client
 
    Marcel Weiler, <marcel(at)eisfair(dot)org>
    2001-2013 The eisfair team, <team(at)eisfair(dot)org>
 
                                    Einleitung
 
-   Dieses Paket enthaelt den Kern des Quassel-IRC Clients.
+   Dieses Paket enthaelt die Konfigurationsoberflaeche der Quassel-IRC
+   Kern-Komponente.
 
    Quassel basiert auf dem Client-Server-Modell: Die Kern-Anwendung kann
    auf einem immer mit dem Internet verbundenen Server ausgefuehrt werden
@@ -16,8 +17,8 @@
    die Kombination aus Screen und textbasierten IRC-Clients wie Irssi oder
    WeeChat, teils IRC-Bouncer.
 
-   Der Quassel-Client kann fuer Windows, Linux und MacOS unter folgender
-   Adresse heruntergeladen werden: [1]http://quassel-irc.org/downloads
+   Der Quassel-Client kann fuer verschiedene Umgebungen unter [1]
+   heruntergeladen werden.
 
                                    Funktionen
 
@@ -42,13 +43,10 @@
    Die Verbindung zwischen Client und Kern kann per SSL verschluesselt
    werden.
 
-   Die Einrichtung des Clients wird auf folgender Webseite inkl.
-   Screenshots erklaert:
-   [2]http://bugs.quassel-irc.org/wiki/quassel-irc#Connecting-to-the-core
+   Die Einrichtung des Clients wird unter [2] inkl. Screenshots erklaert.
 
    Zum Anlegen neuer Benutzer und Aendern der Passwoerter bereits
-   existierender Benutzer gibt es ein eigenes Untermenue im eisfair
-   Setup-Programm.
+   existierender Benutzer gibt es ein eigenes Untermenue im Setup-Programm.
 
                                 Voraussetzungen
 
@@ -63,12 +61,12 @@
 
                                   Installation
 
-   Das quasselcore Paket wird ueber das Setup-Menue installiert. Wird
+   Das cui-quassel-core Paket wird ueber das Setup-Menue installiert. Wird
    eine aeltere Paket-Version vorgefunden, so wird deren Konfiguration
-   gesichert und das alte Paket deinstalliert bevor die neuen
-   Programmdateien installiert und die Konfiguration uebernommen wird.
+   gesichert und das alte Paket deinstalliert bevor die neuen Programmdateien
+   installiert und die Konfiguration uebernommen wird.
 
-   Bei einer Erstinstallation muss der quasselcore ueber einen Client
+   Bei einer Erstinstallation muss der quassel-core ueber einen Client
    konfiguriert werden. Dazu fragt der Client bei der ersten Verbindung
    die noetigen Daten (Admin-User etc.) ab.
 
@@ -84,13 +82,13 @@
           Advanced configuration file handling: Verwalten von
           Konfigurationen
    4.
-          Quasselcore status: Zeigt an, ob der quasselcore laeuft
+          Quassel-core status: Zeigt an, ob der quassel-core laeuft
    5.
-          Start Quasselcore: Startet den quasselcore
+          Start Quassel-core: Startet den quassel-core
    6.
-          Stop Quasselcore: Beendet den quasselcore
+          Stop Quassel-core: Beendet den quassel-core
    7.
-          Restart Quasselcore: Startet den quasselcore neu
+          Restart Quassel-core: Startet den quassel-core neu
    8.
           User Management: Untermenue zum anlegen neuer Benutzer
           und aendern von Passwoertern bestehender Benutzer
@@ -109,19 +107,19 @@
 
                             Die Konfigurationsdatei
 
-   In der Konfigurationsdatei, die ueber das Menue zugaenglich ist, sind
-   folgende Parameter vorhanden; wer sie von Hand editieren will findet
-   sie unter /etc/config.d/quasselcore.
+   In der Konfigurationsdatei, welche ueber das Menue zugaenglich ist, sind
+   die folgenden Parameter vorhanden; wer sie von Hand editieren will findet
+   sie unter /etc/conf.d/quassel-core.
 
    START_QUASSEL_CORE
-          Sorgt dafuer, das der quasselcore gestartet wird.
+          Sorgt dafuer, das der quassel-core gestartet wird.
 
           Gueltige Werte: yes, no
 
           Standardeinstellung: START_QUASSEL_CORE='no'
 
    QUASSEL_CORE_PORT
-          Hier wird der Port eingestellt auf dem quasselcore laufen soll
+          Hier wird der Port eingestellt auf dem quassel-core laufen soll
 
           Gueltige Werte: Port
 
@@ -151,11 +149,8 @@
 
     Hinweis: Alle weiteren Einstellungen werden direkt ueber den Client in
     der SQLite Datenbank konfiguriert.
-    __________________________________________________________________
-
-    Marcel Weiler 2011-10-04
 
 Verweise
 
-   1. http://quassel-irc.org/downloads
-   2. http://bugs.quassel-irc.org/wiki/quassel-irc#Connecting-to-the-core
+   [1] http://quassel-irc.org/downloads
+   [2] http://bugs.quassel-irc.org/wiki/quassel-irc#Connecting-to-the-core

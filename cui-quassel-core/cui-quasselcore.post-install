@@ -1,7 +1,0 @@
-#!/bin/sh
-
-/var/install/bin/add-menu setup.services.menu setup.services.cui-quasselcore.menu "Quasselcore administration"
-
-/var/install/config.d/cui-quasselcore-update.sh
-
-exit 0

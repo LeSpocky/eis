@@ -1,9 +1,9 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# /var/install/bin/cui-quasselcore-change-userpass.sh - change password of a
-# quasselcore user
+# /var/install/bin/cui-quassel-core-add-user.sh - add user to quasselcore
+# database
 #
-# Copyright (c) 2001-2010 The Eisfair Team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2013 The Eisfair Team, team(at)eisfair(dot)org
 #
 # Creation: 2009-12-23 marwe
 #
@@ -15,9 +15,7 @@
 
 # Load eislib and quasselcore configuration
 . /var/install/include/eislib
-. /etc/config.d/cui-quasselcore
+. /etc/conf.d/cui-quassel-core
 
-# ask for username and call change-pass function with it
-USER_INPUT=`/var/install/bin/ask "Name of User to change Password" "" "+"`
-
-/usr/bin/quasselcore --change-userpass=${USER_INPUT} -c ${QUASSEL_CORE_DATADIR}
+# start add-user function of core, its interactive
+/usr/bin/quasselcore --add-user -c ${QUASSEL_CORE_DATADIR}

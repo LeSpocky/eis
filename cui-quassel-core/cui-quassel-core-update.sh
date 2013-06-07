@@ -1,6 +1,6 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# /var/install/config.d/cui-quasselcore-update.sh - paramater update script
+# /var/install/config.d/cui-quassel-core-update.sh - paramater update script
 #
 # Creation: 2009-12-14 Marcel Weiler
 #
@@ -15,7 +15,7 @@
 #exec 2> /tmp/quasselcore-update-trace$$.log
 #set -x
 
-packageName=cui-quasselcore
+packageName=cui-quassel-core
 packageNameBinary=quasselcore
 
 # include configlib for using printvar
@@ -50,8 +50,8 @@ QUASSEL_CORE_DAEMON_OPTS=''
 renameOldVariables()
 {
     # read old values
-    if [ -f /etc/config.d/${packageName} ] ; then
-        . /etc/config.d/${packageName}
+    if [ -f /etc/conf.d/${packageName} ] ; then
+        . /etc/conf.d/${packageName}
     fi
 }
 
@@ -171,7 +171,7 @@ EOFG
 # Main
 # ----------------------------------------------------------------------------
 # Write default config file
-if [ -f /etc/config.d/${packageName} ] ; then
+if [ -f /etc/conf.d/${packageName} ] ; then
     mecho --info -n 'Updating configuration ...'
 else
     mecho --info -n 'Creating configuration ...'
@@ -186,7 +186,7 @@ renameOldVariables
 
 # Write new config file
 mecho --info -n '.'
-makeConfigFile /etc/config.d/${packageName}
+makeConfigFile /etc/conf.d/${packageName}
 
 # Write check.d file
 mecho --info -n '.'

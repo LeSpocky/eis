@@ -1,6 +1,6 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# /var/install/config.d/cui-quasselcore - QUASSEL_CORE configuration
+# /var/install/config.d/cui-quassel-core - QUASSEL_CORE configuration
 #
 # Creation   : 2009-12-14 Marcel Weiler
 #
@@ -12,10 +12,10 @@
 # (at your option) any later version.
 # ----------------------------------------------------------------------------
 
-#exec 2> /tmp/cui-quasselcore-trace$$.log
+#exec 2> /tmp/cui-quassel-core-trace$$.log
 #set -x
 
-packageName=cui-quasselcore
+packageName=cui-quassel-core
 packageNameBinary=quasselcore
 
 # ----------------------------------------------------------------------------
@@ -26,7 +26,7 @@ packageNameBinary=quasselcore
 . /var/install/include/eislib
 
 # include config
-. /etc/config.d/${packageName}
+. /etc/conf.d/${packageName}
 
 
 # ----------------------------------------------------------------------

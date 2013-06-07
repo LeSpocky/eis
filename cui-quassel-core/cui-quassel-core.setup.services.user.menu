@@ -1,0 +1,6 @@
+<!-- /var/install/menu/setup.services.cui-quassel-core.menu -->
+<!-- Creation: 2009-12-23  marwe -->
+<package>cui-quassel-core</package>
+<title>Quassel-core User Management</title>
+<script file="cui-quassel-core-add-user.sh">Add User to Database</script>
+<script file="cui-quassel-core-change-userpass.sh">Change Password of User</script>
