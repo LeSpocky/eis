@@ -1,25 +1,12 @@
 #!/bin/sh
 #------------------------------------------------------------------------------
-# /usr/sbin/setup - setup start script
-#
+# /usr/sbin/setup - setup menu start script
 # Creation:    2001.11.04 fm
 # Last update: $Id: setup 12915 2007-12-16 17:30:44Z jv $
-#
 #------------------------------------------------------------------------------
-
-# better source it in a subshell
-[ -f /etc/config.d/setup ] && MENU=`(. /etc/config.d/setup; echo $MENU)`
-
-menu="$MENU"
-if [ -z "$menu" -o ! -x "$menu" ]
-then
-    menu="/var/install/bin/show-menu.cui"
-fi
-export menu
 
 cd /tmp
 
 # call menu
-$menu /var/install/menu/setup.menu
-
+/var/install/bin/show-menu.cui /var/install/menu/setup.menu
 exit 0

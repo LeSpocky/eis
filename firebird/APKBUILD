@@ -62,20 +62,20 @@ package() {
 
 	# superserver
 	for f in fbserver fbguard fb_lock_print fbmgr.bin; do
-		strip -R .note -R .comment ${_builddir}/gen/firebird/bin/$f 
+		strip -R .note -R .comment ${_builddir}/gen/firebird/bin/$f
 		install -m 0755 -D ${_builddir}/gen/firebird/bin/$f \
-			${pkgdir}/usr/lib/firebird/bin/$f || return 1    
+			${pkgdir}/usr/lib/firebird/bin/$f || return 1
 	done
 
 	# UDFs
 	install -m 0644 -D ${_builddir}/gen/firebird/UDF/fbudf.so \
-		${pkgdir}/usr/lib/firebird/UDF/fbudf.so || return 1    
+		${pkgdir}/usr/lib/firebird/UDF/fbudf.so || return 1
 	install -m 0644 -D ${_builddir}/gen/firebird/UDF/ib_udf.so \
-		${pkgdir}/usr/lib/firebird/UDF/ib_udf.so || return 1    
+		${pkgdir}/usr/lib/firebird/UDF/ib_udf.so || return 1
 	install -m 0644 -D ${_builddir}/src/extlib/fbudf/fbudf.sql \
-		${pkgdir}/usr/lib/firebird/UDF/fbudf.sql || return 1    
+		${pkgdir}/usr/lib/firebird/UDF/fbudf.sql || return 1
 	install -m 0644 -D ${_builddir}/src/extlib/ib_udf.sql \
-		${pkgdir}/usr/lib/firebird/UDF/ib_udf.sql || return 1    
+		${pkgdir}/usr/lib/firebird/UDF/ib_udf.sql || return 1
 	install -m 0644 -D ${_builddir}/src/extlib/ib_udf2.sql \
 		${pkgdir}/usr/lib/firebird/UDF/ib_udf2.sql || return 1
 
@@ -98,7 +98,7 @@ package() {
 	do
 		strip -R .note -R .comment ${_builddir}/gen/firebird/bin/$f
 		install -m 0755 -D ${_builddir}/gen/firebird/bin/$f \
-			${pkgdir}/usr/lib/firebird/bin/$f || return 1          
+			${pkgdir}/usr/lib/firebird/bin/$f || return 1
 		target="$f"
 		if [ "$f" = "gstat" ]
 		then

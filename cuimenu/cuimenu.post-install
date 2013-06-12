@@ -1,26 +1,34 @@
 #!/bin/sh
 
 tmp=$(hostname -i | sed "s# .*##")
-sed -i -e "s/^IP_NET_1_IPV4_IPADDR=.*/IP_NET_1_IPV4_IPADDR='${tmp}'/" /etc/config.d/base
 sed -i -e "s/^IP_NET_1_IPV4_IPADDR=.*/IP_NET_1_IPV4_IPADDR='${tmp}'/" /etc/default.d/base
 
 tmp=$(ip route show | grep default | sed -r 's/^.*via (([0-9]{1,3}[.]){3}([0-9]{1,3}))[^0-9].*$/\1/')
-sed -i -e "s/^IP_NET_1_IPV4_GATEWAY=.*/IP_NET_1_IPV4_GATEWAY='${tmp}'/" /etc/config.d/base
 sed -i -e "s/^IP_NET_1_IPV4_GATEWAY=.*/IP_NET_1_IPV4_GATEWAY='${tmp}'/" /etc/default.d/base
 
 ncalc=$(ip -4 -o address show | grep eth | sed "s#.*inet ##;s# .*##")
 tmp=$(ipcalc -ms ${ncalc} | cut -d'=' -f2)
-if [ -n "$tmp" ]
-then
-    sed -i -e "s/^IP_NET_1_IPV4_NETMASK=.*/IP_NET_1_IPV4_NETMASK='${tmp}'/" /etc/config.d/base
-    sed -i -e "s/^IP_NET_1_IPV4_NETMASK=.*/IP_NET_1_IPV4_NETMASK='${tmp}'/" /etc/default.d/base
-fi
+[ -n "$tmp" ] && sed -i -e "s/^IP_NET_1_IPV4_NETMASK=.*/IP_NET_1_IPV4_NETMASK='${tmp}'/" /etc/default.d/base
 
 tmp=$(hostname -s)
-sed -i -e "s/^HOSTNAME=.*/HOSTNAME='${tmp}'/" /etc/config.d/base
 sed -i -e "s/^HOSTNAME=.*/HOSTNAME='${tmp}'/" /etc/default.d/base
 
 tmp=$(hostname -d)
-sed -i -e "s/^DOMAIN_NAME=.*/DOMAIN_NAME='${tmp}'/" /etc/config.d/base
 sed -i -e "s/^DOMAIN_NAME=.*/DOMAIN_NAME='${tmp}'/" /etc/default.d/base
 
+mkdir -p /etc/config.d
+[ -f /etc/config.d/base ]             || cp /etc/default.d/base /etc/config.d/
+[ -f /etc/config.d/cron ]             || cp /etc/default.d/cron /etc/config.d/
+[ -f /etc/config.d/cui ]              || cp /etc/default.d/cui /etc/config.d/
+[ -f /etc/config.d/fcron ]            || cp /etc/default.d/fcron /etc/config.d/
+[ -f /etc/config.d/environment ]      || cp /etc/default.d/environment /etc/config.d/
+[ -f /etc/config.d/apk-repositories ] || cp /etc/default.d/apk-repositories /etc/config.d/
+
+# change from busybox to syslog-ng
+rc-service -i -q syslog stop 2>/dev/null
+rc-service -i -q klogd stop 2>/dev/null
+rc-update -q del syslog boot 2>/dev/null
+rc-update -q del klogd boot 2>/dev/null
+rc-update -q add syslog-ng boot 2>/dev/null
+
+exit 0
