@@ -17,12 +17,13 @@ tmp=$(hostname -d)
 sed -i -e "s/^DOMAIN_NAME=.*/DOMAIN_NAME='${tmp}'/" /etc/default.d/base
 
 mkdir -p /etc/config.d
-[ -f /etc/config.d/base ]             || cp /etc/default.d/base /etc/config.d/
-[ -f /etc/config.d/cron ]             || cp /etc/default.d/cron /etc/config.d/
-[ -f /etc/config.d/cui ]              || cp /etc/default.d/cui /etc/config.d/
-[ -f /etc/config.d/fcron ]            || cp /etc/default.d/fcron /etc/config.d/
-[ -f /etc/config.d/environment ]      || cp /etc/default.d/environment /etc/config.d/
 [ -f /etc/config.d/apk-repositories ] || cp /etc/default.d/apk-repositories /etc/config.d/
+[ -f /etc/config.d/base ]             || cp /etc/default.d/base /etc/config.d/
+[ -f /etc/config.d/cui ]              || cp /etc/default.d/cui /etc/config.d/
+[ -f /etc/config.d/environment ]      || cp /etc/default.d/environment /etc/config.d/
+[ -f /etc/config.d/fcron ]            || cp /etc/default.d/fcron /etc/config.d/
+[ -f /etc/config.d/menu ]             || cp /etc/default.d/menu /etc/config.d/
+[ -f /etc/config.d/sshd ]             || cp /etc/default.d/sshd /etc/config.d/
 
 # change from busybox to syslog-ng
 rc-service -i -q syslog stop 2>/dev/null
