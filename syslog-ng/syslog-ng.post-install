@@ -7,3 +7,5 @@ echo "rc-update add syslog-ng boot"
 [ ! -f /var/log/error.log ] && touch /var/log/error.log
 [ ! -f /var/log/mail.log ] && touch /var/log/mail.log
 [ ! -f /var/log/kern.log ] && touch /var/log/kern.log
+
+exit 0
