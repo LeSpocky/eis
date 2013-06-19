@@ -1,0 +1,6 @@
+#!/bin/sh
+
+/sbin/rc-update add eis-install default
+
+exit 0
+

@@ -223,71 +223,102 @@ Include /etc/apache2/conf.d/*.conf
 User apache
 Group apache
 
-LoadModule actions_module modules/mod_actions.so
+#LoadModule mpm_event_module modules/mod_mpm_event.so
+LoadModule mpm_prefork_module modules/mod_mpm_prefork.so
+#LoadModule mpm_worker_module modules/mod_mpm_worker.so
+
+LoadModule access_compat_module modules/mod_access_compat.so
+#LoadModule actions_module modules/mod_actions.so
 LoadModule alias_module modules/mod_alias.so
+#LoadModule allowmethods_module modules/mod_allowmethods.so
 #LoadModule asis_module modules/mod_asis.so
 LoadModule auth_basic_module modules/mod_auth_basic.so
-LoadModule auth_digest_module modules/mod_auth_digest.so
-#LoadModule authn_alias_module modules/mod_authn_alias.so
+#LoadModule auth_digest_module modules/mod_auth_digest.so
+#LoadModule auth_form_module modules/mod_auth_form.so
 #LoadModule authn_anon_module modules/mod_authn_anon.so
+LoadModule authn_core_module modules/mod_authn_core.so
 #LoadModule authn_dbd_module modules/mod_authn_dbd.so
 #LoadModule authn_dbm_module modules/mod_authn_dbm.so
-LoadModule authn_default_module modules/mod_authn_default.so
 LoadModule authn_file_module modules/mod_authn_file.so
+#LoadModule authn_socache_module modules/mod_authn_socache.so
+LoadModule authz_core_module modules/mod_authz_core.so
+#LoadModule authz_dbd_module modules/mod_authz_dbd.so
 #LoadModule authz_dbm_module modules/mod_authz_dbm.so
-LoadModule authz_default_module modules/mod_authz_default.so
 LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
 LoadModule authz_host_module modules/mod_authz_host.so
 #LoadModule authz_owner_module modules/mod_authz_owner.so
 LoadModule authz_user_module modules/mod_authz_user.so
 LoadModule autoindex_module modules/mod_autoindex.so
+#LoadModule buffer_module modules/mod_buffer.so
 ${encache}LoadModule cache_module modules/mod_cache.so
-#LoadModule cern_meta_module modules/mod_cern_meta.so
+${encache}LoadModule cache_disk_module modules/mod_cache_disk.so
 LoadModule cgi_module modules/mod_cgi.so
 #LoadModule cgid_module modules/mod_cgid.so
-${endav}LoadModule dav_module modules/mod_dav.so
-${endav}LoadModule dav_fs_module modules/mod_dav_fs.so
-#LoadModule dav_lock_module modules/mod_dav_lock.so
+#LoadModule charset_lite_module modules/mod_charset_lite.so
+#LoadModule data_module modules/mod_data.so
 #LoadModule dbd_module modules/mod_dbd.so
-LoadModule deflate_module modules/mod_deflate.so
+#LoadModule deflate_module modules/mod_deflate.so
+#LoadModule dialup_module modules/mod_dialup.so
 LoadModule dir_module modules/mod_dir.so
-${encache}LoadModule disk_cache_module modules/mod_disk_cache.so
 #LoadModule dumpio_module modules/mod_dumpio.so
+#LoadModule echo_module modules/mod_echo.so
 LoadModule env_module modules/mod_env.so
-LoadModule expires_module modules/mod_expires.so
+#LoadModule expires_module modules/mod_expires.so
 #LoadModule ext_filter_module modules/mod_ext_filter.so
 #LoadModule file_cache_module modules/mod_file_cache.so
 #LoadModule filter_module modules/mod_filter.so
 LoadModule headers_module modules/mod_headers.so
-#LoadModule ident_module modules/mod_ident.so
-#LoadModule imagemap_module modules/mod_imagemap.so
-LoadModule include_module modules/mod_include.so
-LoadModule info_module modules/mod_info.so
+#LoadModule heartbeat_module modules/mod_heartbeat.so
+#LoadModule heartmonitor_module modules/mod_heartmonitor.so
+${enssi}LoadModule include_module modules/mod_include.so
+#LoadModule info_module modules/mod_info.so
 LoadModule log_config_module modules/mod_log_config.so
+LoadModule log_debug_module modules/mod_log_debug.so
 #LoadModule log_forensic_module modules/mod_log_forensic.so
-#LoadModule logio_module modules/mod_logio.so
-${encache}LoadModule mem_cache_module modules/mod_mem_cache.so
+LoadModule logio_module modules/mod_logio.so
 LoadModule mime_module modules/mod_mime.so
 #LoadModule mime_magic_module modules/mod_mime_magic.so
 ${enneg}LoadModule negotiation_module modules/mod_negotiation.so
-#LoadModule proxy_module modules/mod_proxy.so
-#LoadModule proxy_ajp_module modules/mod_proxy_ajp.so
-#LoadModule proxy_balancer_module modules/mod_proxy_balancer.so
-#LoadModule proxy_connect_module modules/mod_proxy_connect.so
-#LoadModule proxy_ftp_module modules/mod_proxy_ftp.so
-#LoadModule proxy_http_module modules/mod_proxy_http.so
+#LoadModule ratelimit_module modules/mod_ratelimit.so
+#LoadModule reflector_module modules/mod_reflector.so
+#LoadModule remoteip_module modules/mod_remoteip.so
+LoadModule reqtimeout_module modules/mod_reqtimeout.so
+#LoadModule request_module modules/mod_request.so
 LoadModule rewrite_module modules/mod_rewrite.so
+#LoadModule sed_module modules/mod_sed.so
+#LoadModule session_module modules/mod_session.so
+#LoadModule session_cookie_module modules/mod_session_cookie.so
+#LoadModule session_dbd_module modules/mod_session_dbd.so
 LoadModule setenvif_module modules/mod_setenvif.so
+#LoadModule slotmem_plain_module modules/mod_slotmem_plain.so
+#LoadModule slotmem_shm_module modules/mod_slotmem_shm.so
+#LoadModule socache_dbm_module modules/mod_socache_dbm.so
+#LoadModule socache_memcache_module modules/mod_socache_memcache.so
+#LoadModule socache_shmcb_module modules/mod_socache_shmcb.so
 #LoadModule speling_module modules/mod_speling.so
-${enssl}LoadModule ssl_module modules/mod_ssl.so
 LoadModule status_module modules/mod_status.so
 #LoadModule substitute_module modules/mod_substitute.so
-LoadModule suexec_module modules/mod_suexec.so
-LoadModule unique_id_module modules/mod_unique_id.so
+#LoadModule suexec_module modules/mod_suexec.so
+#LoadModule unique_id_module modules/mod_unique_id.so
+LoadModule unixd_module modules/mod_unixd.so
 ${enuser}LoadModule userdir_module modules/mod_userdir.so
 #LoadModule usertrack_module modules/mod_usertrack.so
-#LoadModule version_module modules/mod_version.so
+LoadModule version_module modules/mod_version.so
 ${envhost}LoadModule vhost_alias_module modules/mod_vhost_alias.so
+#LoadModule watchdog_module modules/mod_watchdog.so
+
+# apache2-lua
+# #LoadModule lua_module modules/mod_lua.so
+# apache2-ssl:
+# ${enssl}LoadModule ssl_module modules/mod_ssl.so
+# apache2-webdav:
+# ${endav}LoadModule dav_module modules/mod_dav.so
+# ${endav}LoadModule dav_fs_module modules/mod_dav_fs.so
+# ${endav}LoadModule dav_lock_module modules/mod_dav_lock.so
+# apache2-ldap:
+# #LoadModule ldap_module modules/mod_ldap.so
+# apache2-proxy:
+# #LoadModule proxy_html_module modules/mod_proxy_html.so
 
 <IfModule mod_cache.c>
     # 300 = 5 minutes
