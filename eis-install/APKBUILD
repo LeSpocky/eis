@@ -32,12 +32,12 @@ package() {
 	install -m755 -D "$srcdir"/$pkgname.initd \
 		"$pkgdir"/etc/init.d/$pkgname || return 1
 	install -m755 -D "$srcdir"/$pkgname.sh \
-		"$pkgdir"/bin/$pkgname.sh || return 1
+		"$pkgdir"/bin/$pkgname || return 1
 }
 
-md5sums="b63dc9acf5e878f14d56cc9e96ce5085  eis-install.initd
-7d801a20179320a9b27afb7514fe2653  eis-install.sh"
-sha256sums="d3d16ed3c75cb011151dc364e5bfbf3987c80d3018a95e7fd1176723999ae70d  eis-install.initd
-9d314958031455a26caf63b545052610ff996502942609efb097ff2a2b587321  eis-install.sh"
-sha512sums="b20261152221b5a66bdec78617d4510d5fb3c8014c604ac27b1d259d775bfa036f86b0f14fa228644f9c67902a321cbb0de8c8a4e59ff7b12a53c3caa6f289b9  eis-install.initd
-27023763dc3591c3ca19f5433325222ede9cd7ecce8913846e3911398e774c7161eba476fd4734c620ef8fa205bb284342753cfda668a8e1267daa3ce8f9f58d  eis-install.sh"
+md5sums="125ef607b912d0e34c382de2e42963b8  eis-install.initd
+5bf8884a761ec35e2e459cbcbcc3beb7  eis-install.sh"
+sha256sums="02e08f0eaa663c57f2b40187fa59e4a6674d5217ff9bbb7efe0ec962d17e4344  eis-install.initd
+5509a287749be565469a9eb6d8820633a926cc61ffb1ac707f4104b2fa8c70d8  eis-install.sh"
+sha512sums="c319a65034421c6f47f056adf399360f6fa3e80be275ca2469864942519e42ebd2629e0896058402b7568b4a9f420a74b2c98a9e197c7c73d4349bd7175a3a71  eis-install.initd
+4526577b539a913db9d2fb1ae3d85ce139743ee80a51bb13477ac3badfcae048376fc2f275cba2d7975bb33a45423405acbb146ff6bee0570d8cb20e33f40a9d  eis-install.sh"

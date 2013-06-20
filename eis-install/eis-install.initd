@@ -6,11 +6,12 @@ name="Eisfair Installation"
 
 depend() {
 	need localmount
+	after logger
 }
 
 start() {
 	ebegin "Starting ${name}"
-	/bin/eis-install.sh
+	/bin/eis-install
 	eend $?
 }
 

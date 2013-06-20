@@ -7,7 +7,7 @@
 
 
 hw_backtitle() {
-    echo "alpine EIS - alpeis - Installation   $PDRIVE"
+    echo "Eisfair-NG powered by Alpine Linux - Installation   $PDRIVE"
     return 0
 }
 
@@ -34,6 +34,23 @@ PHOSTNAME=""
 PDOMAIN=""
 PDNSSERVER=""
 PTIMEZONE=""
+
+# add packages for install setup
+apk add -q bkeymaps
+
+# create new package list for setup-disk
+cat > /etc/apk/world <<EOF
+alpine-base
+bash
+nano
+openssh
+libeventlog
+libcui
+syslog-ng
+fcron
+cuimenu-bin
+cuimenu
+EOF
 
 while true ; do
     if [ "$PNETIPSTATIC" = "1" ] ; then
@@ -308,7 +325,10 @@ while true ; do
 		    #echo "0" >/proc/sys/kernel/printk
             #setup-disk -m sys ${PDRIVE} >>/tmp/fdisk.log
             sleep 2; kill -3 `cat $tempfile` 2>&1 >/dev/null 2>/dev/null
-		    #sync; sync
+		    
+		    echo ""
+            /sbin/setup-disk m=sys $PDRIVE
+            #sync; sync
             exit 0    
 
             if [ -n "$PKEYBVARIANT" ] ; then        
@@ -318,9 +338,8 @@ while true ; do
                     [ -f "$ROOT/etc/conf.d/keymaps" ] && sed -i '/^KEYMAP=/d' "$ROOT/etc/conf.d/keymaps"
                     echo "KEYMAP=/etc/keymap/$PKEYBVARIANT.bmap.gz" >> "$ROOT/etc/conf.d/keymaps"
                     rc-update -q add keymaps boot
-                fi        
+                fi  
             fi
-            
             ;;
         0)
             exit 0;
