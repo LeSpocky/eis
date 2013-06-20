@@ -9,8 +9,6 @@ ROOTFS=${ROOTFS:-ext4}
 BOOTFS=${BOOTFS:-ext4}
 VARFS=${VARFS:-ext4}
 
-# default location for mounted root
-SYSROOT=${SYSROOT:-/mnt}
 
 in_list() {
 	local i="$1"
@@ -58,12 +56,10 @@ uuid_or_device() {
 
 # generate an fstab from a given mountpoint. Convert to UUID if possible
 enumerate_fstab() {
-	local mnt="$1"
 	local fs_spec= fs_file= fs_vfstype= fs_mntops= fs_freq= fs_passno=
-	[ -z "$mnt" ] && return
-	local escaped_mnt=$(echo $mnt | sed -e 's:/*$::' -e 's:/:\\/:g')
+	local escaped_mnt=$(echo /mnt | sed -e 's:/*$::' -e 's:/:\\/:g')
 	awk "\$2 ~ /^$escaped_mnt(\/|\$)/ {print \$0}" /proc/mounts | \
-		sed "s:$mnt:/:g; s: :\t:g" | sed 's:/\+:/:g' | \
+		sed "s:/mnt:/:g; s: :\t:g" | sed 's:/\+:/:g' | \
 		while read fs_spec fs_file fs_vfstype fs_mntops fs_freq fs_passno; do
 			echo -e "$(uuid_or_device $fs_spec)\t${fs_file}\t${fs_vfstype}\t${fs_mntops} ${fs_freq} ${fs_passno}"
 		done
@@ -137,8 +133,7 @@ find_mount_fs() {
 
 # find device for given mounted dir
 find_mount_dev() {
-	local mnt="$1"
-	awk "\$2 == \"$mnt\" { print \$1 }" /proc/mounts | tail -n 1
+	awk "\$2 == \"/mnt\" { print \$1 }" /proc/mounts | tail -n 1
 }
 
 supported_boot_fs() {
@@ -162,17 +157,17 @@ find_pvs_in_vg() {
 }
 
 install_mounted_root() {
-	local mnt="$1" mnt_boot= boot_fs= root_fs=
+	local mnt_boot= boot_fs= root_fs=
 	local initfs_features="ata base ide scsi usb virtio"
 	local pvs= dev= rootdev= bootdev= extlinux_raidopt= root= modules=
 	local kernel_opts="quiet"
 
-	rootdev=$(find_mount_dev "$mnt")
+	rootdev=$(find_mount_dev /mnt)
 	if [ -z "$rootdev" ]; then
-		echo "$mnt does not seem to be a mount point" >&2
+		echo "/mnt does not seem to be a mount point" >&2
 		return 1
 	fi
-	root_fs=$(find_mount_fs "$mnt")
+	root_fs=$(find_mount_fs /mnt)
 	initfs_features="$initfs_features $root_fs"
 
 	if is_lvm "$rootdev"; then
@@ -182,12 +177,12 @@ install_mounted_root() {
 	fi
 
 
-	bootdev=$(find_mount_dev "$mnt"/boot)
+	bootdev=$(find_mount_dev /mnt/boot)
 	if [ -z "$bootdev" ]; then
 		bootdev=$rootdev
-		mnt_boot="$mnt"
+		mnt_boot=/mnt
 	else
-		mnt_boot="$mnt"/boot
+		mnt_boot=/mnt/boot
 	fi
 	boot_fs=$(find_mount_fs "$mnt_boot")
 	supported_boot_fs "$boot_fs" || return 1
@@ -228,18 +223,18 @@ install_mounted_root() {
 
 	if [ -z "$APKOVL" ]; then
 		ovlfiles=/tmp/ovlfiles
-		lbu package - | tar -C "$mnt" -zxv > "$ovlfiles"
+		lbu package - | tar -C /mnt -zxv > "$ovlfiles"
 	else
 		echo "Restoring backup from $APKOVL to $rootdev..."
-		unpack_apkovl "$APKOVL" "$mnt" || return 1
+		unpack_apkovl "$APKOVL" /mnt || return 1
 	fi
 
 	# generate mkinitfs.conf
-	mkdir -p "$mnt"/etc/mkinitfs/files.d
-	echo "features=\"$initfs_features\"" > "$mnt"/etc/mkinitfs/mkinitfs.conf
+	mkdir -p /mnt/etc/mkinitfs/files.d
+	echo "features=\"$initfs_features\"" > /mnt/etc/mkinitfs/mkinitfs.conf
 	if [ -n "$raidmod" ]; then
-		echo "/sbin/mdadm" > "$mnt"/etc/mkinitfs/files.d/raid
-		echo "/etc/mdadm.conf" >> "$mnt"/etc/mkinitfs/files.d/raid
+		echo "/sbin/mdadm" > /mnt/etc/mkinitfs/files.d/raid
+		echo "/etc/mdadm.conf" >> /mnt/etc/mkinitfs/files.d/raid
 	fi
 
 	# generate update-extlinux.conf
@@ -251,34 +246,29 @@ install_mounted_root() {
 	sed -e "s:^root=.*:root=$root:" \
 		-e "s:^default_kernel_opts=.*:default_kernel_opts=\"$kernel_opts\":" \
 		-e "s:^modules=.*:modules=$modules:" \
-		/etc/update-extlinux.conf > "$mnt"/etc/update-extlinux.conf
+		/etc/update-extlinux.conf > /mnt/etc/update-extlinux.conf
 	if [ "$(rc --sys)" = "XEN0" ]; then
 		sed -i -e "s:^default=.*:default=xen-grsec:" \
-			"$mnt"/etc/update-extlinux.conf
+			/mnt/etc/update-extlinux.conf
 	fi
 
-	# generate the fstab
-	if [ -f "$mnt"/etc/fstab ]; then
-		mv "$mnt"/etc/fstab "$mnt"/etc/fstab.old
-	fi
-	enumerate_fstab "$mnt" >> "$mnt"/etc/fstab
-	cat >>"$mnt"/etc/fstab <<EOF
+	enumerate_fstab /mnt > /mnt/etc/fstab
+	cat >>/mnt/etc/fstab <<EOF
 /dev/cdrom	/media/cdrom	iso9660	noauto,ro 0 0
 /dev/fd0	/media/floppy	vfat	noauto	0 0
 /dev/usbdisk	/media/usb	vfat	noauto	0 0
 EOF
 
 	# remove the installed db in case its there so we force re-install
-	rm -f "$mnt"/var/lib/apk/installed "$mnt"/lib/apk/db/installed
+	rm -f /mnt/var/lib/apk/installed /mnt/lib/apk/db/installed
 	echo "Installing system on $rootdev:"
 	# apk reads config from target root so we need to copy the config
-	mkdir -p "$mnt"/etc/apk/keys/
-	cp /etc/apk/keys/* "$mnt"/etc/apk/keys/
+	mkdir -p /mnt/etc/apk/keys/
+	cp /etc/apk/keys/* /mnt/etc/apk/keys/
 
 
 	local apkflags="--initdb --quiet --progress --update-cache --clean-protected"
-	local pkgs=$(cat "$mnt"/etc/apk/world "$mnt"/var/lib/apk/world 2>/dev/null)
-	pkgs="$pkgs acct linux-$KERNEL_FLAVOR alpine-base"
+	pkgs="alpine-base linux-$KERNEL_FLAVOR acct bash nano openssh libeventlog libcui fcron syslog-ng cuimenu-bin cuimenu"
 	if [ "$(rc --sys)" = "XEN0" ]; then
 		pkgs="$pkgs xen-hypervisor"
 	fi
@@ -288,17 +278,16 @@ EOF
 		repoflags="$repoflags --repository $i"
 	done
 	
-	apk add --root "$mnt" $apkflags --overlay-from-stdin \
-		$repoflags $pkgs <$ovlfiles>/dev/null || return 1
+	apk add --root /mnt $apkflags --overlay-from-stdin $repoflags $pkgs <$ovlfiles>/dev/null || return 1
 	echo ""
-	extlinux $extlinux_raidopt --install "$mnt"/boot
+	extlinux $extlinux_raidopt --install /mnt/boot
 }
 
 unmount_partitions() {
 	local mnt="$1"
 
 	# unmount the partitions
-	umount $(awk '{print $2}' /proc/mounts | egrep "^$mnt(/|\$)" | sort -r)
+	umount $(awk '{print $2}' /proc/mounts | egrep "^/mnt(/|\$)" | sort -r)
 }
 
 # figure out decent default swap size in mega bytes
@@ -655,16 +644,16 @@ data_only_disk_install() {
 setup_root() {
 	local root_dev="$1" boot_dev="$2"
 	mkfs.$ROOTFS -q "$root_dev"
-	mkdir -p "$SYSROOT"
-	mount -t $ROOTFS $root_dev "$SYSROOT" || return 1
+	mkdir -p /mnt
+	mount -t $ROOTFS $root_dev /mnt || return 1
 	if [ -n "$boot_dev" ]; then
-		mkdir -p "$SYSROOT"/boot
-		mount -t $BOOTFS $boot_dev "$SYSROOT"/boot || return 1
+		mkdir -p /mnt/boot
+		mount -t $BOOTFS $boot_dev /mnt/boot || return 1
 	fi
 
 	setup_mdadm_conf
-	install_mounted_root "$SYSROOT" || return 1
-	unmount_partitions "$SYSROOT"
+	install_mounted_root /mnt || return 1
+	unmount_partitions /mnt
 	swapoff -a
 
 	echo ""
@@ -856,14 +845,6 @@ while getopts "hk:Lm:o:qrs:v" opt; do
 	esac
 done
 shift $(( $OPTIND - 1))
-
-if [ -d "$1" ]; then
-	# install to given mounted root
-	apk add -q syslinux
-	install_mounted_root "${1%/}" \
-		&& echo "You might need fix the MBR to be able to boot" >&2
-	exit $?
-fi
 
 reset_var
 swapoff -a

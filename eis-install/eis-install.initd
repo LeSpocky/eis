@@ -1,23 +1,16 @@
 #!/sbin/runscript
 
-# Sample init.d file for alpine linux.
-
-name="Eisfair Installation"
-
 depend() {
 	need localmount
 	after logger
 }
 
 start() {
-	ebegin "Starting ${name}"
+    echo "Starting Eisfair Installation ..."
 	/bin/eis-install
-	eend $?
+
 }
 
 stop() {
-	ebegin "Stopping ${name}"
 	echo ""
-	eend $?
 }
-

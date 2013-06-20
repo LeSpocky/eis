@@ -1,21 +1,5 @@
 #!/bin/sh
 
-tmp=$(hostname -i | sed "s# .*##")
-sed -i -e "s/^IP_NET_1_IPV4_IPADDR=.*/IP_NET_1_IPV4_IPADDR='${tmp}'/" /etc/default.d/base
-
-tmp=$(ip route show | grep default | sed -r 's/^.*via (([0-9]{1,3}[.]){3}([0-9]{1,3}))[^0-9].*$/\1/')
-sed -i -e "s/^IP_NET_1_IPV4_GATEWAY=.*/IP_NET_1_IPV4_GATEWAY='${tmp}'/" /etc/default.d/base
-
-ncalc=$(ip -4 -o address show | grep eth | sed "s#.*inet ##;s# .*##")
-tmp=$(ipcalc -ms ${ncalc} | cut -d'=' -f2)
-[ -n "$tmp" ] && sed -i -e "s/^IP_NET_1_IPV4_NETMASK=.*/IP_NET_1_IPV4_NETMASK='${tmp}'/" /etc/default.d/base
-
-tmp=$(hostname -s)
-sed -i -e "s/^HOSTNAME=.*/HOSTNAME='${tmp}'/" /etc/default.d/base
-
-tmp=$(hostname -d)
-sed -i -e "s/^DOMAIN_NAME=.*/DOMAIN_NAME='${tmp}'/" /etc/default.d/base
-
 mkdir -p /etc/config.d
 [ -f /etc/config.d/apk-repositories ] || cp /etc/default.d/apk-repositories /etc/config.d/
 [ -f /etc/config.d/base ]             || cp /etc/default.d/base /etc/config.d/

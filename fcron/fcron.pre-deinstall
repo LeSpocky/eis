@@ -1,4 +1,6 @@
 #!/bin/sh
 
-/etc/init.d/fcron stop
-/sbin/rc-update del fcron default
+rc-service fcron stop
+rc-update del fcron default
+
+exit 0

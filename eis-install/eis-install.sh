@@ -39,18 +39,18 @@ PTIMEZONE=""
 apk add -q bkeymaps
 
 # create new package list for setup-disk
-cat > /etc/apk/world <<EOF
-alpine-base
-bash
-nano
-openssh
-libeventlog
-libcui
-syslog-ng
-fcron
-cuimenu-bin
-cuimenu
-EOF
+#cat > /etc/apk/world <<EOF
+#alpine-base
+#bash
+#nano
+#openssh
+#libeventlog
+#libcui
+#syslog-ng
+#fcron
+#cuimenu-bin
+#cuimenu
+#EOF
 
 while true ; do
     if [ "$PNETIPSTATIC" = "1" ] ; then

@@ -35,15 +35,15 @@ package() {
 	install -m755 -D "$srcdir"/$pkgname.sh \
 		"$pkgdir"/bin/$pkgname || return 1
 	install -m755 -D "$srcdir"/$pkgname.setup-disk \
-		"$pkgdir"/bin/$pkgname.setup-disk || return 1
+		"$pkgdir"/bin/$pkgname.setup-disk || return 1		
 }
 
-md5sums="125ef607b912d0e34c382de2e42963b8  eis-install.initd
-8f79267a268c6ca442075fc1470e2d9c  eis-install.sh
-02eac222f27d53064e1fbeee0bfca95e  eis-install.setup-disk"
-sha256sums="02e08f0eaa663c57f2b40187fa59e4a6674d5217ff9bbb7efe0ec962d17e4344  eis-install.initd
-d24454add6e84026f459280346e310836470bed5ee3318a2827d10a76dbd299e  eis-install.sh
-6e4fc315e54a096518521b09aa2c8a790d21f11d8f796d7ff23839cf2c25a49a  eis-install.setup-disk"
-sha512sums="c319a65034421c6f47f056adf399360f6fa3e80be275ca2469864942519e42ebd2629e0896058402b7568b4a9f420a74b2c98a9e197c7c73d4349bd7175a3a71  eis-install.initd
-96a9ef9ff1a164a9b2c7111484f4dd8c6cb9a8573ac5495c1f372906c10e0910a093540aff66164011cf68cb444f0b6ef59a181794a1a451dbd8dfd1007e2e95  eis-install.sh
-b5f868322cee8199ce175dbf57238c4f6c68ab2a74637082163531c1dc11de112071e707d6570a00ee0e356bdfc86017c9f68934b2673282775fc47039de40cc  eis-install.setup-disk"
+md5sums="29513cd8646ee3f84c8e5e202a9f1029  eis-install.initd
+62999d757bc182765f70921673e75dbe  eis-install.sh
+607c5d62fcac690924bf9a1ba2bdc11b  eis-install.setup-disk"
+sha256sums="ccecea1047059bf995d271b334c86f96b147c45e5c5c47eac97ef82068402951  eis-install.initd
+486bb407bd05a049a2e1bf6b78aa5f9e569e5cb4df761225ef60f469a882df7d  eis-install.sh
+2391e3b4ca134edcb79a2c8e23cd000f6c3766322184f8ba40f3ecc2be402aae  eis-install.setup-disk"
+sha512sums="56ea86a1506985c7c4692e056374c312dba3367191f616726bcea3d4efbd52cffbda76ca504ee1e1b20e327bfd78e3fa41d563fb63434ba46af64dc67ba30383  eis-install.initd
+507e583d822e22bed0121cb91ff2c9d94b4d671983005bab3eecbea29a9f53d06b780c6dd845500bdce18968568661817f5abc2d680942718d7a1c2149702f68  eis-install.sh
+a9a4a676030b4a3d3132260cc45bde5d7a74d51f6b31209072e5590c03dba1cafd784cb7f9178f9923816d6be679a9c318dcb1b333ff41f64c722039f34fcf38  eis-install.setup-disk"
