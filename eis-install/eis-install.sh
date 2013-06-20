@@ -327,9 +327,13 @@ while true ; do
             sleep 2; kill -3 `cat $tempfile` 2>&1 >/dev/null 2>/dev/null
 		    
 		    echo ""
-            /sbin/setup-disk m=sys $PDRIVE
+            /bin/eis-install.setup-disk -m sys $PDRIVE
             #sync; sync
-            exit 0    
+            exit 0
+            
+            # remove all scripts
+            rm -f /bin/eis-install.setup-disk
+            rm -f /bin/eis-install    
 
             if [ -n "$PKEYBVARIANT" ] ; then        
                 mkdir -p "$ROOT/etc/keymap"
@@ -338,8 +342,9 @@ while true ; do
                     [ -f "$ROOT/etc/conf.d/keymaps" ] && sed -i '/^KEYMAP=/d' "$ROOT/etc/conf.d/keymaps"
                     echo "KEYMAP=/etc/keymap/$PKEYBVARIANT.bmap.gz" >> "$ROOT/etc/conf.d/keymaps"
                     rc-update -q add keymaps boot
-                fi  
+                fi        
             fi
+            
             ;;
         0)
             exit 0;

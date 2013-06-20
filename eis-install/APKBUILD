@@ -3,7 +3,7 @@
 pkgname=eis-install
 pkgver=1.0.0
 pkgrel=0
-pkgdesc="Eisfair Installer"
+pkgdesc="Eisfair-NG Installer"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
@@ -15,6 +15,7 @@ subpackages=""
 source="
 	eis-install.initd
 	eis-install.sh
+	eis-install.setup-disk
 	"
 
 _builddir=
@@ -33,11 +34,16 @@ package() {
 		"$pkgdir"/etc/init.d/$pkgname || return 1
 	install -m755 -D "$srcdir"/$pkgname.sh \
 		"$pkgdir"/bin/$pkgname || return 1
+	install -m755 -D "$srcdir"/$pkgname.setup-disk \
+		"$pkgdir"/bin/$pkgname.setup-disk || return 1
 }
 
 md5sums="125ef607b912d0e34c382de2e42963b8  eis-install.initd
-5bf8884a761ec35e2e459cbcbcc3beb7  eis-install.sh"
+8f79267a268c6ca442075fc1470e2d9c  eis-install.sh
+02eac222f27d53064e1fbeee0bfca95e  eis-install.setup-disk"
 sha256sums="02e08f0eaa663c57f2b40187fa59e4a6674d5217ff9bbb7efe0ec962d17e4344  eis-install.initd
-5509a287749be565469a9eb6d8820633a926cc61ffb1ac707f4104b2fa8c70d8  eis-install.sh"
+d24454add6e84026f459280346e310836470bed5ee3318a2827d10a76dbd299e  eis-install.sh
+6e4fc315e54a096518521b09aa2c8a790d21f11d8f796d7ff23839cf2c25a49a  eis-install.setup-disk"
 sha512sums="c319a65034421c6f47f056adf399360f6fa3e80be275ca2469864942519e42ebd2629e0896058402b7568b4a9f420a74b2c98a9e197c7c73d4349bd7175a3a71  eis-install.initd
-4526577b539a913db9d2fb1ae3d85ce139743ee80a51bb13477ac3badfcae048376fc2f275cba2d7975bb33a45423405acbb146ff6bee0570d8cb20e33f40a9d  eis-install.sh"
+96a9ef9ff1a164a9b2c7111484f4dd8c6cb9a8573ac5495c1f372906c10e0910a093540aff66164011cf68cb444f0b6ef59a181794a1a451dbd8dfd1007e2e95  eis-install.sh
+b5f868322cee8199ce175dbf57238c4f6c68ab2a74637082163531c1dc11de112071e707d6570a00ee0e356bdfc86017c9f68934b2673282775fc47039de40cc  eis-install.setup-disk"
