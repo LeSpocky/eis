@@ -268,7 +268,7 @@ EOF
 
 
 	local apkflags="--initdb --quiet --progress --update-cache --clean-protected"
-	pkgs="alpine-base linux-$KERNEL_FLAVOR acct bash nano openssh libeventlog libcui fcron syslog-ng cuimenu-bin cuimenu"
+	pkgs="alpine-base linux-$KERNEL_FLAVOR syslinux e2fsprogs acct bash nano openssh libeventlog libcui fcron syslog-ng cuimenu-bin cuimenu"
 	if [ "$(rc --sys)" = "XEN0" ]; then
 		pkgs="$pkgs xen-hypervisor"
 	fi
