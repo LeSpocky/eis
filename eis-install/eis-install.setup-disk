@@ -270,8 +270,8 @@ EOF
 	mkdir -p /mnt/etc/apk/keys/
 	cp /etc/apk/keys/* /mnt/etc/apk/keys/
 
-	local apkflags="--initdb --update-cache --clean-protected"	
-	pkgs="alpine-base linux-$KERNEL_FLAVOR syslinux e2fsprogs acct bash nano openssh libeventlog libcui fcron syslog-ng cuimenu-bin cuimenu dhcpcd"
+	local apkflags="--initdb --update-cache --clean-protected"
+	pkgs="alpine-base linux-$KERNEL_FLAVOR acct bash dhcpcd e2fsprogs nano openssh libeventlog libcui fcron syslog-ng cuimenu-bin cuimenu"
 	if [ "$(rc --sys)" = "XEN0" ]; then
 		pkgs="$pkgs xen-hypervisor"
 	fi
@@ -282,16 +282,18 @@ EOF
 	done
 	
 	apk add --root /mnt $apkflags --overlay-from-stdin $repoflags $pkgs <$ovlfiles>/dev/null || return 1
-	echo ""
+	# hide syslinux script error message
+	apk add --root /mnt syslinux 2>/dev/null
 	extlinux $extlinux_raidopt --install /mnt/boot >/dev/null 2>&1
 }
 
+
 unmount_partitions() {
 	local mnt="$1"
-
 	# unmount the partitions
 	umount $(awk '{print $2}' /proc/mounts | egrep "^/mnt(/|\$)" | sort -r)
 }
+
 
 # figure out decent default swap size in mega bytes
 find_swap_size() {
