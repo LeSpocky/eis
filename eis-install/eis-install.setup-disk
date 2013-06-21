@@ -270,8 +270,7 @@ EOF
 	mkdir -p /mnt/etc/apk/keys/
 	cp /etc/apk/keys/* /mnt/etc/apk/keys/
 
-
-	local apkflags="--initdb --quiet --progress --update-cache --clean-protected"
+	local apkflags="--initdb --update-cache --clean-protected"	
 	pkgs="alpine-base linux-$KERNEL_FLAVOR syslinux e2fsprogs acct bash nano openssh libeventlog libcui fcron syslog-ng cuimenu-bin cuimenu dhcpcd"
 	if [ "$(rc --sys)" = "XEN0" ]; then
 		pkgs="$pkgs xen-hypervisor"
@@ -284,7 +283,7 @@ EOF
 	
 	apk add --root /mnt $apkflags --overlay-from-stdin $repoflags $pkgs <$ovlfiles>/dev/null || return 1
 	echo ""
-	extlinux $extlinux_raidopt --install /mnt/boot
+	extlinux $extlinux_raidopt --install /mnt/boot >/dev/null 2>&1
 }
 
 unmount_partitions() {
@@ -540,14 +539,6 @@ setup_lvm_swap() {
 	setup_swap_dev /dev/$vgname/$swapname
 }
 
-# if /var is mounted, move out data and umount it
-reset_var() {
-	[ -z "$(find_mount_dev /var)" ] && return 0
-	mkdir /.var
-	mv /var/* /.var/ 2>/dev/null
-	umount /var && 	rm -rf /var && mv /.var /var && rm -rf /var/lost+found
-}
-
 # set up /var on given device
 setup_var() {
 	local var_dev="$1"
@@ -688,6 +679,9 @@ setup_root() {
 	setup_keymap
 	setup_network
 	setup_timezone
+	# change to bash login
+	sed -i -e 's/\/ash$/\/bash/' /mnt/etc/passwd
+	sed -i -e 's/^#\/bin\/bash/\/bin\/bash/' /mnt/etc/shells
 	# remove bug files ?!
 	rm -f /mnt/etc/runlevels/eis-install
 	rm -f /mnt/etc/runlevels/default/eis-install	
@@ -905,8 +899,7 @@ while getopts "dD:e:E:F:G:H:I:hk:LN:o:qrs:T:v" opt; do
 done
 shift $(( $OPTIND - 1))
 
-reset_var
-swapoff -a
+swapoff -a >/dev/null 2>&1
 
 # stop all volume groups in use
 vgchange --ignorelockingfailure -a n >/dev/null 2>&1

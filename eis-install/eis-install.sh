@@ -311,17 +311,21 @@ while true ; do
                 --title "Start installation"  \
                 --backtitle "$(hw_backtitle)" \
                 --no-kill \
-                --tailboxbg /tmp/fdisk.log 20 75 2>$tempfile
-		    #PRINTK=`cat /proc/sys/kernel/printk`
+                --tailboxbg /tmp/fdisk.log 22 75 2>$tempfile
+            #PRINTK=`cat /proc/sys/kernel/printk`
 		    #echo "0" >/proc/sys/kernel/printk
-            #setup-disk -m sys ${PDRIVE} >>/tmp/fdisk.log
+		    if [ "$PNETIPSTATIC" = "1" ] ; then
+                /bin/eis-install.setup-disk -e $PKEYBVARIANT -E $PKEYBLAYOUT -H "$PHOSTNAME" -D "$PDOMAIN" -I "$PIPADDRESS" -N "$PNETMASK" -G "$PGATEWAY" -F "$PDNSSERVER" $PDRIVE >>/tmp/fdisk.log
+            else
+                /bin/eis-install.setup-disk -e $PKEYBVARIANT -E $PKEYBLAYOUT -H "$PHOSTNAME" -D "$PDOMAIN" -d  $PDRIVE >>tmp/fdisk.log
+            fi
             sleep 2; kill -3 `cat $tempfile` 2>&1 >/dev/null 2>/dev/null
 		    echo ""
-		    if [ "$PNETIPSTATIC" = "1" ] ; then
-                /bin/eis-install.setup-disk -e $PKEYBVARIANT -E $PKEYBLAYOUT -H "$PHOSTNAME" -D "$PDOMAIN" -I "$PIPADDRESS" -N "$PNETMASK" -G "$PGATEWAY" -F "$PDNSSERVER" $PDRIVE
-            else
-                /bin/eis-install.setup-disk -e $PKEYBVARIANT -E $PKEYBLAYOUT -H "$PHOSTNAME" -D "$PDOMAIN" -d  $PDRIVE
-            fi
+		    #if [ "$PNETIPSTATIC" = "1" ] ; then
+            #    /bin/eis-install.setup-disk -e $PKEYBVARIANT -E $PKEYBLAYOUT -H "$PHOSTNAME" -D "$PDOMAIN" -I "$PIPADDRESS" -N "$PNETMASK" -G "$PGATEWAY" -F "$PDNSSERVER" $PDRIVE
+            #else
+            #    /bin/eis-install.setup-disk -e $PKEYBVARIANT -E $PKEYBLAYOUT -H "$PHOSTNAME" -D "$PDOMAIN" -d  $PDRIVE
+            #fi
             sync
             exit 0
 
