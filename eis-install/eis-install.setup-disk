@@ -598,7 +598,7 @@ set_eis_configvar() {
 rc_update() {
     local svc="$1"
     local level="$2"
-    ln -sf ../../init.d/$svc etc/runlevels/${level}/$svc
+    ln -sf /etc/init.d/$svc /mnt/etc/runlevels/${level}/$svc
 }
 
 
@@ -607,11 +607,11 @@ setup_keymap() {
 		mkdir -p /mnt/etc/keymap
 		mkdir -p /mnt/etc/conf.d/
 		if gzip -9 -c "/usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap" > "/mnt/etc/keymap/$PKEYBVARIANT.bmap.gz" ; then
-			sed -i -e 's/^KEYMAP=.*/KEYMAP="$PKEYBVARIANT"/' /mnt/etc/conf.d/keymaps 
+			sed -i -e 's/^keymap=.*/keymap="$PKEYBLAYOUT"/' /mnt/etc/conf.d/keymaps
+			sed -i '/^KEYMAP=/d' /etc/conf.d/keymaps
+			echo "KEYMAP=/etc/keymap/${PKEYBVARIANT}.bmap.gz" >> /etc/conf.d/keymaps 
             set_eis_configvar KEYMAP "$PKEYBVARIANT" 
-			cd /mnt
 			rc_update keymaps boot
-			cd ..
 		fi
 	fi
 }
@@ -661,6 +661,8 @@ EOF
 	set_eis_configvar "IP_NET_1_IPV4_NETMASK" "$PNETMASK"
 	set_eis_configvar "IP_NET_1_IPV4_GATEWAY" "$PGATEWAY"
 	set_eis_configvar "HOSTNAME" "$PHOSTNAME"
+	set_eis_configvar "DOMAIN" "$PDOMAIN"
+	set_eis_configvar "DNS_SERVER" "$PDNSSERVER
 }
 
 
