@@ -662,7 +662,7 @@ EOF
 	set_eis_configvar "IP_NET_1_IPV4_GATEWAY" "$PGATEWAY"
 	set_eis_configvar "HOSTNAME" "$PHOSTNAME"
 	set_eis_configvar "DOMAIN" "$PDOMAIN"
-	set_eis_configvar "DNS_SERVER" "$PDNSSERVER
+	set_eis_configvar "DNS_SERVER" "$PDNSSERVER"
 }
 
 
