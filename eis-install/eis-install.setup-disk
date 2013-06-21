@@ -607,9 +607,9 @@ setup_keymap() {
 		mkdir -p /mnt/etc/keymap
 		mkdir -p /mnt/etc/conf.d/
 		if gzip -9 -c "/usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap" > "/mnt/etc/keymap/$PKEYBVARIANT.bmap.gz" ; then
-			sed -i -e 's/^keymap=.*/keymap="$PKEYBLAYOUT"/' /mnt/etc/conf.d/keymaps
+			sed -i -e 's/^keymap=.*/keymap="${PKEYBLAYOUT}"/' /mnt/etc/conf.d/keymaps
 			sed -i '/^KEYMAP=/d' /etc/conf.d/keymaps
-			echo "KEYMAP=/etc/keymap/${PKEYBVARIANT}.bmap.gz" >> /etc/conf.d/keymaps 
+			echo "KEYMAP=/etc/keymap/${PKEYBVARIANT}.bmap.gz" >> /mnt/etc/conf.d/keymaps 
             set_eis_configvar KEYMAP "$PKEYBVARIANT" 
 			rc_update keymaps boot
 		fi
@@ -663,6 +663,7 @@ EOF
 	set_eis_configvar "HOSTNAME" "$PHOSTNAME"
 	set_eis_configvar "DOMAIN" "$PDOMAIN"
 	set_eis_configvar "DNS_SERVER" "$PDNSSERVER"
+	rc_update networking boot	
 }
 
 
