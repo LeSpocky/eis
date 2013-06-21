@@ -1,4 +1,4 @@
 #!/bin/sh
 
-# add something which happends before install
-
+mkdir -p /etc/init.d
+mkdir -p /etc/runlevels/default

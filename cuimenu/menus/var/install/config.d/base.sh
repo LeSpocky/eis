@@ -60,8 +60,8 @@ do
 		iface $name inet static
 		  address $ipaddr
 		  netmask $netmask
-			EOF
-	    	{
+		EOF
+		{
             if [ -n "$gateway" ]
             then
                 echo "  gateway $gateway"

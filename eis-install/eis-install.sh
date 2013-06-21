@@ -24,33 +24,23 @@ getNextMenuItem () {
 }
 
 PDRIVE=""
-PKEYBLAYOUT=""
-PKEYBVARIANT=""
+PKEYBLAYOUT="de"
+PKEYBVARIANT="de-latin1"
 PNETIPSTATIC="1"
 PIPADDRESS="192.168.1.2"
 PNETMASK="255.255.255.0"
 PGATEWAY="192.168.1.1"
-PHOSTNAME=""
-PDOMAIN=""
-PDNSSERVER=""
+PHOSTNAME="eis"
+PDOMAIN="eisfair.home"
+PDNSSERVER="192.168.1.1"
 PTIMEZONE=""
 
-# add packages for install setup
-apk add -q bkeymaps
+n_item="1"
 
-# create new package list for setup-disk
-#cat > /etc/apk/world <<EOF
-#alpine-base
-#bash
-#nano
-#openssh
-#libeventlog
-#libcui
-#syslog-ng
-#fcron
-#cuimenu-bin
-#cuimenu
-#EOF
+# add packages for install setup and load default keymap
+apk add -q bkeymaps
+[ -f "/usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap" ] && cat "/usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap" | loadkmap
+
 
 while true ; do
     if [ "$PNETIPSTATIC" = "1" ] ; then
@@ -59,7 +49,7 @@ while true ; do
             --default-item "$n_item" \
             --title " Server configuration "  --clear \
             --menu "Base setup" 20 50 13 \
-            0 "Return to Previous Menu" "Return to Previous Menu" \
+            0 "Shell login" "Return to login" \
             1 "Select disc" "Select disc to install Alpeis Server." \
             2 "Keyboard layout" "Setup the keyboard layout." \
             3 "Use DHCP for network" "Automatic IP-address of first network interface." \
@@ -77,7 +67,7 @@ while true ; do
             --default-item "$n_item" \
             --title "Server configuration"  --clear \
             --menu "Base setup" 20 50 13 \
-            0 "Return to Previous Menu" "Return to Previous Menu" \
+            0 "Shell login" "Return to login" \
             1 "Select disc" "Select disc to install Alpeis Server." \
             2 "Keyboard layout" "Setup the keyboard layout." \
             3 "Use DHCP for network" "Automatic IP-address of first network interface." \
@@ -95,7 +85,7 @@ while true ; do
             if [ -z "$drivelist" ] ; then
                 dialog --backtitle "$(hw_backtitle)" --title "" \
                     --msgbox " No drive found!\n Please try again." 6 30
-            else                    
+            else
                 new=$(dialog --stdout --no-shadow \
                     --backtitle "$(hw_backtitle)" \
                     --title "Select drive" \
@@ -103,7 +93,7 @@ while true ; do
                     --menu "Select drive to partition:" 11 40 4 \
                     $drivelist )
                 if [ "$?" -eq 0 ] ; then
-                    PDRIVE="$new"    
+                    PDRIVE="$new"
                     getNextMenuItem
                 fi
             fi
@@ -117,6 +107,7 @@ while true ; do
             done
             PKEYBLAYOUT=$(dialog --stdout --no-shadow --no-cancel \
                 --backtitle "$(hw_backtitle)" \
+                --default-item "$PKEYBLAYOUT" \
                 --title "Keyboard configuration"  --clear \
                 --menu "Select keyboard layout:" 18 40 11 \
                 $sellist )
@@ -128,13 +119,14 @@ while true ; do
             done
             new=$(dialog --stdout --no-shadow --no-cancel \
                 --backtitle "$(hw_backtitle)" \
+                --default-item "$PKEYBVARIANT" \
                 --title "Keyboard configuration"  --clear \
                 --menu "Available variants:" 18 40 11 \
                 $sellist )
             if [ "$?" -eq 0 ] ; then
                 PKEYBVARIANT="$new"
                 cat /usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap | loadkmap
-                getNextMenuItem            
+                getNextMenuItem
             fi
             ;;
             ### DHCP ###########################################################
@@ -311,40 +303,28 @@ while true ; do
                 --title "Start installation"  --clear \
                 --yesno "Delete all partitions on ${PDRIVE}\nand start installation?" 6 40
             [ "$?" = "0" ] || exit 0
-		    
+
             tempfile=/tmp/install.$$
             trap "rm -f $tempfile" 0 1 2 5 15
-            
             date > /tmp/fdisk.log 
             dialog --no-shadow \
                 --title "Start installation"  \
                 --backtitle "$(hw_backtitle)" \
                 --no-kill \
-                --tailboxbg /tmp/fdisk.log 20 70 2>$tempfile
+                --tailboxbg /tmp/fdisk.log 20 75 2>$tempfile
 		    #PRINTK=`cat /proc/sys/kernel/printk`
 		    #echo "0" >/proc/sys/kernel/printk
             #setup-disk -m sys ${PDRIVE} >>/tmp/fdisk.log
             sleep 2; kill -3 `cat $tempfile` 2>&1 >/dev/null 2>/dev/null
-		    
 		    echo ""
-            /bin/eis-install.setup-disk -m sys $PDRIVE
-            #sync; sync
-            exit 0
-            
-            # remove all scripts
-            rm -f /bin/eis-install.setup-disk
-            rm -f /bin/eis-install    
-
-            if [ -n "$PKEYBVARIANT" ] ; then        
-                mkdir -p "$ROOT/etc/keymap"
-                mkdir -p "$ROOT/etc/conf.d/"
-                if gzip -9 -c "$ROOT/usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap" > "$ROOT/etc/keymap/$PKEYBVARIANT.bmap.gz" ; then
-                    [ -f "$ROOT/etc/conf.d/keymaps" ] && sed -i '/^KEYMAP=/d' "$ROOT/etc/conf.d/keymaps"
-                    echo "KEYMAP=/etc/keymap/$PKEYBVARIANT.bmap.gz" >> "$ROOT/etc/conf.d/keymaps"
-                    rc-update -q add keymaps boot
-                fi        
+		    if [ "$PNETIPSTATIC" = "1" ] ; then
+                /bin/eis-install.setup-disk -e $PKEYBVARIANT -E $PKEYBLAYOUT -H "$PHOSTNAME" -D "$PDOMAIN" -I "$PIPADDRESS" -N "$PNETMASK" -G "$PGATEWAY" -F "$PDNSSERVER" $PDRIVE
+            else
+                /bin/eis-install.setup-disk -e $PKEYBVARIANT -E $PKEYBLAYOUT -H "$PHOSTNAME" -D "$PDOMAIN" -d  $PDRIVE
             fi
-            
+            sync
+            exit 0
+
             ;;
         0)
             exit 0;
