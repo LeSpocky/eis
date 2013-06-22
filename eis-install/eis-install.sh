@@ -323,7 +323,7 @@ while true ; do
             ;;
         12)
             ### Start installation #############################################
-            if [ -z "$PDRIVE" ] ; then
+            if [ -n "$PDRIVE" ] ; then
                 dialog --stdout --no-shadow \
                   --backtitle "$(hw_backtitle)" \
                   --title "Start installation"  --clear \
