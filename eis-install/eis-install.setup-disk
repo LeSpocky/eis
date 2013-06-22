@@ -686,7 +686,7 @@ setup_root() {
 	sed -i -e 's/\/ash$/\/bash/' /mnt/etc/passwd
 	sed -i -e 's/^#\/bin\/bash/\/bin\/bash/' /mnt/etc/shells
 	# set root password
-	chroot /mnt /usr/bin/passwd root ${PPASSWORD}
+	chroot /mnt /bin/echo "root:${PPASSWORD}" | /usr/sbin/chpasswd 2>&1 
 	# remove bug files ?!
 	rm -f /mnt/etc/runlevels/eis-install
 	rm -f /mnt/etc/runlevels/default/eis-install	
