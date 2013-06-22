@@ -681,9 +681,12 @@ setup_root() {
 	setup_keymap
 	setup_network
 	setup_timezone
+	rc_update sshd default
 	# change to bash login
 	sed -i -e 's/\/ash$/\/bash/' /mnt/etc/passwd
 	sed -i -e 's/^#\/bin\/bash/\/bin\/bash/' /mnt/etc/shells
+	# set root password
+	chroot /mnt /usr/bin/passwd root ${PPASSWORD}
 	# remove bug files ?!
 	rm -f /mnt/etc/runlevels/eis-install
 	rm -f /mnt/etc/runlevels/default/eis-install	
@@ -764,40 +767,6 @@ native_disk_install() {
 	setup_root $root_dev $BOOT_DEV
 }
 
-diskselect_help() {
-	cat <<__EOF__
-
-The disk you select can be used for a traditional disk install or for a
-data-only install.
-
-The disk will be erased.
-
-Enter 'none' if you want to run diskless.
-
-__EOF__
-}
-
-diskmode_help() {
-	cat <<__EOF__
-
-You can select between 'sys' or 'data'.
-
-sys:
-  This mode is a traditional disk install. The following partitions will be
-  created on the disk: /boot, / (filesystem root) and swap.
-    
-  This mode may be used for development boxes, desktops, virtual servers, etc.
-
-data:
-  This mode uses your disk(s) for data storage, not for the operating system.
-  The system itself will run from tmpfs (RAM).
-
-  Use this mode if you only want to use the disk(s) for a mailspool, databases,
-  logs, etc.
-
-__EOF__
-}
-
 # ask for a root or data disk
 # returns answer in global variable $answer
 ask_disk() {
@@ -855,6 +824,7 @@ options:
  -L  Use LVM to manage partitions
  -N  Netmask
  -o  Restore system from given apkovl file
+ -P  root password
  -q  Exit quietly if no disks are found
  -r  Enable software raid1 with single disk
  -s  Use SWAPSIZE MB instead of autodetecting swap size (Use 0 to disable swap)
@@ -877,7 +847,7 @@ esac
 
 USE_LVM=
 # Parse args
-while getopts "dD:e:E:F:G:H:I:hk:LN:o:qrs:T:v" opt; do
+while getopts "dD:e:E:F:G:H:I:hk:LN:o:P:qrs:T:v" opt; do
 	case $opt in
 		d) PNETIPSTATIC=0;;
 		D) PDOMAIN="$OPTARG";;
@@ -891,6 +861,7 @@ while getopts "dD:e:E:F:G:H:I:hk:LN:o:qrs:T:v" opt; do
 		L) USE_LVM="_lvm";;
 		N) PNETMASK="$OPTARG";;
 		o) APKOVL="$OPTARG";;
+		P) PPASSWORD="$OPTARG";;
 		q) QUIET=1;;
 		r) USE_RAID=1;;
 		s) SWAP_SIZE="$OPTARG";;
@@ -947,5 +918,3 @@ dmesg -n1
 
 # native disk install
 native_disk_install$USE_LVM $diskdevs
-
-echo "sys" > /tmp/alpine-install-diskmode.out

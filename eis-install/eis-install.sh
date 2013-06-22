@@ -4,7 +4,10 @@
 # Copyright (c) 2000-2013 The Eisfair Team <team@eisfair.org>
 #
 # ############################################
-
+# ToDo: Software RAID 1
+#       LVM option for /data or/and /
+#       correct timezone select
+#       optional view logfile
 
 hw_backtitle() {
     echo "Eisfair-NG powered by Alpine Linux - Installation   $PDRIVE"
@@ -34,6 +37,7 @@ PHOSTNAME="eis"
 PDOMAIN="eisfair.home"
 PDNSSERVER="192.168.1.1"
 PTIMEZONE=""
+PPASSWORD="root"
 
 n_item="1"
 
@@ -48,7 +52,7 @@ while true ; do
             --backtitle "$(hw_backtitle)" \
             --default-item "$n_item" \
             --title " Server configuration "  --clear \
-            --menu "Base setup" 20 50 13 \
+            --menu "Base setup" 21 50 14 \
             0 "Shell login" "Return to login" \
             1 "Select disc" "Select disc to install Alpeis Server." \
             2 "Keyboard layout" "Setup the keyboard layout." \
@@ -60,13 +64,15 @@ while true ; do
             8 "Domain" "DNS Domain name." \
             9 "DNS Server" "DNS Server." \
             10 "Set timezone" "Set timezone" \
-            11 "Start installation" "Start installation"  )
+            11 "Root password" "Set password for user root" \
+            12 "Start installation" "Start installation" \
+            13 "Reboot server" "Reboot server after installation"  )
     else
         n_item=$(dialog --stdout --no-shadow --no-cancel --item-help \
             --backtitle "$(hw_backtitle)" \
             --default-item "$n_item" \
             --title "Server configuration"  --clear \
-            --menu "Base setup" 20 50 13 \
+            --menu "Base setup" 21 50 14 \
             0 "Shell login" "Return to login" \
             1 "Select disc" "Select disc to install Alpeis Server." \
             2 "Keyboard layout" "Setup the keyboard layout." \
@@ -75,7 +81,9 @@ while true ; do
             8 "Domain" "DNS Domain name." \
             9 "DNS Server" "DNS Server." \
             10 "Set timezone" "Set timezone" \
-            11 "Start installation" "Start installation"  )
+            11 "Root password" "Set password for user root" \
+            12 "Start installation" "Start installation" \
+            13 "Reboot server" "Reboot server after installation"  )
     fi
 
     case ${n_item} in
@@ -293,43 +301,63 @@ while true ; do
             fi
             ;;
         11)
+            new=$(dialog --stdout --no-shadow \
+                --backtitle "$(hw_backtitle)" \
+                --title "Set root password" \
+                --clear --no-cancel --insecure \
+                --passwordbox "Enter a password for user root" 10 45 "${free}")
+            new2=$(dialog --stdout --no-shadow \
+                --backtitle "$(hw_backtitle)" \
+                --title "Confirm root password" \
+                --clear --no-cancel --insecure \
+                --passwordbox "Re enter password for user root" 10 45 "${free}")
+            if [ "$?" -eq 0 ] ; then
+                if [ "$new" = "$new2" ] ; then
+                    PPASSWORD="${new}"
+                    getNextMenuItem
+                else
+                    dialog --backtitle "$(hw_backtitle)" --title "" \
+                      --msgbox " Password not match!\n Please try again." 6 30
+                fi
+            fi
+            ;;
+        12)
             ### Start installation #############################################
             if [ -z "$PDRIVE" ] ; then
-                # shell or reboot?
-                exit 0
-            fi   
-            dialog --stdout --no-shadow \
-                --backtitle "$(hw_backtitle)" \
-                --title "Start installation"  --clear \
-                --yesno "Delete all partitions on ${PDRIVE}\nand start installation?" 6 40
-            [ "$?" = "0" ] || exit 0
-
-            tempfile=/tmp/install.$$
-            trap "rm -f $tempfile" 0 1 2 5 15
-            date > /tmp/fdisk.log 
-            dialog --no-shadow \
-                --title "Start installation"  \
-                --backtitle "$(hw_backtitle)" \
-                --no-kill \
-                --tailboxbg /tmp/fdisk.log 22 75 2>$tempfile
-            #PRINTK=`cat /proc/sys/kernel/printk`
-	    echo "0" >/proc/sys/kernel/printk
-	    if [ "$PNETIPSTATIC" = "1" ] ; then
-                /bin/eis-install.setup-disk -e $PKEYBVARIANT -E $PKEYBLAYOUT -H "$PHOSTNAME" -D "$PDOMAIN" -I "$PIPADDRESS" -N "$PNETMASK" -G "$PGATEWAY" -F "$PDNSSERVER" $PDRIVE >>/tmp/fdisk.log 2>&1
+                dialog --stdout --no-shadow \
+                  --backtitle "$(hw_backtitle)" \
+                  --title "Start installation"  --clear \
+                  --yesno "Delete all partitions on ${PDRIVE}\nand start installation?" 6 40
+                if [ "$?" <> "0" ] ; then
+                    PRINTK=$(cat /proc/sys/kernel/printk)
+                    echo "0" >/proc/sys/kernel/printk
+                    tempfile=/tmp/install.$$
+                    trap "rm -f $tempfile" 0 1 2 5 15
+                    date > /tmp/fdisk.log 
+                    dialog --no-shadow \
+                      --title "Start installation"  \
+                      --backtitle "$(hw_backtitle)" \
+                      --no-kill \
+                      --tailboxbg /tmp/fdisk.log 22 75 2>$tempfile
+                    if [ "$PNETIPSTATIC" = "1" ] ; then
+                        /bin/eis-install.setup-disk -e "$PKEYBVARIANT" -E "$PKEYBLAYOUT" \
+                        -H "$PHOSTNAME" -D "$PDOMAIN" -I "$PIPADDRESS" -N "$PNETMASK" \
+                        -G "$PGATEWAY" -F "$PDNSSERVER" -P "$PPASSWORD" $PDRIVE >>/tmp/fdisk.log 2>&1
+                    else
+                        /bin/eis-install.setup-disk -e "$PKEYBVARIANT" -E "$PKEYBLAYOUT" \
+                        -H "$PHOSTNAME" -D "$PDOMAIN" -P "$PPASSWORD" -d \
+                        $PDRIVE >>/tmp/fdisk.log 2>&1
+                    fi
+                    sleep 3; kill -3 `cat $tempfile` 2>&1 >/dev/null 2>/dev/null
+                    echo "$PRINTK" > /proc/sys/kernel/printk
+                    getNextMenuItem
+                fi
             else
-                /bin/eis-install.setup-disk -e $PKEYBVARIANT -E $PKEYBLAYOUT -H "$PHOSTNAME" -D "$PDOMAIN" -d  $PDRIVE >>/tmp/fdisk.log 2>&1
+                n_item="1"
             fi
-            sleep 2; kill -3 `cat $tempfile` 2>&1 >/dev/null 2>/dev/null
-	    echo ""
-		    #if [ "$PNETIPSTATIC" = "1" ] ; then
-            #    /bin/eis-install.setup-disk -e $PKEYBVARIANT -E $PKEYBLAYOUT -H "$PHOSTNAME" -D "$PDOMAIN" -I "$PIPADDRESS" -N "$PNETMASK" -G "$PGATEWAY" -F "$PDNSSERVER" $PDRIVE
-            #else
-            #    /bin/eis-install.setup-disk -e $PKEYBVARIANT -E $PKEYBLAYOUT -H "$PHOSTNAME" -D "$PDOMAIN" -d  $PDRIVE
-            #fi
-            sync
-            exit 0
-
             ;;
+        13)
+            reboot;;
         0)
             exit 0;
             ;;
