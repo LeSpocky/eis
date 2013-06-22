@@ -37,7 +37,7 @@ PHOSTNAME="eis"
 PDOMAIN="eisfair.home"
 PDNSSERVER="192.168.1.1"
 PTIMEZONE=""
-PPASSWORD="root"
+PPASSWORD="eis"
 
 n_item="1"
 
@@ -328,7 +328,7 @@ while true ; do
                   --backtitle "$(hw_backtitle)" \
                   --title "Start installation"  --clear \
                   --yesno "Delete all partitions on ${PDRIVE}\nand start installation?" 6 40
-                if [ "$?" <> "0" ] ; then
+                if [ "$?" = "0" ] ; then
                     PRINTK=$(cat /proc/sys/kernel/printk)
                     echo "0" >/proc/sys/kernel/printk
                     tempfile=/tmp/install.$$
@@ -357,9 +357,12 @@ while true ; do
             fi
             ;;
         13)
-            reboot;;
+            echo "1" > /reboot
+            clear 
+            break
+            ;;
         0)
-            exit 0;
+            break
             ;;
     esac
 done

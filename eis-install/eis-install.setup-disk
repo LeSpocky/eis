@@ -19,7 +19,7 @@ PHOSTNAME="eis"
 PDOMAIN="eisfair.home"
 PDNSSERVER="192.168.1.1"
 PTIMEZONE="CET-1CEST,M3.5.0,M10.5.0/3"
-
+PPASSWORD="eis"
 
 in_list() {
 	local i="$1"
@@ -686,7 +686,7 @@ setup_root() {
 	sed -i -e 's/\/ash$/\/bash/' /mnt/etc/passwd
 	sed -i -e 's/^#\/bin\/bash/\/bin\/bash/' /mnt/etc/shells
 	# set root password
-	chroot /mnt /bin/echo "root:${PPASSWORD}" | /usr/sbin/chpasswd 2>&1 
+	chroot /mnt /bin/bash -c "/bin/echo \"root:${PPASSWORD}\" | /usr/sbin/chpasswd 2>&1" 
 	# remove bug files ?!
 	rm -f /mnt/etc/runlevels/eis-install
 	rm -f /mnt/etc/runlevels/default/eis-install	
