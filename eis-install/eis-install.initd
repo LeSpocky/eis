@@ -6,7 +6,8 @@ depend() {
 }
 
 start() {
-  echo "Starting Eisfair Installation ..."
+	echo "Starting Eisfair Installation ..."
+	sleep 1
 	/bin/eis-install
 	[ -f /reboot ] && reboot
 }

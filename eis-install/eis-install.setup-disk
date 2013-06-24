@@ -615,19 +615,20 @@ setup_network() {
 	echo "auto lo"   
 	echo "iface lo inet loopback"
 	echo ""     
+	echo "auto eth0"
     } >/mnt/etc/network/interfaces
 	if [ "$PNETIPSTATIC" = "0" ] ; then
 		echo "iface eth0 inet dhcp" >> /mnt/etc/network/interfaces
 		set_eis_configvar "IP_NET_1_IPV4_STATIC_IP" "no"
 	else
-		cat >>/mnt/etc/network/interfaces <<EOF
-auto eth0
-iface eth0 inet static
-  address $PIPADDRESS
-  netmask $PNETMASK
-  gateway $PGATEWAY
-  hostname $PHOSTNAME
-EOF
+		{
+		echo "iface eth0 inet static"		
+		echo "  address $PIPADDRESS"
+		echo "  netmask $PNETMASK"
+		echo "  gateway $PGATEWAY"
+		echo "  hostname $PHOSTNAM"
+		echo ""
+		} >>/mnt/etc/network/interfaces
 		{
 		echo "search $PDOMAIN"
 		echo "nameserver $PDNSSERVER"
@@ -713,6 +714,12 @@ native_disk_install_lvm() {
 		stop_all_raid
 	fi
 	for diskdev in "$@"; do
+	
+	
+	
+	
+	
+	
 		setup_partitions $diskdev \
 			"$boot_size,$boot_part_type,*" \
 			"$lvm_size,$lvm_part_type" || return 1
@@ -744,6 +751,7 @@ native_disk_install() {
 		stop_all_raid
 	fi
 	for diskdev in "$@"; do
+        dd if=/dev/zero of=${diskdev} bs=1k count=1 1>/dev/null 2>&1
 		setup_partitions $diskdev \
 			"$boot_size,$boot_part_type,*" \
 			"$swap_size,$swap_part_type" \
@@ -835,9 +843,6 @@ __EOF__
 	exit 1
 }
 
-PIPADDRESS="192.168.1.2"
-PNETMASK="255.255.255.0"
-PGATEWAY="192.168.1.1"
 
 KERNEL_FLAVOR=grsec
 case "$(uname -r)" in

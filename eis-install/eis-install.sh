@@ -38,13 +38,13 @@ PDOMAIN="eisfair.home"
 PDNSSERVER="192.168.1.1"
 PTIMEZONE=""
 PPASSWORD="eis"
+POPTIONS=""
 
 n_item="1"
 
 # add packages for install setup and load default keymap
 apk add -q bkeymaps
 [ -f "/usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap" ] && cat "/usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap" | loadkmap
-
 
 while true ; do
     if [ "$PNETIPSTATIC" = "1" ] ; then
@@ -329,6 +329,7 @@ while true ; do
                   --title "Start installation"  --clear \
                   --yesno "Delete all partitions on ${PDRIVE}\nand start installation?" 6 40
                 if [ "$?" = "0" ] ; then
+                    [ "$PNETIPSTATIC" = "0" ] && POPTIONS="$POPTIONS -d"
                     PRINTK=$(cat /proc/sys/kernel/printk)
                     echo "0" >/proc/sys/kernel/printk
                     tempfile=/tmp/install.$$
@@ -338,16 +339,10 @@ while true ; do
                       --title "Start installation"  \
                       --backtitle "$(hw_backtitle)" \
                       --no-kill \
-                      --tailboxbg /tmp/fdisk.log 22 75 2>$tempfile
-                    if [ "$PNETIPSTATIC" = "1" ] ; then
-                        /bin/eis-install.setup-disk -e "$PKEYBVARIANT" -E "$PKEYBLAYOUT" \
+                      --tailboxbg /tmp/fdisk.log 21 75 2>$tempfile
+                    /bin/eis-install.setup-disk -e "$PKEYBVARIANT" -E "$PKEYBLAYOUT" \
                         -H "$PHOSTNAME" -D "$PDOMAIN" -I "$PIPADDRESS" -N "$PNETMASK" \
-                        -G "$PGATEWAY" -F "$PDNSSERVER" -P "$PPASSWORD" $PDRIVE >>/tmp/fdisk.log 2>&1
-                    else
-                        /bin/eis-install.setup-disk -e "$PKEYBVARIANT" -E "$PKEYBLAYOUT" \
-                        -H "$PHOSTNAME" -D "$PDOMAIN" -P "$PPASSWORD" -d \
-                        $PDRIVE >>/tmp/fdisk.log 2>&1
-                    fi
+                        -G "$PGATEWAY" -F "$PDNSSERVER" -P "$PPASSWORD" ${POPTIONS} $PDRIVE >>/tmp/fdisk.log 2>&1
                     sleep 3; kill -3 `cat $tempfile` 2>&1 >/dev/null 2>/dev/null
                     echo "$PRINTK" > /proc/sys/kernel/printk
                     getNextMenuItem
