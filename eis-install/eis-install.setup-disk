@@ -1,5 +1,5 @@
 #!/bin/sh
-# for eisfair removed: confirm_erase
+# alpine linux - eisfair version
 
 PREFIX=
 . "$PREFIX/lib/libalpine.sh"
@@ -577,33 +577,33 @@ setup_mdadm_conf() {
 
 # set eisfair configuration
 set_eis_configvar() {
-    local par="$1"
-    local val="$2"
-    if ! grep -q "$par" /mnt/etc/config.d/base 2>/dev/null
-    then
-        echo "${par}='${val}'" >> /mnt/etc/config.d/base
-    else
-        sed -i -e "s/${par}=.*/${par}='${val}'/" /mnt/etc/config.d/base
-    fi
+	local par="$1"
+	local val="$2"
+	if ! grep -q "$par" /mnt/etc/config.d/base 2>/dev/null
+	then
+		echo "${par}='${val}'" >> /mnt/etc/config.d/base
+	else
+		sed -i -e "s/${par}=.*/${par}='${val}'/" /mnt/etc/config.d/base
+	fi
 }
 
 
 rc_update() {
-    local svc="$1"
-    local level="$2"
-    ln -sf /etc/init.d/$svc /mnt/etc/runlevels/${level}/$svc
+	local svc="$1"
+	local level="$2"
+	ln -sf /etc/init.d/$svc /mnt/etc/runlevels/${level}/$svc
 }
 
 
 setup_keymap() {
-	if [ -n "$PKEYBVARIANT" ] ; then        
+	if [ -n "$PKEYBVARIANT" ] ; then
 		mkdir -p /mnt/etc/keymap
 		mkdir -p /mnt/etc/conf.d/
 		if gzip -9 -c "/usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap" > "/mnt/etc/keymap/$PKEYBVARIANT.bmap.gz" ; then
 			sed -i -e 's/^keymap=.*/keymap="${PKEYBLAYOUT}"/' /mnt/etc/conf.d/keymaps
 			sed -i '/^KEYMAP=/d' /etc/conf.d/keymaps
 			echo "KEYMAP=/etc/keymap/${PKEYBVARIANT}.bmap.gz" >> /mnt/etc/conf.d/keymaps 
-            set_eis_configvar KEYMAP "$PKEYBVARIANT" 
+			set_eis_configvar KEYMAP "$PKEYBVARIANT" 
 			rc_update keymaps boot
 		fi
 	fi
@@ -612,31 +612,34 @@ setup_keymap() {
 # network base configuration
 setup_network() {
 	{
-	echo "auto lo"   
+	echo "auto lo"
 	echo "iface lo inet loopback"
-	echo ""     
+	echo ""
 	echo "auto eth0"
-    } >/mnt/etc/network/interfaces
+	} >/mnt/etc/network/interfaces
 	if [ "$PNETIPSTATIC" = "0" ] ; then
 		echo "iface eth0 inet dhcp" >> /mnt/etc/network/interfaces
 		set_eis_configvar "IP_NET_1_IPV4_STATIC_IP" "no"
 	else
 		{
-		echo "iface eth0 inet static"		
+		echo "iface eth0 inet static"
 		echo "  address $PIPADDRESS"
 		echo "  netmask $PNETMASK"
 		echo "  gateway $PGATEWAY"
-		echo "  hostname $PHOSTNAM"
+		echo "  hostname $PHOSTNAME"
 		echo ""
 		} >>/mnt/etc/network/interfaces
 		{
 		echo "search $PDOMAIN"
-		echo "nameserver $PDNSSERVER"
+		for dns_server in $PDNSSERVER
+		do
+			echo "nameserver $dns_server"
+		done
 		} >/mnt/etc/resolv.conf
 		set_eis_configvar "IP_NET_1_IPV4_STATIC_IP" "yes"
 	fi
 	echo "$PHOSTNAME" >/mnt/etc/hostname
-    cat <<EOF >/mnt/etc/hosts
+	cat <<EOF >/mnt/etc/hosts
 127.0.0.1 localhost
 $PIPADDRESS $PHOSTNAME.$PDOMAIN $PHOSTNAME
 
@@ -655,9 +658,9 @@ EOF
 	set_eis_configvar "IP_NET_1_IPV4_NETMASK" "$PNETMASK"
 	set_eis_configvar "IP_NET_1_IPV4_GATEWAY" "$PGATEWAY"
 	set_eis_configvar "HOSTNAME" "$PHOSTNAME"
-	set_eis_configvar "DOMAIN" "$PDOMAIN"
+	set_eis_configvar "DOMAIN_NAME" "$PDOMAIN"
 	set_eis_configvar "DNS_SERVER" "$PDNSSERVER"
-	rc_update networking boot	
+	rc_update networking boot
 }
 
 
@@ -690,7 +693,7 @@ setup_root() {
 	chroot /mnt /bin/bash -c "/bin/echo \"root:${PPASSWORD}\" | /usr/sbin/chpasswd 2>&1" 
 	# remove bug files ?!
 	rm -f /mnt/etc/runlevels/eis-install
-	rm -f /mnt/etc/runlevels/default/eis-install	
+	rm -f /mnt/etc/runlevels/default/eis-install
 	unmount_partitions /mnt
 	swapoff -a
 
@@ -714,12 +717,6 @@ native_disk_install_lvm() {
 		stop_all_raid
 	fi
 	for diskdev in "$@"; do
-	
-	
-	
-	
-	
-	
 		setup_partitions $diskdev \
 			"$boot_size,$boot_part_type,*" \
 			"$lvm_size,$lvm_part_type" || return 1
@@ -751,7 +748,7 @@ native_disk_install() {
 		stop_all_raid
 	fi
 	for diskdev in "$@"; do
-        dd if=/dev/zero of=${diskdev} bs=1k count=1 1>/dev/null 2>&1
+		dd if=/dev/zero of=${diskdev} bs=1k count=1 1>/dev/null 2>&1
 		setup_partitions $diskdev \
 			"$boot_size,$boot_part_type,*" \
 			"$swap_size,$swap_part_type" \
