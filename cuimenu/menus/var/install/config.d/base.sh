@@ -115,7 +115,8 @@ done
 # write resolv.config
 #----------------------------------------------------------------------------
 if ${static_ip_use:-false} && [ -n "$DNS_SERVER$DOMAIN_NAME" ]
-then 
+then
+	/etc/init.d/dhcpcd stop >/dev/null 2>&1
 	{
 	[ -n "$DOMAIN_NAME"  ] && echo "search $DOMAIN_NAME"
 	# include first internal BIND9 or other DNS server
