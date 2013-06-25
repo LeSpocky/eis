@@ -20,6 +20,7 @@ PDOMAIN="eisfair.home"
 PDNSSERVER="192.168.1.1"
 PTIMEZONE="CET-1CEST,M3.5.0,M10.5.0/3"
 PPASSWORD="eis"
+USE_RAID=""
 
 in_list() {
 	local i="$1"
@@ -165,6 +166,7 @@ install_mounted_root() {
 	local initfs_features="ata base ide scsi usb virtio"
 	local pvs= dev= rootdev= bootdev= extlinux_raidopt= root= modules=
 	local kernel_opts="quiet"
+	local pmdadm=
 
 	rootdev=$(find_mount_dev /mnt)
 	if [ -z "$rootdev" ]; then
@@ -271,7 +273,8 @@ EOF
 	cp /etc/apk/keys/* /mnt/etc/apk/keys/
 
 	local apkflags="--initdb --update-cache --clean-protected"
-	pkgs="alpine-base linux-$KERNEL_FLAVOR acct bash dhcpcd e2fsprogs nano openssh libeventlog libcui fcron syslog-ng cuimenu-bin cuimenu"
+	[ -n "$USE_RAID" ] && pmdadm="mdadm"
+	pkgs="alpine-base linux-$KERNEL_FLAVOR $pmdadm acct bash dhcpcd e2fsprogs nano openssh libeventlog libcui fcron syslog-ng cuimenu-bin cuimenu"
 	if [ "$(rc --sys)" = "XEN0" ]; then
 		pkgs="$pkgs xen-hypervisor"
 	fi
@@ -600,7 +603,7 @@ setup_keymap() {
 		mkdir -p /mnt/etc/keymap
 		mkdir -p /mnt/etc/conf.d/
 		if gzip -9 -c "/usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap" > "/mnt/etc/keymap/$PKEYBVARIANT.bmap.gz" ; then
-			sed -i -e 's/^keymap=.*/keymap="${PKEYBLAYOUT}"/' /mnt/etc/conf.d/keymaps
+			sed -i -e "s/^keymap=.*/keymap=\"${PKEYBLAYOUT}\"/" /mnt/etc/conf.d/keymaps
 			sed -i '/^KEYMAP=/d' /etc/conf.d/keymaps
 			echo "KEYMAP=/etc/keymap/${PKEYBVARIANT}.bmap.gz" >> /mnt/etc/conf.d/keymaps 
 			set_eis_configvar KEYMAP "$PKEYBVARIANT" 

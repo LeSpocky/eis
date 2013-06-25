@@ -14,6 +14,7 @@ hw_backtitle() {
     return 0
 }
 
+
 IsValidIp() {
     if echo $1 | egrep -qs '\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b' ; then
         return 0
@@ -22,11 +23,23 @@ IsValidIp() {
     fi
 }
 
+
+CountDisks() {
+    if [ $# -gt 1 ] ; then 
+        return 0
+    else
+        return 1
+    fi
+}
+
+
 getNextMenuItem () {
     : $(( n_item++ ))
 }
 
+
 PDRIVE=""
+PRAIDLEVEL="0"
 PKEYBLAYOUT="de"
 PKEYBVARIANT="de-latin1"
 PNETIPSTATIC="1"
@@ -89,21 +102,37 @@ while true ; do
     case ${n_item} in
         1)
             ### Select drive ######################################################
-            drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 /p')
+            drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\):.*$/\1 /p')
             if [ -z "$drivelist" ] ; then
                 dialog --backtitle "$(hw_backtitle)" --title "" \
                     --msgbox " No drive found!\n Please try again." 6 30
             else
-                new=$(dialog --stdout --no-shadow \
+                if CountDisks $drivelist ; then
+                    dialog --stdout --no-shadow \
+                    --backtitle "$(hw_backtitle)" \
+                    --title "Software RAID 1 installation"  --clear \
+                    --yesno "Use drives ${drivelist} for RAID 1?" 7 40
+                    if [ "$?" = "0" ] ; then
+                        PRAIDLEVEL="1"
+                        PDRIVE="$drivelist"
+                        getNextMenuItem                        
+                    else
+                        PRAIDLEVEL="0"
+                    fi
+                fi
+                if [ "$PRAIDLEVEL" = "0" ] ; then
+                    drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 /p')
+                    new=$(dialog --stdout --no-shadow \
                     --backtitle "$(hw_backtitle)" \
                     --title "Select drive" \
                     --clear \
                     --menu "Select drive to partition:" 11 40 4 \
                     $drivelist )
-                if [ "$?" -eq 0 ] ; then
-                    PDRIVE="$new"
-                    getNextMenuItem
-                fi
+                    if [ "$?" -eq 0 ] ; then
+                        PDRIVE="$new"
+                        getNextMenuItem
+                    fi
+                fi    
             fi
             ;;
         2)
@@ -327,9 +356,10 @@ while true ; do
                 dialog --stdout --no-shadow \
                   --backtitle "$(hw_backtitle)" \
                   --title "Start installation"  --clear \
-                  --yesno "Delete all partitions on ${PDRIVE}\nand start installation?" 6 40
+                  --yesno "Delete all partitions on ${PDRIVE}\nand start installation?" 8 40
                 if [ "$?" = "0" ] ; then
                     [ "$PNETIPSTATIC" = "0" ] && POPTIONS="$POPTIONS -d"
+                    [ "$PRAIDLEVEL" = "1" ] && POPTIONS="$POPTIONS -r"                    
                     PRINTK=$(cat /proc/sys/kernel/printk)
                     echo "0" >/proc/sys/kernel/printk
                     tempfile=/tmp/install.$$
