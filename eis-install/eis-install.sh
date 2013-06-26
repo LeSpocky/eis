@@ -33,6 +33,29 @@ CountDisks() {
 }
 
 
+calulate_swap_size() {
+    local memtotal_kb=$(awk '$1 == "MemTotal:" {print $2}' /proc/meminfo)
+    local size=$(( $memtotal_kb * 2 / 1024 ))
+    local disk= disksize=
+    for disk in $@; do
+        local sysfsdev=$(echo ${disk#/dev/} | sed 's:/:!:g')
+        local sysfspath=/sys/block/$sysfsdev/size
+        maxsize=$(awk '{ printf "%i", $0 / 8192 }' $sysfspath )
+        if [ $size -gt $maxsize ]; then
+            size=$maxsize
+        fi
+    done
+    if [ $size -gt 4096 ]; then
+        # dont ever use more than 4G
+        size=4096
+    elif [ $size -lt 64 ]; then
+        # dont bother create swap smaller than 64MB
+        size=0
+    fi
+    echo $size
+}
+
+
 getNextMenuItem () {
     : $(( n_item++ ))
 }
@@ -40,6 +63,7 @@ getNextMenuItem () {
 
 PDRIVE=""
 PRAIDLEVEL="0"
+PSWAPSIZE="512"
 PKEYBLAYOUT="de"
 PKEYBVARIANT="de-latin1"
 PNETIPSTATIC="1"
@@ -66,17 +90,17 @@ while true ; do
             --default-item "$n_item" \
             --title " Server configuration "  --clear \
             --menu "Base setup" 21 50 14 \
-            0 "Shell login" "Return to login" \
-            1 "Select disc" "Select disc to install Alpeis Server." \
-            2 "Keyboard layout" "Setup the keyboard layout." \
-            3 "Use DHCP for network" "Automatic IP-address of first network interface." \
-            4 "IP-address" "IP-address of first network interface." \
-            5 "Netmask" "Netmask of IP interface."\
-            6 "Gateway" "Default Gateway for interface." \
-            7 "Hostname" "System Hostname."\
-            8 "Domain" "DNS Domain name." \
-            9 "DNS Server" "DNS Server." \
-            10 "Set timezone" "Set timezone" \
+             0 "Shell login" "Return to login" \
+             1 "Select disc" "Select disc for installation." \
+             2 "Adjust partition size" "Adjust the size of swap/root partition." \
+             3 "Keyboard layout" "Setup the keyboard layout." \
+             4 "Use DHCP for network" "Automatic IP-address of first network interface." \
+             5 "IP-address" "IP-address of first network interface." \
+             6 "Netmask" "Netmask of IP interface."\
+             7 "Gateway" "Default Gateway for interface." \
+             8 "Hostname" "System Hostname."\
+             9 "Domain" "DNS Domain name." \
+            10 "DNS Server" "DNS Server." \
             11 "Root password" "Set password for user root" \
             12 "Start installation" "Start installation" \
             13 "Reboot server" "Reboot server after installation"  )
@@ -86,14 +110,14 @@ while true ; do
             --default-item "$n_item" \
             --title "Server configuration"  --clear \
             --menu "Base setup" 21 50 14 \
-            0 "Shell login" "Return to login" \
-            1 "Select disc" "Select disc to install Alpeis Server." \
-            2 "Keyboard layout" "Setup the keyboard layout." \
-            3 "Use DHCP for network" "Automatic IP-address of first network interface." \
-            7 "Hostname" "System Hostname."\
-            8 "Domain" "DNS Domain name." \
-            9 "DNS Server" "DNS Server." \
-            10 "Set timezone" "Set timezone" \
+             0 "Shell login" "Return to login" \
+             1 "Select disc" "Select disc for installation." \
+             2 "Adjust partition size" "Adjust the size of swap/root partition." \
+             3 "Keyboard layout" "Setup the keyboard layout." \
+             4 "Use DHCP for network" "Automatic IP-address of first network interface." \
+             8 "Hostname" "System Hostname."\
+             9 "Domain" "DNS Domain name." \
+            10 "DNS Server" "DNS Server." \
             11 "Root password" "Set password for user root" \
             12 "Start installation" "Start installation" \
             13 "Reboot server" "Reboot server after installation"  )
@@ -102,40 +126,52 @@ while true ; do
     case ${n_item} in
         1)
             ### Select drive ######################################################
-            drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\):.*$/\1 /p')
+            drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 off/p')
             if [ -z "$drivelist" ] ; then
                 dialog --backtitle "$(hw_backtitle)" --title "" \
                     --msgbox " No drive found!\n Please try again." 6 30
             else
-                if CountDisks $drivelist ; then
-                    dialog --stdout --no-shadow \
-                    --backtitle "$(hw_backtitle)" \
-                    --title "Software RAID 1 installation"  --clear \
-                    --yesno "Use drives ${drivelist} for RAID 1?" 7 40
-                    if [ "$?" = "0" ] ; then
-                        PRAIDLEVEL="1"
-                        PDRIVE="$drivelist"
-                        getNextMenuItem                        
-                    else
-                        PRAIDLEVEL="0"
-                    fi
-                fi
-                if [ "$PRAIDLEVEL" = "0" ] ; then
-                    drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 /p')
-                    new=$(dialog --stdout --no-shadow \
+                new=$(dialog --stdout --no-shadow \
                     --backtitle "$(hw_backtitle)" \
                     --title "Select drive" \
                     --clear \
-                    --menu "Select drive to partition:" 11 40 4 \
+                    --checklist "Select drive(s) to partition:" 12 40 6 \
                     $drivelist )
-                    if [ "$?" -eq 0 ] ; then
+                if [ -n "$new" ] ; then
+                    if CountDisks $new ; then
+                        dialog --stdout --no-shadow \
+                            --backtitle "$(hw_backtitle)" \
+                            --title "Software RAID installation"  --clear \
+                            --yesno "Use drives for RAID:\n${drivelist}" 7 40
+                        if [ "$?" = "0" ] ; then
+                            PRAIDLEVEL="1"
+                            PDRIVE="$new"
+                            getNextMenuItem
+                        fi
+                    else
+                        PRAIDLEVEL="0"
                         PDRIVE="$new"
                         getNextMenuItem
                     fi
-                fi    
+                fi
             fi
             ;;
         2)
+            if [ -z "$PDRIVE" ] ; then
+                n_item="1"
+            else
+                PSWAPSIZE=$(calulate_swap_size ${PDRIVE})
+                new=$(dialog --stdout --no-shadow \
+                    --backtitle "$(hw_backtitle)" \
+                    --title "Adjust size of swap Partition"  --clear \
+                    --inputbox "Size in MB:" 10 45 "$PSWAPSIZE")
+                if [ "$?" -eq 0 ] ; then
+                    PPSWAPSIZE="$new"
+                    getNextMenuItem
+                fi
+            fi
+            ;;
+        3)
             ### Keyboard configuration #########################################
             sellist=""
             cd /usr/share/bkeymaps
@@ -167,7 +203,7 @@ while true ; do
             fi
             ;;
             ### DHCP ###########################################################
-        3)
+        4)
             dialog --stdout --no-shadow \
                 --backtitle "$(hw_backtitle)" \
                 --title "Network interface IP-address"  --clear \
@@ -176,10 +212,10 @@ while true ; do
             if [ "$PNETIPSTATIC" = "1" ] ; then
                 getNextMenuItem
             else
-                n_item="7"
+                n_item="8"
             fi
             ;;
-        4)
+        5)
             ### IP-address #####################################################
             while true ; do
                 new=$(dialog --stdout --no-shadow \
@@ -200,7 +236,7 @@ while true ; do
                 fi
             done
             ;;
-        5)
+        6)
             ### Netmask ########################################################
             while true ; do
                 new=$(dialog --stdout --no-shadow \
@@ -221,7 +257,7 @@ while true ; do
                 fi
             done
             ;;
-        6)
+        7)
             ### Gateway ########################################################
             while true ; do
                 new=$(dialog --stdout --no-shadow \
@@ -242,7 +278,7 @@ while true ; do
                 fi
             done
             ;;
-        7)
+        8)
             ### Hostname #######################################################
             while true ; do
                 new=$(dialog --stdout --no-shadow --backtitle "$(hw_backtitle)" \
@@ -271,7 +307,7 @@ while true ; do
                 fi
             done
             ;;
-        8)
+        9)
             ### Domain #########################################################
             while true ; do
                 new=$(dialog --stdout --no-shadow \
@@ -296,7 +332,7 @@ while true ; do
                 fi
             done
             ;;
-        9)
+        10)
             ### DNS Server #####################################################
             new=$(dialog --stdout --no-shadow \
                 --backtitle "$(hw_backtitle)" \
@@ -304,28 +340,6 @@ while true ; do
                 --inputbox " Enter a space delimited list of DNS Servers to be used by the Managment Interface" 10 45 "${PDNSSERVER}")
             if [ "$?" -eq 0 ] ; then
                 PDNSSERVER="${new}"
-                getNextMenuItem
-            fi
-            ;;
-        10)
-            ### Timezone #######################################################
-            new=$(dialog --stdout --no-shadow \
-                --backtitle "$(hw_backtitle)" \
-                --title "Set timezone" \
-                --clear \
-                --menu "Please select the geographic area in which you live:" 0 0 0 \
-                'Africa'    'Africa' \
-                'America'   'America' \
-                'US'        'US time zones' \
-                'Canada'    'Canada time zones' \
-                'Asia'      'Asia' \
-                'Atlantic'  'Atlantic Ocean'  \
-                'Australia' 'Australia' \
-                'Europe'    'Europe' \
-                'Indian'    'Indian Ocean'  \
-                'Pacific'   'Pacific Ocean')
-            if [ "$?" -eq 0 ] ; then
-                PTIMEZONE="${new}"
                 getNextMenuItem
             fi
             ;;
@@ -356,7 +370,7 @@ while true ; do
                 dialog --stdout --no-shadow \
                   --backtitle "$(hw_backtitle)" \
                   --title "Start installation"  --clear \
-                  --yesno "Delete all partitions on ${PDRIVE}\nand start installation?" 8 40
+                  --yesno "Delete all partitions on drive(s):\n${PDRIVE}\nand start installation?" 8 40
                 if [ "$?" = "0" ] ; then
                     [ "$PNETIPSTATIC" = "0" ] && POPTIONS="$POPTIONS -d"
                     [ "$PRAIDLEVEL" = "1" ] && POPTIONS="$POPTIONS -r"                    
@@ -372,7 +386,8 @@ while true ; do
                       --tailboxbg /tmp/fdisk.log 21 75 2>$tempfile
                     /bin/eis-install.setup-disk -e "$PKEYBVARIANT" -E "$PKEYBLAYOUT" \
                         -H "$PHOSTNAME" -D "$PDOMAIN" -I "$PIPADDRESS" -N "$PNETMASK" \
-                        -G "$PGATEWAY" -F "$PDNSSERVER" -P "$PPASSWORD" ${POPTIONS} $PDRIVE >>/tmp/fdisk.log 2>&1
+                        -G "$PGATEWAY" -F "$PDNSSERVER" -P "$PPASSWORD" -s "$PSWAPSIZE" \
+                        ${POPTIONS} $PDRIVE >>/tmp/fdisk.log 2>&1
                     sleep 3; kill -3 `cat $tempfile` 2>&1 >/dev/null 2>/dev/null
                     echo "$PRINTK" > /proc/sys/kernel/printk
                     getNextMenuItem
