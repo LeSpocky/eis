@@ -8,7 +8,7 @@ url="http://www.firebirdsql.org"
 arch="all"
 license="GNU"
 depends=""
-depends_dev=""
+depends_dev="icu-dev"
 makedepends="$depends_dev"
 install="$pkgname.pre-install $pkgname.post-install"
 subpackages="$pkgname-libs $pkgname-doc"
@@ -47,7 +47,7 @@ build() {
 	--includedir=/usr/include \
 	--disable-static \
 	--without-system-editline \
-	--without-system-icu || return 1
+	--with-system-icu || return 1
 	sleep 1
 	make -j1 || return 1
 }
