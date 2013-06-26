@@ -617,7 +617,7 @@ function users_addgroups_dialog()
                 cui_window_modal   "$dlg" && result="$p2"
                 if [ "$result" == "$IDOK" ]
                 then
-                    local errmsg=$(/usr/sbin/usermod -G "${addgroupsdlg_groups}" "${usersdlg_userlogin}" 2>&1)
+                    local errmsg=$(/usr/sbin/adduser -G "${addgroupsdlg_groups}" "${usersdlg_userlogin}" 2>&1)
                     if [ "$?" != "0" ]
                     then
                         cui_message "$win" \
@@ -697,25 +697,24 @@ function users_edituser_dialog()
                     if [ "${orig_userlogin}" != "${usersdlg_userlogin}" ]
                     then
                         args="$args -l \"${usersdlg_userlogin}\""
-                        args="$args -d \"/home/${usersdlg_userlogin}\" -m"
+                        args="$args -h \"/home/${usersdlg_userlogin}\" -m"
                     fi
                     
                     if [ "${orig_username}" != "${usersdlg_username}" ]
                     then
-                        args="$args -c \"${usersdlg_username}\""
+                        args="$args -g \"${usersdlg_username}\""
                     fi
                     
                     if [ "${orig_usergroup}" != "${usersdlg_usergroup}" ]
                     then
-                        users_get_gid
-                        args="$args -g ${usersdlg_usergid}"
+                        args="$args -G \"${usersdlg_usergroup}\""
                     fi
                     
                     if [ ! -z "$args" ]
                     then
                         args="$args \"${orig_userlogin}\""
 
-                        errmsg=$(eval /usr/sbin/usermod $args 2>&1)
+                        errmsg=$(eval /usr/sbin/adduser $args 2>&1)
                         if [ "$?" != "0" ]
                         then
                             cui_message "$win" \
@@ -794,12 +793,12 @@ function users_createuser_dialog()
             if [ $? != 0 ]
             then            
                 users_create_uid
-                users_get_gid
+                #users_get_gid
 
-                errmsg=$(/usr/sbin/useradd \
+                errmsg=$(/usr/sbin/adduser \
                     -u "${usersdlg_useruid}" \
-                    -g "${usersdlg_usergid}" \
-                    -c "${usersdlg_username}" \
+                    -G "${usersdlg_usergroup}" \
+                    -g "${usersdlg_username}" \
                     -s "/bin/bash" \
                     -d "/home/${usersdlg_userlogin}" -m \
                     ${usersdlg_userlogin} 2>&1)
@@ -858,13 +857,8 @@ function users_deleteuser_dialog()
             cui_message "$win" "Delete home of user \"${usersdlg_userlogin}\" too?" "Question" "${MB_YESNOCANCEL}"
             if [ "$p2" == "$IDYES" -o "$p2" == "$IDNO" ]
             then
-                if [ "$p2" == "$IDYES" ]
-                then
-                    result=$(/var/install/bin/remove-user "${usersdlg_userlogin}" y)
-                else
-                    result=$(/var/install/bin/remove-user "${usersdlg_userlogin}" n)
-                fi
-                
+                result=$(/usr/sbin/deluser ${usersdlg_userlogin})
+                [ "$p2" == "$IDYES" ] && rm -rf /home/${usersdlg_userlogin}
                 if [ "$?" == 0 ]
                 then
                     return 0

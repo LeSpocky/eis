@@ -313,7 +313,7 @@ while true ; do
                 new=$(dialog --stdout --no-shadow \
                     --backtitle "$(hw_backtitle)" \
                     --title "Domain Name"  --clear \
-                    --inputbox "Enter the DNS domain if you have one (localhost if not).  The DNS domain will be appended to the Hostname to form the fully qualified domain name (FQDN)." 10 55 "${PDOMAIN}")
+                    --inputbox "Enter the DNS domain if you have one (localhost if not).  The DNS domain will be appended to the Hostname to form the fully qualified domain name (FQDN)." 12 55 "${PDOMAIN}")
 
                 if [ $? -eq 0 ] ; then
                     if [ "x${new}" == "x" ] ; then

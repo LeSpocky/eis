@@ -665,7 +665,8 @@ setup_root() {
 	setup_timezone
 	rc_update sshd default
 	# change to bash login
-	sed -i -e 's/\/ash$/\/bash/' /mnt/etc/passwd
+	# bash not support UTF-8 ?
+    #sed -i -e 's/\/ash$/\/bash/' /mnt/etc/passwd
 	sed -i -e 's/^#\/bin\/bash/\/bin\/bash/' /mnt/etc/shells
 	# set root password
 	chroot /mnt /bin/bash -c "/bin/echo \"root:${PPASSWORD}\" | /usr/sbin/chpasswd 2>&1" 

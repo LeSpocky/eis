@@ -544,7 +544,7 @@ function groups_creategroup_dialog()
             then          
                 groups_create_gid
 
-                errmsg=$(/usr/sbin/groupadd \
+                errmsg=$(/usr/sbin/addgroup \
                     -g "${groupsdlg_groupgid}" \
                     ${groupsdlg_groupname} 2>&1)
 
@@ -601,7 +601,7 @@ function groups_deletegroup_dialog()
                     cui_message "$win" "Really Delete group \"${groupsdlg_groupname}\"?" "Question" "${MB_YESNO}"
                     if [ "$p2" == "$IDYES" ]
                     then
-                        local errmsg=$(/usr/sbin/groupdel "${groupsdlg_groupname}" 2>&1)
+                        local errmsg=$(/usr/sbin/delgroup "${groupsdlg_groupname}" 2>&1)
                         if [ "$?" == "0" ]
                         then
                             result="$IDOK"
