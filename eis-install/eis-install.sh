@@ -142,7 +142,7 @@ while true ; do
                         dialog --stdout --no-shadow \
                             --backtitle "$(hw_backtitle)" \
                             --title "Software RAID installation"  --clear \
-                            --yesno "Use drives for RAID:\n${drivelist}" 7 40
+                            --yesno "Use drives for RAID:\n${new}" 7 40
                         if [ "$?" = "0" ] ; then
                             PRAIDLEVEL="1"
                             PDRIVE="$new"
