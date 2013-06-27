@@ -17,10 +17,19 @@
 #include <cui-script.h>
 #include "chartools.h"
 #include "pm_api.h"
+#include "uthash.h"
+
 
 #ifndef FALSE
 #define FALSE 0
 #define TRUE  !FALSE
+#endif
+
+#define PKLEN 30
+
+#if 0
+#undef uthash_expand_fyi
+#define uthash_expand_fyi(tbl) printf("expanding to %d buckets\n", tbl->num_buckets)
 #endif
 
 /* ---------------------------------------------------------------------
@@ -42,10 +51,6 @@ extern StubSetHookProc   LibPMStubSetHook;
 extern StubSetProcProc   LibPMStubSetProc;
 extern StubFindProc      LibPMStubFind;
 
-/* local prototypes */
-void            PMWritePackageListEntry(WINDOWSTUB *listview, int showall, struct apk_database *db, struct apk_package *pkg);
-static int      PMMatchNames(apk_hash_item item, void *ctx);
-
 /* local structure */
 struct search_ctx {
 	WINDOWSTUB *listview;
@@ -53,6 +58,15 @@ struct search_ctx {
 	int search_description : 1;
 	char searchtext[128];
 };
+
+
+typedef struct name_rec {
+    char package_name[PKLEN];
+    UT_hash_handle hh;
+} name_rec;
+
+
+struct name_rec *packlist = NULL;
 
 enum {
 	INSTALLED_PACKAGES,
@@ -81,6 +95,7 @@ void
 PMApiClear(void)
 {
 	/* nothing to do right now */
+	PMInternalClearPackageList();
 }
 
 
@@ -245,10 +260,10 @@ PMApiPackagesToList(int argc, const wchar_t* argv[])
 				LibPMWriteError(ERROR_INVALID);
 			pdb = &db;
 			apk_hash_foreach(&pdb->available.names, PMMatchNames, ictx);
-			
 			LibPMStartFrame(_T('R'), 32);
 			LibPMInsertInt (ERROR_SUCCESS);
 			LibPMSendFrame ();
+			PMInternalClearPackageList();
 		}
 		else
 		{
@@ -663,7 +678,32 @@ PMApiDelPackagesList(int argc, const wchar_t* argv[])
 /* ---------------------------------------------------------------------
  * local functions
  * ---------------------------------------------------------------------
- */ 
+ */
+void
+PMInternalClearPackageList(void)
+{
+	struct name_rec *current_entry, *tmp; 
+
+	HASH_ITER(hh, packlist, current_entry, tmp) {
+		HASH_DEL(packlist,current_entry);  
+		free(current_entry);   
+	} 	
+} 
+  
+int
+PMInternalCheckPackageList(char *name) 
+{
+	name_rec *entry=NULL;
+	HASH_FIND_STR(packlist,name,entry);
+	if (!entry) {
+		if ( (entry = (name_rec*)malloc(sizeof(name_rec))) == NULL) return 1;
+		strncpy(entry->package_name, name, PKLEN);
+		HASH_ADD_STR(packlist,package_name,entry);
+		return 0;
+	} else {
+		return 1;
+    }
+}
  
 /* ---------------------------------------------------------------------
  * PPMWritePackageListEntry
@@ -735,22 +775,20 @@ PMWritePackageListEntry(WINDOWSTUB *listview, int showall, struct apk_database *
  * get package name
  * ---------------------------------------------------------------------
  */ 
-static int 
+int 
 PMMatchNames(apk_hash_item item, void *ctx)
 {
 	struct search_ctx *ictx = (struct search_ctx *) ctx;
 	struct apk_name *name = (struct apk_name *) item;
 	wchar_t buffer[128];
 	struct apk_package *pkg = NULL;
-	apk_blob_t *version = NULL;
+	struct apk_provider *p;	
 	struct tm *ts;
 	char str[12];
-	int i;
 
-	for (i = 0; i < name->providers->num; i++)
-	{
-		if ( version == NULL || apk_version_compare_blob(*name->providers->item[i].version, *version) == APK_VERSION_GREATER)
-			pkg = name->providers->item[i].pkg;
+	foreach_array_item(p, name->providers) {
+		if (pkg == NULL || apk_version_compare_blob(*p->version, *pkg->version) == APK_VERSION_GREATER)
+			pkg = p->pkg;
 	}
 
 	if ( pkg )
@@ -764,6 +802,8 @@ PMMatchNames(apk_hash_item item, void *ctx)
 			if ((strstr(pkg->description, ictx->searchtext) == NULL) && (strstr(pkg->name->name, ictx->searchtext) == NULL))
 				return 0;
 		}
+		if ( PMInternalCheckPackageList( pkg->name->name ) == 1 )
+			return 0;		
 		ts = localtime(&pkg->build_time);
 		strftime(str, 11, "%Y-%m-%d", ts );
 		LISTREC* rec = ListviewCreateRecord (ictx->listview->Window);  

@@ -43,4 +43,10 @@ void PMApiInfoToTextView         (int argc, const wchar_t* argv[]);
 void PMApiListInstalledPackages  (int argc, const wchar_t* argv[]);
 void PMApiDelPackagesList        (int argc, const wchar_t* argv[]);
 
+/* local prototypes */
+void PMWritePackageListEntry     (WINDOWSTUB *listview, int showall, struct apk_database *db, struct apk_package *pkg);
+int  PMMatchNames                (apk_hash_item item, void *ctx);
+int  PMInternalCheckPackageList  (char *name);
+void PMInternalClearPackageList  (void);
+
 #endif

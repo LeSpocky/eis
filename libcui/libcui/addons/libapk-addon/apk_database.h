@@ -21,9 +21,6 @@
 #include "apk_provider_data.h"
 #include "apk_solver_data.h"
 
-extern const char * const apk_index_gz;
-extern const char * const apkindex_tar_gz;
-
 struct apk_name;
 APK_ARRAY(apk_name_array, struct apk_name *);
 
@@ -71,8 +68,8 @@ struct apk_db_dir {
 	char name[];
 };
 
-#define PKG_FILE_FMT			"%s%s%s"
-#define PKG_FILE_PRINTF(dir,file)	(dir)->name, (dir)->namelen ? "/" : "", (file)->name
+#define DIR_FILE_FMT			"%s%s%s"
+#define DIR_FILE_PRINTF(dir,file)	(dir)->name, (dir)->namelen ? "/" : "", (file)->name
 
 struct apk_db_dir_instance {
 	struct hlist_node pkg_dirs_list;
@@ -90,6 +87,7 @@ struct apk_name {
 	struct apk_provider_array *providers;
 	struct apk_name_array *rdepends;
 	struct apk_name_array *rinstall_if;
+	unsigned int foreach_genid;
 
 	union {
 		struct apk_solver_name_state ss;
@@ -99,7 +97,7 @@ struct apk_name {
 };
 
 struct apk_repository {
-	char *url;
+	const char *url;
 	struct apk_checksum csum;
 	apk_blob_t description;
 };
@@ -110,7 +108,7 @@ struct apk_repository_list {
 };
 
 struct apk_db_options {
-	int lock_wait, progress_fd;
+	int lock_wait;
 	unsigned long open_flags;
 	char *root;
 	char *arch;
@@ -127,17 +125,18 @@ struct apk_db_options {
 
 struct apk_repository_tag {
 	unsigned int allowed_repos;
-	apk_blob_t *name;
+	apk_blob_t tag, plain_name;
 };
 
 struct apk_database {
 	char *root;
-	int root_fd, lock_fd, cache_fd, cachetmp_fd, keys_fd, progress_fd;
+	int root_fd, lock_fd, cache_fd, keys_fd;
 	unsigned num_repos, num_repo_tags;
 	const char *cache_dir;
 	char *cache_remount_dir;
 	apk_blob_t *arch;
 	unsigned int local_repos, available_repos;
+	unsigned int pending_triggers;
 	int performing_self_update : 1;
 	int permanent : 1;
 	int compat_newfeatures : 1;
@@ -206,7 +205,7 @@ void apk_db_close(struct apk_database *db);
 int apk_db_write_config(struct apk_database *db);
 int apk_db_permanent(struct apk_database *db);
 int apk_db_check_world(struct apk_database *db, struct apk_dependency_array *world);
-struct apk_package_array *apk_db_get_pending_triggers(struct apk_database *db);
+int apk_db_fire_triggers(struct apk_database *db);
 
 struct apk_package *apk_db_pkg_add(struct apk_database *db, struct apk_package *pkg);
 struct apk_package *apk_db_get_pkg(struct apk_database *db, struct apk_checksum *csum);
@@ -219,14 +218,17 @@ int apk_db_index_write(struct apk_database *db, struct apk_ostream *os);
 int apk_db_add_repository(apk_database_t db, apk_blob_t repository);
 struct apk_repository *apk_db_select_repo(struct apk_database *db,
 					  struct apk_package *pkg);
-int apk_repo_format_filename(char *buf, size_t len,
-			     const char *repourl, apk_blob_t *arch,
-			     const char *pkgfile);
+
+int apk_repo_format_cache_index(apk_blob_t to, struct apk_repository *repo);
+int apk_repo_format_item(struct apk_database *db, struct apk_repository *repo, struct apk_package *pkg,
+			 int *fd, char *buf, size_t len);
+
+unsigned int apk_db_get_pinning_mask_repos(struct apk_database *db, unsigned short pinning_mask);
 
 int apk_db_cache_active(struct apk_database *db);
-void apk_cache_format_index(apk_blob_t to, struct apk_repository *repo);
-int apk_cache_download(struct apk_database *db, const char *url, apk_blob_t *arch,
-		       const char *item, const char *cache_item, int verify);
+int apk_cache_download(struct apk_database *db, struct apk_repository *repo,
+		       struct apk_package *pkg, int verify,
+		       apk_progress_cb cb, void *cb_ctx);
 
 typedef void (*apk_cache_item_cb)(struct apk_database *db,
 				  int dirfd, const char *name,
@@ -237,5 +239,9 @@ int apk_db_install_pkg(struct apk_database *db,
 		       struct apk_package *oldpkg,
 		       struct apk_package *newpkg,
 		       apk_progress_cb cb, void *cb_ctx);
+
+void apk_name_foreach_matching(struct apk_database *db, struct apk_string_array *filter, unsigned int match,
+			       void (*cb)(struct apk_database *db, const char *match, struct apk_name *name, void *ctx),
+			       void *ctx);
 
 #endif

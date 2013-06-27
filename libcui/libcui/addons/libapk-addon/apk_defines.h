@@ -14,8 +14,10 @@
 
 #include <string.h>
 
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
-#define BIT(x) (1 << (x))
+#define ARRAY_SIZE(x)	(sizeof(x) / sizeof((x)[0]))
+#define BIT(x)		(1 << (x))
+#define min(a, b)	((a) < (b) ? (a) : (b))
+#define max(a, b)	((a) > (b) ? (a) : (b))
 
 #ifndef TRUE
 #define TRUE 1
@@ -101,8 +103,6 @@ static inline size_t muldiv(size_t a, size_t b, size_t c)
 
 typedef void (*apk_progress_cb)(void *cb_ctx, size_t);
 
-#define APK_PROGRESS_SCALE 0x100
-
 void *apk_array_resize(void *array, size_t new_size, size_t elem_size);
 
 #define APK_ARRAY(array_type_name, elem_type_name)			\
@@ -141,6 +141,9 @@ void *apk_array_resize(void *array, size_t new_size, size_t elem_size);
 	}
 
 APK_ARRAY(apk_string_array, char *);
+
+#define foreach_array_item(iter, array) \
+	for (iter = &(array)->item[0]; iter < &(array)->item[(array)->num]; iter++)
 
 #define LIST_END (void *) 0xe01
 #define LIST_POISON1 (void *) 0xdeadbeef
@@ -259,7 +262,7 @@ static inline void list_add_tail(struct list_head *new, struct list_head *head)
 	__list_add(new, head->prev, head);
 }
 
-static inline void __list_del(struct list_head * prev, struct list_head * next)
+static inline void __list_del(struct list_head *prev, struct list_head *next)
 {
 	next->prev = prev;
 	prev->next = next;
@@ -272,6 +275,13 @@ static inline void list_del(struct list_head *entry)
 	entry->prev = LIST_POISON2;
 }
 
+static inline void list_del_init(struct list_head *entry)
+{
+	__list_del(entry->prev, entry->next);
+	entry->next = NULL;
+	entry->prev = NULL;
+}
+
 static inline int list_hashed(const struct list_head *n)
 {
 	return n->next != n && n->next != NULL;
@@ -282,7 +292,16 @@ static inline int list_empty(const struct list_head *n)
 	return n->next == n;
 }
 
+static inline struct list_head *__list_pop(struct list_head *head)
+{
+	struct list_head *n = head->next;
+	list_del_init(n);
+	return n;
+}
+
 #define list_entry(ptr, type, member) container_of(ptr,type,member)
+
+#define list_pop(head, type, member) container_of(__list_pop(head),type,member)
 
 #define list_for_each(pos, head) \
 	for (pos = (head)->next; pos != (head); pos = pos->next)

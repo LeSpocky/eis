@@ -11,7 +11,9 @@
 #ifndef APK_IO
 #define APK_IO
 
+#include <sys/types.h>
 #include <openssl/evp.h>
+#include <fcntl.h>
 
 #include "apk_defines.h"
 #include "apk_blob.h"
@@ -76,9 +78,11 @@ struct apk_ostream *apk_ostream_counter(off_t *);
 struct apk_istream *apk_istream_from_fd_pid(int fd, pid_t pid, int (*translate_status)(int));
 struct apk_istream *apk_istream_from_file(int atfd, const char *file);
 struct apk_istream *apk_istream_from_file_gz(int atfd, const char *file);
-struct apk_istream *apk_istream_from_url(const char *url);
+struct apk_istream *apk_istream_from_fd_url(int atfd, const char *url);
 struct apk_istream *apk_istream_from_url_gz(const char *url);
 size_t apk_istream_skip(struct apk_istream *istream, size_t size);
+
+#define APK_SPLICE_ALL 0xffffffff
 size_t apk_istream_splice(void *stream, int fd, size_t size,
 			  apk_progress_cb cb, void *cb_ctx);
 
@@ -86,16 +90,26 @@ static inline struct apk_istream *apk_istream_from_fd(int fd)
 {
 	return apk_istream_from_fd_pid(fd, 0, NULL);
 }
+static inline struct apk_istream *apk_istream_from_url(const char *url)
+{
+	return apk_istream_from_fd_url(AT_FDCWD, url);
+}
 
 struct apk_bstream *apk_bstream_from_istream(struct apk_istream *istream);
 struct apk_bstream *apk_bstream_from_fd_pid(int fd, pid_t pid, int (*translate_status)(int));
 struct apk_bstream *apk_bstream_from_file(int atfd, const char *file);
-struct apk_bstream *apk_bstream_from_url(const char *url);
-struct apk_bstream *apk_bstream_tee(struct apk_bstream *from, int atfd, const char *to);
+struct apk_bstream *apk_bstream_from_fd_url(int atfd, const char *url);
+struct apk_bstream *apk_bstream_tee(struct apk_bstream *from, int atfd, const char *to,
+				    apk_progress_cb cb, void *cb_ctx);
 
 static inline struct apk_bstream *apk_bstream_from_fd(int fd)
 {
 	return apk_bstream_from_fd_pid(fd, 0, NULL);
+}
+
+static inline struct apk_bstream *apk_bstream_from_url(const char *url)
+{
+	return apk_bstream_from_fd_url(AT_FDCWD, url);
 }
 
 struct apk_ostream *apk_ostream_to_fd(int fd);
@@ -117,7 +131,6 @@ typedef int apk_dir_file_cb(void *ctx, int dirfd, const char *entry);
 int apk_dir_foreach_file(int dirfd, apk_dir_file_cb cb, void *ctx);
 
 int apk_move_file(int atfd, const char *from, const char *to);
-int apk_url_download(const char *url, int atfd, const char *file);
 const char *apk_url_local_file(const char *url);
 
 void apk_id_cache_init(struct apk_id_cache *idc, int root_fd);

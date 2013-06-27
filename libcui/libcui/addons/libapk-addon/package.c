@@ -38,42 +38,19 @@ static const apk_spn_match_def apk_spn_dependency_separator = {
 	[4] = (1<<0) /* */,
 };
 
+static const apk_spn_match_def apk_spn_repotag_separator = {
+	[8] = (1<<0) /*@*/
+};
+
 struct apk_package *apk_pkg_get_installed(struct apk_name *name)
 {
-	int i;
+	struct apk_provider *p;
 
-	for (i = 0; i < name->providers->num; i++) {
-		struct apk_package *pkg = name->providers->item[i].pkg;
-		if (pkg->name != name)
-			continue;
-		if (pkg->ipkg == NULL)
-			continue;
-		return pkg;
-	}
+	foreach_array_item(p, name->providers)
+		if (p->pkg->name == name && p->pkg->ipkg != NULL)
+			return p->pkg;
+
 	return NULL;
-}
-
-void apk_pkg_format_plain(struct apk_package *pkg, apk_blob_t to)
-{
-	/* pkgname-1.0.apk */
-	apk_blob_push_blob(&to, APK_BLOB_STR(pkg->name->name));
-	apk_blob_push_blob(&to, APK_BLOB_STR("-"));
-	apk_blob_push_blob(&to, *pkg->version);
-	apk_blob_push_blob(&to, APK_BLOB_STR(".apk"));
-	apk_blob_push_blob(&to, APK_BLOB_PTR_LEN("", 1));
-}
-
-void apk_pkg_format_cache(struct apk_package *pkg, apk_blob_t to)
-{
-	/* pkgname-1.0_alpha1.12345678.apk */
-	apk_blob_push_blob(&to, APK_BLOB_STR(pkg->name->name));
-	apk_blob_push_blob(&to, APK_BLOB_STR("-"));
-	apk_blob_push_blob(&to, *pkg->version);
-	apk_blob_push_blob(&to, APK_BLOB_STR("."));
-	apk_blob_push_hexdump(&to, APK_BLOB_PTR_LEN((char *) pkg->csum.data,
-						    APK_CACHE_CSUM_BYTES));
-	apk_blob_push_blob(&to, APK_BLOB_STR(".apk"));
-	apk_blob_push_blob(&to, APK_BLOB_PTR_LEN("", 1));
 }
 
 struct apk_package *apk_pkg_new(void)
@@ -118,6 +95,7 @@ struct apk_installed_package *apk_pkg_install(struct apk_database *db,
 void apk_pkg_uninstall(struct apk_database *db, struct apk_package *pkg)
 {
 	struct apk_installed_package *ipkg = pkg->ipkg;
+	char **trigger;
 	int i;
 
 	if (ipkg == NULL)
@@ -133,8 +111,8 @@ void apk_pkg_uninstall(struct apk_database *db, struct apk_package *pkg)
 	if (ipkg->triggers->num) {
 		list_del(&ipkg->trigger_pkgs_list);
 		list_init(&ipkg->trigger_pkgs_list);
-		for (i = 0; i < ipkg->triggers->num; i++)
-			free(ipkg->triggers->item[i]);
+		foreach_array_item(trigger, ipkg->triggers)
+			free(*trigger);
 	}
 	apk_string_array_free(&ipkg->triggers);
 	apk_string_array_free(&ipkg->pending_triggers);
@@ -176,41 +154,35 @@ int apk_pkg_parse_name(apk_blob_t apkname,
 	return 0;
 }
 
-int apk_deps_add(struct apk_dependency_array **depends,
-		 struct apk_dependency *dep)
+void apk_deps_add(struct apk_dependency_array **depends, struct apk_dependency *dep)
 {
-	struct apk_dependency_array *deps = *depends;
-	int i;
+	struct apk_dependency *d0;
 
-	if (deps != NULL) {
-		for (i = 0; i < deps->num; i++) {
-			if (deps->item[i].name == dep->name) {
-				deps->item[i] = *dep;
-				return 0;
+	if (*depends) {
+		foreach_array_item(d0, *depends) {
+			if (d0->name == dep->name) {
+				*d0 = *dep;
+				return;
 			}
 		}
 	}
-
 	*apk_dependency_array_add(depends) = *dep;
-	return 0;
 }
 
-void apk_deps_del(struct apk_dependency_array **pdeps,
-		  struct apk_name *name)
+void apk_deps_del(struct apk_dependency_array **pdeps, struct apk_name *name)
 {
 	struct apk_dependency_array *deps = *pdeps;
-	int i;
+	struct apk_dependency *d0;
 
 	if (deps == NULL)
 		return;
 
-	for (i = 0; i < deps->num; i++) {
-		if (deps->item[i].name != name)
-			continue;
-
-		deps->item[i] = deps->item[deps->num-1];
-		apk_dependency_array_resize(pdeps, deps->num-1);
-		break;
+	foreach_array_item(d0, deps) {
+		if (d0->name == name) {
+			*d0 = deps->item[deps->num - 1];
+			apk_dependency_array_resize(pdeps, deps->num - 1);
+			break;
+		}
 	}
 }
 
@@ -273,7 +245,7 @@ void apk_blob_pull_dep(apk_blob_t *b, struct apk_database *db, struct apk_depend
 		bver = APK_BLOB_NULL;
 	}
 
-	if (apk_blob_split(bname, APK_BLOB_STR("@"), &bname, &btag))
+	if (apk_blob_cspn(bname, apk_spn_repotag_separator, &bname, &btag))
 		tag = apk_db_get_tag_id(db, btag);
 
 	/* convert to apk_dependency */
@@ -377,26 +349,36 @@ int apk_dep_is_materialized(struct apk_dependency *dep, struct apk_package *pkg)
 	return dep->conflict;
 }
 
-int apk_dep_is_materialized_or_provided(struct apk_dependency *dep, struct apk_package *pkg)
+int apk_dep_analyze(struct apk_dependency *dep, struct apk_package *pkg)
 {
-	int i;
+	struct apk_dependency *p;
+	struct apk_provider provider;
 
 	if (pkg == NULL)
-		return dep->conflict;
+		return APK_DEP_IRRELEVANT;
 
 	if (dep->name == pkg->name)
-		return apk_dep_is_materialized(dep, pkg);
+		return apk_dep_is_materialized(dep, pkg) ? APK_DEP_SATISFIES : APK_DEP_CONFLICTS;
 
-	for (i = 0; i < pkg->provides->num; i++) {
-		struct apk_provider p;
-
-		if (pkg->provides->item[i].name != dep->name)
+	foreach_array_item(p, pkg->provides) {
+		if (p->name != dep->name)
 			continue;
-		p = APK_PROVIDER_FROM_PROVIDES(pkg, &pkg->provides->item[i]);
-		return apk_dep_is_provided(dep, &p);
+		provider = APK_PROVIDER_FROM_PROVIDES(pkg, p);
+		return apk_dep_is_provided(dep, &provider) ? APK_DEP_SATISFIES : APK_DEP_CONFLICTS;
 	}
 
-	return dep->conflict;
+	return APK_DEP_IRRELEVANT;
+}
+
+char *apk_dep_snprintf(char *buf, size_t n, struct apk_dependency *dep)
+{
+	apk_blob_t b = APK_BLOB_PTR_LEN(buf, n);
+	apk_blob_push_dep(&b, NULL, dep);
+	if (b.len)
+		apk_blob_push_blob(&b, APK_BLOB_PTR_LEN("", 1));
+	else
+		b.ptr[-1] = 0;
+	return buf;
 }
 
 void apk_blob_push_dep(apk_blob_t *to, struct apk_database *db, struct apk_dependency *dep)
@@ -407,10 +389,8 @@ void apk_blob_push_dep(apk_blob_t *to, struct apk_database *db, struct apk_depen
 		apk_blob_push_blob(to, APK_BLOB_PTR_LEN("!", 1));
 
 	apk_blob_push_blob(to, APK_BLOB_STR(dep->name->name));
-	if (dep->repository_tag && db != NULL) {
-		apk_blob_push_blob(to, APK_BLOB_PTR_LEN("@", 1));
-		apk_blob_push_blob(to, *db->repo_tags[dep->repository_tag].name);
-	}
+	if (dep->repository_tag && db != NULL)
+		apk_blob_push_blob(to, db->repo_tags[dep->repository_tag].tag);
 	if (!APK_BLOB_IS_NULL(*dep->version)) {
 		apk_blob_push_blob(to, APK_BLOB_STR(apk_version_op_string(result_mask)));
 		apk_blob_push_blob(to, *dep->version);
@@ -816,13 +796,13 @@ int apk_pkg_add_info(struct apk_database *db, struct apk_package *pkg,
 		pkg->commit = apk_blob_cstr(value);
 		break;
 	case 'F': case 'M': case 'R': case 'Z': case 'r': case 'q':
-	case 'a': case 's':
+	case 'a': case 's': case 'f':
 		/* installed db entries which are handled in database.c */
 		return 1;
 	default:
 		/* lower case index entries are safe to be ignored */
 		if (!islower(field)) {
-			pkg->filename = APK_PKG_UNINSTALLABLE;
+			pkg->uninstallable = 1;
 			db->compat_notinstallable = 1;
 		}
 		db->compat_newfeatures = 1;
@@ -934,8 +914,7 @@ int apk_pkg_read(struct apk_database *db, const char *file,
 	tar->close(tar);
 	if (r < 0 && r != -ECANCELED)
 		goto err;
-	if (ctx.pkg->name == NULL ||
-	    ctx.pkg->filename == APK_PKG_UNINSTALLABLE) {
+	if (ctx.pkg->name == NULL || ctx.pkg->uninstallable) {
 		r = -ENOTSUP;
 		goto err;
 	}
@@ -993,9 +972,9 @@ int apk_ipkg_add_script(struct apk_installed_package *ipkg,
 	return 0;
 }
 
-int apk_ipkg_run_script(struct apk_installed_package *ipkg,
-			struct apk_database *db,
-			unsigned int type, char **argv)
+void apk_ipkg_run_script(struct apk_installed_package *ipkg,
+			 struct apk_database *db,
+			 unsigned int type, char **argv)
 {
 	static char * const environment[] = {
 		"PATH=/usr/sbin:/usr/bin:/sbin:/bin",
@@ -1006,11 +985,8 @@ int apk_ipkg_run_script(struct apk_installed_package *ipkg,
 	int fd, status, root_fd = db->root_fd;
 	pid_t pid;
 
-	if (type >= APK_SCRIPT_MAX)
-		return -1;
-
-	if (ipkg->script[type].ptr == NULL)
-		return 0;
+	if (type >= APK_SCRIPT_MAX || ipkg->script[type].ptr == NULL)
+		return;
 
 	argv[0] = (char *) apk_script_types[type];
 
@@ -1021,43 +997,41 @@ int apk_ipkg_run_script(struct apk_installed_package *ipkg,
 
 	apk_message("Executing %s", &fn[15]);
 	if (apk_flags & APK_SIMULATE)
-		return 0;
+		return;
 
 	fd = openat(root_fd, fn, O_CREAT|O_RDWR|O_TRUNC|O_CLOEXEC, 0755);
 	if (fd < 0) {
 		mkdirat(root_fd, "var/cache/misc", 0755);
 		fd = openat(root_fd, fn, O_CREAT|O_RDWR|O_TRUNC|O_CLOEXEC, 0755);
 		if (fd < 0)
-			return -errno;
+			goto error;
 	}
 	if (write(fd, ipkg->script[type].ptr, ipkg->script[type].len) < 0) {
 		close(fd);
-		return -errno;
+		goto error;
 	}
 	close(fd);
 
 	pid = fork();
 	if (pid == -1)
-		return -1;
+		goto error;
 	if (pid == 0) {
-		if (fchdir(root_fd) < 0 || chroot(".") < 0) {
-			apk_error("chroot: %s", strerror(errno));
-		} else {
+		if (fchdir(root_fd) == 0 && chroot(".") == 0)
 			execve(fn, argv, environment);
-		}
 		exit(1);
 	}
 	waitpid(pid, &status, 0);
 	unlinkat(root_fd, fn, 0);
 	apk_id_cache_reset(&db->id_cache);
 
-	if (WIFEXITED(status)) {
-		int rc = WEXITSTATUS(status);
-		if (rc != 0)
-			apk_warning("%s: returned error %d", &fn[15], rc);
-		return 0;
+	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+		apk_error("%s: script exited with error %d", &fn[15], WEXITSTATUS(status));
+		ipkg->broken_script = 1;
 	}
-	return -1;
+	return;
+error:
+	apk_error("%s: failed to execute: %s", &fn[15], apk_error_str(errno));
+	ipkg->broken_script = 1;
 }
 
 static int parse_index_line(void *ctx, apk_blob_t line)
@@ -1178,4 +1152,83 @@ int apk_pkg_version_compare(struct apk_package *a, struct apk_package *b)
 		return APK_VERSION_EQUAL;
 
 	return apk_version_compare_blob(*a->version, *b->version);
+}
+
+unsigned int apk_foreach_genid(void)
+{
+	static unsigned int foreach_genid;
+	foreach_genid += (~APK_FOREACH_GENID_MASK) + 1;
+	return foreach_genid;
+}
+
+void apk_pkg_foreach_matching_dependency(
+		struct apk_package *pkg, struct apk_dependency_array *deps,
+		unsigned int match, struct apk_package *mpkg,
+		void cb(struct apk_package *pkg0, struct apk_dependency *dep0, struct apk_package *pkg, void *ctx),
+		void *ctx)
+{
+	unsigned int genid = match & APK_FOREACH_GENID_MASK;
+	struct apk_dependency *d;
+
+	if (pkg && genid) {
+		if (pkg->foreach_genid >= genid)
+			return;
+		pkg->foreach_genid = genid;
+	}
+
+	foreach_array_item(d, deps) {
+		if (apk_dep_analyze(d, mpkg) & match) {
+			cb(pkg, d, mpkg, ctx);
+			if (genid)
+				break;
+		}
+	}
+}
+
+static void foreach_reverse_dependency(
+		struct apk_package *pkg,
+		struct apk_name_array *rdepends,
+		unsigned int match,
+		void cb(struct apk_package *pkg0, struct apk_dependency *dep0, struct apk_package *pkg, void *ctx),
+		void *ctx)
+{
+	unsigned int installed = match & APK_FOREACH_INSTALLED;
+	unsigned int marked = match & APK_FOREACH_MARKED;
+	unsigned int genid = match & APK_FOREACH_GENID_MASK;
+	struct apk_name **pname0, *name0;
+	struct apk_provider *p0;
+	struct apk_package *pkg0;
+	struct apk_dependency *d0;
+
+	foreach_array_item(pname0, rdepends) {
+		name0 = *pname0;
+		foreach_array_item(p0, name0->providers) {
+			pkg0 = p0->pkg;
+			if (installed && pkg0->ipkg == NULL)
+				continue;
+			if (marked && !pkg0->marked)
+				continue;
+			if (genid) {
+				if (pkg0->foreach_genid >= genid)
+					continue;
+				pkg0->foreach_genid = genid;
+			}
+			foreach_array_item(d0, pkg0->depends) {
+				if (apk_dep_analyze(d0, pkg) & match)
+					cb(pkg0, d0, pkg, ctx);
+			}
+		}
+	}
+}
+
+void apk_pkg_foreach_reverse_dependency(
+		struct apk_package *pkg, unsigned int match,
+		void cb(struct apk_package *pkg0, struct apk_dependency *dep0, struct apk_package *pkg, void *ctx),
+		void *ctx)
+{
+	struct apk_dependency *p;
+
+	foreach_reverse_dependency(pkg, pkg->name->rdepends, match, cb, ctx);
+	foreach_array_item(p, pkg->provides)
+		foreach_reverse_dependency(pkg, p->name->rdepends, match, cb, ctx);
 }

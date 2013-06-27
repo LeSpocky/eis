@@ -86,13 +86,13 @@ static int fork_wget(const char *url, pid_t *ppid)
 	return fds[0];
 }
 
-struct apk_istream *apk_istream_from_url(const char *url)
+struct apk_istream *apk_istream_from_fd_url(int atfd, const char *url)
 {
 	pid_t pid;
 	int fd;
 
 	if (apk_url_local_file(url) != NULL)
-		return apk_istream_from_file(AT_FDCWD, apk_url_local_file(url));
+		return apk_istream_from_file(atfd, apk_url_local_file(url));
 
 	fd = fork_wget(url, &pid);
 	return apk_istream_from_fd_pid(fd, pid, translate_wget);
@@ -103,47 +103,14 @@ struct apk_istream *apk_istream_from_url_gz(const char *file)
 	return apk_bstream_gunzip(apk_bstream_from_url(file));
 }
 
-struct apk_bstream *apk_bstream_from_url(const char *url)
+struct apk_bstream *apk_bstream_from_fd_url(int atfd, const char *url)
 {
 	pid_t pid;
 	int fd;
 
-	if (apk_url_local_file(url))
-		return apk_bstream_from_file(AT_FDCWD, url);
+	if (apk_url_local_file(url) != NULL)
+		return apk_bstream_from_file(atfd, apk_url_local_file(url));
 
 	fd = fork_wget(url, &pid);
 	return apk_bstream_from_fd_pid(fd, pid, translate_wget);
 }
-
-int apk_url_download(const char *url, int atfd, const char *file)
-{
-	pid_t pid;
-	int status, fd;
-
-	fd = openat(atfd, file, O_CREAT|O_RDWR|O_TRUNC, 0644);
-	if (fd < 0)
-		return -errno;
-
-	pid = fork();
-	if (pid == -1)
-		return -1;
-
-	if (pid == 0) {
-		setsid();
-		dup2(open("/dev/null", O_RDONLY), STDIN_FILENO);
-		dup2(fd, STDOUT_FILENO);
-		execlp("wget", "wget", "-q", "-O", "-", url, NULL);
-		exit(0);
-	}
-
-	close(fd);
-	waitpid(pid, &status, 0);
-	status = translate_wget(status);
-	if (status != 0) {
-		unlinkat(atfd, file, 0);
-		return status;
-	}
-
-	return 0;
-}
-

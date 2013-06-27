@@ -138,7 +138,7 @@ size_t apk_istream_splice(void *stream, int fd, size_t size,
 
 	bufsz = size;
 	if (size > 128 * 1024) {
-		if (ftruncate(fd, size) == 0)
+		if (size != APK_SPLICE_ALL && ftruncate(fd, size) == 0)
 			mmapbase = mmap(NULL, size, PROT_READ | PROT_WRITE,
 					MAP_SHARED, fd, 0);
 		if (bufsz > 2*1024*1024)
@@ -156,8 +156,8 @@ size_t apk_istream_splice(void *stream, int fd, size_t size,
 	}
 
 	while (done < size) {
-		if (done != 0 && cb != NULL)
-			cb(cb_ctx, muldiv(APK_PROGRESS_SCALE, done, size));
+		if (cb != NULL)
+			cb(cb_ctx, done);
 
 		togo = size - done;
 		if (togo > bufsz)
@@ -165,6 +165,8 @@ size_t apk_istream_splice(void *stream, int fd, size_t size,
 		r = is->read(is, buf, togo);
 		if (r < 0)
 			goto err;
+		if (r == 0)
+			break;
 
 		if (mmapbase == MAP_FAILED) {
 			if (write(fd, buf, r) != r) {
@@ -383,6 +385,8 @@ struct apk_tee_bstream {
 	struct apk_bstream *inner_bs;
 	int fd;
 	size_t size;
+	apk_progress_cb cb;
+	void *cb_ctx;
 };
 
 static apk_blob_t tee_read(void *stream, apk_blob_t token)
@@ -392,8 +396,11 @@ static apk_blob_t tee_read(void *stream, apk_blob_t token)
 	apk_blob_t blob;
 
 	blob = tbs->inner_bs->read(tbs->inner_bs, token);
-	if (!APK_BLOB_IS_NULL(blob))
+	if (!APK_BLOB_IS_NULL(blob)) {
 		tbs->size += write(tbs->fd, blob.ptr, blob.len);
+		if (tbs->cb)
+			tbs->cb(tbs->cb_ctx, tbs->size);
+	}
 
 	return blob;
 }
@@ -410,7 +417,7 @@ static void tee_close(void *stream, size_t *size)
 	free(tbs);
 }
 
-struct apk_bstream *apk_bstream_tee(struct apk_bstream *from, int atfd, const char *to)
+struct apk_bstream *apk_bstream_tee(struct apk_bstream *from, int atfd, const char *to, apk_progress_cb cb, void *cb_ctx)
 {
 	struct apk_tee_bstream *tbs;
 	int fd;
@@ -433,6 +440,8 @@ struct apk_bstream *apk_bstream_tee(struct apk_bstream *from, int atfd, const ch
 	tbs->inner_bs = from;
 	tbs->fd = fd;
 	tbs->size = 0;
+	tbs->cb = cb;
+	tbs->cb_ctx = cb_ctx;
 
 	return &tbs->bs;
 }
