@@ -673,6 +673,18 @@ setup_root() {
 	# remove bug files ?!
 	rm -f /mnt/etc/runlevels/eis-install
 	rm -f /mnt/etc/runlevels/default/eis-install
+	# change /etc/motd
+	{
+	echo "Welcome to Alpine Linux with Eisfair-NG!"
+	echo ""
+	echo "Please type 'setup' for administration."
+	echo ""
+	} > /mnt/etc/motd
+	# change package repos
+	{
+	echo "http://dl-5.alpinelinux.org/alpine/v2.6/main"
+	echo "http://download.eisfair.org/v2.6"
+	} > /mnt/etc/apk/repositories
 	unmount_partitions /mnt
 	swapoff -a
 
