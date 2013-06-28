@@ -269,6 +269,7 @@ PMApiPackagesToList(int argc, const wchar_t* argv[])
 		{
 			LibPMWriteError(ERROR_INVALID);
 		}
+		free ( ictx );
 	}
 	else
 	{
