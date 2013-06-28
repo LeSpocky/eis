@@ -8,7 +8,7 @@ url="http://fcron.free.fr"
 arch="all"
 license="GNU"
 depends=""
-depends_dev=""
+depends_dev="perl"
 makedepends="$depends_dev"
 install="$pkgname.pre-install $pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall $pkgname.pre-upgrade $pkgname.post-upgrade"
 subpackages=""
@@ -61,3 +61,9 @@ package() {
 md5sums="69ebcb41921e2a282f41ebecb3a27053  fcron-3.0.6.src.tar.gz
 a7656772a06d46b6cb7cc7cf19e3175d  fcron.initd
 34bf916ff0f845960dce715f052bc48b  systab.orig"
+sha256sums="9c36b1bc6c931ec8b4ef55fef569ba17004b32f3ae0a72e3cc4ec4d15bee30a1  fcron-3.0.6.src.tar.gz
+79c6fce95fc93eeba22b3151b067a9e304107a405532e92501a5146f578d0c92  fcron.initd
+b1e164fea850d75a90052058d0b5b82463ac916fb9b8066315fddfd06465e01e  systab.orig"
+sha512sums="53dfc2f57820392e4d32230d9abeaa3ec8a2c4aac6fc4888a266553806e7c31cecc655ff8cd5dbd635e40903cf649962e752e5ba6a5bd7728c79bc42771dfb99  fcron-3.0.6.src.tar.gz
+265b37678606b3c82d0167f081509bf466118fec203e61f2b0746beb0466046a6ef255d0ddececcefc4c66a2afc673fe515c161f06441b892e227bd976fe43cf  fcron.initd
+7d49d571fa5406babc2d80229ca263353b787e26f264063ad463ef6120dd3baa7035944f20b97daee6d8ba8ee80762fc5411df2b82504885001feb86db88492f  systab.orig"
