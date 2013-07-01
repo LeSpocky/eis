@@ -800,7 +800,7 @@ function users_createuser_dialog()
                     -G "${usersdlg_usergroup}" \
                     -g "${usersdlg_username}" \
                     -s "/bin/bash" \
-                    -d "/home/${usersdlg_userlogin}" -m \
+                    -h "/home/${usersdlg_userlogin}" -m \
                     ${usersdlg_userlogin} 2>&1)
                     
                 if [ "$?" != "0" ]
