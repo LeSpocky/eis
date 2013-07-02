@@ -24,7 +24,7 @@ CFLAGS         += -Wstrict-prototypes
 CFLAGS         += -Wimplicit-function-declaration
 CFLAGS         += -D_XOPEN_SOURCE_EXTENDED 
 CFLAGS         += -D_UNICODE -D_GNU_SOURCE
-CFLAGS         += -std=c99
+#CFLAGS         += -std=c99
 CFLAGS         += -g
 CURSESLIB       = ncursesw
 

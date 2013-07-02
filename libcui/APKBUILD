@@ -30,6 +30,10 @@ prepare() {
 build() {
 	cd "$_builddir"
 	make -j1 -s || return 1
+	ln -sf libcui-script.so.${pkgver} libcui-script.so
+	ln -sf libcui-util.so.${pkgver} libcui-util.so
+	ln -sf libcui.so.${pkgver} libcui.so
+	echo "___Build addons:___"
 	cd ${_builddir}/addons/libapk-addon
 	make -j1 -s || return 1
 	cd ${_builddir}/addons/libmysql-addon
@@ -51,7 +55,6 @@ package() {
 	cd ${_builddir}/addons/libsys-addon
 	make DESTDIR=${pkgdir}/ install || return 1
 	rm ${pkgdir}/usr/lib/*.so
-	strip -R .note -R .comment ${pkgdir}/usr/lib/*.so.*
 }
 
 dev(){
@@ -60,7 +63,7 @@ dev(){
 	rm -rf ${pkgdir}/usr/include
 	rm -f ${pkgdir}/usr/lib/*.a
 	mkdir -p ${subpkgdir}/usr/lib || return 1
-	mkdir -p ${subpkgdir}/usr/include || return 1   
+	mkdir -p ${subpkgdir}/usr/include || return 1
 	mv ${_builddir}/*.a ${subpkgdir}/usr/lib/ || return 1
 	cp ${_builddir}/cui.h ${subpkgdir}/usr/include/ || return 1
 	cp ${_builddir}/cui-char.h ${subpkgdir}/usr/include/ || return 1
@@ -68,21 +71,21 @@ dev(){
 	cp ${_builddir}/cui-script.h ${subpkgdir}/usr/include/ || return 1
 	# Don't strip libcui*.a files!
 	# strip -R .note -R .comment ${subpkgdir}/usr/lib/*.a
-	ln -sf libcui.so.${pkgver} ${subpkgdir}/usr/lib/libcui.so  || return 1
-	ln -sf libcui-script.so.${pkgver} ${subpkgdir}/usr/lib/libcui-script.so  || return 1
-	ln -sf libcui-util.so.${pkgver} ${subpkgdir}/usr/lib/libcui-util.so  || return 1
+	ln -sf libcui.so.${pkgver} ${subpkgdir}/usr/lib/libcui.so || return 1
+	ln -sf libcui-script.so.${pkgver} ${subpkgdir}/usr/lib/libcui-script.so || return 1
+	ln -sf libcui-util.so.${pkgver} ${subpkgdir}/usr/lib/libcui-util.so || return 1
 }
 
 addonmysql(){
 	pkgdesc="CUI lib addon for MySQL database"
 	depends="libcui>=$pkgver mysql-libs"
 	cd ${_builddir}/addons/libmysql-addon
-	make -j1 -s DESTDIR=${subpkgdir} install || return 1	
+	make -j1 -s DESTDIR=${subpkgdir} install || return 1
 }
 
 addonpgsql(){
 	pkgdesc="CUI lib addon for Postgresql database"
 	depends="libcui>=$pkgver pgsql-libs"
 	cd ${_builddir}/addons/libpgsql-addon
-	make -j1 -s DESTDIR=${subpkgdir} install || return 1	
+	make -j1 -s DESTDIR=${subpkgdir} install || return 1
 }

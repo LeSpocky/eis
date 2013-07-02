@@ -19,22 +19,16 @@ CC   = gcc
 FLEX = flex
 
 # unicode support
-CFLAGS_UNICODE     = -D_ATFILE_SOURCE -Wall -Wstrict-prototypes -g 
-CFLAGS_UNICODE    += -D_XOPEN_SOURCE_EXTENDED 
-CFLAGS_UNICODE    += -D_UNICODE -D_GNU_SOURCE
-#CFLAGS_UNICODE    += -std=c99 
-CURSESLIB_UNICODE  = ncursesw
+CFLAGS     = -D_ATFILE_SOURCE -Wall -Wstrict-prototypes -g 
+CFLAGS    += -D_XOPEN_SOURCE_EXTENDED 
+CFLAGS    += -D_UNICODE -D_GNU_SOURCE
+CURSESLIB  = ncursesw
 
 # additional library flags
 CLIBFLAGS = -fPIC 
 
-# check platform target
-CFLAGS=$(CFLAGS_UNICODE) 
-CURSESLIB=$(CURSESLIB_UNICODE)
-
 # linker
-LDFLAGS     = -lcui -lcui-util -lcui-script
-LDFLAGS    += -l$(CURSESLIB) -lcrypto -lz
+LDFLAGS     = -L../../ -lcui -lcui-util -lcui-script -lncursesw -lcrypto -lz
 
 # ----------------------------------------------------------------------
 # Objetcs to build
@@ -70,7 +64,7 @@ C_OBJECTS         +=  solver.o
 # compile targets
 $(LIB_NAME).so.$(LIB_VERSION): $(C_OBJECTS)
 	@echo "linking $@ ..."
-	@$(CC) -shared -Wl,-soname,$(LIB_NAME).so.1 -o $@ $^ $(LDFLAGS)
+	@$(CC) $(INCLUDES) -shared -Wl,-soname,$(LIB_NAME).so.2 -o $@ $^ $(LDFLAGS)
 
 # include dependencies
 -include $(C_OBJECTS:.o=.d)
@@ -78,8 +72,8 @@ $(LIB_NAME).so.$(LIB_VERSION): $(C_OBJECTS)
 # pattern build rule
 %.o: %.c
 	@echo "building $*.c ..."
-	@$(CC) -c  $(CLIBFLAGS) $(CFLAGS) $*.c -o $*.o
-	@$(CC) -MM $(CLIBFLAGS) $(CFLAGS) $*.c > $*.d
+	@$(CC) -c  $(CLIBFLAGS) -I../../ $(CFLAGS) $*.c -o $*.o
+	@$(CC) -MM $(CLIBFLAGS) -I../../ $(CFLAGS) $*.c > $*.d
 	@mv -f $*.d $*.d.tmp
 	@sed -e 's|.*:|$*.o:|' < $*.d.tmp > $*.d
 	@cp -f $*.d $*.d.tmp
