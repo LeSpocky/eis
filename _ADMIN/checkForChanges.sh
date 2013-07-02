@@ -4,7 +4,6 @@
 #                      the corresponding build job
 #
 # Creation   :  2013-04-19  starwarsfan
-# Last Update:
 #
 # Copyright (c) 2013 the eisfair team, team(at)eisfair(dot)org>
 #

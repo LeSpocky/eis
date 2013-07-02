@@ -4,7 +4,6 @@
 #                          jenkins job and if not, create one.
 #
 # Creation   :  2013-04-19  starwarsfan
-# Last Update:
 #
 # Copyright (c) 2013 the eisfair team, team(at)eisfair(dot)org>
 #
@@ -89,7 +88,7 @@ iteratePackageFolders ()
 
         echo "Checking jenkins jobs for package '$currentCheckedPackage'"
         for currentJobTemplate in $jobTemplates ; do
-            # $currentJobTemplate is something like '_alpeis__TEMPLATE__v2.4_x86'
+            # $currentJobTemplate is something like '_eisfair-ng__TEMPLATE__v2.6_x86'
             createJob "$currentCheckedPackage" "$currentJobTemplate"
         done
     done
