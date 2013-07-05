@@ -127,8 +127,13 @@ done
 
 if [ -z "$endav" ]
 then
-    mkdir -p /var/lib/dav
+	mkdir -p /var/lib/dav
 	chown apache /var/lib/dav
+	mkdir -p /var/www/uploads
+	chown apache /var/www/uploads
+	if ! apk info -q -e apache2-webdav; then    	
+		apk add -q apache2-webdav 
+	fi
 fi
 #----------------------------------------------------------------------------------------
 # use SSI
@@ -312,9 +317,9 @@ ${envhost}LoadModule vhost_alias_module modules/mod_vhost_alias.so
 # apache2-ssl:
 # ${enssl}LoadModule ssl_module modules/mod_ssl.so
 # apache2-webdav:
-# ${endav}LoadModule dav_module modules/mod_dav.so
-# ${endav}LoadModule dav_fs_module modules/mod_dav_fs.so
-# ${endav}LoadModule dav_lock_module modules/mod_dav_lock.so
+${endav}LoadModule dav_module modules/mod_dav.so
+${endav}LoadModule dav_fs_module modules/mod_dav_fs.so
+${endav}LoadModule dav_lock_module modules/mod_dav_lock.so
 # apache2-ldap:
 # #LoadModule ldap_module modules/mod_ldap.so
 # apache2-proxy:
