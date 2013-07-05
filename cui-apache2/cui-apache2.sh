@@ -218,7 +218,7 @@ KeepAliveTimeout ${APACHE2_MAX_KEEP_ALIVE_TIMEOUT}
     MaxRequestsPerChild ${APACHE2_MAX_REQUESTS_PER_CHILD}
 </IfModule>
 
-Include /etc/apache2/conf.d/*.conf
+IncludeOptional /etc/apache2/conf.d/*.conf
 
 User apache
 Group apache
