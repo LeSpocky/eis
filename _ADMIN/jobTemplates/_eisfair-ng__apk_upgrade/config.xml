@@ -1,56 +1,37 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Build job for v2.6 x86 version of eisfair-ng package &apos;&lt;b&gt;TEMPLATE&lt;/b&gt;&apos;</description>
+  <description>This job updates the installed packages on the alpine build node by performing of apk update and apk upgrade.</description>
   <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>-1</daysToKeep>
-    <numToKeep>25</numToKeep>
+    <numToKeep>20</numToKeep>
     <artifactDaysToKeep>-1</artifactDaysToKeep>
-    <artifactNumToKeep>5</artifactNumToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
-  <properties/>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@1.4.0">
-    <configVersion>2</configVersion>
-    <userRemoteConfigs>
-      <hudson.plugins.git.UserRemoteConfig>
-        <name></name>
-        <refspec></refspec>
-        <url>ssh://git@nettworks-git:7999/EIS/eis.git</url>
-      </hudson.plugins.git.UserRemoteConfig>
-    </userRemoteConfigs>
-    <branches>
-      <hudson.plugins.git.BranchSpec>
-        <name>*/master</name>
-      </hudson.plugins.git.BranchSpec>
-    </branches>
-    <disableSubmodules>false</disableSubmodules>
-    <recursiveSubmodules>false</recursiveSubmodules>
-    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-    <authorOrCommitter>false</authorOrCommitter>
-    <clean>false</clean>
-    <wipeOutWorkspace>false</wipeOutWorkspace>
-    <pruneBranches>false</pruneBranches>
-    <remotePoll>false</remotePoll>
-    <ignoreNotifyCommit>false</ignoreNotifyCommit>
-    <useShallowClone>false</useShallowClone>
-    <buildChooser class="hudson.plugins.git.util.DefaultBuildChooser"/>
-    <gitTool>Default</gitTool>
-    <browser class="hudson.plugins.git.browser.FisheyeGitRepositoryBrowser">
-      <url>https://ssl.nettworks.org/repo/browse/eisfair-ng/</url>
-    </browser>
-    <submoduleCfg class="list"/>
-    <relativeTargetDir></relativeTargetDir>
-    <reference></reference>
-    <excludedRegions></excludedRegions>
-    <excludedUsers></excludedUsers>
-    <gitConfigName></gitConfigName>
-    <gitConfigEmail></gitConfigEmail>
-    <skipTag>false</skipTag>
-    <includedRegions></includedRegions>
-    <scmName></scmName>
-  </scm>
-  <assignedNode>alpine_v2.6_x86</assignedNode>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition plugin="nodelabelparameter@1.4">
+          <name>NODE</name>
+          <description>The build node on which this job should be executed. Only alpine buildnodes selectable.</description>
+          <allowedSlaves>
+            <string>alpine 2.6 x86</string>
+            <string>alpine 2.6 x86-64</string>
+            <string>alpine edge x86</string>
+            <string>alpine edge x86-64</string>
+          </allowedSlaves>
+          <defaultSlaves/>
+          <triggerIfResult>multiSelectionDisallowed</triggerIfResult>
+          <allowMultiNodeSelection>false</allowMultiNodeSelection>
+          <triggerConcurrentBuilds>false</triggerConcurrentBuilds>
+          <ignoreOfflineNodes>true</ignoreOfflineNodes>
+        </org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <assignedNode>$NODE</assignedNode>
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -61,30 +42,10 @@
   <builders>
     <hudson.tasks.Shell>
       <command>sudo apk update
-
-package=&apos;TEMPLATE&apos;
-
-cd $package
-
-abuild checksum
-abuild -r
-rtc=$?
-if [ &quot;$rtc&quot; = 0 ] ; then
-    cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/v2.6/x86
-else
-    exit $rtc
-fi</command>
+sudo apk upgrade</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
-    <hudson.tasks.BuildTrigger>
-      <childProjects>_eisfair-ng__updateRepoIndex__v2.6_x86</childProjects>
-      <threshold>
-        <name>UNSTABLE</name>
-        <ordinal>1</ordinal>
-        <color>YELLOW</color>
-      </threshold>
-    </hudson.tasks.BuildTrigger>
     <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.30.2">
       <recipientList>$DEFAULT_RECIPIENTS</recipientList>
       <configuredTriggers>
@@ -108,7 +69,7 @@ fi</command>
             <recipientList>$DEFAULT_RECIPIENTS</recipientList>
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
-            <sendToDevelopers>false</sendToDevelopers>
+            <sendToDevelopers>true</sendToDevelopers>
             <sendToRequester>false</sendToRequester>
             <includeCulprits>false</includeCulprits>
             <sendToRecipientList>true</sendToRecipientList>
@@ -138,7 +99,7 @@ fi</command>
             <recipientList>$DEFAULT_RECIPIENTS</recipientList>
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
-            <sendToDevelopers>false</sendToDevelopers>
+            <sendToDevelopers>true</sendToDevelopers>
             <sendToRequester>false</sendToRequester>
             <includeCulprits>false</includeCulprits>
             <sendToRecipientList>true</sendToRecipientList>
@@ -186,25 +147,27 @@ fi</command>
       <presendScript></presendScript>
       <attachBuildLog>false</attachBuildLog>
       <compressBuildLog>false</compressBuildLog>
-      <replyTo>$DEFAULT_RECIPIENTS</replyTo>
+      <replyTo></replyTo>
       <saveOutput>false</saveOutput>
     </hudson.plugins.emailext.ExtendedEmailPublisher>
     <hudson.plugins.ircbot.IrcPublisher plugin="ircbot@2.23">
       <targets>
         <hudson.plugins.im.GroupChatIMMessageTarget plugin="instant-messaging@1.25">
           <name>#eisfair-ng-ci</name>
-          <notificationOnly>true</notificationOnly>
+          <notificationOnly>false</notificationOnly>
         </hudson.plugins.im.GroupChatIMMessageTarget>
       </targets>
       <strategy>ALL</strategy>
-      <notifyOnBuildStart>false</notifyOnBuildStart>
+      <notifyOnBuildStart>true</notifyOnBuildStart>
       <notifySuspects>false</notifySuspects>
       <notifyCulprits>false</notifyCulprits>
       <notifyFixers>false</notifyFixers>
       <notifyUpstreamCommitters>false</notifyUpstreamCommitters>
       <buildToChatNotifier class="hudson.plugins.im.build_notify.DefaultBuildToChatNotifier" plugin="instant-messaging@1.25"/>
       <matrixMultiplier>ONLY_CONFIGURATIONS</matrixMultiplier>
+      <channels/>
     </hudson.plugins.ircbot.IrcPublisher>
+    <hudson.plugins.twitter.TwitterPublisher plugin="twitter@0.7"/>
   </publishers>
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.4"/>
