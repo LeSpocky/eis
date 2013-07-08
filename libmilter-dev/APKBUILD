@@ -1,0 +1,37 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer:
+pkgname=libmilter-dev
+pkgver=8.14.3
+pkgrel=1
+pkgdesc="Libmilter with threads"
+url="http://j-chkmail.ensmp.fr/download/libmilter/"
+arch="all"
+license="GPLv2"
+depends=""
+depends_dev=""
+makedepends="$depends_dev"
+install=""
+subpackages=""
+source="http://www.j-chkmail.org/download/libmilter/libmilter-workers-${pkgver}-1.tgz
+	"
+
+_builddir="${srcdir}/libmilter-workers-${pkgver}-1"
+
+prepare() {
+	cd "$_builddir"
+}
+
+build() {
+	cd "$_builddir"
+	./Build -c
+}
+
+package() {
+	cd "$_builddir"
+	mkdir -p ${pkgdir}/usr/lib
+	make DESTDIR=${pkgdir} install
+}
+
+md5sums="47610c4e6778f4414f6fea420956fae3  libmilter-workers-8.14.3-1.tgz"
+sha256sums="5aa49268ff8aa29c96d5a2b0a8c9015b2f4320a00639f02fbff549de379fec4c  libmilter-workers-8.14.3-1.tgz"
+sha512sums="7df09e9b7254b3f8492e759795b51f2092220a63044aed07fa34ae9038e278d19cc3eedefe328b74c75c7948b66869d0eb08f4baf571a9ccaca87834dc7d6803  libmilter-workers-8.14.3-1.tgz"
