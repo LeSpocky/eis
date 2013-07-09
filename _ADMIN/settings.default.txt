@@ -4,7 +4,6 @@
 #                jenkins. See http://jenkins-ci.org
 #
 # Creation   : 2013-04-19 starwarsfan
-# Last Update:
 #
 # Copyright (c) 2013 the eisfair team, team(at)eisfair(dot)org>
 #
@@ -25,10 +24,10 @@ jobsFolder=/home/jenkins/jobs
 # ${templateJobPrefix}${jobNamePrefix}__${templateJobPlaceholder}__<some-text>
 # Please note the mandatory double underlines before and after
 # $templateJobPlaceholder! Examples:
-# _alpeis__TEMPLATE__v2.6_x86
-# _alpeis__TEMPLATE__v2.6_x86_64
+# _eisfair-ng__TEMPLATE__v2.6_x86
+# _eisfair-ng__TEMPLATE__v2.6_x86_64
 templateJobPrefix=_
-jobNamePrefix=alpeis
+jobNamePrefix=eisfair-ng
 templateJobPlaceholder=TEMPLATE
 
 # ----------------------------------------------------------------------------

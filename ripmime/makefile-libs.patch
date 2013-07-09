@@ -1,0 +1,11 @@
+--- src/Makefile
++++ src/Makefile.orig
+@@ -26,7 +26,7 @@
+ #	mailpacks@pldaniels.com
+ #
+ COMPONENTS= -DRIPOLE
+-LIBS= 
++LIBS= -liconv
+ #COMPONENTS= 
+
+ #  DEBUGGING Related Flags

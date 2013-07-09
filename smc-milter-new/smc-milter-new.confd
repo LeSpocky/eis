@@ -1,0 +1,23 @@
+# smc-milter-new conf.d file for alpine linux
+#
+user                    mail
+action                  2
+socket                  /run/milter/smc-milter-new.sock
+pidfile                 /run/smc-milter-new.pid
+clamcheck               yes
+clamsocket              /run/clamav/clamd.sock
+fprotcheck              no
+scriptfile              /usr/bin/smc-milter-new-unzip.sh
+signatureadd            no
+dbhost                  localhost
+dbport                  0
+dbname                  vmaildata
+dbtable                 view_signature
+dbuser                  vmailprovider
+dbpass                  30840a11655b17977
+dbquery                 "SELECT signature FROM view_signature WHERE email ="
+optremove               text/x-vcard
+avmail                  mailadmin@domain.org
+quarantinedir           /var/spool/postfix/quarantine
+debuglevel              0
+#debuglevel             0...4  (4 = not remove /var/tmp/* files)

@@ -29,7 +29,7 @@ CLIBFLAGS   = -fPIC
 
 # linker
 LDFLAGS     = -lcui -lcui-util -lcui-script
-LDFLAGS    += -lncursesw
+LDFLAGS    += -lncursesw -L../../
 
 # ----------------------------------------------------------------------
 # Objetcs to build
@@ -61,8 +61,8 @@ $(LIB_NAME).so.$(LIB_VERSION): $(C_OBJECTS)
 # pattern build rule
 %.o: %.c
 	@echo "building $*.c ..."
-	@$(CC) -c  $(CLIBFLAGS) $(CFLAGS) $*.c -o $*.o
-	@$(CC) -MM $(CLIBFLAGS) $(CFLAGS) $*.c > $*.d
+	@$(CC) -c  $(CLIBFLAGS) -I../../ $(CFLAGS) $*.c -o $*.o
+	@$(CC) -MM $(CLIBFLAGS) -I../../ $(CFLAGS) $*.c > $*.d
 	@mv -f $*.d $*.d.tmp
 	@sed -e 's|.*:|$*.o:|' < $*.d.tmp > $*.d
 	@cp -f $*.d $*.d.tmp
@@ -91,4 +91,3 @@ clean :
 	@rm -f *.d
 	@rm -f *.so.*
 	@rm -f *.cui
-
