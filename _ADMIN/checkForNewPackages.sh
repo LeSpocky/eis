@@ -119,6 +119,30 @@ createJob ()
         if [ $currentRtc != 0 ] ; then
             echo "ERROR: Something went wrong during creation of build-job '$jobName'"
             rtc=$currentRtc
+        elif $buildNewJobs ; then
+            triggerBuild $jobName
+        fi
+    fi
+}
+
+
+
+# ============================================================================
+# Create new jenkins job using the jenkins-cli
+#
+# $1 .. Package name
+# $3 .. Name of the template-job which should be used
+#       as the base for the new job
+triggerBuild ()
+{
+    local jobName=$1
+    if [ -d $jobName -a -f $jobName/config.xml ] ; then
+        echo "Calling jenkins api to build job '$jobName'"
+        java -Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl build $jobName --username $jenkinsUser --password-file $jenkinsPasswordFile
+        currentRtc=$?
+        if [ $currentRtc != 0 ] ; then
+            echo "ERROR: Something went wrong during trigger of build-job '$jobName'"
+            rtc=$currentRtc
         fi
     fi
 }
@@ -134,14 +158,19 @@ usage ()
     cat <<EOF
 
   Usage:
-  ${0}
+  ${0} [options]
         This script checks if a jenkins job for every package on this
         repository is existing. If not, jobs based on the templates will
         be created.
 
+  Options:
+  -n|--no-build .. Do not build new jobs immediately after their creation.
+
 EOF
 }
 
+# Set some defaults
+buildNewJobs=true
 
 while [ $# -ne 0 ]
 do
@@ -151,6 +180,10 @@ do
             # print usage
             usage
             exit 1
+            ;;
+        -n|--no-build)
+            # Do not directly build new jobs
+            buildNewJobs=false
             ;;
         * )
             shift
