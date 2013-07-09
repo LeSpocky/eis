@@ -1,0 +1,44 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer:
+pkgname=ripmime
+pkgver=1.4.0.10
+pkgrel=0
+pkgdesc="mail attachments mime decoded and extract"
+url="http://www.pldaniels.com/ripmime/"
+arch="all"
+license="Sendmail"
+depends=
+makedepends="libiconv-dev"
+install=
+subpackages=
+source="http://www.pldaniels.com/ripmime/ripmime-${pkgver}.tar.gz
+	makefile-libs.patch"
+
+_builddir="$srcdir"/${pkgname}-${pkgver}
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+	make || return 1
+}
+
+package() {
+	cd "$_builddir"
+	install -Dm755 ${pkgname} "$pkgdir"/usr/bin/${pkgname}
+}
+
+md5sums="bb0844b0e73625ef79206d3fe620716e  ripmime-1.4.0.10.tar.gz
+00789cc4017280107473cac562882f0e  makefile-libs.patch"
+sha256sums="896115488a7b7cad3b80f2718695b0c7b7c89fc0d456b09125c37f5a5734406a  ripmime-1.4.0.10.tar.gz
+9778a0cfc607fb758fbc2abc1bc280abe7757874e4f42cee420dc215fb438e7b  makefile-libs.patch"
+sha512sums="e1eae0ad93a50e19ab1966a6f95ae8704e59bc081f89da1e2894a3bb2a2eaea8b0fc4709ec29d126053517d56c72d6ee2a77f0d8e3fb5f223255d45e0b515ab0  ripmime-1.4.0.10.tar.gz
+be0f66b1b6fe7996b1ae21e46ddb44a6b46dccb12e6965ac248e4363e02bbbab4bfac3bbadd9df01a5071234f87a3867dade14d1f7235da53d2fc75c696d8835  makefile-libs.patch"
