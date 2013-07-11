@@ -377,7 +377,7 @@ while true ; do
                   --yesno "Delete all partitions on drive(s):\n${PDRIVE}\nand start installation?" 8 40
                 if [ "$?" = "0" ] ; then
                     [ "$PNETIPSTATIC" = "0" ] && POPTIONS="$POPTIONS -d"
-                    [ "$PRAIDLEVEL" = "1" ] && POPTIONS="$POPTIONS -r"                    
+                    [ "$PRAIDLEVEL" = "1" ] && POPTIONS="$POPTIONS -r"
                     PRINTK=$(cat /proc/sys/kernel/printk)
                     echo "0" >/proc/sys/kernel/printk
                     tempfile=/tmp/install.$$
