@@ -3,7 +3,7 @@
 # /var/install/bin/cui-quassel-core-add-user.sh - add user to quasselcore
 # database
 #
-# Copyright (c) 2001-2013 The Eisfair Team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2013 The eisfair Team, team(at)eisfair(dot)org
 #
 # Creation: 2009-12-23 marwe
 #

@@ -3,7 +3,7 @@
 pkgname=eis-install
 pkgver=1.0.0
 pkgrel=0
-pkgdesc="Eisfair-NG Installer"
+pkgdesc="eisfair-NG Installer"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
