@@ -266,20 +266,6 @@ fi
 ) >> /etc/php/conf.d/eisfair.ini
 
 # -----------------------------------------------------------------------------
-# Extension Directory
-if [ -d "$PHP_EXTENSION_DIR" ] ; then
-    (
-        echo '; Directory in which the loadable extensions (modules) reside.'
-        echo "extension_dir = ${PHP_EXTENSION_DIR}"
-    ) >> /etc/php/conf.d/eisfair.ini
-else
-    (
-        echo '; Directory in which the loadable extensions (modules) reside.'
-        echo 'extension_dir = /usr/lib/php5/extensions'
-    ) >> /etc/php/conf.d/eisfair.ini
-fi
-
-# -----------------------------------------------------------------------------
 # Upload directory
 if [ -d "$PHP_UPLOAD_DIR" ] ; then
     (

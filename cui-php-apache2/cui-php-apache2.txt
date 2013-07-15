@@ -58,14 +58,6 @@ Allgemeine Konfiguration
           aktivieren
           Standardeinstellung: PHP_REGISTER_GLOBALS='no'
 
-   PHP_EXTENSION_DIR
-          Ueber die Variable kann festgelegt werden, wo php5 nach
-          Erweiterungen suchen soll. Normalerweise muss diese Variable
-          nicht veraendert werden.
-
-          Standardeinstellung:
-          PHP_EXTENSION_DIR='/usr/lib/php5/extensions'
-
    PHP_SENDMAIL_PATH
           Hier kann der Pfad zu sendmail angegeben werden. Wenn diese
           Variable leer ist, wird die sendmail in dem Standardverzeichnis

@@ -3,10 +3,10 @@
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 PHP_MYSQL_SOCKET   = '/run/mysqld/mysqld.sock|()'
-                    : 'Use only: eisfair-ng /run/mysqld/mysqld.sock'
+                    : 'Use only /run/mysqld/mysqld.sock or blank'
 PHP_MYSQL_HOST     = 'localhost|(RE:FQDN)|(RE:IPADDR)|()'
                     : 'Use only: localhost, hostname.domain.tld, ip-address or empty for not use'
-PHP_CACHING_MODULE = 'no|apc|eac'
-                    : 'Use "apc" for the APC chaching module or "eac" for eAccelerator. default = "no" -> no chaching modul'
+PHP_CACHING_MODULE = 'no|apc|xcache'
+                    : 'Use "apc" for the APC chaching module or "xcache" for XCache. default = "no" -> no chaching modul'
 PHP_DATE_TIMEZONE  = "Europe/Amsterdam|Europe/Andorra|Europe/Athens|Europe/Belfast|Europe/Belgrade|Europe/Berlin|Europe/Bratislava|Europe/Brussels|Europe/Bucharest|Europe/Budapest|Europe/Chisinau|Europe/Copenhagen|Europe/Dublin|Europe/Gibraltar|Europe/Guernsey|Europe/Helsinki|Europe/Isle_of_Man|Europe/Istanbul|Europe/Jersey|Europe/Kaliningrad|Europe/Kiev|Europe/Lisbon|Europe/Ljubljana|Europe/London|Europe/Luxembourg|Europe/Madrid|Europe/Malta|Europe/Mariehamn|Europe/Minsk|Europe/Monaco|Europe/Moscow|Europe/Nicosia|Europe/Oslo|Europe/Paris|Europe/Podgorica|Europe/Prague|Europe/Riga|Europe/Rome|Europe/Samara|Europe/San_Marino|Europe/Sarajevo|Europe/Simferopol|Europe/Skopje|Europe/Sofia|Europe/Stockholm|Europe/Tallinn|Europe/Tirane|Europe/Tiraspol|Europe/Uzhgorod|Europe/Vaduz|Europe/Vatican|Europe/Vienna|Europe/Vilnius|Europe/Volgograd|Europe/Warsaw|Europe/Zagreb|Europe/Zaporozhye|Europe/Zurich|Etc/GMT|Etc/GMT+0|Etc/GMT+1|Etc/GMT+10|Etc/GMT+11|Etc/GMT+12|Etc/GMT+2|Etc/GMT+3|Etc/GMT+4|Etc/GMT+5|Etc/GMT+6|Etc/GMT+7|Etc/GMT+8|Etc/GMT+9|Etc/GMT-0|Etc/GMT-1|Etc/GMT-10|Etc/GMT-11|Etc/GMT-12|Etc/GMT-13|Etc/GMT-14|Etc/GMT-2|Etc/GMT-3|Etc/GMT-4|Etc/GMT-5|Etc/GMT-6|Etc/GMT-7|Etc/GMT-8|Etc/GMT-9|Etc/GMT0|Etc/Greenwich|Etc/UCT|Etc/Universal|Etc/UTC|Etc/Zulu"
                     : 'Select a predefinde Date/Timezone'

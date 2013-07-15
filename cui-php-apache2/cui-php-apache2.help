@@ -35,10 +35,6 @@ Naehere Informationen dazu unter http://de.php.net/register_globals
 !!!Es wird empfohlen, unter keinen Umstaenden diese Variable zu aktivieren!!!
 </help>
 
-<help name="PHP_EXTENSION_DIR">
-Wo sind die Eweiterungen zu PHP gespeichert.
-</help>
-
 <help name="PHP_SENDMAIL_PATH">
 (Experimentel)<br />
 Wenn gewuenscht, kann man hier dem Pfad zu sendmail angeben. Sollte leer 
@@ -97,11 +93,6 @@ Mit 'yes' wird das SOAP Modul geladen.<br/>
 Mit 'no' wird das Modul deaktiviert (default).
 </help>
 
-<help name="PHP_EXT_LDAP">
-Mit 'yes' wird das LDAP Modul geladen.<br/>
-Mit 'no' wird das Modul deaktiviert (default).
-</help>
-
 <help name="PHP_EXT_MYSQL">
 Mit 'yes' wird das Datenbank-Modul von MySQL beim starten in PHP mit eingebunden.<br/>
 Default: 'no' => nicht mit eingebunden
@@ -142,7 +133,7 @@ Mit 'yes' wird das Datenbank-Modul von SQLITE3 beim starten in PHP mit eingebund
 Default: 'no' => nicht mit eingebunden
 </help>
 
-<help name="PHP_EXT_ADVANTAGE">
-Mit 'yes' wird das Datenbank-Modul von Advantage beim starten in PHP mit eingebunden.<br/>
-Default: 'no' => nicht mit eingebunden
+<help name="PHP_EXT_LDAP">
+Mit 'yes' wird das LDAP Modul geladen.<br/>
+Mit 'no' wird das Modul deaktiviert (default).
 </help>
