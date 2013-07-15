@@ -1,6 +1,6 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
-# Eisfair configuration parameter update script
+# eisfair-ng configuration parameter update script
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 
@@ -85,7 +85,7 @@ packages_name=php-apache2
     printvar "" "default: 32M --> meens 32 Magabytes"
 
     printvar "PHP_MAX_UPLOAD_FILESIZE" "Max. filesize for uploads"
-    printvar "" "default: 2M --> meens 2 Megabytes"
+    printvar "" "default: 16M --> meens 16 Megabytes"
 
     printvar "PHP_MEMORY_LIMIT" "Memory, PHP is allowed to use"
     printvar "" "default: 128M --> meens 128 Megabytes"

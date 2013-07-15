@@ -63,8 +63,8 @@ PHP_MAX_POST_SIZE='32M'               # Maximal POST size
                                       # PHP_MAX_UPLOAD_FILESIZE
                                       # default: 32M --> meens 32 Magabytes
                                      
-PHP_MAX_UPLOAD_FILESIZE='10M'         # Max. filesize for uploads
-                                      # default: 10M --> meens 10 Megabytes
+PHP_MAX_UPLOAD_FILESIZE='16M'         # Max. filesize for uploads
+                                      # default: 16M --> meens 16 Megabytes
                                      
 PHP_MEMORY_LIMIT='128M'               # Memory, PHP is allowed to use
                                       # default: 128M --> meens 128 Megabytes
@@ -88,12 +88,9 @@ PHP_EXT_LDAP='no'                     # Activate LDAP module in PHP.
 #------------------------------------------------------------------------------
 
 PHP_EXT_MYSQL='no'                    # include MySQL extension in PHP
-PHP_EXT_MYSQL_SOCKET='/var/run/mysql/mysql.sock'
+PHP_EXT_MYSQL_SOCKET='/run/mysqld/mysqld.sock'
                                       # default socket to connect the
                                       # MySQL Database.
-                                      # Eisfair-2 -> /var/run/mysql/mysql.sock
-                                      # Eisfair-1 -> /var/lib/mysql/mysql.sock
-                                      # MySQL 3.x.y -> /tmp/mysql.sock
 PHP_EXT_MYSQL_HOST=''                 # Hostname or IP address if use port
                                       # connect
 PHP_EXT_MYSQL_PORT='3306'             # MySQL connect port (3306)

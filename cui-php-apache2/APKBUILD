@@ -3,7 +3,7 @@
 pkgname=cui-php-apache2
 pkgver=5.3.0
 pkgrel=0
-pkgdesc="CUI Setup PHP 5.3.x Module for Apache"
+pkgdesc="CUI Setup PHP 5.x module for apache"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
@@ -20,6 +20,8 @@ source="${pkgname}.default
 		${pkgname}-update.sh
 		${pkgname}.menu
 		${pkgname}.txt
+		${pkgname}.dcache.sh
+		${pkgname}.ddate.sh		
 "
 
 _builddir=
@@ -39,6 +41,8 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/php-apache2 || return 1	
 	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/php-apache2.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/php-apache2-update.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}.dcache.sh     ${pkgdir}/var/install/dialog.d/PHP_CACHING_MODULE.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}.ddate.sh      ${pkgdir}/var/install/dialog.d/PHP_DATE_TIMEZONE.sh || return 1
 	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.apache2.php.menu || return 1	
 	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/php-apache2/php-apache2.txt || return 1	
 }
