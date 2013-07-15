@@ -1,11 +1,11 @@
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # /etc/config.d/php-apache2 - configuration file for apache2
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # General settings
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 PHP_MAX_EXECUTION_TIME='30'           # Time in sec. until the script will be
                                       # terminated.
@@ -15,7 +15,7 @@ PHP_DISPLAY_ERRORS='yes'              # Show syntaxerrors of your PHP-Scripts
                                       # in your Browser.
                                       # yes=ON (default) / no=OFF
                                      
-PHP_LOG_ERROR='no'                    # Write Error to an logfile
+PHP_LOG_ERROR='no'                    # Write Error to a logfile
                                       # yes=ON / no=OFF (default)
                                      
 PHP_INCLUDE_PATH='.:/usr/share/php5:/usr/include/php5'
@@ -40,17 +40,17 @@ PHP_SENDMAIL_APP=''                   # Enter additional command that needed to
                                       # (this will use the deafult one)
 PHP_DATE_TIMEZONE='Europe/Berlin'     # Enter your timezone here
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Info Settings
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 PHP_INFO='no'                         # Puts some PHP-Scripts in your htdoc-dir
-                                      # for testing functionallity for
+                                      # for testing functionality for
                                       # php, gd, pdf.
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Memory Settings
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 PHP_MAX_POST_SIZE='32M'               # Maximal POST size
                                       # If you use the POST-Method for uploads
@@ -67,20 +67,20 @@ PHP_MEMORY_LIMIT='128M'               # Memory, PHP is allowed to use
 PHP_UPLOAD_DIR='/tmp'                 # Where to temporary save uploaded file
                                       # default: /tmp
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # EXTENSION CONFIGURATION - CACHE/OTHER
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
-PHP_EXT_CACHE='no'                    # Activate chaching module in PHP.
+PHP_EXT_CACHE='no'                    # Activate caching module in PHP.
                                       # apc: for APC
                                       # xcache: for XCache
-                                      # default: no -> switch chaching module off
+                                      # default: no -> switch caching module off
                                       
 PHP_EXT_SOAP='no'                     # Activate SOAP module in PHP.                                      
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # EXTENSION CONFIGURATION - DATABASE
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 PHP_EXT_MYSQL='no'                    # include MySQL extension in PHP
 PHP_EXT_MYSQL_SOCKET='/run/mysqld/mysqld.sock'
@@ -96,6 +96,6 @@ PHP_EXT_SQLITE3='no'                  # include SQLite3 extension in PHP
 
 PHP_EXT_LDAP='no'                     # Activate LDAP module in PHP
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # End
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
