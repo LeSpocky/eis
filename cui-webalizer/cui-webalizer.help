@@ -1,0 +1,149 @@
+<!-- Creation:     2009-05-24 jv  -->
+<!-- Last Update:  $Id$ -->
+
+<help name="START_WEBALIZER">
+    Fuer die Aktivierung von 'WEBALIZER' mittels Cronjob muss 
+    diese Variable auf den Wert 'yes' gestellt werden. Die Einstellung
+    'no' schaltet 'WEBALIZER' ab.<br/>
+<br/>
+    Gueltige Werte: yes, no<br/>
+<br/>
+    Standard-Einstellung: START_WEBALIZER='yes'<br/>
+</help>
+
+
+<help name="WEBALIZER_CRON">
+    Hier wird angegeben, wann und wie oft Webalizer die Auswertungen 
+    aktualisieren soll. Die Eingabe erfolgt im Standard-Cron-Format.<br/>
+<br/> 
+    z.B. WEBALIZER_CRON='55 23 * * *'
+</help>
+
+
+<help name="WEBALIZER_VHOSTS_RUN_ALL">
+    Ist diese Variable auf 'yes' gesetzt, werden alle Logdateien ausgewertet, 
+    die in der Apache-Konfiguration konfiguriert sind.<br/>
+<br/>
+    Vorraussetzung ist allerdings, dass APACHE2_VHOST_N hoch genug ist und 
+    APACHE2_VHOST_x_ACTIVE des jeweiligen Virtual Hosts auf 'yes' steht.
+</help>
+
+
+<help name="WEBALIZER_VHOSTS_OUTPUT_DIR">
+    Hier ist das Verzeichnis anzugeben, in das die Auswertungen gespeichert 
+    werden. Diese sind HTML-Dateien und koennen ueber einen Browser angesehen 
+    werden.<br/>
+    Da es nicht moeglich ist, alle Auswertungen in ein Verzeichnis zu speichern,
+    koennen hier Platzhalter als Teil des Verzeichnisses angegeben werden.<br/>
+<br/>
+    Moegliche Platzhalter sind:<br/> 
+    - %VHOST_DOCROOT% - Enthaelt APACHE2_VHOST_x_DOCUMENT_ROOT des entsprechenden Virtual Hosts<br/>
+    - %SERVER_NAME% - Enthaelt APACHE2_VHOST_x_SERVER_NAME des entsprechenden Virtual Hosts<br/>
+<br/>
+    Moegliche Kombinationen sind z.B.:<br/>
+    - WEBALIZER_OUTPUT_DIR='%VHOST_DOCROOT%/logs'<br/>
+    - WEBALIZER_OUTPUT_DIR='/var/www/auswertungen.meinesubdomain.eisfair.net/htdocs/%SERVER_NAME%/'<br/>
+<br/>
+    Bei Beispiel 1 werden die Auswertungen des entsprechenden Virtual Hosts in 
+    dem dazugehoerigen Documentroot abgelegt.
+    Die Auswertungen sind dann ueber http://virtualhost.meinesubdomain.eisfair.net/logs/
+    erreichbar.<br/>
+<br/>
+    Bei Beispiel 2 werden alle Auswertungen in ein eigenes Verzeichnis außerhalb
+    des entsprechnenden Virtual Host abgelegt.
+    Es besteht hier z.B. die Moeglichkeit alle Auswertungen unter einem weiteren
+    Virtual Host zugaenglich zu machen.<br/>
+<br/>
+    Die Auswertungen sind dann z.B. unter<br/>
+    http://auswertungen.meinesubdomain.eisfair.net/vhost1.meinesubdomain.eisfair.net/<br/>
+    http://auswertungen.meinesubdomain.eisfair.net/vhost2.meinesubdomain.eisfair.net/<br/>
+    http://auswertungen.meinesubdomain.eisfair.net/vhost3.meinesubdomain.eisfair.net/<br/>
+    usw. erreichbar.<br/>
+<br/>
+    Anmerkung: Der Virtual Host bei Beispiel 2 (hier auswertungen.meinesubdomain.eisfair.net)
+    muss natuerlich manuell angelegt werden.
+</help>
+
+
+<help name="WEBALIZER_VHOSTS_TITLE">
+    Hier wird die Ueberschrift der Auswertungen angegeben.<br/>
+<br/>
+    Ist z.B. WEBALIZER_TITLE='Auswertungen von' gesetzt wird die Ueberschrift 
+    der Auswertung vom Virtual Host bzw. vom Mainhost, dessen Hostname 
+    eis.meinesubdomain.eisfair.net ist "Auswertungen von eis.meinesubdomain.eisfair.net"
+    lauten.
+</help>
+
+
+<help name="WEBALIZER_VHOSTS_BGCOLOR">
+    Hier wird die Hintergrundfarbe der Auswertung in hexadezimaler Schreibweise 
+    angegeben. Als Praefix muss eine Raute (#) angegeben werden.<br/>
+<br/>
+    z.B. WEBALIZER_VHOSTS_BGCOLOR='#E8E8E8'
+</help>
+
+
+<help name="WEBALIZER_HOST_N">
+    Das Webalizer Paket erlaubt es auch, Logdateien auszuwerten, die nicht von 
+    Apache stammen. Hierzu wird der Variablenblock WEBALIZER_HOST_* verwendet.
+</help>
+
+
+<help name="WEBALIZER_HOST_%_ACCESS_LOG">
+    Hier wird die auszuwertende Logdatei angegeben.<br/>
+<br/>
+    z.B. WEBALIZER_HOST_x_ACCESS_LOG='/var/log/ftpd.log'
+</help>
+
+
+<help name="WEBALIZER_HOST_%_OUTPUT_DIR">
+    Hier wird das Verzeichnis angegeben, in das spaeter die Auswertung 
+    generiert wird.<br/>
+<br/>
+    z.B. WEBALIZER_HOST_x_ACCESS_LOG='/var/www/auswertungen.meinesubdomain.eisfair.net/ftp-logs/'
+</help>
+
+
+<help name="WEBALIZER_HOST_%_HOST_NAME">
+    Hier wird der Hostname angegeben, auf dem der Server, der die Logdateien 
+    produziert hat, laeuft.<br/>
+<br/>
+    Diese Eingabe ist noetig, da man in der HTML-Auswertung die Moeglichkeit hat, 
+    bestimmte Links anzuklicken. Diese sind dann in der Form 
+    http://WEBALIZER_HOST_x_HOST_NAME/pub/files/file.tar.gz.
+</help>
+
+
+<help name="WEBALIZER_HOST_%_TITLE">
+    Hier wird die Ueberschrift der Auswertungen angegeben.<br/>
+<br/>
+    Ist z.B. WEBALIZER_TITLE='Auswertungen von' gesetzt, wird die Ueberschrift 
+    der Auswertung vom Virtual Host bzw. vom Mainhost, dessen Hostname
+    eis.meinesubdomain.eisfair.net ist "Auswertungen von eis.meinesubdomain.eisfair.net"
+    lauten.
+</help>
+
+
+<help name="WEBALIZER_HOST_%_BGCOLOR">
+    Hier wird die Hintergrundfarbe der Auswertung in hexadezimaler Schreibweise 
+    angegeben. Als Praefix muss eine Raute (#) angegeben werden.<br/>
+<br/>
+    z.B. WEBALIZER_HOST_%_BGCOLOR='#E8E8E8'
+</help>
+
+
+<help name="WEBALIZER_HOST_%_TYPE">
+    Webalizer kann mehrere Logdateiformate lesen. Das gaengiste davon ist 
+    das "Common Logfile Format" (CLF). Dies ist z.B. auch das 
+    Standard-Logfileformat von Apache.<br/>
+<br/>
+    Weitere Moeglichkteien neben 'clf' sind 'squid', 'ftp' und 'w3c'.<br/>
+<br/>
+    Wobei das FTP-Format nicht von dem FTP-Daemon aus dem Inet-Paket 
+    unterstuetzt wird. Hier muss in der Inet-Konfiguration das Logdateiformat 
+    vom ftpd auf das Common Logfile Format umgestellt werden. In der 
+    Webalizer-Konfiguration ist dann natuerlich unter 
+    WEBALIZER_HOST_x_TYPE='clf' einzustellen.
+</help>
+
+

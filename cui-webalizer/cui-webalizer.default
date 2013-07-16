@@ -1,0 +1,46 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/webalizer - configuration file for apache webalizer
+# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Basic configuration
+#------------------------------------------------------------------------------
+
+START_WEBALIZER='yes'                 # Start webalizer with cronjob
+WEBALIZER_CRON='55 23 * * *'          # Everyday at 23:xx
+
+#------------------------------------------------------------------------------
+# Apache VHOST configuration
+#------------------------------------------------------------------------------
+
+WEBALIZER_VHOSTS_RUN_ALL='yes'        # Use: yes or no for run Webalizer over
+                                      # all apache2 VHosts
+WEBALIZER_VHOSTS_OUTPUT_DIR='%VHOST_DOCROOT%/logs'
+                                      # Where to put the analysis possible
+                                      # variables are %SERVER_NAME% and
+                                      # %VHOST_DOCROOT%
+WEBALIZER_VHOSTS_TITLE='Auswertung von'
+                                      # The title at the top of the analysis
+WEBALIZER_VHOSTS_BGCOLOR='#E8E8E8'    # The backgroundcolor
+
+#------------------------------------------------------------------------------
+# Optional logfiles
+#------------------------------------------------------------------------------
+
+WEBALIZER_HOST_N='1'                  # Count of hosts
+WEBALIZER_HOST_1_ACCESS_LOG='/var/www/log/access.log'
+                                      # Accesslog of Apache
+WEBALIZER_HOST_1_OUTPUT_DIR='/var/www/htdocs/logs'
+                                      # Where to put the analysis
+WEBALIZER_HOST_1_HOST_NAME='www.domain.tld'
+                                      # Hostname of the (V)Host
+WEBALIZER_HOST_1_TITLE='Auswertung von'
+                                      # The title at the top of the analysis
+WEBALIZER_HOST_1_BGCOLOR='#E8E8E8'    # The backgroundcolor
+WEBALIZER_HOST_1_TYPE='clf'           # 'clf' for Apache, 'squid' for Squid,
+                                      # 'ftp' for FTP
+
+#------------------------------------------------------------------------------
+# End
+#------------------------------------------------------------------------------

@@ -1,0 +1,69 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
+pkgname=cui-webalizer
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="CUI Setup Webalizer module for apache"
+url="http://www.eisfair.org"
+arch="noarch"
+license="GPL"
+depends="cuimenu cui-apache2 webalizer"
+depends_dev=""
+makedepends="$depends_dev"
+install="$pkgname.pre-upgrade $pkgname.post-install $pkgname.post-deinstall"
+subpackages=""
+source="${pkgname}.default
+		${pkgname}.check
+		${pkgname}.check.exp
+		${pkgname}.help
+		${pkgname}.sh
+		${pkgname}-update.sh
+		${pkgname}.menu
+		${pkgname}.txt
+"
+
+_builddir=
+prepare() {
+	cd "$_builddir"
+}
+
+build() {
+	cd "$_builddir"
+}
+
+package() {
+	cd "$_builddir"
+	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/webalizer || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/webalizer.exp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/webalizer || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/webalizer || return 1	
+	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/webalizer.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/webalizer-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.apache2.webalizer.menu || return 1	
+	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/webalizer/webalizer.txt || return 1	
+}
+
+md5sums="3ede300bf2eadb7618c49f1959f1e52f  cui-webalizer.default
+5f5830fdcd766345079ef627e852a7b6  cui-webalizer.check
+45156aec6ccd2e2a92a6069aa1f0faec  cui-webalizer.check.exp
+b54fc32c0c65dfb9f22f28e31dacde30  cui-webalizer.help
+cb12c09dcecb48b6caedaa7a12f17745  cui-webalizer.sh
+0b6fed3140f565033db0a60f7a68b032  cui-webalizer-update.sh
+3056fb76051702c397cf4af2c78f6e8b  cui-webalizer.menu
+fc06fcbb26c5d55f75d884b7b7d97f7c  cui-webalizer.txt"
+sha256sums="598c59a8bbccffd0a3e7ba14d6b4b916ec106186c26f202ddf8df04d4af8bb27  cui-webalizer.default
+7fb3388113aa8171dea8d34afd4dcd340a9bbbe7429fe4c1adc8624461ec00ec  cui-webalizer.check
+5362de7c2719cd38e7ff541508d3204221dd7915894961cb7132a607bfc6058a  cui-webalizer.check.exp
+9dc0dc6304484c43f5117baa974e36964aee5f88b119c82b7cf728c537766801  cui-webalizer.help
+e2212c5067f912d4f8c4e62c8098469bd65a42fc94f2d7c9e2f2e10a6287cc4d  cui-webalizer.sh
+f145220fe68df1e60875adca19bb696a4f9704f381a25940568ca7cc65e3ccb2  cui-webalizer-update.sh
+705df4dd66999c3adb5728c0baf7267bffe09f30869d3b34ef35b5c02b9a7877  cui-webalizer.menu
+a67487ccd3001c89a5ce73c0972ab2d1cdded6dfdd03e3f719cbbbc445108f1b  cui-webalizer.txt"
+sha512sums="992f84f2af9beb76afa23bfd0ea8bd561d3973d172749834f30536d548ac7a3ced22cb9d0301e57a0e7425c6c092b92ac0706a05837395e08208bb27e34c41a2  cui-webalizer.default
+5a3c98e76026581273f721220916b3e0f5b21cbf07bb8928266a565ffb1a55f56cf37f4e5bade1a72e331ccfcd55d20e0eff4906c1a24e2ff1f8eb6825ab6e0b  cui-webalizer.check
+9a3cb06bf906d26f9a71f9c412bc7472fa1e4af3b97fcaaf31576ff99b470059a1616aa43bf64e3d1d9e517b4fabd9c79075cb7c0475084c63f116a55f78640a  cui-webalizer.check.exp
+119ffeaa9693dfa4f5433e829d406abe47554b65ca0b8fae9594b9315898838c3364f2122aea97139d481416cf523c9a374fa9c1b264eedc8cd221a3caeb9983  cui-webalizer.help
+fb940b79159cf284155fc34018e853f712083aa666038ae025e1651c5a7381b69277036fe2fcaf674e4bcb74f5ba785db17d6c9017d2b5d53c9e1cf1828b054c  cui-webalizer.sh
+08a3f1d696b04fe12729e72af8beb01a4bfd5fb156c56badd8980b1ee5dd9c0d73d4e449ccf0fd0fa6a93d8706eba6206cbf1492dee7ae9fc4af6495889b00d4  cui-webalizer-update.sh
+ba6f9605005116a6d277e14741b582dec3ee3b9d0550284a987f018d109971d24a7df42121986e22649664e87d225644b5409a73cfcb629d8d97667fb722b94c  cui-webalizer.menu
+17851190e2a5b4fffb8b097cdbdb596ba99536e428e03892d37d25ae8fba392f6db9ae114513e553b1e95d13c17b88fdcb9572fe6d555659451b5683f882a786  cui-webalizer.txt"

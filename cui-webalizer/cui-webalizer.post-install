@@ -1,0 +1,5 @@
+#!/bin/sh
+
+/var/install/bin/add-menu setup.services.apache2.menu setup.services.apache2.webalizer.menu "Webalizer Administration"
+[ -e /etc/config.d/webalizer ] || cp /etc/default.d/webalizer /etc/config.d/
+exit 0

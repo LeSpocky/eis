@@ -1,0 +1,5 @@
+<!-- /var/install/menu/setup.services.apache2.webalizer.menu -->
+<title>Webalizer Administration</title>
+<package>webalizer</package>
+<doc file="webalizer.txt">PHP Documentation</doc>
+<edit>Edit Webalizer Configuration</edit>
