@@ -3,3 +3,4 @@
 <package>webalizer</package>
 <doc file="webalizer.txt">PHP Documentation</doc>
 <edit>Edit Webalizer Configuration</edit>
+<script file='/usr/bin/webalizer-run'>Run Webalizer now</script>

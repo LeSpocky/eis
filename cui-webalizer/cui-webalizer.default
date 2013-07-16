@@ -29,9 +29,9 @@ WEBALIZER_VHOSTS_BGCOLOR='#E8E8E8'    # The backgroundcolor
 #------------------------------------------------------------------------------
 
 WEBALIZER_HOST_N='1'                  # Count of hosts
-WEBALIZER_HOST_1_ACCESS_LOG='/var/www/log/access.log'
+WEBALIZER_HOST_1_ACCESS_LOG='/var/www/logs/access.log'
                                       # Accesslog of Apache
-WEBALIZER_HOST_1_OUTPUT_DIR='/var/www/htdocs/logs'
+WEBALIZER_HOST_1_OUTPUT_DIR='/var/www/localhost/htdocs/logs'
                                       # Where to put the analysis
 WEBALIZER_HOST_1_HOST_NAME='www.domain.tld'
                                       # Hostname of the (V)Host
