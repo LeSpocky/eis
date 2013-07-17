@@ -2,10 +2,6 @@
 #----------------------------------------------------------------------------
 # Eisfair configuration generator script for Apache
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
 #----------------------------------------------------------------------------
 
 #echo "Executing $0 ..."
@@ -19,10 +15,130 @@ chmod 600 /etc/config.d/apache2
 . /etc/config.d/apache2
 . /var/install/include/apache2
 
+
 # -------------------------------------------------------------------------
 # get ip setting
 # -------------------------------------------------------------------------
 . /etc/config.d/base                 # include base config
+
+
+
+# -------------------------------------------------------------------------
+# functions:
+# -------------------------------------------------------------------------
+create_dir_access() {
+    local vhostnr="$1"
+    local vhost=""
+    local nmax=0   
+    local idx=1
+    local idx2=1
+    local useAlias=""
+    local alias=""
+    local path=""
+    local auth_name=""
+    local auth_type=""
+    local auth_n=""
+    local cgi=""
+    local ssi=""
+    local access=""
+    local content=""
+    local webdav=""
+    local user=""
+    local pass=""
+    
+    [ $vhostnr -gt 0 ] && vhost="VHOST_${vhostnr}_" 
+    
+    eval nmax='$APACHE2_'${vhost}'DIR_N'
+    while [ "$idx" -le "$nmax" ]
+    do
+        eval active='$APACHE2_'$vhost'DIR_'$idx'_ACTIVE'
+        if [ "$active" = "no" ]
+        then
+            idx=`expr $idx + 1`
+            continue
+        fi        
+        eval useAlias='$APACHE2_'$vhost'DIR_'$idx'_ALIAS'
+        eval alias='$APACHE2_'$vhost'DIR_'$idx'_ALIAS_NAME'
+        eval path='$APACHE2_'$vhost'DIR_'$idx'_PATH'
+        eval auth_name='$APACHE2_'$vhost'DIR_'$idx'_AUTH_NAME'
+        eval auth_type='$APACHE2_'$vhost'DIR_'$idx'_AUTH_TYPE'
+        eval auth_n='$APACHE2_'$vhost'DIR_'$idx'_AUTH_N'
+        eval cgi='$APACHE2_'$vhost'DIR_'$idx'_CGI'
+        eval ssi='$APACHE2_'$vhost'DIR_'$idx'_SSI'
+        eval access='$APACHE2_'$vhost'DIR_'$idx'_ACCESS_CONTROL'
+        eval content='$APACHE2_'$vhost'DIR_'$idx'_VIEW_DIR_CONTENT'
+        eval webdav='$APACHE2_'$vhost'DIR_'$idx'_WEBDAV'
+    
+        [ "$useAlias" = "yes" ] && echo "Alias $alias $path"
+        echo "<Directory \"$path\">"
+        echo -n "    Options FollowSymLinks MultiViews"
+        [ "$ssi" = "yes" ]   && echo -n " Includes"
+        [ "$cgi" != "none" ] && echo -n " ExecCGI"
+        if [ "$content" = "yes" ]
+        then
+            echo " Indexes"
+        else
+            echo ""
+        fi
+        [ "$cgi" != "none" ] && echo "    AddHandler cgi-script $cgi"
+        if [ "$ssi" = "yes" ] ; then
+            echo "    AddType text/html .shtml"
+            echo "    AddHandler server-parsed .shtml"
+        fi
+        if [ "$auth_n" -gt 0 ] ; then
+            echo "    AuthName \"${auth_name}\""
+            if [ "$auth_type" = "Basic" ] ; then
+                echo "    AuthType Basic"
+                echo "    AuthBasicProvider file"
+            else
+                echo "    AuthType Digest"
+                echo "    AuthDigestProvider file"
+            fi
+            echo "    AuthUserFile /etc/apache2/passwd/passwords.${vhostnr}-${idx}"
+            echo "    <RequireAll>"
+            echo "        Require valid-user"
+            echo "        Require $access granted"
+            echo "    </RequireAll>"
+
+            # create password file
+            mkdir -p /etc/apache2/passwd
+            echo "" > /etc/apache2/passwd/passwords.${vhostnr}-${idx}
+            idx2=1
+            while [ "$idx2" -le "$auth_n" ]
+            do
+                eval user='$APACHE2_'$vhost'DIR_'$idx'_AUTH_'$idx2'_USER'
+                eval pass='$APACHE2_'$vhost'DIR_'$idx'_AUTH_'$idx2'_PASS'
+                if [ "${auth_type}" = "Basic" ] ; then
+                    /usr/bin/htpasswd -b /etc/apache2/passwd/passwords.${vhostnr}-${idx} $user $pass 2>/dev/null
+                else
+                    # hash the username, realm, and password
+                    htdigest_hash=`printf "$user:$auth_name:$pass" | md5sum -`
+                    # build an htdigest appropriate line, and tack it onto the file
+                    echo "${user}:${auth_name}:${htdigest_hash:0:32}" >> /etc/apache2/passwd/passwords.${vhostnr}-${idx}
+                fi
+                idx2=`expr $idx2 + 1`
+            done
+            chown -R apache:apache /etc/apache2/passwd
+            chmod 700 /etc/apache2/passwd
+            chmod 600 /etc/apache2/passwd/*
+            
+            if [ ! -d ${path} ] ; then
+                mkdir -p ${path}
+                echo "<h1>GEHEIM!</h1>" > ${path}/index.html
+                chown -R apache:apache ${path}
+            fi
+        else
+            echo "    Require all denied"
+            echo "    Require $access granted"                       
+        fi
+        [ "$webdav" = "yes" ] && echo "    Dav on"
+        echo "    AllowOverride All"
+        echo "</Directory>"
+        idx=`expr $idx + 1`                   
+    done
+}
+
+
 
 # read dhcp leases
 #if [ "$IP_NET_1_STATIC_IP" = "no" ]
@@ -626,107 +742,12 @@ else
         [ "$APACHE2_SSL" = "yes" ] && echo "Listen $APACHE2_SSL_PORT"
     fi
 fi
+echo ""
 
 #----------------------------------------------------------------------------------------
 # directory setup
 #----------------------------------------------------------------------------------------
-idx=1
-while [ "$idx" -le "$APACHE2_DIR_N" ]
-do
-    eval active='$APACHE2_DIR_'$idx'_ACTIVE'
-    eval useAlias='$APACHE2_DIR_'$idx'_ALIAS'
-    eval alias='$APACHE2_DIR_'$idx'_ALIAS_NAME'
-    eval path='$APACHE2_DIR_'$idx'_PATH'
-    eval auth_name='$APACHE2_DIR_'$idx'_AUTH_NAME'
-    eval auth_type='$APACHE2_DIR_'$idx'_AUTH_TYPE'
-    eval auth_n='$APACHE2_DIR_'$idx'_AUTH_N'
-    eval cgi='$APACHE2_DIR_'$idx'_CGI'
-    eval ssi='$APACHE2_DIR_'$idx'_SSI'
-    eval access='$APACHE2_DIR_'$idx'_ACCESS_CONTROL'
-    eval content='$APACHE2_DIR_'$idx'_VIEW_DIR_CONTENT'
-    eval webdav='$APACHE2_DIR_'$idx'_WEBDAV'
-
-    if [ "$active" = "no" ]
-    then
-        idx=`expr $idx + 1`
-        continue
-    fi
- 
-    if [ "$useAlias" = "yes" ]
-    then
-        echo "Alias $alias $path"
-    fi
-
-        #echo "Adding directory $path ..." >`tty`
-        echo "<Directory \"${path}\">"
-        echo -n '    Options FollowSymLinks MultiViews'
-        [ "$ssi" = "yes" ]   && echo -n ' Includes'
-        [ "$cgi" != "none" ] && echo -n ' ExecCGI'
-        if [ "$content" = "yes" ]
-        then
-            echo ' Indexes'
-        else
-            echo
-        fi
-        [ "$cgi" != "none" ] && echo "    AddHandler cgi-script $cgi"
-        if [ "$ssi" = "yes" ]
-        then
-            echo '    AddType text/html .shtml'
-            echo '    AddHandler server-parsed .shtml'
-        fi
-        if [ "$auth_n" -gt 0 ]
-        then
-            mkdir -p /etc/apache2/passwd
-            if [ "${auth_type}" = "Basic" ]
-            then
-                echo '    AuthType Basic'
-            else
-                echo '    AuthType Digest'
-                echo "    AuthDigestDomain ${auth_name}"
-                echo '    AuthDigestProvider file'
-            fi
-            echo "    AuthName \"${auth_name}\""
-            echo "    AuthUserFile /etc/apache2/passwd/passwords.${idx}"
-            echo '    require valid-user'
-            rm -f /etc/apache2/passwd/passwords.$idx
-            touch /etc/apache2/passwd/passwords.$idx
-
-            idx2=1
-            while [ "$idx2" -le "$auth_n" ]
-            do
-                eval user='$APACHE2_DIR_'$idx'_AUTH_'$idx2'_USER'
-                eval pass='$APACHE2_DIR_'$idx'_AUTH_'$idx2'_PASS'
-
-                if [ "${auth_type}" = "Basic" ]
-                then
-                    /usr/bin/htpasswd -b /etc/apache2/passwd/passwords.${idx} $user $pass 2>/dev/null
-                else
-                    # hash the username, realm, and password
-                    htdigest_hash=`printf "$user:$auth_name:$pass" | md5sum -`
-                    # build an htdigest appropriate line, and tack it onto the file
-                    echo "${user}:${auth_name}:${htdigest_hash:0:32}" >> /etc/apache2/passwd/passwords.$idx
-                fi
-                idx2=`expr $idx2 + 1`
-            done
-            chown -R apache:apache /etc/apache2/passwd
-            chmod 700 /etc/apache2/passwd
-            chmod 600 /etc/apache2/passwd/*
-        fi
-
-        [ "$webdav" = "yes" ] && echo "    Dav on"
-        echo '    AllowOverride All'
-        echo '    Require all denied'
-        echo "    Require $access granted"
-        echo '</Directory>'
-
-        if [ ! -d ${path} ]
-        then
-            mkdir -p ${path}
-            echo "<h1>GEHEIM!</h1>" > ${path}/index.html
-            chown -R apache:apache ${path}
-        fi
-    idx=`expr $idx + 1`
-done
+create_dir_access 0
 
 #----------------------------------------------------------------------------------------
 # error setup
@@ -839,14 +860,12 @@ do
     errorlog="/var/log/apache2/error-${servername}.log"
     accesslog="/var/log/apache2/access-${servername}.log" 
 
-    if [ "$active" != "yes" ]
-    then
+    if [ "$active" != "yes" ] ; then
         idx=`expr $idx + 1`
         continue
     fi
 
-    if [ ! -d ${docroot} ]
-    then
+    if [ ! -d ${docroot} ] ; then
         mkdir -p ${docroot}
         {
             echo "<html><body><h1>Der VirtualHost <em>$servername</em> wurde erfolgreich eingerichtet!</h1>"
@@ -862,8 +881,7 @@ do
         } > ${docroot}/index.html        
         chown apache:apache -R ${docroot}
     fi
-    if [ ! -d ${scriptdir} ]
-    then
+    if [ ! -d ${scriptdir} ] ; then
         mkdir -p ${scriptdir}
         chown apache:apache ${scriptdir}
     fi
@@ -910,7 +928,7 @@ do
     echo "    CustomLog $accesslog combined"
 
     #################################
-    createVHostDirDirective
+    create_dir_access  $idx
     #################################
     echo "</VirtualHost>"
 
@@ -945,7 +963,7 @@ do
         echo "    ErrorLog ${errorlog}.ssl"
         echo "    CustomLog ${accesslog}.ssl combined"
         #################################
-        createVHostDirDirective
+        create_dir_access  $idx
         #################################
         echo '</VirtualHost>'
 
