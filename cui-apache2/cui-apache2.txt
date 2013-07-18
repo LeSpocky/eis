@@ -167,14 +167,13 @@ Spezielle Einstellungen
           auf 'all' steht.
 
           Folgende Beispiele illustrieren die Formate der Parameter:
-
-          + ''192.168.''
-          + ''192.168.0.0/16''
-          + ''192.168.0.0/255.255.0.0''
-          + ''192.168.0.1 192.168.0.2''
-          + ''http.apache.org''
-          + ''apache.org''
-          + ''.org''
+          + ''all''
+          + ''ip 192.168.''
+          + ''ip 192.168.0.0/16''
+          + ''ip 192.168.0.0/255.255.0.0''
+          + ''ip 192.168.0.1 192.168.0.2''
+          + ''host http.apache.org''
+          + ''host apache.org''
 
           Standardeinstellung: APACHE2_ACCESS_CONTROL='all'
 
@@ -184,20 +183,6 @@ Spezielle Einstellungen
           zusammenzubauen. Fuer weitere Informationen siehe
           [2]http://www.apacheweek.com/features/ssi.
 
-Error- und Access-Logdatei
-
-   APACHE2_ERROR_LOG
-          Alle Fehler, die der Apache dem User liefert oder die sonst
-          auftreten koennen (z.B. Fehler in Modulen) werden in dieser
-          Datei gespeichert.
-
-          Standardeinstellung: APACHE2_ERROR_LOG='/var/www/log/error_log'
-
-   APACHE2_ACCESS_LOG
-          Alle Zugriffe werden in diese Datei geloggt.
-
-          Standardeinstellung:
-          APACHE2_ACCESS_LOG='/var/www/log/access_log'
 
 Script Aliases
 

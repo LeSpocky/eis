@@ -3632,8 +3632,8 @@ if [ "$WEBALIZER_VHOSTS_RUN_ALL" = 'yes' ] ; then
         fi
         eval servername='$APACHE2_VHOST_'$idx'_SERVER_NAME'
         eval docroot='$APACHE2_VHOST_'$idx'_DOCUMENT_ROOT'
-        eval accesslog='$APACHE2_VHOST_'$idx'_ACCESS_LOG'
         eval accesscontrol='$APACHE2_VHOST_'$idx'_ACCESS_CONTROL'
+        accesslog="/var/log/apache2/access-${servername}.log"
 
         # first remove the trailing slash
         doc_root=`echo $docroot | sed -e 's|/$||'`
