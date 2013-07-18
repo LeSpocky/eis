@@ -448,10 +448,10 @@ ${endav}LoadModule dav_lock_module modules/mod_dav_lock.so
     SSLRandomSeed connect builtin
     AddType       application/x-x509-ca-cert .crt
     AddType       application/x-pkcs7-crl    .crl
-	  SSLPassPhraseDialog builtin
-    SSLSessionCache "shmcb:/var/run/apache2/ssl_scache(512000)"
+    SSLPassPhraseDialog builtin
+    SSLSessionCache "shmcb:/run/apache2/ssl_scache(512000)"
     SSLSessionCacheTimeout 300
-	  SSLMutex "file:/var/run/apache2/ssl_mutex"
+    SSLMutex "file:/run/apache2/ssl_mutex"
 </IfModule>
 
 <IfModule mod_mime_magic.c>
@@ -483,8 +483,7 @@ ServerSignature ${APACHE2_SERVER_SIGNATURE}
 <Directory />
     Options FollowSymLinks
     AllowOverride None
-    Order deny,allow
-    Deny from all    
+    Require all denied   
 </Directory>
 
 <Directory "/var/www/localhost/htdocs">
