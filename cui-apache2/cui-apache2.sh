@@ -120,7 +120,6 @@ create_dir_access() {
                 chown -R apache:apache ${path}
             fi
         else
-            echo "    Require all denied"
             echo "    Require $access"
         fi
         [ "$webdav" = "yes" ] && echo "    Dav on"
@@ -136,7 +135,7 @@ create_dir_access() {
 #if [ "$IP_NET_1_STATIC_IP" = "no" ] ; then
 #    leasefile=/var/lib/dhcp3/dhclient.eth0.leases
 #    if [ -f $leasefile ] ; then
-#        IP_NET_1_IPADDR=`grep fixed-address $leasefile | awk 'BEGIN { RS=""; FS="\n"} {print $NF}' | sed -e 's#[^0-9.]##g'`
+#        IP_NET_1_IPV4_IPADDR=`grep fixed-address $leasefile | awk 'BEGIN { RS=""; FS="\n"} {print $NF}' | sed -e 's#[^0-9.]##g'`
 #    fi
 #fi
 
@@ -165,22 +164,21 @@ enuser="#"
 #----------------------------------------------------------------------------------------
 encache="#"
 envhost="#"
+uses_vhost_atall="no"
 # cache for doc root:
 modcache="$APACHE2_MOD_CACHE"
-# cache for any vhost:
-if [ "$modcache" = "no" ] ; then
-    idx=0
-    while [ "$idx" -le "$APACHE2_VHOST_N" ]
-    do
-        eval vhostact='$APACHE2_VHOST_'$idx'_ACTIVE'
-        if [ "$vhostact" = "yes" ] ; then
-            envhost=""
-            eval modcache='$APACHE2_VHOST_'$idx'_MOD_CACHE'
-            [ "$modcache" = "yes" ] && break
-        fi
-        idx=`expr $idx + 1`
-    done
-fi
+idx=0
+while [ "$idx" -le "$APACHE2_VHOST_N" ]
+do
+    eval vhostact='$APACHE2_VHOST_'$idx'_ACTIVE'
+    if [ "$vhostact" = "yes" ] ; then
+        envhost=""
+        uses_vhost_atall="yes"
+        eval modcache='$APACHE2_VHOST_'$idx'_MOD_CACHE'
+        [ "$modcache" = "yes" ] && break
+    fi
+    idx=`expr $idx + 1`
+done
 [ "$modcache" = "yes" ] && encache=""
 
 #----------------------------------------------------------------------------------------
@@ -253,9 +251,9 @@ enneg="#"
 #----------------------------------------------------------------------------------------
 # creating httpd.conf
 #----------------------------------------------------------------------------------------
-options="FollowSymLinks MultiViews"
-[ "$APACHE2_VIEW_DIRECTORY_CONTENT" = "yes" ] && options="$options Indexes"
-[ "$APACHE2_ENABLE_SSI" = "yes" ]             && options="$options Includes"
+apache_options="FollowSymLinks MultiViews"
+[ "$APACHE2_VIEW_DIRECTORY_CONTENT" = "yes" ] && apache_options="$apache_options Indexes"
+[ "$APACHE2_ENABLE_SSI" = "yes" ]             && apache_options="$apache_options Includes"
 
 hnlookup='Off'
 [ "$APACHE2_HOSTNAME_LOOKUPS" = "yes" ] && hnlookup='On'
@@ -466,8 +464,6 @@ ${endav}LoadModule dav_lock_module modules/mod_dav_lock.so
 ServerAdmin  ${APACHE2_SERVER_ADMIN}
 ServerName   ${APACHE2_SERVER_NAME}:${APACHE2_PORT}
 UseCanonicalName Off
-DocumentRoot "/var/www/localhost/htdocs"
-${enuser}UserDir public_html
 DirectoryIndex ${APACHE2_DIRECTORY_INDEX}
 AccessFileName .htaccess
 TypesConfig /etc/apache2/mime.types
@@ -483,15 +479,17 @@ ServerSignature ${APACHE2_SERVER_SIGNATURE}
 <Directory />
     Options FollowSymLinks
     AllowOverride None
-    Require all denied   
+    Require all denied
 </Directory>
 
+DocumentRoot "/var/www/localhost/htdocs"
 <Directory "/var/www/localhost/htdocs">
-    Options ${options}
+    Options ${apache_options}
     AllowOverride All
     Require ${APACHE2_ACCESS_CONTROL} 
 </Directory>
 
+${enuser}UserDir public_html
 <Directory "/home/*/public_html">
     AllowOverride FileInfo AuthConfig Limit Indexes
     Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
@@ -500,15 +498,13 @@ ServerSignature ${APACHE2_SERVER_SIGNATURE}
     </Limit>
     <LimitExcept GET POST OPTIONS>
         Require all denied
-    </LimitExcept>	
-    Require ${APACHE2_ACCESS_CONTROL} 
+    </LimitExcept>
+    Require ${APACHE2_ACCESS_CONTROL}
 </Directory>
 
-
-<Files ~ "^\.ht">
+<Files ".ht*">
     Require all denied
 </Files>
-
 
 ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
 <Directory "/var/www/cgi-bin">
@@ -647,7 +643,9 @@ do
     fi
     for single_port in $ports
     do
+        # add if not found
         [ ! "`echo \"$ipports\" | grep \"$ip:$single_port\"`" ] && ipports="$ipports $ip:$single_port "
+        # use asterisk
         if [ "$ip" = "*" ] ; then
             hasAsterisk="yes"
         else
@@ -658,21 +656,18 @@ do
 done
 
 # check whether there is a mixture of name- and ip-based vhosts
-if [ "$hasAsterisk" = "yes" ]
-then
-    if [ "$hasIp" = "yes" ] ; then
-        nameIpMixture="yes"
-        [ ! "`echo \"$ipports\" | grep \"${IP_NET_1_IPADDR}:${APACHE2_PORT}\"`" ] && ipports="$ipports ${IP_NET_1_IPADDR}:${APACHE2_PORT} "
-        if [ "$APACHE2_SSL" = "yes" ] ; then
-            [ ! "`echo \"$ipports\" | grep \"${IP_NET_1_IPADDR}:${APACHE2_SSL_PORT}\"`" ] && ipports="$ipports ${IP_NET_1_IPADDR}:${APACHE2_SSL_PORT} "
-        fi
+[ "$hasAsterisk" = "yes" -a "$hasIp" = "yes" ] && nameIpMixture="yes"
+if [ "$nameIpMixture" = "yes" ] ; then
+    [ ! "`echo \"$ipports\" | grep \"${IP_NET_1_IPV4_IPADDR}:${APACHE2_PORT}\"`" ] && ipports="$ipports ${IP_NET_1_IPV4_IPADDR}:${APACHE2_PORT} "
+    if [ "$APACHE2_SSL" = "yes" ] ; then
+        [ ! "`echo \"$ipports\" | grep \"${IP_NET_1_IPV4_IPADDR}:${APACHE2_SSL_PORT}\"`" ] && ipports="$ipports ${IP_NET_1_IPV4_IPADDR}:${APACHE2_SSL_PORT} "
     fi
 else
-    [ ! "`echo \"$ipports\" | grep \"${IP_NET_1_IPADDR}:${APACHE2_PORT}\"`" ] && ipports="$ipports ${IP_NET_1_IPADDR}:${APACHE2_PORT} "
+    [ ! "`echo \"$ipports\" | grep \"*:${APACHE2_PORT}\"`" ] && ipports="$ipports *:${APACHE2_PORT} "
     if [ "$APACHE2_SSL" = "yes" ] ; then
-        [ ! "`echo \"$ipports\" | grep \"${IP_NET_1_IPADDR}:${APACHE2_SSL_PORT}\"`" ] && ipports="$ipports ${IP_NET_1_IPADDR}:${APACHE2_SSL_PORT} "
+        [ ! "`echo \"$ipports\" | grep \"*:${APACHE2_SSL_PORT}\"`" ] && ipports="$ipports *:${APACHE2_SSL_PORT} "
     fi
-fi
+fi    
 
 (
 # if a vhost active $envhost=""
@@ -739,7 +734,7 @@ if [ "$APACHE2_SSL" = "yes" ] ; then
         echo "<VirtualHost _default_:${APACHE2_SSL_PORT}>"
         echo "    ServerName ${APACHE2_SERVER_NAME}:${APACHE2_SSL_PORT}"
         echo "    <Directory \"/var/www/localhost/htdocs\">"
-        echo "        Options ${options}"
+        echo "        Options ${apache_options}"
         echo "        AllowOverride All"
         echo "        Require ${APACHE2_ACCESS_CONTROL}"
         echo "    </Directory>"
@@ -812,13 +807,13 @@ do
     echo "        Require ${accesscontrol}"
     echo "    </Directory>"
 
-    options="FollowSymLinks MultiViews"
-    [ "$ssi" = "yes" ]     && options="$options Includes"
-    [ "$content" = "yes" ] && options="$options Indexes"
+    vhost_options="FollowSymLinks MultiViews"
+    [ "$ssi" = "yes" ]     && vhost_options="$vhost_options Includes"
+    [ "$content" = "yes" ] && vhost_options="$vhost_options Indexes"
 
     echo "    <Directory \"${docroot}\">"
     echo "        AllowOverride All"
-    echo "        Options ${options}"
+    echo "        Options ${vhost_options}"
     echo "        Require ${accesscontrol}"
     echo "    </Directory>"
 
@@ -848,7 +843,7 @@ do
         echo "    </Files>"
         echo "    <Directory \"${docroot}\">"
         echo "        AllowOverride All"
-        echo "        Options ${options}"
+        echo "        Options ${vhost_options}"
         echo "        Require ${accesscontrol}"
         echo "    </Directory>"
         echo "    <Directory \"${scriptdir}\">"
@@ -903,6 +898,16 @@ do
 
     idx=`expr $idx + 1`
 done
+
+if [ -z "$envhost" ] ; then
+    # create default vhost
+    echo ""
+    echo "<VirtualHost _default_:${APACHE2_PORT}>"    
+    echo "    DocumentRoot /var/www/localhost/htdocs"
+    echo "    Options ${apache_options}"
+    echo "</VirtualHost>"
+fi
+
 ) >>/etc/apache2/httpd.conf
 
 #----------------------------------------------------------------------------------------
