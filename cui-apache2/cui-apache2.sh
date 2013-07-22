@@ -94,7 +94,7 @@ create_dir_access() {
 
             # create password file
             mkdir -p /etc/apache2/passwd
-            echo "" > /etc/apache2/passwd/passwords.${vhostnr}-${idx}
+            echo -n "" > /etc/apache2/passwd/passwords.${vhostnr}-${idx}
             idx2=1
             while [ "$idx2" -le "$auth_n" ]
             do
@@ -223,13 +223,12 @@ do
 done
 
 if [ -z "$endav" ] ; then
-	mkdir -p /var/lib/dav
-	chown apache /var/lib/dav
-	mkdir -p /var/www/uploads
-	chown apache /var/www/uploads
+	mkdir -p /var/www/var
+	chown apache /var/www/var
 	if ! apk info -q -e apache2-webdav; then
 		apk add -q apache2-webdav 
 	fi
+	rm -f /etc/apache2/conf.d/http-dav.conf
 fi
 #----------------------------------------------------------------------------------------
 # use SSI
@@ -457,7 +456,7 @@ ${endav}LoadModule dav_lock_module modules/mod_dav_lock.so
 </IfModule>
 
 <IfModule mod_dav_fs.c>
-    DAVLockDB /var/lib/dav/lockdb
+    DAVLockDB /var/www/var/lockdb
 </IfModule>
 
 
