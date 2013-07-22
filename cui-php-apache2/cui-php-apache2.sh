@@ -37,7 +37,7 @@ if [ "$PHP_INFO" = "yes" ] ; then
         /*  create a circle */
         imagearc($image, 100, 150, 150, 50, 0, 360, $green);
         /* display font  jv: fix font dir */
-        /*ImageTTFText($image, 45, 10, 30, 100, $cyan, "/usr/local/fonts/john.ttf",$_GET["text"]); */
+        ImageTTFText($image, 45, 10, 30, 100, $cyan, "/usr/share/fonts/TTF/php-apache2-john.ttf",$_GET["text"]);
         /*  render image */
         ImagePNG($image);
         // ImageJPEG($image);
@@ -72,84 +72,11 @@ if [ "$PHP_INFO" = "yes" ] ; then
         echo "<input type=text name=text value=eisfair> <input type=submit value=TestIt!>";
         echo "</form>";
     }
-
     ?>'>/var/www/localhost/htdocs/gd.php
 
-    echo '<?php
-    $RADIUS = 200.0;
-    $MARGIN = 20.0;
-    $p = PDF_new();
-    PDF_open_file($p, "");
-    PDF_set_info($p, "Creator", "pdfclock.php");
-    PDF_set_info($p, "Author", "Rainer Schaaf");
-    PDF_set_info($p, "Title", "PDF clock (PHP)");
-    PDF_begin_page($p, 2 * ($RADIUS + $MARGIN), 2 * ($RADIUS + $MARGIN));
-    PDF_translate($p, $RADIUS + $MARGIN, $RADIUS + $MARGIN);
-    PDF_setcolor($p, "both", "rgb", 0.0, 0.0, 1.0, 0.0);
-    PDF_save($p);
-    # minute strokes
-    PDF_setlinewidth($p, 2.0);
-    for ($alpha = 0; $alpha < 360; $alpha += 6) {
-        PDF_rotate($p, 6.0);
-        PDF_moveto($p, $RADIUS, 0.0);
-        PDF_lineto($p, $RADIUS-$MARGIN/3, 0.0);
-        PDF_stroke($p);
-    }
-    PDF_restore($p);
-    PDF_save($p);
-    # 5 minute strokes
-    PDF_setlinewidth($p, 3.0);
-    for ($alpha = 0; $alpha < 360; $alpha += 30) {
-        PDF_rotate($p, 30.0);
-        PDF_moveto($p, $RADIUS, 0.0);
-        PDF_lineto($p, $RADIUS-$MARGIN, 0.0);
-        PDF_stroke($p);
-    }
-    $ltime = getdate();
-    # draw hour hand
-    PDF_save($p);
-    PDF_rotate($p, -(($ltime['minutes']/60.0)+$ltime['hours']-3.0)*30.0);
-    PDF_moveto($p, -$RADIUS/10, -$RADIUS/20);
-    PDF_lineto($p, $RADIUS/2, 0.0);
-    PDF_lineto($p, -$RADIUS/10, $RADIUS/20);
-    PDF_closepath($p);
-    PDF_fill($p);
-    PDF_restore($p);
-    # draw minute hand
-    PDF_save($p);
-    PDF_rotate($p, -(($ltime['seconds']/60.0)+$ltime['minutes']-15.0)*6.0);
-    PDF_moveto($p, -$RADIUS/10, -$RADIUS/20);
-    PDF_lineto($p, $RADIUS * 0.8, 0.0);
-    PDF_lineto($p, -$RADIUS/10, $RADIUS/20);
-    PDF_closepath($p);
-    PDF_fill($p);
-    PDF_restore($p);
-    # draw second hand
-    PDF_setcolor($p, "both", "rgb", 1.0, 0.0, 0.0, 0.0);
-    PDF_setlinewidth($p, 2);
-    PDF_save($p);
-    PDF_rotate($p, -(($ltime['seconds'] - 15.0) * 6.0));
-    PDF_moveto($p, -$RADIUS/5, 0.0);
-    PDF_lineto($p, $RADIUS, 0.0);
-    PDF_stroke($p);
-    PDF_restore($p);
-    # draw little circle at center
-    PDF_circle($p, 0, 0, $RADIUS/30);
-    PDF_fill($p);
-    PDF_restore($p);
-    PDF_end_page($p);
-    PDF_close($p);
-    $buf = PDF_get_buffer($p);
-    $len = strlen($buf);
-    header("Content-type: application/pdf");
-    header("Content-Length: $len");
-    header("Content-Disposition: inline; filename=pdfclock.pdf");
-    print $buf;
-    PDF_delete($p);
-    ?>' >/var/www/localhost/htdocs/pdf.php
-    chown $APACHE_USER /var/www/localhost/htdocs/info.php  /var/www/localhost/htdocs/pdf.php /var/www/localhost/htdocs/gd.php
+    chown $APACHE_USER /var/www/localhost/htdocs/info.php /var/www/localhost/htdocs/gd.php
 else
-    rm -f /var/www/localhost/htdocs/info.php /var/www/localhost/htdocs/gd.php /var/www/localhost/htdocs/pdf.php
+    rm -f /var/www/localhost/htdocs/info.php /var/www/localhost/htdocs/gd.php 
 fi
 
 # =============================================================================
@@ -542,6 +469,19 @@ soap.wsdl_cache_limit = 5
 EOF
 else
     rm -f /etc/php/conf.d/soap.ini
+fi
+
+# -----------------------------------------------------------------------------
+# GD
+if [ "$PHP_EXT_GD" = "yes" ] ; then
+	if ! apk info -q -e php-gd; then    	
+		apk add -q php-gd 
+	fi
+	cat >/etc/php/conf.d/gd.ini <<EOF
+extension=gd.so
+EOF
+else
+    rm -f /etc/php/conf.d/gd.ini
 fi
 
 # -----------------------------------------------------------------------------

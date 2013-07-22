@@ -79,18 +79,14 @@ Allgemeine Konfiguration
           Standardeinstellung: PHP_DATE_TIMEZONE='Europe/Berlin'
 
    PHP_INFO
-          Steht diese Variable auf 'yes' werden in
-          [2]APACHE2_DOCUMENT_ROOT drei Scripts abgelegt, um die
-          Funktionalitaet vom GD-Library, bzw. von PDF-Library zu testen.
-          Oder um allgemeine PHP-Informationen abzurufen.
-
+          Steht diese Variable auf 'yes' werden im htdocs Verzeichnis
+          zwei Scripte abgelegt, um die Funktionalitaet vom GD-Library 
+          testen, oder um allgemeine PHP-Informationen abzurufen.
           Die Scripts heissen folgendermassen
 
           + info.php - Generelle Informationen ueber die PHP-Installation
-          + gd.php - ueberpruefung der Funktionalitaet vom GB-Library
+          + gd.php - ueberpruefung der Funktionalitaet vom GD-Library
             (Erstellen von JPEGs, GIFs, etc.)
-          + pdf.php - ueberpruefung der Funktionalitaet vom PDF-Library
-            (Erstellung von PDF-Dateien)
 
           Standardeinstellung: PHP_INFO='no'
 
@@ -132,6 +128,18 @@ Allgemeine Konfiguration
           (zur Verfuegung stehen apc und eac).
 
           Standardeinstellung: PHP_EXT_CACHE='no'
+
+   PHP_EXT_SOAP
+          Mit 'yes' wird das SOAP Modul geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_SOAP='no'
+
+   PHP_EXT_GD
+          Mit 'yes' wird das SOAP Modul geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_GD='yes'
 
    PHP_EXT_MYSQL
           Hier kann die MySQL Erweiterung in PHP5 aktiviert werden

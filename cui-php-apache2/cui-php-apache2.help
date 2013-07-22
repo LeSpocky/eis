@@ -49,15 +49,11 @@ Standartwerte. Sollte leer bleiben.
 </help>
 
 <help name="PHP_INFO">
-Steht diese Variable auf 'yes' werden in APACHE2_DOCUMENT_ROOT drei 
-Scripts abgelegt, um die Funktionalitaet vom GD-Library, bzw. von PDF-Library
- zu testen. Oder um allgemeine PHP-Informationen abzurufen.
-<br/><br/>
-Die Scripts heissen folgendermassen
-<br/><br/>
-- info.php - Generelle Informationen ueber die PHP-Installation
+Steht diese Variable auf 'yes' werden im htdocs Verzeichnis zwei 
+Scripte abgelegt, um die Funktionalitaet der GD-Library zu testen oder um 
+allgemeine PHP-Informationen abzurufen. Sie heissen folgendermassen:<br/>
+- info.php - Generelle Informationen ueber die PHP-Installation<br/>
 - gd.php - Ueberpruefung der Funktionalitaet vom GB-Library (Erstellen von JPEGs, GIFs, etc.)
-- pdf.php - Ueberpruefung der Funktionalitaet vom PDF-Library (Erstellung von PDF-Dateien)
 </help>
 
 <help name="PHP_MAX_POST_SIZE">
@@ -91,6 +87,11 @@ Mit 'no' wird das Chaching deaktiviert (default).
 <help name="PHP_EXT_SOAP">
 Mit 'yes' wird das SOAP Modul geladen.<br/>
 Mit 'no' wird das Modul deaktiviert (default).
+</help>
+
+<help name="PHP_EXT_GD">
+Mit 'yes' wird das GD Modul geladen. (default)<br/>
+Mit 'no' wird das Modul deaktiviert.
 </help>
 
 <help name="PHP_EXT_MYSQL">

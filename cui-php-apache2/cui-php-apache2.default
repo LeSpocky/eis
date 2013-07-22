@@ -45,8 +45,7 @@ PHP_DATE_TIMEZONE='Europe/Berlin'     # Enter your timezone here
 # ----------------------------------------------------------------------------
 
 PHP_INFO='no'                         # Puts some PHP-Scripts in your htdoc-dir
-                                      # for testing functionality for
-                                      # php, gd, pdf.
+                                      # for testing functionality for php, gd.
 
 # ----------------------------------------------------------------------------
 # Memory Settings
@@ -77,6 +76,7 @@ PHP_EXT_CACHE='no'                    # Activate caching module in PHP.
                                       # default: no -> switch caching module off
                                       
 PHP_EXT_SOAP='no'                     # Activate SOAP module in PHP.                                      
+PHP_EXT_GD='yes'                      # Activate GD extension for PHP.
 
 # ----------------------------------------------------------------------------
 # EXTENSION CONFIGURATION - DATABASE
