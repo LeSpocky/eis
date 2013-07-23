@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Creation:     2013-05-27 jv <jens@eisfair.org>
-# Copyright (c) 2000-2013 The Eisfair Team <team@eisfair.org>
+# Copyright (c) 2000-2013 The eisfair Team <team@eisfair.org>
 #
 # ############################################
 # ToDo: Software RAID 1
@@ -10,12 +10,12 @@
 #       optional view logfile
 
 hw_backtitle() {
-    echo "Eisfair-NG powered by Alpine Linux - Installation   $PDRIVE"
+    echo "eisfair-NG powered by Alpine Linux - Installation   $PDRIVE"
     return 0
 }
 
 
-IsValidIp() {
+isValidIp() {
     if echo $1 | egrep -qs '\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b' ; then
         return 0
     else
@@ -24,7 +24,7 @@ IsValidIp() {
 }
 
 
-CountDisks() {
+countDisks() {
     if [ $# -gt 1 ] ; then 
         return 0
     else
@@ -126,7 +126,11 @@ while true ; do
     case ${n_item} in
         1)
             ### Select drive ######################################################
-            drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 off/p')
+            if [ `fdisk -l | grep "^Disk /" | wc -l` = '1' ] ; then
+                drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 on/p')
+            else
+                drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 off/p')
+            fi
             if [ -z "$drivelist" ] ; then
                 dialog --backtitle "$(hw_backtitle)" --title "" \
                     --msgbox " No drive found!\n Please try again." 6 30
@@ -138,7 +142,7 @@ while true ; do
                     --checklist "Select drive(s) to partition:" 12 40 6 \
                     $drivelist )
                 if [ -n "$new" ] ; then
-                    if CountDisks $new ; then
+                    if countDisks $new ; then
                         dialog --stdout --no-shadow \
                             --backtitle "$(hw_backtitle)" \
                             --title "Software RAID installation"  --clear \
@@ -223,7 +227,7 @@ while true ; do
                     --title "Network interface IP-address"  --clear \
                     --inputbox "Enter the IP-Address (192.168.1.2)" 10 45 "$PIPADDRESS")
                 if [ "$?" -eq 0 ] ; then
-                    if IsValidIp $new ; then
+                    if isValidIp $new ; then
                         PIPADDRESS="$new"
                         getNextMenuItem
                         break
@@ -244,7 +248,7 @@ while true ; do
                     --title "Network mask"  --clear \
                     --inputbox "Enter the network mask (255.255.255.0)" 10 45 "$PNETMASK")
                 if [ "$?" -eq 0 ] ; then
-                    if IsValidIp $new ; then
+                    if isValidIp $new ; then
                         PNETMASK="$new"
                         getNextMenuItem
                         break
@@ -265,7 +269,7 @@ while true ; do
                     --title "Default gateway"  --clear \
                     --inputbox "Enter the default gateway (192.168.1.1)" 10 45 "$PGATEWAY")
                 if [ "$?" -eq 0 ] ; then
-                    if IsValidIp $new ; then
+                    if isValidIp $new ; then
                         PGATEWAY="$new"
                         getNextMenuItem
                         break
@@ -373,7 +377,7 @@ while true ; do
                   --yesno "Delete all partitions on drive(s):\n${PDRIVE}\nand start installation?" 8 40
                 if [ "$?" = "0" ] ; then
                     [ "$PNETIPSTATIC" = "0" ] && POPTIONS="$POPTIONS -d"
-                    [ "$PRAIDLEVEL" = "1" ] && POPTIONS="$POPTIONS -r"                    
+                    [ "$PRAIDLEVEL" = "1" ] && POPTIONS="$POPTIONS -r"
                     PRINTK=$(cat /proc/sys/kernel/printk)
                     echo "0" >/proc/sys/kernel/printk
                     tempfile=/tmp/install.$$

@@ -1,20 +1,20 @@
 <!-- Last Update:  $Id: apache2_php5 31507 2012-08-23 22:31:23Z schlotze $ -->
 
-<help name="PHP5_MAX_EXECUTION_TIME">
+<help name="PHP_MAX_EXECUTION_TIME">
 Hat ein PHP-Script eine laengere Laufzeit als die hier angegebene, 
 wird die Ausfuehrung des Scripts abgebrochen.
 </help>
 
-<help name="PHP5_DISPLAY_ERRORS">
+<help name="PHP_DISPLAY_ERRORS">
 Hier kann man die Anzeige von Syntaxfehlern im Browser waehrend der 
 Laufzeit unterdruecken.
 </help>
 
-<help name="PHP5_LOG_ERROR">
+<help name="PHP_LOG_ERROR">
 If set to "yes", writes errors to an logfile.
 </help>
 
-<help name="PHP5_INCLUDE_PATH">
+<help name="PHP_INCLUDE_PATH">
 In diesen Verzeichnissen schaut PHP nach, wenn per include(), require() o.ae. 
 eine Datei ohne die Angabe von einem absoluten Verzeichnis inkludiert 
 werden soll. Oder wenn diese Datei im aktuellen Verzeichnis nicht gefunden wird.
@@ -22,7 +22,7 @@ werden soll. Oder wenn diese Datei im aktuellen Verzeichnis nicht gefunden wird.
 Als Trennzeichen der Verzeichnisse wird ein Doppelpunkt (:) verwendet.
 </help>
 
-<help name="PHP5_REGISTER_GLOBALS">
+<help name="PHP_REGISTER_GLOBALS">
 Steht diese Variable auf 'yes', stellt dies ein Sicherheitsrisiko da!
 <br/><br/>
 Aeltere PHP-Scripts laufen evt. nicht, wenn diese Variable auf 'no' steht. 
@@ -35,116 +35,106 @@ Naehere Informationen dazu unter http://de.php.net/register_globals
 !!!Es wird empfohlen, unter keinen Umstaenden diese Variable zu aktivieren!!!
 </help>
 
-<help name="PHP5_EXTENSION_DIR">
-Wo sind die Eweiterungen zu PHP gespeichert.
-</help>
-
-<help name="PHP5_SENDMAIL_PATH">
+<help name="PHP_SENDMAIL_PATH">
 (Experimentel)<br />
 Wenn gewuenscht, kann man hier dem Pfad zu sendmail angeben. Sollte leer 
 bleiben, dann wird der Standard Pfad genommen.
 </help>
 
-<help name="PHP5_SENDMAIL_APP">
+<help name="PHP_SENDMAIL_APP">
 (Experimentel)<br />
 Hier kann man der sendmail Applikation einen anderen Namen geben. 
 Kann hilfreich sein, wenn man andere Parameter nutzen moechte, als die 
 Standartwerte. Sollte leer bleiben.
 </help>
 
-<help name="PHP5_INFO">
-Steht diese Variable auf 'yes' werden in APACHE2_DOCUMENT_ROOT drei 
-Scripts abgelegt, um die Funktionalitaet vom GD-Library, bzw. von PDF-Library
- zu testen. Oder um allgemeine PHP-Informationen abzurufen.
-<br/><br/>
-Die Scripts heissen folgendermassen
-<br/><br/>
-- info.php - Generelle Informationen ueber die PHP-Installation
+<help name="PHP_INFO">
+Steht diese Variable auf 'yes' werden im htdocs Verzeichnis zwei 
+Scripte abgelegt, um die Funktionalitaet der GD-Library zu testen oder um 
+allgemeine PHP-Informationen abzurufen. Sie heissen folgendermassen:<br/>
+- info.php - Generelle Informationen ueber die PHP-Installation<br/>
 - gd.php - Ueberpruefung der Funktionalitaet vom GB-Library (Erstellen von JPEGs, GIFs, etc.)
-- pdf.php - Ueberpruefung der Funktionalitaet vom PDF-Library (Erstellung von PDF-Dateien)
 </help>
 
-<help name="PHP5_MAX_POST_SIZE">
+<help name="PHP_MAX_POST_SIZE">
 Clients koennen groessere Datenmengen an den Server ueber HTTP schicken. Dazu wird meistens die POST-Method verwendet.
 <br/>
 Diese Variable definiert, wie gross die Datenmenge fuer einen Upload mit POST-Method maximal sein darf.
 </help>
 
-<help name="PHP5_MAX_UPLOAD_FILESIZE">
+<help name="PHP_MAX_UPLOAD_FILESIZE">
 Neben der POST-Method existieren noch weitere Methoden, um groessere Daten an 
 den Server zu senden. Z.B. die PUT-Method.
 <br/>
 Diese Variable definiert, wie gross die Datenmenge fuer einen Upload generell sein darf.
 </help>
 
-<help name="PHP5_MEMORY_LIMIT">
+<help name="PHP_MEMORY_LIMIT">
 Verbraucht ein Script mehr als den in dieser Variable defnierten Arbeitsspeicher, wird die Ausfuehrung abgebrochen.
 </help>
 
-<help name="PHP5_UPLOAD_DIR">
+<help name="PHP_UPLOAD_DIR">
 Hier kann man ein Verzeichnis angeben, in dem Hochgeladene Dateien zuwischengespeichert werden koennen.<br/>
 Standart ist hier /tmp
 </help>
 
-<help name="PHP5_EXT_CACHE">
+<help name="PHP_EXT_CACHE">
 Mit 'apc' wird das APC Chaching Modul geladen.<br/>
-Mit 'eac' wird das eAccelerator Chaching Modul geladen.<br/>
+Mit 'xcache' wird das XCache Modul geladen. (zur Zeit noch nicht verfuegbar)<br/>
 Mit 'no' wird das Chaching deaktiviert (default).
 </help>
 
-<help name="PHP5_EXT_SOAP">
+<help name="PHP_EXT_SOAP">
 Mit 'yes' wird das SOAP Modul geladen.<br/>
 Mit 'no' wird das Modul deaktiviert (default).
 </help>
 
-<help name="PHP5_EXT_LDAP">
-Mit 'yes' wird das LDAP Modul geladen.<br/>
-Mit 'no' wird das Modul deaktiviert (default).
+<help name="PHP_EXT_GD">
+Mit 'yes' wird das GD Modul geladen. (default)<br/>
+Mit 'no' wird das Modul deaktiviert.
 </help>
 
-<help name="PHP5_EXT_MYSQL">
+<help name="PHP_EXT_MYSQL">
 Mit 'yes' wird das Datenbank-Modul von MySQL beim starten in PHP mit eingebunden.<br/>
 Default: 'no' => nicht mit eingebunden
 </help>
 
-<help name="PHP5_EXT_MYSQL_SOCKET">
+<help name="PHP_EXT_MYSQL_SOCKET">
 Hiermit kann der standart Socket eingegeben werden, ueber dem sich PHP mit der MySQL Datenbank verbindet.<br/>
-Bei MySQL ab Version 4.x.y ist das normalerweise '/var/lib/mysql/mysql.sock'<br/>
-Bei MySQL version 3.x.y ist das '/tmp/mysql.sock'<br/>
-Default: ist die fuer MySQL Version 4.x.y
+Das ist das normalerweise '/run/mysqld/mysqld.sock'<br/>
 </help>
 
-<help name="PHP5_EXT_MYSQL_HOST">
+<help name="PHP_EXT_MYSQL_HOST">
 Hier kann die IP-Adresse oder der Hostname eines lokalen (127.0.0.1) oder externen 
 MySQL Servers eingetragen werden.<br/>
 </help>
 
-<help name="PHP5_EXT_MYSQL_PORT">
+<help name="PHP_EXT_MYSQL_PORT">
 Port des lokalen oder externen MySQL-Server.<br/>
 Dieser Wert wird nur in ganz seltenen Faellen nicht 3306 betragen.
 </help>
 
-<help name="PHP5_EXT_MSSQL">
+<help name="PHP_EXT_MSSQL">
 Mit 'yes' wird das Datenbank-Modul von MS-SQL beim starten in PHP mit eingebunden.<br/>
 Default: 'no' => nicht mit eingebunden
 </help>
 
-<help name="PHP5_EXT_PGSQL">
+<help name="PHP_EXT_PGSQL">
 Mit 'yes' wird das Datenbank-Modul von PostgreSQL beim starten in PHP mit eingebunden<br/>
 Default: 'no' => nicht mit eingebunden
 </help>
 
-<help name="PHP5_EXT_INTER">
+<help name="PHP_EXT_INTER">
 Mit 'yes' wird das Datenbank-Modul von INTERBASE beim starten in PHP mit eingebunden.<br/>
 Default: 'no' => nicht mit eingebunden
 </help>
 
-<help name="PHP5_EXT_SQLITE3">
+<help name="PHP_EXT_SQLITE3">
 Mit 'yes' wird das Datenbank-Modul von SQLITE3 beim starten in PHP mit eingebunden.<br/>
 Default: 'no' => nicht mit eingebunden
 </help>
 
-<help name="PHP5_EXT_ADVANTAGE">
-Mit 'yes' wird das Datenbank-Modul von Advantage beim starten in PHP mit eingebunden.<br/>
-Default: 'no' => nicht mit eingebunden
+<help name="PHP_EXT_LDAP">
+Mit 'yes' wird das LDAP Modul geladen.<br/>
+Mit 'no' wird das Modul deaktiviert (default).
 </help>

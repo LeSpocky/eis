@@ -1,0 +1,45 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer:
+pkgname=libdb5.3
+pkgver=5.3.21
+pkgrel=0
+pkgdesc="Berkeley v5.3 Database Libraries"
+url="http://www.oracle.com/technology/software/products/berkeley-db/index.html"
+arch="all"
+license="GPL"
+depends=""
+depends_dev=""
+makedepends="$depends_dev"
+install=""
+subpackages="$pkgname-dev"
+source="http://ftp.uni-erlangen.de/pub/FreeBSD/distfiles/bdb/db-${pkgver}.tar.gz"
+
+_builddir="$srcdir/db-${pkgver}/build_unix"
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+	../dist/configure --prefix=/usr || return 1
+	make || return 1
+}
+
+package() {
+	cd "$_builddir"
+	make -j1 DESTDIR="$pkgdir" install || return 1
+	find ${pkgdir} -name '*.la' -delete
+	rm -rf ${pkgdir}/usr/bin
+	rm -rf ${pkgdir}/usr/docs
+}
+
+md5sums="3fda0b004acdaa6fa350bfc41a3b95ca  db-5.3.21.tar.gz"
+sha256sums="ddd92a930317df92021054c03992392db9ea5cddba43bef8920d392a82114fb8  db-5.3.21.tar.gz"
+sha512sums="e09a08002b723a056b7a53dea275794a9df104296e7733ec1d7023888f23466095b38614f3ab1acbbb095d10cca70cc14c35c3519a41800eadd6863beb85e3a9  db-5.3.21.tar.gz"

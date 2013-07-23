@@ -151,6 +151,10 @@ packages_name=apache2
             printvar "APACHE2_VHOST_"$idx"_ENABLE_SSI"              ""
             printvar "APACHE2_VHOST_"$idx"_MOD_CACHE"               "Enable mod_cache for current vhost"
             printvar "APACHE2_VHOST_"$idx"_DIR_N"                   ""
+            printvar "APACHE2_VHOST_"$idx"_SSL"                     "activate SSL"
+            printvar "APACHE2_VHOST_"$idx"_SSL_PORT"                "activate SSL"
+            printvar "APACHE2_VHOST_"$idx"_SSL_FORCE"               "redirect to https://"
+            printvar "APACHE2_VHOST_"$idx"_SSL_CERT_NAME"           "Name of the cert."
             dirIdx='1'
             eval tmpDir='$APACHE2_VHOST_'$idx'_DIR_N'
             countDir=`expr $tmpDir + 1`
@@ -181,11 +185,6 @@ packages_name=apache2
                 printvar "APACHE2_VHOST_"$idx"_DIR_"$dirIdx"_WEBDAV"           "Enable WebDav"
                 dirIdx=`expr $dirIdx + 1`
             done
-            printvar "APACHE2_VHOST_"$idx"_SSL"                  "activate SSL"
-            printvar "APACHE2_VHOST_"$idx"_SSL_PORT"             "activate SSL"
-            printvar "APACHE2_VHOST_"$idx"_SSL_FORCE"            "redirect to https://"
-            printvar "APACHE2_VHOST_"$idx"_SSL_CERT_NAME"        "Name of the cert."
-
             idx=`expr $idx + 1`
         done
     fi

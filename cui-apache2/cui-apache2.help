@@ -90,30 +90,17 @@ Ermöglich die Anzeige von Benutzer-Seiten aus: /home/USER/public_html
 <help name="APACHE2_ACCESS_CONTROL">
 Die IPs bzw. Hosts die hier angegeben werden haben Zugriff auf den Apache.
 Für die Virtual Hosts muss dies extra eingestellt werden.
-Jeder Rechner hat Zugriff, wenn die Variable auf 'all' steht.
-<br/><br/>
-Folgende Beispiele illustrieren die Formate der Parameter:
-- 192.168.
-- 192.168.0.0/16
-- 192.168.0.0/255.255.0.0
-- 192.168.0.1 192.168.0.2
-- http.apache.org
-- apache.org
-- .org
-<br/><br/>
+Jeder Rechner hat Zugriff, wenn die Variable auf 'all' steht.<br/>
+Folgende Beispiele illustrieren die Formate der Parameter:<br/>
+- all<br/>
+- ip 192.168.<br/>
+- ip 192.168.0.0/16<br/>
+- ip 192.168.0.0/255.255.0.0<br/>
+- ip 192.168.0.1 192.168.0.2<br/>
+- host http.apache.org<br/>
+- host apache.org<br/>
+<br/>
 Standardeinstellung: APACHE2_ACCESS_CONTROL='all'
-</help>
-
-<help name="APACHE2_ERROR_LOG">
-Alle Errors, die der Apache dem User liefert oder die sonst auftreten können (z.B. Fehler in Modulen)
-werden in dieser Datei gespeichert.
-<br/><br/>
-Standardeinstellung: APACHE2_ERROR_LOG='/var/www/log/error.log'
-</help>
-
-<help name="APACHE2_ACCESS_LOG">
-Alle Zugriffe werden in diese Datei geloggt.
-Standardeinstellung: APACHE2_ACCESS_LOG='/var/www/log/access.log'
 </help>
 
 <help name="APACHE2_ERROR_DOCUMENT_N">
@@ -178,8 +165,16 @@ in den späteren Versionen vom Apache-Package wird sich dies aber noch ändern.
 </help>
 
 <help name="APACHE2_DIR_%_ACCESS_CONTROL">
-Der Syntax dieser Variable wird bei APACHE2_ACCESS_CONTROL erklärt.
-Die hier angegebene Zugriffserlaubnis bezieht sich dann nur auf APACHE2_DIR_%_PATH
+Die IPs bzw. Hosts die hier angegeben werden haben Zugriff auf das Verzeichnis
+APACHE2_DIR_%_PATH. Jeder Rechner hat Zugriff, wenn die Variable auf 'all' steht.<br/>
+Folgende Beispiele illustrieren die Formate der Parameter:<br/>
+- all<br/>
+- ip 192.168.<br/>
+- ip 192.168.0.0/16<br/>
+- ip 192.168.0.0/255.255.0.0<br/>
+- ip 192.168.0.1 192.168.0.2<br/>
+- host http.apache.org<br/>
+- host apache.org<br/>
 </help>
 
 <help name="APACHE2_DIR_%_CGI">
@@ -273,18 +268,17 @@ Beispiel:
 APACHE2_VHOST_%_ERROR_LOG='/data/www/meinedomain.de/log/error_log'
 </help>
 
-<help name="APACHE2_VHOST_%_ACCESS_LOG">
-In die hier angegebe Datei werden die erfolgten Zugriffe geschrieben.
-<br/><br/>
-Beispiel:
-APACHE2_VHOST_%_ACCESS_LOG='/data/www/meinedomain.de/log/access_log'
-</help>
-
 <help name="APACHE2_VHOST_%_ACCESS_CONTROL">
-Die Adressen die hier angegeben werden, haben Zugriff auf den Server.
-Wenn alle Rechner Zugriff haben sollen, dann muss hier "all'' angegeben werden.
-<br/><br/>
-Siehe auch APACHE2_ACCESS_CONTROL
+Die IPs bzw. Hosts die hier angegeben werden haben Zugriff auf den VHost.
+Jeder Rechner hat Zugriff, wenn die Variable auf 'all' steht.<br/>
+Folgende Beispiele illustrieren die Formate der Parameter:<br/>
+- all<br/>
+- ip 192.168.<br/>
+- ip 192.168.0.0/16<br/>
+- ip 192.168.0.0/255.255.0.0<br/>
+- ip 192.168.0.1 192.168.0.2<br/>
+- host http.apache.org<br/>
+- host apache.org<br/>
 </help>
 
 <help name="APACHE2_VHOST_%_SCRIPT_DIR">
@@ -295,29 +289,17 @@ Beispiel:
 APACHE2_VHOST_%_SCRIPT_DIR='/data/www/meinedomain.de/cgi-bin/'
 </help>
 
-<help name="APACHE2_VHOST_%_ERROR_LOG">
-In die hier angebene Datei werden die Fehler, welche für diesen
-Virtual Host auftreten geschrieben. z.B. Zugriffsfehler wie ein
-404 - Not Found
-<br/><br/>
-Beispiel:
-APACHE2_VHOST_%_ERROR_LOG='/data/www/meinedomain.de/log/error_log'
-</help>
-
-<help name="APACHE2_VHOST_%_ACCESS_LOG">
-In die hier angegebe Datei werden die erfolgten Zugriffe
-geschrieben.
-<br/><br/>
-Beispiel:
-APACHE2_VHOST_%_ACCESS_LOG='/data/www/meinedomain.de/log/access_log'
-</help>
-
-<help name="APACHE2_VHOST_%_ACCESS_CONTROL">
-Die Adressen die hier angegeben werden, haben Zugriff auf den
-Server. Wenn alle Rechner Zugriff haben sollen, dann muss hier
-``all'' angegeben werden.
-<br/><br/>
-Siehe auch [6]APACHE2_ACCESS_CONTROL
+<help name="APACHE2_VHOST_%_DIR_%_ACCESS_CONTROL">
+Die IPs bzw. Hosts die hier angegeben werden haben Zugriff auf das Verzeichnis
+des VHosts. Jeder Rechner hat Zugriff, wenn die Variable auf 'all' steht.<br/>
+Folgende Beispiele illustrieren die Formate der Parameter:<br/>
+- all<br/>
+- ip 192.168.<br/>
+- ip 192.168.0.0/16<br/>
+- ip 192.168.0.0/255.255.0.0<br/>
+- ip 192.168.0.1 192.168.0.2<br/>
+- host http.apache.org<br/>
+- host apache.org<br/>
 </help>
 
 <help name="APACHE2_VHOST_%_VIEW_DIRECTORY_CONTENT">

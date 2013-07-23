@@ -3,7 +3,7 @@
 # /var/install/bin/cui-quassel-core-change-userpass.sh - change password of a
 # quasselcore user
 #
-# Copyright (c) 2001-2010 The Eisfair Team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2010 The eisfair Team, team(at)eisfair(dot)org
 #
 # Creation: 2009-12-23 marwe
 #
