@@ -11,7 +11,7 @@ depends=""
 depends_dev="coreutils ncurses-dev ncurses-widec-libs libiconv-dev flex openssl-dev mysql-dev postgresql-dev"
 makedepends="$depends_dev"
 install=""
-subpackages="$pkgname-dev $pkgname-addonmysql $pkgname-addonpgsql"
+subpackages="$pkgname-dev $pkgname-addonmysql $pkgname-addonpgsql $pkgname-addonpwdfile"
 source=""
 
 _builddir="$srcdir/$pkgname"
@@ -40,6 +40,8 @@ build() {
 	make -j1 -s || return 1
 	cd ${_builddir}/addons/libpgsql-addon
 	make -j1 -s || return 1
+	cd ${_builddir}/addons/libpwdfile-addon
+	make -j1 -s || return 1	
 	cd ${_builddir}/addons/libsys-addon
 	make -j1 -s || return 1
 }
@@ -87,5 +89,12 @@ addonpgsql(){
 	pkgdesc="CUI lib addon for Postgresql database"
 	depends="libcui>=$pkgver pgsql-libs"
 	cd ${_builddir}/addons/libpgsql-addon
+	make -j1 -s DESTDIR=${subpkgdir} install || return 1
+}
+
+addonpwdfile(){
+	pkgdesc="CUI lib addon for flattext user:password files"
+	depends="libcui>=$pkgver"
+	cd ${_builddir}/addons/libpwdfile-addon
 	make -j1 -s DESTDIR=${subpkgdir} install || return 1
 }
