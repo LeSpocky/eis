@@ -132,7 +132,7 @@ SysReadPasswdList(char* passwdfile )
 					loop++;
 				}
 				
-				if (loop >= 2)
+				if (loop >= 1)
 				{
 					if (last)
 					{

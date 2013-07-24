@@ -50,13 +50,6 @@ extern StubSetProcProc   LibSysStubSetProc;
 extern StubFindProc      LibSysStubFind;
 
 
-
-/* ---------------------------------------------------------------------
- * local prototypes
- * ---------------------------------------------------------------------
- */
-
-
 /* ---------------------------------------------------------------------
  * SysApiInit
  * Initialize API
@@ -98,10 +91,13 @@ SysApiUsersToList(int argc, const wchar_t* argv[])
 		WINDOWSTUB*   listview;
 		unsigned long tmplong;
 		int           selindex = 0;
-		const wchar_t*  keyword = _T("");
+		char          tmpname[256];
+        const wchar_t*  keyword = _T("");
+		
 
 		swscanf(argv[0], _T("%ld"), &tmplong);
 		listview = LibSysStubFind(tmplong);
+		snprintf(tmpname, 255, "%ls", argv[1]);
 		
 		if (argc >= 3)
 		{
@@ -111,7 +107,7 @@ SysApiUsersToList(int argc, const wchar_t* argv[])
 		if (listview && listview->Window)
 		{
 			int     index;
-			PASSWD_T* userslist = SysReadPasswdList( argv[1] );
+			PASSWD_T* userslist = SysReadPasswdList( tmpname );
 			if (userslist)
 			{
 				PASSWD_T* user = userslist;
@@ -133,10 +129,14 @@ SysApiUsersToList(int argc, const wchar_t* argv[])
 				}
 				SysFreePasswdList(userslist);
 			}
+			else
+			{
+				LibSysWriteError(ERROR_FAILED);
+			}
 			
 			ListviewSetSel(listview->Window, selindex);
-			
-			LibSysStartFrame(_T('R'), 32);
+
+            LibSysStartFrame(_T('R'), 32);
 			LibSysInsertInt (ERROR_SUCCESS);
 			LibSysSendFrame ();
 		}
