@@ -56,29 +56,6 @@ SysFreePasswdList(PASSWD_T* passwds)
 	}
 }
 
-
-
-/* ---------------------------------------------------------------------
- * SysFindPasswd
- * search password list for an entry specified by username
- * ---------------------------------------------------------------------
- */
-PASSWD_T*
-SysFindPasswd(PASSWD_T* passwds, const wchar_t* username)
-{
-	while (passwds)
-	{
-		if (wcscmp(passwds->UserName, username) == 0)
-		{
-			return passwds;
-		}
-		passwds = (PASSWD_T*) passwds->Next;
-	}
-	return NULL;
-}
-
-
-
 /* ---------------------------------------------------------------------
  * SysReadPasswdList
  * read flat text "username:password" file

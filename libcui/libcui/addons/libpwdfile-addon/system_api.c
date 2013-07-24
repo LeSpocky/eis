@@ -93,7 +93,7 @@ SysApiUsersToList(int argc, const wchar_t* argv[])
 		int           selindex = 0;
 		char          tmpname[256];
         const wchar_t*  keyword = _T("");
-		
+		int           index;		
 
 		swscanf(argv[0], _T("%ld"), &tmplong);
 		listview = LibSysStubFind(tmplong);
@@ -106,12 +106,10 @@ SysApiUsersToList(int argc, const wchar_t* argv[])
 		
 		if (listview && listview->Window)
 		{
-			int     index;
 			PASSWD_T* userslist = SysReadPasswdList( tmpname );
 			if (userslist)
 			{
 				PASSWD_T* user = userslist;
-			
 				while (user)
 				{
 					LISTREC* rec = ListviewCreateRecord (listview->Window);
@@ -129,11 +127,6 @@ SysApiUsersToList(int argc, const wchar_t* argv[])
 				}
 				SysFreePasswdList(userslist);
 			}
-			else
-			{
-				LibSysWriteError(ERROR_FAILED);
-			}
-			
 			ListviewSetSel(listview->Window, selindex);
 
             LibSysStartFrame(_T('R'), 32);

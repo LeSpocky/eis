@@ -27,20 +27,6 @@
 
 #include "chartools.h"
 
-#define USERS_SHOW_ALL       0
-#define USERS_HIDE_SYSTEM    1
-#define USERS_HIDE_REAL      2
-#define USERS_HIDE_MACHINES  4
-#define USERS_HIDE_NOBODY    8
-#define USERS_HIDE_ROOT     16
-
-#define GROUPS_SHOW_ALL      0
-#define GROUPS_HIDE_SYSTEM   1
-#define GROUPS_HIDE_REAL     2
-#define GROUPS_HIDE_NOGROUP  3
-
-
-
 typedef struct
 {
 	wchar_t* UserName;
@@ -48,7 +34,6 @@ typedef struct
 	void*  Next;
 } PASSWD_T;
 
-PASSWD_T*        SysFindPasswd     (PASSWD_T* passwds, const wchar_t* username);
 void             SysFreePasswdList (PASSWD_T* passwds);
 PASSWD_T*        SysReadPasswdList (char* passwdfile );
 
