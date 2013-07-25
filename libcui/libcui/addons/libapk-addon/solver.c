@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 #include <unistd.h>
+#include <strings.h>
 #include "apk_defines.h"
 #include "apk_database.h"
 #include "apk_package.h"
@@ -312,7 +313,7 @@ static void exclude_non_providers(struct apk_solver_state *ss, struct apk_name *
 	dbg_printf("%s must provide %s\n", name->name, must_provide->name);
 
 	foreach_array_item(p, name->providers) {
-		if (p->pkg->name == must_provide)
+		if (p->pkg->name == must_provide || !p->pkg->ss.pkg_selectable)
 			goto next;
 		foreach_array_item(d, p->pkg->provides)
 			if (d->name == must_provide)
@@ -554,7 +555,7 @@ static int compare_providers(struct apk_solver_state *ss,
 		return r;
 
 	/* Prefer lowest available repository */
-	return ffsl(pkgB->repos) - ffsl(pkgA->repos);
+	return ffs(pkgB->repos) - ffs(pkgA->repos);
 }
 
 static void inherit_pinning_from_pkg(struct apk_solver_state *ss, struct apk_package *rinstall_if, struct apk_package *parent_pkg)
