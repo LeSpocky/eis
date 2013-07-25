@@ -36,6 +36,46 @@
 
 
 /* ---------------------------------------------------------------------
+ * estrtok
+ * local tokenizer function
+ * ---------------------------------------------------------------------
+ */
+char 
+*estrtok(char *str, const char *delim)
+{
+    static char *last = NULL;
+    char *ret;
+
+    if(str)
+        last = str;
+    else {
+        if(!last)
+            return NULL;
+        last++;
+    }  
+
+    ret = last;
+
+    for(;;)
+    {  
+        if(*last == 0) 
+        {  
+            last = NULL;
+            return "";
+        }  
+
+        if(strchr(delim, *last))
+        {  
+            *last = 0; 
+            return ret;
+        }  
+        last++;
+    }  
+}
+
+
+
+/* ---------------------------------------------------------------------
  * SysFreePasswdList
  * free passwd list data
  * ---------------------------------------------------------------------
@@ -67,6 +107,7 @@ SysReadPasswdList(char* passwdfile )
 	PASSWD_T* passwds = NULL;
 	PASSWD_T* last    = NULL;
 	char      buffer[256];
+	char      *tmp;
 	
 	FILE* in = fopen( passwdfile, "rt");
 	if (!in)
@@ -79,37 +120,26 @@ SysReadPasswdList(char* passwdfile )
 		if (fgets(buffer, 255, in))
 		{
 			PASSWD_T* newpasswd;
-			char* s = buffer;
-			char* p = strchr(buffer, '\n');
-			if (p)
-			{
-				*p = '\0';
-			}
-			
 			newpasswd = (PASSWD_T*) malloc(sizeof(PASSWD_T));
 			if (newpasswd)
 			{
 				int loop = 0;
 				memset(newpasswd, 0, sizeof(newpasswd));
 				newpasswd->Next      = NULL;
-				
-				p = strchr(s, ':');
-				while (p)
-				{
-					*p = '\0';
+
+				tmp = estrtok(buffer, ":");
+				while(tmp)
+				{  
 					switch(loop)
 					{
-					case 0: newpasswd->UserName = ModuleMbToTCharDup(s); break;
-					case 1: newpasswd->Password = ModuleMbToTCharDup(s); break;
+					case 0: newpasswd->UserName = ModuleMbToTCharDup(tmp); break;
+					case 1: newpasswd->Password = ModuleMbToTCharDup(tmp); break;
 					default: break;
 					}
-					
-					s = p + 1;
-					p = strchr(s, ':');
+                	tmp = estrtok(NULL, ":");
 					loop++;
-				}
-				
-				if (loop >= 1)
+            	}
+		    	if (loop >= 2)
 				{
 					if (last)
 					{
