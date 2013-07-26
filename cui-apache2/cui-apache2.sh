@@ -139,11 +139,6 @@ create_dir_access() {
 #    fi
 #fi
 
-if [ "$START_APACHE2" = "yes" ] ; then
-     rc-update -q add apache2 2>/dev/null
-else
-     rc-update del apache2
-fi
 
 #if [ ! -f /etc/ssl/certs/apache.pem -a "$APACHE2_SSL" = "yes" ] ; then
 #    echo "* Creating CA for SSL ..."

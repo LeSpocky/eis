@@ -1,7 +1,7 @@
 <!-- /var/install/menu/setup.services.vsftpd.menu -->
 <title>Administration of vsFTPd</title>
 <package>vsftpd</package>
-<doc file="apache2.txt">Read Apache Documentation</doc>
+<doc file="vsftpd.txt">Read Documentation</doc>
 <edit>Edit Configuration</edit>
 <menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
 <script file="vsftpd-user.cui.sh">Virtual users</script>

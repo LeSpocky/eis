@@ -16,13 +16,6 @@ FTP_LOG_COUNT="30"
 . /etc/config.d/vsftpd
 
 
-if [ "$START_FTP" = "yes" ] ; then
-     rc-update -q add vsftpd 2>/dev/null
-else
-     rc-update del vsftpd
-fi
-
-
 #----------------------------------------------------------------------------------------
 # creating configig file
 #----------------------------------------------------------------------------------------
