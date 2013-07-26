@@ -97,10 +97,11 @@ can_start()
     if [ -n "$start" ] ; then
         test "${start}" = "yes"
     else
-        # if the START_* varname not the package name (vsftpd with START_FTP) 
-        start=$(grep "^START_.*" /etc/config.d/${1} |  sed 's/=.*/\1/')  
+        # if the START_* varname not the package name (vsftpd with START_FTP)
+        startvar=$(grep "^START_.*" /etc/config.d/${1} |  sed 's/=.*/\1/')
+        eval start='$'${startvar}
         test "${start}" = "yes"
-    fi  
+    fi
 }
 
 if [ -n "$apply" ] ; then

@@ -7,7 +7,7 @@ pkgdesc="CUI setup for very secure FTP service (vsftpd)"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
-depends="vsftpd linux-pam-pwdfile libcui-addonpwdfile openssl"
+depends="cuimenu vsftpd linux-pam-pwdfile libcui-addonpwdfile openssl"
 depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.pre-upgrade $pkgname.post-install $pkgname.post-deinstall"
@@ -54,7 +54,7 @@ package() {
 md5sums="f5898af4fa6ca3ceae1f7c72c027a382  cui-vsftpd.default
 f6e42e57d37781d9019787e3e21fbc91  cui-vsftpd.check
 9e66a7318142c18a35b959dc18c8e091  cui-vsftpd.help
-eaf3128b9c1ab6527a0a797135a30019  cui-vsftpd.sh
+fd672209e9bd7792a20fb9457e131e81  cui-vsftpd.sh
 44996115489ebf5619a39e648a5520fa  cui-vsftpd-update.sh
 83d0c750e2eba6b68e7e491158da8ab6  cui-vsftpd.menu
 6ad4229ccffb26abc331e990c8b69834  cui-vsftpd.txt
@@ -62,7 +62,7 @@ eaf3128b9c1ab6527a0a797135a30019  cui-vsftpd.sh
 sha256sums="095928a2aae3073cda8ee49b0e2df3690157eb2a67e0acdeb7742f8279737f6f  cui-vsftpd.default
 1775128719f7afe8182cc09d820da5c79143d2b033b843cbaa1b4823746f1b20  cui-vsftpd.check
 6b3d0b68c98183abbd25b14492f1d60f7e191358f28cbc7ecfa254274626fada  cui-vsftpd.help
-d16abd59b27b535be17760accd506622ee52e7902dac2ded93bd4a50e139fc02  cui-vsftpd.sh
+31c1ad394c23d0d386207f6487dcfb5dc467966ca434594b5b21771bbb4bc0f1  cui-vsftpd.sh
 46ba3d05e8a3f5e43bf6a3b4c3ea1ce19d3dbf37509f6120c3fd171916d5c62f  cui-vsftpd-update.sh
 6771ac71572a9a05e11f0ac41f6647eed0267f03ca2d8d6cbd97c36e2fc0810e  cui-vsftpd.menu
 57440759e293add1be41157dcf28bbbfb92c5f5c7699409388636fe7024b375c  cui-vsftpd.txt
@@ -70,7 +70,7 @@ b2864142c7da6eb64ce1d8a9cb789c65819269b43a2c72b301226d8289279fac  vsftpd-user.cu
 sha512sums="b974b594bfd2a9a3a3dea1e665735ac080489c2440df5ebb499888f20fbb48d1ff23938eed235fe49d140e5ad0cff188c445e0f469d72461d09dc8a1b73da721  cui-vsftpd.default
 0265cdaff18b26c214daadb89e06cd886bbec4f03156e62bce1d4d12bee9b7eafd47ac18f8ad6c8962b99fa14d2cc30ab944b1c8db73dd67d1c51e66caa44c9a  cui-vsftpd.check
 8a1878b6206b7a0f95182ec182424b15eea4604557a654cd604a7b5b7bb696cdca8a028a49ac8ee206ca88a5e821ce68c142da6dfc9b657306d9587b1c676b16  cui-vsftpd.help
-f253853fd9027c398dbdded78bf8a6b62a8d2fbe175e1bd0a512f3b01bc7a14e433c33b188bd459aa4042b694c43ed93e5afee2e7cd3c2a5aa068cb52956c02e  cui-vsftpd.sh
+46efc49d5e0eccad75d1700b5de83e4f97f6b212422ca6f68f2d8d496fde4657e758b64280ef80df371ca0455b90eb7a40093503b502183912667258dfdb1000  cui-vsftpd.sh
 51107df8b90e640942d6cfd7b24382c0e1f49768a7812989a1ed541927d3c561b325c465ed85e9cc2c46b503f93a3a519ae7e3f2b37891999e3dff4786e4786f  cui-vsftpd-update.sh
 051093df0a3c522ee34903be5710d8df2e6937e43ac883f357b8d043508137f988e39d2a09fc22fe65b9616d77eb55c129edf9e5dab1a538eb826db36d610720  cui-vsftpd.menu
 8d6f9aa87af5352ef3cf9fa4105acfd6276d899983ffff710ce39b37dac5edc4d6959c98fa44cde4c498627cdd2c3cdb474f78305b5ed67aed5b84d4a2c6fd6f  cui-vsftpd.txt

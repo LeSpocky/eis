@@ -21,39 +21,41 @@ FTP_LOG_COUNT="30"
 #----------------------------------------------------------------------------------------
 enbind="#"
 envuap="#"
+enlocalroot=/var/lib/vsftpd
+
 [ -n "$FTP_PORT" ] && enbind=""
-[ "$FTP_VIRTUAL_USERS_USE_APACHE" = "yes" ] && envuap=""
+if [ "$FTP_VIRTUAL_USERS_USE_APACHE" = "yes" ] ; then
+    envuap=""
+    enlocalroot=/var/www
+fi
 
 cat > /etc/vsftpd/vsftpd.conf <<EOF
 listen=YES
 ${enbind}ftp_data_port=${FTP_PORT}
 listen_address=${FTP_BIND}
 seccomp_sandbox=NO
+
 #-------------------------------------------------------------------------------
 anonymous_enable=NO
+#anon_upload_enable=YES
+#anon_other_write_enable=YES
+#anon_mkdir_write_enable=YES
+#anon_world_readable_only=NO
+#anon_umask=002
+dirmessage_enable=YES
 local_enable=YES
 write_enable=YES
-allow_writeable_chroot=YES
-connect_from_port_20=YES
-secure_chroot_dir=/run/vsftpd
-guest_enable=YES
-pam_service_name=vsftpd
-ftpd_banner="Welcome to eisfair-ng vsFTPd"
-local_root=/var/lib/vsftpd
-
-#local_umask=022
-#anon_umask=022
-#anon_upload_enable=YES
-#anon_mkdir_write_enable=YES
-#anon_other_write_enable=YES
-
-#---access to webhome for all virtual users ------------------------------------
-${envuap}ftp_username=apache
-${envuap}chmod_enable=YES
+local_umask=022
+chmod_enable=YES
 ${envuap}chown_uploads=YES
 ${envuap}chown_username=apache
-${envuap}guest_username=apache
-${envuap}local_root=/var/www
+#chroot_local_user=YES
+#chroot_list_enable=YES
+#chroot_list_file=/etc/vsftpd/chroot.list
+
+pam_service_name=vsftpd
+ftpd_banner="Welcome to eisfair-ng vsFTPd"
+local_root=${enlocalroot}
 
 #-------------------------------------------------------------------------------
 # logging:
@@ -67,6 +69,8 @@ xferlog_file=/var/log/vsftpd-xfer.log
 EOF
 
 mkdir -p /var/lib/vsftpd
+[ -f /etc/vsftpd/passwd ] || touch /etc/vsftpd/passwd
+[ -f /etc/vsftpd/chroot.list ] || touch /etc/vsftpd/chroot.list
 
 #----------------------------------------------------------------------------------------
 # create pam.d configuration for virtual user
