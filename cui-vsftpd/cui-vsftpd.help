@@ -22,3 +22,10 @@ enable support for NAT 'yes' or 'no'<br/>
 <br/>
 Default: FTP_NAT_MODE='no'
 </help>
+
+<help name="FTP_VIRTUAL_USERS_USE_APACHE">
+Enable access to webhome (/var/www) for all virtual users as user apache.<br/>
+<br/>
+Default: FTP_VIRTUAL_USERS_USE_APACHE='yes'
+</help>
+

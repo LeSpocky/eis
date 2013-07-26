@@ -20,7 +20,9 @@ FTP_LOG_COUNT="30"
 # creating configig file
 #----------------------------------------------------------------------------------------
 enbind="#"
+envuap="#"
 [ -n "$FTP_PORT" ] && enbind=""
+[ "$FTP_VIRTUAL_USERS_USE_APACHE" = "yes" ] && envuap=""
 
 cat > /etc/vsftpd/vsftpd.conf <<EOF
 listen=YES
@@ -30,14 +32,29 @@ seccomp_sandbox=NO
 #-------------------------------------------------------------------------------
 anonymous_enable=NO
 local_enable=YES
-#virtual_use_local_privs=YES
 write_enable=YES
+allow_writeable_chroot=YES
 connect_from_port_20=YES
 secure_chroot_dir=/run/vsftpd
 guest_enable=YES
 pam_service_name=vsftpd
 ftpd_banner="Welcome to eisfair-ng vsFTPd"
 local_root=/var/lib/vsftpd
+
+#local_umask=022
+#anon_umask=022
+#anon_upload_enable=YES
+#anon_mkdir_write_enable=YES
+#anon_other_write_enable=YES
+
+#---access to webhome for all virtual users ------------------------------------
+${envuap}ftp_username=apache
+${envuap}chmod_enable=YES
+${envuap}chown_uploads=YES
+${envuap}chown_username=apache
+${envuap}guest_username=apache
+${envuap}local_root=/var/www
+
 #-------------------------------------------------------------------------------
 # logging:
 dual_log_enable=YES
@@ -45,6 +62,7 @@ log_ftp_protocol=YES
 syslog_enable=YES
 vsftpd_log_file=/var/log/vsftpd.log
 xferlog_enable=YES
+xferlog_std_format=YES
 xferlog_file=/var/log/vsftpd-xfer.log
 EOF
 

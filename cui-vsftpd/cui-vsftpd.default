@@ -13,3 +13,7 @@ FTP_PORT='21'                         # Listen for an incoming connection.
 FTP_BIND=''                           # If set, then bind the FTP port only to
                                       # ip-address.
 FTP_NAT_MODE='no'                     # Enable support for NAT 'yes' or 'no'
+
+FTP_NAT_MODE='no'                     # Enable support for NAT 'yes' or 'no'
+
+FTP_VIRTUAL_USERS_USE_APACHE='yes'    # /var/www with UID apache for all vusers
