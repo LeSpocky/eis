@@ -1,0 +1,5 @@
+#!/bin/sh
+
+/var/install/bin/add-menu setup.services.menu setup.services.vsftpd.menu "FTP Administration"
+[ -e /etc/config.d/vsftpd ] || cp /etc/default.d/vsftpd /etc/config.d/
+exit 0

@@ -1,0 +1,23 @@
+   
+   START_FTP
+          Legt fest, ob der pure-ftp FTP-Server gestartet wird.
+
+          Gueltige Werte: yes,no
+
+   FPT_PORT
+          Definiert den Port, auf den der FTP-Server 'lauschen' soll.
+
+          Default: 21
+
+   FTP_BIND
+          Binde den FTP-Service an eine bestimmte IP-Adresse.
+
+          Default:
+
+
+   FTP_NAT_MODE
+          Ein Schalter, den man nutzen kann, wenn das FTP ueber einen
+          masquerading Router (beispielsweise fli4l) nicht funktioniert.
+
+          Gueltige Werte: yes,no
+

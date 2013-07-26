@@ -1,0 +1,15 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/vsftpd - configuration file for vsftpd
+# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# General settings
+#------------------------------------------------------------------------------
+
+START_FTP='no'                        # Start pure-ftpd 'yes' or 'no'
+FTP_PORT='21'                         # Listen for an incoming connection.
+                                      # Default 21.
+FTP_BIND=''                           # If set, then bind the FTP port only to
+                                      # ip-address.
+FTP_NAT_MODE='no'                     # Enable support for NAT 'yes' or 'no'

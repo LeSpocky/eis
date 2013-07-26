@@ -1,0 +1,77 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
+pkgname=cui-vsftpd
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="CUI setup for very secure FTP service (vsftpd)"
+url="http://www.eisfair.org"
+arch="noarch"
+license="GPL"
+depends="vsftpd linux-pam-pwdfile openssl"
+depends_dev=""
+makedepends="$depends_dev"
+install="$pkgname.pre-upgrade $pkgname.post-install $pkgname.post-deinstall"
+subpackages=""
+source="${pkgname}.default
+		${pkgname}.check
+		${pkgname}.help
+		${pkgname}.sh
+		${pkgname}-update.sh
+		${pkgname}.menu
+		${pkgname}.txt
+		vsftpd-user.cui.sh
+"
+
+_builddir=
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+}
+
+package() {
+	cd "$_builddir"
+
+	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/vsftpd || return 1
+	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/vsftpd || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/vsftpd || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/vsftpd.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/vsftpd-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.vsftpd.menu || return 1	
+	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/vsftpd/vsftpd.txt || return 1
+	install -D -m755 ${srcdir}/vsftpd-user.cui.sh       ${pkgdir}/var/install/bin/vsftpd-user.cui.sh || return 1
+}
+
+md5sums="b0703ccc394cdfa27a413f7d89549985  cui-vsftpd.default
+e2873ca6854cc861401dd4f1f112e52f  cui-vsftpd.check
+4d2232671afbc6c33d39d91d08e15c11  cui-vsftpd.help
+2ba61dcc33d16512df82f1e1532a0e82  cui-vsftpd.sh
+afd6c4dd996f026254e71c3c8fbf3440  cui-vsftpd-update.sh
+4b591de7d7876f9913e5789679236816  cui-vsftpd.menu
+7939aa9b6a448eebea5917d68783328e  cui-vsftpd.txt
+64c58db0074364b5421acf07ada41e50  vsftpd-user.cui.sh"
+sha256sums="5440fc4c848e906b7e345118c2b00f07f1406b1d6504d704d90f7edff46f43f1  cui-vsftpd.default
+fc5a032eb87ad07b877141eb6b878e64a911e70a23fa956c90f2543868c24f9c  cui-vsftpd.check
+8ca5df83f37ae4f8fc059f9fee7fecbbaaf0c4d1e1ac2f54c947e89335d4b2d9  cui-vsftpd.help
+6fa72ee99b4d26bbaebb235463d12e44d5b8cc31d510c034733b11f7620fa8b4  cui-vsftpd.sh
+66c45fcc30d03f069aa030c17b043f0abb4073bacbd8285a269c36bc7a59ac6b  cui-vsftpd-update.sh
+775df405edef77a9654bda67ef60bb9d4b28fdc96ce740844f3b97bd97941dea  cui-vsftpd.menu
+fc867f131e8d81e348ce2b7bccc4722130be55b5c96ea5808d0ff8a616997442  cui-vsftpd.txt
+b2864142c7da6eb64ce1d8a9cb789c65819269b43a2c72b301226d8289279fac  vsftpd-user.cui.sh"
+sha512sums="0be5e9a9d8da85fab3a62f01b0fb52ce09402b885e799fc9a07a3a082e45a453463d4dbe25208d7daa22c5b0c5d8ec952269a347cb92220741feed2839810eae  cui-vsftpd.default
+61cb8c4b116033279a56edce250abf18a68424c5926123d4ba99878baedeb0b26943d98372da0d7185df316df4824979cc9d3f2f52d7ea10a1ecc860f885c525  cui-vsftpd.check
+ca10251d49895d51dd5dcdf94901e4659ed5fcadacd895b3b1ab6f8e0807bcaabc97ecbe2aa6aae693905cb3c339e27b7517deb9d632f2393e6b849de69f6233  cui-vsftpd.help
+043ab092136456990d591f94b245eb80ad732296b86e87b887cadb3f33e63574082395472f1ff525eedc3f727e1ef60bdb3f0c25287b635dee7cf2274466a249  cui-vsftpd.sh
+021591255517496e17c326d48acbc18999e6989025f400c15fa99a5ce43d772570082a6bedf340a104fa5d1db2f9df27e551bc26b31603b43a7f1a296c7f4e4c  cui-vsftpd-update.sh
+3b36482ffdbddc470c4c0cb9b65447a6b981a3211aa06dc2ec6cb2636c18a8c418c00ad2932b6440ab24ece82be93c61de8f56a288ef9e070612200a71d4a5e7  cui-vsftpd.menu
+8d2962baf1eeb592cb02af865c76238011602efebf797e531a9df3857613a26ae0b2cac7a3e5fe46a4e1ece03c21b43a6312b507406780b3205f9307478f42ec  cui-vsftpd.txt
+4bc656a88f64576bf1f9823936bada4333f60af6fd73237afd88047de162e93d99e57167486b032f1c2db5a54d3c495c1be89e53d76d2dd4d720d3de31ade1e9  vsftpd-user.cui.sh"
