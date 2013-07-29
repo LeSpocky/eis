@@ -1,7 +1,7 @@
 <package>apk-repositories</package>
 <title>Package administration</title>
 <script file="packages-installed.cui.sh">List installed packages</script>
-<script file="packages-all.cui.sh">CUI eisfair packages</script>
+<script file="packages-cui.cui.sh">CUI eisfair packages</script>
 <script file="packages-all.cui.sh">All packages</script>
 <edit>Edit apk repository configuration</edit>
 <menu file="setup.services.advancedconfig.menu">Advanced apk repository configuration file handling</menu>
