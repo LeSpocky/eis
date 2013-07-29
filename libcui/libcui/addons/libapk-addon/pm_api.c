@@ -260,6 +260,7 @@ PMApiPackagesToList(int argc, const wchar_t* argv[])
 				LibPMWriteError(ERROR_INVALID);
 			pdb = &db;
 			apk_hash_foreach(&pdb->available.names, PMMatchNames, ictx);
+			apk_db_close(&db);
 			LibPMStartFrame(_T('R'), 32);
 			LibPMInsertInt (ERROR_SUCCESS);
 			LibPMSendFrame ();
@@ -800,8 +801,16 @@ PMMatchNames(apk_hash_item item, void *ctx)
 		}
 		if (ictx->searchtext)
 		{
-			if ((strstr(pkg->description, ictx->searchtext) == NULL) && (strstr(pkg->name->name, ictx->searchtext) == NULL))
-				return 0;
+			if (strstr(ictx->searchtext, "cui-*"))
+			{
+				if (strncmp(pkg->name->name, "cui-", 4) != 0) 
+					return 0;				
+			}
+			else
+			{
+				if ((strstr(pkg->description, ictx->searchtext) == NULL) && (strstr(pkg->name->name, ictx->searchtext) == NULL))
+					return 0;
+			}
 		}
 		if ( PMInternalCheckPackageList( pkg->name->name ) == 1 )
 			return 0;		
