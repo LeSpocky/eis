@@ -126,7 +126,7 @@ while true ; do
     case ${n_item} in
         1)
             ### Select drive ######################################################
-            if [ `fdisk -l | grep "^Disk /" | wc -l` = '1' ] ; then
+            if [ `fdisk -l | grep "^Disk /.*:" | wc -l` = '1' ] ; then
                 drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 on/p')
             else
                 drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 off/p')
