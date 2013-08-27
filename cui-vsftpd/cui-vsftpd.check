@@ -2,5 +2,3 @@
 START_FTP                              -                             -                            YESNO
 FTP_PORT                               START_FTP                     -                            PORT
 FTP_BIND                               START_FTP                     -                            EIPADDRESSES
-FTP_NAT_MODE                           START_FTP                     -                            YESNO
-FTP_VIRTUAL_USERS_USE_APACHE           START_FTP                     -                            YESNO

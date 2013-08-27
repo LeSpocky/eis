@@ -20,6 +20,8 @@ source="${pkgname}.default
 		${pkgname}.menu
 		${pkgname}.txt
 		vsftpd-user.cui.sh
+		cui-vsftpd.syslog-destination
+		cui-vsftpd.syslog-log
 "
 
 _builddir=
@@ -49,29 +51,37 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.vsftpd.menu || return 1	
 	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/vsftpd/vsftpd.txt || return 1
 	install -D -m755 ${srcdir}/vsftpd-user.cui.sh       ${pkgdir}/var/install/bin/vsftpd-user.cui.sh || return 1
+	install -D -m755 ${srcdir}/cui-vsftpd.syslog-destination  ${pkgdir}/etc/syslog-ng/syslog-ng-destination.vsftp || return 1
+	install -D -m755 ${srcdir}/cui-vsftpd.syslog-log    ${pkgdir}/etc/syslog-ng/syslog-ng-log.vsftp || return 1    	
 }
 
-md5sums="f5898af4fa6ca3ceae1f7c72c027a382  cui-vsftpd.default
-f6e42e57d37781d9019787e3e21fbc91  cui-vsftpd.check
+md5sums="e607bb9892aa7e39792282615f824564  cui-vsftpd.default
+cb7ba3fc8193de09ef47a64afcaeb748  cui-vsftpd.check
 9e66a7318142c18a35b959dc18c8e091  cui-vsftpd.help
-fd672209e9bd7792a20fb9457e131e81  cui-vsftpd.sh
-44996115489ebf5619a39e648a5520fa  cui-vsftpd-update.sh
+60f98daba86c955e05a15a51b8e07243  cui-vsftpd.sh
+9ca7e1b54266e58af39084aa20185719  cui-vsftpd-update.sh
 83d0c750e2eba6b68e7e491158da8ab6  cui-vsftpd.menu
-6ad4229ccffb26abc331e990c8b69834  cui-vsftpd.txt
-64c58db0074364b5421acf07ada41e50  vsftpd-user.cui.sh"
-sha256sums="095928a2aae3073cda8ee49b0e2df3690157eb2a67e0acdeb7742f8279737f6f  cui-vsftpd.default
-1775128719f7afe8182cc09d820da5c79143d2b033b843cbaa1b4823746f1b20  cui-vsftpd.check
+70493031661ce1dc8c63668f707a0e16  cui-vsftpd.txt
+8f8b44b18a505358e9b68fe08adc54d4  vsftpd-user.cui.sh
+16ac169f6a02c9c4a8033a8af7960767  cui-vsftpd.syslog-destination
+02cebf22b722900dc7707acb5a885c16  cui-vsftpd.syslog-log"
+sha256sums="3b32ffbadc1029e54992e4cd45673b702c49e54e65ebfa28ab032e90277a166c  cui-vsftpd.default
+ac198912d217e181b7b8c998082872d4a7b3799846f8f544b048cb79d551f1af  cui-vsftpd.check
 6b3d0b68c98183abbd25b14492f1d60f7e191358f28cbc7ecfa254274626fada  cui-vsftpd.help
-31c1ad394c23d0d386207f6487dcfb5dc467966ca434594b5b21771bbb4bc0f1  cui-vsftpd.sh
-46ba3d05e8a3f5e43bf6a3b4c3ea1ce19d3dbf37509f6120c3fd171916d5c62f  cui-vsftpd-update.sh
+0e195ce0cf16ee6242103215d10bead554ff2c4109aecd6bd144b1109029c20c  cui-vsftpd.sh
+b8802f87be1e4c9bfccddbdc73906f3b5368dfd8b98f669e76cf0cc8aad9a610  cui-vsftpd-update.sh
 6771ac71572a9a05e11f0ac41f6647eed0267f03ca2d8d6cbd97c36e2fc0810e  cui-vsftpd.menu
-57440759e293add1be41157dcf28bbbfb92c5f5c7699409388636fe7024b375c  cui-vsftpd.txt
-b2864142c7da6eb64ce1d8a9cb789c65819269b43a2c72b301226d8289279fac  vsftpd-user.cui.sh"
-sha512sums="b974b594bfd2a9a3a3dea1e665735ac080489c2440df5ebb499888f20fbb48d1ff23938eed235fe49d140e5ad0cff188c445e0f469d72461d09dc8a1b73da721  cui-vsftpd.default
-0265cdaff18b26c214daadb89e06cd886bbec4f03156e62bce1d4d12bee9b7eafd47ac18f8ad6c8962b99fa14d2cc30ab944b1c8db73dd67d1c51e66caa44c9a  cui-vsftpd.check
+0275fc79f6e3c32dbe0fcb6f1160c665352ab7faa57b7ff6d1468ea8db1636e7  cui-vsftpd.txt
+09a765b7cf3c8154628f408a49e9a5d2c963b9585c53a64e29f0f130b07f9bd0  vsftpd-user.cui.sh
+fe69d0311b6088abb31766fe38e067443162cc44c6c8944f1dc71fa6c7bbee36  cui-vsftpd.syslog-destination
+32623eb48f4a90dfaebee2c92e8a46349ab9a5748f6fbc1082537076ec6e146a  cui-vsftpd.syslog-log"
+sha512sums="bf097484d67c41e56b29100c693d8217bd9b6ccaa078833020c69850ae3c5277914842ed8e7d77e42b3ddc88d476dbd7b70eb93f786d52d4e031c29bcacd04cc  cui-vsftpd.default
+71d2997cbb1969e2a36e68a0e1c0d4734fd294480a0c2ffb42b265691d4738857105349a046f25b0c61c9b9d7d053e8bdadbeccc6cb2dfb31d3ab1a42acf163b  cui-vsftpd.check
 8a1878b6206b7a0f95182ec182424b15eea4604557a654cd604a7b5b7bb696cdca8a028a49ac8ee206ca88a5e821ce68c142da6dfc9b657306d9587b1c676b16  cui-vsftpd.help
-46efc49d5e0eccad75d1700b5de83e4f97f6b212422ca6f68f2d8d496fde4657e758b64280ef80df371ca0455b90eb7a40093503b502183912667258dfdb1000  cui-vsftpd.sh
-51107df8b90e640942d6cfd7b24382c0e1f49768a7812989a1ed541927d3c561b325c465ed85e9cc2c46b503f93a3a519ae7e3f2b37891999e3dff4786e4786f  cui-vsftpd-update.sh
+4b229bbe2bed28316e0ce75136c9bde6fdc585f401b983744167b424ab5d082e7c6f2c79092f89bd296c3169fe475235a9a29d48ee0dde0174580bd1ab860128  cui-vsftpd.sh
+5d40b8500f72e7fe1ed91951df82bbca633f66566c71a4f60c9a5a9bc11a5dc33edf7ccf9f124156ddeb52eb05c9c258852c49f975a9ec0db937df6662affb6a  cui-vsftpd-update.sh
 051093df0a3c522ee34903be5710d8df2e6937e43ac883f357b8d043508137f988e39d2a09fc22fe65b9616d77eb55c129edf9e5dab1a538eb826db36d610720  cui-vsftpd.menu
-8d6f9aa87af5352ef3cf9fa4105acfd6276d899983ffff710ce39b37dac5edc4d6959c98fa44cde4c498627cdd2c3cdb474f78305b5ed67aed5b84d4a2c6fd6f  cui-vsftpd.txt
-4bc656a88f64576bf1f9823936bada4333f60af6fd73237afd88047de162e93d99e57167486b032f1c2db5a54d3c495c1be89e53d76d2dd4d720d3de31ade1e9  vsftpd-user.cui.sh"
+4c23792462835863f7a743b3e1ed7da498409e2da0b0e02b93906f9d83bb76b98dc44441ea787f78f73e5943cb0394cd9b519de37d9fbc8e714a0dcd3d887aa0  cui-vsftpd.txt
+91bca66601091bf5b75cbd4711a3bb88615ac460a3a74151cf4a2a4a0c97389244a1fe2aa38d87bf828b73ede8b735a817842f2f55188adae99738960cdadd19  vsftpd-user.cui.sh
+048fbca391181218452061d8434f19cc37439c577286d377a061786a9a01fddcfc2b7fcda9c1d79b8f4ee43f990ca73b2f9566b0f85dab9ed822e2bc2842d442  cui-vsftpd.syslog-destination
+ca0965e87fa0de2b8e250ba597de679f93d24c8325756a2b06deed3ac04bc3996b85331942204cf49567d06a262616ec25f6143ce09f231687e6796c1a53c729  cui-vsftpd.syslog-log"

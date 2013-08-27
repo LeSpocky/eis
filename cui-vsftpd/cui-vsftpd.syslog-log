@@ -1,0 +1,5 @@
+log {
+        source(s_all);
+        filter(f_ftp);
+        destination(df_ftp);
+};

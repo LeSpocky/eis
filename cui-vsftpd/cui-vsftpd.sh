@@ -22,12 +22,9 @@ FTP_LOG_COUNT="30"
 enbind="#"
 envuap="#"
 enlocalroot=/var/lib/vsftpd
+enguestuser="vsftpd"
 
 [ -n "$FTP_PORT" ] && enbind=""
-if [ "$FTP_VIRTUAL_USERS_USE_APACHE" = "yes" ] ; then
-    envuap=""
-    enlocalroot=/var/www
-fi
 
 cat > /etc/vsftpd/vsftpd.conf <<EOF
 listen=YES
@@ -37,38 +34,37 @@ seccomp_sandbox=NO
 
 #-------------------------------------------------------------------------------
 anonymous_enable=NO
-#anon_upload_enable=YES
-#anon_other_write_enable=YES
-#anon_mkdir_write_enable=YES
-#anon_world_readable_only=NO
-#anon_umask=002
-dirmessage_enable=YES
 local_enable=YES
+guest_enable=YES
+chroot_local_user=YES
+virtual_use_local_privs=YES
+hide_ids=YES
+allow_writeable_chroot=YES
+user_config_dir=/etc/vsftpd/users
+chroot_list_enable=YES
+chroot_list_file=/etc/vsftpd/chroot.list
+dirmessage_enable=YES
 write_enable=YES
 local_umask=022
 chmod_enable=YES
-${envuap}chown_uploads=YES
-${envuap}chown_username=apache
-#chroot_local_user=YES
-#chroot_list_enable=YES
-#chroot_list_file=/etc/vsftpd/chroot.list
+chown_uploads=YES
+chown_username=apache
 
 pam_service_name=vsftpd
 ftpd_banner="Welcome to eisfair-ng vsFTPd"
-local_root=${enlocalroot}
 
 #-------------------------------------------------------------------------------
 # logging:
-dual_log_enable=YES
-log_ftp_protocol=YES
 syslog_enable=YES
-vsftpd_log_file=/var/log/vsftpd.log
+log_ftp_protocol=YES
 xferlog_enable=YES
 xferlog_std_format=YES
-xferlog_file=/var/log/vsftpd-xfer.log
+xferlog_file=/var/log/ftp-xfer.log
+setproctitle_enable=YES
+
 EOF
 
-mkdir -p /var/lib/vsftpd
+mkdir -p /etc/vsftpd/users
 [ -f /etc/vsftpd/passwd ] || touch /etc/vsftpd/passwd
 [ -f /etc/vsftpd/chroot.list ] || touch /etc/vsftpd/chroot.list
 
@@ -87,7 +83,7 @@ EOF
 # setup logrotate
 #----------------------------------------------------------------------------------------
 cat >> /etc/logrotate.d/vsftpd <<EOF
-/var/log/vsftpd*log {
+/var/log/ftp*log {
     ${FTP_LOG_INTERVAL}
     missingok
 	rotate ${FTP_LOG_COUNT}

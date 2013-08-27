@@ -35,10 +35,6 @@ packages_name=vsftpd
 
     printvar "FTP_BIND"           "If set, then bind the FTP port only to ip-address."
 
-    printvar "FTP_NAT_MODE"       "Enable support for NAT 'yes' or 'no'"
-
-    printvar "FTP_VIRTUAL_USERS_USE_APACHE" "Enable access to webhome for all virtual users"
-
 ) > /etc/config.d/${packages_name}
 # Set rights
 chmod 0644  /etc/config.d/${packages_name}

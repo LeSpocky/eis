@@ -14,15 +14,3 @@
 
           Default:
 
-
-   FTP_NAT_MODE
-          Ein Schalter, den man nutzen kann, wenn das FTP ueber einen
-          masquerading Router (beispielsweise fli4l) nicht funktioniert.
-
-          Gueltige Werte: yes,no
-
-   FTP_VIRTUAL_USERS_USE_APACHE
-          Ermoeglichet den Zugriff auf das Apache Verzeichnis /var/www
-          als Benutzer Apache fuer alle virtuellen Benutzer.
-
-          Gueltige Werte: yes,no

@@ -32,13 +32,49 @@ IDC_USERSDLG_BUTCANCEL='31'
 IDC_USERSDLG_LABEL1='32'
 IDC_USERSDLG_LABEL4='33'
 IDC_USERSDLG_LABEL5='34'
+IDC_USERSDLG_LABEL6='35'
+IDC_USERSDLG_LABEL7='36'
 IDC_USERSDLG_EDLOGIN='40'
 IDC_USERSDLG_EDPASS1='41'
 IDC_USERSDLG_EDPASS2='42'
+IDC_USERSDLG_CHUSER='43'
+IDC_USERSDLG_CHROOT='44'
 
 lastsection="?"
 passwdfile="/etc/vsftpd/passwd"
 keyword=""
+
+#============================================================================
+# help routines
+#============================================================================
+function write_user_config()
+{
+    [ -z "$usersdlg_chuser" ] && usersdlg_chuser="apache"
+    [ -z "$usersdlg_chroot" ] && usersdlg_chroot="/var/www"
+    mkdir -p /etc/vsftpd/users
+    {
+        echo "guest_username=$usersdlg_chuser"
+        echo "local_root=$usersdlg_chroot"
+        echo "dirlist_enable=YES"
+        echo "download_enable=YES"
+        echo "write_enable=YES"
+    } > /etc/vsftpd/users/${usersdlg_userlogin}
+}
+
+
+function read_user_config()
+{
+    if [ -f /etc/vsftpd/users/${usersdlg_userlogin} ]
+    then
+        . /etc/vsftpd/users/${usersdlg_userlogin}
+        usersdlg_chuser="$guest_username"
+        usersdlg_chroot="$local_root"
+        return 0
+    else
+        return 1
+    fi
+}
+
 
 #============================================================================
 # general routines
@@ -55,6 +91,7 @@ function load_data()
     local list
     local sel
     local count
+    local n=0
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && list="$p2"
     if cui_valid_handle "$list"
@@ -63,9 +100,21 @@ function load_data()
         cui_listview_clear     "$list"
 
         # transfer data into list view
-        pwdfile_users_tolist   "$list" "$passwdfile" #"$keyword"
+        pwdfile_users_tolist   "$list" "$passwdfile" "$keyword"
+        cui_listview_getcount  "$list" && count="$p2"
+        while [ $n -lt $count ]
+        do
+            usersdlg_userlogin=""
+            cui_listview_gettext "$list" "$n" "0" && usersdlg_userlogin="$p2"
+            if read_user_config
+            then
+                cui_listview_settext "$list" "$n" "1" "$usersdlg_chuser"
+                cui_listview_settext "$list" "$n" "2" "$usersdlg_chroot"
+            fi
+            n=$[ $n + 1 ]
+        done
+                
         cui_listview_update    "$list"
-        cui_listview_getcount   "$list" && count="$p2"
         if [ -z "$keyword" ]
         then
             cui_listview_alphasort "$list" "0" "1"
@@ -123,7 +172,19 @@ function usersdlg_ok_clicked()
         cui_edit_gettext "$ctrl"
         usersdlg_userpass2="$p2"
     fi
-
+    cui_window_getctrl "$win" "$IDC_USERSDLG_CHUSER" && ctrl="$p2"
+    if cui_valid_handle "$ctrl"
+    then
+        cui_edit_gettext "$ctrl"
+        usersdlg_chuser="$p2"
+    fi
+    cui_window_getctrl "$win" "$IDC_USERSDLG_CHROOT" && ctrl="$p2"
+    if cui_valid_handle "$ctrl"
+    then
+        cui_edit_gettext "$ctrl"
+        usersdlg_chroot="$p2"
+    fi
+    
     if [ -z "${usersdlg_userlogin}" ]
     then
         cui_message "$win" "No login name entered! Please enter a valid name" \
@@ -132,7 +193,7 @@ function usersdlg_ok_clicked()
         return
     fi
 
-    if [ "$usersdlg_userpass1" = "xxxxxxxxxxxx" -o -z "$usersdlg_userpass1" ]
+    if [ -z "$usersdlg_userpass1" ]
     then
         cui_message "$win" "Password is not set. Please enter password!" \
                            "Missing Password" "$MB_ERROR"
@@ -193,6 +254,16 @@ function usersdlg_create_hook()
     then
         cui_window_create     "$p2"
     fi
+    cui_label_new "$dlg" "Chuser name:" 2 7 14 1 $IDC_USERSDLG_LABEL6 $CWS_NONE $CWS_NONE
+    if cui_valid_handle "$p2"
+    then
+        cui_window_create     "$p2"
+    fi
+    cui_label_new "$dlg" "Chroot path:" 2 9 14 1 $IDC_USERSDLG_LABEL7 $CWS_NONE $CWS_NONE
+    if cui_valid_handle "$p2"
+    then
+        cui_window_create     "$p2"
+    fi
 
     cui_edit_new "$dlg" "" 17 1 18 1 40 $IDC_USERSDLG_EDLOGIN $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
@@ -207,6 +278,7 @@ function usersdlg_create_hook()
         cui_window_create     "$ctrl"
         cui_edit_settext      "$ctrl" "${usersdlg_userpass1}"
     fi
+
     cui_edit_new "$dlg" "" 17 5 18 1 40 $IDC_USERSDLG_EDPASS2 $EF_PASSWORD $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
@@ -214,14 +286,28 @@ function usersdlg_create_hook()
         cui_edit_settext      "$ctrl" "${usersdlg_userpass2}"
     fi
 
-    cui_button_new "$dlg" "&OK" 10 7 10 1 $IDC_USERSDLG_BUTOK $CWS_DEFOK $CWS_NONE && ctrl="$p2"
+    cui_edit_new "$dlg" "" 17 7 18 1 40 $IDC_USERSDLG_CHUSER $CWS_NONE $CWS_NONE && ctrl="$p2"
+    if cui_valid_handle "$ctrl"
+    then
+        cui_window_create     "$ctrl"        
+        cui_edit_settext      "$ctrl" "${usersdlg_chuser}"
+    fi
+
+    cui_edit_new "$dlg" "" 17 9 18 1 40 $IDC_USERSDLG_CHROOT $CWS_NONE $CWS_NONE && ctrl="$p2"
+    if cui_valid_handle "$ctrl"
+    then
+        cui_window_create     "$ctrl"        
+        cui_edit_settext      "$ctrl" "${usersdlg_chroot}"
+    fi
+
+    cui_button_new "$dlg" "&OK" 10 11 10 1 $IDC_USERSDLG_BUTOK $CWS_DEFOK $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" usersdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
 
-    cui_button_new "$dlg" "&Cancel" 21 7 10 1 $IDC_USERSDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE && ctrl="$p2"
+    cui_button_new "$dlg" "&Cancel" 21 11 10 1 $IDC_USERSDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" usersdlg_cancel_clicked
@@ -259,10 +345,10 @@ function users_edituser_dialog()
 
             usersdlg_userpass1="xxxxxxxxxxxx"
             usersdlg_userpass2="xxxxxxxxxxxx"
-
             local orig_userlogin="${usersdlg_userlogin}"
+            read_user_config
 
-            cui_window_new "$win" 0 0 40 11 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
+            cui_window_new "$win" 0 0 40 15 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle "$dlg" 
             then
                 cui_window_setcolors "$dlg" "DIALOG"
@@ -273,30 +359,42 @@ function users_edituser_dialog()
                 cui_window_modal   "$dlg" && result="$p2"
                 if  [ "$result" == "$IDOK" ]
                 then
-                    if [ "${orig_userlogin}" != "${usersdlg_userlogin}" ]
+                    if [ "${orig_userlogin}" = "${usersdlg_userlogin}" ]
                     then
+                        if [ "$usersdlg_userpass2" = "xxxxxxxxxxxx"  ]
+                        then
+                            write_user_config
+                        else
+                            rndval=$(openssl rand -base64 9)
+                            keyval=$(openssl passwd -1 -salt ${rndval} ${usersdlg_userpass1})
+                            if sed -i -e "s/^${usersdlg_userlogin}:.*/${usersdlg_userlogin}:${keyval}/" ${passwdfile}
+                            then
+                                write_user_config
+                                result="$IDOK"
+                            else
+                                cui_message "$win" "User \"${usersdlg_userlogin}\" cannot change password!" "Error" "$MB_ERROR"
+                                result="$IDCANCEL"
+                            fi
+                        fi
+                    else
+                        # copy user to other name
                         grep -q "^${usersdlg_userlogin}:" ${passwdfile}
                         if [ $? == 0 ]
                         then
-                            cui_message "$win" \
-                                "User \"${usersdlg_userlogin}\" already exists!" \
-                                "Error" "$MB_ERROR"
+                            cui_message "$win" "User \"${usersdlg_userlogin}\" already exists!" "Error" "$MB_ERROR"
                             result="$IDCANCEL"
                         fi
-                        rndval=$(openssl rand -base64 9)
-                        keyval=$(openssl passwd -1 -salt ${rndval} ${usersdlg_userpass1})
-                        echo "${usersdlg_userlogin}:${keyval}" >> ${passwdfile}
-                    else 
-                        rndval=$(openssl rand -base64 9)
-                        keyval=$(openssl passwd -1 -salt ${rndval} ${usersdlg_userpass1})
-                        if sed -i -e "s/^${usersdlg_userlogin}:.*/${usersdlg_userlogin}:${keyval}/" ${passwdfile}
+                        if [ "$usersdlg_userpass2" = "xxxxxxxxxxxx" ] 
                         then
-                            result="$IDOK"
-                        else
-                             cui_message "$win" \
-                                "User \"${usersdlg_userlogin}\" cannot change password!" \
-                                "Error" "$MB_ERROR"
+                            cui_message "$win" "User \"${usersdlg_userlogin}\" cannot set new password!" "Error" "$MB_ERROR"
                             result="$IDCANCEL"
+                        fi                        
+                        if [ "$result" = "$IDOK" ]
+                        then
+                            rndval=$(openssl rand -base64 9)
+                            keyval=$(openssl passwd -1 -salt ${rndval} ${usersdlg_userpass1})
+                            echo "${usersdlg_userlogin}:${keyval}" >> ${passwdfile}
+                            write_user_config
                         fi
                     fi
                 fi
@@ -328,8 +426,10 @@ function users_createuser_dialog()
     usersdlg_userlogin=""
     usersdlg_userpass1=""
     usersdlg_userpass2=""
-
-    cui_window_new "$win" 0 0 40 11 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
+    usersdlg_chuser="apache"
+    usersdlg_chroot="/var/www"
+    
+    cui_window_new "$win" 0 0 40 15 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
     if cui_valid_handle "$dlg"
     then
         cui_window_setcolors "$dlg" "DIALOG"
@@ -341,12 +441,20 @@ function users_createuser_dialog()
 
         if  [ "$result" == "$IDOK" ]
         then
-            if ! grep -q -e "^${usersdlg_userlogin}:" ${passwdfile}
+            if [ "$usersdlg_userpass1"  = "xxxxxxxxxxxx"  ]
             then
-                rndval=$(openssl rand -base64 9)
-                keyval=$(openssl passwd -1 -salt ${rndval} ${usersdlg_userpass1})
-                echo "${usersdlg_userlogin}:${keyval}" >> ${passwdfile}
-                nret=0
+                cui_message "$win" "Password is not set. Please enter password!" \
+                           "Missing Password" "$MB_ERROR"
+                cui_return 1
+            else
+                if ! grep -q -e "^${usersdlg_userlogin}:" ${passwdfile}
+                then
+                    rndval=$(openssl rand -base64 9)
+                    keyval=$(openssl passwd -1 -salt ${rndval} ${usersdlg_userpass1})
+                    echo "${usersdlg_userlogin}:${keyval}" >> ${passwdfile}
+                    write_user_config
+                    nret=0
+                fi    
             fi
         fi
         cui_window_destroy "$dlg"
@@ -380,6 +488,7 @@ function users_deleteuser_dialog()
             then
                 if sed -i -e "/^${usersdlg_userlogin}:/d" ${passwdfile}
                 then
+                    rm -f  /etc/vsftpd/users/${usersdlg_userlogin}
                     return 0
                 else
                     return 1
@@ -694,10 +803,12 @@ function mainwin_create_hook()
     local win="$p2"
     local ctrl
 
-    cui_listview_new "$win" "" 0 0 30 10 1 "${IDC_LISTVIEW}" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
+    cui_listview_new "$win" "" 0 0 30 10 3 "${IDC_LISTVIEW}" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_listview_setcoltext "$ctrl" 0 "Login username"
+        cui_listview_setcoltext "$ctrl" 1 "Guest username"
+        cui_listview_setcoltext "$ctrl" 2 "chroot path"
 
         cui_listview_settitlealignment "$ctrl" 0 "${ALIGN_LEFT}"
 

@@ -1,5 +1,11 @@
 #!/bin/sh
 
 /var/install/bin/del-menu setup.services.menu setup.services.vsftpd.menu
+/var/install/bin/del-menu setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f /var/log/ftp.log"
 rm -f /etc/backup.d/vsftpd.*
+rm -f /etc/syslog-ng/syslog-ng-destination.vsftp
+rm -f /etc/syslog-ng/syslog-ng-log.vsftp
+rc-service --quiet syslog-ng update
+rc-service --quiet syslog-ng reload
+
 exit 0
