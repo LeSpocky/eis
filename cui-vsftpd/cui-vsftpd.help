@@ -23,9 +23,13 @@ enable support for NAT 'yes' or 'no'<br/>
 Default: FTP_NAT_MODE='no'
 </help>
 
-<help name="FTP_VIRTUAL_USERS_USE_APACHE">
-Enable access to webhome (/var/www) for all virtual users as user apache.<br/>
-<br/>
-Default: FTP_VIRTUAL_USERS_USE_APACHE='yes'
+<help name="FTP_LOG_INTERVAL">
+Logrotate interval: daily, weekly, monthly.<br/>
+How often shall logrotate be executed?
 </help>
 
+<help name="FTP_LOG_MAXCOUNT">
+Number of log files to save.<br/>
+This is the number of log file archives that are kept
+on the system by logrotate, before they are outdated and removed.
+</help>

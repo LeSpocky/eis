@@ -10,19 +10,12 @@
 
 pgmname=$0
 
-FTP_LOG_INTERVAL="daily"
-FTP_LOG_COUNT="30"
-
 . /etc/config.d/vsftpd
-
 
 #----------------------------------------------------------------------------------------
 # creating configig file
 #----------------------------------------------------------------------------------------
 enbind="#"
-envuap="#"
-enlocalroot=/var/lib/vsftpd
-enguestuser="vsftpd"
 
 [ -n "$FTP_PORT" ] && enbind=""
 
@@ -64,7 +57,6 @@ setproctitle_enable=YES
 
 EOF
 
-mkdir -p /etc/vsftpd/users
 [ -f /etc/vsftpd/passwd ] || touch /etc/vsftpd/passwd
 [ -f /etc/vsftpd/chroot.list ] || touch /etc/vsftpd/chroot.list
 
@@ -73,7 +65,7 @@ mkdir -p /etc/vsftpd/users
 #----------------------------------------------------------------------------------------
 cat > /etc/pam.d/vsftpd <<EOF
 # basic PAM configuration for vsftpd.
-auth required pam_pwdfile.so debug pwdfile /etc/vsftpd/passwd
+auth required pam_pwdfile.so pwdfile /etc/vsftpd/passwd
 account required pam_permit.so
 
 EOF
@@ -86,7 +78,7 @@ cat >> /etc/logrotate.d/vsftpd <<EOF
 /var/log/ftp*log {
     ${FTP_LOG_INTERVAL}
     missingok
-	rotate ${FTP_LOG_COUNT}
+	rotate ${FTP_LOG_MAXCOUNT}
     notifempty
     sharedscripts
     delaycompress
@@ -95,6 +87,5 @@ cat >> /etc/logrotate.d/vsftpd <<EOF
     endscript
 }
 EOF
-
 
 exit 0

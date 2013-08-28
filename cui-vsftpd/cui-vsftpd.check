@@ -2,3 +2,5 @@
 START_FTP                              -                             -                            YESNO
 FTP_PORT                               START_FTP                     -                            PORT
 FTP_BIND                               START_FTP                     -                            EIPADDRESSES
+FTP_LOG_INTERVAL                       START_FTP                     -                            LOG_INTERVAL
+FTP_LOG_MAXCOUNT                       START_FTP                     -                            NUMERIC
