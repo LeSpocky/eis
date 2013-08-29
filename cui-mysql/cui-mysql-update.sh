@@ -32,7 +32,7 @@ packages_name=mysql
     printvar "START_MYSQL"          "Start mysql service 'yes' or 'no'"
 
     printvar "MYSQL_BIND"           "If set, then bind the MySQL port only to ip-address."
-    
+
     printvar "MYSQL_LOG_INTERVAL"   "logrotate interval"
 
     printvar "MYSQL_LOG_MAXCOUNT"   "max count of logfiles"

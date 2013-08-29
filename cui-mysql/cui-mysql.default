@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------
-# /etc/config.d/vsftpd - configuration file for mysql
+# /etc/config.d/mysql - configuration file for mysql
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
 #------------------------------------------------------------------------------
 
@@ -13,5 +13,3 @@ MYSQL_BIND=''                         # If set, then bind the MySQL port only to
 MYSQL_LOG_INTERVAL="weekly"
 MYSQL_LOG_MAXCOUNT="4"
 
-
-                                      

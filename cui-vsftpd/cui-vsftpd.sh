@@ -1,6 +1,6 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
-# Eisfair configuration generator script for vsftpd
+# Eisfair configuration generator script
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 

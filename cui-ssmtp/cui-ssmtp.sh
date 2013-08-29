@@ -1,11 +1,11 @@
 #!/bin/sh
 #-------------------------------------------------------------------------------
-# Eisfair configuration generator script for mysql
+# Eisfair configuration generator script
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
 #-------------------------------------------------------------------------------
 
 #echo "Executing $0 ..."
-#exec 2> /tmp/mysql-trace$$.log
+#exec 2> /tmp/ssmtp-trace$$.log
 #set -x
 
 # read base configuration file for domain

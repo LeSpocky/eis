@@ -1,7 +1,7 @@
 #!/bin/sh
 
 /var/install/bin/add-menu setup.services.menu setup.services.vsftpd.menu "FTP Administration"
-/var/install/bin/add-menu --script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f /var/log/ftp.log" "Show FTP"
+/var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/ftp.log" "Show FTP"
 rc-service --quiet syslog-ng update
 rc-service --quiet syslog-ng reload
 
