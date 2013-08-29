@@ -1,0 +1,13 @@
+# ------------------------------------------------------------------------------
+# /etc/config.d/-check_exp - configuration file for -check_exp
+# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+# ------------------------------------------------------------------------------
+SSMTP_USER       = '([-._[:lower:]0-9])+'
+                 : 'no valid user name, because only the following characters
+                    are allowed: a-z, 0-9, ., _ and -'
+SSMTP_PORT       = '()|(RE:PORT)'
+                 : 'should be valid port number or empty'
+SSMTP_USETLS     = 'no|starttls|tls'
+                 : 'should be "no", "starttls" or "tls"'
+SSMTP_AUTHMETHOD = 'plain|cram-md5'
+                 : 'should be "plain" or "cram-md5"'

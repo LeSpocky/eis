@@ -1,0 +1,29 @@
+<!-- ssmtp.tex - table of content -->
+<!-- creation date: 2013-01-26 -->
+<index title="Das sSMTP-Paket">
+    <entry line="5" level="1">Die Einleitung</entry>
+    <entry line="13" level="1">Die Funktionen</entry>
+    <entry line="20" level="1">Die Voraussetzungen</entry>
+    <entry line="27" level="1">Die Installation</entry>
+    <entry line="37" level="1">Das Menue im Setup-Programm</entry>
+    <entry line="54" level="1">Die Aenderung der Konfiguration</entry>
+    <entry line="63" level="1">Die Konfigurationsdatei</entry>
+    <entry line="69" level="1">Die Parameter</entry>
+    <entry line="71" level="2">START_SSMTP</entry>
+    <entry line="79" level="2">SSMTP_FORWARD_TO</entry>
+    <entry line="87" level="2">SSMTP_MAILHUB</entry>
+    <entry line="95" level="2">SSMTP_MAILHUB_PORT</entry>
+    <entry line="105" level="2">SSMTP_HOSTNAME</entry>
+    <entry line="118" level="2">SSMTP_SENDER_DOMAIN</entry>
+    <entry line="128" level="2">SSMTP_USE_AUTH</entry>
+    <entry line="137" level="2">SSMTP_AUTH_USER</entry>
+    <entry line="146" level="2">SSMTP_AUTH_PASS</entry>
+    <entry line="155" level="2">SSMTP_AUTH_METHOD</entry>
+    <entry line="164" level="2">SSMTP_USE_TLS</entry>
+    <entry line="183" level="2">SSMTP_USE_TLS_CERT</entry>
+    <entry line="193" level="2">SSMTP_OUTGOING_N</entry>
+    <entry line="202" level="3">SSMTP_OUTGOING_x_USER</entry>
+    <entry line="211" level="3">SSMTP_OUTGOING_x_EMAIL</entry>
+    <entry line="221" level="3">SSMTP_OUTGOING_x_MAILHUB</entry>
+    <entry line="231" level="3">SSMTP_OUTGOING_x_MAILHUB_PORT</entry>
+</index>

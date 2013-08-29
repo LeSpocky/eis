@@ -1,0 +1,240 @@
+                                Das sSMTP-Paket
+
+                                 Die Einleitung
+
+   Das sSMTP-Programm ist ein send-only Mail Transfer Agent (MTA) und ist
+   eine schlanke Alternative zur send-only-Konfiguration des mail-Paketes
+   von Juergen Edner. Das Paket ist fuer eisfair-/eisXen-Systeme gedacht,
+   die nicht als Mailserver eingerichtet sind, aber dennoch
+   Statusmeldungen, z.B. Cron-Output, per E-Mail versenden sollen.
+
+                                 Die Funktionen
+
+   Das sSMTP-Paket besteht aus folgenden Komponenten:
+
+     * sSMTP - Programm zum Versenden von E-Mail
+       ([1]http://ftp.de.debian.org/debian/pool/main/s/ssmtp/)
+
+                              Die Voraussetzungen
+
+   Auf dem System, auf dem sSMTP installiert werden soll, kann kein
+   anderes Mailsystem, wie z.B. mail, vmail oder msmtp, installiert sein.
+   Allerdings benoetigt sSMTP ein Mailsystem auf einem anderen Rechner, an
+   welches es seine Nachrichten weiterreichen kann.
+
+                                Die Installation
+
+   Das sSMTP-Paket wird ueber das Setup-Menue installiert. Wird eine
+   aeltere Paketversion vorgefunden, so wird diese deinstalliert bevor die
+   neuen Programmdateien installiert werden. Nach dem Installieren der
+   Programmdateien wird direkt der Konfigurations-Editor gestartet um die
+   Konfiguration anzupassen. Nach Beendigung dieses Schrittes werden die
+   Konfigurationsdateien generiert und alle benoetigten Programme
+   gestartet.
+
+                          Das Menue im Setup-Programm
+
+   Das Menue im Setup-Programm ist wie folgt aufgebaut:
+
+     * sSMTP sendmail emulation
+          + View documentation: Anzeigen der Dokumentation
+          + Edit configuration: Bearbeiten der Konfiguration
+          + Advanced configuration file handling: Konfigurationen
+            verwalten
+          + Send test email: Eine Testnachricht versenden
+          + View log file: Die Logmeldungen anzeigen
+     * Return: Untermenue verlassen
+
+   Die Menuepunkte duerften selbsterklaerend sein, da sie keinerlei
+   weitere Eingaben erwarten. Aus diesem Grund wird auf deren Funktion
+   nicht weiter eingegangen.
+
+                        Die Aenderung der Konfiguration
+
+   Die Konfiguration kann ueber den Menuepunkt `Edit configuration'
+   geaendert werden. Standardmaessig wird der Editor aufgerufen, der in
+   der Environment-Konfiguration ueber die Variable `EDITOR' festgelegt
+   wurde. Nachdem der Editor beendet wurde wird abgefragt, ob die
+   Konfiguration aktiviert werden soll. Wird dies bestaetigt, werden ueber
+   ein Skript die Anpassungen umgehend wirksam gemacht.
+
+                            Die Konfigurationsdatei
+
+   In der Konfigurationsdatei, die ueber das Menue zugaenglich ist, sind
+   folgende Parameter vorhanden; wer sie von Hand editieren will findet
+   sie unter /etc/config.d/ssmtp.
+
+                                 Die Parameter
+
+   START_SSMTP
+          Wird der Wert dieses Parameters auf 'yes' gesetzt, so wird das
+          Paket aktiviert; der Wert 'no' deaktiviert es.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: START_SSMTP='no'
+
+   SSMTP_FORWARD_TO
+          Alle Nachrichten an Anwender deren UID < 1000 ist, werden
+          standardmaessig an diese E-Mail-Adresse geschickt.
+
+          Gueltige Werte: E-Mail-Adresse
+
+          Standardeinstellung: SSMTP_FORWARD_TO='root@local.lan'
+
+   SSMTP_MAILHUB
+          Ueber diesen Mailserver werden die ausgehenden Nachrichten
+          standardmaessig verschickt.
+
+          Gueltige Werte: Hostname (als FQDN)
+
+          Standardeinstellung: SSMTP_MAILHUB='mail.local.lan'
+
+   SSMTP_MAILHUB_PORT
+          Optional: Ueber diesen Parameter kann der TCP-Port festgelegt
+          werden, ueber welchen die Verbindung zum Mailhub aufgebaut
+          werden soll. Wird kein Wert angegeben, so wird der
+          SMTP-Standardport 25/tcp verwendet.
+
+          Gueltige Werte: gueltige Portnummer oder leer
+
+          Standardeinstellung: SSMTP_MAILHUB_PORT=''
+
+   SSMTP_HOSTNAME
+          Optional: Ueber diesen Parameter kann ein beliebiger Hostname
+          festgelegt werden, welcher von sSMTP im SMTP-HELO-Dialog
+          uebermitteln soll. Ausserdem wird daraus die Absenderadresse
+          fuer ausgehende Nachrichten hergeleitet
+          (username@SSMTP_HOSTNAME).
+          Wird kein Hostname angegeben, wird der in /etc/config.d/base
+          konfigurierte Name verwendet.
+
+          Gueltige Werte: Hostname (als FQDN) oder leer
+
+          Standardeinstellung: SSMTP_HOSTNAME=''
+
+   SSMTP_SENDER_DOMAIN
+          Optional: Ueber diesen Parameter kann der Domainname fuer
+          ausgehende Nachrichten festgelegt werden. Wird dieser Parameter
+          nicht gesetzt, so wird der Domainname vom SMTP-Hostnamen
+          hergeleitet.
+
+          Gueltige Werte: Domainname oder leer
+
+          Standardeinstellung: SSMTP_SENDER_DOMAIN=''
+
+   SSMTP_USE_AUTH
+          Erfordert der ueber den Parameter [2]SSMTP_MAILHUB konfigurierte
+          Mailserver eine Authentifizierung, so muss dieser Parameter auf
+          den Wert 'yes' gesetzt werden.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: SSMTP_USE_AUTH='no'
+
+   SSMTP_AUTH_USER
+          Ueber diesen Parameter wird der Benutzername festgelegt, welcher
+          von sSMTP verwendet werden soll um sich gegenueber dem
+          Mailserver zu authentifizieren.
+
+          Gueltige Werte: Benutzername
+
+          Beispiel: SSMTP_AUTH_USER='user'
+
+   SSMTP_AUTH_PASS
+          Ueber diesen Parameter wird das Kennwort festgelegt, welcher von
+          sSMTP verwendet werden soll um sich gegenueber dem Mailserver zu
+          authentifizieren.
+
+          Gueltige Werte: Kennwort
+
+          Beispiel: SSMTP_AUTH_PASS='pass'
+
+   SSMTP_AUTH_METHOD
+          Ueber diesen Parameter wird die Authentifizierungsmethode
+          festgelegt, welche sSMTP fuer die Authentifizierung gegenueber
+          dem Mailserver verwenden soll.
+
+          Gueltige Werte: plain, cram-md5
+
+          Standardeinstellung: SSMTP_AUTH_METHOD='cram-md5'
+
+   SSMTP_USE_TLS
+          Ueber diesen Parameter wird festgelegt, ob und wie sSMTP
+          versucht eine verschluesselte Verbindung zum Mailserver
+          aufzubauen.
+          Hierbei fuehrt der Wert 'starttls' dazu, dass sSMTP zunaechst
+          eine unverschluesselte Verbindung ueber den smtp-Port 25/tcp
+          aufbaut und dann mit Hilfe des STARTTLS-Befehls in den
+          verschluesselten Modus wechselt.
+          Der Wert 'tls' veranlasst sSMTP direkt eine verschluesselte
+          Verbindung ueber den smtps-Port 465/tcp aufzubauen, sodass
+          dieser gegebenenfalls ueber den Parameter [3]SSMTP_MAILHUB_PORT
+          eingestellt werden muss.
+          Der Wert 'no' fuehrt dazu, dass eine unverschluesselte
+          Verbindung aufgebaut wird.
+
+          Gueltige Werte: no, starttls, tls
+
+          Standardeinstellung: SSMTP_USE_TLS='no'
+
+   SSMTP_USE_TLS_CERT
+          Wird der Wert dieses Parameters auf 'yes' gesetzt, so wird
+          versucht sich mittels eines SSL-/TLS-Zertificates beim
+          Mailserver zu authentifizieren. Der Wert auf 'no' deaktiviert
+          diese Funktion.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: SSMTP_USE_TLS_CERT='no'
+
+   SSMTP_OUTGOING_N
+          Ueber diesen Parameter wird festgelegt, wie viele
+          Aliasdefinitionen fuer ausgehende Nachrichten konfiguriert
+          werden sollen.
+
+          Gueltige Werte: Zahl
+
+          Standardeinstellung: SSMTP_OUTGOING_N='0'
+
+   SSMTP_OUTGOING_x_USER
+          Ueber diesen Parameter wird der Name eines Systemanwenders
+          festgelegt, fuer den eine E-Mail-Aliasadresse konfiguriert
+          werden soll.
+
+          Gueltige Werte: existierender Systemanwender
+
+          Standardeinstellung: SSMTP_OUTGOING_1_USER='root'
+
+   SSMTP_OUTGOING_x_EMAIL
+          Ueber diesen Parameter wird die E-Mail-Adresse festgelegt, die
+          beim Versand von Nachrichten des ueber den Parameter
+          [4]SSMTP_OUTGOING_x_USER definierten Anwenders, verwendet werden
+          soll.
+
+          Gueltige Werte: gueltige E-Mail-Adresse
+
+          Standardeinstellung: SSMTP_OUTGOING_1_EMAIL='me@local.lan'
+
+   SSMTP_OUTGOING_x_MAILHUB
+          Optional: Ueber diesen Parameter kann ein Mailserver festgelegt
+          werden ueber den ausgehende Nachrichten des des ueber den
+          Parameter [5]SSMTP_OUTGOING_x_USER definierten Anwenders,
+          geleitet werden sollen.
+
+          Gueltige Werte: Hostname (als FQDN)
+
+          Standardeinstellung: SSMTP_OUTGOING_1_MAILHUB=''
+
+   SSMTP_OUTGOING_x_MAILHUB_PORT
+          Optional: Ueber diesen Parameter kann der Port festgelegt
+          werden, ueber welchen die Verbindung zum Mailserver aufgebaut
+          werden soll. Wird kein Wert angegeben, so wird der
+          SMTP-Standardport 25/tcp verwendet.
+
+          Gueltige Werte: gueltige Portnummer oder leer
+
+          Standardeinstellung: SSMTP_OUTGOING_1_MAILHUB_PORT=''
+     __________________________________________________________________
+
+    Juergen Edner 2013-01-26

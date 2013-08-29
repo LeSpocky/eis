@@ -1,0 +1,46 @@
+#!/bin/sh
+#-------------------------------------------------------------------------------
+# /var/install/bin/ssmtp-send-testmail - send mail to test sSMTP configuration
+#  Copyright (c) 2008 - 2010 Stefan Goldbach, stefan(at)altergraben(dot)de
+#                2010 - 2013 the eisfair team, team(at)eisfair(dot)org
+#-------------------------------------------------------------------------------
+
+. /etc/config.d/ssmtp
+
+subject="sSMTP test mail"
+ssmtp_error=/tmp/ssmtp-error
+
+[ -z "$SSMTP_HOSTNAME" ] && SSMTP_HOSTNAME=$(hostname --fqdn)
+
+echo -n "Sending test mail to '$SSMTP_FORWARD_TO}'"
+
+{
+    echo "This email was generated to test your sSMTP sendmail"
+    echo "emulation installed on '${HOSTNAME}' (${SSMTP_HOSTNAME})."
+    echo ""
+    echo "This mail was forwarded to '${SSMTP_FORWARD_TO}'"
+    echo "using the mailhub '${SSMTP_MAILHUB}'."
+} | /usr/bin/mail  -s "${subject}" ${SSMTP_FORWARD_TO} 2> ${ssmtp_error}
+
+sleep 0.3
+echo -n "."
+sleep 0.3
+echo -n "."
+sleep 0.3
+echo -n "."
+sleep 0.3
+
+message=`cat ${ssmtp_error} | sed 's#send-mail:\(.\+\)#\1#'`
+
+if [ -n "$message" ]
+then
+    echo ""
+    echo ${message}
+    echo ""
+else
+    echo " done."
+fi
+
+sleep 1
+
+rm -f ${ssmtp_error}

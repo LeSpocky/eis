@@ -25,11 +25,9 @@
 #----------------------------------------------------------------------------
 
 # only include this file once
-if [ "$_CONFIGLIB" = "true" ]
-then
-    return 0
-fi
+[ "$_CONFIGLIB" = "true" ] && return 0
 _CONFIGLIB='true'
+
 # default for linespacing
 _CONFIGLIB_LINESPACING='off'
 # fixed spaces string - 60 character long (fast method)
@@ -330,10 +328,7 @@ printvar()
     local _printvar_restcommentlen=0
     local _printvar_comment_rest=0
 
-    if [ -n "$2" ]
-    then
-        _printvar_comment=" # $2"
-    fi
+    [ -n "$2" ] && _printvar_comment=" # $2"
 
     if [ -z "$_printvar_varname" ]
     then
@@ -487,4 +482,37 @@ printend()
 setlinespacing()
 {
     _CONFIGLIB_LINESPACING="$1"
+}
+
+# ========
+# function: variable is set
+# input:  $1 - variable name
+# return:  0 - variable set
+#          1 - variable not set
+variable_set()
+{
+    local ret=
+    local _var1=""
+    local _var2=""
+    eval _var1=\$"${1}"
+    eval _var2=\$"{${1}+EMPTY}"
+    if [ -z "${_var1}" ]
+    then
+        [ "${_var2}" = "EMPTY" ] && ret=0 || ret=1
+    else
+        ret=0
+    fi
+    return ${ret}
+}
+
+# ========
+# print variable only if it has been set
+# $1 - variable name
+# $2 - comment
+printsetvar()
+{
+    if variable_set "${1}"
+    then
+        printvar "${1}" "${2}"
+    fi
 }

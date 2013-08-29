@@ -1,0 +1,7 @@
+<!-- /var/install/menu/setup.services.ssmtp.menu -->
+<package>ssmtp</package>
+<title>sSMTP administration</title>
+<doc>View documentation</doc>
+<edit>Edit configuration</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
+<script file="ssmtp-send-testmail">Send test email</script>

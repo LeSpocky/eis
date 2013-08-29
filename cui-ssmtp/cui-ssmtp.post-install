@@ -1,0 +1,6 @@
+#!/bin/sh
+
+/var/install/bin/add-menu setup.services.menu setup.services.ssmtp.menu "sSMTP Mail Administration"
+
+[ -e /etc/config.d/ssmtp ] || cp /etc/default.d/ssmtp /etc/config.d/
+exit 0

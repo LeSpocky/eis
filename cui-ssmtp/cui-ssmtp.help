@@ -1,0 +1,142 @@
+<help name="START_SSMTP">
+    Wird der Wert dieses Parameters auf 'yes' gesetzt, so wird das Paket
+    aktiviert; der Wert 'no' deaktiviert es.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+</help>
+
+<help name="SSMTP_FORWARD_TO">
+    Alle Nachrichten an Anwender deren UID &lt; 1000 ist, werden standardmaessig
+    an diese E-Mail-Adresse geschickt.
+<!-- JED / 23.01.2013 - Es wird kein leerer Parameter zugelassen um eine
+                        stabile Konfiguration zu gewaehrleisten
+    Wird hier keine Adresse eingetragen, so wird die Funktion zum Umschreiben
+    von Adressen deaktiviert. -->
+    <br/>
+    Gueltige Werte: eine E-Mail-Adresse<br/>
+    <br/>
+    Standard-Einstellung: SSMTP_FORWARD_TO='root@eisfair.local'<br/>
+</help>
+
+<help name="SSMTP_MAILHUB">
+    Ueber diesen Mailserver versendet sSMTP alle ausgehenden Nachrichten.<br/>
+    <br/>
+    Standard-Einstellung: SSMTP_MAILHUB='mail.eisfair.local'<br/>
+</help>
+
+<help name="SSMTP_MAILHUB_PORT">
+    Optional: Ueber den Parameter SSMTP_MAILHUB_PORT kann der Port festgelegt
+    werden, ueber welchen die Verbindung zum Mailhub aufgebaut werden soll.
+    Wird kein Wert angegeben, so wird der SMTP-Standardport 25/tcp verwendet.<br/>
+    <br/>
+    Standard-Einstellung: SSMTP_MAILHUB_PORT=''<br/>
+</help>
+
+<help name="SSMTP_HOSTNAME">
+    Optional: Ueber den Parameter SSMTP_HOSTNAME kann sSMTP einen beliebigen
+    Hostnamen im SMTP-HELO-Dialog uebermitteln. Ausserdem wird daraus die
+    Absenderadresse fuer ausgehende Nachrichten hergeleitet (username@SSMTP_HOSTNAME).
+    Wird kein Hostname angegeben, wird der in /etc/config.d/base konfigurierte
+    Name verwendet.<br/>
+    <br/>
+    Standard-Einstellung: SSMTP_HOSTNAME=''<br/>
+</help>
+
+<help name="SSMTP_SENDER_DOMAIN">
+    Optional: Ueber den Parameter SSMTP_SENDER_DOMAIN kann der Domainname
+    fuer ausgehende Nachrichten festgelegt werden. Wird dieser Parameter
+    nicht gesetzt, so wird der Domainname vom SMTP-Hostnamen hergeleitet.<br/>
+    <br/>
+    Gueltige Werte: Domainname oder leer<br/>
+</help>
+
+<help name="SSMTP_USE_AUTH">
+   Wenn der angegebene Mail-Server eine Authentifizierung verlangt, muss
+   diese Variable auf den Wert 'yes' gestellt werden.<br/>
+   <br/>
+   Standard-Einstellung: SSMTP_USE_AUTH='yes'
+</help>
+
+<help name="SSMTP_AUTH_USER">
+    Benutzername fuer die Authentifizierung am Mail-Server.<br/>
+    <br/>
+    Standard-Einstellung: SSMTP_AUTH_USER='user'
+</help>
+
+<help name="SSMTP_AUTH_PASS">
+    Passwort fuer die Authentifizierung am Mail-Server.<br/>
+    <br/>
+    Standard-Einstellung: SSMTP_AUTH_PASS='pass'
+</help>
+
+<help name="SSMTP_AUTH_METHOD">
+    Hier muss ein vom Mail-Server unterstuetztes Authentifizierungs-Verfahren
+    angegeben werden. sSMTP unterstuetzt 'plain' und 'cram-md5'.<br/>
+    <br/>
+    Standard-Einstellung: SSMTP_AUTH_METHOD='plain'
+</help>
+
+<help name="SSMTP_USE_TLS">
+    Ueber diesen Parameter wird festgelegt, ob und wie sSMTP versucht eine
+    verschluesselte Verbindung zum Mailserver aufzubauen.<br/>
+    Hierbei fuehrt der Wert 'starttls' dazu, dass sSMTP zunaechst eine
+    unverschluesselte Verbindung ueber den smtp-Port 25/tcp aufbaut und dann
+    mit Hilfe des STARTTLS-Befehls in den verschl"usselten Modus wechselt.<br/>
+    Der Wert 'tls' veranlasst sSMTP direkt eine verschluesselte Verbindung
+    ueber den smtps-Port 465/tcp aufzubauen, sodass dieser gegebenenfalls
+    ueber den Parameter SSMTP\_MAILHUB\_PORT eingestellt werden muss.<br/>
+    Der Wert 'no' fuehrt dazu, dass eine unverschluesselte Verbindung
+    aufgebaut wird.<br/>
+    <br/>
+    Gueltige Werte: no, starttls, tls
+    <br/>
+    Standard-Einstellung: SSMTP_USE_TLS='no'
+</help>
+
+<help name="SSMTP_USE_TLS_CERT">
+    Wird der Wert dieses Parameters auf 'yes' gesetzt, so wird
+    versucht sich mittels eines SSL/TLS-Zertificates beim Mailserver
+    zu authentifizieren. Der Wert auf 'no' deaktiviert diese Funktion.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+</help>
+
+<help name="SSMTP_OUTGOING_N">
+    Ueber diesen Parameter wird festgelegt, wie viele Aliasdefinitionen
+    fuer ausgehende Nachrichten konfiguriert werden sollen.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+</help>
+
+<help name="SSMTP_OUTGOING_%_USER">
+    Ueber diesen Parameter wird der Name eines Systemanwenders
+    festgelegt, fuer den eine E-Mail-Aliasadresse konfiguriert werden
+    soll.<br/>
+    <br/>
+    Gueltige Werte: existierender Systemanwender<br/>
+</help>
+
+<help name="SSMTP_OUTGOING_%_EMAIL">
+    Ueber diesen Parameter wird die E-Mail-Adresse festgelegt, die beim
+    Versand von Nachrichten des ueber den Parameter SSMTP_OUTGOING_x_USER
+    definierten Anwenders, verwendet werden soll.<br/>
+    <br/>
+    Gueltige Werte: gueltige E-Mail-Adresse<br/>
+</help>
+
+<help name="SSMTP_OUTGOING_%_MAILHUB">
+    Optional: Ueber diesen Parameter kann ein Mailserver festgelegt
+    werden ueber den ausgehende Nachrichten des des ueber den Parameter
+    SSMTP_OUTGOING_x_USER definierten Anwenders, geleitet werden sollen.<br/>
+    <br/>
+    Gueltige Werte: ein Hostname (als FQDN)<br/>
+</help>
+
+<help name="SSMTP_OUTGOING_x_MAILHUB_PORT">
+    Optional: Ueber diesen Parameter kann der Port festgelegt werden,
+    ueber welchen die Verbindung zum Mailserver aufgebaut werden soll.
+    Wird kein Wert angegeben, so wird der SMTP-Standardport 25/tcp
+    verwendet.<br/>
+    <br/>
+    Gueltige Werte: eine gueltige Portnummer oder leer<br/>
+</help>
