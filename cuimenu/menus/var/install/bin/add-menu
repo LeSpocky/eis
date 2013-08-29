@@ -1,10 +1,8 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/bin/add-menu - add a menu entry
-#
 # Creation:	    2001-11-04  fm
 # Last Update:  $Id: add-menu 27036 2010-12-23 17:24:49Z hbfl $
-#
 # Usage (for XML-menus)
 # ---------------------------------
 # add-menu [--menu] menu-file sub-menu-file comment
@@ -12,27 +10,22 @@
 #
 #          --menu         add <menu>-Tag   [default]
 #          --script       add <script>-Tag instead of <menu>-Tag
-#
+#          --logfile      add <doc>-Tag for logfiles instead of <menu>-Tag
 #
 #          menu-file      filename relativ to menupath /var/install/menu
-#
 #                         The new entry is added to this menu.
 #
-#
 #          sub-menu-file  filename relativ to menupath /var/install/menu
-#
 #                         The new entry
 #                             <menu file="sub-menu-file">comment</menu>
 #                         is added to the end of the menu-file
 #                         if such a line does not already exist.
 #
 #          script-file    filename relativ to /var/install/bin or absolute path
-#
 #                         The new entry
 #                             <script file="script-file">comment</script>
 #                         is added to the end of the menu-file
 #                         if such a line does not already exist.
-#
 #
 #          comment        text to display in the menu
 #----------------------------------------------------------------------------
@@ -42,12 +35,15 @@ case "$1" in
         shift
         tag="script"
     ;;
-
     --menu)
         shift
         tag="menu"
     ;;
-
+    --logfile)
+        shift
+        tag="doc"
+        opt=" tail=\"yes\""
+    ;;    
     *)
         tag="menu"
     ;;
@@ -56,15 +52,15 @@ esac
 menu_file=$1
 menu_cmd=$2
 shift 2
-
 menu_text="$*"
-menu_path='/var/install/menu'
 
-if [ -f "$menu_path/$menu_file" ]
+if [ -f "/var/install/menu/$menu_file" ]
 then
-    if grep -q "<$tag file=\"$menu_cmd\"" $menu_path/$menu_file
+    if grep -q "<${tag}${opt} file=\"${menu_cmd}\"" /var/install/menu/${menu_file}
     then
         exit 0
     fi
-    echo "<$tag file=\"$menu_cmd\">$menu_text</$tag>" >>$menu_path/$menu_file
+    echo "<${tag}${opt} file=\"${menu_cmd}\">${menu_text}</${tag}>" >>/var/install/menu/${menu_file}
 fi
+
+exit 0

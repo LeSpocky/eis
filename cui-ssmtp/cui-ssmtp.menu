@@ -1,6 +1,6 @@
 <!-- /var/install/menu/setup.services.ssmtp.menu -->
 <package>ssmtp</package>
-<title>sSMTP administration</title>
+<title>sSMTP Administration</title>
 <doc>View documentation</doc>
 <edit>Edit configuration</edit>
 <menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>

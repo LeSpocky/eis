@@ -11,12 +11,13 @@ subject="sSMTP test mail"
 ssmtp_error=/tmp/ssmtp-error
 
 [ -z "$SSMTP_HOSTNAME" ] && SSMTP_HOSTNAME=$(hostname --fqdn)
+hostname=$(hostname)
 
 echo -n "Sending test mail to '$SSMTP_FORWARD_TO}'"
 
 {
     echo "This email was generated to test your sSMTP sendmail"
-    echo "emulation installed on '${HOSTNAME}' (${SSMTP_HOSTNAME})."
+    echo "emulation installed on '${hostname}' (${SSMTP_HOSTNAME})."
     echo ""
     echo "This mail was forwarded to '${SSMTP_FORWARD_TO}'"
     echo "using the mailhub '${SSMTP_MAILHUB}'."
@@ -36,7 +37,6 @@ if [ -n "$message" ]
 then
     echo ""
     echo ${message}
-    echo ""
 else
     echo " done."
 fi
