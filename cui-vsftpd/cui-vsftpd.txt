@@ -1,6 +1,6 @@
-   
+
    START_FTP
-          Legt fest, ob der pure-ftp FTP-Server gestartet wird.
+          Legt fest, ob der vsftp FTP-Server gestartet wird.
 
           Gueltige Werte: yes,no
 
@@ -17,9 +17,8 @@
    FTP_LOG_INTERVAL
           Wann soll die Log-Datei durch eine leere Datei ersetzt werden.
           Damit beeinflusst man die Groesse der Log-Datei.
-   
+
           Default: weekly
-   
+
    FTP_LOG_MAXCOUNT
           Maximale Anzahl der gespeicherten Log-Dateien.
-           

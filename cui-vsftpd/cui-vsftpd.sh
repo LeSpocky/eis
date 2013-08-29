@@ -8,12 +8,10 @@
 #exec 2> /tmp/vsftpd-trace$$.log
 #set -x
 
-pgmname=$0
-
 . /etc/config.d/vsftpd
 
 #----------------------------------------------------------------------------------------
-# creating configig file
+# creating/edit config file
 #----------------------------------------------------------------------------------------
 enbind="#"
 
@@ -74,7 +72,7 @@ EOF
 #----------------------------------------------------------------------------------------
 # setup logrotate
 #----------------------------------------------------------------------------------------
-cat >> /etc/logrotate.d/vsftpd <<EOF
+cat > /etc/logrotate.d/vsftpd <<EOF
 /var/log/ftp*log {
     ${FTP_LOG_INTERVAL}
     missingok

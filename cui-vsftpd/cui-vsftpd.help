@@ -1,5 +1,5 @@
 <help name="START_FTP">
-start pure-ftpd 'yes' or 'no'<br/>
+start FTP server 'yes' or 'no'<br/>
 <br/>
 Default: START_FTP='no'
 </help>

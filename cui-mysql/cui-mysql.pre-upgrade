@@ -1,0 +1,6 @@
+#!/bin/sh
+# remove default.d und check.d files
+rm -f /etc/default.d/mysql
+rm -f /etc/check.d/mysql
+rm -f /etc/check.d/mysql.exp
+exit 0
