@@ -15,13 +15,13 @@
     <entry line="102" level="2">PHP_MAX_UPLOAD_FILESIZE</entry>
     <entry line="111" level="2">PHP_MEMORY_LIMIT</entry>
     <entry line="117" level="2">PHP_UPLOAD_DIR</entry>
-    <entry line="124" level="3">PHP_EXT_CACHE</entry>
-    <entry line="132" level="3">PHP_EXT_SOAP</entry>
-    <entry line="138" level="3">PHP_EXT_GD</entry>
-    <entry line="144" level="3">PHP_EXT_MYSQL</entry>
+    <entry line="124" level="2">PHP_EXT_CACHE</entry>
+    <entry line="132" level="2">PHP_EXT_SOAP</entry>
+    <entry line="138" level="2">PHP_EXT_GD</entry>
+    <entry line="144" level="2">PHP_EXT_MYSQL</entry>
     <entry line="149" level="3">PHP_EXT_MYSQL_SOCKET</entry>
     <entry line="156" level="3">PHP_EXT_MSSQL</entry>
-    <entry line="161" level="3">PHP_EXT_PGSQL</entry>
-    <entry line="166" level="3">PHP_EXT_INTER</entry>
-    <entry line="171" level="3">PHP_EXT_SQLITE3</entry>
+    <entry line="161" level="2">PHP_EXT_PGSQL</entry>
+    <entry line="166" level="2">PHP_EXT_INTER</entry>
+    <entry line="171" level="2">PHP_EXT_SQLITE3</entry>
 </index>
