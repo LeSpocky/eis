@@ -33,23 +33,22 @@ MYSQL_DEFAULT_COLLATION="latin1_german1_ci"
 #-------------------------------------------------------------------------------
 {
 # The following options will be passed to all MySQL clients
-echo "
-[client]
+echo "[client]
 #password	    = your_password
 port		    = $MYSQL_CONNECT_PORT
-socket		    = /var/run/mysqld/mysqld.sock"
+socket		    = /var/run/mysqld/mysqld.sock
+"
 
 # Here follows entries for some specific programs
 
 # set mysql to syslog output
-echo "
-[mysqld_safe]
+echo "[mysqld_safe]
 syslog
-syslog-tag=mysqld"
+syslog-tag=mysqld
+"
 
 # The MySQL server
-echo "
-[mysqld]
+echo "[mysqld]
 port		    = $MYSQL_CONNECT_PORT
 socket		    = /var/run/mysqld/mysqld.sock
 skip-external-locking"
@@ -97,7 +96,7 @@ read_rnd_buffer_size = 512K
 myisam_sort_buffer_size = 8M"
 idbh="innodb_data_home_dir = /var/lib/mysql"
 idfp="innodb_data_file_path = ibdata1:10M:autoextend"
-ibps="innodb_buffer_pool_size = 16M"
+ibps="innodb_buffer_pool_size = 32M"
 iams="innodb_additional_mem_pool_size = 2M"
 ilfs="innodb_log_file_size = 5M"
 ilbs="innodb_log_buffer_size = 8M"
