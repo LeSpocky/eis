@@ -19,7 +19,8 @@ In diesen Verzeichnissen schaut PHP nach, wenn per include(), require() o.ae.
 eine Datei ohne die Angabe von einem absoluten Verzeichnis inkludiert 
 werden soll. Oder wenn diese Datei im aktuellen Verzeichnis nicht gefunden wird.
 <br/><br/>
-Als Trennzeichen der Verzeichnisse wird ein Doppelpunkt (:) verwendet.
+Als Trennzeichen der Verzeichnisse wird ein Doppelpunkt (:) verwendet.<br/>
+Standartwert: .:/usr/share/pear:/usr/include/php5
 </help>
 
 <help name="PHP_REGISTER_GLOBALS">

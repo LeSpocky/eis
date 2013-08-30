@@ -1,5 +1,4 @@
 #!/bin/sh
-
 /var/install/bin/add-menu setup.services.apache2.menu setup.services.apache2.php.menu "PHP Administration"
 [ -e /etc/config.d/php-apache2 ] || cp /etc/default.d/php-apache2 /etc/config.d/
 exit 0

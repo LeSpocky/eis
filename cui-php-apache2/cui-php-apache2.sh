@@ -1,6 +1,6 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
-# eisfair-ng configuration generator script for PHP
+# eisfair-ng configuration generator script
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 
@@ -14,7 +14,10 @@ retval=0
 
 APACHE_USER="apache"
 
+mkdir -p /etc/php/conf.d
+
 if [ "$PHP_INFO" = "yes" ] ; then
+    mkdir -p /var/www/localhost/htdocs
     echo '<?php phpinfo() ?>'>/var/www/localhost/htdocs/info.php
     echo '<?php
     if(!empty($_GET["text"])) {

@@ -40,7 +40,7 @@ Allgemeine Konfiguration
           verwendet.
 
           Standardeinstellung:
-          PHP_INCLUDE_PATH='.:/usr/share/php5:/usr/include/php5'
+          PHP_INCLUDE_PATH='.:/usr/share/pear:/usr/include/php5'
 
    PHP_REGISTER_GLOBALS
           Wird diese Variable auf 'yes' gesetzt, stellt dies ein

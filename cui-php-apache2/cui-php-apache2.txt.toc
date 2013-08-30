@@ -1,0 +1,27 @@
+<!-- ssmtp.tex - table of content -->
+<!-- creation date: 2013-08-30 -->
+<index title="PHP fuer Apache2">
+    <entry line="7" level="1">Die Konfigurationsdatei</entry>
+    <entry line="15" level="2">PHP_MAX_EXECUTION_TIME</entry>
+    <entry line="21" level="2">PHP_DISPLAY_ERRORS</entry>
+    <entry line="27" level="2">PHP_LOG_ERROR</entry>
+    <entry line="33" level="2">PHP_INCLUDE_PATH</entry>
+    <entry line="45" level="2">PHP_REGISTER_GLOBALS</entry>
+    <entry line="61" level="2">PHP_SENDMAIL_PATH</entry>
+    <entry line="68" level="2">PHP_SENDMAIL_APP</entry>
+    <entry line="75" level="2">PHP_DATE_TIMEZONE</entry>
+    <entry line="81" level="2">PHP_INFO</entry>
+    <entry line="93" level="2">PHP_MAX_POST_SIZE</entry>
+    <entry line="102" level="2">PHP_MAX_UPLOAD_FILESIZE</entry>
+    <entry line="111" level="2">PHP_MEMORY_LIMIT</entry>
+    <entry line="117" level="2">PHP_UPLOAD_DIR</entry>
+    <entry line="124" level="3">PHP_EXT_CACHE</entry>
+    <entry line="132" level="3">PHP_EXT_SOAP</entry>
+    <entry line="138" level="3">PHP_EXT_GD</entry>
+    <entry line="144" level="3">PHP_EXT_MYSQL</entry>
+    <entry line="149" level="3">PHP_EXT_MYSQL_SOCKET</entry>
+    <entry line="156" level="3">PHP_EXT_MSSQL</entry>
+    <entry line="161" level="3">PHP_EXT_PGSQL</entry>
+    <entry line="166" level="3">PHP_EXT_INTER</entry>
+    <entry line="171" level="3">PHP_EXT_SQLITE3</entry>
+</index>
