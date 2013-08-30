@@ -14,8 +14,7 @@ MYSQL_NETWORK="yes"
 MYSQL_BIND_IP_ADDRESS="127.0.0.1"
 MYSQL_MEMORY_OPT="medium"
 MYSQL_MAX_ALLOWED_PACKET="1"
-MYSQL_MAX_CONNECTIONS="300"
-MYSQL_DEFAULT_COLLATION="latin1_german1_ci"
+MYSQL_MAX_CONNECTIONS="200"
 
 . /etc/config.d/mysql
 
@@ -37,6 +36,7 @@ echo "[client]
 #password	    = your_password
 port		    = $MYSQL_CONNECT_PORT
 socket		    = /var/run/mysqld/mysqld.sock
+default-character-set = utf8
 "
 
 # Here follows entries for some specific programs
@@ -234,31 +234,35 @@ echo "$ilbs"
 echo "$iflc"
 #innodb_lock_wait_timeout = 50
 echo "$ilwt"
-echo
+
 # character set:
-#echo "character-set-server = `echo "$MYSQL_DEFAULT_COLLATION" | cut -f 1 -d '_'`"
-#echo "collation-server = $MYSQL_DEFAULT_COLLATION"
-#echo
+echo "
+character-set-server = utf8
+collation-server = utf8_general_ci
+"
 
-echo "[mysqldump]"
-echo "quick"
-echo "max_allowed_packet = 16M"
-echo
+echo "[mysqldump]
+quick
+max_allowed_packet = 16M
+default-character-set = utf8
+"
 
-echo "[mysql]"
-echo "no-auto-rehash"
+echo "[mysql]
+no-auto-rehash
+"
 # Remove the next comment character if you are not familiar with SQL
 #safe-updates
 
-echo "
-[myisamchk]
+echo "[myisamchk]
 key_buffer_size = $kbs
 sort_buffer_size = $kbs
 read_buffer = 2M
 write_buffer = 2M
 "
-echo "[mysqlhotcopy]"
-echo "interactive-timeout"
+
+echo "[mysqlhotcopy]
+interactive-timeout
+"
 
 } > /etc/mysql/my.cnf
 
