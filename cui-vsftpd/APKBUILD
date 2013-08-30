@@ -45,8 +45,8 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.vsftpd.menu || return 1	
 	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/vsftpd/vsftpd.txt || return 1
 	install -D -m755 ${srcdir}/vsftpd-user.cui.sh       ${pkgdir}/var/install/bin/vsftpd-user.cui.sh || return 1
-	install -D -m755 ${srcdir}/cui-vsftpd.syslog-destination  ${pkgdir}/etc/syslog-ng/syslog-ng-destination.vsftp || return 1
-	install -D -m755 ${srcdir}/cui-vsftpd.syslog-log    ${pkgdir}/etc/syslog-ng/syslog-ng-log.vsftp || return 1    	
+	install -D -m644 ${srcdir}/cui-vsftpd.syslog-destination  ${pkgdir}/etc/syslog-ng/syslog-ng-destination.vsftp || return 1
+	install -D -m644 ${srcdir}/cui-vsftpd.syslog-log    ${pkgdir}/etc/syslog-ng/syslog-ng-log.vsftp || return 1    	
 }
 
 md5sums="f9c49b777df4dd85b0286a717650f339  cui-vsftpd.default
