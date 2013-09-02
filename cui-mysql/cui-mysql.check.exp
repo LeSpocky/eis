@@ -1,0 +1,2 @@
+MYSQL_RAM     = '1G|2G|4G|8G|16G|32G|64G'
+              : 'Use only: 1G, 2G, 4G, 8G, 16G, 32G or 64G'
