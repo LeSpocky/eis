@@ -1,5 +1,8 @@
 # Variable                             OPT_VARIABLE                  VARIABLE_N                   VALUE
 START_MYSQL                            -                             -                            YESNO
-MYSQL_BIND                             START_MYSQL                   -                            EIPADDRESSES
+MYSQL_NETWORK                          START_MYSQL                   -                            YESNO
+MYSQL_BIND                             MYSQL_NETWORK                 -                            EIPADDRESSES
+MYSQL_CONNECT_PORT                     MYSQL_NETWORK                 -                            PORT
+MYSQL_RAM                              START_MYSQL                   -                            MYSQL_RAM
 MYSQL_LOG_INTERVAL                     START_MYSQL                   -                            LOG_INTERVAL
 MYSQL_LOG_MAXCOUNT                     START_MYSQL                   -                            NUMERIC

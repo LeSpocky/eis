@@ -233,20 +233,19 @@ fi
 # -----------------------------------------------------------------------------
 # MYSQL
 if [ "$PHP_EXT_MYSQL" = "yes" ] ; then
-	if ! apk info -q -e php-mysql; then    	
-		apk add -q php-mysql 
+	if ! apk info -q -e php-mysql; then
+		apk add -q php-mysql
 	fi
-	if ! apk info -q -e php-mysqli; then    	
-		apk add -q php-mysqli 
+	if ! apk info -q -e php-mysqli; then
+		apk add -q php-mysqli
 	fi
-	if ! apk info -q -e php-pdo_mysql; then    	
-		apk add -q php-pdo_mysql 
+	if ! apk info -q -e php-pdo_mysql; then
+		apk add -q php-pdo_mysql
 	fi
     if [ -z "$PHP_EXT_MYSQL_SOCKET" -a -z "$PHP_EXT_MYSQL_HOST" ] ; then
         [ -e "/run/mysqld/mysqld.sock" ] && PHP_EXT_MYSQL_SOCKET="/run/mysqld/mysqld.sock"
     fi
-    if [ -z "$PHP_EXT_MYSQL_HOST" ]
-    then
+    if [ -z "$PHP_EXT_MYSQL_HOST" ] ; then
         PHP_EXT_MYSQL_PORT=""
     else
         [ -z "$PHP_EXT_MYSQL_PORT" ] && PHP_EXT_MYSQL_PORT="3306"
@@ -337,8 +336,8 @@ fi
 # -----------------------------------------------------------------------------
 # MSSQL
 if [ "$PHP_EXT_MSSQL" = "yes" ] ; then
-	if ! apk info -q -e php-mssql; then    	
-		apk add -q php-mssql 
+	if ! apk info -q -e php-mssql; then
+		apk add -q php-mssql
 	fi	
     cat >/etc/php/conf.d/mssql.ini <<EOF
 extension=mssql.so
@@ -387,11 +386,11 @@ fi
 # -----------------------------------------------------------------------------
 # POSTGRESQL
 if [ "${PHP_EXT_PGSQL}" = "yes" ] ; then
-	if ! apk info -q -e php-pgsql; then    	
-		apk add -q php-pgsql 
+	if ! apk info -q -e php-pgsql; then
+		apk add -q php-pgsql
 	fi
-	if ! apk info -q -e php-pdo_pgsql; then    	
-		apk add -q php-pdo_pgsql 
+	if ! apk info -q -e php-pdo_pgsql; then
+		apk add -q php-pdo_pgsql
 	fi
     cat >/etc/php/conf.d/pqsql.ini <<EOF
 extension=pgsql.so
@@ -423,17 +422,17 @@ extension=pdo_pgsql.so
 EOF
 else
     rm -f /etc/php/conf.d/pqsql.ini
-    rm -f /etc/php/conf.d/pdo_pgsql.ini    
+    rm -f /etc/php/conf.d/pdo_pgsql.ini
 fi
 
 # -----------------------------------------------------------------------------
 # SQLite3
 if [ "$PHP_EXT_SQLITE3" = "yes" ] ; then
-	if ! apk info -q -e php-sqlite3; then    	
-		apk add -q php-sqlite3 
+	if ! apk info -q -e php-sqlite3; then
+		apk add -q php-sqlite3
 	fi
-	if ! apk info -q -e php-pdo_sqlite; then    	
-		apk add -q php-pdo_sqlite 
+	if ! apk info -q -e php-pdo_sqlite; then
+		apk add -q php-pdo_sqlite
 	fi
     cat >/etc/php/conf.d/sqlite3.ini <<EOF
 extension=pdo_sqlite.so
@@ -445,14 +444,14 @@ extension=sqlite3.so
 EOF
 else
     rm -f /etc/php/conf.d/sqlite3.ini
-    rm -f /etc/php/conf.d/pdo_sqlite.ini      
+    rm -f /etc/php/conf.d/pdo_sqlite.ini
 fi
 
 # -----------------------------------------------------------------------------
 # SOAP
 if [ "$PHP_EXT_SOAP" = "yes" ] ; then
-	if ! apk info -q -e php-soap; then    	
-		apk add -q php-soap 
+	if ! apk info -q -e php-soap; then
+		apk add -q php-soap
 	fi
 	cat >/etc/php/conf.d/soap.ini <<EOF
 extension=soap.so
@@ -477,8 +476,8 @@ fi
 # -----------------------------------------------------------------------------
 # GD
 if [ "$PHP_EXT_GD" = "yes" ] ; then
-	if ! apk info -q -e php-gd; then    	
-		apk add -q php-gd 
+	if ! apk info -q -e php-gd; then
+		apk add -q php-gd
 	fi
 	cat >/etc/php/conf.d/gd.ini <<EOF
 extension=gd.so
@@ -490,8 +489,8 @@ fi
 # -----------------------------------------------------------------------------
 # LDAP
 if [ "$PHP_EXT_LDAP" = "yes" ] ; then
-	if ! apk info -q -e php-ldap; then    	
-		apk add -q php-ldap 
+	if ! apk info -q -e php-ldap; then
+		apk add -q php-ldap
 	fi
     cat >/etc/php/conf.d/ldap.ini <<EOF
 extension=ldap.so
@@ -506,11 +505,11 @@ fi
 # -----------------------------------------------------------------------------
 # CACHE
 rm -f /etc/php/conf.d/apc.ini
-rm -f /etc/php/conf.d/xcache.ini    
+rm -f /etc/php/conf.d/xcache.ini
 
 if [ "$PHP_EXT_CACHE" = "apc" ] ; then
-	if ! apk info -q -e php-apc; then    	
-		apk add -q php-apc 
+	if ! apk info -q -e php-apc; then
+		apk add -q php-apc
 	fi
     cat >/etc/php/conf.d/apc.ini <<EOF
 extension=apc.so
@@ -524,9 +523,9 @@ apc.mmap_file_mask=/tmp/apc.XXXXXX
 ;apc.enable_cli=1
 EOF
 elif [ "${PHP_EXT_CACHE}" = "xcache" ] ; then
-#  later available: 
-#	if ! apk info -q -e php-xcache; then    	
-#		apk add -q php-xcache 
+#  later available:
+#	if ! apk info -q -e php-xcache; then
+#		apk add -q php-xcache
 #	fi
     cat >/etc/php/conf.d/xcache.ini <<EOF
 

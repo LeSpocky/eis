@@ -10,30 +10,30 @@
 PHP_MAX_EXECUTION_TIME='30'           # Time in sec. until the script will be
                                       # terminated.
                                       # default: 30
-                                     
+
 PHP_DISPLAY_ERRORS='yes'              # Show syntaxerrors of your PHP-Scripts
                                       # in your Browser.
                                       # yes=ON (default) / no=OFF
-                                     
+
 PHP_LOG_ERROR='no'                    # Write Error to a logfile
                                       # yes=ON / no=OFF (default)
-                                     
+
 PHP_INCLUDE_PATH='.:/usr/share/pear:/usr/include/php5'
                                       # Path were include files are located
                                       # default: .:/usr/share/pear:/usr/include/php5
-                                     
+
 PHP_REGISTER_GLOBALS='no'             # Fixes some errors with some old
                                       # scripts.
                                       # BUT it is strongly recommed to disable
                                       # this! -> SECURITY REASONS!!!
                                       # (use $_POST[] and $_GET[] varables)
                                       # yes=ON / no=OFF (default)
-                                   
+
 PHP_SENDMAIL_PATH=''                  # Here you can change your path to
                                       # sendmail if needed.
                                       # default: empty
                                       # (this will use the deafult one)
-                                     
+
 PHP_SENDMAIL_APP=''                   # Enter additional command that needed to
                                       # run sendmail correctly.
                                       # default: empty
@@ -56,13 +56,13 @@ PHP_MAX_POST_SIZE='32M'               # Maximal POST size
                                       # this value must be bigger/equal than
                                       # PHP_MAX_UPLOAD_FILESIZE
                                       # default: 32M --> means 32 Megabytes
-                                     
+
 PHP_MAX_UPLOAD_FILESIZE='16M'         # Max. filesize for uploads
                                       # default: 16M --> means 16 Megabytes
-                                     
+
 PHP_MEMORY_LIMIT='128M'               # Memory, PHP is allowed to use
                                       # default: 128M --> means 128 Megabytes
-                                     
+
 PHP_UPLOAD_DIR='/tmp'                 # Where to temporary save uploaded file
                                       # default: /tmp
 
@@ -74,8 +74,8 @@ PHP_EXT_CACHE='no'                    # Activate caching module in PHP.
                                       # apc: for APC
                                       # xcache: for XCache
                                       # default: no -> switch caching module off
-                                      
-PHP_EXT_SOAP='no'                     # Activate SOAP module in PHP.                                      
+
+PHP_EXT_SOAP='no'                     # Activate SOAP module in PHP.
 PHP_EXT_GD='yes'                      # Activate GD extension for PHP.
 
 # ----------------------------------------------------------------------------

@@ -167,10 +167,10 @@ Allgemeine Konfiguration
           Hier kann die Interbase Erweiterung in PHP5 aktiviert werden
 
           Standardeinstellung: PHP_EXT_INTER='no'
-          
+
    PHP_EXT_SQLITE3
           Hier kann die SQLite Erweiterung in PHP5 aktiviert werden
 
           Standardeinstellung: PHP_EXT_SQLITE='no'
-          
+
 

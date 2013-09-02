@@ -31,7 +31,13 @@ packages_name=mysql
 
     printvar "START_MYSQL"          "Start mysql service 'yes' or 'no'"
 
+    printvar "MYSQL_NETWORK"        "enable the TCP/IP external connection"
+
     printvar "MYSQL_BIND"           "If set, then bind the MySQL port only to ip-address."
+
+    printvar "MYSQL_CONNECT_PORT"   "MySQL remote port, default=3306"
+
+    printvar "MYSQL_RAM"            "Use 1 ... 64 GB RAM"    
 
     printvar "MYSQL_LOG_INTERVAL"   "logrotate interval"
 
