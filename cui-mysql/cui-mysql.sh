@@ -268,7 +268,7 @@ binlog_cache_size           = $binlog_cache_size
 
 ## Query Cache
 query_cache_size            = $query_cache_size
-query_cache_limit           = 512K	#max query result size to put in cache
+query_cache_limit           = 2M    #512K	#max query result size to put in cache
 
 ## Connections
 max_connections             = $max_connections
