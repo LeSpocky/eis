@@ -55,9 +55,9 @@ if [ "$MYSQL_RAM" = "1GB" ]; then
     innodb_log_file_size="64M"
     innodb_buffer_pool_size="128M"
     innodb_log_buffer_size="16M"
-    #combined size of all logs <4GB. <2G_RAM = 2, >2G_RAM = 4    
+    #combined size of all logs <4GB. <2G_RAM = 2, >2G_RAM = 4
     innodb_log_files_in_group="2"
-    
+
 elif [ "$MYSQL_RAM" = "2GB" ]; then
     ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
     thread_stack="256K"
@@ -81,17 +81,17 @@ elif [ "$MYSQL_RAM" = "2GB" ]; then
     innodb_log_file_size="64M"
     innodb_buffer_pool_size="768M"
     innodb_log_buffer_size="32M"
-    #combined size of all logs <4GB. <2G_RAM = 2, >2G_RAM = 4    
-    innodb_log_files_in_group="2"  
-    
+    #combined size of all logs <4GB. <2G_RAM = 2, >2G_RAM = 4
+    innodb_log_files_in_group="2"
+
 elif [ "$MYSQL_RAM" = "4GB" ]; then
     ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
-    thread_stack="256K"  
-    sort_buffer_size="512K"	 
-    read_buffer_size="512K"	  
-    read_rnd_buffer_size="512K"	 				
-    join_buffer_size="512K"	  
-    binlog_cache_size="64K"	 
+    thread_stack="256K"
+    sort_buffer_size="512K"
+    read_buffer_size="512K"
+    read_rnd_buffer_size="512K"
+    join_buffer_size="512K"
+    binlog_cache_size="64K"
     ## total per-thread buffer memory usage: 2368000K = 2.312G
     ## Query Cache - global buffer
     query_cache_size="32M"
@@ -107,9 +107,9 @@ elif [ "$MYSQL_RAM" = "4GB" ]; then
     innodb_log_file_size="128M"
     innodb_buffer_pool_size="2G"
     innodb_log_buffer_size="64M"
-    #combined size of all logs <4GB. <2G_RAM = 2, >2G_RAM = 4    
-    innodb_log_files_in_group="4"   
-    
+    #combined size of all logs <4GB. <2G_RAM = 2, >2G_RAM = 4
+    innodb_log_files_in_group="4"
+
 elif [ "$MYSQL_RAM" = "8GB" ]; then
     ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
     thread_stack="256K"
@@ -133,8 +133,8 @@ elif [ "$MYSQL_RAM" = "8GB" ]; then
     innodb_log_file_size="256M"
     innodb_buffer_pool_size="4G"
     innodb_log_buffer_size="128M"
-    #combined size of all logs <4GB. <2G_RAM = 2, >2G_RAM = 4    
-    innodb_log_files_in_group="4"   
+    #combined size of all logs <4GB. <2G_RAM = 2, >2G_RAM = 4
+    innodb_log_files_in_group="4"
 
 elif [ "$MYSQL_RAM" = "16GB" ]; then
     ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
@@ -159,8 +159,8 @@ elif [ "$MYSQL_RAM" = "16GB" ]; then
     innodb_log_file_size="256M"
     innodb_buffer_pool_size="10G"
     innodb_log_buffer_size="128M"
-    #combined size of all logs <4GB. <2G_RAM = 2, >2G_RAM = 4    
-    innodb_log_files_in_group="4"   
+    #combined size of all logs <4GB. <2G_RAM = 2, >2G_RAM = 4
+    innodb_log_files_in_group="4"
 
 elif [ "$MYSQL_RAM" = "32GB" ]; then
     ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
@@ -190,13 +190,13 @@ elif [ "$MYSQL_RAM" = "32GB" ]; then
 
 elif [ "$MYSQL_RAM" = "64GB" ]; then
     ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
-    thread_stack="512K"	     
-    sort_buffer_size="2M"	  
-    read_buffer_size="2M"	 
-    read_rnd_buffer_size="2M" 				
-    join_buffer_size="2M"     
+    thread_stack="512K"
+    sort_buffer_size="2M"
+    read_buffer_size="2M"
+    read_rnd_buffer_size="2M"
+    join_buffer_size="2M"
     binlog_cache_size="128K"
-    ## total per-thread buffer memory usage: 17664000K = 17.250GB    	
+    ## total per-thread buffer memory usage: 17664000K = 17.250GB
     ## Query Cache - global buffer
     query_cache_size="64M"
     ## Connections - multiplier for memory usage via per-thread buffers
@@ -211,9 +211,9 @@ elif [ "$MYSQL_RAM" = "64GB" ]; then
     innodb_log_file_size="768M"
     innodb_buffer_pool_size="38G"
     innodb_log_buffer_size="128M"
-    #combined size of all logs <4GB. <2G_RAM = 2, >2G_RAM = 4    
-    innodb_log_files_in_group="4"   
-    
+    #combined size of all logs <4GB. <2G_RAM = 2, >2G_RAM = 4
+    innodb_log_files_in_group="4"
+
 fi
 
 
@@ -237,7 +237,7 @@ collation-server            = utf8_general_ci
 back_log                    = 300
 open-files-limit            = 8192
 open-files                  = 1024
-$bindaddr	
+$bindaddr
 port                        = $MYSQL_CONNECT_PORT
 socket                      = /var/run/mysqld/mysqld.sock
 skip-external-locking
@@ -247,21 +247,21 @@ skip-name-resolve
 datadir                     = /var/lib/mysql
 relay_log                   = mysql-relay-bin
 relay_log_index             = mysql-relay-index
-#log                        = mysql-gen.log	
+#log                        = mysql-gen.log
 log_error                   = mysql-error.log
 log_warnings
 log_bin                     = mysql-bin
 log_slow_queries            = mysql-slow.log
 #log_queries_not_using_indexes
-long_query_time             = 10	#default: 10
-max_binlog_size             = 256M	#max size for binlog before rolling
+long_query_time             = 10    #default: 10
+max_binlog_size             = 256M  #max size for binlog before rolling
 expire_logs_days            = 4	#binlog files older than this will be purged
 
 ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
 thread_stack                = $thread_stack
 sort_buffer_size            = $sort_buffer_size
 read_buffer_size            = $read_buffer_size
-read_rnd_buffer_size        = $read_rnd_buffer_size					
+read_rnd_buffer_size        = $read_rnd_buffer_size
 join_buffer_size            = $join_buffer_size
 binlog_cache_size           = $binlog_cache_size
 
@@ -284,7 +284,7 @@ sql_mode                    = NO_AUTO_CREATE_USER
 max_heap_table_size         = $max_heap_table_size
 bulk_insert_buffer_size     = $bulk_insert_buffer_size
 tmp_table_size              = $tmp_table_size    
-#tmpdir                  = /data/mysql-tmp0:/data/mysql-tmp1 #Recommend using RAMDISK for tmpdir
+#tmpdir                     = /data/mysql-tmp0:/data/mysql-tmp1 #Recommend using RAMDISK for tmpdir
 
 ## Table cache settings
 table_cache                 = 512	#5.0.x <default: 64>
@@ -296,7 +296,7 @@ thread_cache_size           = 100 #recommend 5% of max_connections
 
 ## Replication
 #read_only
-#skip-slave-start		
+#skip-slave-start
 #slave-skip-errors          = <default: none, recommend:1062>
 #slave-net-timeout          = <default: 3600>
 #slave-load-tmpdir          = <location of slave tmpdir>
@@ -324,7 +324,7 @@ thread_cache_size           = 100 #recommend 5% of max_connections
 #rpl_semi_sync_master_timeout	= 1000 #in milliseconds <default: 10000>, master only setting
 
 ## 5.1.x and 5.5.x replication related setting. 
-#binlog_format			= MIXED
+#binlog_format              = MIXED
 
 ## MyISAM Engine
 key_buffer                  = $key_buffer
@@ -338,32 +338,32 @@ myisam_recover              = BACKUP #repair mode, recommend BACKUP
 #plugin-load=innodb=ha_innodb_plugin.so;innodb_trx=ha_innodb_plugin.so;innodb_locks=ha_innodb_plugin.so;innodb_cmp=ha_innodb_plugin.so;innodb_cmp_reset=ha_innodb_plugin.so;innodb_cmpmem=ha_innodb_plugin.so;innodb_cmpmem_reset=ha_innodb_plugin.so;innodb_lock_waits=ha_innodb_plugin.so
 
 ## InnoDB IO Capacity - 5.1.x plugin, 5.5.x
-#innodb_io_capacity		= 200
+#innodb_io_capacity         = 200
 
 ## InnoDB IO settings -  5.1.x only
-#innodb_file_io_threads		= 16
+#innodb_file_io_threads     = 16
 
 ## InnoDB IO settings -  5.5.x and greater
-#innodb_write_io_threads 	= 16
-#innodb_read_io_threads		= 16
+#innodb_write_io_threads    = 16
+#innodb_read_io_threads     = 16
 
 ## InnoDB Plugin Independent Settings
 innodb_data_home_dir        = /var/lib/mysql
 innodb_data_file_path       = ibdata1:128M;ibdata2:10M:autoextend
 innodb_log_file_size        = $innodb_log_file_size 
 innodb_log_files_in_group   = $innodb_log_files_in_group
-innodb_buffer_pool_size		= $innodb_buffer_pool_size
-innodb_additional_mem_pool_size	= 4M  #global buffer
-innodb_status_file		  	        #extra reporting
-innodb_file_per_table			    #enable always
+innodb_buffer_pool_size     = $innodb_buffer_pool_size
+innodb_additional_mem_pool_size = 4M  #global buffer
+innodb_status_file                  #extra reporting
+innodb_file_per_table               #enable always
 innodb_flush_log_at_trx_commit = 2  #2/0 = perf, 1 = ACID
-innodb_table_locks          = 0	    #preserve table locks
+innodb_table_locks          = 0     #preserve table locks
 innodb_log_buffer_size      = $innodb_log_buffer_size
-innodb_lock_wait_timeout    = 60	
-innodb_thread_concurrency   = 16	#recommend 2x core quantity
-innodb_commit_concurrency   = 16	#recommend 4x num disks
-#innodb_flush_method        = O_DIRECT	   #O_DIRECT = local/DAS, O_DSYNC = SAN/iSCSI
-innodb_support_xa           = 0		#recommend 0, disable xa to negate extra disk flush
+innodb_lock_wait_timeout    = 60
+innodb_thread_concurrency   = 16    #recommend 2x core quantity
+innodb_commit_concurrency   = 16    #recommend 4x num disks
+#innodb_flush_method        = O_DIRECT   #O_DIRECT = local/DAS, O_DSYNC = SAN/iSCSI
+innodb_support_xa           = 0          #recommend 0, disable xa to negate extra disk flush
 skip-innodb-doublewrite
 
 ## Binlog sync settings
