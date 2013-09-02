@@ -26,10 +26,6 @@ build() {
 
 package() {
 	cp -r ${startdir}/menus/* ${pkgdir}/
-	mkdir -p ${pkgdir}/usr/sbin/*
-	mkdir -p ${pkgdir}/var/install/bin/*
-	mkdir -p ${pkgdir}/var/install/config.d/*
-	mkdir -p ${pkgdir}/var/install/include/*
 	chmod 0755 ${pkgdir}/usr/sbin/*
 	chmod 0755 ${pkgdir}/var/install/bin/*
 	chmod 0755 ${pkgdir}/var/install/config.d/*
