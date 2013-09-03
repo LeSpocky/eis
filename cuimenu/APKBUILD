@@ -25,6 +25,7 @@ build() {
 }
 
 package() {
+	mkdir -p ${pkgdir}
 	cp -r ${startdir}/menus/* ${pkgdir}/
 	chmod 0755 ${pkgdir}/usr/sbin/*
 	chmod 0755 ${pkgdir}/var/install/bin/*
