@@ -506,6 +506,7 @@ fi
 # CACHE
 rm -f /etc/php/conf.d/apc.ini
 rm -f /etc/php/conf.d/xcache.ini
+rm -f /etc/php/conf.d/memcache.ini
 
 if [ "$PHP_EXT_CACHE" = "apc" ] ; then
 	if ! apk info -q -e php-apc; then
@@ -530,7 +531,32 @@ elif [ "${PHP_EXT_CACHE}" = "xcache" ] ; then
     cat >/etc/php/conf.d/xcache.ini <<EOF
 
 EOF
+elif [ "${PHP_EXT_CACHE}" = "memcache" ] ; then
+	if ! apk info -q -e php-memcache; then
+		apk add -q php-memcache
+	fi
+    cat >/etc/php/conf.d/memcache.ini <<EOF
+extension=memcache.so
+;memcache.allow_failover="1"
+;memcache.max_failover_attempts="20"
+;memcache.chunk_size="8192"
+;memcache.default_port="11211"
+;memcache.hash_strategy="standard"
+;memcache.hash_function="crc32"
+;session.save_handler="files"
+;session.save_path=""
+;memcache.protocol=ascii
+;memcache.redundancy=1
+;memcache.session_redundancy=2
+;memcache.compress_threshold=20000
+;memcache.lock_timeout=15
+EOF
+
+
 fi
+
+
+
 # =============================================================================
 # Restart apache
 [ "${START_APACHE2}" = "yes" ] && rc-service -i -q apache2 restart 

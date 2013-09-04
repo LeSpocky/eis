@@ -4,6 +4,10 @@
 
           Gueltige Werte: yes,no
 
+   MYSQL_NETWORK
+          Erlaubt die externe Verbindung ueber TCP/IP
+          Gueltige Werte: yes,no
+
    MYSQL_PORT
           Definiert den Port, auf den der MySQL-Server 'lauschen' soll.
 
@@ -13,6 +17,11 @@
           Binde den MySQL-Server an eine bestimmte IP-Adresse.
 
           Default:
+
+   MYSQL_RAM
+          Fuer MySQL verwendeter Arbeitsspeicher.
+
+          Moegliche Werte: 1 ... 64 GB
 
    MYSQL_LOG_INTERVAL
           Wann soll die Log-Datei durch eine leere Datei ersetzt werden.

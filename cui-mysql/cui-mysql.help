@@ -1,7 +1,13 @@
 <help name="START_MYSQL">
 start MySQL server 'yes' or 'no'<br/>
 <br/>
-Default: START_FTP='no'
+Default: START_MYSQL='no'
+</help>
+
+<help name="MYSQL_NETWORK">
+Enable the TCP/IP external connection<br/>
+<br/>
+Default: MYSQL_NETWORK='no'
 </help>
 
 <help name="MYSQL_PORT">
@@ -14,8 +20,11 @@ Default: MYSQL_PORT='3306'
 If set, then bind the MySQL port only to ip-address.<br/>
 <br/>
 Default: MYSQL_BIND=''<br/>
-Example for internal only: MYSQL_BIND='127.0.0.1'<br/>
 Example: MYSQL_BIND='192.168.1.1'<br/>
+</help>
+
+<help name="MYSQL_RAM">
+Memory using for mysql server.<br/>
 </help>
 
 <help name="MYSQL_LOG_INTERVAL">
