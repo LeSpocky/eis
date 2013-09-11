@@ -1,10 +1,8 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # template-restore-dconf - restore config file from /etc/default.d
-#
-# Creation:	2003-12-24  Ansgar Püster
-# Last Update:  $Id: template-restore-dconf 24471 2012-11-08 21:14:01Z jv $
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 
 # get package name from filename PACKAGE-restore-dconf
 filename=`basename $0`
@@ -20,12 +18,10 @@ package=`echo $filename | sed "s|-restore-dconf$||"`
 #debug read answ < /dev/tty
 
 
-if [ ! -f /etc/default.d/$package ]
-then
+if [ ! -f /etc/default.d/$package ]  ; then
     /var/install/bin/ask.cui --err "Configuration file /etc/default.d/$package does not exist"
 else
-    if ( /var/install/bin/ask.cui "Overwrite your current configuration with: /etc/default.d/$package ?" )
-    then
+    if ( /var/install/bin/ask.cui "Overwrite your current configuration with: /etc/default.d/$package ?" ) ; then
         cp -p /etc/default.d/$package /etc/config.d/$package
     fi
 fi

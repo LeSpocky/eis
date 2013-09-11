@@ -1,10 +1,8 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # Copyright (c) 2001-2011 the eisfair team, team@eisfair(dot)org
-#
 # usage: edit [--apply|--apply-stopstart] file
 #        edit [--apply|--apply-stopstart] package message
-#
 #----------------------------------------------------------------------------
 
 # include backup

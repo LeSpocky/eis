@@ -1,12 +1,7 @@
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # /var/install/include/baselib - basic library for eisfair scripts
-#
-# Creation:     2004-09-29 max
-# Last Update: $Id: baselib 24471 2012-11-14 21:14:01Z jv $
-#
-#----------------------------------------------------------------------------
-
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 # interface description
 # _EISLIB_BASELIB        is set to 'true' if this file is already included
 #
@@ -31,29 +26,19 @@
 #                        return 1 if screen size to small
 #
 # echo_retval()          function to display the retval message
-#
 #----------------------------------------------------------------------------
 
-
-#============================================================================
 # only include this file once
-if [ "$_EISLIB_BASELIB" = "true" ]
-then
-    return 0
-fi
+[ "$_EISLIB_BASELIB" = "true" ] && return 0
 _EISLIB_BASELIB='true'
 
-#============================================================================
 # defaults for screensize
-#============================================================================
-
 _EISLIB_SCREENSIZE_X_MIN=80
 _EISLIB_SCREENSIZE_Y_MIN=24
 _EISLIB_SCREENSIZE_Y_FILE=999999
 
 #============================================================================
 # define basic functions
-#============================================================================
 
 get_printmode()
 {

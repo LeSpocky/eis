@@ -7,7 +7,7 @@
 # General settings:
 #------------------------------------------------------------------------------
 
-HOSTNAME='eisfair2'                    # name of eisfair server
+HOSTNAME='eis-ng'                   # hostname
 
 #------------------------------------------------------------------------------
 # Ether networks used with IP protocol:

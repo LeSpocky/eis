@@ -1,11 +1,8 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # /var/install/bin/del-menu - delete menu
-# Creation:     09.12.2001  ms
-#               02.11.2003  fm complete rewrite
-# Last Update:  $Id: del-menu 24471 2010-06-10 21:14:01Z schlotze $
-# Usage (for XML-menus)
-# ---------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 # del-menu menu-file sub-menu-file
 # del-menu menu-file script-file
 #
@@ -22,14 +19,13 @@
 #                         is removed from the menu-file if the line exists.
 #----------------------------------------------------------------------------
 
-if [ -f "/var/install/menu/$1" ]
-then
+if [ -f "/var/install/menu/$1" ] ; then
     # new syntax now matches add-menu
     menu_file=$1
     menu_cmd=$2
     # remove by command
     grep -vE "<(menu|script|doc.*) file=\"${menu_cmd}\">" /var/install/menu/${menu_file} >/tmp/$menu_file.$$
-    cp /tmp/$menu_file.$$ /var/install/menu/${menu_file}     # don't mv, keep permissions
+    cp -f /tmp/$menu_file.$$ /var/install/menu/${menu_file}     # don't mv, keep permissions
     rm -f /tmp/$menu_file.$$
 fi
 

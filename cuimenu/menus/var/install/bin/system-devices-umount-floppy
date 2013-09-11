@@ -1,15 +1,11 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # system-devices-umount-floppy - umount floppy disk
-#
-# Creation   : 19.07.2003 fm  Frank Meyer <frank@eisfair.org>
-# Last Update: $Id: system-devices-format-floppy 24471 2012-11-14 21:14:01Z jv $
-#
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 
 umount /media/floppy
-if [ $? = 0 ]
-then
+if [ $? = 0 ] ; then
     /var/install/bin/ask.cui --info "Floppy umount successful."
 else
     /var/install/bin/ask.cui --error "Floppy umount failed!"

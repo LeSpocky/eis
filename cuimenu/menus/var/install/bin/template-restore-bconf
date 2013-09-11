@@ -1,17 +1,12 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # template-restore-bconf - restore config file from /etc/backup.d
-#
-# Creation:	2003-12-24  Ansgar Püster
-# Last Update:  $Id: template-restore-dconf 24471 2012-11-08 21:14:01Z jv $
-#----------------------------------------------------------------------------
-
-if [ $# -gt 0 ]
-then
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
+if [ $# -gt 0 ] ; then
     restfile="$1"
   
-    if ( /var/install/bin/ask.cui "Overwrite your current configuration with: $restfile ?" )
-    then
+    if ( /var/install/bin/ask.cui "Overwrite your current configuration with: $restfile ?" ) ; then
         cp -p /etc/backup.d/$restfile /etc/config.d/$package
     fi
     return 0

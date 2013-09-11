@@ -10,6 +10,7 @@
 # set fcron.conf group cron, read for all!
 #chown root:cron /etc/fcron.conf
 #chmod 0644 /etc/fcron.conf
+mkdir -p /var/spool/fcron
 chown cron:cron /var/spool/fcron
 chmod 0770 /var/spool/fcron
 
@@ -30,13 +31,11 @@ while [ "${idx}" -le "${CRON_N}" ]
 do
 	# check for active
 	eval active='${CRON_'${idx}'_ACTIVE}'
-	if [ "${active}" = "yes" ]
-	then
+	if [ "${active}" = "yes" ] ; then
 		eval time='$FCRON_'${idx}'_TIMES'
 		eval user='$FCRON_'${idx}'_USER'
 		eval command='$FCRON_'${idx}'_COMMAND'
-		if ! grep -e "^${user}:" /etc/passwd >/dev/null 2>&1
-		then
+		if ! grep -e "^${user}:" /etc/passwd >/dev/null 2>&1 ; then
 			user="root"
 		fi
 		mkdir -p ${cron_path}/${user}
@@ -48,11 +47,10 @@ done
 #----------------------------------------------------------------------------
 # start stop update
 #----------------------------------------------------------------------------
-if [ "$START_FCRON" = "yes" ]
-then
-	  rc-update -q add fcron default 2>/dev/null 
+if [ "$START_FCRON" = "yes" ] ; then
+    rc-update -q add fcron default 2>/dev/null
 else
-	  rc-update -q del fcron default 2>/dev/null
+    rc-update -q del fcron default 2>/dev/null
 fi
 
 exit 0

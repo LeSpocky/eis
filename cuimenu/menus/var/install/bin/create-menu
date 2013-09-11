@@ -1,19 +1,14 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # /var/install/bin/create-menu - create a new menu file
-#
-# Creation:	09.04.2005  jed
-# Last Update:  $Id: create-menu 24471 2010-06-10 21:14:01Z schlotze $
-#
-# Usage (for XML-menus)
-# ---------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 # create-menu menu-file menu-title
 #
 #          menu-file      filename relativ to menupath /var/install/menu
 #          menu-title     title of the new menu
 #----------------------------------------------------------------------------
 pgmname=`basename $0`
-menu_path='/var/install/menu'
 
 #----------------------------------------------------------------------------
 # check menu naming
@@ -27,20 +22,15 @@ check_menu_naming()
     local m_name="$2"
     local rval=1
     
-    if [ -n "$p_name" ]
-    then
+    if [ -n "$p_name" ] ; then
         #/var/install/menu/setup.services.foo.menu
         echo "${m_name}" | grep -q "^setup\.services\.${p_name}\.menu$"
-        if [ $? -eq 0 ]
-        then
+        if [ $? -eq 0 ] ; then
             rval=0
         else    
             #/var/install/menu/setup.services.foo.bar.menu
             echo "${m_name}" | grep -E -q "^setup\.services\.${p_name}\..+\.menu$"
-            if [ $? -eq 0 ]
-            then
-                rval=0
-            fi
+            [ $? -eq 0 ] &&  rval=0
         fi
     fi
     return $rval
@@ -48,21 +38,19 @@ check_menu_naming()
 
 # main
 ret=1
-if [ $# -ge 2 ]
-then
+if [ $# -ge 2 ] ; then
     menu_file=`basename $1`
     shift 1
     menu_title="$*"
     package_name=`echo $menu_file | cut -d. -f3`
 
-    if check_menu_naming "$package_name" "$menu_file"
-    then
+    if check_menu_naming "$package_name" "$menu_file" ; then
         {
-            echo "<!-- $menu_path/$menu_file -->"
+            echo "<!-- /var/install/menu/$menu_file -->"
             echo "<!-- Creation:  `date` by $pgmname -->"
             echo "<package>$package_name</package>"
             echo "<title>$menu_title</title>"
-        } > $menu_path/$menu_file
+        } > /var/install/menu/$menu_file
 
         ret=0
     else

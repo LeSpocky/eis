@@ -1,19 +1,14 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # system-devices-mount-cdrom - mount CDROM
-#
-# Creation   : 19.07.2003 fm  Frank Meyer <frank@eisfair.org>
-# Last Update: $Id: system-devices-format-floppy 24471 2012-11-14 21:14:01Z jv $
-#
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 
 mountpath='/media/cdrom'
 
-if [ -e /dev/cdrom ]
-then
+if [ -e /dev/cdrom ] ; then
     mount -r -t iso9660 /dev/cdrom $mountpath
-    if [ $? = 0 ]
-    then
+    if [ $? = 0 ] ; then
         /var/install/bin/ask.cui --info "mount successful, path is $mountpath."
     else
         /var/install/bin/ask.cui --error "mount failed."

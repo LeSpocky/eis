@@ -1,10 +1,8 @@
 #!/bin/bash
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # master-diff-config - master file for config file camparison
-#
-# Creation:	2003-12-24  Ansgar Püster
-# Last Update:  $Id: template-restore-dconf 24471 2012-11-08 21:14:01Z jv $
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 
 # include techo only for better performance
 . /var/install/include/techo
@@ -138,10 +136,8 @@ env_diff()
   while read ind varname varval
   do
     # new indicator
-    if [ $ind = 'new' ]
-    then
-      if [ $n_val = 1 ]
-      then
+    if [ $ind = 'new' ] ; then
+      if [ $n_val = 1 ] ; then
         echo "> $n_varname $n_varval"
         set_new
       else
@@ -151,10 +147,8 @@ env_diff()
     fi
 
     # old indicator
-    if [ $ind = 'old' ]
-    then
-      if [ $o_val = 1 ]
-      then
+    if [ $ind = 'old' ] ; then
+      if [ $o_val = 1 ] ; then
         echo "$o_varname $o_varval <"
         set_old
       else
@@ -164,13 +158,10 @@ env_diff()
     fi
       
     # both value are set
-    if [ $n_val = 1 -a $o_val = 1 ]
-    then
-      if [ $n_varname = $o_varname ]
-      then
+    if [ $n_val = 1 -a $o_val = 1 ] ; then
+      if [ $n_varname = $o_varname ] ; then
         # identical names
-        if [ "$n_varval" = "$o_varval" ]
-        then
+        if [ "$n_varval" = "$o_varval" ] ; then
            echo "$o_varname $o_varval $n_varname $n_varval"
         else
            echo "$o_varname $o_varval | $n_varname $n_varval"
@@ -178,8 +169,7 @@ env_diff()
         o_val=0
         n_val=0
       else
-        if [[ $n_varname < $o_varname ]]
-        then
+        if [[ $n_varname < $o_varname ]] ; then
           echo "> $n_varname $n_varval"
           n_val=0
         else
@@ -191,14 +181,12 @@ env_diff()
   done < $both_cont
 
   # check remaining names
-  if [ $n_val = 1 ]
-  then
+  if [ $n_val = 1 ] ; then
     echo "> $n_varname $n_varval"
     n_val=0
   fi 
   
-  if [ $o_val = 1 ]
-  then
+  if [ $o_val = 1 ] ; then
     echo "$o_varname $o_varval <"
     o_val=0
   fi
@@ -256,8 +244,7 @@ fmask='*[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0
 act_count=0
 fcount=0
 
-if  [ $l_source = '-' ]
-then
+if  [ $l_source = '-' ] ; then
     sourcefile=/tmp/sourcefile.$$    
     if ! /var/install/bin/list-files.cui -t "Select backup config file for DIFF" \
                                 -c "Select:" \
@@ -273,8 +260,7 @@ then
     rm -f $sourcefile
 fi
 
-if  [ $r_source = '-' ]
-then
+if  [ $r_source = '-' ] ; then
     sourcefile=/tmp/sourcefile.$$  
     if ! /var/install/bin/list-files.cui -t "Select second backup config file for DIFF" \
                                 -c "Select:" \
@@ -304,8 +290,7 @@ if [ $r_source != '-' -a ! -f $r_source ]; then
    r_source='-'
 fi
 
-if [ $l_source != '-' -a $r_source != '-' ]
-then
+if [ $l_source != '-' -a $r_source != '-' ] ; then
    header
    tmp_dir=/tmp
    right=$tmp_dir/right.$$

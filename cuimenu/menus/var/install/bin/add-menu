@@ -1,10 +1,8 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/bin/add-menu - add a menu entry
-# Creation:	    2001-11-04  fm
-# Last Update:  $Id: add-menu 27036 2010-12-23 17:24:49Z hbfl $
-# Usage (for XML-menus)
-# ---------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 # add-menu [--menu] menu-file sub-menu-file comment
 # add-menu --script menu-file script-file comment
 #
@@ -54,10 +52,8 @@ menu_cmd=$2
 shift 2
 menu_text="$*"
 
-if [ -f "/var/install/menu/$menu_file" ]
-then
-    if grep -q "<${tag}${opt} file=\"${menu_cmd}\"" /var/install/menu/${menu_file}
-    then
+if [ -f "/var/install/menu/$menu_file" ] ; then
+    if grep -q "<${tag}${opt} file=\"${menu_cmd}\"" /var/install/menu/${menu_file} ; then
         exit 0
     fi
     echo "<${tag}${opt} file=\"${menu_cmd}\">${menu_text}</${tag}>" >>/var/install/menu/${menu_file}

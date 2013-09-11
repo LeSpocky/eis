@@ -1,26 +1,22 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # system-devices-vg-show - show volume groups
-#
-# Creation   : 2009-09-02 schlotze
-# Last Update: $Id: system-filesystems-vg-show 16589 2008-09-02 21:18:56Z schlotze $
-#
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 . /var/install/include/anykey
 . /var/install/include/mecho
 . /var/install/include/techo
 
 echo ""
-mecho --info "List volume groups"
+echo "List volume groups"
 techo begin 39 5r 5r 5r 8 9r 9r
 techo row --info "VG" --info "#PV" --info "#LV" --info "#SN" --info "Attr" --info "VSize" --info "VFree"
-mecho --info "================================================================================"
+echo "================================================================================"
 
 vgs|while read line
 do
     set -- $line
-    if [ "$1" != "VG" ]
-    then
+    if [ "$1" != "VG" ] ; then
         techo row $1 $2 $3 $4 $5 $6 $7
     fi
 done

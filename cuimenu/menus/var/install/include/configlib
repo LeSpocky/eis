@@ -1,9 +1,7 @@
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # /var/install/include/configlib - library for eisfair scripts
-# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
-#----------------------------------------------------------------------------
-
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 # interface description:
 # printgpl()           : [--conf|--check|--check_exp|--check_ext|()]
 #        [--conf]      : print the GPL Header for config
@@ -38,78 +36,42 @@ _CONFIGLIB_MAXLINELEN=79
 # printgpl
 # ==================
 # prints the GPL header for a configuration and check file
-#
 # parameters: $1 file-name in header
 #                e.g [--conf|--check|--check_exp|--check_ext|()]
 #             $2 package name
-#                e.g. "base"
-#             $3 creation date
-#                e.g. "2001-12-31"
-#             $4 creator
-#                e.g. "fm"
-#             $5 copyright notice, if not set default will be used [optional]
-#                e.g. "2001-2009 the eisfair team, team(at)eisfair(dot)org"
 #
-# output    : GPL header for an eisfair config- and check-file
+# output    : header for an eisfair config- and check-file
 printgpl()
 {
     case "${1}" in
         --conf)
-                if [ "${2}" != "base" ]
-                then
+                if [ "${2}" != "base" ] ; then
                     folder_line="/etc/config.d/${2} - configuration file for ${2}"
-                    shift 2
-                    gpl "$1" "$2" "$3"
                 else
                     folder_line="/etc/config.d/${2} - eisfair boot configuration parameters"
-                    shift 2
-                    gpl "$1" "$2" "$3"
                 fi
             ;;
         --check)
                 folder_line="/etc/check.d/${2} - eischk file for ${2}"
-                shift 2
-                gpl "$1" "$2" "$3"
             ;;
         --check_exp)
                 folder_line="/etc/check.d/${2}.exp - eischk exp file for ${2}"
-                shift 2
-                gpl "$1" "$2" "$3"
             ;;
         --check_ext)
                 folder_line="/etc/check.d/${2}.ext - eischk ext file for ${2}"
-                shift 2
-                gpl "$1" "$2" "$3"
             ;;
         *)
                 folder_line="/etc/config.d/${1} - configuration file for ${1}"
-                shift
-                gpl "$1" "$2" "$3"
-                ;;
+            ;;
     esac
+    gpl
 }
 
     gpl()
     {
         echo "#------------------------------------------------------------------------------"
         echo "# ${folder_line}"
-        echo "#"
-        echo "# Creation   :  ${1} ${2}"
-        echo "# Last Update:  `date +%Y-%m-%d` ${LOGNAME}"
-        echo "#"
-
-        if [ -n "${3}" ]
-        then
-            echo "# Copyright (c) ${3}"
-        else
-            echo "# Copyright (c) 2001-`date +\"%Y\"` the eisfair team, team(at)eisfair(dot)org"
-        fi
-
-        echo "#"
-        echo "# This program is free software; you can redistribute it and/or modify"
-        echo "# it under the terms of the GNU General Public License as published by"
-        echo "# the Free Software Foundation; either version 2 of the License, or"
-        echo "# (at your option) any later version."
+        echo "# Copyright (c) 2001-`date +\"%Y\"` the eisfair team, team(at)eisfair(dot)org"
         echo "#------------------------------------------------------------------------------"
         echo ""
     }
@@ -117,7 +79,6 @@ printgpl()
 # printgroup
 # ==========
 # prints an eisfair configuration group header
-#
 # parameters: -b x  print 'x' newline before the group,
 #                   one newline is the default and must not be set
 #             -a x  print 'x' newline after the group,
