@@ -1,0 +1,44 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
+pkgname=wkhtmltopdf
+pkgver=0.11.0_rc1
+pkgrel=0
+pkgdesc="Simple shell utility to convert html to pdf using the webkit rendering engine, and qt."
+url="http://code.google.com/p/wkhtmltopdf/"
+arch="all"
+license="GPL"
+depends=""
+depends_dev="qt-dev"
+makedepends="$depends_dev"
+install=""
+subpackages="$pkgname-dev"
+source="http://wkhtmltopdf.googlecode.com/files/wkhtmltopdf-${pkgver}.tar.bz2"
+
+_builddir="$srcdir/${pkgname}-$pkgver"
+
+prepare() {
+	echo ""
+}
+
+build() {
+	cd "$_builddir"
+	qmake || return 1
+}
+
+package() {
+	mkdir -p ${pkgdir}/usr
+	cd "$_builddir"
+	make -j1 INSTALL_ROOT=${pkgdir}/usr install || return 1
+	rm ${pkgdir}/usr/lib/*.so
+}
+
+dev() {
+	mkdir -p ${subpkgdir}/usr/lib
+	cd ${subpkgdir}/usr/lib
+	ln -sf libwkhtmltox.so.0.10.0 libwkhtmltox.so
+	default_dev
+}
+
+md5sums="65378cf59698c676fcd6d8f5efd54be6  wkhtmltopdf-0.11.0_rc1.tar.bz2"
+sha256sums="a36dbfc7cc27604b667f278ff8e9c86ced6777cdd1646d585d4e06e473b1905c  wkhtmltopdf-0.11.0_rc1.tar.bz2"
+sha512sums="24a14d25e007aaf9d7f0aaab3aa686e2b6799cf00052c7612a04a0c7c4b06b059c407ff3146e12ac20798c7ce10a9917dc9fb889aaa9b38a74c5a064cf658985  wkhtmltopdf-0.11.0_rc1.tar.bz2"
