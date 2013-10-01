@@ -236,9 +236,6 @@ rm  -f /etc/php/conf.d/mysql.ini
 rm  -f /etc/php/conf.d/mysqli.ini
 rm  -f /etc/php/conf.d/pdo_mysql.ini
 if [ "$PHP_EXT_MYSQL" = "yes" ] ; then
-    apk info -q -e php-mysql || apk add -q php-mysql
-    apk info -q -e php-mysqli || apk add -q php-mysqli
-    apk info -q -e php-pdo_mysql || apk add -q php-pdo_mysql
     if [ -z "$PHP_EXT_MYSQL_SOCKET" -a -z "$PHP_EXT_MYSQL_HOST" ] ; then
         [ -e "/run/mysqld/mysqld.sock" ] && PHP_EXT_MYSQL_SOCKET="/run/mysqld/mysqld.sock"
     fi
@@ -248,7 +245,8 @@ if [ "$PHP_EXT_MYSQL" = "yes" ] ; then
         [ -z "$PHP_EXT_MYSQL_PORT" ] && PHP_EXT_MYSQL_PORT="3306"
     fi
 
-	if apk info -q -e php-mysql; then
+    apk info -q -e php-mysql || apk add -q php-mysql
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/mysql.ini <<EOF
 extension=mysql.so
 [mysql]
@@ -266,7 +264,9 @@ mysql.connect_timeout=60
 mysql.trace_mode=Off
 EOF
     fi
-	if apk info -q -e php-mysqli; then
+
+    apk info -q -e php-mysqli || apk add -q php-mysqli
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/pdo_mysql.ini <<EOF
 extension=pdo_mysql.so
 [pdo_mysql]
@@ -274,7 +274,8 @@ pdo_mysql.cache_size=2000
 pdo_mysql.default_socket=${PHP_EXT_MYSQL_SOCKET}
 EOF
     fi
-	if apk info -q -e php-pdo_mysql; then
+    apk info -q -e php-pdo_mysql || apk add -q php-pdo_mysql
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/mysqli.ini <<EOF
 extension=mysqli.so
 [mysqli]
@@ -304,7 +305,7 @@ fi
 rm -f /etc/php/conf.d/interbase.ini
 if [ "$PHP_EXT_INTER" = "yes" ] ; then
 #    apk info -q -e php-interbase || apk add -q php-interbase
-	if apk info -q -e php-interbase; then
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/interbase.ini <<EOF
 ;extension=interbase.so
 ;extension=pdo_firebird.so
@@ -338,7 +339,7 @@ fi
 rm -f /etc/php/conf.d/mssql.ini
 if [ "$PHP_EXT_MSSQL" = "yes" ] ; then
     apk info -q -e php-mssql || apk add -q php-mssql
-	if apk info -q -e php-mssql; then
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/mssql.ini <<EOF
 extension=mssql.so
 [mssql]
@@ -388,8 +389,7 @@ rm -f /etc/php/conf.d/pqsql.ini
 rm -f /etc/php/conf.d/pdo_pgsql.ini
 if [ "${PHP_EXT_PGSQL}" = "yes" ] ; then
     apk info -q -e php-pgsql || apk add -q php-pgsql
-    apk info -q -e php-pdo_pgsql || apk add -q php-pdo_pgsql
-	if apk info -q -e php-pgsql; then
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/pqsql.ini <<EOF
 extension=pgsql.so
 [PostgresSQL]
@@ -416,7 +416,8 @@ pgsql.ignore_notice = 0
 pgsql.log_notice = 0
 EOF
     fi
-    if apk info -q -e php-pdo_pgsql; then
+    apk info -q -e php-pdo_pgsql || apk add -q php-pdo_pgsql
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/pdo_pgsql.ini <<EOF
 extension=pdo_pgsql.so
 EOF
@@ -429,15 +430,15 @@ rm -f /etc/php/conf.d/sqlite3.ini
 rm -f /etc/php/conf.d/pdo_sqlite.ini
 if [ "$PHP_EXT_SQLITE3" = "yes" ] ; then
     apk info -q -e php-sqlite3 || apk add -q php-sqlite3
-    apk info -q -e php-pdo_sqlite || apk add -q php-pdo_sqlite
-	if apk info -q -e php-sqlite3; then
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/sqlite3.ini <<EOF
 extension=pdo_sqlite.so
 [sqlite3]
 ;sqlite3.extension_dir =
 EOF
     fi
-	if apk info -q -e php-pdo_sqlite; then
+    apk info -q -e php-pdo_sqlite || apk add -q php-pdo_sqlite
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/pdo_sqlite.ini <<EOF
 extension=sqlite3.so
 EOF
@@ -450,8 +451,8 @@ fi
 rm -f /etc/php/conf.d/soap.ini
 if [ "$PHP_EXT_SOAP" = "yes" ] ; then
     apk info -q -e php-soap || apk add -q php-soap
-	if apk info -q -e php-soap; then
-	    cat >/etc/php/conf.d/soap.ini <<EOF
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/soap.ini <<EOF
 extension=soap.so
 [soap]
 ; Enables or disables WSDL caching feature.
@@ -475,8 +476,8 @@ fi
 rm -f /etc/php/conf.d/gd.ini
 if [ "$PHP_EXT_GD" = "yes" ] ; then
     apk info -q -e php-gd || apk add -q php-gd
-	if apk info -q -e php-gd; then
-	    cat >/etc/php/conf.d/gd.ini <<EOF
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/gd.ini <<EOF
 extension=gd.so
 EOF
     fi
@@ -487,7 +488,7 @@ fi
 rm -f /etc/php/conf.d/ldap.ini
 if [ "$PHP_EXT_LDAP" = "yes" ] ; then
     apk info -q -e php-ldap || apk add -q php-ldap
-	if apk info -q -e php-ldap; then
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/ldap.ini <<EOF
 extension=ldap.so
 [ldap]
@@ -505,7 +506,7 @@ rm -f /etc/php/conf.d/memcache.ini
 
 if [ "$PHP_EXT_CACHE" = "apc" ] ; then
     apk info -q -e php-apc || apk add -q php-apc
-	if apk info -q -e php-apc; then
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/apc.ini <<EOF
 extension=apc.so
 apc.enabled=1
@@ -520,14 +521,14 @@ EOF
     fi
 elif [ "${PHP_EXT_CACHE}" = "xcache" ] ; then
     apk info -q -e php-xcache || apk add -q php-xcache
-	if apk info -q -e php-xcache; then
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/xcache.ini <<EOF
 extension=xcache.so
 EOF
     fi
 elif [ "${PHP_EXT_CACHE}" = "memcache" ] ; then
     apk info -q -e php-memcache || apk add -q php-memcache
-	if apk info -q -e php-memcache; then
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/memcache.ini <<EOF
 extension=memcache.so
 ;memcache.allow_failover="1"
@@ -551,8 +552,8 @@ fi
 # JSON
 rm -f /etc/php/conf.d/json.ini
 if [ "$PHP_EXT_JSON" = "yes" ] ; then
-	apk info -q -e php-json || apk add -q php-json
-	if apk info -q -e php-json; then
+    apk info -q -e php-json || apk add -q php-json
+    if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/json.ini <<EOF
 extension=json.so
 EOF
