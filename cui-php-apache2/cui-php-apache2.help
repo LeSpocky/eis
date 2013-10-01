@@ -96,6 +96,11 @@ Mit 'yes' wird das GD Modul geladen. (default)<br/>
 Mit 'no' wird das Modul deaktiviert.
 </help>
 
+<help name="PHP_EXT_JSON">
+Mit 'yes' wird das json (JavaScript Object Notation) Modul geladen.<br/>
+Mit 'no' wird das Modul deaktiviert (default).
+</help>
+
 <help name="PHP_EXT_MYSQL">
 Mit 'yes' wird das Datenbank-Modul von MySQL beim starten in PHP mit eingebunden.<br/>
 Default: 'no' => nicht mit eingebunden

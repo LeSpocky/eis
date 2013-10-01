@@ -23,6 +23,7 @@ prepare() {
 build() {
 	cd "$_builddir"
 	qmake || return 1
+	make || return 1
 }
 
 package() {
