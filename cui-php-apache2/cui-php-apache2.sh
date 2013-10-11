@@ -560,6 +560,20 @@ EOF
     fi
 fi
 
+# -----------------------------------------------------------------------------
+# ZIP
+rm -f /etc/php/conf.d/zip.ini
+if [ "$PHP_EXT_ZIP" = "yes" ] ; then
+    apk info -q -e php-zip || apk add -q php-zip
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/zip.ini <<EOF
+extension=zip.so
+EOF
+    fi
+fi
+
+
+
 # =============================================================================
 # Restart apache
 [ "${START_APACHE2}" = "yes" ] && rc-service -i -q apache2 restart 

@@ -91,6 +91,7 @@ package_name=php-apache2
     printvar "PHP_EXT_SOAP" "Activate SOAP module in PHP."
     printvar "PHP_EXT_GD" "Activate GD extension for PHP."
     printvar "PHP_EXT_JSON" "Activate json extension for PHP"
+    printvar "PHP_EXT_ZIP" "Activate ZIP extension for PHP"
 
     # ------------------------------------------------------------------------
     printgroup "Extension Configuration - Database"

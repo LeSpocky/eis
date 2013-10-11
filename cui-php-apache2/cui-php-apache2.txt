@@ -147,6 +147,12 @@ Allgemeine Konfiguration
 
           Standardeinstellung: PHP_EXT_JSON='no'
 
+   PHP_EXT_ZIP
+          Mit 'yes' wird das ZipArchive Modul geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_ZIP='yes'
+
    PHP_EXT_MYSQL
           Hier kann die MySQL Erweiterung in PHP5 aktiviert werden
 

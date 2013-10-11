@@ -78,6 +78,7 @@ PHP_EXT_CACHE='no'                    # Activate caching module in PHP.
 PHP_EXT_SOAP='no'                     # Activate SOAP module in PHP.                                      
 PHP_EXT_GD='yes'                      # Activate GD extension for PHP.
 PHP_EXT_JSON='no'                     # Activate json extension for PHP.
+PHP_EXT_ZIP='yes'                     # Activate ZIP extension for PHP.
 
 # ----------------------------------------------------------------------------
 # EXTENSION CONFIGURATION - DATABASE
