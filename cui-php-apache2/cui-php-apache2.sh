@@ -597,6 +597,18 @@ EOF
 fi
 
 # -----------------------------------------------------------------------------
+# XML
+rm -f /etc/php/conf.d/xml.ini
+if [ "$PHP_EXT_XML" = "yes" ] ; then
+    apk info -q -e php-xml || apk add -q php-xml
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/xml.ini <<EOF
+extension=xml.so
+EOF
+    fi
+fi
+
+# -----------------------------------------------------------------------------
 # ZIP
 rm -f /etc/php/conf.d/zip.ini
 if [ "$PHP_EXT_ZIP" = "yes" ] ; then

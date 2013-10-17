@@ -94,6 +94,7 @@ package_name=php-apache2
     printvar "PHP_EXT_GETTEXT" "Activate Native Language extension."
     printvar "PHP_EXT_ICONV" "Activate iconv character set conversion."
     printvar "PHP_EXT_IMAP" "Activate IMAP mail extension for PHP."
+    printvar "PHP_EXT_XML" "Activate XML extension for PHP."
     printvar "PHP_EXT_ZIP" "Activate ZIP extension for PHP."
 
     # ------------------------------------------------------------------------

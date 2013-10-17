@@ -22,11 +22,12 @@
     <entry line="150" level="2">PHP_EXT_GETTEXT</entry>
     <entry line="156" level="2">PHP_EXT_ICONV</entry>
     <entry line="162" level="2">PHP_EXT_IMAP</entry>
-    <entry line="168" level="2">PHP_EXT_ZIP</entry>
-    <entry line="174" level="2">PHP_EXT_MYSQL</entry>
-    <entry line="179" level="3">PHP_EXT_MYSQL_SOCKET</entry>
-    <entry line="186" level="3">PHP_EXT_MSSQL</entry>
-    <entry line="191" level="2">PHP_EXT_PGSQL</entry>
-    <entry line="196" level="2">PHP_EXT_INTER</entry>
-    <entry line="201" level="2">PHP_EXT_SQLITE3</entry>
+    <entry line="168" level="2">PHP_EXT_XML</entry>
+    <entry line="174" level="2">PHP_EXT_ZIP</entry>
+    <entry line="180" level="2">PHP_EXT_MYSQL</entry>
+    <entry line="185" level="3">PHP_EXT_MYSQL_SOCKET</entry>
+    <entry line="192" level="3">PHP_EXT_MSSQL</entry>
+    <entry line="197" level="2">PHP_EXT_PGSQL</entry>
+    <entry line="202" level="2">PHP_EXT_INTER</entry>
+    <entry line="207" level="2">PHP_EXT_SQLITE3</entry>
 </index>

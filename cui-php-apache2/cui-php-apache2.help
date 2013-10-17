@@ -116,6 +116,11 @@ Mit 'yes' wird das IMAP Email Modul geladen.<br/>
 Mit 'no' wird das Modul deaktiviert (default).
 </help>
 
+<help name="PHP_EXT_XML">
+Mit 'yes' wird das XML Modul geladen.<br/>
+Mit 'no' wird das Modul deaktiviert (default).
+</help>
+
 <help name="PHP_EXT_ZIP">
 Mit 'yes' wird das ZipArchive Modul geladen.<br/>
 Mit 'no' wird das Modul deaktiviert (default).

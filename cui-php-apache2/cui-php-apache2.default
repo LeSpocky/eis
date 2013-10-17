@@ -81,6 +81,7 @@ PHP_EXT_JSON='no'                     # Activate json extension for PHP.
 PHP_EXT_GETTEXT='no'                  # Activate Native Language extension.
 PHP_EXT_ICONV='no'                    # Activate iconv character set conversion.
 PHP_EXT_IMAP='no'                     # Activate IMAP mail extension for PHP.
+PHP_EXT_XML='no'                      # Activate XML extension for PHP.
 PHP_EXT_ZIP='yes'                     # Activate ZIP extension for PHP.
 
 # ----------------------------------------------------------------------------
