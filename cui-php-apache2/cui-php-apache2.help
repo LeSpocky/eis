@@ -101,6 +101,16 @@ Mit 'yes' wird das json (JavaScript Object Notation) Modul geladen.<br/>
 Mit 'no' wird das Modul deaktiviert (default).
 </help>
 
+<help name="PHP_EXT_GETTEXT">
+Mit 'yes' wird das gettext (Native Language Support API) Modul geladen.<br/>
+Mit 'no' wird das Modul deaktiviert (default).
+</help>
+
+<help name="PHP_EXT_ICONV">
+Mit 'yes' wird das iconv Modul (Zeichensatz Konvertierung) geladen.<br/>
+Mit 'no' wird das Modul deaktiviert (default).
+</help>
+
 <help name="PHP_EXT_ZIP">
 Mit 'yes' wird das ZipArchive Modul geladen.<br/>
 Mit 'no' wird das Modul deaktiviert (default).

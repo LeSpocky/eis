@@ -147,6 +147,18 @@ Allgemeine Konfiguration
 
           Standardeinstellung: PHP_EXT_JSON='no'
 
+   PHP_EXT_GETTEXT
+          Mit 'yes' wird das gettext (Native Language Support API) Modul
+          geladen. Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_GETTEXT='no'
+
+   PHP_EXT_ICONV
+          Mit 'yes' wird das iconv Modul (Zeichensatz Konvertierung) geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_ICONV='no'
+
    PHP_EXT_ZIP
           Mit 'yes' wird das ZipArchive Modul geladen.
           Mit 'no' wird das Modul deaktiviert.

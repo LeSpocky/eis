@@ -19,11 +19,13 @@
     <entry line="132" level="2">PHP_EXT_SOAP</entry>
     <entry line="138" level="2">PHP_EXT_GD</entry>
     <entry line="144" level="2">PHP_EXT_JSON</entry>
-    <entry line="150" level="2">PHP_EXT_ZIP</entry>
-    <entry line="156" level="2">PHP_EXT_MYSQL</entry>
-    <entry line="161" level="3">PHP_EXT_MYSQL_SOCKET</entry>
-    <entry line="168" level="3">PHP_EXT_MSSQL</entry>
-    <entry line="173" level="2">PHP_EXT_PGSQL</entry>
-    <entry line="178" level="2">PHP_EXT_INTER</entry>
-    <entry line="183" level="2">PHP_EXT_SQLITE3</entry>
+    <entry line="150" level="2">PHP_EXT_GETTEXT</entry>
+    <entry line="156" level="2">PHP_EXT_ICONV</entry>
+    <entry line="162" level="2">PHP_EXT_ZIP</entry>
+    <entry line="168" level="2">PHP_EXT_MYSQL</entry>
+    <entry line="173" level="3">PHP_EXT_MYSQL_SOCKET</entry>
+    <entry line="180" level="3">PHP_EXT_MSSQL</entry>
+    <entry line="185" level="2">PHP_EXT_PGSQL</entry>
+    <entry line="190" level="2">PHP_EXT_INTER</entry>
+    <entry line="195" level="2">PHP_EXT_SQLITE3</entry>
 </index>

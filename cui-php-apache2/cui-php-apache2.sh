@@ -561,6 +561,30 @@ EOF
 fi
 
 # -----------------------------------------------------------------------------
+# GETTEXT
+rm -f /etc/php/conf.d/gettext.ini
+if [ "$PHP_EXT_GETTEXT" = "yes" ] ; then
+    apk info -q -e php-gettext || apk add -q php-gettext
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/gettext.ini <<EOF
+extension=gettext.so
+EOF
+    fi
+fi
+
+# -----------------------------------------------------------------------------
+# ICONV
+rm -f /etc/php/conf.d/iconv.ini
+if [ "$PHP_EXT_ICONV" = "yes" ] ; then
+    apk info -q -e php-iconv || apk add -q php-iconv
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/iconv.ini <<EOF
+extension=iconv.so
+EOF
+    fi
+fi
+
+# -----------------------------------------------------------------------------
 # ZIP
 rm -f /etc/php/conf.d/zip.ini
 if [ "$PHP_EXT_ZIP" = "yes" ] ; then
