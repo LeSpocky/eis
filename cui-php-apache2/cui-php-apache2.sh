@@ -585,6 +585,18 @@ EOF
 fi
 
 # -----------------------------------------------------------------------------
+# IMAP
+rm -f /etc/php/conf.d/imap.ini
+if [ "$PHP_EXT_IMAP" = "yes" ] ; then
+    apk info -q -e php-imap || apk add -q php-imap
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/imap.ini <<EOF
+extension=imap.so
+EOF
+    fi
+fi
+
+# -----------------------------------------------------------------------------
 # ZIP
 rm -f /etc/php/conf.d/zip.ini
 if [ "$PHP_EXT_ZIP" = "yes" ] ; then
