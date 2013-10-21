@@ -2,7 +2,7 @@
 # Maintainer: jv <jens@eisfair.org>
 pkgname=cui-apache2
 pkgver=2.4.0
-pkgrel=0
+pkgrel=1
 pkgdesc="CUI Setup for Apache 2.4.x"
 url="http://www.eisfair.org"
 arch="noarch"
@@ -10,7 +10,7 @@ license="GPL"
 depends="cuimenu apache2 apache2-utils"
 depends_dev=""
 makedepends="$depends_dev"
-install="$pkgname.pre-upgrade $pkgname.post-install $pkgname.post-deinstall"
+install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.post-deinstall"
 subpackages=""
 source="${pkgname}.default
 		${pkgname}.check

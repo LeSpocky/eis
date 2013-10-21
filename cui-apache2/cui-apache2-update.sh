@@ -1,20 +1,14 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
-# Eisfair configuration parameter update script
+# eisfair-ng configuration parameter update script
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 
-# name of the current package
-# ---------------------------
 packages_name=apache2
 
 # include libs for using
-# ----------------------
-. /var/install/include/configlib     # configlib from eisfair
+. /var/install/include/configlib
 
-### -------------------------------------------------------------------------
-### read old configuration and rename old variables
-### -------------------------------------------------------------------------
 # set the defaults from default.d file
 . /etc/default.d/${packages_name}
 # read old values if exists
@@ -123,8 +117,8 @@ packages_name=apache2
         fi
         idx=`expr $idx + 1`
     done
-        
-        
+
+
     #------------------------------------------------------------------------------
     printgroup "Virtual Hosts" 
     #------------------------------------------------------------------------------
@@ -134,7 +128,7 @@ packages_name=apache2
     then
         idx='1'
         count=`expr $APACHE2_VHOST_N + 0`
-    
+
         while [ $idx -le $count ]
         do
             printvar "APACHE2_VHOST_"$idx"_ACTIVE"                  "Should the VHost be active?"
@@ -158,7 +152,7 @@ packages_name=apache2
             dirIdx='1'
             eval tmpDir='$APACHE2_VHOST_'$idx'_DIR_N'
             countDir=`expr $tmpDir + 1`
-    
+
             while [ $dirIdx -le $countDir ]
             do
                 printvar "APACHE2_VHOST_"$idx"_DIR_"$dirIdx"_ACTIVE"           ""
@@ -171,7 +165,7 @@ packages_name=apache2
                 authIdx='1'
                 eval tmpAuth='$APACHE2_VHOST_'$idx'_DIR_'$dirIdx'_AUTH_N'
                 countAuth=`expr $tmpAuth + 1`
-    
+
                 while [ $authIdx -le $countAuth ]
                 do
                     printvar "APACHE2_VHOST_"$idx"_DIR_"$dirIdx"_AUTH_"$authIdx"_USER"      ""
@@ -210,10 +204,6 @@ packages_name=apache2
     printvar "APACHE2_MOD_CACHE"               "Enable mod_cache for localhost"
 
     #------------------------------------------------------------------------------
-    printgroup "End of Apache2 Configuraton"
-    #------------------------------------------------------------------------------
-
-    #------------------------------------------------------------------------------
     printend
     #------------------------------------------------------------------------------
 
@@ -221,6 +211,5 @@ packages_name=apache2
 # Set rights
 chmod 0644  /etc/config.d/${packages_name}
 chown root  /etc/config.d/${packages_name}
-
 
 exit 0

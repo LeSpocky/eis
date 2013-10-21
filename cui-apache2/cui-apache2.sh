@@ -867,7 +867,7 @@ do
 #        fi
 #        )>`tty`
     fi
-    
+
     # create default path and index.html file
     if [ ! -d ${docroot} ] ; then
         mkdir -p ${docroot}
@@ -888,7 +888,7 @@ do
     if [ ! -d ${scriptdir} ] ; then
         mkdir -p ${scriptdir}
         chown apache:apache ${scriptdir}
-    fi    
+    fi
 
     idx=`expr $idx + 1`
 done
@@ -907,12 +907,13 @@ fi
 #----------------------------------------------------------------------------------------
 # setup logrotate
 #----------------------------------------------------------------------------------------
-cat >> /etc/logrotate.d/apache2 <<EOF
+cat > /etc/logrotate.d/apache2 <<EOF
 /var/log/apache2/*log {
     ${APACHE2_LOG_INTERVAL}
     missingok
 	rotate ${APACHE2_LOG_COUNT}
     notifempty
+    create 0644
     sharedscripts
     delaycompress
     postrotate
@@ -928,9 +929,9 @@ EOF
 grep -vE ".*>Show apache .*" /var/install/menu/setup.system.logfileview.menu >/tmp/setup.system.logfileview.menu.$$
 cp -f /tmp/setup.system.logfileview.menu.$$ /var/install/menu/setup.system.logfileview.menu     # don't mv, keep permissions
 rm -f /tmp/setup.system.logfileview.menu.$$
-    
-/var/install/bin/add-menu --script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f /var/log/apache2/access.log" "Show apache access"
-/var/install/bin/add-menu --script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f /var/log/apache2/error.log" "Show apache error"
+
+/var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/apache2/access.log" "Show apache access"
+/var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/apache2/error.log" "Show apache error"
 
 idx=1
 while [ "$idx" -le "$APACHE2_VHOST_N" ]
@@ -940,8 +941,8 @@ do
         eval servername='$APACHE2_VHOST_'$idx'_SERVER_NAME'
         errorlog="/var/log/apache2/error-${servername}.log"
         accesslog="/var/log/apache2/access-${servername}.log"
-        /var/install/bin/add-menu --script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f $accesslog" "Show apache access $servername"
-        /var/install/bin/add-menu --script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f $errorlog" "Show apache error $servername"
+        /var/install/bin/add-menu --logfile setup.system.logfileview.menu "$accesslog" "Show apache access $servername"
+        /var/install/bin/add-menu --logfile setup.system.logfileview.menu "$errorlog" "Show apache error $servername"
     fi
     idx=`expr $idx + 1`
 done

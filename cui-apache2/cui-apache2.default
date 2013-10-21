@@ -145,8 +145,8 @@ APACHE2_VHOST_1_DIR_1_WEBDAV='no'     # Enable WebDav
 #------------------------------------------------------------------------------
 
 APACHE2_LOG_LEVEL='warn'              # warning level
-APACHE2_LOG_COUNT='10'                # number of log files to save
-APACHE2_LOG_INTERVAL='weekly'         # logrotate interval: daily, weekly,
+APACHE2_LOG_COUNT='30'                # number of log files to save
+APACHE2_LOG_INTERVAL='daily'          # logrotate interval: daily, weekly,
                                       # monthly
 
 #------------------------------------------------------------------------------
