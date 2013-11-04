@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------------
 # /var/install/bin/packages-installed.cui.sh - list installed packages
 #
-# Creation:     2010-05-01 dv
+# Creation:     2013-05-01 jv
 # Last update:  $Id: 24072 2013-02-21 09:53:06Z jv $
 #
 # Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
@@ -128,7 +128,7 @@ function install_package()
                 cui_terminal_run      "$termwin" "apk add --upgrade $package && sleep 2"
             fi
         fi
-    fi     
+    fi
 }
 
 
@@ -163,7 +163,7 @@ function uninstall_package()
             if [ -n "${required_by}" ]
             then
                 cui_message "$win" "Package is required by the following packages:${CUINL}${CUINL}${required_by}" "Abort" "$MB_ERROR"
-            else            
+            else
                 cui_message $win "Really uninstall package \"$package\"?" "Question" "$[$MB_YESNO + $MB_DEFBUTTON2]" && res="$p2"
 
                 if [ "$res" == "$IDYES" ]
@@ -247,9 +247,9 @@ function show_installed_package_info()
 
 function textview_postkey_hook()
 {
-	local win="$p2"
-	local ctrl="$p3"
-	local key="$p4"
+    local win="$p2"
+    local ctrl="$p3"
+    local key="$p4"
 
     case $key in
     ${KEY_ENTER})
@@ -281,10 +281,10 @@ function textview_postkey_hook()
 
 function inputdlg_ok_clicked()
 {
-	local win="$p2"
-	local ctrl
-	local idx
-    
+    local win="$p2"
+    local ctrl
+    local idx
+
     cui_window_getctrl "$win" "$IDC_INPUTDLG_EDVALUE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
@@ -305,8 +305,8 @@ function inputdlg_ok_clicked()
 
 function inputdlg_cancel_clicked()
 {
-	cui_window_close "$p2" "$IDCANCEL"
-	cui_return 1
+    cui_window_close "$p2" "$IDCANCEL"
+    cui_return 1
 }
 
 #----------------------------------------------------------------------------
@@ -318,9 +318,9 @@ function inputdlg_cancel_clicked()
 
 function inputdlg_create_hook()
 {
-	local dlg="$p2"
-	local ctrl
-	local idx
+    local dlg="$p2"
+    local ctrl
+    local idx
 
     if cui_label_new "$dlg" "Keyword:" 2 1 14 1 "$IDC_INPUTDLG_LABEL1" "$CWS_NONE" "$CWS_NONE"
     then
@@ -347,7 +347,7 @@ function inputdlg_create_hook()
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" inputdlg_cancel_clicked
         cui_window_create     "$ctrl"
     fi
- 
+
     cui_return 1
 }
 
@@ -387,26 +387,26 @@ function terminal_exit()
 
 function popup_menu_clicked_hook()
 {
-	cui_window_close "$p3" "$IDOK"
-	cui_return 1
+    cui_window_close "$p3" "$IDOK"
+    cui_return 1
 }
 
 #----------------------------------------------------------------------------
 # popup_menu_escape_hook
-# expects: $p2 : window handle                                          
+# expects: $p2 : window handle
 #          $p3 : control window handle
 # returns: nothing
 #----------------------------------------------------------------------------
 
 function popup_menu_escape_hook()
 {
-	cui_window_close "$p3" "$IDCANCEL"
-	cui_return 1
+    cui_window_close "$p3" "$IDCANCEL"
+    cui_return 1
 }
  
 #----------------------------------------------------------------------------
 # popup_menu_postkey_hook
-# expects: $p2 : window handle                                          
+# expects: $p2 : window handle
 #          $p3 : control window handle
 #          $p4 : key code
 # returns: 1 : Key handled, 2 : Key ignored
@@ -414,16 +414,15 @@ function popup_menu_escape_hook()
 
 function popup_menu_postkey_hook()
 {
-	local ctrl="$p3"
-
-	if [ "$p4" == "$KEY_F10" ]
-	then
-       cui_window_close "$ctrl" "$IDCANCEL"
-       cui_window_quit 0
-       cui_return 1
-   else
-       cui_return 0
-   fi
+    local ctrl="$p3"
+    if [ "$p4" == "$KEY_F10" ]
+    then
+        cui_window_close "$ctrl" "$IDCANCEL"
+        cui_window_quit 0
+        cui_return 1
+    else
+        cui_return 0
+    fi
 }
 
 
@@ -457,8 +456,8 @@ function menu_clicked_hook()
 
 function menu_changed_hook()
 {
-	load_data "$p2"
-	cui_return 1
+    load_data "$p2"
+    cui_return 1
 }
 
 
@@ -476,7 +475,7 @@ function menu_changed_hook()
 
 function listview_changed_hook()
 {
-	cui_return 1
+    cui_return 1
 }
 
 
@@ -490,12 +489,12 @@ function listview_changed_hook()
 
 function listview_clicked_hook()
 {
-	local win="$p2"
-	local ctrl="$p3"
-	local menu
-	local result
-	local item
-	local dlg
+    local win="$p2"
+    local ctrl="$p3"
+    local menu
+    local result
+    local item
+    local dlg
 
     cui_menu_new "$win" "Options" 0 0 30 13 1 "$[$CWS_CENTERED + $CWS_POPUP]" "$CWS_NONE" && menu="$p2"
     if cui_valid_handle $menu
@@ -531,7 +530,7 @@ function listview_clicked_hook()
                 cui_window_destroy  "$menu"
                 keyword="-u"
                 load_data "$win"
-                ;;				
+                ;;
             3)
                 cui_window_destroy  "$menu"
                 install_package $win
@@ -588,9 +587,9 @@ function listview_clicked_hook()
 
 function listview_postkey_hook()
 {
-	local win="$p2"
-	local ctrl="$p3"
-	local key="$p4"
+    local win="$p2"
+    local ctrl="$p3"
+    local key="$p4"
 
     if [ "$key" == "${KEY_ENTER}" ]
     then
@@ -612,10 +611,10 @@ function listview_postkey_hook()
 
 function mainwin_create_hook()
 {
-	local win="$p2"
-	local ctrl
+    local win="$p2"
+    local ctrl
 
-    cui_listview_new "$win" "" 0 0 30 10 6 "${IDC_LISTVIEW}" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
+    cui_listview_new "$win" "" 0 0 30 10 5 "${IDC_LISTVIEW}" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_listview_setcoltext "$ctrl" 0 "Package "
@@ -623,14 +622,12 @@ function mainwin_create_hook()
         cui_listview_setcoltext "$ctrl" 2 "Date "
         cui_listview_setcoltext "$ctrl" 3 "Latest "
         cui_listview_setcoltext "$ctrl" 4 "Description   "
-        cui_listview_setcoltext "$ctrl" 5 "Repo"
 
         cui_listview_settitlealignment "$ctrl" 0 "${ALIGN_LEFT}"
         cui_listview_settitlealignment "$ctrl" 1 "${ALIGN_LEFT}"
         cui_listview_settitlealignment "$ctrl" 2 "${ALIGN_LEFT}"
         cui_listview_settitlealignment "$ctrl" 3 "${ALIGN_LEFT}"
         cui_listview_settitlealignment "$ctrl" 4 "${ALIGN_LEFT}"
-        cui_listview_settitlealignment "$ctrl" 5 "${ALIGN_LEFT}"
 
         cui_listview_callback   "$ctrl" "$LISTVIEW_CLICKED" "$win" listview_clicked_hook
         cui_listview_callback   "$ctrl" "$LISTVIEW_CHANGED" "$win" listview_changed_hook
@@ -649,8 +646,8 @@ function mainwin_create_hook()
 
 function mainwin_init_hook()
 {
-	local win="$p2"
-	local termwin
+    local win="$p2"
+    local termwin
 
     cui_getclientrect "$win"
     local w="$p4"
@@ -689,12 +686,12 @@ function mainwin_key_hook()
             cui_window_setlstatustext "$win" "Commands: F2=All F3=Search F4=View F7=Upgrade F8=Uninstall F10=Exit"
             cui_window_setrstatustext "$win" "V1.0.0"
         else
-            keyword=""
+            keyword=""		
             cui_window_setlstatustext "$win" "Commands: F2=Latest F3=Search F4=View F7=Upgrade F8=Uninstall F10=Exit"
             cui_window_setrstatustext "$win" "V1.0.0"
         fi
         load_data "$win"
-        ;;		
+        ;;
     "$KEY_F3")
         cui_window_new "$win" 0 0 46 7 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
         if cui_valid_handle $dlg
@@ -775,7 +772,7 @@ function mainwin_size_hook()
 
 function init()
 {
-	local win="$p2"
+    local win="$p2"
 
     # initialize shell extension library
     pm_initmodule

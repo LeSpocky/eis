@@ -27,7 +27,7 @@
 
 #define PKNAMELEN 40
 #define PKVERSLEN 22
-#define PKDESCLEN 80
+#define PKDESCLEN 110
 
 #if 0
 #undef uthash_expand_fyi
@@ -743,7 +743,7 @@ PMApiDelPackagesList(int argc, const wchar_t* argv[])
 void 
 PMWritePackageListEntry(WINDOWSTUB *listview, int showall, struct apk_database *db, struct apk_package *pkg)
 {
-	wchar_t buffer[81];
+	wchar_t buffer[PKDESCLEN+1];
 	struct apk_name *name;
 	apk_blob_t *latest = apk_blob_atomize(APK_BLOB_STR(""));
 	unsigned int latest_repos = 0;
@@ -852,7 +852,7 @@ void
 PMInternalHashToListview(WINDOWSTUB *listview)
 {
 	struct name_rec *entry;
-	wchar_t buffer[81];
+	wchar_t buffer[PKDESCLEN+1];
 	struct tm *ts;
 	char str[12];
 
