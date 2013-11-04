@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------------
 # /var/install/bin/packages-cui.cui.sh - list cui-* packages
 #
-# Creation:     2010-05-01 dv
+# Creation:     2013-05-01 jv
 # Last update:  $Id: 24072 2013-02-21 09:53:06Z jv $
 #
 # Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
@@ -58,9 +58,6 @@ function load_data()
         cui_window_settext     "$list" ""
 
         cui_listview_update    "$list"
-
-        # sort list view data
-        cui_listview_alphasort "$list" "0" "1"
 
         # restore selection index
         if [ "$sel" -gt 0 ]
@@ -176,7 +173,7 @@ function uninstall_package()
                 fi
             fi
         fi
-    fi     
+    fi
 }
 
 
@@ -197,20 +194,18 @@ function show_installed_package_info()
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && list="$p2"
     if cui_valid_handle $list
     then
-		cui_listview_getsel "$list" && index="$p2"
-		if cui_valid_index "$index"
-		then
-			cui_listview_gettext "$list" "$index" "0" && package="$p2"
-
-			cui_getclientrect "$win"
-			local w="$[$p4 - 4]"
-			local h="$[$p5 - 2]"
-
-			cui_textview_new "$win" "Package info" 0 0 $w $h "${IDC_INFOTEXT}" "$[$CWS_POPUP + $CWS_CENTERED]" "$CWS_NONE" && txt="$p2"
-			if cui_valid_handle "$txt"
-			then
+        cui_listview_getsel "$list" && index="$p2"
+        if cui_valid_index "$index"
+        then
+            cui_listview_gettext "$list" "$index" "0" && package="$p2"
+            cui_getclientrect "$win"
+            local w="$[$p4 - 4]"
+            local h="$[$p5 - 2]"
+            cui_textview_new "$win" "Package info" 0 0 $w $h "${IDC_INFOTEXT}" "$[$CWS_POPUP + $CWS_CENTERED]" "$CWS_NONE" && txt="$p2"
+            if cui_valid_handle "$txt"
+            then
                 cui_textview_callback   "$txt" "${TEXTVIEW_POSTKEY}" "$win" textview_postkey_hook
-				cui_window_setcolors    "$txt" "HELP"
+                cui_window_setcolors    "$txt" "HELP"
                 cui_window_create       "$txt"
 
                 pm_info_totext "$txt" "$package"
@@ -384,20 +379,20 @@ function popup_menu_clicked_hook()
 
 #----------------------------------------------------------------------------
 # popup_menu_escape_hook
-# expects: $p2 : window handle                                          
+# expects: $p2 : window handle
 #          $p3 : control window handle
 # returns: nothing
 #----------------------------------------------------------------------------
 
 function popup_menu_escape_hook()
 {
-	cui_window_close "$p3" "$IDCANCEL"
-	cui_return 1
+    cui_window_close "$p3" "$IDCANCEL"
+    cui_return 1
 }
  
 #----------------------------------------------------------------------------
 # popup_menu_postkey_hook
-# expects: $p2 : window handle                                          
+# expects: $p2 : window handle
 #          $p3 : control window handle
 #          $p4 : key code
 # returns: 1 : Key handled, 2 : Key ignored
@@ -604,9 +599,9 @@ function mainwin_create_hook()
         cui_listview_setcoltext "$ctrl" 0 "Package "
         cui_listview_setcoltext "$ctrl" 1 "Version "
         cui_listview_setcoltext "$ctrl" 2 "Date "
-        cui_listview_setcoltext "$ctrl" 3 "Latest "
-        cui_listview_setcoltext "$ctrl" 4 "Description   "
-        cui_listview_setcoltext "$ctrl" 5 "Repo"
+        cui_listview_setcoltext "$ctrl" 3 "Installed "
+        cui_listview_setcoltext "$ctrl" 4 "Description "
+        cui_listview_setcoltext "$ctrl" 5 "Repo "
 
         cui_listview_settitlealignment "$ctrl" 0 "${ALIGN_LEFT}"
         cui_listview_settitlealignment "$ctrl" 1 "${ALIGN_LEFT}"

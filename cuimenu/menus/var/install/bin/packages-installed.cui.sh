@@ -684,15 +684,15 @@ function mainwin_key_hook()
     case $key in
     "$KEY_F2")
         if [ -z "$keyword" ]
-		then
+        then
             keyword="-u"
             cui_window_setlstatustext "$win" "Commands: F2=All F3=Search F4=View F7=Upgrade F8=Uninstall F10=Exit"
             cui_window_setrstatustext "$win" "V1.0.0"
-		else
-            keyword=""		
+        else
+            keyword=""
             cui_window_setlstatustext "$win" "Commands: F2=Latest F3=Search F4=View F7=Upgrade F8=Uninstall F10=Exit"
             cui_window_setrstatustext "$win" "V1.0.0"
-		fi
+        fi
         load_data "$win"
         ;;		
     "$KEY_F3")
