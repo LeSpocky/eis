@@ -88,7 +88,7 @@ if [ -e /tmp/determinedFolders-$$.txt ] ; then
             jobTemplates=`java -Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl list-jobs --username $jenkinsUser --password-file $jenkinsPasswordFile | grep $buildJobNamePrefix | tr '\n' ' '`
             for currentBuildJob in $jobTemplates ; do
                 echo -n " - Job $currentBuildJob"
-                java -Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl build $currentBuildJob --username $jenkinsUser --password-file $jenkinsPasswordFile
+                java -jar $jenkinsCliJar -s $jenkinsUrl build $currentBuildJob --username $jenkinsUser --password-file $jenkinsPasswordFile
                 echo " - Done"
             done
             echo "Finished triggering '$packageToTrigger'"
