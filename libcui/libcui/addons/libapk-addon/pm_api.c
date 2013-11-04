@@ -2,7 +2,7 @@
  * File: pm_api.c   
  * pm = package manager
  *   
- * Copyright (C) 2009  Daniel Vogel, <daniel@eisfair.org>
+ * Copyright (C) 2013  Jens Vehlhaber, <jens@eisfair.org>
  *
  * Last Update:  $Id: pm_api.c 23987 2013-02-25 17:33:07Z jv $
  *   
@@ -25,7 +25,9 @@
 #define TRUE  !FALSE
 #endif
 
-#define PKLEN 30
+#define PKNAMELEN 40
+#define PKVERSLEN 22
+#define PKDESCLEN 80
 
 #if 0
 #undef uthash_expand_fyi
@@ -53,7 +55,6 @@ extern StubFindProc      LibPMStubFind;
 
 /* local structure */
 struct search_ctx {
-	WINDOWSTUB *listview;
 	int reponr;
 	int search_description : 1;
 	char searchtext[128];
@@ -61,10 +62,14 @@ struct search_ctx {
 
 
 typedef struct name_rec {
-    char package_name[PKLEN];
-    UT_hash_handle hh;
+	char package_name[PKNAMELEN];
+	char package_version[PKVERSLEN];
+	char package_description[PKDESCLEN];
+	int  package_installed;
+	int  package_repo;
+	time_t package_date;
+	UT_hash_handle hh;
 } name_rec;
-
 
 struct name_rec *packlist = NULL;
 
@@ -73,12 +78,58 @@ enum {
 	MARKED_PACKAGES,
 };
 
+
+/* ---------------------------------------------------------------------
+ * local functions
+ * ---------------------------------------------------------------------
+ */
+void
+PMInternalClearHashList(void)
+{
+	struct name_rec *current_entry, *tmp; 
+	HASH_ITER(hh, packlist, current_entry, tmp) {
+		HASH_DEL(packlist,current_entry);
+		free(current_entry);
+	}
+}
+
+int
+PMInternalAddHashList(char *name, char *version, char *description, int installed, int reponr, time_t buildtime)
+{
+	name_rec *entry=NULL;
+	HASH_FIND_STR(packlist,name,entry);
+	if (entry) return 0;
+	if ((entry = (name_rec*)malloc(sizeof(name_rec))) == NULL) return 1;
+	strncpy(entry->package_name, name, PKNAMELEN);
+	strncpy(entry->package_version, version, PKVERSLEN);
+	strncpy(entry->package_description, description, PKDESCLEN);
+	entry->package_installed = installed;
+	entry->package_repo = reponr;
+	entry->package_date = buildtime;
+	HASH_ADD_STR(packlist,package_name,entry);
+	return 0;
+}
+
+void
+PMInternalSortHashList(void)
+{
+	HASH_SORT(packlist, PMIntNamecmp);
+}
+
+int
+PMIntNamecmp(void *_a, void *_b)
+{
+	name_rec *a = (name_rec*)_a;
+	name_rec *b = (name_rec*)_b;
+	return strcmp(a->package_name,b->package_name);
+}
+
 /* ---------------------------------------------------------------------
  * PMApiInit
  * Initialize API
  * ---------------------------------------------------------------------
  */
-void 
+void
 PMApiInit(void)
 {
 	/* nothing to do right now */
@@ -95,21 +146,21 @@ void
 PMApiClear(void)
 {
 	/* nothing to do right now */
-	PMInternalClearPackageList();
+	PMInternalClearHashList();
 }
 
 
 /* ---------------------------------------------------------------------
  * API functions
  * ---------------------------------------------------------------------
- */ 
+ */
 
 /* ---------------------------------------------------------------------
  * PMApiReposToMenu
  * Read repositories from database and transfer them into a menu window
  * $0 : menu window handle
  * ---------------------------------------------------------------------
- */ 
+ */
 void 
 PMApiReposToMenu(int argc, const wchar_t* argv[])
 {
@@ -176,7 +227,7 @@ PMApiReposToMenu(int argc, const wchar_t* argv[])
  * $0 : index
  * return : name
  * ---------------------------------------------------------------------
- */ 
+ */
 void
 PMApiGetRepoById(int argc, const wchar_t* argv[])
 {
@@ -212,7 +263,7 @@ PMApiGetRepoById(int argc, const wchar_t* argv[])
 		apk_db_close(&db);
 		LibPMStartFrame(_T('R'), 32 + wcslen(buffer) * sizeof(wchar_t));
 		LibPMInsertInt (ERROR_SUCCESS);
-		LibPMInsertStr (buffer);		
+		LibPMInsertStr (buffer);
 		LibPMSendFrame ();
 	}
 	else
@@ -229,22 +280,23 @@ PMApiGetRepoById(int argc, const wchar_t* argv[])
  * $1 : repository, 0 = all
  * $2 : keyword (optional)
  * ---------------------------------------------------------------------
- */ 
+ */
 void
 PMApiPackagesToList(int argc, const wchar_t* argv[])
 {
+	WINDOWSTUB *listview;
 	if (argc >= 2)
 	{
 		unsigned long  tmplong;
 		struct search_ctx *ictx = (struct search_ctx *)malloc(sizeof(struct search_ctx)) ;
 		
 		swscanf(argv[0], _T("%ld"), &tmplong);
-		ictx->listview = LibPMStubFind(tmplong);
+		listview = LibPMStubFind(tmplong);
 		swscanf(argv[1], _T("%d"), &ictx->reponr);
 		memset(ictx->searchtext, 0, sizeof(ictx->searchtext)); 
 		if (argc >= 3)
 			snprintf(ictx->searchtext, 127, "%ls", argv[2]);
-		if (ictx->listview && ictx->listview->Window)
+		if (listview && listview->Window)
 		{
 			struct apk_database db;
 			struct apk_database *pdb;
@@ -261,10 +313,12 @@ PMApiPackagesToList(int argc, const wchar_t* argv[])
 			pdb = &db;
 			apk_hash_foreach(&pdb->available.names, PMMatchNames, ictx);
 			apk_db_close(&db);
+			PMInternalSortHashList();
+			PMInternalHashToListview(listview);
 			LibPMStartFrame(_T('R'), 32);
 			LibPMInsertInt (ERROR_SUCCESS);
 			LibPMSendFrame ();
-			PMInternalClearPackageList();
+			PMInternalClearHashList();
 		}
 		else
 		{
@@ -321,12 +375,12 @@ PMApiListInstalledPackages(int argc, const wchar_t* argv[])
 			memset(&dbopts, 0, sizeof(dbopts));
 			list_init(&dbopts.repository_list);
 			apk_atom_init();
-			dbopts.open_flags |= APK_OPENF_READ;			
+			dbopts.open_flags |= APK_OPENF_READ;
 			r = apk_db_open(&db, &dbopts);
-			if (r != 0) 
+			if (r != 0)
 			{
 				LibPMWriteError(ERROR_INVALID);
-			}			
+			}
 			pdb = &db;
 			if (keyword == NULL)
 			{
@@ -410,8 +464,9 @@ PMApiInfoToTextView(int argc, const wchar_t* argv[])
 			{
 				snprintf(tmpname, 63, "%ls", package);
 				name = apk_db_query_name(&db, APK_BLOB_STR( tmpname ));
-				if ( name == NULL ) {
-				r = 1;
+				if ( name == NULL )
+				{
+					r = 1;
 					swprintf(buffer, 127, _T("Package with name \"%s\" not found!"), tmpname);
 					TextviewAdd  (textview->Window, buffer);
 				}
@@ -431,10 +486,10 @@ PMApiInfoToTextView(int argc, const wchar_t* argv[])
 				}
 				if ( pkg == NULL )
 				{
-			    	r = 1;
+					r = 1;
 					TextviewAdd  (textview->Window, _T("Failed to get package data"));  
-				}         
-			}       
+				}
+			}
 			if (r == 0)
 			{
 				swprintf(buffer, 127, _T("%s"), pkg->description);
@@ -547,10 +602,10 @@ PMApiInfoToTextView(int argc, const wchar_t* argv[])
 				if ( pkg->ipkg != NULL ) 
 				{
 					struct apk_db_dir_instance *diri;
-					struct apk_db_file *file;	      
-					struct hlist_node *dc, *dn, *fc, *fn;	
+					struct apk_db_file *file;
+					struct hlist_node *dc, *dn, *fc, *fn;
 					i = 0;
-					TextviewAdd         (textview->Window, 
+					TextviewAdd         (textview->Window,
 					  _T("--------------------------------------------------------"));
 					hlist_for_each_entry_safe(diri, dc, dn, &pkg->ipkg->owned_dirs, pkg_dirs_list) 
 					{
@@ -601,7 +656,7 @@ PMApiDelPackagesList(int argc, const wchar_t* argv[])
 		struct apk_database db;
 		struct apk_db_options dbopts;
 		struct apk_name *name;
-		struct apk_package *pkg;         		
+		struct apk_package *pkg;
 		char   tmpname[64];
 		wchar_t  str[55];
 		wchar_t  buffer[256];
@@ -644,25 +699,24 @@ PMApiDelPackagesList(int argc, const wchar_t* argv[])
 				{
 					if (pkg0->depends->item[j].name != pkg->name)
 						continue;
-                    swprintf(str, 54, _T("%s"), pkg0->name->name);
-                    n = wcslen(buffer);
+					swprintf(str, 54, _T("%s"), pkg0->name->name);
+					n = wcslen(buffer);
 					if (n < 200)
-				    {
+					{
 						wcscat(buffer, str); 
 						wcscat(buffer, _T(" ")); 
-                    } 
-                    else
-                    {
-                    	if ( n < 254 )
-		    				wcscat(buffer, _T("."));                     
-                    }
-                	
+					}
+					else
+					{
+						if ( n < 254 )
+							wcscat(buffer, _T("."));
+					}
 				}
 			}
 			apk_db_close(&db);
 			LibPMStartFrame(_T('R'), 32 + wcslen(buffer) * sizeof(wchar_t));
 			LibPMInsertInt (ERROR_SUCCESS);
-			LibPMInsertStr (buffer);		
+			LibPMInsertStr (buffer);
 			LibPMSendFrame ();
 		}
 		else
@@ -674,39 +728,9 @@ PMApiDelPackagesList(int argc, const wchar_t* argv[])
 	{
 		LibPMWriteError(ERROR_ARGC);
 	}
-}			
-
-
-/* ---------------------------------------------------------------------
- * local functions
- * ---------------------------------------------------------------------
- */
-void
-PMInternalClearPackageList(void)
-{
-	struct name_rec *current_entry, *tmp; 
-
-	HASH_ITER(hh, packlist, current_entry, tmp) {
-		HASH_DEL(packlist,current_entry);  
-		free(current_entry);   
-	} 	
-} 
-  
-int
-PMInternalCheckPackageList(char *name) 
-{
-	name_rec *entry=NULL;
-	HASH_FIND_STR(packlist,name,entry);
-	if (!entry) {
-		if ( (entry = (name_rec*)malloc(sizeof(name_rec))) == NULL) return 1;
-		strncpy(entry->package_name, name, PKLEN);
-		HASH_ADD_STR(packlist,package_name,entry);
-		return 0;
-	} else {
-		return 1;
-    }
 }
- 
+
+
 /* ---------------------------------------------------------------------
  * PPMWritePackageListEntry
  * Print the latest version of installed packages on listview  
@@ -719,16 +743,17 @@ PMInternalCheckPackageList(char *name)
 void 
 PMWritePackageListEntry(WINDOWSTUB *listview, int showall, struct apk_database *db, struct apk_package *pkg)
 {
-	wchar_t buffer[128];
+	wchar_t buffer[81];
 	struct apk_name *name;
 	apk_blob_t *latest = apk_blob_atomize(APK_BLOB_STR(""));
 	unsigned int latest_repos = 0;
 	int i, r = -1;
 	struct tm *ts;
-	char str[12]; 	
+	char str[12]; 
 
 	name = pkg->name;
-	for (i = 0; i < name->providers->num; i++) {
+	for (i = 0; i < name->providers->num; i++) 
+	{
 		struct apk_package *pkg0 = name->providers->item[i].pkg;
 		if (pkg0->name != name || pkg0->repos == 0)
 			continue;
@@ -744,29 +769,27 @@ PMWritePackageListEntry(WINDOWSTUB *listview, int showall, struct apk_database *
 				break;
 		}
 	}
-	r = latest->len ? apk_version_compare_blob(*pkg->version, *latest) : APK_VERSION_UNKNOWN;
+	r = apk_version_compare_blob(*latest, *pkg->version);
 	// show only upgradable packages
-	if ((showall != APK_VERSION_EQUAL) && (r == APK_VERSION_EQUAL)) 
+	if ((showall != APK_VERSION_EQUAL) && (r == APK_VERSION_EQUAL))
 		return;
-	if ( r == APK_VERSION_EQUAL )
+	if ( r != APK_VERSION_GREATER )
 		latest = apk_blob_atomize(APK_BLOB_STR(" "));
 	ts = localtime(&pkg->build_time);
 	strftime(str, 11, "%Y-%m-%d", ts );	
 	LISTREC* rec = ListviewCreateRecord (listview->Window);  
 	if (rec)
 	{
-		swprintf(buffer, 127, _T("%s"), pkg->name->name);
+		swprintf(buffer, PKNAMELEN, _T("%s"), pkg->name->name);
 		ListviewSetColumnText(rec, 0, buffer);
-		swprintf(buffer, 127, _T("" BLOB_FMT), BLOB_PRINTF(*pkg->version));
+		swprintf(buffer, PKVERSLEN, _T("" BLOB_FMT), BLOB_PRINTF(*pkg->version));
 		ListviewSetColumnText(rec, 1, buffer);		
-		swprintf(buffer, 127, _T("%s"), str);
+		swprintf(buffer,        11, _T("%s"), str);
 		ListviewSetColumnText(rec, 2, buffer);
-		swprintf(buffer, 127, _T("" BLOB_FMT), BLOB_PRINTF(*latest));
+		swprintf(buffer, PKVERSLEN, _T("" BLOB_FMT), BLOB_PRINTF(*latest));
 		ListviewSetColumnText(rec, 3, buffer);
-		swprintf(buffer, 127, _T("%s"), pkg->description);
+		swprintf(buffer, PKDESCLEN, _T("%s"), pkg->description);
 		ListviewSetColumnText(rec, 4, buffer);
-		swprintf(buffer, 127, _T("%u"), pkg->repos);
-		ListviewSetColumnText(rec, 5, buffer);
 		ListviewInsertRecord(listview->Window, rec);
 	}
 }
@@ -782,23 +805,26 @@ PMMatchNames(apk_hash_item item, void *ctx)
 {
 	struct search_ctx *ictx = (struct search_ctx *) ctx;
 	struct apk_name *name = (struct apk_name *) item;
-	wchar_t buffer[128];
 	struct apk_package *pkg = NULL;
-	struct apk_provider *p;	
-	struct tm *ts;
-	char str[12];
+	struct apk_provider *p;
+	int    ninst = 0;
 
-	foreach_array_item(p, name->providers) {
+	foreach_array_item(p, name->providers)
+	{
 		if (pkg == NULL || apk_version_compare_blob(*p->version, *pkg->version) == APK_VERSION_GREATER)
 			pkg = p->pkg;
+		if (p->pkg->name == name && p->pkg->ipkg != NULL)
+			ninst = 1;
 	}
 
 	if ( pkg )
 	{
+/*
 		if ( ictx->reponr > 0 ) {
-			if (pkg->repos != ictx->reponr) 
-			   return 0;
+			if (pkg->repos != ictx->reponr)
+				return 0;
 		}
+*/
 		if (ictx->searchtext)
 		{
 			if (strstr(ictx->searchtext, "cui-*"))
@@ -812,30 +838,52 @@ PMMatchNames(apk_hash_item item, void *ctx)
 					return 0;
 			}
 		}
-		if ( PMInternalCheckPackageList( pkg->name->name ) == 1 )
-			return 0;		
-		ts = localtime(&pkg->build_time);
-		strftime(str, 11, "%Y-%m-%d", ts );
-		LISTREC* rec = ListviewCreateRecord (ictx->listview->Window);  
-		if (rec)
-		{
-			swprintf(buffer, 127, _T("%s"), pkg->name->name);
-			ListviewSetColumnText(rec, 0, buffer);
-			swprintf(buffer, 127, _T("" BLOB_FMT), BLOB_PRINTF(*pkg->version));
-			ListviewSetColumnText(rec, 1, buffer);
-			swprintf(buffer, 127, _T("%s"), str);
-			ListviewSetColumnText(rec, 2, buffer);
-			if (pkg->ipkg == NULL)
-				swprintf(buffer, 127, _T(" " ));
-			else
-				swprintf(buffer, 127, _T("installed" ));
-			ListviewSetColumnText(rec, 3, buffer);
-			swprintf(buffer, 127, _T("%s"), pkg->description);
-			ListviewSetColumnText(rec, 4, buffer);
-			swprintf(buffer, 127, _T("%u"), pkg->repos);
-			ListviewSetColumnText(rec, 5, buffer);
-			ListviewInsertRecord(ictx->listview->Window, rec);
-		}
+		PMInternalAddHashList( pkg->name->name, apk_blob_cstr(*pkg->version), pkg->description, ninst, pkg->repos, pkg->build_time );
 	}
 	return 0;
 }
+
+/* ---------------------------------------------------------------------
+ * PMInternalHashToListview
+ * Copy all (sorted) internal hash list records to libcui list
+ * ---------------------------------------------------------------------
+ */
+void
+PMInternalHashToListview(WINDOWSTUB *listview)
+{
+	struct name_rec *entry;
+	wchar_t buffer[81];
+	struct tm *ts;
+	char str[12];
+
+	for(entry=packlist; entry != NULL; entry=(struct name_rec*)(entry->hh.next))
+	{
+		ts = localtime(&entry->package_date);
+		strftime(str, 11, "%Y-%m-%d", ts );
+		LISTREC* rec = ListviewCreateRecord(listview->Window);
+		if (rec)
+		{
+			swprintf(buffer, PKNAMELEN, _T("%s"), entry->package_name);
+			ListviewSetColumnText(rec, 0, buffer);
+			swprintf(buffer, PKVERSLEN, _T("%s"), entry->package_version);
+			ListviewSetColumnText(rec, 1, buffer);
+			swprintf(buffer,        11, _T("%s"), str);
+			ListviewSetColumnText(rec, 2, buffer);
+			if (entry->package_installed == 0)
+			{
+				swprintf(buffer,     2, _T(" " ));
+			}
+			else
+			{
+				swprintf(buffer,    10, _T("installed"));
+			}
+			ListviewSetColumnText(rec, 3, buffer);
+			swprintf(buffer, PKDESCLEN, _T("%s"), entry->package_description);
+			ListviewSetColumnText(rec, 4, buffer);
+			swprintf(buffer,        12, _T("%d"), entry->package_repo);
+			ListviewSetColumnText(rec, 5, buffer);
+			ListviewInsertRecord(listview->Window, rec);
+		}
+	}
+}
+
