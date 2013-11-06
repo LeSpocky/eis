@@ -49,6 +49,7 @@ done
 #----------------------------------------------------------------------------
 if [ "$START_FCRON" = "yes" ] ; then
     rc-update -q add fcron default 2>/dev/null
+    rc-service -q fcron update 2>/dev/null
 else
     rc-update -q del fcron default 2>/dev/null
 fi
