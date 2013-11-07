@@ -212,7 +212,7 @@ while true ; do
             if [ "$PNETIPSTATIC" = "1" ] ; then
                 getNextMenuItem
             else
-                n_item="8"
+                n_item="9"
             fi
             ;;
         5)
