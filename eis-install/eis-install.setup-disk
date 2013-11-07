@@ -9,7 +9,7 @@ ROOTFS=${ROOTFS:-ext4}
 BOOTFS=${BOOTFS:-ext4}
 VARFS=${VARFS:-ext4}
 
-PALPVERSION="2.7"
+PALPVERSION="2.6"
 PKEYBLAYOUT="de"
 PKEYBVARIANT="de-latin1"
 PNETIPSTATIC="1"
@@ -114,7 +114,7 @@ unpack_apkovl() {
 		return 0 
 	fi
 
-	apk add -q openssl
+	apk add --quiet openssl
 
 	if ! openssl list-cipher-commands | grep "^$suffix$" > /dev/null; then
 		errstr="Cipher $suffix is not supported"
@@ -285,7 +285,12 @@ install_mounted_root() {
 			/mnt/etc/update-extlinux.conf
 	fi
 
+	# generate the fstab
 	enumerate_fstab /mnt > /mnt/etc/fstab
+	if [ -n "$SWAP_DEVICE" ]; then
+		echo -e "${SWAP_DEVICE}\tswap\tswap\tdefaults\t0 0" \
+			>> /mnt/etc/fstab
+	fi
 	cat >>/mnt/etc/fstab <<EOF
 /dev/cdrom	/media/cdrom	iso9660	noauto,ro 0 0
 /dev/fd0	/media/floppy	vfat	noauto	0 0
@@ -303,7 +308,7 @@ EOF
 
 	local apkflags="--initdb --update-cache --clean-protected"
 	[ -n "$USE_RAID" ] && raidpkg="mdadm"
-	pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libeventlog libcui fcron syslog-ng logrotate cuimenu-bin cuimenu"
+	pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libeventlog libcui fcron syslog-ng logrotate cuimenu-bin cuimenu syslinux"
 	if [ "$(rc --sys)" = "XEN0" ]; then
 		pkgs="$pkgs xen-hypervisor"
 	fi
@@ -317,16 +322,16 @@ EOF
 	init_chroot_mounts /mnt
 	apk add --root /mnt $apkflags --overlay-from-stdin \
 		$repoflags $pkgs <$ovlfiles>/dev/null || return 1
-	# hide syslinux script error message
-	apk add --root /mnt syslinux 2>/dev/null
 	cleanup_chroot_mounts /mnt
 	set_grsec chroot_caps $chroot_caps >/dev/null
+	return 0
 }
 
 unmount_partitions() {
 	local mnt="$1"
+
 	# unmount the partitions
-	umount $(awk '{print $2}' /proc/mounts | egrep "^/mnt(/|\$)" | sort -r)
+	umount $(awk '{print $2}' /proc/mounts | egrep "^$mnt(/|\$)" | sort -r)
 }
 
 
@@ -391,7 +396,7 @@ stop_all_raid() {
 init_progs() {
 	local raidpkg=
 	[ -n "$USE_RAID" ] && raidpkg="mdadm"
-	apk add -q sfdisk e2fsprogs lvm2 $raidpkg syslinux $@
+	apk add --quiet sfdisk e2fsprogs lvm2 $raidpkg syslinux $@
 }
 
 show_disk_info() {
@@ -535,6 +540,7 @@ setup_swap_dev() {
 		mkswap $swap_dev >/dev/null
 		echo -e "$swap_dev\tswap\t\tswap\tdefaults 0 0" >> /etc/fstab
 	done
+	SWAP_DEVICE="$(uuid_or_device $swap_dev)"
 	swapon -a
 	rc-update --quiet add swap boot
 }
