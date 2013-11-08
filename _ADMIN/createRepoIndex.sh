@@ -94,7 +94,7 @@ usage ()
     cat <<EOF
 
   Usage:
-  ${0} -v <version> -a <architecture>
+  ${0} -v <version> -a <architecture> [-b <branch>]
         This script creates the repository index file using the configured
         keypair and stores it on the configured path.
 
@@ -106,10 +106,15 @@ usage ()
         .. The architecture of the system, for which the repository index
            should be created. Example: x86_64
 
+  Optional parameters:
+  -b <branch>
+        .. The branch to be used on the repository. Default value: 'main'
+
 EOF
 }
 
 version=''
+branch='main'
 arch=''
 
 while [ $# -ne 0 ]
@@ -125,6 +130,14 @@ do
             if [ $# -ge 2 ]
             then
                 version=$2
+                shift
+            fi
+            ;;
+
+        -b)
+            if [ $# -ge 2 ]
+            then
+                branch=$2
                 shift
             fi
             ;;
@@ -148,7 +161,7 @@ if [ -z "$version" -o -z "$arch" ] ; then
     exit 1
 fi
 
-repoPath=${apkRepositoryBaseFolder}/${version}/${arch}
+repoPath=${apkRepositoryBaseFolder}/${version}/${branch}/${arch}
 
 # Now do the job :-)
 createRepoIndex
