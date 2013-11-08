@@ -1,10 +1,8 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # Copyright (c) 2001-2011 the eisfair team, team@eisfair(dot)org
-#
 # usage: edit [--apply|--apply-stopstart] file
 #        edit [--apply|--apply-stopstart] package message
-#
 #----------------------------------------------------------------------------
 
 # include backup
@@ -22,8 +20,7 @@ case "$1" in
     ;;
 esac
 
-if [ $# -eq 1 ]
-then
+if [ $# -eq 1 ] ; then
     package=`basename $1`
 else
     package="$1"
@@ -35,8 +32,7 @@ exitval=0
 # edit first package...
 current_package=`echo $package | sed -e 's/ .*$//g'`
 
-if [ -f /etc/config.d/$current_package ]
-then
+if [ -f /etc/config.d/$current_package ] ; then
     if ! /var/install/bin/edit-conf.cui --check /etc/config.d/$current_package
     then
         /var/install/bin/ask.cui --err "The configuration of this package can't be opened" 
@@ -77,8 +73,7 @@ fi
 # call apply-script if exists
 apply_script()
 {
-    if [ -f /var/install/config.d/${1}.sh ]
-    then
+    if [ -f /var/install/config.d/${1}.sh ] ; then
         sh /var/install/config.d/${1}.sh
     else
         return 0
@@ -89,51 +84,54 @@ apply_script()
 # can start package
 can_start()
 {
+    local startvar
+    local start
     # read configuration file
     . /etc/config.d/${1}
     # change also '-' to '_', many packages use a '-' in the name,
     # like package-dev and START_PACKAGE-DEV does not work :-(
     startvar=`echo START_${1} | tr 'a-z' 'A-Z' | tr '-' '_'`
     eval start='$'${startvar}
-    test "${start}" = "yes"
+    if [ -n "$start" ] ; then
+        test "${start}" = "yes"
+    else
+        # if the START_* varname not the package name (vsftpd with START_FTP)
+        startvar=$(grep "^START_.*" /etc/config.d/${1} |  sed 's/=.*/\1/')
+        eval start='$'${startvar}
+        test "${start}" = "yes"
+    fi
 }
 
-if [ -n "$apply" ]
-then
-    if [ "$package" = "base" -o "$package" = "environment" ]
-    then
+if [ -n "$apply" ] ; then
+    if [ "$package" = "base" -o "$package" = "environment" ] ; then
         apply_script $package
     else
-        if /var/install/bin/ask.cui "Activate configuration now?"
-        then
+        if /var/install/bin/ask.cui "Activate configuration now?" ; then
             # activate changes
             for current_package in $package
             do
-                if [ -f /etc/init.d/$current_package  ]
-                then
-                    if [ "$apply" = "restart" ]
-                    then
+                if [ -f /etc/init.d/$current_package ] ; then
+                    if [ "$apply" = "restart" ] ; then
                         if  apply_script $current_package &&
                             can_start    $current_package
                         then
                             # restart package
-                            /etc/init.d/$current_package restart
+                            /sbin/rc-service -i -q $current_package restart
                             /sbin/rc-update -q add $current_package default >/dev/null 2>&1
                         else
                             # stop package
-                            /etc/init.d/$current_package stop
+                            /sbin/rc-service -i -q $current_package stop
                             /sbin/rc-update -q del $current_package
                         fi
-                    elif [ "$apply" = "stopstart" ]
-                    then
+                    elif [ "$apply" = "stopstart" ] ; then
                         init_script $current_package stop
                         if  apply_script $current_package &&
                             can_start    $current_package
                         then
-                            /etc/init.d/$current_package start
-                            /sbin/rc-update -q add $current_package default >/dev/null 2>&1                      
+                            /sbin/rc-service -i -q $current_package start
+                            /sbin/rc-update -q add $current_package default >/dev/null 2>&1
                         else
-                            /sbin/rc-update -q del $current_package                    
+                            /sbin/rc-update -q del $current_package
                         fi
                     fi
                 else

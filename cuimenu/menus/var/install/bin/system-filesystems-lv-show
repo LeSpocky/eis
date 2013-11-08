@@ -1,26 +1,22 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # system-devices-lv-show - show logical volumes
-#
-# Creation   : 2009-09-02 schlotze
-# Last Update: $Id: system-filesystems-lv-show 16722 2012-11-15 22:34:50Z jv $
-#
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 . /var/install/include/anykey
 . /var/install/include/mecho
 . /var/install/include/techo
 
 modprobe dm_mod
 
-mecho --info "List logical volumes"
+echo "List logical volumes"
 techo begin 31 32 8 9r
 techo row --info "LV" --info "VG" --info "Attr" --info "VSize"
-mecho --info "================================================================================"
+echo "================================================================================"
 lvs|while read line
 do
     set -- $line
-    if [ "$1" != "LV" ]
-    then
+    if [ "$1" != "LV" ] ; then
         techo row $1 $2 $3 $4
     fi
 done

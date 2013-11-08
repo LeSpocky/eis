@@ -1,0 +1,55 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# /var/install/include/pwdfilelib-2 - script interface for user:password files
+#
+# Creation:    2013-07-24 jv jens@eisfair.org
+# Last update: $Id: pwdfilelib-2 33436 2013-04-10 20:34:56Z dv $
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+
+
+SYS_API_USERSTOLIST=10
+
+sys_module_offs="99000"
+
+#------------------------------------------------------------------------------
+# Load pwdfile module
+# Expects: <nothing>
+# Returns: <nothing> but success or failure
+#------------------------------------------------------------------------------
+function pwdfile_initmodule()
+{
+    cui_load_addon "/usr/lib/cui-addons/libpwdfile-addon.so.2.0.0"
+    if [ "$p2" != 0 ]
+    then
+        sys_module_offs="$p2"
+        return 0
+    else
+        return 1
+    fi
+}
+
+
+#------------------------------------------------------------------------------
+# Transfer user database to list view
+# Expects: $1  <-- Handle         : listview window handle
+#          $2  <-- Filename       : flattext 'username:password' file
+#          $3  <-- String         : text for user name matching
+# Returns: nothing
+#------------------------------------------------------------------------------
+function pwdfile_users_tolist()
+{
+    cui_send "C" "$[${sys_module_offs} + ${SYS_API_USERSTOLIST}]" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#----------------------------------------------------------------------------
+# End
+#----------------------------------------------------------------------------
+

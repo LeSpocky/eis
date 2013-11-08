@@ -1042,7 +1042,7 @@ BackendMakePipePath(void)
 	mode_t oldmask;
 
 	/* pipe path is in tmp directory */
-	strcpy(PipePath, "/var/run/cui");
+	strcpy(PipePath, "/run/cui");
 
 	/* make sure that the pipe path exists */
 	oldmask = umask(0);

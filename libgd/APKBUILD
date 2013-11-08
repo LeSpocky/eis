@@ -1,0 +1,48 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer:
+pkgname=libgd
+pkgver=2.1.0
+pkgrel=0
+pkgdesc="GD Graphics Library"
+url="http://www.libgd.org"
+arch="all"
+license="GPL"
+depends=""
+depends_dev="libpng-dev jpeg-dev freetype-dev"
+makedepends="$depends_dev"
+install=""
+subpackages="$pkgname-dev"
+source="https://bitbucket.org/libgd/gd-libgd/downloads/libgd-${pkgver}.tar.gz"
+
+_builddir="$srcdir/${pkgname}-$pkgver"
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+	./configure --prefix=/usr \
+	--with-png \
+	--with-freetype \
+	--with-jpeg || return 1
+	make || return 1
+}
+
+package() {
+	cd "$_builddir"
+	make -j1 DESTDIR="$pkgdir" install || return 1
+	rm -rf  ${pkgdir}/usr/bin
+	find ${pkgdir} -name '*.la' -delete
+}
+
+
+md5sums="20a8eeae51cef7d7850679b1e53ce2b5  libgd-2.1.0.tar.gz"
+sha256sums="3ceef69d5454a392e8793ae90b5f0d632dd3e20879c12856aa1d1d3d063a51c8  libgd-2.1.0.tar.gz"
+sha512sums="ae1f14462c944a6c0482799808f0dba83b4f56d13a4332c5f6d86d3503e5428503a5326ee4fe6b81ec206f17dc0b9fdb030c27845626738d3e1824a20b5258d2  libgd-2.1.0.tar.gz"

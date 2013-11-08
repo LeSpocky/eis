@@ -1,8 +1,8 @@
 # Contributor: jv <jens@eisfair.org>
 # Maintainer: jv <jens@eisfair.org>
 pkgname=cui-php-apache2
-pkgver=5.3.0
-pkgrel=0
+pkgver=5.4.0
+pkgrel=2
 pkgdesc="CUI Setup PHP 5.x module for apache"
 url="http://www.eisfair.org"
 arch="noarch"
@@ -10,7 +10,7 @@ license="GPL"
 depends="cuimenu cui-apache2 php-apache2"
 depends_dev=""
 makedepends="$depends_dev"
-install="$pkgname.pre-upgrade $pkgname.post-install $pkgname.post-deinstall"
+install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.post-deinstall"
 subpackages=""
 source="${pkgname}.default
 		${pkgname}.check
@@ -20,8 +20,10 @@ source="${pkgname}.default
 		${pkgname}-update.sh
 		${pkgname}.menu
 		${pkgname}.txt
+		${pkgname}.txt.toc
 		${pkgname}.dcache.sh
-		${pkgname}.ddate.sh		
+		${pkgname}.ddate.sh
+		${pkgname}-john.ttf
 "
 
 _builddir=
@@ -43,37 +45,45 @@ package() {
 	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/php-apache2-update.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}.dcache.sh     ${pkgdir}/var/install/dialog.d/PHP_CACHING_MODULE.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}.ddate.sh      ${pkgdir}/var/install/dialog.d/PHP_DATE_TIMEZONE.sh || return 1
-	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.apache2.php.menu || return 1	
-	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/php-apache2/php-apache2.txt || return 1	
+	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.apache2.php.menu || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/php-apache2/php-apache2.txt || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt.toc       ${pkgdir}/usr/share/doc/php-apache2/php-apache2.toc || return 1
+	install -D -m644 ${srcdir}/${pkgname}-john.ttf      ${pkgdir}/usr/share/fonts/TTF/php-apache2-john.ttf || return 1
 }
 
-md5sums="2577948bd15bf3ff58938042817d30dd  cui-php-apache2.default
-e92cef0ff8ed0eeaddc9830220492ab8  cui-php-apache2.check
-70d36efceb68d32f3684df786c76d062  cui-php-apache2.check.exp
-b84be10b6f5dbf87b5f1e747ff4799f9  cui-php-apache2.help
-4f9fc1f85e645ba28fa6d1b84bf6731e  cui-php-apache2.sh
-7e2f7d63c597e1be613819f001c1add3  cui-php-apache2-update.sh
+md5sums="46a174cb56b0494b44e77fa30d071016  cui-php-apache2.default
+487348e8dbbcb6ef10d2ee8fd638cd8a  cui-php-apache2.check
+a96224317c5cfba8f2a9f9b1a7a50445  cui-php-apache2.check.exp
+d5fd950f86bea5dbf5105a6665abd487  cui-php-apache2.help
+a98d3484a4d70080788e0863efb15ad5  cui-php-apache2.sh
+2618d463d5ab15437be6ae67da204a9b  cui-php-apache2-update.sh
 ae8cf28ea4b40035a5fd6f24cfc3ea95  cui-php-apache2.menu
-9a2149952624cd67d9a4cec02010e711  cui-php-apache2.txt
-27a42e6350c59cfd99d54a822a2926a4  cui-php-apache2.dcache.sh
-5907373951052a841ce63aab5fbe46c9  cui-php-apache2.ddate.sh"
-sha256sums="c7d0ce7fb8327160cfd142266e610dd0b19070e58872c7e92a584ed4ac4ff870  cui-php-apache2.default
-3ff469c28f3759713312d22f23267ece4861ad50a5eb92a6abced97a71e78902  cui-php-apache2.check
-bbaf61cbe324c21542aceb8160654b6751a136f87c8b85f478caae50d6f2ec20  cui-php-apache2.check.exp
-d77114a1d6f144c293a84da22f2612d1df244b25b5a1dc579361c486dd02850b  cui-php-apache2.help
-6fb61f94c4c3d0f061ee7faa3e67ac2cc0d2372613f6d987c40803c4fedcb94b  cui-php-apache2.sh
-70de71cac5d00d8e8c278825c7464af4693fe3ad36bf3a1a6edb2769f29426e4  cui-php-apache2-update.sh
+84106d495cb69ae5074dadc0daedebad  cui-php-apache2.txt
+f8352715f91c7bbf7236991f5f37bfb3  cui-php-apache2.txt.toc
+1c385875df3bc766779f78be8ff2be86  cui-php-apache2.dcache.sh
+5af3b4b9d53fb291d3eab4b3ef5fadf2  cui-php-apache2.ddate.sh
+a0d557816fc12316bd852bfe966513b9  cui-php-apache2-john.ttf"
+sha256sums="97b535167955d1bf480d3079ce57a8b4600841cfc5c0a49b305ca2f5ea39c563  cui-php-apache2.default
+d309c074671fc645c63fac7db12bb761d70210d87aecf9a5c0aaa35148b785f7  cui-php-apache2.check
+49821b3176a00fdcb7c71c260a02969f6a7ead0ff38f441ecd97a5f011edab4c  cui-php-apache2.check.exp
+1cf067122605ab83a5f9a7f42dd80ad590a8c9ad49732a27a8df438b81d3fce1  cui-php-apache2.help
+f6ce30f714cf2dfcb51369e9f462e600bbfa05d15cf6109bbe9b8e4897cac396  cui-php-apache2.sh
+25ced65d36d3b9b12da7dbb36832ba043687c1fb732983b6332e48ae9930993a  cui-php-apache2-update.sh
 b7e62a035305b598f8d60fe6c02e9b50cd227af65b9ff34e93224589ff7eb116  cui-php-apache2.menu
-1821ee93461a71cc8f22a87f1ca7d8147c5adbbaea150e03ff6f818a9010396d  cui-php-apache2.txt
-0106814003cb49576f81c880a21fedcd405c119ed2539395894278f6e77cf8e4  cui-php-apache2.dcache.sh
-b3222a31695677d66cabbef2006047a74cd1c2ddd7aa2c852e4035122b9dbbb7  cui-php-apache2.ddate.sh"
-sha512sums="eb4981219444cbb3b5adb538c299808f2fc52c38c1ff81d1698ea3410f8109e90d0d0cad424204d63bee3c66e46658d9503d77935d7edb0611f5c51000ecbf0f  cui-php-apache2.default
-6d8afbd893bc29eb3f22ae419da832c28db681146f54324077ab8a206c2675c29686c4fb19d6e6d7dd30bd765fa70994924596cafcab74267041dc5f56e785c7  cui-php-apache2.check
-738eee9de99907c64daa23fa57bf45a5e39c46fab35d84912c3c048e2b3055a55622b012df2d8847354a1940055a2a6e62d09c413ac83dfca30159f5717365e1  cui-php-apache2.check.exp
-413d7be7621ae3606aae54b0aa3d08b635e3e35660033f36efe2b40307ba4c6bb0ec78c22dc410195c64981a1e31a1bcaf72a90f2e2cd67c43193d56d6de4d4e  cui-php-apache2.help
-c3833780198841b28cd13589d9b43d9cfd4d3fa06fa07595ea92410f2d73e452416735d0f80a897e855b21deeb19b2a7f5ea97191c7de6ff712a7dd99297fa19  cui-php-apache2.sh
-e497c5984004d4894c7b61afefbd4aecccb57072adfa8ecad7ecacd59d0bbca9864a2e434335308db0d368aab084600c56458141362ab646efe46c0f60f01206  cui-php-apache2-update.sh
+30e564f82d27916e9a31d6bc8eba4c1319214bdcba6eafd192f7299dcb723c7e  cui-php-apache2.txt
+dc8fc02066bd52b0bd8dc0a15f0a51b4d14316e657e0e27a01b19c9e019060ff  cui-php-apache2.txt.toc
+f42085442cbf8c2631652a8fd3834b6e606a6cad3c022579a6525e06e5bf894f  cui-php-apache2.dcache.sh
+e60ce3e416a01c7b77a51b440020c6650645397705e213414e347d91c6e9df6d  cui-php-apache2.ddate.sh
+3f773b852896ea02a427c71d2eced2a3d1259d80405f7ac6516ae88d6485734a  cui-php-apache2-john.ttf"
+sha512sums="f1686b32f4c87d523f19fb80c3496464c58d02064f0997ef981cabecf767edcaee1b40ce17d3b0126c23ef8f5f21cd17c1a8ecaee12f197bedd187ba4d1ce137  cui-php-apache2.default
+d6421e6e329e3203143dbc1b26de4579cc47068f303c5f41f04966946be5d565bfca4b1abf1a460d64451458e37b1e2041d4ea004fd36d46b02b23575d94873c  cui-php-apache2.check
+414a31e06f7aa915090dc4b4a355ae55c1643e0ae3645b5cd10d6d04f966c69ad7fbd507eb614978372996e1e1f8c8c84fa11a5193259a15f9a694667f2203e4  cui-php-apache2.check.exp
+bb30893f029e51d76f0f8a551fafcc3a56ee8438cbe444dc8d3818f96312f267492ecb39309445e224392716c82cec2a28434edbb7f14b32d03a42d1280f6ec9  cui-php-apache2.help
+89f6cc297826fad3fab711cae36665c903c2060019c62df3b6b93c06d7cd489908fde040274452edef191b959a8db314bdb0669d59c5d8dfc48016eac26f69f6  cui-php-apache2.sh
+052eac818b83d727ebac077caa2408e3021578c4e07e7a8abfe49b56b29774e1b282fa0a448e32ef42a8a86cf0fcdda246272950d99dddf23e868af08e7f976d  cui-php-apache2-update.sh
 eb026564de71e84edf9ee182517cf3d5cc737cd74d091fef9e4711779efd1b9c0255d1431f3a289a22d481eca5780a07746a0a6a53fe9c7798f36a38e27d27cb  cui-php-apache2.menu
-75b76b9309b0b9fa283ebf070857dbc7c75d5d316a905d0d7100ed5b5525940d1c3cd5a6ab66b2a10859f1d9df03c879948e1831c5e8b10b50e7d65a02a49d65  cui-php-apache2.txt
-a6c9c4bb7f3ebf2a072dce532c019ad6c1ada0470438e6986057d218f17515fd4a7301c70afb747e53f4208fbec8d1e886010679c14b1f0b1d39563f629db350  cui-php-apache2.dcache.sh
-7ef15d5149026390b9874b98646bcfec5f2451633e49463affd9130281a2d2bfe5804ccf329a13f8b19528fdf058b4591ba10ef239cbbd627f22f17457f4a2ff  cui-php-apache2.ddate.sh"
+93bcb01c6bd954674626087aa5f4cdf3e0ad2548dba9c46a2720cf22337a41e023408f6b2e89061caded87b8ac111ef035cfe6d7278dfac91d409721b55cd179  cui-php-apache2.txt
+1a75b453b4a1a8d1ce212689459f2299ef20b3a5edd12b75a24444d85e23f4f58db1a4b422303d05a83134c0bfaf86d6695dd208a73e280801e5c56ab78d2f08  cui-php-apache2.txt.toc
+9c9895045ce7cdb6a2f45ee81f96e26ea101b5201bef0c5b8ffbee301c73eae8ff2ac088dba60dd72dcaa1ebcde509aa87807fce0cc11567240bddfb80396651  cui-php-apache2.dcache.sh
+1654837fd4bba03afb5f6bf96f907dc31e3e57214fe7053a2f183937f56694dca198efe1021e7aa4878458bb28221628c4d4921bf20534f5a1235b2aaf7b187b  cui-php-apache2.ddate.sh
+edbe3d31bfaf04f29ac950711ba3432a4c55d6195a261880a5f84b4eb08e9f5b9c2898cb6ff3b2cf101b91000d159d58a7620d4c1b9f8bea596ebe477df3cd06  cui-php-apache2-john.ttf"

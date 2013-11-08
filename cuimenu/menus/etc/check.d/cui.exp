@@ -1,18 +1,8 @@
 #------------------------------------------------------------------------------
 # /etc/check.d/cui.exp - eischk exp file for cui
-#
-# Creation   :  2007-11-03 dv
-# Last Update:  2012-11-14 root
-#
-# Copyright (c) 2001-2012 the eisfair team, team(at)eisfair(dot)org
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#------------------------------------------------------------------------------
-
-CUI_BKGND_COLOR       = 'BLACK|RED|GREEN|BROWN|BLUE|MAGENTA|CYAN|LIGHTGRAY'
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
+ CUI_BKGND_COLOR       = 'BLACK|RED|GREEN|BROWN|BLUE|MAGENTA|CYAN|LIGHTGRAY'
                        : 'invalid color. Only BLACK, RED, GREEN, BROWN,
                           BLUE, MAGENTA, CYAN, LIGHTGRAY are allowed'
 CUI_COLOR             = '(RE:CUI_BKGND_COLOR)|DARKGRAY|LIGHTRED|LIGHTGREEN|YELLOW|LIGHTBLUE|LIGHTMAGENTA|LIGHTCYAN|WHITE'

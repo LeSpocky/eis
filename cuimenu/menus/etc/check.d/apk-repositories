@@ -1,16 +1,7 @@
-# ------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # /etc/check.d/apk-repositories - check table for configuration parameters
-#
-# Creation   :  2013-05-03 starwarsfan
-#
-# Copyright (c) 2013 The alpeis-team <team(at)eisfair(dot)org>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-# ------------------------------------------------------------------------------
-
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 # Variable                OPT_VARIABLE              VARIABLE_N         VALUE
 APK_REPOSITORY_N          -                         -                  NUMERIC
 APK_REPOSITORY_%_NAME     -                         APK_REPOSITORY_N   NONE

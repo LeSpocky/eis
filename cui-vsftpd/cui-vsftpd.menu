@@ -1,0 +1,10 @@
+<!-- /var/install/menu/setup.services.vsftpd.menu -->
+<title>Administration of vsFTPd</title>
+<package>vsftpd</package>
+<doc file="vsftpd.txt">Read Documentation</doc>
+<edit>Edit Configuration</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
+<script file="vsftpd-user.cui.sh">Virtual users</script>
+<init task="start">Start</init>
+<init task="stop">Stop</init>
+<init task="status">Show status</init>

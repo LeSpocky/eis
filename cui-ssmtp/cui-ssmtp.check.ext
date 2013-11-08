@@ -1,0 +1,22 @@
+# ------------------------------------------------------------------------------
+# /etc/config.d/-check_ext - configuration file for -check_ext
+# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+# ------------------------------------------------------------------------------
+if (start_ssmtp)
+then
+    if (ssmtp_use_tls == "tls")
+    then
+        if (ssmtp_mailhub_port == "" || ssmtp_mailhub_port != "465")
+        then
+            error "If you set SSMTP_USE_TLS='tls', you most likely have to set SSMTP_MAILHUB_PORT='465' too!"
+        fi
+    else
+        if (ssmtp_use_tls == "starttls")
+        then
+            if (ssmtp_mailhub_port != "" && ssmtp_mailhub_port != "25")
+            then
+                error "If you set SSMTP_USE_TLS='starttls', you most likely have to set SSMTP_MAILHUB_PORT='25' too!"
+            fi
+        fi
+    fi
+fi

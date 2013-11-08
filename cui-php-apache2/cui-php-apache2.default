@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-# /etc/config.d/php-apache2 - configuration file for apache2
+# /etc/config.d/php-apache2 - configuration file 
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
 # ----------------------------------------------------------------------------
 
@@ -18,9 +18,9 @@ PHP_DISPLAY_ERRORS='yes'              # Show syntaxerrors of your PHP-Scripts
 PHP_LOG_ERROR='no'                    # Write Error to a logfile
                                       # yes=ON / no=OFF (default)
                                      
-PHP_INCLUDE_PATH='.:/usr/share/php5:/usr/include/php5'
+PHP_INCLUDE_PATH='.:/usr/share/pear:/usr/include/php5'
                                       # Path were include files are located
-                                      # default: .:/usr/share/php5:/usr/include/php5
+                                      # default: .:/usr/share/pear:/usr/include/php5
                                      
 PHP_REGISTER_GLOBALS='no'             # Fixes some errors with some old
                                       # scripts.
@@ -45,8 +45,7 @@ PHP_DATE_TIMEZONE='Europe/Berlin'     # Enter your timezone here
 # ----------------------------------------------------------------------------
 
 PHP_INFO='no'                         # Puts some PHP-Scripts in your htdoc-dir
-                                      # for testing functionality for
-                                      # php, gd, pdf.
+                                      # for testing functionality for php, gd.
 
 # ----------------------------------------------------------------------------
 # Memory Settings
@@ -77,6 +76,13 @@ PHP_EXT_CACHE='no'                    # Activate caching module in PHP.
                                       # default: no -> switch caching module off
                                       
 PHP_EXT_SOAP='no'                     # Activate SOAP module in PHP.                                      
+PHP_EXT_GD='yes'                      # Activate GD extension for PHP.
+PHP_EXT_JSON='no'                     # Activate json extension for PHP.
+PHP_EXT_GETTEXT='no'                  # Activate Native Language extension.
+PHP_EXT_ICONV='no'                    # Activate iconv character set conversion.
+PHP_EXT_IMAP='no'                     # Activate IMAP mail extension for PHP.
+PHP_EXT_XML='no'                      # Activate XML extension for PHP.
+PHP_EXT_ZIP='yes'                     # Activate ZIP extension for PHP.
 
 # ----------------------------------------------------------------------------
 # EXTENSION CONFIGURATION - DATABASE

@@ -1,29 +1,24 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # system-devices-pv-show - show physical volumes
-#
-# Creation   : 2009-09-02 schlotze
-# Last Update: $Id: system-filesystems-pv-show 16982 2008-10-17 12:52:01Z schlotze $
-#
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 
 . /var/install/include/anykey
 . /var/install/include/mecho
 . /var/install/include/techo
 
 echo ""
-mecho --info "List physical volumes"
+echo "List physical volumes"
 techo begin 11 39 6 6 9r 9r
 techo row --info "PV" --info "VG" --info "Fmt" --info "Attr" --info "PSize" --info "PFree"
-mecho --info "================================================================================"
+echo "================================================================================"
 
 pvs|while read line
 do
     set -- $line
-    if [ "$1" != "PV" ]
-    then
-        if [ -z "$6" ]
-        then
+    if [ "$1" != "PV" ] ; then
+        if [ -z "$6" ] ; then
             techo row $1 "" $2 $3 $4 $5
         else
             techo row $1 $2 $3 $4 $5 $6

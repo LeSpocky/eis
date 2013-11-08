@@ -46,7 +46,10 @@ void PMApiDelPackagesList        (int argc, const wchar_t* argv[]);
 /* local prototypes */
 void PMWritePackageListEntry     (WINDOWSTUB *listview, int showall, struct apk_database *db, struct apk_package *pkg);
 int  PMMatchNames                (apk_hash_item item, void *ctx);
-int  PMInternalCheckPackageList  (char *name);
-void PMInternalClearPackageList  (void);
+int  PMInternalAddHashList       (char *name, char *version, char *description, int installed, int reponr, time_t buildtime);
+void PMInternalClearHashList     (void);
+int  PMIntNamecmp                (void *_a, void *_b);
+void PMInternalSortHashList      (void);
+void PMInternalHashToListview    (WINDOWSTUB *listview);
 
 #endif

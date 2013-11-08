@@ -1,0 +1,94 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
+pkgname=cui-ssmtp
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="CUI setup for simple mail send service sSMTP"
+url="http://www.eisfair.org"
+arch="noarch"
+license="GPL"
+depends="cuimenu ssmtp mailx"
+depends_dev=""
+makedepends="$depends_dev"
+install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.post-deinstall"
+subpackages=""
+source="${pkgname}.default
+		${pkgname}.check
+		${pkgname}.check.exp
+		${pkgname}.check.ext
+		${pkgname}.dauthm.sh
+		${pkgname}.dusetls.sh
+		${pkgname}.help
+		${pkgname}.testmail
+		${pkgname}.sh
+		${pkgname}-update.sh
+		${pkgname}.menu
+		${pkgname}.txt
+		${pkgname}.txt.toc
+"
+
+_builddir=
+prepare() {
+	cd "$_builddir"
+}
+
+build() {
+	cd "$_builddir"
+}
+
+package() {
+	cd "$_builddir"
+	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/ssmtp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/ssmtp.exp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.ext     ${pkgdir}/etc/check.d/ssmtp.ext || return 1	
+	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/ssmtp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/ssmtp || return 1
+	install -D -m755 ${srcdir}/${pkgname}.testmail      ${pkgdir}/var/install/bin/ssmtp-send-testmail || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/ssmtp.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/ssmtp-update.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}.dauthm.sh     ${pkgdir}/var/install/dialog.d/SSMTP_AUTHMETHOD.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}.dusetls.sh    ${pkgdir}/var/install/dialog.d/SSMTP_USETLS.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.ssmtp.menu || return 1	
+	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/ssmtp/ssmtp.txt || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt.toc       ${pkgdir}/usr/share/doc/ssmtp/ssmtp.toc || return 1
+}
+
+md5sums="6c055a9ed601e61d56233431246ef2aa  cui-ssmtp.default
+6122a1137c743d5305ca7419db428c9f  cui-ssmtp.check
+b74b5c35c2597ab86addefa4d031a1fe  cui-ssmtp.check.exp
+06956480fb882bf434132b4f1d358247  cui-ssmtp.check.ext
+87b36bf2229ec14cb216e2ffd0ed7c6d  cui-ssmtp.dauthm.sh
+f2a59f4c443c578928dd94846cbc1ce5  cui-ssmtp.dusetls.sh
+d7baaa7bb0506141cc76f52646a7f28f  cui-ssmtp.help
+d7dcbf1c697d356781767347240f2b6c  cui-ssmtp.testmail
+fe86e08e90174987a78dce1a8841f98a  cui-ssmtp.sh
+c88ee8e987371c240b8a94845fd318b8  cui-ssmtp-update.sh
+c6a03de9b6430ec1d1b26e444f2d35f2  cui-ssmtp.menu
+0a5bd7bb882fca6ca05f43639465dcf1  cui-ssmtp.txt
+a71514536ef199ba9349f375de07c91f  cui-ssmtp.txt.toc"
+sha256sums="1446b7901ab1c8ea8ccf92e8c8a256f7fe3bd85a4d330da8c0ea66f4be3c6d76  cui-ssmtp.default
+8c8b3cb4dc65385cac75948f4fba4490455ae6ed4fb455e233f160808bcfb388  cui-ssmtp.check
+8fd0b8c9f97381eea0f9b8cf40fb37cdbd45635c0fa0a069eb3aa14e65c3723e  cui-ssmtp.check.exp
+8e7f14c9e3dcad1d66051fc09a3391ef062f9a5869107752cf03fa8bb272c158  cui-ssmtp.check.ext
+41a85cff006f1c9225f1b8cd03a34098cc6b430135e3311cc076756d8932ac2a  cui-ssmtp.dauthm.sh
+6753399ab48ed7f283deb8bb1624c9723b2e5747e648fddf998c5a6407b4c034  cui-ssmtp.dusetls.sh
+f354e2846c08e10107c0db173d1e14b927f61ee4e85d26a0d5ff6ebb63c6332d  cui-ssmtp.help
+74f27619cd0c725051ce1973fba427e25131d2b2836e9174571ebf979da5f1e4  cui-ssmtp.testmail
+92425349ceeeb245170bb5a20b7214cbd7de2c60a2ef815ac7a864ff8a3412ba  cui-ssmtp.sh
+ddef223c56dadfed6f6de296653dc0003aebe9b2cb44fd4c2d939fdb01d5e656  cui-ssmtp-update.sh
+357bbdec4f095117045241cfa78e785a637b8e328fece8045654311647bb43ed  cui-ssmtp.menu
+236ae846b4fafe26357d8c7330f5d917f368d32810bba6a672ef7ad8fb714c79  cui-ssmtp.txt
+4a6be98475ea5559dc8f5c5e312f9adedbf4f4d02b48fb5c3fe4e8ee8ac19032  cui-ssmtp.txt.toc"
+sha512sums="86002fcbf7fa88d4dfb1d73f8b4580e83ed8a0f56ccbecdef64f306b0adf750b6057960c446f40231be55f4654e2ef77f85ce2c1929dad05328147f7c5e62ba4  cui-ssmtp.default
+866e749a774371875267f0b873d56a7c14ca330754f6473cb1133a6565cf9cbedd5345462caae30721a8c53967dadff1cb07ce572e649fee99621dc9ed97c2a5  cui-ssmtp.check
+40eb22d57e26a9ca689c6d294291e5155b1f5db0002e1b7909b63efbfeb70bcf0c416c7d1f2c9912564f96366aaa5d003d7f7e95592590362e735d914fdf94ca  cui-ssmtp.check.exp
+0fe79b698cb184fab0a43fc109f5575351055b462840c1d304f172f20624a4a7924bc1e3f5c1fc293f14740b44c371697131bbf5b26ae61a13a2171c4107a830  cui-ssmtp.check.ext
+92d7e9bd5b6718da10559fc00acb198fb0b70e2164dfc6771c85c5aa205bc20ee3b1d0eea15e23bbe3f49a2f2bec1e335b547ef7ff4a1f0ad06bcb49cf66af44  cui-ssmtp.dauthm.sh
+814485de8cca719fd26b21f17cf6209377ef5c0ca3f0d8b4f11c05ec316a8882873255e7c0d0601abdd803ea019016fc1d3e0084ac17f66f71239b7f5efe2af0  cui-ssmtp.dusetls.sh
+7bd0a90c03ea957472a5eea0631e7e032bff22e0cd3edd3d9e94115bf81bbcc55cca194da2b2fa75104ccfdcb76d19e965a740c9c1837cc24212579300c0c56a  cui-ssmtp.help
+8d59fdc9aa398d98772de1427e2a4e2afcae8a620deb6891d6332c111503398f272399d0a5d42338fc4bf1463b17f3a572d2f1e746a065ec436f65806aeae665  cui-ssmtp.testmail
+71ac72d9947e38981a50010d3033fc44b4ce7afae47b4943db85bb9c7d19f4182b33317c6af6c6fdfaa2646ec71ceda8872d571284436db7bb16ae302b652ea5  cui-ssmtp.sh
+5a7ef05dc01afd2b9ce66702ce3419f03f251b61dbff161276b143a2bdefc5f93a2c599d5583d2dd4154ddd6bcb3d4a40f96b5f0548c05ddc4269e177b5e735c  cui-ssmtp-update.sh
+13c95f2172902a958c0f497bccae6cbf5ea001d333d6d5c427e75ee9fdd286bed35f34eb543c62928c379c8f2d64f5a93a1f2357ca0e67bf01897a4ecdbc37a3  cui-ssmtp.menu
+cb8ec0a9c7a56fd907db104d4a85f09518c632f41f3f84431599f7a252f40bb459b203b1bb96fb844026fcded0a805f8b8ffe74ccf3db5c4a0640a17b9755ad2  cui-ssmtp.txt
+8e1aba169793543a47287c4a0d3b156eaae8dd1b19c10cfb3b9040339c8c767f63fcf95eba184bcddc0ba1b41fa6ce842d4a6670f15c0e122acc63ab7cec0a9f  cui-ssmtp.txt.toc"

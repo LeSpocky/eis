@@ -1,8 +1,8 @@
 #!/bin/sh
-# ----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # eisfair-ng configuration parameter update script
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
-# ----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 package_name=php-apache2
 
@@ -14,7 +14,7 @@ package_name=php-apache2
 # Read old values if exists
 [ -f /etc/config.d/${package_name} ] && . /etc/config.d/${package_name}
 
-### --------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 ### Write the new config
 (
     printgpl "$package_name" "2006-07-31" "schlotze" "2008-2013 Sebastian Scholze <sebastian@eisfair.org>"
@@ -60,8 +60,7 @@ package_name=php-apache2
     # ------------------------------------------------------------------------
 
     printvar "PHP_INFO" "Puts some PHP-Scripts in your htdoc-dir"
-    printvar "" "for testing functionallity for"
-    printvar "" "php, gd, pdf."
+    printvar "" "for testing functionallity for php, gd."
 
     # ------------------------------------------------------------------------
     printgroup "Memory Settings"
@@ -90,6 +89,13 @@ package_name=php-apache2
     printvar "" "xcache: for XCache"
     printvar "" "default: no -> switch caching module off"
     printvar "PHP_EXT_SOAP" "Activate SOAP module in PHP."
+    printvar "PHP_EXT_GD" "Activate GD extension for PHP."
+    printvar "PHP_EXT_JSON" "Activate json extension for PHP."
+    printvar "PHP_EXT_GETTEXT" "Activate Native Language extension."
+    printvar "PHP_EXT_ICONV" "Activate iconv character set conversion."
+    printvar "PHP_EXT_IMAP" "Activate IMAP mail extension for PHP."
+    printvar "PHP_EXT_XML" "Activate XML extension for PHP."
+    printvar "PHP_EXT_ZIP" "Activate ZIP extension for PHP."
 
     # ------------------------------------------------------------------------
     printgroup "Extension Configuration - Database"
@@ -112,8 +118,5 @@ package_name=php-apache2
 chmod 0644  /etc/config.d/${package_name}
 chown root  /etc/config.d/${package_name}
 
-
-### --------------------------------------------------------------------------
-### end
-### --------------------------------------------------------------------------
-
+exit 0
+### ----------------------------------------------------------------------------

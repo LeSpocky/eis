@@ -1,15 +1,6 @@
 #-----------------------------------------------------------------------------
 # /etc/check.d/base.exp - expressions for check table of configuration params
-#
-# Creation:     2003-09-14  fm
-# Last Update:  $Id: base.exp 29077 2011-11-06 15:27:16Z hbfl $
-#
-# Copyright (c) 2001-2011 the eisfair team, team(at)eisfair(dot)org
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
 #-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
 # fli4l

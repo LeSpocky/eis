@@ -1,0 +1,2 @@
+WEBALIZER_HOST_TYPE = 'clf|squid|ftp|w3c'
+                    : 'Use only: clf for Apache or squid, ftp, w3c'

@@ -1,0 +1,3 @@
+#!/bin/sh
+[ -f /etc/config.d/php-apache2 ] && /var/install/config.d/php-apache2-update.sh
+exit 0

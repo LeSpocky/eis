@@ -697,7 +697,7 @@ function users_edituser_dialog()
                     if [ "${orig_userlogin}" != "${usersdlg_userlogin}" ]
                     then
                         args="$args -l \"${usersdlg_userlogin}\""
-                        args="$args -h \"/home/${usersdlg_userlogin}\" -m"
+                        args="$args -h \"/home/${usersdlg_userlogin}\" "
                     fi
                     
                     if [ "${orig_username}" != "${usersdlg_username}" ]
@@ -800,7 +800,7 @@ function users_createuser_dialog()
                     -G "${usersdlg_usergroup}" \
                     -g "${usersdlg_username}" \
                     -s "/bin/bash" \
-                    -h "/home/${usersdlg_userlogin}" -m \
+                    -h "/home/${usersdlg_userlogin}" \
                     ${usersdlg_userlogin} 2>&1)
                     
                 if [ "$?" != "0" ]

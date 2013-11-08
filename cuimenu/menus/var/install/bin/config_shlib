@@ -1,28 +1,14 @@
 #!/bin/bash
-#----------------------------------------------------------------------------
-# /var/install/bin/config_shlib -
-#                      shell library for advanced configfile handling
-#
-# Creation:     2003-12-24 ap
-# Last Update:  $Id: config_shlib 24471 2010-06-10 21:14:01Z schlotze $
-#
-# Copyright (c) 2001-2007 Ansgar Püster <Ansgar.Puester(at)T-Online(dot)de>
-# Copyright (c) 2008-2009 the eisfair team, team(at)eisfair(dot)org
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#----------------------------------------------------------------------------
-#
+#-----------------------------------------------------------------------------
+# /var/install/bin/config_shlib - library for advanced configfile handling
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 # This library is used by
-#
 #    /var/install/bin/edit
 #    /var/install/bin/template-backup-config and all it's links
 #    /var/install/bin/template-restore-bconf and all it's links
 #    /var/install/bin/template-restore-dconf and all it's links
 #    /var/install/bin/master-diff-config     and all it's links
-#
 
 defaultd=/etc/default.d
 configd=/etc/config.d
@@ -34,16 +20,12 @@ fmask='*[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0
 
 gotoyx () { echo -e "\033[$1;$2H\c"; }
 
-#
 # get_date
 # ========
-#
 # Parameters:      $1    name of file in backup directory
 #                        <dir>/<components>.<date>
 #                        <components> may contain .
-#
 # Returns:         <date>
-#
 get_date()
 {
    old_ifs="$IFS"
@@ -53,21 +35,16 @@ get_date()
    IFS="$old_ifs"
 }
 
-#
 # check_backupdir
 # ===============
-#
 # Parameters:      $1    name of backup directory
-#
 # Returns:         0     success
 #                  1     failure
-#
 check_backupdir()
 {
     dir=$1
 
-    if [ ! -d $dir ]
-    then
+    if [ ! -d $dir ] ; then
         mkdir $dir
         [ $? != 0 ] && return 1
         chmod og-rw $dir
@@ -76,16 +53,12 @@ check_backupdir()
     return 0
 }
 
-#
 # check_config_files
 # ==================
-#
 #  Parameters:     $1    package name
 #                  $2    'quiet' - disable screen output
-#
 #  Returns:        0     success
 #                  1     failure
-#
 check_config_files()
 {
     [ "$debug" = 'true' ] && echo "call check_config_files: $*"
@@ -102,8 +75,7 @@ check_config_files()
     [ "${_ccf_max_backup}" = '' ] && _ccf_max_backup=10
 
     # check number of files
-    if [ "$fcount" -gt "${_ccf_max_backup}" ]
-    then
+    if [ "$fcount" -gt "${_ccf_max_backup}" ] ; then
         # number of files to remove
         rmcount=`expr $fcount - ${_ccf_max_backup}`
         count=0
@@ -120,8 +92,7 @@ check_config_files()
         } | sort -t: -k2 | while read line
         do
             # remove obsolete files
-            if [ "$count" -lt "$rmcount" ]
-            then
+            if [ "$count" -lt "$rmcount" ] ; then
                 # extract filename from line
                 file=`echo ${line} | cut -d: -f1`
                 rm $file
@@ -131,8 +102,7 @@ check_config_files()
             fi
         done
 
-        if [ "${quiet}" != "quiet" ]
-        then
+        if [ "${quiet}" != "quiet" ] ; then
             echo "Backup directory contained $fcount files for package $package ($rmcount removed)."
         fi
     fi
@@ -140,18 +110,14 @@ check_config_files()
   set +x
 }
 
-#
 # backup_config
 # =============
-#
 #  Parameters:     $1    package name
 #                  $2    file to backup
 #                  $3    individal backup suffix
 #                  $4    'quiet' - disable screen output
-#
 #  Returns:        0     backup O.K.
 #                  1     failure
-#
 backup_config()
 {
     [ "$debug" = 'true' ] && echo "call backup_config: $*"
@@ -162,14 +128,12 @@ backup_config()
     quiet=$4
 
     # check backup directory
-    if ! check_backupdir $backupd
-    then
+    if ! check_backupdir $backupd ; then
         echo " * Error creating backup directory $backupd ..."
         return 1
     fi
 
-    if [ "$suffix" = "" ]
-    then
+    if [ -z "$suffix" ] ; then
         # timestamp to add to filename
         stamp=`date +%Y-%m-%d-%H-%M-%S`
     else
@@ -178,18 +142,15 @@ backup_config()
     fi
 
     # do the backup
-    if [ -f $file ]
-    then
+    if [ -f $file ] ; then
         cp -p $file $backupd/$package.$stamp
         chmod og-rw $backupd/$package.$stamp
 
-        if [ "$quiet" != "quiet" ]
-        then
+        if [ "$quiet" != "quiet" ] ; then
             echo "Configuration file was saved as $package.$stamp in $backupd."
         fi
     else
-        if [ "$quiet" != "quiet" ]
-        then
+        if [ "$quiet" != "quiet" ] ; then
             echo "File $file not found - no backup done"
         fi
     fi
@@ -213,18 +174,16 @@ activate_hint()
 
 select_file()
 {
+    local selected="false"
+    local act_count=1
     # count files
-    fcount=`find $backupd -maxdepth 1 -type f -name "$package.$fmask" 2>/dev/null | wc -l`
+    local fcount=`find $backupd -maxdepth 1 -type f -name "$package.$fmask" 2>/dev/null | wc -l`
     fcount=`echo $fcount`
-    [ "$omit_file" != '' ] && fcount=`expr $fcount - 1`
+    [ -n "$omit_file" ] && fcount=`expr $fcount - 1`
 
-    selected='false'
-
-    act_count=1
     header
 
-    if [ $fcount -gt 0 ]
-    then
+    if [ $fcount -gt 0 ] ; then
         row=4
         # find files in sorted order
         for file in `find $backupd -maxdepth 1 -type f -name "$package.$fmask" | sort`
@@ -238,8 +197,7 @@ select_file()
 
             selected='false'
           # if [ $row = 21 ]
-            if [ $row = 13 ]
-            then
+            if [ $row = 13 ] ; then
                 while [ $selected = 'false' ]
                 do
                     gotoyx $row 1
@@ -303,7 +261,7 @@ select_file()
             fi
         fi
     else
-        if [ "$omit_file" = '' ]; then
+        if [ -z "$omit_file" ]; then
             echo "No files for $package found in $backupd."
         else
             echo "Only one file for $package found in $backupd."

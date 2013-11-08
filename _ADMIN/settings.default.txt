@@ -53,7 +53,7 @@ jenkinsPasswordFile=/var/lib/jenkins/.ssh/ci-password
 # The private key must be located in ~/.abuild/
 signingPrivateKey=YourPrivateKey
 signingPublicKey=${signingPrivateKey}.pub
-apkRepoQualifier=alpeis-ci
+apkRepoQualifier=eisfair-ng-ci
 apkRepositoryBaseFolder=/path/to/repository/
 
 # ----------------------------------------------------------------------------

@@ -1,16 +1,13 @@
 #!/bin/bash
-#
 # Creation:     2013-05-27 jv <jens@eisfair.org>
 # Copyright (c) 2000-2013 The eisfair Team <team@eisfair.org>
-#
-# ############################################
-# ToDo: Software RAID 1
-#       LVM option for /data or/and /
+#-------------------------------------------------------------------------------
+# ToDo: LVM option for /data or/and /
 #       correct timezone select
 #       optional view logfile
 
 hw_backtitle() {
-    echo "eisfair-NG powered by Alpine Linux - Installation   $PDRIVE"
+    echo "Alpine Linux with eisfair-ng - Installation   $PDRIVE"
     return 0
 }
 
@@ -72,8 +69,8 @@ PNETMASK="255.255.255.0"
 PGATEWAY="192.168.1.1"
 PHOSTNAME="eis"
 PDOMAIN="eisfair.home"
-PDNSSERVER="192.168.1.1"
-PTIMEZONE=""
+PDNSSERVER=""
+PTIMEZONE="Europe/Berlin"
 PPASSWORD="eis"
 POPTIONS=""
 
@@ -98,9 +95,9 @@ while true ; do
              5 "IP-address" "IP-address of first network interface." \
              6 "Netmask" "Netmask of IP interface."\
              7 "Gateway" "Default Gateway for interface." \
-             8 "Hostname" "System Hostname."\
-             9 "Domain" "DNS Domain name." \
-            10 "DNS Server" "DNS Server." \
+             8 "DNS Server" "DNS Server." \
+             9 "Hostname" "System Hostname."\
+            10 "Domain" "DNS Domain name." \
             11 "Root password" "Set password for user root" \
             12 "Start installation" "Start installation" \
             13 "Reboot server" "Reboot server after installation"  )
@@ -115,9 +112,8 @@ while true ; do
              2 "Adjust partition size" "Adjust the size of swap/root partition." \
              3 "Keyboard layout" "Setup the keyboard layout." \
              4 "Use DHCP for network" "Automatic IP-address of first network interface." \
-             8 "Hostname" "System Hostname."\
-             9 "Domain" "DNS Domain name." \
-            10 "DNS Server" "DNS Server." \
+             9 "Hostname" "System Hostname."\
+            10 "Domain" "DNS Domain name." \
             11 "Root password" "Set password for user root" \
             12 "Start installation" "Start installation" \
             13 "Reboot server" "Reboot server after installation"  )
@@ -126,7 +122,7 @@ while true ; do
     case ${n_item} in
         1)
             ### Select drive ######################################################
-            if [ `fdisk -l | grep "^Disk /" | wc -l` = '1' ] ; then
+            if [ `fdisk -l | grep "^Disk /.*:" | wc -l` = '1' ] ; then
                 drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 on/p')
             else
                 drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 off/p')
@@ -216,7 +212,7 @@ while true ; do
             if [ "$PNETIPSTATIC" = "1" ] ; then
                 getNextMenuItem
             else
-                n_item="8"
+                n_item="9"
             fi
             ;;
         5)
@@ -271,6 +267,7 @@ while true ; do
                 if [ "$?" -eq 0 ] ; then
                     if isValidIp $new ; then
                         PGATEWAY="$new"
+                        [ -z "$PDNSSERVER" ] && PDNSSERVER="$new"
                         getNextMenuItem
                         break
                     else
@@ -283,6 +280,17 @@ while true ; do
             done
             ;;
         8)
+            ### DNS Server #####################################################
+            new=$(dialog --stdout --no-shadow \
+                --backtitle "$(hw_backtitle)" \
+                --title "Management DNS Servers"  --clear \
+                --inputbox " Enter a space delimited list of DNS Servers to be used by the Managment Interface" 10 45 "${PDNSSERVER}")
+            if [ "$?" -eq 0 ] ; then
+                PDNSSERVER="${new}"
+                getNextMenuItem
+            fi
+            ;;
+        9)
             ### Hostname #######################################################
             while true ; do
                 new=$(dialog --stdout --no-shadow --backtitle "$(hw_backtitle)" \
@@ -311,7 +319,7 @@ while true ; do
                 fi
             done
             ;;
-        9)
+       10)
             ### Domain #########################################################
             while true ; do
                 new=$(dialog --stdout --no-shadow \
@@ -336,18 +344,8 @@ while true ; do
                 fi
             done
             ;;
-        10)
-            ### DNS Server #####################################################
-            new=$(dialog --stdout --no-shadow \
-                --backtitle "$(hw_backtitle)" \
-                --title "Management DNS Servers"  --clear \
-                --inputbox " Enter a space delimited list of DNS Servers to be used by the Managment Interface" 10 45 "${PDNSSERVER}")
-            if [ "$?" -eq 0 ] ; then
-                PDNSSERVER="${new}"
-                getNextMenuItem
-            fi
-            ;;
         11)
+            ### root password ##################################################
             new=$(dialog --stdout --no-shadow \
                 --backtitle "$(hw_backtitle)" \
                 --title "Set root password" \

@@ -3,7 +3,7 @@
 pkgname=eis-install
 pkgver=1.0.0
 pkgrel=0
-pkgdesc="eisfair-NG Installer"
+pkgdesc="eisfair-ng installer"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
@@ -38,12 +38,12 @@ package() {
 		"$pkgdir"/bin/$pkgname.setup-disk || return 1
 }
 
-md5sums="1bdebce6751674f3762ce72693293e8e  eis-install.initd
-fdbd50201eea2e45b9bdffc95129a398  eis-install.sh
-f12bb3d7384a1e4a3017cdefca8a681d  eis-install.setup-disk"
-sha256sums="0a7cc90df34048199851fc3cf866b764f4eeb1a067e2698eb2f3ba37016ae352  eis-install.initd
-146feaf0152033c4def163719c595f2249ba11e40bfcd8c6c80971835c1527b6  eis-install.sh
-5e99b4536ffd6338cf950048fac0ae640ec44b685e004f711a7863c0ee3eefd7  eis-install.setup-disk"
-sha512sums="10fca395d1d81edf48bae301a2fe9b3c3fa79f6d63ed120209cd59597a63f8d2daf7c9bc98df29b4c791e14617baa9b61aae307265de98d577964b468a8b742c  eis-install.initd
-622fa796cdf51ab08037c546b16f23dfc0f98bfff1509070dc7bb1d504a4143dee719f4a99dc9430c8ab5b66fd63fa6b7ecfec548eeee03df85d192d09aab504  eis-install.sh
-cd34272de22839910a39c4824616236cdf65a12c042d044a3b822b63d5d3095d67ec40cf4d8001b9f33e40eb6706b0e2c7f0a252a7fc5e9f1e3de895ce1f878b  eis-install.setup-disk"
+md5sums="a98734dee80911e7a4340ab5b3898a9c  eis-install.initd
+b9b21f041347c64eb369cb8966e8dd93  eis-install.sh
+76ee6df9d7b4b3651cd7abc31af83652  eis-install.setup-disk"
+sha256sums="b4fbfc83c5beaeed746c4e42bf9698d3529a123ffd36bc2a2de8faf3daab2495  eis-install.initd
+7780da9a36e8d42f682b58ebb6c5f50be08e71f1f4909dc8a5f1a965d42e7a23  eis-install.sh
+dbfc9fde7997d3f5c2efbc78861176c460cf80114296b9d33dd58c901f73d495  eis-install.setup-disk"
+sha512sums="81cfd80aa85adda7948cf40c6b093521a5bf33e87c12c9338a346d31455e6ca5e166aef8647c9d4a40d06e4c4ecb64da386cc81b422338c469f986cc6503656c  eis-install.initd
+0316b6ac377e5f5defedbf2fd6050dc8c17852d5a64db27f90fd58fdb599879883dcba74421adb8fa3216719a218d902b8312284d9d975fa8d308d6dcd66ba11  eis-install.sh
+6d176af7d713752ac78e8c1ad19cb1f35f3f13df2f581899a14580249cc00082766ec8adb831cb92059533324fdb8c8f37ae185375f4061beaa8edf046b24c0f  eis-install.setup-disk"

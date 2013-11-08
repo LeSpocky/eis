@@ -1,0 +1,3 @@
+#!/bin/sh
+[ -f /etc/config.d/vsftpd ] && /var/install/config.d/vsftpd-update.sh
+exit 0

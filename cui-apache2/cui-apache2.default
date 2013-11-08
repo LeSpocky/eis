@@ -36,7 +36,7 @@ APACHE2_DIRECTORY_INDEX='index.html index.htm'
 APACHE2_HOSTNAME_LOOKUPS='yes'        # Resolve IPs in logfile?
 APACHE2_VIEW_DIRECTORY_CONTENT='yes'  # If there's no index.html view files in
                                       # dir
-APACHE2_ACCESS_CONTROL='all'          # Who get access e.g. 192.168.0.0/24
+APACHE2_ACCESS_CONTROL='all'          # Who get access e.g. ip 192.168.0.0/24
 APACHE2_ENABLE_SSI='no'               # Enable SSI 'yes' or 'no'
 APACHE2_ENABLE_USERDIR='yes'          # Show content of /home/USER/public_html
 
@@ -83,7 +83,7 @@ APACHE2_DIR_1_AUTH_TYPE='Basic'       # Authentication type: Basic or Digest
 APACHE2_DIR_1_AUTH_N='0'              # No. of usernames
 APACHE2_DIR_1_AUTH_1_USER='user'      # User no. 1.
 APACHE2_DIR_1_AUTH_1_PASS='secret'    # Password for user 1.
-APACHE2_DIR_1_ACCESS_CONTROL='all'    # e.g. 192.168.0.0/24 or 192.168.
+APACHE2_DIR_1_ACCESS_CONTROL='all'    # e.g. ip 192.168.0.0/24 or 192.168.
 APACHE2_DIR_1_CGI='none'              # !NOT YES! Possibilities are: 'none'
                                       # '.pl' '.cgi'
 APACHE2_DIR_1_SSI='no'                # Allow Server Side Includes?
@@ -113,6 +113,11 @@ APACHE2_VHOST_1_ACCESS_CONTROL='all'  # controls who get stuff
 APACHE2_VHOST_1_VIEW_DIRECTORY_CONTENT='no'
 APACHE2_VHOST_1_ENABLE_SSI='no'
 APACHE2_VHOST_1_MOD_CACHE='no'        # Enable mod_cache for current vhost
+APACHE2_VHOST_1_SSL='no'              # activate SSL
+APACHE2_VHOST_1_SSL_PORT='443'        # activate SSL
+APACHE2_VHOST_1_SSL_FORCE='no'        # redirect to https://
+APACHE2_VHOST_1_SSL_CERT_NAME='apache'
+                                      # Name of the cert.
 APACHE2_VHOST_1_DIR_N='0'
 APACHE2_VHOST_1_DIR_1_ACTIVE='no'
 APACHE2_VHOST_1_DIR_1_ALIAS='no'      # Create an alias?
@@ -127,26 +132,21 @@ APACHE2_VHOST_1_DIR_1_AUTH_N='0'      # No. of usernames
 APACHE2_VHOST_1_DIR_1_AUTH_1_USER='user'
 APACHE2_VHOST_1_DIR_1_AUTH_1_PASS='secret'
 APACHE2_VHOST_1_DIR_1_ACCESS_CONTROL='all'
-                                      # e.g. 192.168.0.0/24 or 192.168.
+                                      # e.g. ip 192.168.0.0/24 or 192.168.
 APACHE2_VHOST_1_DIR_1_CGI='none'      # !NOT YES! Possibilities are: 'none'
                                       # '.pl' '.cgi'
 APACHE2_VHOST_1_DIR_1_SSI='no'        # Allow Server Side Includes?
 APACHE2_VHOST_1_DIR_1_VIEW_DIR_CONTENT='no'
                                       # View files in dir if no index.html
 APACHE2_VHOST_1_DIR_1_WEBDAV='no'     # Enable WebDav
-APACHE2_VHOST_1_SSL='no'              # activate SSL
-APACHE2_VHOST_1_SSL_PORT='443'        # activate SSL
-APACHE2_VHOST_1_SSL_FORCE='no'        # redirect to https://
-APACHE2_VHOST_1_SSL_CERT_NAME='apache'
-                                      # Name of the cert.
 
 #------------------------------------------------------------------------------
 # Log-file handling
 #------------------------------------------------------------------------------
 
 APACHE2_LOG_LEVEL='warn'              # warning level
-APACHE2_LOG_COUNT='10'                # number of log files to save
-APACHE2_LOG_INTERVAL='weekly'         # logrotate interval: daily, weekly,
+APACHE2_LOG_COUNT='30'                # number of log files to save
+APACHE2_LOG_INTERVAL='daily'          # logrotate interval: daily, weekly,
                                       # monthly
 
 #------------------------------------------------------------------------------

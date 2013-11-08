@@ -1,15 +1,11 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # system-devices-umount-cdrom - umount cdrom
-#
-# Creation   : 19.07.2003 fm  Frank Meyer <frank@eisfair.org>
-# Last Update: $Id: system-devices-format-floppy 24471 2012-11-14 21:14:01Z jv $
-#
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 
 umount /media/cdrom
-if [ $? = 0 ]
-then
+if [ $? = 0 ] ; then
     /var/install/bin/ask.cui --info "CD-ROM umount successful."
 else
     /var/install/bin/ask.cui --error "CD-ROM umount failed!"

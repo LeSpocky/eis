@@ -1,40 +1,19 @@
-#!/bin/sh
-#-----------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # /var/install/include/virtlib -- eislib functions for detecting virtualization context
-#
-# Creation:     2009-10-23 alex
-# Last Update:  $Id: virtlib 24471 2010-06-10 21:14:01Z schlotze $
-#
-# Copyright (c) 2009--2010 the eisfair team, team(at)eisfair(dot)org
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#-----------------------------------------------------------------------
-
-#-----------------------------------------------------------------------
-# interface description
-#-----------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 # is_running_in_xendomu()         : returns 0 or 1 as return codes if
 #                                   running in Xen DomU or not
 # check_running_on_xen_detailed() : echos one of four strings depending
 #                                   on virtualization context:
 #                                   'noxen', 'xendomu', 'xendom0', 'hvm'
-#-----------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 
-#=======================================================================
 # only include this file once
-#=======================================================================
-
-if [ "${_EISLIB_VIRTLIB}" != 'true' ]
-then
-
+[ "${_EISLIB_VIRTLIB}" = 'true' ] && return 0
 _EISLIB_VIRTLIB='true'
 
-#=======================================================================
 # include other libs
-#=======================================================================
 . /var/install/include/check-eisfair-version
 
 #=======================================================================
@@ -53,28 +32,23 @@ _IS_HVM='false'
 _collect_xen_context()
 {
     local _DETECT_ANSWER=`xen-detect`
-    if [ "${_DETECT_ANSWER}" = 'Not running on Xen.' ]
-    then
+    if [ "${_DETECT_ANSWER}" = 'Not running on Xen.' ] ; then
         _NO_XEN='true'
     else
         # PV or HVM?
         echo "${_DETECT_ANSWER}" | grep -q 'PV'
-        if [ $? -eq 0 ]
-        then
+        if [ $? -eq 0 ] ; then
             # PV, could be DomU or Dom0, do some tests to get evidence
 
-            if pgrep -f xend &>/dev/null
-            then
+            if pgrep -f xend &>/dev/null ; then
                 _IS_XEN_DOM0='true'
             fi
 
-            if `echo "${EISFAIR_SYSTEM}" | grep -q 'eisxen'`
-            then
+            if `echo "${EISFAIR_SYSTEM}" | grep -q 'eisxen'`  ; then
                 _IS_EISXEN_SYSTEM='true'
             fi
 
-            if [ `/var/install/bin/check-version eisxen` = 'new' ]
-            then
+            if [ `/var/install/bin/check-version eisxen` = 'new' ] ; then
                 _HAS_EISXEN_INSTALLED='true'
             fi
 
@@ -109,8 +83,7 @@ virtlib_debug_output()
 is_running_in_xendomu()
 {
     _collect_xen_context
-    if [ "${_IS_RUNNING_IN_DOMU}" = 'true' ]
-    then
+    if [ "${_IS_RUNNING_IN_DOMU}" = 'true' ] ; then
         return 0
     else
         return 1
@@ -135,12 +108,4 @@ check_running_on_xen_detailed()
     fi
 }
 
-#=======================================================================
-# end only include once
-#=======================================================================
-
-fi
-
-#=======================================================================
 # end
-#=======================================================================

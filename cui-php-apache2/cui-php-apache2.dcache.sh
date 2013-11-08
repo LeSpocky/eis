@@ -13,7 +13,7 @@
 exec_dialog()
 {
     win="$p2"
-    sellist="apc,no"
+    sellist="no,apc,memcache"
     ece_select_list_dlg "$win" "Cache Method" "$sellist"
 }
 

@@ -1,0 +1,39 @@
+<help name="START_MYSQL">
+start MySQL server 'yes' or 'no'<br/>
+<br/>
+Default: START_MYSQL='no'
+</help>
+
+<help name="MYSQL_NETWORK">
+Enable the TCP/IP external connection<br/>
+<br/>
+Default: MYSQL_NETWORK='no'
+</help>
+
+<help name="MYSQL_PORT">
+Listen for an incoming connection on port MYSQL_PORT.<br/>
+<br/>
+Default: MYSQL_PORT='3306'
+</help>
+
+<help name="MYSQL_BIND">
+If set, then bind the MySQL port only to ip-address.<br/>
+<br/>
+Default: MYSQL_BIND=''<br/>
+Example: MYSQL_BIND='192.168.1.1'<br/>
+</help>
+
+<help name="MYSQL_RAM">
+Memory using for mysql server.<br/>
+</help>
+
+<help name="MYSQL_LOG_INTERVAL">
+Logrotate interval: daily, weekly, monthly.<br/>
+How often shall logrotate be executed?
+</help>
+
+<help name="MYSQL_LOG_MAXCOUNT">
+Number of log files to save.<br/>
+This is the number of log file archives that are kept
+on the system by logrotate, before they are outdated and removed.
+</help>

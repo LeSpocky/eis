@@ -45,7 +45,7 @@ log {
 # error ... emergency             /var/log/error.log    
 log {
         source(s_all);
-        filter(f_at_least_err);
+        filter(f_err_no_mysqld);
         destination(df_error);
 };
 # *.emerg                         *

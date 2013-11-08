@@ -1,0 +1,35 @@
+<help name="START_FTP">
+start FTP server 'yes' or 'no'<br/>
+<br/>
+Default: START_FTP='no'
+</help>
+
+<help name="FTP_PORT">
+Listen for an incoming connection on port FTP_PORT.<br/>
+<br/>
+Default: FTP_PORT='21'
+</help>
+
+<help name="FTP_BIND">
+If set, then bind the FTP port only to ip-address.<br/>
+<br/>
+Default: FTP_BIND=''<br/>
+Example: FTP_BIND='192.168.1.1'<br/>
+</help>
+
+<help name="FTP_NAT_MODE">
+enable support for NAT 'yes' or 'no'<br/>
+<br/>
+Default: FTP_NAT_MODE='no'
+</help>
+
+<help name="FTP_LOG_INTERVAL">
+Logrotate interval: daily, weekly, monthly.<br/>
+How often shall logrotate be executed?
+</help>
+
+<help name="FTP_LOG_MAXCOUNT">
+Number of log files to save.<br/>
+This is the number of log file archives that are kept
+on the system by logrotate, before they are outdated and removed.
+</help>

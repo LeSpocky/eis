@@ -1,21 +1,14 @@
-#---------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # /usr/local/bin/techo - table echo
-#
-# Creation:     2004-08-20 max
-# Last Update: $Id: techo 24471 2012-11-14 21:14:01Z jv $
-#
-#----------------------------------------------------------------------------
-
-# --------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 # usage
 #     techo [--tty|--file] [--std|--info|--warn|--error] --begin width width ...
 #     techo [--tty|--file] [--std|--info|--warn|--error] --row [--std|--info|--warn|--error|--link] message ...
 #     techo [--tty|--file] [--std|--info|--warn|--error] --end
-#
 # options:
 #     --tty      use console colors
 #     --file     don't use any color tags
-#
 # message-options:
 #     --std      print standard message (default)
 #     --stdbr    print standard message (default)(bright)
@@ -23,7 +16,6 @@
 #     --warn     print warning message  (yellow)(bright)
 #     --error    print error message    (red)(brightinvers)
 #     --link     print message '>'      (cyan)
-#
 # example:
 #     techo --begin '3 3r 15 10 28* 20'
 #     techo --row "" 1 foo foo "This is a somehow longer text, since i need a very long line of text" foo
@@ -31,7 +23,6 @@
 #     techo --row "" 12 foofoo foo foo --error foobar
 #     techo --info --row "" 24 foo foobar foo --error foobar
 #     techo --end
-# --------------------------------------------------------------------------
 
 _EISLIB_SCREENSIZE_X='80'
 
@@ -89,10 +80,8 @@ techo()
             done
 
             # check for row length only if != file
-            if [ "${_techo_mode}" != "file" ]
-            then
-                if [ ${_techo_total} -gt 80 ]
-                then
+            if [ "${_techo_mode}" != "file" ] ; then
+                if [ ${_techo_total} -gt 80 ] ; then
                     echo "You cannot use techo with more than 80 columns."
                     exit 255
                 fi
@@ -167,6 +156,4 @@ techo()
             ;;
     esac
 }
-# ==========================================================================
 # end
-# ==========================================================================

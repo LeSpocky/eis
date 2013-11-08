@@ -66,16 +66,6 @@ typedef struct
 	void*  Next;
 } PASSWD_T;
 
-typedef enum
-{
-	UNKNOWN_SYSTEM,
-	EISFAIR_1,
-	EISFAIR_2,
-	EISXEN
-} SYSTEM_T;
-
-void           SysInit           (void);
-
 USER_T*        SysGetUserList    (int query_flags);
 GROUP_T*       SysGetGroupList   (int query_flags);
 

@@ -40,7 +40,7 @@ Allgemeine Konfiguration
           verwendet.
 
           Standardeinstellung:
-          PHP_INCLUDE_PATH='.:/usr/share/php5:/usr/include/php5'
+          PHP_INCLUDE_PATH='.:/usr/share/pear:/usr/include/php5'
 
    PHP_REGISTER_GLOBALS
           Wird diese Variable auf 'yes' gesetzt, stellt dies ein
@@ -79,18 +79,14 @@ Allgemeine Konfiguration
           Standardeinstellung: PHP_DATE_TIMEZONE='Europe/Berlin'
 
    PHP_INFO
-          Steht diese Variable auf 'yes' werden in
-          [2]APACHE2_DOCUMENT_ROOT drei Scripts abgelegt, um die
-          Funktionalitaet vom GD-Library, bzw. von PDF-Library zu testen.
-          Oder um allgemeine PHP-Informationen abzurufen.
-
+          Steht diese Variable auf 'yes' werden im htdocs Verzeichnis
+          zwei Scripte abgelegt, um die Funktionalitaet vom GD-Library 
+          testen, oder um allgemeine PHP-Informationen abzurufen.
           Die Scripts heissen folgendermassen
 
           + info.php - Generelle Informationen ueber die PHP-Installation
-          + gd.php - ueberpruefung der Funktionalitaet vom GB-Library
+          + gd.php - ueberpruefung der Funktionalitaet vom GD-Library
             (Erstellen von JPEGs, GIFs, etc.)
-          + pdf.php - ueberpruefung der Funktionalitaet vom PDF-Library
-            (Erstellung von PDF-Dateien)
 
           Standardeinstellung: PHP_INFO='no'
 
@@ -133,6 +129,54 @@ Allgemeine Konfiguration
 
           Standardeinstellung: PHP_EXT_CACHE='no'
 
+   PHP_EXT_SOAP
+          Mit 'yes' wird das SOAP Modul geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_SOAP='no'
+
+   PHP_EXT_GD
+          Mit 'yes' wird das SOAP Modul geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_GD='yes'
+
+   PHP_EXT_JSON
+          Mit 'yes' wird das json (JavaScript Object Notation) Modul geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_JSON='no'
+
+   PHP_EXT_GETTEXT
+          Mit 'yes' wird das gettext (Native Language Support API) Modul
+          geladen. Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_GETTEXT='no'
+
+   PHP_EXT_ICONV
+          Mit 'yes' wird das iconv Modul (Zeichensatz Konvertierung) geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_ICONV='no'
+
+   PHP_EXT_IMAP
+          Mit 'yes' wird das IMAP Email Modul geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_IMAP='no'
+
+   PHP_EXT_XML
+          Mit 'yes' wird das XML Modul geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_XML='no'
+
+   PHP_EXT_ZIP
+          Mit 'yes' wird das ZipArchive Modul geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_ZIP='yes'
+
    PHP_EXT_MYSQL
           Hier kann die MySQL Erweiterung in PHP5 aktiviert werden
 
@@ -159,10 +203,9 @@ Allgemeine Konfiguration
           Hier kann die Interbase Erweiterung in PHP5 aktiviert werden
 
           Standardeinstellung: PHP_EXT_INTER='no'
-          
+
    PHP_EXT_SQLITE3
           Hier kann die SQLite Erweiterung in PHP5 aktiviert werden
 
           Standardeinstellung: PHP_EXT_SQLITE='no'
-          
 

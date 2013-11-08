@@ -38,6 +38,6 @@
   Busybox-wget unterstuetzt keine https:// URLs.<br/>
 <br/>
   Gueltige Werte: vollstaendige URL<br/>
-  Standard-Einstellung: APK_REPOSITORY_%_URL='http://download.eisfair.org/v2.4'<br/>
+  Standard-Einstellung: APK_REPOSITORY_%_URL='http://download.eisfair.org/v2.7/main'<br/>
 <br/>
 </help>

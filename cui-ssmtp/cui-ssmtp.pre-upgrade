@@ -1,0 +1,7 @@
+#!/bin/sh
+# remove default.d und check.d files
+rm -f /etc/default.d/ssmtp
+rm -f /etc/check.d/ssmtp
+rm -f /etc/check.d/ssmtp.exp
+rm -f /etc/check.d/ssmtp.ext
+exit 0

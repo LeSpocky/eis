@@ -2,10 +2,6 @@
 #----------------------------------------------------------------------------
 # Eisfair configuration generator script for Apache
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
 #----------------------------------------------------------------------------
 
 #echo "Executing $0 ..."
@@ -17,32 +13,134 @@ pgmname=$0
 chmod 600 /etc/config.d/apache2
 
 . /etc/config.d/apache2
-. /var/install/include/apache2
+# include base config for get ip setting
+. /etc/config.d/base
 
 # -------------------------------------------------------------------------
-# get ip setting
+# function for dir access (host and vhosts)
 # -------------------------------------------------------------------------
-. /etc/config.d/base                 # include base config
+create_dir_access() {
+    local vhostnr="$1"
+    local vhost=""
+    local nmax=0
+    local idx=1
+    local idx2=1
+    local useAlias=""
+    local alias=""
+    local path=""
+    local auth_name=""
+    local auth_type=""
+    local auth_n=""
+    local cgi=""
+    local ssi=""
+    local access=""
+    local content=""
+    local webdav=""
+    local user=""
+    local pass=""
+
+    [ $vhostnr -gt 0 ] && vhost="VHOST_${vhostnr}_"
+
+    eval nmax='$APACHE2_'${vhost}'DIR_N'
+    while [ "$idx" -le "$nmax" ]
+    do
+        eval active='$APACHE2_'$vhost'DIR_'$idx'_ACTIVE'
+        if [ "$active" = "no" ] ; then
+            idx=`expr $idx + 1`
+            continue
+        fi
+        eval useAlias='$APACHE2_'$vhost'DIR_'$idx'_ALIAS'
+        eval alias='$APACHE2_'$vhost'DIR_'$idx'_ALIAS_NAME'
+        eval path='$APACHE2_'$vhost'DIR_'$idx'_PATH'
+        eval auth_name='$APACHE2_'$vhost'DIR_'$idx'_AUTH_NAME'
+        eval auth_type='$APACHE2_'$vhost'DIR_'$idx'_AUTH_TYPE'
+        eval auth_n='$APACHE2_'$vhost'DIR_'$idx'_AUTH_N'
+        eval cgi='$APACHE2_'$vhost'DIR_'$idx'_CGI'
+        eval ssi='$APACHE2_'$vhost'DIR_'$idx'_SSI'
+        eval access='$APACHE2_'$vhost'DIR_'$idx'_ACCESS_CONTROL'
+        eval content='$APACHE2_'$vhost'DIR_'$idx'_VIEW_DIR_CONTENT'
+        eval webdav='$APACHE2_'$vhost'DIR_'$idx'_WEBDAV'
+
+        [ "$access" = "all" ] && access="all granted"
+        [ "$useAlias" = "yes" ] && echo "Alias $alias $path"
+        echo "<Directory \"$path\">"
+        echo -n "    Options FollowSymLinks MultiViews"
+        [ "$ssi" = "yes" ]   && echo -n " Includes"
+        [ "$cgi" != "none" ] && echo -n " ExecCGI"
+        if [ "$content" = "yes" ] ; then
+            echo " Indexes"
+        else
+            echo ""
+        fi
+        [ "$cgi" != "none" ] && echo "    AddHandler cgi-script $cgi"
+        if [ "$ssi" = "yes" ] ; then
+            echo "    AddType text/html .shtml"
+            echo "    AddHandler server-parsed .shtml"
+        fi
+        if [ "$auth_n" -gt 0 ] ; then
+            echo "    AuthName \"${auth_name}\""
+            if [ "$auth_type" = "Basic" ] ; then
+                echo "    AuthType Basic"
+                echo "    AuthBasicProvider file"
+            else
+                echo "    AuthType Digest"
+                echo "    AuthDigestProvider file"
+            fi
+            echo "    AuthUserFile /etc/apache2/passwd/passwords.${vhostnr}-${idx}"
+            echo "    <RequireAll>"
+            echo "        Require valid-user"
+            echo "        Require $access"
+            echo "    </RequireAll>"
+
+            # create password file
+            mkdir -p /etc/apache2/passwd
+            echo -n "" > /etc/apache2/passwd/passwords.${vhostnr}-${idx}
+            idx2=1
+            while [ "$idx2" -le "$auth_n" ]
+            do
+                eval user='$APACHE2_'$vhost'DIR_'$idx'_AUTH_'$idx2'_USER'
+                eval pass='$APACHE2_'$vhost'DIR_'$idx'_AUTH_'$idx2'_PASS'
+                if [ "${auth_type}" = "Basic" ] ; then
+                    /usr/bin/htpasswd -b /etc/apache2/passwd/passwords.${vhostnr}-${idx} $user $pass 2>/dev/null
+                else
+                    # hash the username, realm, and password
+                    htdigest_hash=`printf "$user:$auth_name:$pass" | md5sum -`
+                    # build an htdigest appropriate line, and tack it onto the file
+                    echo "${user}:${auth_name}:${htdigest_hash:0:32}" >> /etc/apache2/passwd/passwords.${vhostnr}-${idx}
+                fi
+                idx2=`expr $idx2 + 1`
+            done
+            chown -R apache:apache /etc/apache2/passwd
+            chmod 700 /etc/apache2/passwd
+            chmod 600 /etc/apache2/passwd/*
+
+            if [ ! -d ${path} ] ; then
+                mkdir -p ${path}
+                echo "<h1>GEHEIM!</h1>" > ${path}/index.html
+                chown -R apache:apache ${path}
+            fi
+        else
+            echo "    Require $access"
+        fi
+        [ "$webdav" = "yes" ] && echo "    Dav on"
+        echo "    AllowOverride All"
+        echo "</Directory>"
+        idx=`expr $idx + 1`
+    done
+}
+
+
 
 # read dhcp leases
-#if [ "$IP_NET_1_STATIC_IP" = "no" ]
-#then
+#if [ "$IP_NET_1_STATIC_IP" = "no" ] ; then
 #    leasefile=/var/lib/dhcp3/dhclient.eth0.leases
-#    if [ -f $leasefile ]
-#    then
-#        IP_NET_1_IPADDR=`grep fixed-address $leasefile | awk 'BEGIN { RS=""; FS="\n"} {print $NF}' | sed -e 's#[^0-9.]##g'`
+#    if [ -f $leasefile ] ; then
+#        IP_NET_1_IPV4_IPADDR=`grep fixed-address $leasefile | awk 'BEGIN { RS=""; FS="\n"} {print $NF}' | sed -e 's#[^0-9.]##g'`
 #    fi
 #fi
 
-if [ "$START_APACHE2" = "yes" ]
-then
-     rc-update -q add apache2 2>/dev/null
-else
-     rc-update del apache2 
-fi
 
-#if [ ! -f /etc/ssl/certs/apache.pem -a "$APACHE2_SSL" = "yes" ]
-#then
+#if [ ! -f /etc/ssl/certs/apache.pem -a "$APACHE2_SSL" = "yes" ] ; then
 #    echo "* Creating CA for SSL ..."
 #    /var/install/bin/certs-create-tls-certs ca batch
 #    echo "* Creating apache.pem"
@@ -61,24 +159,21 @@ enuser="#"
 #----------------------------------------------------------------------------------------
 encache="#"
 envhost="#"
+uses_vhost_atall="no"
 # cache for doc root:
 modcache="$APACHE2_MOD_CACHE"
-# cache for any vhost:
-if [ "$modcache" = "no" ]
-then
-    idx=0
-    while [ "$idx" -le "$APACHE2_VHOST_N" ]
-    do
-	    eval vhostact='$APACHE2_VHOST_'$idx'_ACTIVE'
-		if [ "$vhostact" = "yes" ]
-		then
-		    envhost=""
-            eval modcache='$APACHE2_VHOST_'$idx'_MOD_CACHE'
-            [ "$modcache" = "yes" ] && break
-		fi	
-        idx=`expr $idx + 1`
-    done
-fi
+idx=0
+while [ "$idx" -le "$APACHE2_VHOST_N" ]
+do
+    eval vhostact='$APACHE2_VHOST_'$idx'_ACTIVE'
+    if [ "$vhostact" = "yes" ] ; then
+        envhost=""
+        uses_vhost_atall="yes"
+        eval modcache='$APACHE2_VHOST_'$idx'_MOD_CACHE'
+        [ "$modcache" = "yes" ] && break
+    fi
+    idx=`expr $idx + 1`
+done
 [ "$modcache" = "yes" ] && encache=""
 
 #----------------------------------------------------------------------------------------
@@ -95,8 +190,7 @@ idx=1
 while [ "$idx" -le "$APACHE2_DIR_N" ]
 do
     eval webdav='$APACHE2_DIR_'$idx'_WEBDAV'
-    if [ "$webdav" = "yes" ] 
-    then
+    if [ "$webdav" = "yes" ] ; then
 	    endav=""
 	    break
 	fi	
@@ -106,15 +200,13 @@ vidx=1
 while [ "$vidx" -le "$APACHE2_VHOST_N" ]
 do
     eval activevhost='$APACHE2_VHOST_'$vidx'_ACTIVE'
-    if [ "$activevhost" = "yes" ]
-    then
+    if [ "$activevhost" = "yes" ] ; then
         idx=1
         eval tmpidx='$APACHE2_VHOST_'$vidx'_DIR_N'
         while [ "$idx" -le "$tmpidx" ]
         do
             eval webdav='$APACHE2_VHOST_'$vidx'_DIR_'$idx'_WEBDAV'
-            if [ "$webdav" = "yes" ] 
-            then
+            if [ "$webdav" = "yes" ] ; then
                 endav=""
                 break
             fi
@@ -125,15 +217,13 @@ do
     vidx=`expr $vidx + 1`
 done
 
-if [ -z "$endav" ]
-then
-	mkdir -p /var/lib/dav
-	chown apache /var/lib/dav
-	mkdir -p /var/www/uploads
-	chown apache /var/www/uploads
-	if ! apk info -q -e apache2-webdav; then    	
+if [ -z "$endav" ] ; then
+	mkdir -p /var/www/var
+	chown apache /var/www/var
+	if ! apk info -q -e apache2-webdav; then
 		apk add -q apache2-webdav 
 	fi
+	rm -f /etc/apache2/conf.d/http-dav.conf
 fi
 #----------------------------------------------------------------------------------------
 # use SSI
@@ -148,11 +238,16 @@ enneg="#"
 [ "$APACHE2_ERROR_DOCUMENT_N" -gt 0 ] && enneg=""
 
 #----------------------------------------------------------------------------------------
+# change access from (Allow from all) to (Require all granted)
+#----------------------------------------------------------------------------------------
+[ "$APACHE2_ACCESS_CONTROL" = "all" ] && APACHE2_ACCESS_CONTROL="all granted"
+
+#----------------------------------------------------------------------------------------
 # creating httpd.conf
 #----------------------------------------------------------------------------------------
-options="FollowSymLinks MultiViews"
-[ "$APACHE2_VIEW_DIRECTORY_CONTENT" = "yes" ] && options="$options Indexes"
-[ "$APACHE2_ENABLE_SSI" = "yes" ]             && options="$options Includes"
+apache_options="FollowSymLinks MultiViews"
+[ "$APACHE2_VIEW_DIRECTORY_CONTENT" = "yes" ] && apache_options="$apache_options Indexes"
+[ "$APACHE2_ENABLE_SSI" = "yes" ]             && apache_options="$apache_options Includes"
 
 hnlookup='Off'
 [ "$APACHE2_HOSTNAME_LOOKUPS" = "yes" ] && hnlookup='On'
@@ -345,10 +440,10 @@ ${endav}LoadModule dav_lock_module modules/mod_dav_lock.so
     SSLRandomSeed connect builtin
     AddType       application/x-x509-ca-cert .crt
     AddType       application/x-pkcs7-crl    .crl
-	  SSLPassPhraseDialog builtin
-    SSLSessionCache "shmcb:/var/run/apache2/ssl_scache(512000)"
+    SSLPassPhraseDialog builtin
+    SSLSessionCache "shmcb:/run/apache2/ssl_scache(512000)"
     SSLSessionCacheTimeout 300
-	  SSLMutex "file:/var/run/apache2/ssl_mutex"
+    SSLMutex "file:/run/apache2/ssl_mutex"
 </IfModule>
 
 <IfModule mod_mime_magic.c>
@@ -356,15 +451,13 @@ ${endav}LoadModule dav_lock_module modules/mod_dav_lock.so
 </IfModule>
 
 <IfModule mod_dav_fs.c>
-    DAVLockDB /var/lib/dav/lockdb
+    DAVLockDB /var/www/var/lockdb
 </IfModule>
 
 
 ServerAdmin  ${APACHE2_SERVER_ADMIN}
 ServerName   ${APACHE2_SERVER_NAME}:${APACHE2_PORT}
 UseCanonicalName Off
-DocumentRoot "/var/www/localhost/htdocs"
-${enuser}UserDir public_html
 DirectoryIndex ${APACHE2_DIRECTORY_INDEX}
 AccessFileName .htaccess
 TypesConfig /etc/apache2/mime.types
@@ -380,44 +473,38 @@ ServerSignature ${APACHE2_SERVER_SIGNATURE}
 <Directory />
     Options FollowSymLinks
     AllowOverride None
-    Order deny,allow
-    Deny from all    
+    Require all denied
 </Directory>
 
+DocumentRoot "/var/www/localhost/htdocs"
 <Directory "/var/www/localhost/htdocs">
-    Options ${options}
+    Options ${apache_options}
     AllowOverride All
-    Order allow,deny
-    Allow from ${APACHE2_ACCESS_CONTROL} 
+    Require ${APACHE2_ACCESS_CONTROL} 
 </Directory>
 
+${enuser}UserDir public_html
 <Directory "/home/*/public_html">
     AllowOverride FileInfo AuthConfig Limit Indexes
     Options MultiViews Indexes SymLinksIfOwnerMatch IncludesNoExec
     <Limit GET POST OPTIONS>
-        Order allow,deny
-        Allow from all
+        Require all granted
     </Limit>
     <LimitExcept GET POST OPTIONS>
-        Order deny,allow
-        Deny from all
-    </LimitExcept>	
-    Order allow,deny
-    Allow from ${APACHE2_ACCESS_CONTROL} 
+        Require all denied
+    </LimitExcept>
+    Require ${APACHE2_ACCESS_CONTROL}
 </Directory>
 
-
-<Files ~ "^\.ht">
+<Files ".ht*">
     Require all denied
 </Files>
-
 
 ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
 <Directory "/var/www/cgi-bin">
     AllowOverride None
     Options None
-    Order allow,deny
-    Allow from ${APACHE2_ACCESS_CONTROL}
+    Require ${APACHE2_ACCESS_CONTROL}
 </Directory>
 
 IndexOptions FancyIndexing VersionSort NameWidth=* HTMLTable Charset=UTF-8
@@ -427,8 +514,7 @@ Alias /icons/ "/usr/share/apache2/icons/"
 <Directory "/usr/share/apache2/icons">
     Options Indexes MultiViews FollowSymLinks
     AllowOverride None
-    Order allow,deny
-    Allow from all
+    Require all granted
 </Directory>
 
 AddIconByEncoding (CMP,/icons/compressed.gif) x-compress x-gzip
@@ -536,31 +622,25 @@ idx=1
 while [ "$idx" -le "$APACHE2_VHOST_N" ]
 do
     eval active='$APACHE2_VHOST_'$idx'_ACTIVE'
+    if [ "$active" = "no" ] ; then
+        idx=`expr $idx + 1`
+        continue
+    fi
     eval ip='$APACHE2_VHOST_'$idx'_IP'
     eval port='$APACHE2_VHOST_'$idx'_PORT'
     eval ssl='$APACHE2_VHOST_'$idx'_SSL'
     eval sslport='$APACHE2_VHOST_'$idx'_SSL_PORT'
-    if [ "$active" = "no" ]
-    then
-        idx=`expr $idx + 1`
-        continue
-    fi
+
     ports="$port "
-    if [ "$ssl" = "yes" -a "$APACHE2_SSL" = "yes" ]
-    then
-        if [ ! "x$sslport" = "x" ]
-        then
-            ports="$port $sslport"
-        fi
+    if [ "$ssl" = "yes" -a "$APACHE2_SSL" = "yes" ] ; then
+        [ ! "x$sslport" = "x" ] && ports="$port $sslport"
     fi
     for single_port in $ports
     do
-        if [ ! "`echo \"$ipports\" | grep \"$ip:$single_port\"`" ]
-        then
-            ipports="$ipports $ip:$single_port "
-        fi
-        if [ "$ip" = "*" ]
-        then
+        # add if not found
+        [ ! "`echo \"$ipports\" | grep \"$ip:$single_port\"`" ] && ipports="$ipports $ip:$single_port "
+        # use asterisk
+        if [ "$ip" = "*" ] ; then
             hasAsterisk="yes"
         else
             hasIp="yes"
@@ -570,54 +650,33 @@ do
 done
 
 # check whether there is a mixture of name- and ip-based vhosts
-if [ "$hasAsterisk" = "yes" ]
-then
-    if [ "$hasIp" = "yes" ]
-    then
-        nameIpMixture="yes"
-        if [ ! "`echo \"$ipports\" | grep \"${IP_NET_1_IPADDR}:${APACHE2_PORT}\"`" ]
-        then
-            ipports="$ipports ${IP_NET_1_IPADDR}:${APACHE2_PORT} "
-        fi
-        if [ "$APACHE2_SSL" = "yes" ]
-        then
-            if [ ! "`echo \"$ipports\" | grep \"${IP_NET_1_IPADDR}:${APACHE2_SSL_PORT}\"`" ]
-            then
-                ipports="$ipports ${IP_NET_1_IPADDR}:${APACHE2_SSL_PORT} "
-            fi
-        fi
+[ "$hasAsterisk" = "yes" -a "$hasIp" = "yes" ] && nameIpMixture="yes"
+if [ "$nameIpMixture" = "yes" ] ; then
+    [ ! "`echo \"$ipports\" | grep \"${IP_NET_1_IPV4_IPADDR}:${APACHE2_PORT}\"`" ] && ipports="$ipports ${IP_NET_1_IPV4_IPADDR}:${APACHE2_PORT} "
+    if [ "$APACHE2_SSL" = "yes" ] ; then
+        [ ! "`echo \"$ipports\" | grep \"${IP_NET_1_IPV4_IPADDR}:${APACHE2_SSL_PORT}\"`" ] && ipports="$ipports ${IP_NET_1_IPV4_IPADDR}:${APACHE2_SSL_PORT} "
     fi
 else
-    if [ ! "`echo \"$ipports\" | grep \"${IP_NET_1_IPADDR}:${APACHE2_PORT}\"`" ]
-    then
-        ipports="$ipports ${IP_NET_1_IPADDR}:${APACHE2_PORT} "
+    [ ! "`echo \"$ipports\" | grep \"*:${APACHE2_PORT}\"`" ] && ipports="$ipports *:${APACHE2_PORT} "
+    if [ "$APACHE2_SSL" = "yes" ] ; then
+        [ ! "`echo \"$ipports\" | grep \"*:${APACHE2_SSL_PORT}\"`" ] && ipports="$ipports *:${APACHE2_SSL_PORT} "
     fi
-    if [ "$APACHE2_SSL" = "yes" ]
-    then
-        if [ ! "`echo \"$ipports\" | grep \"${IP_NET_1_IPADDR}:${APACHE2_SSL_PORT}\"`" ]
-        then
-            ipports="$ipports ${IP_NET_1_IPADDR}:${APACHE2_SSL_PORT} "
-        fi
-    fi
-fi
+fi    
 
 (
 # if a vhost active $envhost=""
-if [  "$envhost" = "#" ] 
-then
+if [  "$envhost" = "#" ] ; then
     echo "Listen $APACHE2_PORT"
     [ "$APACHE2_SSL" = "yes" ] && echo "Listen $APACHE2_SSL_PORT"
 else
-    if [ "$nameIpMixture" = "no" ]
-    then
+    if [ "$nameIpMixture" = "no" ] ; then
         iApacheSslSet=0
         for ipport in $ipports
         do
             echo "Listen $ipport"
             [ ! "$ipport" = "*:${APACHE2_SSL_PORT}" ] && iApacheSslSet=1
         done
-        if [ "$APACHE2_SSL" = "yes" -a $iApacheSslSet = 0 ]
-        then
+        if [ "$APACHE2_SSL" = "yes" -a $iApacheSslSet = 0 ] ; then
             echo "Listen *:$APACHE2_SSL_PORT"
             iApacheSslSet=1
         fi
@@ -626,113 +685,17 @@ else
         [ "$APACHE2_SSL" = "yes" ] && echo "Listen $APACHE2_SSL_PORT"
     fi
 fi
+echo ""
 
 #----------------------------------------------------------------------------------------
 # directory setup
 #----------------------------------------------------------------------------------------
-idx=1
-while [ "$idx" -le "$APACHE2_DIR_N" ]
-do
-    eval active='$APACHE2_DIR_'$idx'_ACTIVE'
-    eval useAlias='$APACHE2_DIR_'$idx'_ALIAS'
-    eval alias='$APACHE2_DIR_'$idx'_ALIAS_NAME'
-    eval path='$APACHE2_DIR_'$idx'_PATH'
-    eval auth_name='$APACHE2_DIR_'$idx'_AUTH_NAME'
-    eval auth_type='$APACHE2_DIR_'$idx'_AUTH_TYPE'
-    eval auth_n='$APACHE2_DIR_'$idx'_AUTH_N'
-    eval cgi='$APACHE2_DIR_'$idx'_CGI'
-    eval ssi='$APACHE2_DIR_'$idx'_SSI'
-    eval access='$APACHE2_DIR_'$idx'_ACCESS_CONTROL'
-    eval content='$APACHE2_DIR_'$idx'_VIEW_DIR_CONTENT'
-    eval webdav='$APACHE2_DIR_'$idx'_WEBDAV'
-
-    if [ "$active" = "no" ]
-    then
-        idx=`expr $idx + 1`
-        continue
-    fi
- 
-    if [ "$useAlias" = "yes" ]
-    then
-        echo "Alias $alias $path"
-    fi
-
-        #echo "Adding directory $path ..." >`tty`
-        echo "<Directory \"${path}\">"
-        echo -n '    Options FollowSymLinks MultiViews'
-        [ "$ssi" = "yes" ]   && echo -n ' Includes'
-        [ "$cgi" != "none" ] && echo -n ' ExecCGI'
-        if [ "$content" = "yes" ]
-        then
-            echo ' Indexes'
-        else
-            echo
-        fi
-        [ "$cgi" != "none" ] && echo "    AddHandler cgi-script $cgi"
-        if [ "$ssi" = "yes" ]
-        then
-            echo '    AddType text/html .shtml'
-            echo '    AddHandler server-parsed .shtml'
-        fi
-        if [ "$auth_n" -gt 0 ]
-        then
-            mkdir -p /etc/apache2/passwd
-            if [ "${auth_type}" = "Basic" ]
-            then
-                echo '    AuthType Basic'
-            else
-                echo '    AuthType Digest'
-                echo "    AuthDigestDomain ${auth_name}"
-                echo '    AuthDigestProvider file'
-            fi
-            echo "    AuthName \"${auth_name}\""
-            echo "    AuthUserFile /etc/apache2/passwd/passwords.${idx}"
-            echo '    require valid-user'
-            rm -f /etc/apache2/passwd/passwords.$idx
-            touch /etc/apache2/passwd/passwords.$idx
-
-            idx2=1
-            while [ "$idx2" -le "$auth_n" ]
-            do
-                eval user='$APACHE2_DIR_'$idx'_AUTH_'$idx2'_USER'
-                eval pass='$APACHE2_DIR_'$idx'_AUTH_'$idx2'_PASS'
-
-                if [ "${auth_type}" = "Basic" ]
-                then
-                    /usr/bin/htpasswd -b /etc/apache2/passwd/passwords.${idx} $user $pass 2>/dev/null
-                else
-                    # hash the username, realm, and password
-                    htdigest_hash=`printf "$user:$auth_name:$pass" | md5sum -`
-                    # build an htdigest appropriate line, and tack it onto the file
-                    echo "${user}:${auth_name}:${htdigest_hash:0:32}" >> /etc/apache2/passwd/passwords.$idx
-                fi
-                idx2=`expr $idx2 + 1`
-            done
-            chown -R apache:apache /etc/apache2/passwd
-            chmod 700 /etc/apache2/passwd
-            chmod 600 /etc/apache2/passwd/*
-        fi
-
-        [ "$webdav" = "yes" ] && echo "    Dav on"
-        echo '    AllowOverride All'
-        echo '    Require all denied'
-        echo "    Require $access granted"
-        echo '</Directory>'
-
-        if [ ! -d ${path} ]
-        then
-            mkdir -p ${path}
-            echo "<h1>GEHEIM!</h1>" > ${path}/index.html
-            chown -R apache:apache ${path}
-        fi
-    idx=`expr $idx + 1`
-done
+create_dir_access 0
 
 #----------------------------------------------------------------------------------------
 # error setup
 #----------------------------------------------------------------------------------------
-if [ "$APACHE2_ERROR_DOCUMENT_N" -gt 0 ]
-then
+if [ "$APACHE2_ERROR_DOCUMENT_N" -gt 0 ] ; then
     idx=1
     echo "Alias /error/ \"/usr/share/apache2/error/\""
     echo "<IfModule mod_negotiation.c>"
@@ -742,8 +705,7 @@ then
     echo "        Options IncludesNoExec"
     echo "        AddOutputFilter Includes html"
     echo "        AddHandler type-map var"
-    echo "        Order allow,deny"
-    echo "        Allow from all"
+    echo "        Require all granted"
     echo "        LanguagePriority en de fr"
     echo "        ForceLanguagePriority Prefer Fallback"
     echo "    </Directory>"
@@ -761,31 +723,28 @@ fi
 #----------------------------------------------------------------------------------------
 # SSL setup
 #----------------------------------------------------------------------------------------
-if [ "$APACHE2_SSL" = "yes" ]
-then
-    if [ $APACHE2_VHOST_N -eq 0 -o "$uses_vhost_atall" = "no" ]
-    then
+if [ "$APACHE2_SSL" = "yes" ] ; then
+    if [ $APACHE2_VHOST_N -eq 0 -o "$uses_vhost_atall" = "no" ] ; then
         echo "<VirtualHost _default_:${APACHE2_SSL_PORT}>"
         echo "    ServerName ${APACHE2_SERVER_NAME}:${APACHE2_SSL_PORT}"
-        echo '    <Directory \"/var/www/localhost/htdocs\">'
-        echo "        Options ${options}"
-        echo '        AllowOverride All'
-        echo '        Order allow,deny'
-        echo "        Allow from ${APACHE2_ACCESS_CONTROL}"
-        echo '    </Directory>'
+        echo "    <Directory \"/var/www/localhost/htdocs\">"
+        echo "        Options ${apache_options}"
+        echo "        AllowOverride All"
+        echo "        Require ${APACHE2_ACCESS_CONTROL}"
+        echo "    </Directory>"
         echo "    SSLEngine On"
         echo "    SSLCipherSuite ALL:!ADH:!EXP56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL"
         echo "    SSLCertificateFile /etc/ssl/certs/apache.pem"
         echo "    SSLCertificateKeyFile /etc/ssl/private/apache.key"
-        echo '    <Files ~ \"\.(pl|cgi|shtml|phtml|php?)$\">'
-        echo '        SSLOptions +StdEnvVars'
-        echo '    </Files>'
-        echo '    <Directory \"/var/www/cgi-bin\">'
-        echo '        SSLOptions +StdEnvVars'
-        echo '    </Directory>'
+        echo '    <Files ~ "\.(pl|cgi|shtml|phtml|php?)$">'
+        echo "        SSLOptions +StdEnvVars"
+        echo "    </Files>"
+        echo "    <Directory \"/var/www/cgi-bin\">"
+        echo "        SSLOptions +StdEnvVars"
+        echo "    </Directory>"
         echo '    SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0'
         echo '    CustomLog /var/log/apache2/ssl_request.log "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"'
-        echo '</VirtualHost>'
+        echo "</VirtualHost>"
     fi
 fi
 
@@ -793,33 +752,14 @@ fi
 #----------------------------------------------------------------------------------------
 # VHost setup
 #----------------------------------------------------------------------------------------
-if [ "$APACHE2_VHOST_N" -gt 0 ]
-then
-    echo ""
-    idx=1
-    anyVHostActive="no"
-    anyVHostSSLActive="no"
-    while [ "$idx" -le "$APACHE2_VHOST_N" ]
-    do
-        eval active='$APACHE2_VHOST_'$idx'_ACTIVE'
-        eval ssl='$APACHE2_VHOST_'$idx'_SSL'
-        [ "$active" = "yes" ] && anyVHostActive="yes"
-        [ "$ssl" = "yes" ]    && anyVHostSSLActive="yes"
-        idx=`expr $idx + 1`
-    done
-    if [ "$anyVHostActive" = "yes" ]
-    then
-        for ipport in $ipports
-        do
-            echo "NameVirtualHost $ipport"
-        done
-    fi
-fi
-
 idx=1
 while [ "$idx" -le "$APACHE2_VHOST_N" ]
 do
     eval active='$APACHE2_VHOST_'$idx'_ACTIVE'
+    if [ "$active" != "yes" ] ; then
+        idx=`expr $idx + 1`
+        continue
+    fi
     eval ip='$APACHE2_VHOST_'$idx'_IP'
     eval port='$APACHE2_VHOST_'$idx'_PORT'
     eval servername='$APACHE2_VHOST_'$idx'_SERVER_NAME'
@@ -838,15 +778,98 @@ do
     eval sslcertname='$APACHE2_VHOST_'$idx'_SSL_CERT_NAME'
     errorlog="/var/log/apache2/error-${servername}.log"
     accesslog="/var/log/apache2/access-${servername}.log" 
+    [ "$accesscontrol" = "all" ] && accesscontrol="all granted"
 
-    if [ "$active" != "yes" ]
-    then
-        idx=`expr $idx + 1`
-        continue
+    echo ""
+    echo "<VirtualHost $ip:$port>"
+    echo "    ServerName $servername:$port"
+    [ "x$serveralias" != "x" ] && echo "    ServerAlias $serveralias"
+    echo "    ServerAdmin $mail"
+    echo "    DocumentRoot $docroot"
+    echo "    ScriptAlias $scriptalias $scriptdir"
+    if [ "$modcache" = "yes" ] ; then
+        echo "    CacheEnable mem /"
+        echo "    <IfModule mod_cache_disk.c>"
+        echo "        CacheEnable disk /"
+        echo "    </IfModule>"
+    else    
+        [ "$APACHE2_MOD_CACHE" = "yes" ] && echo "    CacheDisable /"
+    fi
+    echo "    <Directory \"${scriptdir}\">"
+    echo "        AllowOverride All"
+    echo "        Options None"
+    echo "        Require ${accesscontrol}"
+    echo "    </Directory>"
+
+    vhost_options="FollowSymLinks MultiViews"
+    [ "$ssi" = "yes" ]     && vhost_options="$vhost_options Includes"
+    [ "$content" = "yes" ] && vhost_options="$vhost_options Indexes"
+
+    echo "    <Directory \"${docroot}\">"
+    echo "        AllowOverride All"
+    echo "        Options ${vhost_options}"
+    echo "        Require ${accesscontrol}"
+    echo "    </Directory>"
+
+    if [ "$APACHE2_SSL" = "yes" -a "$ssl" = "yes" -a "$forcessl" = "yes" ] ; then
+        echo "    Redirect permanent / https://${servername}:${sslport}/"
     fi
 
-    if [ ! -d ${docroot} ]
-    then
+    echo "    ErrorLog $errorlog"
+    echo "    CustomLog $accesslog combined"
+
+    #################################
+    create_dir_access  $idx
+    #################################
+    echo "</VirtualHost>"
+
+    ### SSL VIRTUALHOST
+    [ -z "$sslcertname" ] && sslcertname="apache"
+
+    if [ "$APACHE2_SSL" = "yes" -a "$ssl" = "yes" ] ; then
+        echo "<VirtualHost ${ip}:${sslport} >"
+        echo "    SSLEngine On"
+        echo "    SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL"
+        echo "    SSLCertificateFile /etc/ssl/certs/${sslcertname}.pem"
+        echo "    SSLCertificateKeyFile /etc/ssl/private/${sslcertname}.key"
+        echo '    <Files ~ "\.(pl|cgi|shtml|phtml|php|php?)$">'
+        echo "        SSLOptions +StdEnvVars"
+        echo "    </Files>"
+        echo "    <Directory \"${docroot}\">"
+        echo "        AllowOverride All"
+        echo "        Options ${vhost_options}"
+        echo "        Require ${accesscontrol}"
+        echo "    </Directory>"
+        echo "    <Directory \"${scriptdir}\">"
+        echo "        SSLOptions +StdEnvVars"
+        echo "    </Directory>"
+        echo '    SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0'
+        echo "    ServerName ${servername}:${sslport}"
+        [ -n "$serveralias" ] && echo "    ServerAlias ${serveralias}"
+        echo "    ServerAdmin ${mail}"
+        echo "    DocumentRoot ${docroot}"
+        echo "    ScriptAlias ${scriptalias} ${scriptdir}"
+        echo "    ErrorLog ${errorlog}.ssl"
+        echo "    CustomLog ${accesslog}.ssl combined"
+        #################################
+        create_dir_access  $idx
+        #################################
+        echo "</VirtualHost>"
+
+#        (
+#        if [ ! -f /etc/ssl/certs/${sslcertname}.pem ] ; then
+#            echo "* The certificate $sslcertname doesn't exist" 
+#            if /var/install/bin/ask "Do you want to create it now" ; then
+#                echo "Creating $sslcertname.pem"
+#                echo "Notice: The Common Name (you will type it in a moment) has to be the ServerName!"
+#                /var/install/bin/certs-create-tls-certs web batch alternate "$sslcertname" "$servername"
+#            fi
+#        fi
+#        )>`tty`
+    fi
+
+    # create default path and index.html file
+    if [ ! -d ${docroot} ] ; then
         mkdir -p ${docroot}
         {
             echo "<html><body><h1>Der VirtualHost <em>$servername</em> wurde erfolgreich eingerichtet!</h1>"
@@ -859,123 +882,38 @@ do
             echo "The access logfile is <em>$accesslog</em><br>"
             echo "The error logfile is <em>$errorlog</em><p>"
             echo "Access to this VirtualHost has <em>$accesscontrol</em></body></html>"
-        } > ${docroot}/index.html        
+        } > ${docroot}/index.html
         chown apache:apache -R ${docroot}
     fi
-    if [ ! -d ${scriptdir} ]
-    then
+    if [ ! -d ${scriptdir} ] ; then
         mkdir -p ${scriptdir}
         chown apache:apache ${scriptdir}
-    fi
-    echo ""
-    echo "<VirtualHost $ip:$port>"
-    echo "    ServerName $servername:$port"
-    [ "x$serveralias" != "x" ] && echo "    ServerAlias $serveralias"
-    echo "    ServerAdmin $mail"
-    echo "    DocumentRoot $docroot"
-    echo "    ScriptAlias $scriptalias $scriptdir"
-    if [ "$modcache" = "yes" ] 
-    then
-        echo "    CacheEnable mem /"
-        echo "    <IfModule mod_cache_disk.c>"
-        echo "        CacheEnable disk /"
-        echo "    </IfModule>"
-    else    
-        [ "$APACHE2_MOD_CACHE" = "yes" ] && echo "    CacheDisable /"
-    fi
-    echo "    <Directory \"${scriptdir}\">"
-    echo '        AllowOverride All'
-    echo '        Options None'
-    echo '        Order allow,deny'
-    echo "        Allow from ${accesscontrol}"
-    echo '    </Directory>'
-
-    options="FollowSymLinks MultiViews"
-    [ "$ssi" = "yes" ]     && options="$options Includes"
-    [ "$content" = "yes" ] && options="$options Indexes"
-
-    echo "    <Directory \"${docroot}\">"
-    echo '        AllowOverride All'
-    echo "        Options ${options}"
-    echo '        Order allow,deny'
-    echo "        Allow from ${accesscontrol}"
-    echo '    </Directory>'
-
-    if [ "$APACHE2_SSL" = "yes" -a "$ssl" = "yes" -a "$forcessl" = "yes" ]
-    then
-        echo "    Redirect permanent / https://${servername}:${sslport}/"
-    fi
-
-    echo "    ErrorLog $errorlog"
-    echo "    CustomLog $accesslog combined"
-
-    #################################
-    createVHostDirDirective
-    #################################
-    echo "</VirtualHost>"
-
-    ### SSL VIRTUALHOST
-    [ -z "$sslcertname" ] && sslcertname="apache"
-
-    if [ "$APACHE2_SSL" = "yes" -a "$ssl" = "yes" ]
-    then
-        echo "<VirtualHost "$ip":"$sslport">"
-        echo '    SSLEngine On'
-        echo '    SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL'
-        echo "    SSLCertificateFile /etc/ssl/certs/${sslcertname}.pem"
-        echo "    SSLCertificateKeyFile /etc/ssl/private/${sslcertname}.key"
-        echo '    <Files ~ "\.(pl|cgi|shtml|phtml|php|php?)$">'
-        echo '        SSLOptions +StdEnvVars'
-        echo '    </Files>'
-        echo "    <Directory \"${docroot}\">"
-        echo "        AllowOverride All"
-        echo "        Options ${options}"
-        echo '        Order allow,deny'
-        echo "        Allow from ${accesscontrol}"
-        echo '    </Directory>'
-        echo "    <Directory \"${scriptdir}\">"
-        echo "        SSLOptions +StdEnvVars"
-        echo "    </Directory>"
-        echo '    SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0'
-        echo "    ServerName ${servername}:${sslport}"
-        [ -n "$serveralias" != "" ] && echo "    ServerAlias ${serveralias}"
-        echo "    ServerAdmin ${mail}"
-        echo "    DocumentRoot ${docroot}"
-        echo "    ScriptAlias ${scriptalias} ${scriptdir}"
-        echo "    ErrorLog ${errorlog}.ssl"
-        echo "    CustomLog ${accesslog}.ssl combined"
-        #################################
-        createVHostDirDirective
-        #################################
-        echo '</VirtualHost>'
-
-        (
-        if [ ! -f /etc/ssl/certs/${sslcertname}.pem ]
-        then
-            echo "* The certificate $sslcertname doesn't exist"
-            if /var/install/bin/ask "Do you want to create it now"
-            then
-                echo "Creating $sslcertname.pem"
-                echo "Notice: The Common Name (you will type it in a moment) has to be the ServerName!"
-                /var/install/bin/certs-create-tls-certs web batch alternate "$sslcertname" "$servername"
-            fi
-        fi
-        )>`tty`
     fi
 
     idx=`expr $idx + 1`
 done
+
+if [ -z "$envhost" ] ; then
+    # create default vhost
+    echo ""
+    echo "<VirtualHost _default_:${APACHE2_PORT}>"    
+    echo "    DocumentRoot /var/www/localhost/htdocs"
+    echo "    Options ${apache_options}"
+    echo "</VirtualHost>"
+fi
+
 ) >>/etc/apache2/httpd.conf
 
 #----------------------------------------------------------------------------------------
 # setup logrotate
 #----------------------------------------------------------------------------------------
-cat >> /etc/logrotate.d/apache2 <<EOF
+cat > /etc/logrotate.d/apache2 <<EOF
 /var/log/apache2/*log {
     ${APACHE2_LOG_INTERVAL}
     missingok
 	rotate ${APACHE2_LOG_COUNT}
     notifempty
+    create 0644
     sharedscripts
     delaycompress
     postrotate
@@ -991,21 +929,20 @@ EOF
 grep -vE ".*>Show apache .*" /var/install/menu/setup.system.logfileview.menu >/tmp/setup.system.logfileview.menu.$$
 cp -f /tmp/setup.system.logfileview.menu.$$ /var/install/menu/setup.system.logfileview.menu     # don't mv, keep permissions
 rm -f /tmp/setup.system.logfileview.menu.$$
-    
-/var/install/bin/add-menu --script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f /var/log/apache2/access.log" "Show apache access"
-/var/install/bin/add-menu --script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f /var/log/apache2/error.log" "Show apache error"
+
+/var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/apache2/access.log" "Show apache access"
+/var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/apache2/error.log" "Show apache error"
 
 idx=1
 while [ "$idx" -le "$APACHE2_VHOST_N" ]
 do
     eval active='$APACHE2_VHOST_'$idx'_ACTIVE'
-    if [ "$active" = "yes" ]
-    then
+    if [ "$active" = "yes" ] ; then
         eval servername='$APACHE2_VHOST_'$idx'_SERVER_NAME'
         errorlog="/var/log/apache2/error-${servername}.log"
         accesslog="/var/log/apache2/access-${servername}.log"
-        /var/install/bin/add-menu --script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f $accesslog" "Show apache access $servername"
-        /var/install/bin/add-menu --script setup.system.logfileview.menu "/var/install/bin/show-doc.cui -f $errorlog" "Show apache error $servername"
+        /var/install/bin/add-menu --logfile setup.system.logfileview.menu "$accesslog" "Show apache access $servername"
+        /var/install/bin/add-menu --logfile setup.system.logfileview.menu "$errorlog" "Show apache error $servername"
     fi
     idx=`expr $idx + 1`
 done

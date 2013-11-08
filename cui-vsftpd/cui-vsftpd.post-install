@@ -1,0 +1,9 @@
+#!/bin/sh
+
+/var/install/bin/add-menu setup.services.menu setup.services.vsftpd.menu "FTP Administration"
+/var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/ftp.log" "Show FTP"
+rc-service --quiet syslog-ng update
+rc-service --quiet syslog-ng reload
+
+[ -e /etc/config.d/vsftpd ] || cp /etc/default.d/vsftpd /etc/config.d/
+exit 0

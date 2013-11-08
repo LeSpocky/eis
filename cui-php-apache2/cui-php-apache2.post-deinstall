@@ -1,5 +1,4 @@
 #!/bin/sh
-
 /var/install/bin/del-menu setup.services.apache2.menu setup.services.apache2.php.menu
-rm -f /etc/backup.d/apache2.*
+rm -f /etc/backup.d/php-apache2.*
 exit 0

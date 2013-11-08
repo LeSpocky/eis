@@ -1,0 +1,3 @@
+#!/bin/sh
+[ -f /etc/config.d/apache2 ] && /var/install/config.d/apache2-update.sh
+exit 0

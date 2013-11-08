@@ -1,15 +1,6 @@
 #-----------------------------------------------------------------------------
 # /etc/config.d/environment - config of environment (read by /etc/profile)
-#
-# Creation   : 2003-07-20 fm
-# Last Update: $Id: environment 12759 2007-11-26 09:27:44Z jv $
-#
-# Copyright (c) 2001-2007 The Eisfair Team <team(at)eisfair(dot)org>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
 #-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------

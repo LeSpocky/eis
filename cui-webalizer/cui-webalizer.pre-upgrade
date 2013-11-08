@@ -1,0 +1,6 @@
+#!/bin/sh
+# remove default.d und check.d files
+rm -f /etc/default.d/webalizer
+rm -f /etc/check.d/webalizer
+rm -f /etc/check.d/webalizer.exp
+exit 0

@@ -1,0 +1,3 @@
+#!/bin/sh
+[ -f /etc/config.d/mysql ] && /var/install/config.d/mysql-update.sh
+exit 0

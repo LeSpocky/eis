@@ -39,50 +39,8 @@ static USER_T*   SysReadEtcPasswd(int query_flags);
 static GROUP_T*  SysReadEtcGroup (int query_flags);
 static PASSWD_T* SysReadEtcShadow(void);
 
-static SYSTEM_T  System = EISFAIR_1;
-static int       SysMinUserId  = 100;
-static int       SysMinGroupId = 100;
+static int       SysMinUserId  = 1000;
 
-
-/* ---------------------------------------------------------------------
- * SysInit
- * Initialize the system
- * ---------------------------------------------------------------------
- */
-void SysInit(void)
-{
-	FILE* in = fopen("/etc/eisfair-system", "rt");
-	if (in)
-	{
-		char buffer[128 + 1];
-		
-		fgets(buffer, 128, in);
-		
-		if (strstr(buffer, "eisfair-1") == buffer)
-		{
-			SysMinUserId  = 100;
-			SysMinGroupId = 100;
-			System = EISFAIR_1;
-		}
-		else if (strstr(buffer, "eisfair-2") == buffer)
-		{
-			SysMinUserId  = 200;
-			SysMinGroupId = 200;
-			System        = EISFAIR_2;
-		}
-		else if (strstr(buffer, "eisxen-1") == buffer)
-		{
-			SysMinUserId  = 200;
-			SysMinGroupId = 200;
-			System        = EISXEN;
-		}
-		else
-		{
-			System = UNKNOWN_SYSTEM;
-		}
-		fclose(in);
-	}
-}
 
 
 /* ---------------------------------------------------------------------

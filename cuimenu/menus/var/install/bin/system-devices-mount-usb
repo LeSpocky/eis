@@ -1,41 +1,32 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # system-devices-mount-usb - mount usb device
-#
-# Creation   : 19.07.2003 fm  Frank Meyer <frank@eisfair.org>
-# Last Update: $Id: system-devices-format-floppy 24471 2012-11-14 21:14:01Z jv $
-#
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 
 mountpath='/media/usb'
 option='vfat'
 
 echo ""
 
-if [ -e /proc/scsi/usb-storage -a "$(ls /proc/scsi/usb-storage 2>/dev/null)" != "" ]
-then
+if [ -e /proc/scsi/usb-storage -a -n "$(ls /proc/scsi/usb-storage 2>/dev/null)" ] ; then
     for a in sda sdb sdc sdd sde sdf sdg sdh sdi sdj sdk sdl sdm sdn sdo
     do
         found="0"
         # if mounted?
-        if [ -n "`mount | grep "^/dev/${a} "`"  ]
-        then
+        if [ -n "`mount | grep "^/dev/${a} "`"  ] ; then
             found="1"
         else
-            if [ -e /proc/mdstat ]
-            then
-                if grep -q " ${a}" /proc/mdstat 
-                then
+            if [ -e /proc/mdstat ] ; then
+                if grep -q " ${a}" /proc/mdstat ; then
                     found="1"
                 fi
             fi
         fi
         dev="/dev/${a}1" 
-        if [ "$found" = "0" -a -e ${dev} ]
-        then
+        if [ "$found" = "0" -a -e ${dev} ] ; then
             mount -t ${option} ${dev} ${mountpath}
-            if [ $? = 0 ]
-            then
+            if [ $? = 0 ] ; then
                 /var/install/bin/ask.cui --info "mount successful with option $option, path is $mountpath."
                 exit 0 
             fi

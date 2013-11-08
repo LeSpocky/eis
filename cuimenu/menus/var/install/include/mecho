@@ -1,19 +1,12 @@
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # /var/install/include/mecho - multi echo
-#
-# Creation:     2004-07-22 fm
-# Last Update: $Id: mecho 24471 2012-11-14 21:14:01Z jv $
-#
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-# usage
-#
 # mecho [-n] [--std|--info|--warn|--error] [--tty|--html|--file] message ...
-#
 # options:
 #     -n         do not append newline
-#
 #     --std      print standard message (default)
 #     --stdbr    print standard message (default)(bright)
 #     --info     print info message     (green)
@@ -22,11 +15,9 @@
 #     --link     print message          '>'  (cyan)
 #     --ok       print message          [  OK  ] (green)
 #     --fail     print message          [ Fail ] (red)(bright)
-#
 #     --tty      use console colors
 #     --file     don't use any color tags
 # ---------------------------------------------------------------------------
-
 mecho()
 {
     local _mecho_mode="tty"
@@ -52,8 +43,7 @@ mecho()
         esac
     done
 
-    if [ "$_mecho_mode" = "file" ] 
-    then
+    if [ "$_mecho_mode" = "file" ] ; then
         _mecho_colors=""
         _mecho_reset=""
     fi    

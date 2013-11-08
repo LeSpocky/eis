@@ -53,6 +53,7 @@ build() {
 }
 
 package() {
+	mkdir -p ${pkgdir}/var/install/bin
 	cd ${_builddir}/ask.cui
 	make -j1 DESTDIR="$pkgdir" install || return 1
 	cd ${_builddir}/edit-conf.cui

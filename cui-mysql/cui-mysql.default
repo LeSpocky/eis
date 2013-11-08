@@ -1,0 +1,17 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/mysql - configuration file for mysql
+# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# General settings
+#------------------------------------------------------------------------------
+
+START_MYSQL="no"                      # Start MySQL server 'yes' or 'no'
+MYSQL_NETWORK="no"                    # enable the TCP/IP external connection
+MYSQL_BIND=""                         # If set, then bind the MySQL port only to
+MYSQL_CONNECT_PORT="3306"             # MySQL remote port, default=3306
+MYSQL_RAM="2GB"                       # Use 1 ... 64 GB RAM
+
+MYSQL_LOG_INTERVAL="weekly"
+MYSQL_LOG_MAXCOUNT="4"

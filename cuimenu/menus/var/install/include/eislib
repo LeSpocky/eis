@@ -1,12 +1,7 @@
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # /var/install/include/eislib - library for eisfair scripts
-#
-# Creation   :  2004-10-10 max
-# Last Update: $Id: eislib 24471 2012-11-14 21:14:01Z jv $
-#
-#----------------------------------------------------------------------------
-
-# interface description:
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 # anykey  : wait for user pressing any key
 # clrhome : clears screen (on tty) / draws a line (html-browser)
 # mecho   : multi echo - read documentation for details
@@ -15,10 +10,7 @@
 # eistime : date and time in ISO 8601 notation
 
 # only include this file once
-if [ "$_EISLIB" = "true" ]
-then
-    return 0
-fi
+[ "$_EISLIB" = "true" ] && return 0
 _EISLIB='true'
 
 . /var/install/include/baselib

@@ -1,21 +1,18 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # /var/install/bin/system-filesystems-list - list filesystems
-#
-# Creation   : 19.07.2003 fm  Frank Meyer <frank@eisfair.org>
-# Last Update: $Id: system-devices-format-floppy 24471 2012-11-14 21:14:01Z jv $
-#
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 
 . /var/install/include/techo
 
-local filesystem_file=/tmp/listfs.$$
-local fs_spec=""
-local fs_file=""
-local fs_vfstype=""
-local fs_mntopts=""
-local fs_freq=""
-local fs_passno=""
+filesystem_file=/tmp/listfs.$$
+fs_spec=""
+fs_file=""
+fs_vfstype=""
+fs_mntopts=""
+fs_freq=""
+fs_passno=""
 
 clean()
 {
@@ -36,8 +33,7 @@ cat /etc/fstab |
     do
         set -- $line
 
-        if `echo $1 | grep -qs UUID=`
-        then
+        if `echo $1 | grep -qs UUID=` ; then
             fs_spec=`blkid -o device -t $1`
         else
             fs_spec=$1

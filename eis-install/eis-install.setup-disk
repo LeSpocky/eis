@@ -1,5 +1,5 @@
 #!/bin/sh
-# alpine linux - eisfair version
+# alpine linux - eisfair-ng version
 
 PREFIX=
 . "$PREFIX/lib/libalpine.sh"
@@ -9,6 +9,7 @@ ROOTFS=${ROOTFS:-ext4}
 BOOTFS=${BOOTFS:-ext4}
 VARFS=${VARFS:-ext4}
 
+PALPVERSION="2.6"
 PKEYBLAYOUT="de"
 PKEYBVARIANT="de-latin1"
 PNETIPSTATIC="1"
@@ -113,7 +114,7 @@ unpack_apkovl() {
 		return 0 
 	fi
 
-	apk add -q openssl
+	apk add --quiet openssl
 
 	if ! openssl list-cipher-commands | grep "^$suffix$" > /dev/null; then
 		errstr="Cipher $suffix is not supported"
@@ -160,6 +161,31 @@ find_volume_group() {
 find_pvs_in_vg() {
 	local vg="$1"
 	pvs --noheadings | awk "\$2 == \"$vg\" {print \$1}"
+}
+
+# echo current grsecurity option and set new
+set_grsec() {
+	local key="$1" value="$2"
+	if ! [ -e /proc/sys/kernel/grsecurity/$key ]; then
+		return 0
+	fi
+	cat /proc/sys/kernel/grsecurity/$key
+	echo $value > /proc/sys/kernel/grsecurity/$key
+}
+
+init_chroot_mounts() {
+	local mnt="$1" i=
+	for i in proc dev; do
+		mkdir -p "$mnt"/$i
+		mount --bind /$i "$mnt"/$i
+	done
+}
+
+cleanup_chroot_mounts() {
+	local mnt="$1" i=
+	for i in proc dev; do
+		umount "$mnt"/$i
+	done
 }
 
 install_mounted_root() {
@@ -259,7 +285,12 @@ install_mounted_root() {
 			/mnt/etc/update-extlinux.conf
 	fi
 
+	# generate the fstab
 	enumerate_fstab /mnt > /mnt/etc/fstab
+	if [ -n "$SWAP_DEVICE" ]; then
+		echo -e "${SWAP_DEVICE}\tswap\tswap\tdefaults\t0 0" \
+			>> /mnt/etc/fstab
+	fi
 	cat >>/mnt/etc/fstab <<EOF
 /dev/cdrom	/media/cdrom	iso9660	noauto,ro 0 0
 /dev/fd0	/media/floppy	vfat	noauto	0 0
@@ -269,13 +300,15 @@ EOF
 	# remove the installed db in case its there so we force re-install
 	rm -f /mnt/var/lib/apk/installed /mnt/lib/apk/db/installed
 	echo "Installing system on $rootdev:"
+	extlinux $extlinux_raidopt --install /mnt/boot
+
 	# apk reads config from target root so we need to copy the config
 	mkdir -p /mnt/etc/apk/keys/
 	cp /etc/apk/keys/* /mnt/etc/apk/keys/
 
 	local apkflags="--initdb --update-cache --clean-protected"
 	[ -n "$USE_RAID" ] && raidpkg="mdadm"
-	pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libeventlog libcui fcron syslog-ng cuimenu-bin cuimenu"
+	pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libeventlog libcui fcron syslog-ng logrotate cuimenu-bin cuimenu syslinux"
 	if [ "$(rc --sys)" = "XEN0" ]; then
 		pkgs="$pkgs xen-hypervisor"
 	fi
@@ -284,18 +317,21 @@ EOF
 	for i in $repos; do
 		repoflags="$repoflags --repository $i"
 	done
-	
-	apk add --root /mnt $apkflags --overlay-from-stdin $repoflags $pkgs <$ovlfiles>/dev/null || return 1
-	# hide syslinux script error message
-	apk add --root /mnt syslinux 2>/dev/null
-	extlinux $extlinux_raidopt --install /mnt/boot >/dev/null 2>&1
-}
 
+	chroot_caps=$(set_grsec chroot_caps 0)
+	init_chroot_mounts /mnt
+	apk add --root /mnt $apkflags --overlay-from-stdin \
+		$repoflags $pkgs <$ovlfiles>/dev/null || return 1
+	cleanup_chroot_mounts /mnt
+	set_grsec chroot_caps $chroot_caps >/dev/null
+	return 0
+}
 
 unmount_partitions() {
 	local mnt="$1"
+
 	# unmount the partitions
-	umount $(awk '{print $2}' /proc/mounts | egrep "^/mnt(/|\$)" | sort -r)
+	umount $(awk '{print $2}' /proc/mounts | egrep "^$mnt(/|\$)" | sort -r)
 }
 
 
@@ -360,7 +396,7 @@ stop_all_raid() {
 init_progs() {
 	local raidpkg=
 	[ -n "$USE_RAID" ] && raidpkg="mdadm"
-	apk add -q sfdisk e2fsprogs lvm2 $raidpkg syslinux $@
+	apk add --quiet sfdisk e2fsprogs lvm2 $raidpkg syslinux $@
 }
 
 show_disk_info() {
@@ -504,6 +540,7 @@ setup_swap_dev() {
 		mkswap $swap_dev >/dev/null
 		echo -e "$swap_dev\tswap\t\tswap\tdefaults 0 0" >> /etc/fstab
 	done
+	SWAP_DEVICE="$(uuid_or_device $swap_dev)"
 	swapon -a
 	rc-update --quiet add swap boot
 }
@@ -675,15 +712,15 @@ setup_root() {
 	rm -f /mnt/etc/runlevels/default/eis-install
 	# change /etc/motd
 	{
-	echo "Welcome to Alpine Linux with Eisfair-NG!"
+	echo "Welcome to Alpine Linux with eisfair-ng!"
 	echo ""
 	echo "Please type 'setup' for administration."
 	echo ""
 	} > /mnt/etc/motd
 	# change package repos
 	{
-	echo "http://dl-5.alpinelinux.org/alpine/v2.6/main"
-	echo "http://download.eisfair.org/v2.6"
+	echo "http://dl-5.alpinelinux.org/alpine/v${PALPVERSION}/main"
+	echo "http://download.eisfair.org/v${PALPVERSION}/main"
 	} > /mnt/etc/apk/repositories
 	unmount_partitions /mnt
 	swapoff -a

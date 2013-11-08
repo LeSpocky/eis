@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------------
 # /var/install/bin/packages-installed.cui.sh - list installed packages
 #
-# Creation:     2010-05-01 dv
+# Creation:     2013-05-01 jv
 # Last update:  $Id: 24072 2013-02-21 09:53:06Z jv $
 #
 # Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
@@ -37,7 +37,6 @@ lastsection="?"
 # read packages and transfer them to list
 # $1 --> mainwin window handle
 #----------------------------------------------------------------------------
-
 function load_data()
 {
     local win="$1"
@@ -47,7 +46,7 @@ function load_data()
     local sel
     local section
     local count
-  
+
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && list="$p2"
     if cui_valid_handle "$list"
     then
@@ -68,10 +67,12 @@ function load_data()
         # sort list view data
         cui_listview_alphasort "$list" "0" "1"
 
+        cui_listview_getcount  "$list" && count="$p2"
+        cui_window_setrtext    "$win" "packages: $count"
+
         # restore selection index
         if [ "$section" == "$lastsection" -a "$sel" -gt 0 ]
         then
-            cui_listview_getcount   "$list" && count="$p2"
             if [ "$sel" -lt "$count" ]
             then
                 cui_listview_setsel "$list" "$sel"
@@ -89,12 +90,10 @@ function load_data()
     fi
 }
 
-
 #----------------------------------------------------------------------------
 # install or upgrade a package
 # $1 --> mainwin window handle
 #----------------------------------------------------------------------------
-
 function install_package()
 {
     local win="$1"
@@ -128,7 +127,7 @@ function install_package()
                 cui_terminal_run      "$termwin" "apk add --upgrade $package && sleep 2"
             fi
         fi
-    fi     
+    fi
 }
 
 
@@ -136,7 +135,6 @@ function install_package()
 # uninstall a package
 # $1 --> mainwin window handle
 #----------------------------------------------------------------------------
-
 function uninstall_package()
 {
     local win="$1"
@@ -163,7 +161,7 @@ function uninstall_package()
             if [ -n "${required_by}" ]
             then
                 cui_message "$win" "Package is required by the following packages:${CUINL}${CUINL}${required_by}" "Abort" "$MB_ERROR"
-            else            
+            else
                 cui_message $win "Really uninstall package \"$package\"?" "Question" "$[$MB_YESNO + $MB_DEFBUTTON2]" && res="$p2"
 
                 if [ "$res" == "$IDYES" ]
@@ -185,7 +183,7 @@ function uninstall_package()
                 fi
             fi
         fi
-    fi     
+    fi
 }
 
 
@@ -193,7 +191,6 @@ function uninstall_package()
 # show installed package info
 # $1 --> mainwin window handle
 #----------------------------------------------------------------------------
-
 function show_installed_package_info()
 {
     local win="$1"
@@ -206,20 +203,18 @@ function show_installed_package_info()
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && list="$p2"
     if cui_valid_handle $list
     then
-		cui_listview_getsel "$list" && index="$p2"
-		if cui_valid_index "$index"
-		then
-			cui_listview_gettext "$list" "$index" "0" && package="$p2"
-
-			cui_getclientrect "$win"
-			local w="$[$p4 - 4]"
-			local h="$[$p5 - 2]"
-
-			cui_textview_new "$win" "Package info" 0 0 $w $h "${IDC_INFOTEXT}" "$[$CWS_POPUP + $CWS_CENTERED]" "$CWS_NONE" && txt="$p2"
-			if cui_valid_handle "$txt"
-			then
+        cui_listview_getsel "$list" && index="$p2"
+        if cui_valid_index "$index"
+        then
+            cui_listview_gettext "$list" "$index" "0" && package="$p2"
+            cui_getclientrect "$win"
+            local w="$[$p4 - 4]"
+            local h="$[$p5 - 2]"
+            cui_textview_new "$win" "Package info" 0 0 $w $h "${IDC_INFOTEXT}" "$[$CWS_POPUP + $CWS_CENTERED]" "$CWS_NONE" && txt="$p2"
+            if cui_valid_handle "$txt"
+            then
                 cui_textview_callback   "$txt" "${TEXTVIEW_POSTKEY}" "$win" textview_postkey_hook
-				cui_window_setcolors    "$txt" "HELP"
+                cui_window_setcolors    "$txt" "HELP"
                 cui_window_create       "$txt"
 
                 pm_info_totext "$txt" "$package"
@@ -230,7 +225,6 @@ function show_installed_package_info()
         fi
     fi
 }
-
 
 #============================================================================
 # popup textview callback
@@ -244,12 +238,11 @@ function show_installed_package_info()
 #          $p4 : key that has been pressed
 # returns: 1   : event handled
 #----------------------------------------------------------------------------
-
 function textview_postkey_hook()
 {
-	local win="$p2"
-	local ctrl="$p3"
-	local key="$p4"
+    local win="$p2"
+    local ctrl="$p3"
+    local key="$p4"
 
     case $key in
     ${KEY_ENTER})
@@ -266,7 +259,6 @@ function textview_postkey_hook()
     esac
 }
 
-
 #============================================================================
 # data input dialog
 #============================================================================
@@ -278,13 +270,12 @@ function textview_postkey_hook()
 #          $p3 : button control id
 # returns: 1   : event handled
 #----------------------------------------------------------------------------
-
 function inputdlg_ok_clicked()
 {
-	local win="$p2"
-	local ctrl
-	local idx
-    
+    local win="$p2"
+    local ctrl
+    local idx
+
     cui_window_getctrl "$win" "$IDC_INPUTDLG_EDVALUE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
@@ -302,25 +293,23 @@ function inputdlg_ok_clicked()
 #          $2 : button control id
 # returns: 1  : event handled     
 #----------------------------------------------------------------------------
-
 function inputdlg_cancel_clicked()
 {
-	cui_window_close "$p2" "$IDCANCEL"
-	cui_return 1
+    cui_window_close "$p2" "$IDCANCEL"
+    cui_return 1
 }
 
 #----------------------------------------------------------------------------
 # inputdlg_create_hook
 # Dialog create hook - create dialog controls
 # expects: $1 : window handle of dialog window
-# returns: 1  : event handled      
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
-
 function inputdlg_create_hook()
 {
-	local dlg="$p2"
-	local ctrl
-	local idx
+    local dlg="$p2"
+    local ctrl
+    local idx
 
     if cui_label_new "$dlg" "Keyword:" 2 1 14 1 "$IDC_INPUTDLG_LABEL1" "$CWS_NONE" "$CWS_NONE"
     then
@@ -347,7 +336,6 @@ function inputdlg_create_hook()
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" inputdlg_cancel_clicked
         cui_window_create     "$ctrl"
     fi
- 
     cui_return 1
 }
 
@@ -361,7 +349,6 @@ function inputdlg_create_hook()
 #    $p2 --> mainwin window handle
 #    $p3 --> terminal window
 #----------------------------------------------------------------------------
-
 function terminal_exit()
 {
     local win="$p2"
@@ -369,10 +356,8 @@ function terminal_exit()
 
     cui_window_destroy "$ctrl"
     load_data $win
-
     cui_return 1
 }
-
 
 #============================================================================
 # popup menu callbacks
@@ -384,48 +369,43 @@ function terminal_exit()
 #          $p3 : control window handle
 # returns: nothing
 #----------------------------------------------------------------------------
-
 function popup_menu_clicked_hook()
 {
-	cui_window_close "$p3" "$IDOK"
-	cui_return 1
+    cui_window_close "$p3" "$IDOK"
+    cui_return 1
 }
 
 #----------------------------------------------------------------------------
 # popup_menu_escape_hook
-# expects: $p2 : window handle                                          
+# expects: $p2 : window handle
 #          $p3 : control window handle
 # returns: nothing
 #----------------------------------------------------------------------------
-
 function popup_menu_escape_hook()
 {
-	cui_window_close "$p3" "$IDCANCEL"
-	cui_return 1
+    cui_window_close "$p3" "$IDCANCEL"
+    cui_return 1
 }
- 
+
 #----------------------------------------------------------------------------
 # popup_menu_postkey_hook
-# expects: $p2 : window handle                                          
+# expects: $p2 : window handle
 #          $p3 : control window handle
 #          $p4 : key code
 # returns: 1 : Key handled, 2 : Key ignored
 #----------------------------------------------------------------------------
-
 function popup_menu_postkey_hook()
 {
-	local ctrl="$p3"
-
-	if [ "$p4" == "$KEY_F10" ]
-	then
-       cui_window_close "$ctrl" "$IDCANCEL"
-       cui_window_quit 0
-       cui_return 1
-   else
-       cui_return 0
-   fi
+    local ctrl="$p3"
+    if [ "$p4" == "$KEY_F10" ]
+    then
+        cui_window_close "$ctrl" "$IDCANCEL"
+        cui_window_quit 0
+        cui_return 1
+    else
+        cui_return 0
+    fi
 }
-
 
 #============================================================================
 # section menu callbacks
@@ -435,7 +415,6 @@ function popup_menu_postkey_hook()
 # menu_clicked_hook (menu selection by user)
 #    $p2 --> mainwin window handle
 #----------------------------------------------------------------------------
-
 function menu_clicked_hook()
 {
     local win="$p2"
@@ -449,16 +428,14 @@ function menu_clicked_hook()
     cui_return 1
 }
 
-
 #----------------------------------------------------------------------------
 # menu_changed_hook (menu selection changed)
 #    $p2 --> mainwin window handle
 #----------------------------------------------------------------------------
-
 function menu_changed_hook()
 {
-	load_data "$p2"
-	cui_return 1
+    load_data "$p2"
+    cui_return 1
 }
 
 
@@ -473,10 +450,9 @@ function menu_changed_hook()
 #          $p3 : control id   
 # returns: 1   : event handled
 #----------------------------------------------------------------------------
-
 function listview_changed_hook()
 {
-	cui_return 1
+    cui_return 1
 }
 
 
@@ -487,15 +463,14 @@ function listview_changed_hook()
 #          $p3 : control id
 # returns: 1   : event handled
 #----------------------------------------------------------------------------
-
 function listview_clicked_hook()
 {
-	local win="$p2"
-	local ctrl="$p3"
-	local menu
-	local result
-	local item
-	local dlg
+    local win="$p2"
+    local ctrl="$p3"
+    local menu
+    local result
+    local item
+    local dlg
 
     cui_menu_new "$win" "Options" 0 0 30 13 1 "$[$CWS_CENTERED + $CWS_POPUP]" "$CWS_NONE" && menu="$p2"
     if cui_valid_handle $menu
@@ -531,7 +506,7 @@ function listview_clicked_hook()
                 cui_window_destroy  "$menu"
                 keyword="-u"
                 load_data "$win"
-                ;;				
+                ;;
             3)
                 cui_window_destroy  "$menu"
                 install_package $win
@@ -578,19 +553,17 @@ function listview_clicked_hook()
     cui_return 1
 }
 
-
 #----------------------------------------------------------------------------
 #  listview_postkey_hook (catch ENTER key)
 #    $p2 --> window handle of main window
 #    $p3 --> window handle of list control
 #    $p4 --> key
 #----------------------------------------------------------------------------
-
 function listview_postkey_hook()
 {
-	local win="$p2"
-	local ctrl="$p3"
-	local key="$p4"
+    local win="$p2"
+    local ctrl="$p3"
+    local key="$p4"
 
     if [ "$key" == "${KEY_ENTER}" ]
     then
@@ -600,7 +573,6 @@ function listview_postkey_hook()
     fi
 }
 
-
 #============================================================================
 # main window callbacks
 #============================================================================
@@ -609,13 +581,12 @@ function listview_postkey_hook()
 # mainwin_create_hook (for creation of child windows)
 #    $p2 --> mainwin window handle
 #----------------------------------------------------------------------------
-
 function mainwin_create_hook()
 {
-	local win="$p2"
-	local ctrl
+    local win="$p2"
+    local ctrl
 
-    cui_listview_new "$win" "" 0 0 30 10 6 "${IDC_LISTVIEW}" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
+    cui_listview_new "$win" "" 0 0 30 10 5 "${IDC_LISTVIEW}" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_listview_setcoltext "$ctrl" 0 "Package "
@@ -623,14 +594,12 @@ function mainwin_create_hook()
         cui_listview_setcoltext "$ctrl" 2 "Date "
         cui_listview_setcoltext "$ctrl" 3 "Latest "
         cui_listview_setcoltext "$ctrl" 4 "Description   "
-        cui_listview_setcoltext "$ctrl" 5 "Repo"
 
         cui_listview_settitlealignment "$ctrl" 0 "${ALIGN_LEFT}"
         cui_listview_settitlealignment "$ctrl" 1 "${ALIGN_LEFT}"
         cui_listview_settitlealignment "$ctrl" 2 "${ALIGN_LEFT}"
         cui_listview_settitlealignment "$ctrl" 3 "${ALIGN_LEFT}"
         cui_listview_settitlealignment "$ctrl" 4 "${ALIGN_LEFT}"
-        cui_listview_settitlealignment "$ctrl" 5 "${ALIGN_LEFT}"
 
         cui_listview_callback   "$ctrl" "$LISTVIEW_CLICKED" "$win" listview_clicked_hook
         cui_listview_callback   "$ctrl" "$LISTVIEW_CHANGED" "$win" listview_changed_hook
@@ -641,16 +610,14 @@ function mainwin_create_hook()
     cui_return 1
 }
 
-
 #----------------------------------------------------------------------------
 # mainwin_init_hook (load data)
 #    $p2 --> mainwin window handle
 #----------------------------------------------------------------------------
-
 function mainwin_init_hook()
 {
-	local win="$p2"
-	local termwin
+    local win="$p2"
+    local termwin
 
     cui_getclientrect "$win"
     local w="$p4"
@@ -669,32 +636,30 @@ function mainwin_init_hook()
     cui_return 1
 }
 
-
 #----------------------------------------------------------------------------
 # mainwin_key_hook (handle key events for mainwin)
 #    $p2 --> mainwin window handle
 #    $p3 --> key code
 #----------------------------------------------------------------------------
-
 function mainwin_key_hook()
 {
-	local win="$p2"
-	local key="$p3"
+    local win="$p2"
+    local key="$p3"
 
     case $key in
     "$KEY_F2")
         if [ -z "$keyword" ]
-		then
+        then
             keyword="-u"
             cui_window_setlstatustext "$win" "Commands: F2=All F3=Search F4=View F7=Upgrade F8=Uninstall F10=Exit"
             cui_window_setrstatustext "$win" "V1.0.0"
-		else
-            keyword=""		
+        else
+            keyword=""
             cui_window_setlstatustext "$win" "Commands: F2=Latest F3=Search F4=View F7=Upgrade F8=Uninstall F10=Exit"
             cui_window_setrstatustext "$win" "V1.0.0"
-		fi
+        fi
         load_data "$win"
-        ;;		
+        ;;
     "$KEY_F3")
         cui_window_new "$win" 0 0 46 7 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
         if cui_valid_handle $dlg
@@ -738,31 +703,27 @@ function mainwin_key_hook()
     cui_return 1
 }
 
-
 #----------------------------------------------------------------------------
 # mainwin_size_hook (handle resize events for mainwin)
 #    $p2 --> mainwin window handle
 #----------------------------------------------------------------------------
-
 function mainwin_size_hook()
 {
-	local win="$p2"
+    local win="$p2"
 
-	cui_getclientrect "$win"
-	local x="$p2"
-	local y="$p3"	
-	local w="$p4"
-	local h="$p5"
+    cui_getclientrect "$win"
+    local x="$p2"
+    local y="$p3"
+    local w="$p4"
+    local h="$p5"
 
-	cui_window_getctrl "$win" "$IDC_LISTVIEW"
-	if cui_valid_handle "$p2"
-	then
-		cui_window_move "$p2" "0" "0" "$w" "$h"
-	fi
-
-	cui_return 1
+    cui_window_getctrl "$win" "$IDC_LISTVIEW"
+    if cui_valid_handle "$p2"
+    then
+        cui_window_move "$p2" "0" "0" "$w" "$h"
+    fi
+    cui_return 1
 }
-
 
 #============================================================================
 # shellrun entry function
@@ -772,10 +733,9 @@ function mainwin_size_hook()
 # init routine (entry point of all shellrun.cui based programs)
 #    $p2 --> desktop window handle
 #----------------------------------------------------------------------------
-
 function init()
 {
-	local win="$p2"
+    local win="$p2"
 
     # initialize shell extension library
     pm_initmodule
@@ -802,12 +762,9 @@ function init()
     cui_return 0
 }
 
-
 #----------------------------------------------------------------------------
 # main routines (always at the bottom of the file)
 #----------------------------------------------------------------------------
-
 cui_init
 cui_run
-
 exit 0

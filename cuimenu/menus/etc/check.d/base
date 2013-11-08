@@ -2,7 +2,6 @@
 # /etc/check.d/base - check table for configuration parameters
 # Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
 #-----------------------------------------------------------------------------
-
 # Variable                   OPT_VARIABLE           VARIABLE_N         VALUE
 HOSTNAME                     -                       -                 HOSTNAME
 

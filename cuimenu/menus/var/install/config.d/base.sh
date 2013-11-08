@@ -261,6 +261,7 @@ then
 		  $interval
 		  missingok
 		  notifempty
+		  create 0644
 		  compress
 		EOF
 	}

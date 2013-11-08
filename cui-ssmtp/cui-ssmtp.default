@@ -1,0 +1,22 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/ssmtp - configuration file for ssmtp
+# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# General settings
+#------------------------------------------------------------------------------
+
+START_SSMTP="no"                      # activate configuration: yes or no
+
+SSMTP_FORWARD_TO='root@eisfair.local' # receiver of all mails send via ssmtp
+SSMTP_MAILHUB='mail.local.lan'        # host to send mail to
+SSMTP_USE_AUTH='no'                   # activate authentication: yes or no
+SSMTP_AUTH_USER='user'                # user name used for authentication
+SSMTP_AUTH_PASS='pass'                # password used for authentication
+SSMTP_AUTH_METHOD='cram-md5'          # athentication method: plain or cram-md5
+SSMTP_USE_TLS='no'                    # secure connection: no, tls or starttls
+SSMTP_USE_TLS_CERT='no'               # use cert to authenticate: yes or no
+SSMTP_OUTGOING_N='0'                  # number of outgoing alias definitions
+SSMTP_OUTGOING_1_USER='root'          # local username
+SSMTP_OUTGOING_1_EMAIL='root@local.lan' # outgoing email address

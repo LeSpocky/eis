@@ -2,12 +2,12 @@
 # Maintainer:team@eisfair.org
 pkgname=cuimenu
 pkgver=2.0.0
-pkgrel=2
+pkgrel=4
 pkgdesc="Eisfair CUI base menu"
 url="http://www.eisfair.org"
-arch="all"
+arch="noarch"
 license="GPL"
-depends="cuimenu-bin bash syslog-ng"
+depends="cuimenu-bin bash syslog-ng logrotate fcron"
 depends_dev=""
 makedepends=""
 install="$pkgname.pre-install $pkgname.pre-upgrade $pkgname.post-install"
@@ -25,7 +25,9 @@ build() {
 }
 
 package() {
+	mkdir -p ${pkgdir}
 	cp -r ${startdir}/menus/* ${pkgdir}/
+	chmod 0770 ${pkgdir}/etc/config.d
 	chmod 0755 ${pkgdir}/usr/sbin/*
 	chmod 0755 ${pkgdir}/var/install/bin/*
 	chmod 0755 ${pkgdir}/var/install/config.d/*

@@ -1,6 +1,6 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
-# eisfair-ng configuration generator script for PHP
+# eisfair-ng configuration generator script
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 
@@ -14,7 +14,10 @@ retval=0
 
 APACHE_USER="apache"
 
+mkdir -p /etc/php/conf.d
+
 if [ "$PHP_INFO" = "yes" ] ; then
+    mkdir -p /var/www/localhost/htdocs
     echo '<?php phpinfo() ?>'>/var/www/localhost/htdocs/info.php
     echo '<?php
     if(!empty($_GET["text"])) {
@@ -37,7 +40,7 @@ if [ "$PHP_INFO" = "yes" ] ; then
         /*  create a circle */
         imagearc($image, 100, 150, 150, 50, 0, 360, $green);
         /* display font  jv: fix font dir */
-        /*ImageTTFText($image, 45, 10, 30, 100, $cyan, "/usr/local/fonts/john.ttf",$_GET["text"]); */
+        ImageTTFText($image, 45, 10, 30, 100, $cyan, "/usr/share/fonts/TTF/php-apache2-john.ttf",$_GET["text"]);
         /*  render image */
         ImagePNG($image);
         // ImageJPEG($image);
@@ -72,84 +75,11 @@ if [ "$PHP_INFO" = "yes" ] ; then
         echo "<input type=text name=text value=eisfair> <input type=submit value=TestIt!>";
         echo "</form>";
     }
-
     ?>'>/var/www/localhost/htdocs/gd.php
 
-    echo '<?php
-    $RADIUS = 200.0;
-    $MARGIN = 20.0;
-    $p = PDF_new();
-    PDF_open_file($p, "");
-    PDF_set_info($p, "Creator", "pdfclock.php");
-    PDF_set_info($p, "Author", "Rainer Schaaf");
-    PDF_set_info($p, "Title", "PDF clock (PHP)");
-    PDF_begin_page($p, 2 * ($RADIUS + $MARGIN), 2 * ($RADIUS + $MARGIN));
-    PDF_translate($p, $RADIUS + $MARGIN, $RADIUS + $MARGIN);
-    PDF_setcolor($p, "both", "rgb", 0.0, 0.0, 1.0, 0.0);
-    PDF_save($p);
-    # minute strokes
-    PDF_setlinewidth($p, 2.0);
-    for ($alpha = 0; $alpha < 360; $alpha += 6) {
-        PDF_rotate($p, 6.0);
-        PDF_moveto($p, $RADIUS, 0.0);
-        PDF_lineto($p, $RADIUS-$MARGIN/3, 0.0);
-        PDF_stroke($p);
-    }
-    PDF_restore($p);
-    PDF_save($p);
-    # 5 minute strokes
-    PDF_setlinewidth($p, 3.0);
-    for ($alpha = 0; $alpha < 360; $alpha += 30) {
-        PDF_rotate($p, 30.0);
-        PDF_moveto($p, $RADIUS, 0.0);
-        PDF_lineto($p, $RADIUS-$MARGIN, 0.0);
-        PDF_stroke($p);
-    }
-    $ltime = getdate();
-    # draw hour hand
-    PDF_save($p);
-    PDF_rotate($p, -(($ltime['minutes']/60.0)+$ltime['hours']-3.0)*30.0);
-    PDF_moveto($p, -$RADIUS/10, -$RADIUS/20);
-    PDF_lineto($p, $RADIUS/2, 0.0);
-    PDF_lineto($p, -$RADIUS/10, $RADIUS/20);
-    PDF_closepath($p);
-    PDF_fill($p);
-    PDF_restore($p);
-    # draw minute hand
-    PDF_save($p);
-    PDF_rotate($p, -(($ltime['seconds']/60.0)+$ltime['minutes']-15.0)*6.0);
-    PDF_moveto($p, -$RADIUS/10, -$RADIUS/20);
-    PDF_lineto($p, $RADIUS * 0.8, 0.0);
-    PDF_lineto($p, -$RADIUS/10, $RADIUS/20);
-    PDF_closepath($p);
-    PDF_fill($p);
-    PDF_restore($p);
-    # draw second hand
-    PDF_setcolor($p, "both", "rgb", 1.0, 0.0, 0.0, 0.0);
-    PDF_setlinewidth($p, 2);
-    PDF_save($p);
-    PDF_rotate($p, -(($ltime['seconds'] - 15.0) * 6.0));
-    PDF_moveto($p, -$RADIUS/5, 0.0);
-    PDF_lineto($p, $RADIUS, 0.0);
-    PDF_stroke($p);
-    PDF_restore($p);
-    # draw little circle at center
-    PDF_circle($p, 0, 0, $RADIUS/30);
-    PDF_fill($p);
-    PDF_restore($p);
-    PDF_end_page($p);
-    PDF_close($p);
-    $buf = PDF_get_buffer($p);
-    $len = strlen($buf);
-    header("Content-type: application/pdf");
-    header("Content-Length: $len");
-    header("Content-Disposition: inline; filename=pdfclock.pdf");
-    print $buf;
-    PDF_delete($p);
-    ?>' >/var/www/localhost/htdocs/pdf.php
-    chown $APACHE_USER /var/www/localhost/htdocs/info.php  /var/www/localhost/htdocs/pdf.php /var/www/localhost/htdocs/gd.php
+    chown $APACHE_USER /var/www/localhost/htdocs/info.php /var/www/localhost/htdocs/gd.php
 else
-    rm -f /var/www/localhost/htdocs/info.php /var/www/localhost/htdocs/gd.php /var/www/localhost/htdocs/pdf.php
+    rm -f /var/www/localhost/htdocs/info.php /var/www/localhost/htdocs/gd.php 
 fi
 
 # =============================================================================
@@ -302,26 +232,22 @@ fi
 
 # -----------------------------------------------------------------------------
 # MYSQL
+rm  -f /etc/php/conf.d/mysql.ini
+rm  -f /etc/php/conf.d/mysqli.ini
+rm  -f /etc/php/conf.d/pdo_mysql.ini
 if [ "$PHP_EXT_MYSQL" = "yes" ] ; then
-	if ! apk info -q -e php-mysql; then    	
-		apk add -q php-mysql 
-	fi
-	if ! apk info -q -e php-mysqli; then    	
-		apk add -q php-mysqli 
-	fi
-	if ! apk info -q -e php-pdo_mysql; then    	
-		apk add -q php-pdo_mysql 
-	fi
     if [ -z "$PHP_EXT_MYSQL_SOCKET" -a -z "$PHP_EXT_MYSQL_HOST" ] ; then
         [ -e "/run/mysqld/mysqld.sock" ] && PHP_EXT_MYSQL_SOCKET="/run/mysqld/mysqld.sock"
     fi
-    if [ -z "$PHP_EXT_MYSQL_HOST" ]
-    then
+    if [ -z "$PHP_EXT_MYSQL_HOST" ] ; then
         PHP_EXT_MYSQL_PORT=""
     else
         [ -z "$PHP_EXT_MYSQL_PORT" ] && PHP_EXT_MYSQL_PORT="3306"
     fi
-    cat >/etc/php/conf.d/mysql.ini <<EOF
+
+    apk info -q -e php-mysql || apk add -q php-mysql
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/mysql.ini <<EOF
 extension=mysql.so
 [mysql]
 mysql.allow_local_infile=On
@@ -337,15 +263,20 @@ mysql.default_password=
 mysql.connect_timeout=60
 mysql.trace_mode=Off
 EOF
+    fi
 
-    cat >/etc/php/conf.d/pdo_mysql.ini <<EOF
+    apk info -q -e php-mysqli || apk add -q php-mysqli
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/pdo_mysql.ini <<EOF
 extension=pdo_mysql.so
 [pdo_mysql]
 pdo_mysql.cache_size=2000
 pdo_mysql.default_socket=${PHP_EXT_MYSQL_SOCKET}
 EOF
-
-    cat >/etc/php/conf.d/mysqli.ini <<EOF
+    fi
+    apk info -q -e php-pdo_mysql || apk add -q php-pdo_mysql
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/mysqli.ini <<EOF
 extension=mysqli.so
 [mysqli]
 mysqli.max_persistent=-1
@@ -366,16 +297,16 @@ mysqlnd.collect_memory_statistics=Off
 ;mysqlnd.net_cmd_buffer_size=2048
 ;mysqlnd.net_read_buffer_size=32768
 EOF
-else
-    rm  -f /etc/php/conf.d/mysql.ini
-    rm  -f /etc/php/conf.d/mysqli.ini
-    rm  -f /etc/php/conf.d/pdo_mysql.ini
+    fi
 fi
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # INTERBASE
+rm -f /etc/php/conf.d/interbase.ini
 if [ "$PHP_EXT_INTER" = "yes" ] ; then
-    cat >/etc/php/conf.d/interbase.ini <<EOF
+#    apk info -q -e php-interbase || apk add -q php-interbase
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/interbase.ini <<EOF
 ;extension=interbase.so
 ;extension=pdo_firebird.so
 [interbase]
@@ -400,17 +331,16 @@ ibase.dateformat = "%Y-%m-%d"
 ; Default time format.
 ibase.timeformat = "%H:%M:%S"
 EOF
-else
-    rm -f /etc/php/conf.d/interbase.ini
+    fi
 fi
 
 # -----------------------------------------------------------------------------
 # MSSQL
+rm -f /etc/php/conf.d/mssql.ini
 if [ "$PHP_EXT_MSSQL" = "yes" ] ; then
-	if ! apk info -q -e php-mssql; then    	
-		apk add -q php-mssql 
-	fi	
-    cat >/etc/php/conf.d/mssql.ini <<EOF
+    apk info -q -e php-mssql || apk add -q php-mssql
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/mssql.ini <<EOF
 extension=mssql.so
 [mssql]
 ; Allow or prevent persistent links.
@@ -450,20 +380,17 @@ mssql.secure_connection = Off
 ; This is only used when compiled with FreeTDS
 ;mssql.charset = "ISO-8859-1"
 EOF
-else
-    rm -f /etc/php/conf.d/mssql.ini
+    fi
 fi
 
 # -----------------------------------------------------------------------------
 # POSTGRESQL
+rm -f /etc/php/conf.d/pqsql.ini
+rm -f /etc/php/conf.d/pdo_pgsql.ini
 if [ "${PHP_EXT_PGSQL}" = "yes" ] ; then
-	if ! apk info -q -e php-pgsql; then    	
-		apk add -q php-pgsql 
-	fi
-	if ! apk info -q -e php-pdo_pgsql; then    	
-		apk add -q php-pdo_pgsql 
-	fi
-    cat >/etc/php/conf.d/pqsql.ini <<EOF
+    apk info -q -e php-pgsql || apk add -q php-pgsql
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/pqsql.ini <<EOF
 extension=pgsql.so
 [PostgresSQL]
 ; Allow or prevent persistent links.
@@ -488,43 +415,44 @@ pgsql.ignore_notice = 0
 ; http://php.net/pgsql.log-notice
 pgsql.log_notice = 0
 EOF
-    cat >/etc/php/conf.d/pdo_pgsql.ini <<EOF
+    fi
+    apk info -q -e php-pdo_pgsql || apk add -q php-pdo_pgsql
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/pdo_pgsql.ini <<EOF
 extension=pdo_pgsql.so
 EOF
-else
-    rm -f /etc/php/conf.d/pqsql.ini
-    rm -f /etc/php/conf.d/pdo_pgsql.ini    
+    fi
 fi
 
 # -----------------------------------------------------------------------------
 # SQLite3
+rm -f /etc/php/conf.d/sqlite3.ini
+rm -f /etc/php/conf.d/pdo_sqlite.ini
 if [ "$PHP_EXT_SQLITE3" = "yes" ] ; then
-	if ! apk info -q -e php-sqlite3; then    	
-		apk add -q php-sqlite3 
-	fi
-	if ! apk info -q -e php-pdo_sqlite; then    	
-		apk add -q php-pdo_sqlite 
-	fi
-    cat >/etc/php/conf.d/sqlite3.ini <<EOF
+    apk info -q -e php-sqlite3 || apk add -q php-sqlite3
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/sqlite3.ini <<EOF
 extension=pdo_sqlite.so
 [sqlite3]
 ;sqlite3.extension_dir =
 EOF
-    cat >/etc/php/conf.d/pdo_sqlite.ini <<EOF
+    fi
+    apk info -q -e php-pdo_sqlite || apk add -q php-pdo_sqlite
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/pdo_sqlite.ini <<EOF
 extension=sqlite3.so
 EOF
-else
-    rm -f /etc/php/conf.d/sqlite3.ini
-    rm -f /etc/php/conf.d/pdo_sqlite.ini      
+    fi
+
 fi
 
 # -----------------------------------------------------------------------------
 # SOAP
+rm -f /etc/php/conf.d/soap.ini
 if [ "$PHP_EXT_SOAP" = "yes" ] ; then
-	if ! apk info -q -e php-soap; then    	
-		apk add -q php-soap 
-	fi
-	cat >/etc/php/conf.d/soap.ini <<EOF
+    apk info -q -e php-soap || apk add -q php-soap
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/soap.ini <<EOF
 extension=soap.so
 [soap]
 ; Enables or disables WSDL caching feature.
@@ -540,36 +468,46 @@ soap.wsdl_cache_ttl=86400
 ; Sets the size of the cache limit. (Max. number of WSDL files to cache)
 soap.wsdl_cache_limit = 5
 EOF
-else
-    rm -f /etc/php/conf.d/soap.ini
+    fi
+fi
+
+# -----------------------------------------------------------------------------
+# GD
+rm -f /etc/php/conf.d/gd.ini
+if [ "$PHP_EXT_GD" = "yes" ] ; then
+    apk info -q -e php-gd || apk add -q php-gd
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/gd.ini <<EOF
+extension=gd.so
+EOF
+    fi
 fi
 
 # -----------------------------------------------------------------------------
 # LDAP
+rm -f /etc/php/conf.d/ldap.ini
 if [ "$PHP_EXT_LDAP" = "yes" ] ; then
-	if ! apk info -q -e php-ldap; then    	
-		apk add -q php-ldap 
-	fi
-    cat >/etc/php/conf.d/ldap.ini <<EOF
+    apk info -q -e php-ldap || apk add -q php-ldap
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/ldap.ini <<EOF
 extension=ldap.so
 [ldap]
 ; Sets the maximum number of open links or -1 for unlimited.
 ldap.max_links = -1
 EOF
-else
-    rm -f /etc/php/conf.d/ldap.ini
+    fi
 fi
 
 # -----------------------------------------------------------------------------
 # CACHE
 rm -f /etc/php/conf.d/apc.ini
-rm -f /etc/php/conf.d/xcache.ini    
+rm -f /etc/php/conf.d/xcache.ini
+rm -f /etc/php/conf.d/memcache.ini
 
 if [ "$PHP_EXT_CACHE" = "apc" ] ; then
-	if ! apk info -q -e php-apc; then    	
-		apk add -q php-apc 
-	fi
-    cat >/etc/php/conf.d/apc.ini <<EOF
+    apk info -q -e php-apc || apk add -q php-apc
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/apc.ini <<EOF
 extension=apc.so
 apc.enabled=1
 ;apc.shm_segments=1
@@ -580,15 +518,110 @@ apc.enabled=1
 apc.mmap_file_mask=/tmp/apc.XXXXXX
 ;apc.enable_cli=1
 EOF
+    fi
 elif [ "${PHP_EXT_CACHE}" = "xcache" ] ; then
-#  later available: 
-#	if ! apk info -q -e php-xcache; then    	
-#		apk add -q php-xcache 
-#	fi
-    cat >/etc/php/conf.d/xcache.ini <<EOF
-
+    apk info -q -e php-xcache || apk add -q php-xcache
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/xcache.ini <<EOF
+extension=xcache.so
 EOF
+    fi
+elif [ "${PHP_EXT_CACHE}" = "memcache" ] ; then
+    apk info -q -e php-memcache || apk add -q php-memcache
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/memcache.ini <<EOF
+extension=memcache.so
+;memcache.allow_failover="1"
+;memcache.max_failover_attempts="20"
+;memcache.chunk_size="8192"
+;memcache.default_port="11211"
+;memcache.hash_strategy="standard"
+;memcache.hash_function="crc32"
+;session.save_handler="files"
+;session.save_path=""
+;memcache.protocol=ascii
+;memcache.redundancy=1
+;memcache.session_redundancy=2
+;memcache.compress_threshold=20000
+;memcache.lock_timeout=15
+EOF
+    fi
 fi
+
+# -----------------------------------------------------------------------------
+# JSON
+rm -f /etc/php/conf.d/json.ini
+if [ "$PHP_EXT_JSON" = "yes" ] ; then
+    apk info -q -e php-json || apk add -q php-json
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/json.ini <<EOF
+extension=json.so
+EOF
+    fi
+fi
+
+# -----------------------------------------------------------------------------
+# GETTEXT
+rm -f /etc/php/conf.d/gettext.ini
+if [ "$PHP_EXT_GETTEXT" = "yes" ] ; then
+    apk info -q -e php-gettext || apk add -q php-gettext
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/gettext.ini <<EOF
+extension=gettext.so
+EOF
+    fi
+fi
+
+# -----------------------------------------------------------------------------
+# ICONV
+rm -f /etc/php/conf.d/iconv.ini
+if [ "$PHP_EXT_ICONV" = "yes" ] ; then
+    apk info -q -e php-iconv || apk add -q php-iconv
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/iconv.ini <<EOF
+extension=iconv.so
+EOF
+    fi
+fi
+
+# -----------------------------------------------------------------------------
+# IMAP
+rm -f /etc/php/conf.d/imap.ini
+if [ "$PHP_EXT_IMAP" = "yes" ] ; then
+    apk info -q -e php-imap || apk add -q php-imap
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/imap.ini <<EOF
+extension=imap.so
+EOF
+    fi
+fi
+
+# -----------------------------------------------------------------------------
+# XML
+rm -f /etc/php/conf.d/xml.ini
+if [ "$PHP_EXT_XML" = "yes" ] ; then
+    apk info -q -e php-xml || apk add -q php-xml
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/xml.ini <<EOF
+extension=xml.so
+EOF
+    fi
+fi
+
+# -----------------------------------------------------------------------------
+# ZIP
+rm -f /etc/php/conf.d/zip.ini
+if [ "$PHP_EXT_ZIP" = "yes" ] ; then
+    apk info -q -e php-zip || apk add -q php-zip
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/zip.ini <<EOF
+extension=zip.so
+EOF
+    fi
+fi
+
+
+
 # =============================================================================
 # Restart apache
 [ "${START_APACHE2}" = "yes" ] && rc-service -i -q apache2 restart 

@@ -1,10 +1,8 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
 # template-backup-config - backup config file to /etc/backup.d
-#
-# Creation:	2003-12-24  Ansgar Püster
-# Last Update:  $Id: template-restore-dconf 24471 2012-11-08 21:14:01Z jv $
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
 
 # get package name from filename PACKAGE-backup-config
 filename=`basename $0`
@@ -19,8 +17,7 @@ package=`echo $filename | sed "s|-backup-config$||"`
 #debug echo "         package:  $package"
 #debug read answ < /dev/tty
 
-if [ ! -f /etc/config.d/$package ]
-then
+if [ ! -f /etc/config.d/$package ] ; then
     /var/install/bin/ask.cui --err "Configuration file /etc/config.d/$package does not exist!"
     exit 1
 fi
@@ -56,8 +53,7 @@ fcount=`echo $fcount`
 _ccf_max_backup=10
 
 # check number of files
-if [ "$fcount" -gt "${_ccf_max_backup}" ]
-then
+if [ "$fcount" -gt "${_ccf_max_backup}" ] ; then
     # number of files to remove
     rmcount=`expr $fcount - ${_ccf_max_backup}`
     count=0
@@ -73,8 +69,7 @@ then
     } | sort -t: -k2 | while read line
     do
         # remove obsolete files
-        if [ "$count" -lt "$rmcount" ]
-        then
+        if [ "$count" -lt "$rmcount" ] ; then
             # extract filename from line
             file=`echo ${line} | cut -d: -f1`
             rm $file

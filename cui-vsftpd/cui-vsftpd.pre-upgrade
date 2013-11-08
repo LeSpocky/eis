@@ -1,0 +1,6 @@
+#!/bin/sh
+# remove default.d und check.d files
+rm -f /etc/default.d/vsftpd
+rm -f /etc/check.d/vsftpd
+rm -f /etc/check.d/vsftpd.exp
+exit 0

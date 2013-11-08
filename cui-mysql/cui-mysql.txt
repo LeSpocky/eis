@@ -1,0 +1,33 @@
+
+   START_MYSQL
+          Legt fest, ob der MySQL Server gestartet wird.
+
+          Gueltige Werte: yes,no
+
+   MYSQL_NETWORK
+          Erlaubt die externe Verbindung ueber TCP/IP
+          Gueltige Werte: yes,no
+
+   MYSQL_PORT
+          Definiert den Port, auf den der MySQL-Server 'lauschen' soll.
+
+          Default: 3306
+
+   MYSQL_BIND
+          Binde den MySQL-Server an eine bestimmte IP-Adresse.
+
+          Default:
+
+   MYSQL_RAM
+          Fuer MySQL verwendeter Arbeitsspeicher.
+
+          Moegliche Werte: 1 ... 64 GB
+
+   MYSQL_LOG_INTERVAL
+          Wann soll die Log-Datei durch eine leere Datei ersetzt werden.
+          Damit beeinflusst man die Groesse der Log-Datei.
+
+          Default: weekly
+
+   MYSQL_LOG_MAXCOUNT
+          Maximale Anzahl der gespeicherten Log-Dateien.

@@ -17,8 +17,7 @@ check_certificate=off
 EOF
 
 ### http proxy ###
-if [ -n "$HTTP_PROXY" ]
-then
+if [ -n "$HTTP_PROXY" ]  ; then
     mkdir -p /etc/profile.d
     cat >/etc/profile.d/proxy.sh <<EOF
 export http_proxy=$HTTP_PROXY
@@ -37,8 +36,7 @@ EOF
     umask 077
     for rcfile in $wgetrcfiles_auth
     do
-        if [ -n "$HTTP_PROXY_USER" ]
-        then
+        if [ -n "$HTTP_PROXY_USER" ] ; then
             {
             echo "proxy_user=$HTTP_PROXY_USER"
             echo "proxy_password=$HTTP_PROXY_PASSWD"

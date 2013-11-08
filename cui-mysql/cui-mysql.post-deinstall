@@ -1,0 +1,10 @@
+#!/bin/sh
+
+/var/install/bin/del-menu setup.services.menu setup.services.mysql.menu
+/var/install/bin/del-menu setup.system.logfileview.menu "/var/log/mysql.log"
+rm -f /etc/backup.d/mysql.*
+rm -f /etc/default.d/mysql
+rm -f /etc/check.d/mysql
+rm -f /etc/check.d/mysql.exp
+
+exit 0
