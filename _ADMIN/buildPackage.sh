@@ -93,6 +93,9 @@ buildPackage ()
     echo "Cd to ${packageName}"
     cd ${packageName}
 
+    echo "Removing previously build apk files"
+    rm -f *.apk
+
 #    echo "Updating checksums"
 #    abuild checksum
 
