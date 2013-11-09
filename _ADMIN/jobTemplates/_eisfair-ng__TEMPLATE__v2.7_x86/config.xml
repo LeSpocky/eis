@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Build job for x86 version of eisfair-ng package &apos;&lt;b&gt;TEMPLATE&lt;/b&gt;&apos; on latest alpine version (edge)</description>
+  <description>Build job for v2.7 x86 version of eisfair-ng package &apos;&lt;b&gt;TEMPLATE&lt;/b&gt;&apos;</description>
   <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>-1</daysToKeep>
     <numToKeep>25</numToKeep>
@@ -9,12 +9,7 @@
     <artifactNumToKeep>5</artifactNumToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
-  <properties>
-    <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>17577</diskUsageWithoutBuilds>
-      <slaveWorkspacesUsage class="concurrent-hash-map"/>
-    </hudson.plugins.disk__usage.DiskUsageProperty>
-  </properties>
+  <properties/>
   <scm class="hudson.plugins.git.GitSCM" plugin="git@1.5.0">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
@@ -55,7 +50,7 @@
     <includedRegions></includedRegions>
     <scmName></scmName>
   </scm>
-  <assignedNode>alpine_edge_x86</assignedNode>
+  <assignedNode>alpine_v2.7_x86</assignedNode>
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -65,14 +60,12 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>_ADMIN/buildPackage.sh
-</command>
+      <command>_ADMIN/buildPackage.sh</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
-    <hudson.plugins.jira.JiraIssueUpdater plugin="jira@1.39"/>
     <hudson.tasks.BuildTrigger>
-      <childProjects>_eisfair-ng__updateRepoIndex__edge_x86</childProjects>
+      <childProjects>_eisfair-ng__updateRepoIndex__v2.7_x86</childProjects>
       <threshold>
         <name>UNSTABLE</name>
         <ordinal>1</ordinal>

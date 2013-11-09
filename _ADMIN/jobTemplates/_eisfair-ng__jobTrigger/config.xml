@@ -9,8 +9,23 @@
     <artifactNumToKeep>-1</artifactNumToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
-  <properties/>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@1.4.0">
+  <properties>
+    <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
+      <diskUsageWithoutBuilds>11233531</diskUsageWithoutBuilds>
+      <slaveWorkspacesUsage class="concurrent-hash-map">
+        <entry>
+          <string></string>
+          <concurrent-hash-map>
+            <entry>
+              <string>/data/ci/jenkins/jobs/_eisfair-ng__jobTrigger/workspace</string>
+              <long>11207376</long>
+            </entry>
+          </concurrent-hash-map>
+        </entry>
+      </slaveWorkspacesUsage>
+    </hudson.plugins.disk__usage.DiskUsageProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@1.5.0">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -52,11 +67,11 @@
   </scm>
   <assignedNode>master</assignedNode>
   <canRoam>false</canRoam>
-  <disabled>false</disabled>
+  <disabled>true</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <jdk>(Vorgabewert)</jdk>
-  <triggers class="vector">
+  <triggers>
     <hudson.triggers.SCMTrigger>
       <spec>H/2 * * * *</spec>
       <ignorePostCommitHooks>false</ignorePostCommitHooks>
@@ -71,7 +86,7 @@ _ADMIN/checkForChanges.sh
     </hudson.tasks.Shell>
   </builders>
   <publishers>
-    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.30.2">
+    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.35.1">
       <recipientList>$DEFAULT_RECIPIENTS</recipientList>
       <configuredTriggers>
         <hudson.plugins.emailext.plugins.trigger.UnstableTrigger>
@@ -87,6 +102,7 @@ _ADMIN/checkForChanges.sh
             <attachBuildLog>false</attachBuildLog>
             <compressBuildLog>false</compressBuildLog>
             <replyTo></replyTo>
+            <contentType>project</contentType>
           </email>
         </hudson.plugins.emailext.plugins.trigger.UnstableTrigger>
         <hudson.plugins.emailext.plugins.trigger.StillFailingTrigger>
@@ -102,6 +118,7 @@ _ADMIN/checkForChanges.sh
             <attachBuildLog>false</attachBuildLog>
             <compressBuildLog>false</compressBuildLog>
             <replyTo></replyTo>
+            <contentType>project</contentType>
           </email>
         </hudson.plugins.emailext.plugins.trigger.StillFailingTrigger>
         <hudson.plugins.emailext.plugins.trigger.SuccessTrigger>
@@ -117,6 +134,7 @@ _ADMIN/checkForChanges.sh
             <attachBuildLog>false</attachBuildLog>
             <compressBuildLog>false</compressBuildLog>
             <replyTo></replyTo>
+            <contentType>project</contentType>
           </email>
         </hudson.plugins.emailext.plugins.trigger.SuccessTrigger>
         <hudson.plugins.emailext.plugins.trigger.StillUnstableTrigger>
@@ -132,6 +150,7 @@ _ADMIN/checkForChanges.sh
             <attachBuildLog>false</attachBuildLog>
             <compressBuildLog>false</compressBuildLog>
             <replyTo></replyTo>
+            <contentType>project</contentType>
           </email>
         </hudson.plugins.emailext.plugins.trigger.StillUnstableTrigger>
         <hudson.plugins.emailext.plugins.trigger.FailureTrigger>
@@ -147,6 +166,7 @@ _ADMIN/checkForChanges.sh
             <attachBuildLog>false</attachBuildLog>
             <compressBuildLog>false</compressBuildLog>
             <replyTo></replyTo>
+            <contentType>project</contentType>
           </email>
         </hudson.plugins.emailext.plugins.trigger.FailureTrigger>
         <hudson.plugins.emailext.plugins.trigger.FixedTrigger>
@@ -162,6 +182,7 @@ _ADMIN/checkForChanges.sh
             <attachBuildLog>false</attachBuildLog>
             <compressBuildLog>false</compressBuildLog>
             <replyTo></replyTo>
+            <contentType>project</contentType>
           </email>
         </hudson.plugins.emailext.plugins.trigger.FixedTrigger>
       </configuredTriggers>
@@ -178,8 +199,8 @@ _ADMIN/checkForChanges.sh
     <hudson.plugins.twitter.TwitterPublisher plugin="twitter@0.7"/>
   </publishers>
   <buildWrappers>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.4"/>
-    <com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4">
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.7"/>
+    <com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.3">
       <includes>eisfair-ng.buildsettings.txt</includes>
       <excludes></excludes>
       <flatten>false</flatten>
