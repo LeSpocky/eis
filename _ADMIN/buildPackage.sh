@@ -101,7 +101,13 @@ buildPackage ()
     rtc=$?
     if [ "${rtc}" = 0 ] ; then
         echo "Copying apk file(s) to repository folder"
-        cp -f ~/packages/${JOB_NAME}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/main/${packageArch}
+        if ls *.apk >/dev/null 2>&1 ; then
+            cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/main/${packageArch}
+            rtc=$?
+        else
+            cp -f ~/packages/${JOB_NAME}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/main/${packageArch}
+            rtc=$?
+        fi
     else
         exit ${rtc}
     fi
