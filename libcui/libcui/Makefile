@@ -47,6 +47,7 @@ C_CUI_OBJECTS =  wrappers.o
 C_CUI_OBJECTS += chartools.o
 C_CUI_OBJECTS += window.o
 C_CUI_OBJECTS += edit.o
+C_CUI_OBJECTS += memo.o
 C_CUI_OBJECTS += label.o
 C_CUI_OBJECTS += button.o
 C_CUI_OBJECTS += radio.o

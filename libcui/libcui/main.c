@@ -9,7 +9,7 @@
 #define IDC_RADIO1 103
 #define IDC_RADIO2 104
 #define IDC_CHKBOX1 105
-#define IDC_LISTBOX1 106
+#define IDC_MEMO1 106
 #define IDC_PROGRESS 107
 #define IDC_COMBO1 108
 #define IDC_LISTBUT 109
@@ -101,7 +101,7 @@ void TimerHook(void* w, int id)
 void MouseMoveHook(void* w, int x, int y)
 {
 	CUIWINDOW* win = (CUIWINDOW*) w;
-	CUIWINDOW* ctrl = WindowGetCtrl((CUIWINDOW*) w, IDC_LISTBOX1);
+	CUIWINDOW* ctrl = WindowGetCtrl((CUIWINDOW*) w, IDC_MEMO1);
 	wchar_t help[64];
 	if (ctrl)
 	{
@@ -114,7 +114,7 @@ void MouseMoveHook(void* w, int x, int y)
 void MouseButtonHook(void* w, int x, int y, int state)
 {
 	CUIWINDOW* win = (CUIWINDOW*) w;
-	CUIWINDOW* ctrl = WindowGetCtrl(win, IDC_LISTBOX1);
+	CUIWINDOW* ctrl = WindowGetCtrl(win, IDC_MEMO1);
 	if (ctrl)
 	{
 		int index = 0;
@@ -238,9 +238,13 @@ int main(void)
 	ctrl = CheckboxNew(group, _T("Check &Me 1"), 1, 3, 18, 1, IDC_CHKBOX1, CWS_NONE, CWS_NONE);
 	WindowCreate(ctrl);
 
-	ctrl = ListboxNew(window, _T("Listbox"), 1, 7, 34, 8, IDC_LISTBOX1, CWS_NONE, CWS_BORDER);
+	ctrl = MemoNew (window, _T(""), 1, 7, 34, 8, IDC_MEMO1, MF_WORDWRAP, CWS_BORDER);
 	WindowColScheme(ctrl, _T("MENU"));
-	WindowCreate(ctrl);
+	WindowCreate   (ctrl);
+	MemoSetText    (ctrl, _T("Hello World!\nThis is a multi line word wrapping edit control\nfor libcui"));
+
+//	MemoSetText    (ctrl, _T("Hello World!\nThis is a\nfor libcui"));
+	
 /*	for (i = 0; i < 20; i++)
 	{
 		char itemtxt[64];

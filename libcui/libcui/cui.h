@@ -28,6 +28,7 @@
 #include <curses.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include "cui-char.h"
 
 #ifndef FALSE
@@ -94,6 +95,9 @@ enum
 	/* edit control flags */
 	EF_PASSWORD       = 0x01000000,
 
+	/* memo control flags */
+	MF_WORDWRAP       = 0x01000000,
+	
 	/* listbox control flags */
 	LB_SORTED         = 0x01000000,
 	LB_DESCENDING     = 0x02000000,
@@ -199,6 +203,11 @@ typedef struct
 {
 	int X, Y, W, H;         /* coordinates */
 } CUIRECT;
+
+typedef struct
+{
+	int X, Y;               /* 2D size */
+} CUISIZE;
 
 typedef struct
 {
@@ -490,6 +499,20 @@ void EditSetChangedHook  (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target
 void EditSetText         (CUIWINDOW* win, const wchar_t* text);
 const wchar_t* EditGetText (CUIWINDOW* win, wchar_t* text, int len);
 void EditResetInput      (CUIWINDOW* win);
+
+/* ---------------------------------------------------------------------
+ * memo text control
+ * ---------------------------------------------------------------------
+ */
+CUIWINDOW* MemoNew(CUIWINDOW* parent, const wchar_t* text,
+                   int x, int y, int w, int h, int id, int sflags, int cflags);
+void MemoSetSetFocusHook (CUIWINDOW* win, CustomHook1PtrProc proc, CUIWINDOW* target);
+void MemoSetKillFocusHook(CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
+void MemoSetPreKeyHook   (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target);
+void MemoSetPostKeyHook  (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW* target);
+void MemoSetChangedHook  (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
+void MemoSetText         (CUIWINDOW* win, const wchar_t* text);
+const wchar_t* MemoGetText (CUIWINDOW* win, wchar_t* text, int len);
 
 /* ---------------------------------------------------------------------
  * label control

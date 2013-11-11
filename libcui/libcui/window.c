@@ -4455,6 +4455,11 @@ WindowSigHandler (int sig)
  * Read a key from the console (and handle screen resize events)
  * ---------------------------------------------------------------------
  */
+ 
+#define KEY_M_SHIFT 0x1000
+#define KEY_M_ALT   0x2000
+#define KEY_M_CTRL  0x4000
+#define KEY_M_MASK  0x7000
 static int
 GetKey(int* key)
 {
@@ -4462,6 +4467,11 @@ GetKey(int* key)
 	int result = get_wch(&c);
 	if ((result == KEY_CODE_YES) || (result == OK))
 	{
+/*		if (((c & ~KEY_M_MASK) == '\b') &&
+		    ((c &  KEY_M_MASK) == KEY_M_CTRL))
+		{
+			c = KEY_BACKSPACE;
+		}*/
 		*key = (int) c;
 		return TRUE;
 	}
