@@ -3,9 +3,9 @@
 # /var/install/bin/userman.cui.users.module.sh - users module for eisfair user mananger
 #
 # Creation:     2008-03-09 dv
-# Last update:  $Id: userman.cui.users.module.sh 31617 2012-09-17 12:29:15Z dv $
+# Last update:  $Id: userman.cui.users.module.sh 31617 2013-11-12 12:29:15Z jv $
 #
-# Copyright (c) 2001-2007 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -45,31 +45,30 @@ IDC_ADDGROUPS_BUTREMOVE='15'
 
 #----------------------------------------------------------------------------
 # users_get_additional_groups
-# expects: user name in ${usersdlg_userlogin}
-# returns: group list in ${addgroupsdlg_groups} 
+# expects: user name in $usersdlg_userlogin
+# returns: group list in $addgroupsdlg_groups
 #----------------------------------------------------------------------------
-
 function users_get_additional_groups()
 {
     local oldifs="$IFS"
     local line
     IFS=':'
-    
+
     addgroupsdlg_groups=""
-    
+
     while read line
     do
         set -- $line
         local g="$1"
         local u="$4"
         local j
-                                                    
+
         IFS=','
         set -- $u
 
         for j in $*
         do
-            if [ "$j" = "${usersdlg_userlogin}" ]
+            if [ "$j" = "$usersdlg_userlogin" ]
             then
                 addgroupsdlg_groups="${addgroupsdlg_groups} $g"
                 break
@@ -77,20 +76,19 @@ function users_get_additional_groups()
         done
         IFS=':'
     done </etc/group
-    
+
     IFS="$oldifs"
 }
 
 #----------------------------------------------------------------------------
 # users_create_uid
 # expects: nothing
-# returns: next free uid in ${usersdlg_useruid} 
+# returns: next free uid in $usersdlg_useruid
 #----------------------------------------------------------------------------
-
 function users_create_uid()
 {
    local oldifs="$IFS"
-   IFS=':'     
+   IFS=':'
    usersdlg_useruid=2000
    while read line
    do
@@ -107,25 +105,24 @@ function users_create_uid()
 
 #----------------------------------------------------------------------------
 # users_get_gid
-# expects: name of group in ${usersdlg_usergroup}
-# returns: group id in ${usersdlg_usergid}
+# expects: name of group in $usersdlg_usergroup
+# returns: group id in $usersdlg_usergid
 #----------------------------------------------------------------------------
-
 function users_get_gid()
 {
    oldifs="$IFS"
-   IFS=':'     
+   IFS=':'
    usersdlg_usergid=100
    while read line
    do
        set -- $line
-       if [ "$1" == "${usersdlg_usergroup}" ]
+       if [ "$1" == "$usersdlg_usergroup" ]
        then
            usersdlg_usergid="$3"
        fi
    done </etc/group
    IFS="$oldifs"
-} 
+}
 
 #----------------------------------------------------------------------------
 # check if password is valid
@@ -133,21 +130,18 @@ function users_get_gid()
 # return:  0 - valid password
 #          1 - invalid password
 #----------------------------------------------------------------------------
-
 function users_is_valid_pw()
 {
     local ret=1
     local user=$1
-        
+
     if [ "$user" != "" ]
     then
         pword=`grep "^$user:" /etc/shadow|cut -d: -f2`
-
         [ "$pword" != "*" ] && ! echo "$pword"|grep -q "^!"
-                                
-        if [ $? -eq 0 ] 
+        if [ $? -eq 0 ]
         then
-            ret=0   
+            ret=0
         fi
     fi
 
@@ -165,13 +159,12 @@ function users_is_valid_pw()
 #          $2 : button control id
 # returns: 1  : event handled
 #----------------------------------------------------------------------------
-
 function usersdlg_ok_clicked()
 {
     local win="$p2"
     local ctrl
     local index
-    
+
     cui_window_getctrl "$win" "$IDC_USERSDLG_EDLOGIN" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
@@ -208,30 +201,30 @@ function usersdlg_ok_clicked()
             cui_message "$win" "No user group selected! Please select a valid group" \
                                "Missing data" "$MB_ERROR"
             cui_return 1
-            return        
+            return
         fi
     fi
 
-    if [ -z "${usersdlg_userlogin}" ]
+    if [ -z "$usersdlg_userlogin" ]
     then
         cui_message "$win" "No login name entered! Please enter a valid name" \
                            "Missing data" "$MB_ERROR"
         cui_return 1
         return
     fi
-    
-    if [ "${usersdlg_userpass1}" != "${usersdlg_userpass2}" ]
+
+    if [ "$usersdlg_userpass1" != "$usersdlg_userpass2" ]
     then
         cui_message "$win" "Passwords do not match. Please enter them again" \
                            "Wrong Password" "$MB_ERROR"
         cui_return 1
         return
     fi
-        
+
     cui_window_close "$win" "$IDOK"
     cui_return 1
 }
-                
+
 #----------------------------------------------------------------------------
 # usersdlg_cancel_clicked
 # Cancel button clicked hook
@@ -239,20 +232,18 @@ function usersdlg_ok_clicked()
 #          $2 : button control id
 # returns: 1  : event handled     
 #----------------------------------------------------------------------------
-
 function usersdlg_cancel_clicked()
 {
     cui_window_close "$p2" "$IDCANCEL"
     cui_return 1
 }
-                        
+
 #----------------------------------------------------------------------------
 # usersdlg_create_hook
 # Dialog create hook - create dialog controls
 # expects: $1 : window handle of dialog window
 # returns: 1  : event handled     
 #----------------------------------------------------------------------------
-
 function usersdlg_create_hook()
 {
     local dlg="$p2"
@@ -272,7 +263,7 @@ function usersdlg_create_hook()
     if cui_valid_handle "$p2"
     then
         cui_window_create     "$p2"
-    fi    
+    fi
     cui_label_new "$dlg" "New password:" 2 7 14 1 $IDC_USERSDLG_LABEL4 $CWS_NONE $CWS_NONE
     if cui_valid_handle "$p2"
     then
@@ -288,13 +279,13 @@ function usersdlg_create_hook()
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
-        cui_edit_settext      "$ctrl" "${usersdlg_userlogin}"
+        cui_edit_settext      "$ctrl" "$usersdlg_userlogin"
     fi
     cui_edit_new "$dlg" "" 17 3 18 1 40 $IDC_USERSDLG_EDNAME $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl"
-        cui_edit_settext      "$ctrl" "${usersdlg_username}"
+        cui_edit_settext      "$ctrl" "$usersdlg_username"
     fi
     cui_combobox_new "$dlg" 17 5 12 10 $IDC_USERSDLG_CBGROUP $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
@@ -306,44 +297,43 @@ function usersdlg_create_hook()
             set -- $line
             cui_combobox_add      "$ctrl" "$1"
             IFS="$_ifs"
-        done < /etc/group        
-        cui_combobox_select   "$ctrl" "${usersdlg_usergroup}"        
+        done < /etc/group
+        cui_combobox_select   "$ctrl" "$usersdlg_usergroup"
         cui_window_create     "$ctrl"
     fi
     cui_edit_new "$dlg" "" 17 7 18 1 40 $IDC_USERSDLG_EDPASS1 $EF_PASSWORD $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl"
-        cui_edit_settext      "$ctrl" "${usersdlg_userpass1}"
+        cui_edit_settext      "$ctrl" "$usersdlg_userpass1"
     fi
     cui_edit_new "$dlg" "" 17 9 18 1 40 $IDC_USERSDLG_EDPASS2 $EF_PASSWORD $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
-        cui_window_create     "$ctrl"        
-        cui_edit_settext      "$ctrl" "${usersdlg_userpass2}"
+        cui_window_create     "$ctrl"
+        cui_edit_settext      "$ctrl" "$usersdlg_userpass2"
     fi
-        
+
     cui_button_new "$dlg" "&OK" 10 11 10 1 $IDC_USERSDLG_BUTOK $CWS_DEFOK $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" usersdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
-                                    
+
     cui_button_new "$dlg" "&Cancel" 21 11 10 1 $IDC_USERSDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" usersdlg_cancel_clicked
         cui_window_create     "$ctrl"
     fi
-                                                                        
     cui_return 1
 }
-             
+ 
 #============================================================================
 # addgroupsdlg - dialog to manage additional groups
 #============================================================================
-             
+
 #----------------------------------------------------------------------------
 # addgroupsdlg_butadd_clicked
 # button or listbox clicked hook
@@ -351,7 +341,6 @@ function usersdlg_create_hook()
 #          $2 : button control id
 # returns: 1  : event handled
 #----------------------------------------------------------------------------
-             
 function addgroupsdlg_butadd_clicked()
 {
     local win="$p2"
@@ -359,7 +348,7 @@ function addgroupsdlg_butadd_clicked()
     local lstsel
     local index
     local newindex
-    
+
     cui_window_getctrl "$win" "$IDC_ADDGROUPS_LSTALL" && lstall="$p2"
     if cui_valid_handle "$lstall"
     then
@@ -374,9 +363,8 @@ function addgroupsdlg_butadd_clicked()
                 cui_listbox_delete "$lstall" "$index"
                 cui_listbox_setsel "$lstsel" "$newindex"
             fi
-        fi                
+        fi
     fi
-    
     cui_return 1
 }
 
@@ -387,7 +375,6 @@ function addgroupsdlg_butadd_clicked()
 #          $2 : button control id
 # returns: 1  : event handled
 #----------------------------------------------------------------------------
-
 function addgroupsdlg_butrem_clicked()
 {
     local win="$p2"
@@ -395,7 +382,7 @@ function addgroupsdlg_butrem_clicked()
     local lstsel
     local index
     local newindex
-    
+
     cui_window_getctrl "$win" "$IDC_ADDGROUPS_LSTALL" && lstall="$p2"
     if cui_valid_handle "$lstall"
     then
@@ -410,12 +397,12 @@ function addgroupsdlg_butrem_clicked()
                 cui_listbox_delete "$lstsel" "$index"
                 cui_listbox_setsel "$lstall" "$newindex"
             fi
-        fi                
+        fi
     fi
-    
+
     cui_return 1
 }
-             
+
 #----------------------------------------------------------------------------
 # addgroupsdlg_ok_clicked
 # Ok button clicked hook
@@ -423,51 +410,49 @@ function addgroupsdlg_butrem_clicked()
 #          $2 : button control id
 # returns: 1  : event handled
 #----------------------------------------------------------------------------
-
 function addgroupsdlg_ok_clicked()
 {
     local dlg="$p2"
     local lstsel
     local count
     local index
-    
+
     addgroupsdlg_groups=""
-    
+
     cui_window_getctrl "$dlg" "$IDC_ADDGROUPS_LSTSEL" && lstsel="$p2"
     if cui_valid_handle "$lstsel"
     then
         count=0
         index=0
-        
+
         cui_listbox_getcount "$lstsel"  && count="$p2"
-        
+
         while [ "$index" -lt "$count" ]
         do
             cui_listbox_get "$lstsel" "$index"
-            
-            if [ -z "${addgroupsdlg_groups}" ]
+
+            if [ -z "$addgroupsdlg_groups" ]
             then
                 addgroupsdlg_groups="$p2"
             else
                 addgroupsdlg_groups="${addgroupsdlg_groups},$p2"
             fi
-            
+
             index=$[$index + 1]
         done
-    fi    
+    fi
 
     cui_window_close "$dlg" "$IDOK"
     cui_return 1
 }
-                
+
 #----------------------------------------------------------------------------
 # addgroupsdlg_cancel_clicked
 # Cancel button clicked hook
 # expects: $1 : window handle of dialog window
 #          $2 : button control id
-# returns: 1  : event handled     
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
-
 function addgroupsdlg_cancel_clicked()
 {
     cui_window_close "$p2" "$IDCANCEL"
@@ -478,9 +463,8 @@ function addgroupsdlg_cancel_clicked()
 # addgroupsdlg_create_hook
 # Create controls for additional groups dialog
 # expects: $1 : window handle of dialog window
-# returns: 1  : event handled     
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
-             
 function addgroupsdlg_create_hook()
 {
     local dlg="$p2"
@@ -521,14 +505,14 @@ function addgroupsdlg_create_hook()
     then
         cui_window_create     "$ctrl"
     fi
-                        
+
     cui_button_new "$dlg" "&OK" 10 13 10 1 $IDC_ADDGROUPS_BUTOK $CWS_DEFOK $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" addgroupsdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
-                                    
+
     cui_button_new "$dlg" "&Cancel" 26 13 10 1 $IDC_ADDGROUPS_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
@@ -550,7 +534,7 @@ function addgroupsdlg_create_hook()
                 IFS="$_ifs"
 
                 # search group
-                local found=0                
+                local found=0
                 for group in ${addgroupsdlg_groups}
                 do
                     if [ "$group" == "$1" ]
@@ -559,25 +543,24 @@ function addgroupsdlg_create_hook()
                         break
                     fi
                 done
-                
+
                 # add group
                 if [ $found == 1 ]
                 then
                     cui_listbox_add "$lstsel" "$1"
                 else
                     cui_listbox_add "$lstall" "$1"
-                fi                
-            done < /etc/group 
-            
+                fi
+            done < /etc/group
+
             cui_listbox_setsel "$lstsel" "0"
             cui_listbox_setsel "$lstall" "0"
             cui_window_setfocus "$lstall"
-        fi                
+        fi
     fi
-                                                                        
-    cui_return 1            
-}             
-             
+    cui_return 1
+}
+
 #============================================================================
 # functions to create modify or delete users (using usersdlg and addgroupsdlg)
 #============================================================================
@@ -588,7 +571,6 @@ function addgroupsdlg_create_hook()
 # returns: 0  : modified (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-
 function users_addgroups_dialog()
 {
     local win="$1"
@@ -603,7 +585,7 @@ function users_addgroups_dialog()
         cui_listview_getsel "$ctrl" && index="$p2"
         if cui_valid_index "$index"
         then
-            cui_listview_gettext "$ctrl" "$index" "0" && usersdlg_userlogin="$p2"            
+            cui_listview_gettext "$ctrl" "$index" "0" && usersdlg_userlogin="$p2"
             users_get_additional_groups
 
             cui_window_new "$win" 0 0 47 17 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
@@ -613,11 +595,11 @@ function users_addgroups_dialog()
                 cui_window_settext   "$dlg" "Additional Groups"
                 cui_window_sethook   "$dlg" "$HOOK_CREATE"  addgroupsdlg_create_hook
                 cui_window_create    "$dlg"
-        
+
                 cui_window_modal   "$dlg" && result="$p2"
                 if [ "$result" == "$IDOK" ]
                 then
-                    local errmsg=$(/usr/sbin/adduser -G "${addgroupsdlg_groups}" "${usersdlg_userlogin}" 2>&1)
+                    local errmsg=$(/usr/sbin/adduser -G "$addgroupsdlg_groups" "$usersdlg_userlogin" 2>&1)
                     if [ "$?" != "0" ]
                     then
                         cui_message "$win" \
@@ -626,11 +608,10 @@ function users_addgroups_dialog()
                     fi
                 fi
 
-                cui_window_destroy "$dlg"        
+                cui_window_destroy "$dlg"
             fi
         fi
     fi
-    
     [ "$result" == "$IDOK" ]
     return "$?"
 }
@@ -641,7 +622,6 @@ function users_addgroups_dialog()
 # returns: 0  : modified (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-
 function users_edituser_dialog()
 {
     local win="$1"
@@ -659,13 +639,13 @@ function users_edituser_dialog()
             cui_listview_gettext "$ctrl" "$index" "0" && usersdlg_userlogin="$p2"
             cui_listview_gettext "$ctrl" "$index" "2" && usersdlg_usergroup="$p2"
             cui_listview_gettext "$ctrl" "$index" "5" && usersdlg_username="$p2"
-            
+
             usersdlg_userpass1="xxxxxxxxxxxx"
             usersdlg_userpass2="xxxxxxxxxxxx"
-            
-            local orig_userlogin="${usersdlg_userlogin}"
-            local orig_username="${usersdlg_username}"
-            local orig_usergroup="${usersdlg_usergroup}"
+
+            local orig_userlogin="$usersdlg_userlogin"
+            local orig_username="$usersdlg_username"
+            local orig_usergroup="$usersdlg_usergroup"
 
             cui_window_new "$win" 0 0 40 15 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle "$dlg" 
@@ -674,42 +654,42 @@ function users_edituser_dialog()
                 cui_window_settext   "$dlg" "Edit User"
                 cui_window_sethook   "$dlg" "$HOOK_CREATE"  usersdlg_create_hook
                 cui_window_create    "$dlg"
-        
+
                 cui_window_modal   "$dlg" && result="$p2"
                 if  [ "$result" == "$IDOK" ]
                 then
-                    if [ "${orig_userlogin}" != "${usersdlg_userlogin}" ]
-                    then                
-                        grep "^${usersdlg_userlogin}:" /etc/passwd >/dev/null  
+                    if [ "$orig_userlogin" != "$usersdlg_userlogin" ]
+                    then
+                        grep "^${usersdlg_userlogin}:" /etc/passwd >/dev/null
                         if [ $? == 0 ]
                         then
                             cui_message "$win" \
                                 "User \"${usersdlg_userlogin}\" already exists!" \
                                 "Error" "$MB_ERROR"
-                            result="$IDCANCEL"                        
+                            result="$IDCANCEL"
                         fi
                     fi
                 fi
                 if  [ "$result" == "$IDOK" ]
                 then
                     local args=""
-                    
-                    if [ "${orig_userlogin}" != "${usersdlg_userlogin}" ]
+
+                    if [ "$orig_userlogin" != "$usersdlg_userlogin" ]
                     then
                         args="$args -l \"${usersdlg_userlogin}\""
                         args="$args -h \"/home/${usersdlg_userlogin}\" "
                     fi
-                    
-                    if [ "${orig_username}" != "${usersdlg_username}" ]
+
+                    if [ "$orig_username" != "$usersdlg_username" ]
                     then
                         args="$args -g \"${usersdlg_username}\""
                     fi
-                    
-                    if [ "${orig_usergroup}" != "${usersdlg_usergroup}" ]
+
+                    if [ "$orig_usergroup" != "$usersdlg_usergroup" ]
                     then
                         args="$args -G \"${usersdlg_usergroup}\""
                     fi
-                    
+
                     if [ ! -z "$args" ]
                     then
                         args="$args \"${orig_userlogin}\""
@@ -721,22 +701,22 @@ function users_edituser_dialog()
                                 "Error! $errmsg" "Error" "$MB_ERROR"
                             result="$IDCANCEL"
                         else
-                            if [ "${usersdlg_userpass1}" != "xxxxxxxxxxxx" ]
+                            if [ "$usersdlg_userpass1" != "xxxxxxxxxxxx" ]
                             then
-                                errmsg=`(echo "${usersdlg_userpass1}"; echo "${usersdlg_userpass1}") | \
-                                     passwd "${usersdlg_userlogin}" 2>&1`
+                                errmsg=`(echo "$usersdlg_userpass1"; echo "$usersdlg_userpass1") | \
+                                     passwd "$usersdlg_userlogin" 2>&1`
                                 if [ "$?" != "0" ]
                                 then
                                     cui_message "$win" \
                                          "Error! $errmsg" "Error" "$MB_ERROR"
                                 fi
-                            fi  
+                            fi
                         fi
-                    else  
-                        if [ "${usersdlg_userpass1}" != "xxxxxxxxxxxx" ]
+                    else
+                        if [ "$usersdlg_userpass1" != "xxxxxxxxxxxx" ]
                         then
-                            errmsg=`(echo "${usersdlg_userpass1}"; echo "${usersdlg_userpass1}") | \
-                                passwd "${usersdlg_userlogin}" 2>&1`
+                            errmsg=`(echo "$usersdlg_userpass1"; echo "$usersdlg_userpass1") | \
+                                passwd "$usersdlg_userlogin" 2>&1`
                             if [ "$?" != "0" ]
                             then
                                 cui_message "$win" \
@@ -748,12 +728,10 @@ function users_edituser_dialog()
                         fi
                     fi
                 fi
-        
-                cui_window_destroy "$dlg"        
+                cui_window_destroy "$dlg"
             fi
         fi
     fi
-    
     [ "$result" == "$IDOK" ]
     return "$?"
 }
@@ -764,13 +742,12 @@ function users_edituser_dialog()
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-              
 function users_createuser_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
     local dlg
-    
+
     usersdlg_userlogin=""
     usersdlg_username=""
     usersdlg_usergroup="users"
@@ -784,38 +761,28 @@ function users_createuser_dialog()
         cui_window_settext   "$dlg" "Create User"        
         cui_window_sethook   "$dlg" "$HOOK_CREATE"  usersdlg_create_hook
         cui_window_create    "$dlg"
-        
+
         cui_window_modal     "$dlg" && result="$p2"
-        
+
         if  [ "$result" == "$IDOK" ]
         then
-            grep "^${usersdlg_userlogin}:" /etc/passwd >/dev/null  
+            grep "^${usersdlg_userlogin}:" /etc/passwd >/dev/null
             if [ $? != 0 ]
-            then            
+            then
                 users_create_uid
                 #users_get_gid
-
-                errmsg=$(/usr/sbin/adduser \
-                    -u "${usersdlg_useruid}" \
-                    -G "${usersdlg_usergroup}" \
-                    -g "${usersdlg_username}" \
+                errmsg=$(echo -e "${usersdlg_userpass1}\n${usersdlg_userpass1}" | \
+                    /usr/sbin/adduser \
+                    -u "$usersdlg_useruid" \
+                    -G "$usersdlg_usergroup" \
+                    -g "$usersdlg_username" \
                     -s "/bin/bash" \
-                    -h "/home/${usersdlg_userlogin}" \
+                    -h "/home/$usersdlg_userlogin" \
                     ${usersdlg_userlogin} 2>&1)
-                    
                 if [ "$?" != "0" ]
                 then
-                    cui_message "$win" \
-                        "Error! $errmsg" "Error" "$MB_ERROR"
+                    cui_message "$win" "Error! $errmsg" "Error" "$MB_ERROR"
                     result="$IDCANCEL"
-                else
-                    errmsg=`(echo "${usersdlg_userpass1}"; echo "${usersdlg_userpass1}") | \
-                        passwd "${usersdlg_userlogin}" 2>&1`
-                    if [ "$?" != "0" ]
-                    then
-                        cui_message "$win" \
-                            "Error! $errmsg" "Error" "$MB_ERROR"
-                    fi
                 fi
             else
                 cui_message "$win" \
@@ -824,10 +791,9 @@ function users_createuser_dialog()
                 result="$IDCANCEL"
             fi
         fi
-        
-        cui_window_destroy "$dlg"        
+
+        cui_window_destroy "$dlg"
     fi
-    
     [ "$result" == "$IDOK" ]
     return "$?"
 }
@@ -838,7 +804,6 @@ function users_createuser_dialog()
 # returns: 0  : modified (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-
 function users_deleteuser_dialog()
 {
     local win="$1"
@@ -871,12 +836,12 @@ function users_deleteuser_dialog()
                     fi
                     return 1
                 fi
-                
+
                 return 1
             fi
         fi
     fi
-    
+
     return 1
 }
 
@@ -886,7 +851,6 @@ function users_deleteuser_dialog()
 # returns: 0  : modified (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-
 function users_invalidate_passwd()
 {
     local win="$1"
@@ -901,22 +865,30 @@ function users_invalidate_passwd()
         then
             cui_listview_gettext "$ctrl" "$index" "0" && usersdlg_userlogin="$p2"
 
-            if users_is_valid_pw "${usersdlg_userlogin}"
+            if users_is_valid_pw "$usersdlg_userlogin"
             then
-                passwd -l "${usersdlg_userlogin}"
+                passwd -l "$usersdlg_userlogin"
                 case "$?" in
                 0) return 0
                    ;;
-                *) cui_message "$win" "Error: failed to invalidate passwd" "Error" "$MB_ERROR"
+                *) cui_message "$win" "Error: failed to lock password" "Error" "$MB_ERROR"
                    return 1
                    ;;
                 esac
-                
                 return 1
+            else
+                passwd -u "$usersdlg_userlogin"
+                case "$?" in
+                0) return 0
+                   ;;
+                *) cui_message "$win" "Error: failed to unlock password" "Error" "$MB_ERROR"
+                   return 1
+                   ;;
+                esac
+
             fi
         fi
     fi
-    
     return 1
 }
 
@@ -930,24 +902,23 @@ function users_invalidate_passwd()
 # expects: $1 : listview window handle
 # returns: nothing
 #----------------------------------------------------------------------------
-
 function users_sort_list()
 {
     local ctrl=$1
     local mode="0"
 
-    if [ "${users_sortcolumn}" != "-1" ]
+    if [ "$users_sortcolumn" != "-1" ]
     then
-        if [ "${users_sortmode}" == "up" ]
+        if [ "$users_sortmode" == "up" ]
         then
             mode="1"
         fi
 
-        if [ "${users_sortcolumn}" == "1" -o "${users_sortcolumn}" == "3" ]
+        if [ "$users_sortcolumn" == "1" -o "$users_sortcolumn" == "3" ]
         then
-            cui_listview_numericsort "$ctrl" "${users_sortcolumn}" "$mode"
+            cui_listview_numericsort "$ctrl" "$users_sortcolumn" "$mode"
         else
-            cui_listview_alphasort "$ctrl" "${users_sortcolumn}" "$mode"
+            cui_listview_alphasort "$ctrl" "$users_sortcolumn" "$mode"
         fi
     fi
 }
@@ -958,7 +929,6 @@ function users_sort_list()
 #          $p3 : control window handle
 # returns: nothing
 #----------------------------------------------------------------------------
-
 function users_sortmenu_clicked_hook()
 {
     cui_window_close "$p3" "$IDOK"
@@ -971,7 +941,6 @@ function users_sortmenu_clicked_hook()
 #          $p3 : control window handle
 # returns: nothing
 #----------------------------------------------------------------------------
-
 function users_sortmenu_escape_hook()
 {
    cui_window_close "$p3" "$IDCANCEL"
@@ -985,7 +954,6 @@ function users_sortmenu_escape_hook()
 #          $p4 : key code
 # returns: 1 : Key handled, 2 : Key ignored
 #----------------------------------------------------------------------------
-
 function users_sortmenu_postkey_hook()
 {
    local ctrl="$p3"
@@ -1006,32 +974,31 @@ function users_sortmenu_postkey_hook()
 # expects: $1 : base window handle
 # returns: nothing
 #----------------------------------------------------------------------------
-
 function users_select_sort_column()
 {
     local win="$1"
     local menu
     local result
     local item
-    local oldcolumn="${users_sortcolumn}"
-    local oldmode="${users_sortmode}"
+    local oldcolumn="$users_sortcolumn"
+    local oldmode="$users_sortmode"
 
     cui_menu_new "$win" "Sort column" 0 0 36 15 1 "$[$CWS_CENTERED + $CWS_POPUP]" "$CWS_NONE" && menu="$p2"
     if cui_valid_handle "$menu"
     then
         cui_menu_additem      "$menu" "Don't sort" 1
-	cui_menu_additem      "$menu" "Sort by User  (ascending)"  2
+        cui_menu_additem      "$menu" "Sort by User  (ascending)"  2
         cui_menu_additem      "$menu" "Sort by User  (descending)" 3
-	cui_menu_additem      "$menu" "Sort by Uid   (ascending)"  4
+        cui_menu_additem      "$menu" "Sort by Uid   (ascending)"  4
         cui_menu_additem      "$menu" "Sort by Uid   (descending)" 5
-	cui_menu_additem      "$menu" "Sort by Group (ascending)"  6
+        cui_menu_additem      "$menu" "Sort by Group (ascending)"  6
         cui_menu_additem      "$menu" "Sort by Group (descending)" 7
-	cui_menu_additem      "$menu" "Sort by Gid   (ascending)"  8
+        cui_menu_additem      "$menu" "Sort by Gid   (ascending)"  8
         cui_menu_additem      "$menu" "Sort by Gid   (descending)" 9
         cui_menu_addseparator "$menu"
         cui_menu_additem      "$menu" "Close menu" 0
         cui_menu_selitem      "$menu" 1
-        
+
         cui_menu_callback     "$menu" "$MENU_CLICKED" "$win" users_sortmenu_clicked_hook
         cui_menu_callback     "$menu" "$MENU_ESCAPE"  "$win" users_sortmenu_escape_hook
         cui_menu_callback     "$menu" "$MENU_POSTKEY" "$win" users_sortmenu_postkey_hook
@@ -1044,38 +1011,38 @@ function users_select_sort_column()
             item="$p2"
 
             case $item in
-            1) 
+            1)
                users_sortcolumn="-1"
                ;;
-            2) 
+            2)
                users_sortcolumn="0"
                users_sortmode="up"
                ;;
-            3) 
+            3)
                users_sortcolumn="0"
                users_sortmode="down"
                ;;
-            4) 
+            4)
                users_sortcolumn="1"
                users_sortmode="up"
                ;;
-            5) 
+            5)
                users_sortcolumn="1"
                users_sortmode="down"
                ;;
-            6) 
+            6)
                users_sortcolumn="2"
                users_sortmode="up"
                ;;
-            7) 
+            7)
                users_sortcolumn="2"
                users_sortmode="down"
                ;;
-            8) 
+            8)
                users_sortcolumn="3"
                users_sortmode="up"
                ;;
-            9) 
+            9)
                users_sortcolumn="3"
                users_sortmode="down"
                ;;
@@ -1084,7 +1051,7 @@ function users_select_sort_column()
 
         cui_window_destroy  "$menu"
 
-        if [ "$oldcolumn" != "${users_sortcolumn}" -o "$oldmode" != "${users_sortmode}" ]
+        if [ "$oldcolumn" != "$users_sortcolumn" -o "$oldmode" != "$users_sortmode" ]
         then
             users_readdata      "$win"
         fi
@@ -1118,7 +1085,6 @@ users_show_filter="$users_max_filter"
 #          $p2 : control id
 # returns: 1   : event handled
 #----------------------------------------------------------------------------
-
 function users_listview_clicked_hook()
 {
     local win="$p2"
@@ -1134,7 +1100,7 @@ function users_listview_clicked_hook()
         cui_menu_additem      "$menu" "Edit entry"        1
         cui_menu_additem      "$menu" "Delete entry"      2
         cui_menu_additem      "$menu" "Create new entry"  3
-        cui_menu_additem      "$menu" "Invalidate Password" 4
+        cui_menu_additem      "$menu" "Lock/Unlock Password" 4
         cui_menu_addseparator "$menu"
         cui_menu_additem      "$menu" "Additional groups" 5
         cui_menu_additem      "$menu" "Sort by column"    6
@@ -1151,7 +1117,7 @@ function users_listview_clicked_hook()
         cui_menu_addseparator "$menu"
         cui_menu_additem      "$menu" "Close menu"        0
         cui_menu_selitem      "$menu" 1
-        
+
         cui_menu_callback     "$menu" "$MENU_CLICKED" "$win" "module_menu_clicked_hook"
         cui_menu_callback     "$menu" "$MENU_ESCAPE"  "$win" "module_menu_escape_hook"
         cui_menu_callback     "$menu" "$MENU_POSTKEY" "$win" "module_menu_postkey_hook"
@@ -1161,7 +1127,7 @@ function users_listview_clicked_hook()
         if [ "$result" == "$IDOK" ]
         then
             cui_menu_getselitem "$menu" && item="$p2"
-            
+
             case $item in
             1)
                 cui_window_destroy  "$menu"
@@ -1221,10 +1187,8 @@ function users_listview_clicked_hook()
             cui_window_destroy  "$menu"
         fi
     fi
-    
     cui_return 1
 }
-
 
 #----------------------------------------------------------------------------
 #  users_list_postkey_hook (catch ENTER key)
@@ -1232,13 +1196,12 @@ function users_listview_clicked_hook()
 #    $p3 --> window handle of list control
 #    $p4 --> key
 #----------------------------------------------------------------------------
-
 function users_list_postkey_hook()
 {
     local win="$p2"
     local ctrl="$p3"
     local key="$p4"
-    
+
     if [ "$key" == "${KEY_ENTER}" ]
     then
         users_listview_clicked_hook "$win" "$ctrl"
@@ -1246,17 +1209,16 @@ function users_list_postkey_hook()
         cui_return 0
     fi
 }
-             
+
 #----------------------------------------------------------------------------
 # users_init (init the users module)
 #    $1 --> window handle of main window
 #----------------------------------------------------------------------------
-
 function users_init()
 {
     local win="$1"
     local ctrl
-    
+
     cui_listview_new "$win" "" 0 0 30 10 6 "${IDC_USERS_LIST}" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
@@ -1284,7 +1246,7 @@ Further you can change the way the list is sorted by pressing the F9 key."
 changed by pressing F5 key."
         cui_window_totop "$ctrl"
     fi
-    
+
     cui_window_setlstatustext "$win" "Commands: F3=Show F4=Edit F5=Groups F7=Create F8=Delete F9=Sort F10=Exit"
 }
 
@@ -1292,23 +1254,22 @@ changed by pressing F5 key."
 # users_close (close the users module)
 #    $1 --> window handle of main window
 #----------------------------------------------------------------------------
-
 function users_close()
 {
     local win="$1"
     local ctrl
-        
+
     cui_window_getctrl "$win" "${IDC_USERS_LIST}" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_destroy "$ctrl" 
-    fi    
+    fi
 
     cui_window_getctrl "$win" "${IDC_HELPTEXT}" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_textview_clear "$ctrl"
-    fi    
+    fi
 }
 
 #----------------------------------------------------------------------------
@@ -1319,23 +1280,21 @@ function users_close()
 #    $4 --> w
 #    $5 --> h
 #----------------------------------------------------------------------------
-
 function users_size()
 {
     local ctrl
-    
+
     cui_window_getctrl "$1" "$IDC_USERS_LIST" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_move "$ctrl" "$2" "$3" "$4" "$5"
-    fi        
+    fi
 }
 
 #----------------------------------------------------------------------------
 # users_readdata (read data of the users module)
 #    $1 --> window handle of main window
 #----------------------------------------------------------------------------
-
 function users_readdata()
 {
     local ctrl
@@ -1343,18 +1302,18 @@ function users_readdata()
     local sel;
     local count;
     local index;
-    
+
     # read user inforamtion
     cui_window_getctrl "$win" "$IDC_USERS_LIST" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_listview_getsel   "$ctrl" && sel="$p2"
-        cui_listview_clear    "$ctrl" 
+        cui_listview_clear    "$ctrl"
 
         sys_users_tolist      "$ctrl" "$users_show_filter" ""
 
         cui_listview_getcount "$ctrl" && count="$p2"
-        
+
         if [ "$sel" -ge "0" -a "$count" -gt "0" ]
         then
             if [ "$sel" -ge "$count" ]
@@ -1366,7 +1325,7 @@ function users_readdata()
         else
             users_sort_list     "$ctrl"
             cui_listview_setsel "$ctrl" "0"
-        fi        
+        fi
     fi
 }
 
@@ -1374,7 +1333,6 @@ function users_readdata()
 # users_activate (activate the users module)
 #    $1 --> window handle of main window
 #----------------------------------------------------------------------------
-
 function users_activate()
 {
     local win="$1"
@@ -1392,7 +1350,6 @@ function users_activate()
 #    $1 --> window handle of main window
 #    $2 --> keyboad input
 #----------------------------------------------------------------------------
-
 function users_key()
 {
     local win="$1"
@@ -1437,14 +1394,12 @@ function users_key()
     "$KEY_F9")
         users_select_sort_column $win
         return 0
-        ;;       
+        ;;
     esac
-    
+
     return 1
 }
 
 #============================================================================
 # end of users module
 #============================================================================
-
-
