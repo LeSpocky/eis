@@ -813,8 +813,6 @@ PMMatchNames(apk_hash_item item, void *ctx)
 	{
 		if (pkg == NULL || apk_version_compare_blob(*p->version, *pkg->version) == APK_VERSION_GREATER)
 			pkg = p->pkg;
-		if (p->pkg->name == name && p->pkg->ipkg != NULL)
-			ninst = 1;
 	}
 
 	if ( pkg )
@@ -838,6 +836,8 @@ PMMatchNames(apk_hash_item item, void *ctx)
 					return 0;
 			}
 		}
+		if (pkg->ipkg != NULL)
+			ninst = 1;
 		PMInternalAddHashList( pkg->name->name, apk_blob_cstr(*pkg->version), pkg->description, ninst, pkg->repos, pkg->build_time );
 	}
 	return 0;
