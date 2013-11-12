@@ -27,7 +27,7 @@ build() {
 package() {
 	mkdir -p ${pkgdir}
 	cp -r ${startdir}/menus/* ${pkgdir}/
-	chmod 0770 ${pkgdir}/etc/config.d
+	chmod 0770 ${pkgdir}/etc/default.d
 	chmod 0755 ${pkgdir}/usr/sbin/*
 	chmod 0755 ${pkgdir}/var/install/bin/*
 	chmod 0755 ${pkgdir}/var/install/config.d/*

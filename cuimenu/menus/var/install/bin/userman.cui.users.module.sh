@@ -89,7 +89,7 @@ function users_create_uid()
 {
    local oldifs="$IFS"
    IFS=':'
-   usersdlg_useruid=2000
+   usersdlg_useruid=1000
    while read line
    do
        set -- $line
