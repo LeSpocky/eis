@@ -124,7 +124,7 @@ SysReadPasswdList(char* passwdfile )
 			if (newpasswd)
 			{
 				int loop = 0;
-				memset(newpasswd, 0, sizeof(newpasswd));
+				memset(newpasswd, 0, sizeof(PASSWD_T));
 				newpasswd->Next      = NULL;
 
 				tmp = estrtok(buffer, ":");

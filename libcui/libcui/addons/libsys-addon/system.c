@@ -317,7 +317,7 @@ SysReadEtcPasswd(int query_flags)
 			{
 				int loop = 0;
 				
-				memset(newuser, 0, sizeof(newuser));
+				memset(newuser, 0, sizeof(USER_T));
 				newuser->Next      = NULL;
 				newuser->ValidPW   = FALSE;
 				newuser->GroupName = wcsdup(_T("unknown"));
@@ -416,7 +416,7 @@ SysReadEtcGroup(int query_flags)
 			if (newgroup)
 			{
 				int   loop = 0;
-				memset(newgroup, 0, sizeof(newgroup));
+				memset(newgroup, 0, sizeof(GROUP_T));
 				newgroup->Next = NULL;
 				
 				p = strchr(s, ':');
@@ -507,7 +507,7 @@ SysReadEtcShadow(void)
 			if (newpasswd)
 			{
 				int loop = 0;
-				memset(newpasswd, 0, sizeof(newpasswd));
+				memset(newpasswd, 0, sizeof(PASSWD_T));
 				newpasswd->Next      = NULL;
 				
 				p = strchr(s, ':');
