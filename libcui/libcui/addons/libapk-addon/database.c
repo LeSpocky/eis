@@ -1379,7 +1379,7 @@ static int do_remount(const char *path, const char *option)
 
 	if (pid == 0) {
 		execl("/bin/mount", "mount", "-o", "remount", "-o",
-		      option, path, NULL);
+		      option, path, (void*) 0);
 		return 1;
 	}
 
@@ -2151,7 +2151,7 @@ int apk_db_add_repository(apk_database_t _db, apk_blob_t _repository)
 		db->available_repos &= ~BIT(repo_num);
 		r = 0;
 	} else {
-		db->repo_tags[tag_id].allowed_repos |= BIT(repo_num) & db->available_repos;
+		db->repo_tags[tag_id].allowed_repos |= BIT(repo_num);
 	}
 
 	return 0;
@@ -2277,8 +2277,8 @@ static int apk_db_install_archive_entry(void *_ctx,
 		diri = find_diri(ipkg, bdir, diri, &ctx->file_diri_node);
 		if (diri == NULL) {
 			if (!APK_BLOB_IS_NULL(bdir)) {
-				apk_error(PKG_VER_FMT": "BLOB_FMT": no dirent in archive\n",
-					  pkg, BLOB_PRINTF(name));
+				apk_error(PKG_VER_FMT": "BLOB_FMT": no dirent in archive",
+					  PKG_VER_PRINTF(pkg), BLOB_PRINTF(name));
 				ipkg->broken_files = 1;
 				return 0;
 			}
@@ -2376,7 +2376,7 @@ static int apk_db_install_archive_entry(void *_ctx,
 			memcpy(&file->csum, &ae->csum, sizeof(file->csum));
 	} else {
 		if (apk_verbosity >= 3)
-			apk_message("%s", ae->name);
+			apk_message("%s (dir)", ae->name);
 
 		if (name.ptr[name.len-1] == '/')
 			name.len--;

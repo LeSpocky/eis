@@ -66,6 +66,7 @@ extern char **apk_argv;
 #define APK_INTERACTIVE		0x0400
 #define APK_NO_NETWORK		0x1000
 #define APK_OVERLAY_FROM_STDIN	0x2000
+#define APK_NO_SCRIPTS		0x4000
 
 /* default architecture for APK packages. */
 #if defined(__x86_64__)
@@ -76,10 +77,10 @@ extern char **apk_argv;
 #define APK_DEFAULT_ARCH	"ppc"
 #elif defined(__powerpc64__)
 #define APK_DEFAULT_ARCH	"ppc64"
+#elif defined(__arm__) && defined(__ARM_PCS_VFP) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define APK_DEFAULT_ARCH	"armhf"
 #elif defined(__arm__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #define APK_DEFAULT_ARCH	"armel"
-#elif defined(__arm__)
-#define APK_DEFAULT_ARCH	"arm"
 #else
 #warning APK_DEFAULT_ARCH is not set for this architecture
 #define APK_DEFAULT_ARCH        "noarch"
