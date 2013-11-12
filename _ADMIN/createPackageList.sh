@@ -36,14 +36,18 @@ for currentFile in `ls -d ../*/` ; do
     if [ "${currentFile}" != '../_ADMIN/' ] ; then
         packageName=${currentFile#*/}
         packageName=${packageName%/*}
-        echo -n "${delimiter}${packageName}"
+#        echo -n "${delimiter}${packageName}"
         echo -n "${delimiter}${packageName}" >> ${packageListTmp}
         delimiter=','
     fi
 done
 
+cat $packageListTmp
+echo ''
+
 if diff $packageListTmp $packageList >/dev/null 2>&1 ; then
     echo 'No changes on package list'
 else
+    echo 'Package list changed, activating new list'
     mv $packageListTmp $packageList
 fi
