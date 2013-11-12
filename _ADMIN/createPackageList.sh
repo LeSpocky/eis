@@ -26,9 +26,23 @@ cd `dirname $0`
 scriptDir=`pwd`
 scriptName=`basename $0`
 
-for currentFile in `ls ../` ; do
-    # Skip files on repo root and skip folder _ADMIN
-    if [ "${currentFile%%/*}" != "${currentFile}" -a "${currentFile%%/*}" != '_ADMIN' ] ; then
-        echo ${currentFile%%/*} >> packages.txt
+packageListTmp=packages.tmp.txt
+packageList=packages.txt
+
+if [ -e $packageListTmp ] ; then
+    rm -f $packageListTmp
+fi
+
+for currentFile in `ls -d ../*/` ; do
+    # Skip _ADMIN folder
+    if [ "${currentFile}" != '../_ADMIN/' ] ; then
+        echo $currentFile | cut -d "/" -f2
+        echo $currentFile | cut -d "/" -f2 >> $packageListTmp
     fi
 done
+
+if diff $packageListTmp $packageList >/dev/null 2>&1 ; then
+    echo 'No changes on package list'
+else
+    mv $packageListTmp $packageList
+fi
