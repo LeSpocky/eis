@@ -2,7 +2,7 @@
 # Makefile for curses user interface programs on Eis/Fair
 #
 # Creation     : 13.03.2004
-# Last Modified: $Id: Makefile 33516 2013-04-21 08:35:55Z dv $
+# Last Modified: $Id: Makefile 34682 2013-11-10 18:17:35Z dv $
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ CFLAGS         += -Wstrict-prototypes
 CFLAGS         += -Wimplicit-function-declaration
 CFLAGS         += -D_XOPEN_SOURCE_EXTENDED 
 CFLAGS         += -D_UNICODE -D_GNU_SOURCE
-#CFLAGS         += -std=c99
+CFLAGS         += -std=c99
 CFLAGS         += -g
 CURSESLIB       = ncursesw
 
@@ -97,7 +97,7 @@ test.cui: $(C_OBJECTS)
 
 libcui.so.$(CUI_VERSION): $(C_CUI_OBJECTS)
 	@echo "linking $@ ..."
-	@$(CC) -shared -Wl,-soname,libcui.so.2 -o $@ $^ -l$(CURSESLIB) -liconv
+	@$(CC) -shared -Wl,-soname,libcui.so.2 -o $@ $^ -l$(CURSESLIB)
 
 libcui.a: $(C_CUI_OBJECTS)
 	@rm -f $@

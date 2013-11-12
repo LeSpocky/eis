@@ -5,7 +5,7 @@
  * Copyright (C) 2006
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: memo.c 33402 2013-11-02 21:32:17Z dv $
+ * Last Update:  $Id: edit.c 33402 2013-04-02 21:32:17Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -79,17 +79,20 @@ static void       MemoUpdateScrollRange(CUIWINDOW* win);
 static void       MemoUpdateScrollPos  (CUIWINDOW* win, CUIPOINT cursor);
 static PARAGRAPH* MemoFindParagraph    (MEMODATA* data, int index);
 static void       MemoUpdateVisCursor  (CUIWINDOW *win, unsigned int flags);
+static void       MemoAppendPara       (MEMODATA* data, PARAGRAPH *para);
 
 
 static PARAGRAPH* ParaNew            (void);
 static void       ParaDelete         (PARAGRAPH *para);
+static void       ParaLink           (PARAGRAPH *para, PARAGRAPH *insertpos);
+static void       ParaUnlink         (PARAGRAPH *para);
 static void       ParaInsertText     (PARAGRAPH *para, int pos, const wchar_t *text, int len);
+static void       ParaAppendPara     (PARAGRAPH *para, PARAGRAPH *pappend);
+static PARAGRAPH *ParaSplitPara      (PARAGRAPH *para, int pos);
 static void       ParaDeleteText     (PARAGRAPH *para, int pos, int len);
-static void       ParaAppendPara     (MEMODATA* data, PARAGRAPH *para);
-static void       ParaRenderText     (PARAGRAPH *para, CUISIZE *visualSize, CUISIZE *virtualSize);
+static void       ParaRenderText     (PARAGRAPH *para, int width, CUISIZE *virtualSize);
 static CUIPOINT   ParaGetVisualPos   (PARAGRAPH *para, int width, int colpos);
 static int        ParaGetLogicalPos  (PARAGRAPH *para, int width, const CUIPOINT *pt);
-
 static void       ParaShowText       (PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX);
 static void       ParaShowLine       (CUIWINDOW *win, const wchar_t *pText, int len, int offs);
 
@@ -225,7 +228,7 @@ MemoPaintHook(void* w)
 				win,
 				data->ScrollPosX, 
 				y - data->ScrollPosY, 
-				data->VisualSize.X);
+				data->WordWrapLimit);
 		}
 		
 		y   += para->NumLines;
@@ -323,13 +326,13 @@ MemoKeyHook(void* w, int key)
 				return TRUE;
 
 			case KEY_UP:
-				cursor = ParaGetVisualPos(para, data->VisualSize.X, data->LogicalCursor.X);
+				cursor = ParaGetVisualPos(para, data->WordWrapLimit, data->LogicalCursor.X);
 				if (cursor.Y > 0)
 				{
 					cursor.Y -= 1;
 					cursor.X  = data->VirtualColumn;
 					
-					data->LogicalCursor.X = ParaGetLogicalPos(para, data->VisualSize.X, &cursor);
+					data->LogicalCursor.X = ParaGetLogicalPos(para, data->WordWrapLimit, &cursor);
 					
 					MemoUpdateVisCursor(win, UF_NONE);
 				}
@@ -340,7 +343,7 @@ MemoKeyHook(void* w, int key)
 					cursor.Y  = para->NumLines - 1;
 					cursor.X  = data->VirtualColumn;
 					
-					data->LogicalCursor.X = ParaGetLogicalPos(para, data->VisualSize.X, &cursor);					
+					data->LogicalCursor.X = ParaGetLogicalPos(para, data->WordWrapLimit, &cursor);					
 					data->LogicalCursor.Y--;
 					
 					MemoUpdateVisCursor(win, UF_NONE);
@@ -348,13 +351,13 @@ MemoKeyHook(void* w, int key)
 				return TRUE;
 
 			case KEY_DOWN:
-				cursor = ParaGetVisualPos(para, data->VisualSize.X, data->LogicalCursor.X);
+				cursor = ParaGetVisualPos(para, data->WordWrapLimit, data->LogicalCursor.X);
 				if ((cursor.Y + 1) < para->NumLines)
 				{
 					cursor.Y += 1;
 					cursor.X  = data->VirtualColumn;
 					
-					data->LogicalCursor.X = ParaGetLogicalPos(para, data->VisualSize.X, &cursor);
+					data->LogicalCursor.X = ParaGetLogicalPos(para, data->WordWrapLimit, &cursor);
 					
 					MemoUpdateVisCursor(win, UF_NONE);
 				}
@@ -368,22 +371,22 @@ MemoKeyHook(void* w, int key)
 				return TRUE;
 				
 			case KEY_HOME:
-				cursor = ParaGetVisualPos(para, data->VisualSize.X, data->LogicalCursor.X);
+				cursor = ParaGetVisualPos(para, data->WordWrapLimit, data->LogicalCursor.X);
 				if (cursor.X > 0)
 				{
 					cursor.X = 0;
-					data->LogicalCursor.X = ParaGetLogicalPos(para, data->VisualSize.X, &cursor);
+					data->LogicalCursor.X = ParaGetLogicalPos(para, data->WordWrapLimit, &cursor);
 										
 					MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
 				}
 				return TRUE;
 				
 			case KEY_END:
-				cursor = ParaGetVisualPos(para, data->VisualSize.X, data->LogicalCursor.X);
+				cursor = ParaGetVisualPos(para, data->WordWrapLimit, data->LogicalCursor.X);
 				if (cursor.X < para->Length)
 				{
 					cursor.X = para->Length;
-					data->LogicalCursor.X = ParaGetLogicalPos(para, data->VisualSize.X, &cursor);
+					data->LogicalCursor.X = ParaGetLogicalPos(para, data->WordWrapLimit, &cursor);
 
 					MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
 				}
@@ -395,17 +398,20 @@ MemoKeyHook(void* w, int key)
 					int lines = para->NumLines;
 					CUISIZE virtualSize;
 					
+					/* limit cursor pos */
 					if (data->LogicalCursor.X >= para->Length)
 					{
 						data->LogicalCursor.X = para->Length;
 					}
 
+					/* update logical cursor */
 					data->LogicalCursor.X--;
 					
+					/* modify paragraph and re-render text */
 					ParaDeleteText(para, data->LogicalCursor.X, 1);
+					ParaRenderText(para, data->WordWrapLimit, &virtualSize);
 					
-					ParaRenderText(para, &data->VisualSize, &virtualSize);
-					
+					/* if lines did change, update total visual range */
 					if (lines != para->NumLines)
 					{
 						data->VirtualSize.Y += (para->NumLines - lines);
@@ -415,32 +421,136 @@ MemoKeyHook(void* w, int key)
 					MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
 					WindowInvalidate   (win);
 				}
-/*				else if (para->pPrev)
+				else if (para->pPrev)
 				{
+					CUISIZE    virtualSize;
+					PARAGRAPH *prevpara;
+					int        lines  = para->pPrev->NumLines;
+					int        length = para->pPrev->Length;
+
+					/* memorize prev paragraph */
+					prevpara = para->pPrev;
+					
+					/* unlink paragraph and append*/
+					ParaUnlink    (para);					
+					ParaAppendPara(prevpara, para);
+
+					/* update logical cursor */
 					data->LogicalCursor.Y--;
-					data->LogicalCursor.X = para->pPrev->Length;
+					data->LogicalCursor.X = length;
+
+					ParaRenderText(prevpara, data->WordWrapLimit, &virtualSize);					
+					if (lines != prevpara->NumLines)
+					{
+						data->VirtualSize.Y += (prevpara->NumLines - lines);
+						data->VirtualSize.Y -= para->NumLines;
+						MemoUpdateScrollRange(win);
+					}
+					
+					/* delete para */
+					ParaDelete(para);
+					data->NumPara--;
 					
 					MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
-				}*/
+					WindowInvalidate   (win);
+				}
 				return TRUE;
 				
-	/*		case KEY_DC:
+			case KEY_DC:
+				if ((data->LogicalCursor.X < para->Length) && (para->Length > 0))
 				{
-					int i;
-					for (i = data->CursorPos; i < len; i++)
+					CUISIZE    virtualSize;
+					int lines = para->NumLines;
+					
+					/* limit cursor pos */
+					if (data->LogicalCursor.X >= para->Length)
 					{
-						data->MemoText[i] = data->MemoText[i + 1];
+						data->LogicalCursor.X = para->Length;
 					}
 
-					if (data->MemoChangedHook)
+					/* modify paragraph and re-render text */
+					ParaDeleteText(para, data->LogicalCursor.X, 1);					
+					ParaRenderText(para, data->WordWrapLimit, &virtualSize);
+					
+					/* if lines did change, update total visual range */
+					if (lines != para->NumLines)
 					{
-						data->MemoChangedHook(data->MemoChangedTarget, win);
+						data->VirtualSize.Y += (para->NumLines - lines);
+						MemoUpdateScrollRange(win);
 					}
-
-					WindowInvalidate(win);
-					data->FirstChar = FALSE;
+					
+					MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
+					WindowInvalidate   (win);					
 				}
-				return TRUE; */
+				else if (para->pNext)
+				{
+					PARAGRAPH *delpara;
+					CUISIZE    virtualSize;
+					int        lines  = para->NumLines;
+					int        length = para->Length;
+					
+					/* memorize paragraph */
+					delpara = para->pNext;
+
+					/* unlink paragraph and append*/
+					ParaUnlink    (delpara);					
+					ParaAppendPara(para, delpara);
+
+					/* update logical cursor */
+					data->LogicalCursor.X = length;
+
+					ParaRenderText(para, data->WordWrapLimit, &virtualSize);					
+					if (lines != para->NumLines)
+					{
+						data->VirtualSize.Y += (para->NumLines - lines);
+						data->VirtualSize.Y -= delpara->NumLines;
+						MemoUpdateScrollRange(win);
+					}
+					
+					/* delete para */
+					ParaDelete(delpara);
+					data->NumPara--;
+					
+					MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
+					WindowInvalidate   (win);
+				}
+				return TRUE;
+				
+			case KEY_RETURN:
+				{
+					int        lines = para->NumLines;
+					PARAGRAPH *newpara;
+					CUISIZE    virtualSize;
+					
+					/* limit cursor pos */
+					if (data->LogicalCursor.X >= para->Length)
+					{
+						data->LogicalCursor.X = para->Length;
+					}
+					
+					newpara = ParaSplitPara(para, data->LogicalCursor.X);
+					if (newpara)
+					{
+						ParaLink(newpara, para);
+						
+						ParaRenderText(para, data->WordWrapLimit, &virtualSize);
+						data->VirtualSize.Y += (para->NumLines - lines);
+						
+						ParaRenderText(newpara, data->WordWrapLimit, &virtualSize);
+						data->VirtualSize.Y += newpara->NumLines;
+						
+						data->LogicalCursor.X = 0;
+						data->LogicalCursor.Y++;
+						
+						MemoUpdateScrollRange(win);
+						
+						data->NumPara++;
+						
+						MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
+						WindowInvalidate   (win);						
+					}
+				}
+				return TRUE;
 
 			default:
 				if ((key >= ' ')&&(key <= 255))
@@ -451,8 +561,7 @@ MemoKeyHook(void* w, int key)
 					
 					text[0] = key;
 					ParaInsertText(para, data->LogicalCursor.X++, text, 1);
-					
-					ParaRenderText(para, &data->VisualSize, &virtualSize);
+					ParaRenderText(para, data->WordWrapLimit, &virtualSize);
 					
 					if (lines != para->NumLines)
 					{
@@ -777,6 +886,15 @@ MemoCalcTextPos(CUIWINDOW* win)
 		WindowGetClientRect(win, &rc);
 		data->VisualSize.X = rc.W;
 		data->VisualSize.Y = rc.H;
+		
+		if (data->DoWordWrapping)
+		{
+			data->WordWrapLimit = data->VisualSize.X;
+		}
+		else
+		{
+			data->WordWrapLimit = INT_MAX;
+		}
 
 		/* initialize dimensions to zero */
 		memset(&data->VirtualSize, 0, sizeof(data->VirtualSize));
@@ -787,7 +905,7 @@ MemoCalcTextPos(CUIWINDOW* win)
 		{
 			CUISIZE size;
 			
-			ParaRenderText(para, &data->VisualSize, &size);
+			ParaRenderText(para, data->WordWrapLimit, &size);
 			if (size.X > data->VirtualSize.X)
 			{
 				data->VirtualSize.X = size.X;
@@ -848,11 +966,15 @@ MemoUpdateScrollPos(CUIWINDOW* win, CUIPOINT cursor)
 		{
 			data->ScrollPosY = cursor.Y;
 		}
-		if (cursor.Y > data->ScrollPosY + data->VisualSize.Y)
+		if (cursor.Y > (data->ScrollPosY + data->VisualSize.Y))
 		{
-			data->ScrollPosY = cursor.Y - data->VisualSize.Y;
+			data->ScrollPosY = (cursor.Y - data->VisualSize.Y);
 		}
-		WindowSetVScrollPos(win, data->ScrollPosY);
+		if (WindowGetVScrollPos(win) != data->ScrollPosY)
+		{
+			WindowSetVScrollPos(win, data->ScrollPosY);
+			WindowInvalidate   (win);
+		}
 	}
 	else
 	{
@@ -871,6 +993,13 @@ MemoUpdateScrollPos(CUIWINDOW* win, CUIPOINT cursor)
 			data->ScrollPosX = cursor.X - data->VisualSize.X;
 		}
 		WindowSetHScrollPos(win, data->ScrollPosX);
+		
+		if (WindowGetHScrollPos(win) != data->ScrollPosX)
+		{
+			WindowSetHScrollPos(win, data->ScrollPosX);
+			WindowInvalidate   (win);
+		}
+		
 	}
 	else
 	{
@@ -892,7 +1021,7 @@ MemoAppendText(MEMODATA* data, const wchar_t *text, int len)
 	if (para)
 	{
 		ParaInsertText(para, 0, text, len);
-		ParaAppendPara(data, para);
+		MemoAppendPara(data, para);
 	}
 }
 
@@ -919,7 +1048,7 @@ MemoGetVisualCursor(MEMODATA* data, CUIPOINT *pCursor)
 		if (para)
 		{
 			CUIPOINT pt;
-			pt = ParaGetVisualPos(para, data->VisualSize.X, data->LogicalCursor.X);
+			pt = ParaGetVisualPos(para, data->WordWrapLimit, data->LogicalCursor.X);
 			
 			pCursor->Y += pt.Y;
 			pCursor->X  = pt.X;
@@ -992,13 +1121,32 @@ MemoUpdateVisCursor(CUIWINDOW *win, unsigned int flags)
 }
 
 
+static void
+MemoAppendPara(MEMODATA* data, PARAGRAPH *para)
+{
+	if (data->pLast)
+	{
+		para->pPrev = data->pLast;
+		para->pNext = NULL;
+		data->pLast->pNext = para;
+	}
+	else
+	{
+		para->pPrev = NULL;
+		para->pNext = NULL;
+		data->pFirst = para;
+	}
+	data->pLast = para;
+}
+
+
 static PARAGRAPH* 
 ParaNew(void)
 {
 	PARAGRAPH *result = (PARAGRAPH*) malloc(sizeof(PARAGRAPH));
 	if (result)
 	{
-		memset(result, 0, sizeof(result));
+		memset(result, 0, sizeof(PARAGRAPH));
 		result->NumLines = 1;
 	}
 	return result;
@@ -1013,6 +1161,34 @@ ParaDelete(PARAGRAPH *para)
 		free(para->pText);
 	}
 	free(para);
+}
+
+
+static void
+ParaLink(PARAGRAPH *para, PARAGRAPH *insertpos)
+{
+	para->pNext      = insertpos->pNext;
+	para->pPrev      = insertpos;
+	insertpos->pNext = para;
+	
+	if (para->pNext)
+	{
+		para->pNext->pPrev = para;
+	}
+}
+
+
+static void
+ParaUnlink(PARAGRAPH *para)
+{
+	if (para->pPrev)
+	{
+		para->pPrev->pNext = para->pNext;
+	}
+	if (para->pNext)
+	{
+		para->pNext->pPrev = para->pPrev;
+	}
 }
 
 
@@ -1040,52 +1216,61 @@ ParaInsertText(PARAGRAPH *para, int pos, const wchar_t *text, int len)
 		}
 		else
 		{
-			wcsrcpy(para->pText + len, para->pText);
-			wcsncpy(para->pText, text, len);
+			wcsrcpy(para->pText + len + pos, para->pText + pos);
+			wcsncpy(para->pText + pos, text, len);
 		}
 		para->Length += len;
 	}
 }
 
 
-static void
-ParaAppendPara(MEMODATA* data, PARAGRAPH *para)
+static PARAGRAPH *ParaSplitPara(PARAGRAPH *para, int pos)
 {
-	if (data->pLast)
+	PARAGRAPH *result = ParaNew();
+	if (result)
 	{
-		para->pPrev = data->pLast;
-		para->pNext = NULL;
-		data->pLast->pNext = para;
+		if ((para->pText) && (pos < para->Length))
+		{
+			ParaInsertText(result, 0,   para->pText + pos, para->Length - pos);
+			ParaDeleteText(para,   pos, para->Length - pos);
+		}
 	}
-	else
-	{
-		para->pPrev = NULL;
-		para->pNext = NULL;
-		data->pFirst = para;
-	}
-	data->pLast = para;
+	return result;
 }
+
+
+static void
+ParaAppendPara(PARAGRAPH *para, PARAGRAPH *pappend)
+{
+	if (pappend->pText)
+	{
+		ParaInsertText(para, para->Length, pappend->pText, pappend->Length);
+	}
+}
+
 
 static void
 ParaDeleteText(PARAGRAPH *para, int pos, int len)
 {
-	if (para->pText && (para->Length > pos) && (pos > 0))
+	if (para->pText && (para->Length > pos) && (pos >= 0))
 	{
 		if (pos + len > para->Length)
 		{
 			len = para->Length - pos;
 		}
 		wcscpy(para->pText + pos, para->pText + pos + len);
+		
+		para->Length -= len;
 	}
 }
 
 static void
-ParaRenderText(PARAGRAPH *para, CUISIZE *visualSize, CUISIZE *virtualSize)
+ParaRenderText(PARAGRAPH *para, int width, CUISIZE *virtualSize)
 {
 	virtualSize->X = 0;
 	virtualSize->Y = 1;
 	
-	if (visualSize->X > 0)
+	if (width > 0)
 	{
 		if (para->pText)
 		{
@@ -1098,7 +1283,7 @@ ParaRenderText(PARAGRAPH *para, CUISIZE *visualSize, CUISIZE *virtualSize)
 			while (*pChar != L'\0')
 			{
 				length++;
-				if (length > visualSize->X)
+				if (length > width)
 				{
 					if (pSpaceChar != pLineStart)
 					{
@@ -1388,7 +1573,7 @@ wcsrcpy(wchar_t *dest, const wchar_t *source)
 	dest   += len;
 	source += len;
 
-	while(len-- > 0)
+	while(len-- >= 0)
 	{
 		*(dest--) = *(source--);
 	}
