@@ -29,15 +29,16 @@ scriptName=`basename $0`
 packageListTmp=packages.tmp.txt
 packageList=packages.txt
 
-if [ -e $packageListTmp ] ; then
-    rm -f $packageListTmp
-fi
-
+delimiter=''
+echo -n "packages=" > $packageListTmp
 for currentFile in `ls -d ../*/` ; do
     # Skip _ADMIN folder
     if [ "${currentFile}" != '../_ADMIN/' ] ; then
-        echo $currentFile | cut -d "/" -f2
-        echo $currentFile | cut -d "/" -f2 >> $packageListTmp
+        packageName=${currentFile#*/}
+        packageName=${packageName%/*}
+        echo -n "${delimiter}${packageName}"
+        echo -n "${delimiter}${packageName}" >> ${packageListTmp}
+        delimiter=','
     fi
 done
 
