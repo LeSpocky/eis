@@ -26,9 +26,11 @@
 #include "cui.h"
 
 #define INCREMENT_SIZE 32
+#define WRAPLIMIT_MAX  512
 
 #define UF_NONE          0x00
 #define UF_SET_V_COLUMN  0x01
+
 
 typedef struct PARAStruct
 {
@@ -93,8 +95,8 @@ static void       ParaDeleteText     (PARAGRAPH *para, int pos, int len);
 static void       ParaRenderText     (PARAGRAPH *para, int width, CUISIZE *virtualSize);
 static CUIPOINT   ParaGetVisualPos   (PARAGRAPH *para, int width, int colpos);
 static int        ParaGetLogicalPos  (PARAGRAPH *para, int width, const CUIPOINT *pt);
-static void       ParaShowText       (PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX);
-static void       ParaShowLine       (CUIWINDOW *win, const wchar_t *pText, int len, int offs);
+static void       ParaShowText       (PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX, int limit);
+static void       ParaShowLine       (CUIWINDOW *win, const wchar_t *pText, int len, int width, int offs);
 
 /* ---------------------------------------------------------------------
  * MemoNcPaintHook
@@ -136,7 +138,8 @@ MemoNcPaintHook(void* w, int size_x, int size_y)
 		{
 			WindowPaintVScroll(win, 0, size_y - 2);
 			WindowPaintHScroll(win, 0, size_x - 2);
-			MOVEYX(win->Frame, size_x - 1, size_y - 1); 
+			
+			MOVEYX(win->Frame, size_y - 1, size_x - 1); 
 			PRINT (win->Frame, _T(" "));		
 		}
 		else if (win->HasVScroll)
@@ -172,7 +175,7 @@ MemoNcPaintHook(void* w, int size_x, int size_y)
 	MOVEYX(win->Frame, 0, 2); PRINTN(win->Frame, win->Text, len);
 	if (rc.W > 2)
 	{
-		MOVEYX(win->Frame, 0, 1); PRINT(win->Frame, _T(" "));
+		MOVEYX(win->Frame, 0, 1);       PRINT(win->Frame, _T(" "));
 		MOVEYX(win->Frame, 0, len + 2); PRINT(win->Frame, _T(" "));
 	}
 }
@@ -192,7 +195,7 @@ MemoPaintHook(void* w)
 	MEMODATA  *data;
 	PARAGRAPH *para;
 	int        y;
-
+	
 	data = win->InstData;
 	if (!data) return;
 
@@ -207,34 +210,26 @@ MemoPaintHook(void* w)
 	{
 		SetColor(win->Win, win->Color.InactTxtColor, win->Color.WndSelColor, TRUE);
 	}
-
+	
 	y    = 0;
 	para = data->pFirst;
 	while (para)
 	{
-	
 		if (((y + para->NumLines) > data->ScrollPosY) && 
 		    (y < data->ScrollPosY + data->VisualSize.Y))
 		{
-#if 0
-			wchar_t buffer[128];
-			
-			swprintf(buffer, 128, L"%d %d, ", data->VisualSize.X, data->VisualSize.Y);
-		
-			PRINTN(win->Win, buffer, wcslen(buffer));
-#endif
-
 			ParaShowText(para, 
 				win,
 				data->ScrollPosX, 
 				y - data->ScrollPosY, 
+				data->VisualSize.X,
 				data->WordWrapLimit);
 		}
 		
 		y   += para->NumLines;
 		para = para->pNext;
 	}
-	
+		
 	MemoGetVisualCursor(data, &pt);
 	WindowSetCursor(win, pt.X - data->ScrollPosX, pt.Y - data->ScrollPosY);
 }
@@ -566,11 +561,13 @@ MemoKeyHook(void* w, int key)
 					if (lines != para->NumLines)
 					{
 						data->VirtualSize.Y += (para->NumLines - lines);
-						MemoUpdateScrollRange(win);
+						//MemoUpdateScrollRange(win);
 					}
 					
-					MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
-					WindowInvalidate   (win);
+					
+					MemoUpdateScrollRange(win);
+					MemoUpdateVisCursor  (win, UF_SET_V_COLUMN);
+					WindowInvalidate     (win);
 
 					return TRUE;
 				}
@@ -689,6 +686,7 @@ MemoNew(CUIWINDOW* parent, const wchar_t* text,
 		}
 
 		memo->InstData = (MEMODATA*) malloc(sizeof(MEMODATA));
+		memset(memo->InstData, 0, sizeof(MEMODATA));
 	
 		if (flags & MF_WORDWRAP)
 		{
@@ -698,24 +696,27 @@ MemoNew(CUIWINDOW* parent, const wchar_t* text,
 		else
 		{
 			((MEMODATA*)memo->InstData)->DoWordWrapping = FALSE;
-			((MEMODATA*)memo->InstData)->WordWrapLimit  = INT_MAX;
+			((MEMODATA*)memo->InstData)->WordWrapLimit  = WRAPLIMIT_MAX;
 		}
 		
 		((MEMODATA*)memo->InstData)->LogicalCursor.X = 0;
 		((MEMODATA*)memo->InstData)->LogicalCursor.Y = 0;
 		((MEMODATA*)memo->InstData)->ScrollPosX      = 0;
 		((MEMODATA*)memo->InstData)->ScrollPosY      = 0;
-		((MEMODATA*)memo->InstData)->NumPara         = 0;
 		((MEMODATA*)memo->InstData)->VirtualColumn   = 0;
 		((MEMODATA*)memo->InstData)->SetFocusHook    = NULL;
 		((MEMODATA*)memo->InstData)->KillFocusHook   = NULL;
 		((MEMODATA*)memo->InstData)->PreKeyHook      = NULL;
 		((MEMODATA*)memo->InstData)->PostKeyHook     = NULL;
 		((MEMODATA*)memo->InstData)->MemoChangedHook = NULL;
+		
+		/* initialized empty editor window */
+		((MEMODATA*)memo->InstData)->pFirst  = ParaNew();
+		((MEMODATA*)memo->InstData)->pLast   = ((MEMODATA*)memo->InstData)->pFirst;
+		((MEMODATA*)memo->InstData)->NumPara = 1;
 
-/*		((MEMODATA*)memo->InstData)->MouseDown  = FALSE;	*/
-
-		WindowSetText(memo, text);
+		WindowSetText  (memo, text);
+		MemoCalcTextPos(memo);
 
 		return memo;
 	}
@@ -893,7 +894,7 @@ MemoCalcTextPos(CUIWINDOW* win)
 		}
 		else
 		{
-			data->WordWrapLimit = INT_MAX;
+			data->WordWrapLimit = WRAPLIMIT_MAX;
 		}
 
 		/* initialize dimensions to zero */
@@ -915,6 +916,11 @@ MemoCalcTextPos(CUIWINDOW* win)
 				data->VirtualSize.Y = size.Y;
 			}			
 			para    = para->pNext;
+		}
+		
+		if (!data->DoWordWrapping)
+		{
+			data->VirtualSize.X = data->WordWrapLimit;
 		}
 
 		MemoGetVisualCursor  (data, &cursor);		
@@ -960,51 +966,46 @@ MemoUpdateScrollPos(CUIWINDOW* win, CUIPOINT cursor)
 {
 	MEMODATA  *data = (MEMODATA*) win->InstData;
 	
-	if (data->VirtualSize.Y > data->VisualSize.Y)
+	if (data->VirtualSize.Y >= data->VisualSize.Y)
 	{
 		if (cursor.Y < data->ScrollPosY)
 		{
 			data->ScrollPosY = cursor.Y;
 		}
-		if (cursor.Y > (data->ScrollPosY + data->VisualSize.Y))
+		if (cursor.Y >= (data->ScrollPosY + data->VisualSize.Y))
 		{
-			data->ScrollPosY = (cursor.Y - data->VisualSize.Y);
-		}
-		if (WindowGetVScrollPos(win) != data->ScrollPosY)
-		{
-			WindowSetVScrollPos(win, data->ScrollPosY);
-			WindowInvalidate   (win);
+			data->ScrollPosY = (cursor.Y - data->VisualSize.Y + 1);
 		}
 	}
 	else
 	{
-		data->ScrollPosY = 0;
-		WindowSetVScrollPos(win, 0);
-	}
-	
-	if (data->VirtualSize.X > data->VisualSize.X)
+		data->ScrollPosY = 0;		
+	}	
+	if (WindowGetVScrollPos(win) != data->ScrollPosY)
+	{
+		WindowSetVScrollPos(win, data->ScrollPosY);
+		WindowInvalidate   (win);
+	}	
+
+	if (data->VirtualSize.X >= data->VisualSize.X)
 	{
 		if (cursor.X < data->ScrollPosX)
 		{
 			data->ScrollPosX = cursor.X;
 		}
-		if (cursor.X > data->ScrollPosX + data->VisualSize.X)
+		if (cursor.X >= data->ScrollPosX + data->VisualSize.X)
 		{
-			data->ScrollPosX = cursor.X - data->VisualSize.X;
-		}
-		WindowSetHScrollPos(win, data->ScrollPosX);
-		
-		if (WindowGetHScrollPos(win) != data->ScrollPosX)
-		{
-			WindowSetHScrollPos(win, data->ScrollPosX);
-			WindowInvalidate   (win);
-		}
-		
+			data->ScrollPosX = (cursor.X - data->VisualSize.X + 1);
+		}		
 	}
 	else
 	{
 		data->ScrollPosX = 0;
-		WindowSetHScrollPos(win, 0);
+	}
+	if (WindowGetHScrollPos(win) != data->ScrollPosX)
+	{
+		WindowSetHScrollPos(win, data->ScrollPosX);
+		WindowInvalidate   (win);
 	}
 }
 
@@ -1310,7 +1311,7 @@ ParaRenderText(PARAGRAPH *para, int width, CUISIZE *virtualSize)
 					
 					virtualSize->Y++;
 				}
-				if (*pChar == L' ')
+				if ((*pChar == L' ') || (*pChar == L'-'))
 				{
 					pSpaceChar = pChar;
 				}				
@@ -1333,7 +1334,7 @@ ParaRenderText(PARAGRAPH *para, int width, CUISIZE *virtualSize)
 
 
 static void
-ParaShowText(PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX)
+ParaShowText(PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX, int limit)
 {
 	int y = offsY;
 	
@@ -1350,7 +1351,7 @@ ParaShowText(PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX)
 			while (*pChar != L'\0')
 			{
 				length++;
-				if (length > widthX)
+				if (length > limit)
 				{
 					if (pSpaceChar != pLineStart)
 					{
@@ -1358,7 +1359,11 @@ ParaShowText(PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX)
 						if (y >= 0)
 						{
 							MOVEYX(win->Win, y, 0);
-							ParaShowLine(win, pLineStart, pSpaceChar - pLineStart + 1, offsX);
+							ParaShowLine(win, 
+								pLineStart, 
+								pSpaceChar - pLineStart + 1, 
+								widthX, 
+								offsX);
 						}
 						
 						length     = pChar - pSpaceChar;	
@@ -1370,7 +1375,11 @@ ParaShowText(PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX)
 						if (y >= 0)
 						{
 							MOVEYX(win->Win, y, 0);
-							ParaShowLine(win, pLineStart, pChar - pLineStart, offsX);
+							ParaShowLine(win, 
+								pLineStart, 
+								pChar - pLineStart, 
+								widthX,
+								offsX);
 						}
 
 						length     = 0;
@@ -1380,7 +1389,7 @@ ParaShowText(PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX)
 					
 					y++;
 				}
-				if (*pChar == L' ')
+				if ((*pChar == L' ') || (*pChar == L'-'))
 				{
 					pSpaceChar = pChar;
 				}				
@@ -1389,11 +1398,24 @@ ParaShowText(PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX)
 			}
 			
 			/* use remaining line */
-			if ((pChar != pLineStart) && (y >= 0))
+			if (y >= 0)
 			{
 				MOVEYX(win->Win, y, 0);
-				ParaShowLine(win, pLineStart, pChar - pLineStart, offsX);
+				ParaShowLine(win, 
+					pLineStart, 
+					pChar - pLineStart, 
+					widthX,
+					offsX);
 			}
+		}
+		else if (y >= 0)
+		{
+			MOVEYX(win->Win, y, 0);
+			ParaShowLine(win, 
+				L"", 
+				0, 
+				widthX,
+				offsX);
 		}
 	}
 }
@@ -1457,7 +1479,7 @@ ParaGetVisualPos(PARAGRAPH *para, int width, int colpos)
 					
 					result.Y++;
 				}
-				if (*pChar == L' ')
+				if ((*pChar == L' ') || (*pChar == L'-'))
 				{
 					pSpaceChar = pChar;
 				}				
@@ -1535,7 +1557,7 @@ ParaGetLogicalPos(PARAGRAPH *para, int width, const CUIPOINT *pt)
 					
 					y++;
 				}
-				if (*pChar == L' ')
+				if ((*pChar == L' ') || (*pChar == L'-'))
 				{
 					pSpaceChar = pChar;
 				}				
@@ -1555,11 +1577,35 @@ ParaGetLogicalPos(PARAGRAPH *para, int width, const CUIPOINT *pt)
 
 
 static void
-ParaShowLine(CUIWINDOW *win, const wchar_t *pText, int len, int offs)
+ParaShowLine(CUIWINDOW *win, const wchar_t *pText, int len, int width, int offs)
 {
+	int pos = 0;
+	
 	if (len > offs)
 	{
-		PRINTN(win->Win, &pText[offs], len - offs);
+		if (len - offs > width)
+		{
+			PRINTN(win->Win, &pText[offs], width);
+		}
+		else
+		{
+			PRINTN(win->Win, &pText[offs], len - offs);
+		}
+		
+		pos = len - offs;
+	}
+	
+	while (pos < width)
+	{
+		int block = 32;
+		
+		if (pos + block > width)
+		{
+			block = width - pos;
+		}
+		PRINTN(win->Win, L"                                ", block);
+		
+		pos += block;
 	}
 }
 

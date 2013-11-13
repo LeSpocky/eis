@@ -238,20 +238,11 @@ int main(void)
 	ctrl = CheckboxNew(group, _T("Check &Me 1"), 1, 3, 18, 1, IDC_CHKBOX1, CWS_NONE, CWS_NONE);
 	WindowCreate(ctrl);
 
-	ctrl = MemoNew (window, _T(""), 1, 7, 34, 8, IDC_MEMO1, MF_WORDWRAP, CWS_BORDER);
-	WindowColScheme(ctrl, _T("MENU"));
+	ctrl = MemoNew (window, _T(""), 1, 7, 34, 8, IDC_MEMO1, MF_WORDWRAP /*CWS_NONE*/, CWS_BORDER);
+	// WindowColScheme(ctrl, _T("MENU"));
 	WindowCreate   (ctrl);
-	MemoSetText    (ctrl, _T("Hello World!\nThis is a multi line word wrapping edit control\nfor libcui"));
-
-//	MemoSetText    (ctrl, _T("Hello World!\nThis is a\nfor libcui"));
-	
-/*	for (i = 0; i < 20; i++)
-	{
-		char itemtxt[64];
-		sprintf(itemtxt, "Item %02i", i);
-		ListboxAdd(ctrl, itemtxt);
-	}
-	ListboxSetSel(ctrl, 2);*/
+	// MemoSetText    (ctrl, _T("Hello World!\nThis is a multi line word wrapping edit control\nfor libcui"));
+	MemoSetText    (ctrl, _T("Hello World!\nThis is a multi\nfor libcui"));
 
 	ctrl = ProgressbarNew(window, _T("Progress"), 37, 7, 17, 3, IDC_PROGRESS, CWS_NONE, CWS_NONE);
 	ProgressbarSetPos(ctrl, 25);
