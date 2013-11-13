@@ -1,71 +1,96 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>This job stores the job configurations of the administrative eisfair-ng build jobs on its git repository.</description>
+  <description>Build job for x86 version of eisfair-ng iso image based on latest alpine version (edge)</description>
   <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>-1</daysToKeep>
-    <numToKeep>50</numToKeep>
+    <numToKeep>25</numToKeep>
     <artifactDaysToKeep>-1</artifactDaysToKeep>
-    <artifactNumToKeep>10</artifactNumToKeep>
+    <artifactNumToKeep>5</artifactNumToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>8833586</diskUsageWithoutBuilds>
+      <diskUsageWithoutBuilds>18857</diskUsageWithoutBuilds>
       <slaveWorkspacesUsage class="concurrent-hash-map">
         <entry>
-          <string></string>
+          <string>alpine edge x86 (eb2)</string>
           <concurrent-hash-map>
             <entry>
-              <string>/data/ci/jenkins/jobs/_eisfair-ng__storeAdminJobConfigurations/workspace</string>
-              <long>8816849</long>
+              <string>/home/jenkins/ci/workspace/_eisfair-ng__iso_edge_x86</string>
+              <long>0</long>
             </entry>
           </concurrent-hash-map>
         </entry>
       </slaveWorkspacesUsage>
     </hudson.plugins.disk__usage.DiskUsageProperty>
   </properties>
-  <scm class="hudson.scm.NullSCM"/>
-  <assignedNode>master</assignedNode>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.0">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <name></name>
+        <refspec></refspec>
+        <url>ssh://git@nettworks-git:7999/EIS/eis-iso.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/master</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <gitTool>Default</gitTool>
+    <browser class="hudson.plugins.git.browser.FisheyeGitRepositoryBrowser">
+      <url>https://ssl.nettworks.org/repo/browse/eisfair-ng-iso/</url>
+    </browser>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <quietPeriod>20</quietPeriod>
+  <assignedNode>alpine_edge_x86</assignedNode>
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <jdk>(Vorgabewert)</jdk>
-  <triggers/>
+  <triggers>
+    <hudson.triggers.SCMTrigger>
+      <spec>H/2 * * * *</spec>
+      <ignorePostCommitHooks>false</ignorePostCommitHooks>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>if [ -r eis/.git ] ; then
-    cd eis
-    git pull
-    cd ..
-else
-    git clone ssh://git@nettworks-git:7999/EIS/eis.git
-fi
-mv eisfair-ng.buildsettings.txt eis/_ADMIN/settings.txt
-
-cd eis/_ADMIN
-
-targetDir=`pwd`/jobTemplates
-echo $targetDir
-cd ../../../../
-for currentTemplate in `ls _eisfair-ng__*/config.xml` ; do
-    echo $currentTemplate
-    if [ ! -d $targetDir/${currentTemplate%/*} ] ; then
-        mkdir -p $targetDir/${currentTemplate%/*} 
+      <command>sudo apk update
+make clean
+rm -f *x86.iso*
+rm -rf isotmp.alpine-eisfair-ng
+make PROFILE=alpine-eisfair-ng iso
+rtc=$?
+if [ $rtc = 0 ] ; then
+    make PROFILE=alpine-eisfair-ng sha1
+    rtc=$?
+    if [ $rtc = 0 ] ; then
+        eisInstallVersion=`find . -name eis-install*.apk | sed -e &quot;s/^.*eis-install-//g&quot; -e &quot;s/.apk//g&quot;`
+        rm -f ${CI_RESULTFOLDER_EISFAIR_NG}/edge/main/*x86.iso*
+        mv alpine-eisfair-ng-*-x86.iso      alpine-eisfair-ng-${eisInstallVersion}-x86.iso
+        mv alpine-eisfair-ng-*-x86.iso.sha1 alpine-eisfair-ng-${eisInstallVersion}-x86.iso.sha1
+        cp *x86.iso* ${CI_RESULTFOLDER_EISFAIR_NG}/edge/main/
+    else
+        echo &quot;Error during ISO SHA1 calculation!&quot;
+        exit $rtc
     fi
-    cp $currentTemplate $targetDir/${currentTemplate}
-done
-cd $WORKSPACE/eis
-git add _ADMIN/jobTemplates/*
-if git commit -m &quot;Updated administrative job configurations&quot; ; then
-    git push
+else
+    echo &quot;Error during ISO build!&quot;
+    exit $rtc
 fi
 </command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
+    <hudson.plugins.jira.JiraIssueUpdater plugin="jira@1.39"/>
     <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.36">
       <recipientList>$DEFAULT_RECIPIENTS</recipientList>
       <configuredTriggers>
@@ -82,6 +107,7 @@ fi
             <attachBuildLog>false</attachBuildLog>
             <compressBuildLog>false</compressBuildLog>
             <replyTo></replyTo>
+            <contentType>project</contentType>
           </email>
         </hudson.plugins.emailext.plugins.trigger.UnstableTrigger>
         <hudson.plugins.emailext.plugins.trigger.StillFailingTrigger>
@@ -89,7 +115,7 @@ fi
             <recipientList>$DEFAULT_RECIPIENTS</recipientList>
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
-            <sendToDevelopers>true</sendToDevelopers>
+            <sendToDevelopers>false</sendToDevelopers>
             <sendToRequester>false</sendToRequester>
             <includeCulprits>false</includeCulprits>
             <sendToRecipientList>true</sendToRecipientList>
@@ -97,6 +123,7 @@ fi
             <attachBuildLog>false</attachBuildLog>
             <compressBuildLog>false</compressBuildLog>
             <replyTo></replyTo>
+            <contentType>project</contentType>
           </email>
         </hudson.plugins.emailext.plugins.trigger.StillFailingTrigger>
         <hudson.plugins.emailext.plugins.trigger.SuccessTrigger>
@@ -120,7 +147,7 @@ fi
             <recipientList>$DEFAULT_RECIPIENTS</recipientList>
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
-            <sendToDevelopers>true</sendToDevelopers>
+            <sendToDevelopers>false</sendToDevelopers>
             <sendToRequester>false</sendToRequester>
             <includeCulprits>false</includeCulprits>
             <sendToRecipientList>true</sendToRecipientList>
@@ -128,6 +155,7 @@ fi
             <attachBuildLog>false</attachBuildLog>
             <compressBuildLog>false</compressBuildLog>
             <replyTo></replyTo>
+            <contentType>project</contentType>
           </email>
         </hudson.plugins.emailext.plugins.trigger.StillUnstableTrigger>
         <hudson.plugins.emailext.plugins.trigger.FailureTrigger>
@@ -143,6 +171,7 @@ fi
             <attachBuildLog>false</attachBuildLog>
             <compressBuildLog>false</compressBuildLog>
             <replyTo></replyTo>
+            <contentType>project</contentType>
           </email>
         </hudson.plugins.emailext.plugins.trigger.FailureTrigger>
         <hudson.plugins.emailext.plugins.trigger.FixedTrigger>
@@ -158,6 +187,7 @@ fi
             <attachBuildLog>false</attachBuildLog>
             <compressBuildLog>false</compressBuildLog>
             <replyTo></replyTo>
+            <contentType>project</contentType>
           </email>
         </hudson.plugins.emailext.plugins.trigger.FixedTrigger>
       </configuredTriggers>
@@ -168,20 +198,27 @@ fi
       <presendScript></presendScript>
       <attachBuildLog>false</attachBuildLog>
       <compressBuildLog>false</compressBuildLog>
-      <replyTo></replyTo>
+      <replyTo>$DEFAULT_RECIPIENTS</replyTo>
       <saveOutput>false</saveOutput>
     </hudson.plugins.emailext.ExtendedEmailPublisher>
-    <hudson.plugins.twitter.TwitterPublisher plugin="twitter@0.7"/>
+    <hudson.plugins.ircbot.IrcPublisher plugin="ircbot@2.23">
+      <targets>
+        <hudson.plugins.im.GroupChatIMMessageTarget plugin="instant-messaging@1.28">
+          <name>#eisfair-ng-ci</name>
+          <notificationOnly>true</notificationOnly>
+        </hudson.plugins.im.GroupChatIMMessageTarget>
+      </targets>
+      <strategy>ALL</strategy>
+      <notifyOnBuildStart>false</notifyOnBuildStart>
+      <notifySuspects>false</notifySuspects>
+      <notifyCulprits>false</notifyCulprits>
+      <notifyFixers>false</notifyFixers>
+      <notifyUpstreamCommitters>false</notifyUpstreamCommitters>
+      <buildToChatNotifier class="hudson.plugins.im.build_notify.DefaultBuildToChatNotifier" plugin="instant-messaging@1.28"/>
+      <matrixMultiplier>ONLY_CONFIGURATIONS</matrixMultiplier>
+    </hudson.plugins.ircbot.IrcPublisher>
   </publishers>
   <buildWrappers>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.7"/>
-    <com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.3">
-      <includes>eisfair-ng.buildsettings.txt</includes>
-      <excludes></excludes>
-      <flatten>false</flatten>
-      <includeAntExcludes>false</includeAntExcludes>
-      <hudsonHomeRelative>false</hudsonHomeRelative>
-      <relativeTo>userContent</relativeTo>
-    </com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper>
   </buildWrappers>
 </project>

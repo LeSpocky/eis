@@ -30,7 +30,7 @@
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
     <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>16789</diskUsageWithoutBuilds>
+      <diskUsageWithoutBuilds>17849</diskUsageWithoutBuilds>
       <slaveWorkspacesUsage class="concurrent-hash-map"/>
     </hudson.plugins.disk__usage.DiskUsageProperty>
   </properties>
@@ -50,7 +50,7 @@ sudo apk upgrade</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
-    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.35.1">
+    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.36">
       <recipientList>$DEFAULT_RECIPIENTS</recipientList>
       <configuredTriggers>
         <hudson.plugins.emailext.plugins.trigger.UnstableTrigger>
