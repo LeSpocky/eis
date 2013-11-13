@@ -3,9 +3,9 @@
 # /var/install/bin/userman.cui.grous.module.sh - module for eisfair user mananger
 #
 # Creation:     2008-03-09 dv
-# Last update:  $Id: userman.cui.groups.module.sh 32221 2012-11-16 21:49:12Z dv $
+# Last update:  $Id: userman.cui.groups.module.sh 32221 2013-11-13 21:49:12Z jv $
 #
-# Copyright (c) 2001-2007 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,49 +30,45 @@ IDC_EDITMEMBERS_LSTSEL='13'
 IDC_EDITMEMBERS_BUTADD='14'
 IDC_EDITMEMBERS_BUTREMOVE='15'
 
-
 #----------------------------------------------------------------------------
 # is_group_empty
 # expects: $1 group id
 # returns: 0 if empty (success) or 1 if not empty (failure)
 #----------------------------------------------------------------------------
-
 function is_group_empty
 {
     local gid=$1
     local oldifs=$IFS
-    
+
     while read line
     do
         IFS=':'
         set -- $line
         g="$4"
         IFS="$oldifs"
-                
+
         if [ $g = $gid ]
         then
             found_user=$1
             return 1
         fi
     done </etc/passwd
-    return 0                                                                                                                                
+    return 0
 }
-
 
 #----------------------------------------------------------------------------
 # groups_create_gid
 # expects: nothing
 # returns: next free gid in ${groupsdlg_groupgid} 
 #----------------------------------------------------------------------------
-
 function groups_create_gid
 {
-    oldifs="$IFS"   
+    oldifs="$IFS"
     IFS=':'
     groupsdlg_groupgid=200
     while read line
     do
-        set -- $line 
+        set -- $line
         if [ $3 -gt ${groupsdlg_groupgid} -a $3 -lt 300 ]
         then
             groupsdlg_groupgid=$3
@@ -82,7 +78,6 @@ function groups_create_gid
 
     groupsdlg_groupgid=$[${groupsdlg_groupgid} + 1]
 }
-
 
 #============================================================================
 # groupsdlg - dialog to create and edit groups
@@ -95,12 +90,11 @@ function groups_create_gid
 #          $2 : button control id
 # returns: 1  : event handled
 #----------------------------------------------------------------------------
-
 function groupsdlg_ok_clicked()
 {
     local win="$p2"
     local ctrl
-    
+
     cui_window_getctrl "$win" "$IDC_GROUPSDLG_EDNAME" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
@@ -108,7 +102,7 @@ function groupsdlg_ok_clicked()
         groupsdlg_groupname="$p2"
     fi
 
-    if [ -z "${groupsdlg_groupname}" ]
+    if [ -z "$groupsdlg_groupname" ]
     then
         cui_message "$win" "No group name entered! Please enter a valid name" \
                            "Missing data" "$MB_ERROR"
@@ -125,9 +119,8 @@ function groupsdlg_ok_clicked()
 # Cancel button clicked hook
 # expects: $1 : window handle of dialog window
 #          $2 : button control id
-# returns: 1  : event handled     
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
-
 function groupsdlg_cancel_clicked()
 {
     cui_window_close "$p2" "$IDCANCEL"
@@ -138,9 +131,8 @@ function groupsdlg_cancel_clicked()
 # groupsdlg_create_hook
 # Dialog create hook - create dialog controls
 # expects: $1 : window handle of dialog window
-# returns: 1  : event handled      
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
-
 function groupsdlg_create_hook()
 {
     local dlg="$p2"
@@ -155,8 +147,8 @@ function groupsdlg_create_hook()
     cui_edit_new "$dlg" "" 17 1 21 1 32 $IDC_GROUPSDLG_EDNAME $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
-        cui_window_create     "$ctrl" 
-        cui_edit_settext      "$ctrl" "${groupsdlg_groupname}"
+        cui_window_create     "$ctrl"
+        cui_edit_settext      "$ctrl" "$groupsdlg_groupname"
     fi
 
     cui_button_new "$dlg" "&OK" 10 3 10 1 $IDC_GROUPSDLG_BUTOK $CWS_DEFOK $CWS_NONE && ctrl="$p2"
@@ -165,14 +157,13 @@ function groupsdlg_create_hook()
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" groupsdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
-      
+
     cui_button_new "$dlg" "&Cancel" 21 3 10 1 $IDC_GROUPSDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" groupsdlg_cancel_clicked
         cui_window_create     "$ctrl"
     fi
-      
     cui_return 1
 }
 
@@ -187,7 +178,6 @@ function groupsdlg_create_hook()
 #          $2 : button control id
 # returns: 1  : event handled
 #----------------------------------------------------------------------------
-
 function groupmembersdlg_butadd_clicked()
 {
     local win="$p2"
@@ -195,7 +185,7 @@ function groupmembersdlg_butadd_clicked()
     local lstsel
     local index
     local newindex
-    
+
     cui_window_getctrl "$win" "$IDC_EDITMEMBERS_LSTALL" && lstall="$p2"
     if cui_valid_handle "$lstall"
     then
@@ -210,9 +200,8 @@ function groupmembersdlg_butadd_clicked()
                 cui_listbox_delete "$lstall" "$index"
                 cui_listbox_setsel "$lstsel" "$newindex"
             fi
-        fi                
+        fi
     fi
-    
     cui_return 1
 }
 
@@ -223,7 +212,6 @@ function groupmembersdlg_butadd_clicked()
 #          $2 : button control id
 # returns: 1  : event handled
 #----------------------------------------------------------------------------
-
 function groupmembersdlg_butrem_clicked()
 {
     local win="$p2"
@@ -231,7 +219,7 @@ function groupmembersdlg_butrem_clicked()
     local lstsel
     local index
     local newindex
-    
+
     cui_window_getctrl "$win" "$IDC_EDITMEMBERS_LSTALL" && lstall="$p2"
     if cui_valid_handle "$lstall"
     then
@@ -246,9 +234,8 @@ function groupmembersdlg_butrem_clicked()
                 cui_listbox_delete "$lstsel" "$index"
                 cui_listbox_setsel "$lstall" "$newindex"
             fi
-        fi                
+        fi
     fi
-    
     cui_return 1
 }
 
@@ -259,38 +246,37 @@ function groupmembersdlg_butrem_clicked()
 #          $2 : button control id
 # returns: 1  : event handled
 #----------------------------------------------------------------------------
-
 function groupmembersdlg_ok_clicked()
 {
     local dlg="$p2"
     local lstsel
     local count
     local index
-    
+
     groupmembersdlg_members=""
-    
+
     cui_window_getctrl "$dlg" "$IDC_EDITMEMBERS_LSTSEL" && lstsel="$p2"
     if cui_valid_handle "$lstsel"
     then
         count=0
         index=0
-        
+
         cui_listbox_getcount "$lstsel"  && count="$p2"
-        
+
         while [ "$index" -lt "$count" ]
         do
             cui_listbox_get "$lstsel" "$index"
-            
-            if [ -z "${groupmembersdlg_members}" ]
+
+            if [ -z "$groupmembersdlg_members" ]
             then
                 groupmembersdlg_members="$p2"
             else
                 groupmembersdlg_members="${groupmembersdlg_members},$p2"
             fi
-            
+
             index=$[$index + 1]
         done
-    fi    
+    fi
 
     cui_window_close "$dlg" "$IDOK"
     cui_return 1
@@ -303,7 +289,6 @@ function groupmembersdlg_ok_clicked()
 #          $2 : button control id
 # returns: 1  : event handled     
 #----------------------------------------------------------------------------
-
 function groupmembersdlg_cancel_clicked()
 {
     cui_window_close "$p2" "$IDCANCEL"
@@ -316,7 +301,6 @@ function groupmembersdlg_cancel_clicked()
 # expects: $1 : window handle of dialog window
 # returns: 1  : event handled     
 #----------------------------------------------------------------------------
-
 function groupmembersdlg_create_hook()
 {
     local dlg="$p2"
@@ -335,14 +319,14 @@ function groupmembersdlg_create_hook()
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" groupmembersdlg_butadd_clicked
-        cui_window_create     "$ctrl"    
+        cui_window_create     "$ctrl"
     fi
 
     cui_button_new "$dlg" "&<" 20 5 5 1 $IDC_EDITMEMBERS_BUTREMOVE $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" groupmembersdlg_butrem_clicked
-        cui_window_create     "$ctrl"    
+        cui_window_create     "$ctrl"
     fi
 
     cui_listbox_new "$dlg" "Selected" 26 1 17 10 $IDC_EDITMEMBERS_LSTSEL $LB_SORTED $CWS_NONE && ctrl="$p2"
@@ -351,7 +335,7 @@ function groupmembersdlg_create_hook()
         cui_listbox_callback  "$ctrl" "$LISTBOX_CLICKED" "$dlg" groupmembersdlg_butrem_clicked
         cui_window_create     "$ctrl"
     fi
-    
+
     cui_label_new  "$dlg" "Tip: use Space-key to select!" 2 11 30 1 0 $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
@@ -364,7 +348,7 @@ function groupmembersdlg_create_hook()
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" groupmembersdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
-                                    
+
     cui_button_new "$dlg" "&Cancel" 26 13 10 1 $IDC_EDITMEMBERS_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
@@ -378,17 +362,15 @@ function groupmembersdlg_create_hook()
         cui_window_getctrl "$dlg" "$IDC_EDITMEMBERS_LSTSEL" && lstsel="$p2"
         if cui_valid_handle "$lstsel"
         then
-            sys_group_member_selection "$lstall" "$lstsel" "${groupmembersdlg_group}"
-            
+            sys_group_member_selection "$lstall" "$lstsel" "$groupmembersdlg_group"
+
             cui_listbox_setsel "$lstsel" "0"
             cui_listbox_setsel "$lstall" "0"
             cui_window_setfocus "$lstall"
-        fi                
+        fi
     fi
-                                                                        
-    cui_return 1            
-}             
-             
+    cui_return 1
+}
 
 #============================================================================
 # functions to create modify or delete groups (using groupsdlg and groupmembersdlg)
@@ -400,7 +382,6 @@ function groupmembersdlg_create_hook()
 # returns: 0  : modified (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-
 function groups_editmembers_dialog()
 {
     local win="$1"
@@ -415,7 +396,7 @@ function groups_editmembers_dialog()
         cui_listview_getsel "$ctrl" && index="$p2"
         if cui_valid_index "$index"
         then
-            cui_listview_gettext "$ctrl" "$index" "0" && groupmembersdlg_group="$p2"            
+            cui_listview_gettext "$ctrl" "$index" "0" && groupmembersdlg_group="$p2"
 
             cui_window_new "$win" 0 0 47 17 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle "$dlg"
@@ -424,11 +405,11 @@ function groups_editmembers_dialog()
                 cui_window_settext   "$dlg" "Group members"
                 cui_window_sethook   "$dlg" "$HOOK_CREATE"  groupmembersdlg_create_hook
                 cui_window_create    "$dlg"
-        
+
                 cui_window_modal   "$dlg" && result="$p2"
                 if [ "$result" == "$IDOK" ]
                 then
-                     sys_set_group_members "${groupmembersdlg_group}" "${groupmembersdlg_members}"
+                     sys_set_group_members "$groupmembersdlg_group" "$groupmembersdlg_members"
                      if [ "$p2" != "1" ]
                      then
                          cui_message "$win" \
@@ -437,11 +418,11 @@ function groups_editmembers_dialog()
                      fi
                 fi
 
-                cui_window_destroy "$dlg"        
+                cui_window_destroy "$dlg"
             fi
         fi
     fi
-    
+
     [ "$result" == "$IDOK" ]
     return "$?"
 }
@@ -452,7 +433,6 @@ function groups_editmembers_dialog()
 # returns: 0  : modified (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-
 function groups_editgroup_dialog()
 {
     local win="$1"
@@ -469,7 +449,7 @@ function groups_editgroup_dialog()
         then
             cui_listview_gettext "$ctrl" "$index" "0" && groupsdlg_groupname="$p2"
 
-            local orig_groupname="${groupsdlg_groupname}"
+            local orig_groupname="$groupsdlg_groupname"
 
             cui_window_new "$win" 0 0 42 7 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle "$dlg"
@@ -482,17 +462,17 @@ function groups_editgroup_dialog()
                 cui_window_modal     "$dlg" && result="$p2"
                 if  [ "$result" == "$IDOK" ]
                 then
-                    if [ "${orig_groupname}" != "${groupsdlg_groupname}" ]
-                    then                
+                    if [ "$orig_groupname" != "$groupsdlg_groupname" ]
+                    then
                         grep "^${groupsdlg_groupname}:" /etc/group >/dev/null
                         if [ $? == 0 ]
                         then
                             cui_message "$win" \
-                                "Group \"${groupsdlg_groupname}\" already exists!" \
+                                "Group \"$groupsdlg_groupname\" already exists!" \
                                 "Error" "$MB_ERROR"
                             result="$IDCANCEL"
                         else
-                            errmsg=$(/usr/sbin/groupmod -n "${groupsdlg_groupname}" ${orig_groupname} 2>&1)
+                            errmsg=$(/usr/sbin/groupmod -n "$groupsdlg_groupname" ${orig_groupname} 2>&1)
                             if [ "$?" != "0" ]
                             then
                                 cui_message "$win" \
@@ -507,7 +487,7 @@ function groups_editgroup_dialog()
             fi
         fi
     fi
-      
+
     [ "$result" == "$IDOK" ]
     return "$?"
 }
@@ -518,13 +498,12 @@ function groups_editgroup_dialog()
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-              
 function groups_creategroup_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
     local dlg
-    
+
     groupsdlg_groupname=""
 
     cui_window_new "$win" 0 0 42 7 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
@@ -541,11 +520,11 @@ function groups_creategroup_dialog()
         then
             grep "^${groupsdlg_groupname}:" /etc/group >/dev/null
             if [ $? != 0 ]
-            then          
+            then
                 groups_create_gid
 
                 errmsg=$(/usr/sbin/addgroup \
-                    -g "${groupsdlg_groupgid}" \
+                    -g "$groupsdlg_groupgid" \
                     ${groupsdlg_groupname} 2>&1)
 
                 if [ "$?" != "0" ]
@@ -554,17 +533,17 @@ function groups_creategroup_dialog()
                         "Error! $errmsg" "Error" "$MB_ERROR"
                     result="$IDCANCEL"
                 fi
-            else  
+            else
                 cui_message "$win" \
-                    "Group \"${groupsdlg_groupname}\" already exists!" \
+                    "Group \"$groupsdlg_groupname\" already exists!" \
                     "Error" "$MB_ERROR"
                 result="$IDCANCEL"
             fi
         fi
-          
+
         cui_window_destroy "$dlg"
     fi
-      
+
     [ "$result" == "$IDOK" ]
     return "$?"
 }
@@ -575,12 +554,11 @@ function groups_creategroup_dialog()
 # returns: 0  : modified (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-
 function groups_deletegroup_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
-    local ctrl 
+    local ctrl
     local index
 
     cui_window_getctrl "$win" "$IDC_GROUPS_LIST" && ctrl="$p2"
@@ -592,16 +570,16 @@ function groups_deletegroup_dialog()
             cui_listview_gettext "$ctrl" "$index" "0" && groupsdlg_groupname="$p2"
             cui_listview_gettext "$ctrl" "$index" "1" && groupsdlg_groupgid="$p2"
 
-            if [ "${groupsdlg_groupgid}" -lt 200 -o "${groupsdlg_groupgid}" -ge 65534 ]
+            if [ "$groupsdlg_groupgid" -lt 200 -o "$groupsdlg_groupgid" -ge 65534 ]
             then
-                cui_message "$win" "It is not allowed to remove group \"${groupsdlg_groupname}\", sorry!" "Error" "${MB_ERROR}"
+                cui_message "$win" "It is not allowed to remove group \"$groupsdlg_groupname\", sorry!" "Error" "${MB_ERROR}"
             else
                 if is_group_empty ${groupsdlg_groupgid}
                 then
-                    cui_message "$win" "Really Delete group \"${groupsdlg_groupname}\"?" "Question" "${MB_YESNO}"
+                    cui_message "$win" "Really Delete group \"$groupsdlg_groupname\"?" "Question" "${MB_YESNO}"
                     if [ "$p2" == "$IDYES" ]
                     then
-                        local errmsg=$(/usr/sbin/delgroup "${groupsdlg_groupname}" 2>&1)
+                        local errmsg=$(/usr/sbin/delgroup "$groupsdlg_groupname" 2>&1)
                         if [ "$?" == "0" ]
                         then
                             result="$IDOK"
@@ -611,7 +589,7 @@ function groups_deletegroup_dialog()
                         fi
                     fi
                 else
-                    cui_message "$win" "Cannot remove group \"${groupsdlg_groupname}\"! ${CUINL}User \"${found_user}\" is still member of this group." "Error" "${MB_ERROR}"
+                    cui_message "$win" "Cannot remove group \"$groupsdlg_groupname\"! ${CUINL}User \"$found_user\" is still member of this group." "Error" "${MB_ERROR}"
                 fi
             fi
         fi
@@ -631,24 +609,23 @@ function groups_deletegroup_dialog()
 # expects: $1 : listview window handle
 # returns: nothing
 #----------------------------------------------------------------------------
-
 function groups_sort_list()
 {
     local ctrl=$1
     local mode="0"
 
-    if [ "${groups_sortcolumn}" != "-1" ]
+    if [ "$groups_sortcolumn" != "-1" ]
     then
-        if [ "${groups_sortmode}" == "up" ]
+        if [ "$groups_sortmode" == "up" ]
         then
             mode="1"
         fi
 
-        if [ "${groups_sortcolumn}" == "1" ]
+        if [ "$groups_sortcolumn" == "1" ]
         then
-            cui_listview_numericsort "$ctrl" "${groups_sortcolumn}" "$mode"
+            cui_listview_numericsort "$ctrl" "$groups_sortcolumn" "$mode"
         else
-            cui_listview_alphasort "$ctrl" "${groups_sortcolumn}" "$mode"
+            cui_listview_alphasort "$ctrl" "$groups_sortcolumn" "$mode"
         fi
     fi
 }
@@ -659,7 +636,6 @@ function groups_sort_list()
 #          $p3 : control window handle
 # returns: nothing
 #----------------------------------------------------------------------------
-
 function groups_sortmenu_clicked_hook()
 {
     cui_window_close "$p3" "$IDOK"
@@ -668,25 +644,23 @@ function groups_sortmenu_clicked_hook()
 
 #----------------------------------------------------------------------------
 # groups_sortmenu_escape_hook
-# expects: $p2 : window handle                                          
+# expects: $p2 : window handle
 #          $p3 : control window handle
 # returns: nothing
 #----------------------------------------------------------------------------
-
 function groups_sortmenu_escape_hook()
 {
    cui_window_close "$p3" "$IDCANCEL"
    cui_return 1
 }
- 
+
 #----------------------------------------------------------------------------
 # groups_sortmenu_postkey_hook
-# expects: $p2 : window handle                                          
+# expects: $p2 : window handle
 #          $p3 : control window handle
 #          $p4 : key code
 # returns: 1 : Key handled, 2 : Key ignored
 #----------------------------------------------------------------------------
-
 function groups_sortmenu_postkey_hook()
 {
    local ctrl="$p3"
@@ -704,18 +678,17 @@ function groups_sortmenu_postkey_hook()
 #----------------------------------------------------------------------------
 # groups_select_sort_column
 # Show menu to select the sort column
-# expects: $1 : base window handle   
+# expects: $1 : base window handle
 # returns: nothing
 #----------------------------------------------------------------------------
-
 function groups_select_sort_column()
 {
     local win="$1"
     local menu
     local result
-    local item  
-    local oldcolumn="${groups_sortcolumn}"
-    local oldmode="${groups_sortmode}"
+    local item
+    local oldcolumn="$groups_sortcolumn"
+    local oldmode="$groups_sortmode"
 
     cui_menu_new "$win" "Sort column" 0 0 36 10 1 "$[$CWS_CENTERED + $CWS_POPUP]" "$CWS_NONE" && menu="$p2"
     if cui_valid_handle "$menu"
@@ -728,7 +701,7 @@ function groups_select_sort_column()
         cui_menu_addseparator "$menu"
         cui_menu_additem      "$menu" "Close menu" 0
         cui_menu_selitem      "$menu" 1
-        
+
         cui_menu_callback     "$menu" "$MENU_CLICKED" "$win" groups_sortmenu_clicked_hook
         cui_menu_callback     "$menu" "$MENU_ESCAPE"  "$win" groups_sortmenu_escape_hook 
         cui_menu_callback     "$menu" "$MENU_POSTKEY" "$win" groups_sortmenu_postkey_hook
@@ -741,22 +714,22 @@ function groups_select_sort_column()
             item="$p2"
 
             case $item in
-            1) 
+            1)
                groups_sortcolumn="-1"
                ;;
-            2)   
+            2)
                groups_sortcolumn="0"
                groups_sortmode="up" 
                ;;
-            3)   
+            3)
                groups_sortcolumn="0"
                groups_sortmode="down"
                ;;
-            4)   
+            4)
                groups_sortcolumn="1"
                groups_sortmode="up" 
                ;;
-            5)   
+            5)
                groups_sortcolumn="1"
                groups_sortmode="down"
                ;;
@@ -765,13 +738,12 @@ function groups_select_sort_column()
 
         cui_window_destroy  "$menu"
 
-        if [ "$oldcolumn" != "${groups_sortcolumn}" -o "$oldmode" != "${groups_sortmode}" ]
+        if [ "$oldcolumn" != "$groups_sortcolumn" -o "$oldmode" != "$groups_sortmode" ]
         then
             groups_readdata      "$win"
         fi
     fi
 }
-
 
 #============================================================================
 # groups module (module functions called from userman.cui.sh)
@@ -784,7 +756,6 @@ groups_menu="Unix groups"
 groups_sortcolumn="-1"
 groups_sortmode="up"
 
-
 #============================================================================
 # listview callbacks
 #============================================================================
@@ -796,7 +767,6 @@ groups_sortmode="up"
 #          $p2 : control id
 # returns: 1   : event handled
 #----------------------------------------------------------------------------
-
 function groups_listview_clicked_hook()
 {
     local win="$p2"
@@ -820,7 +790,7 @@ function groups_listview_clicked_hook()
         cui_menu_addseparator "$menu"
         cui_menu_additem      "$menu" "Close menu"        0
         cui_menu_selitem      "$menu" 1
-        
+
         cui_menu_callback     "$menu" "$MENU_CLICKED" "$win" "module_menu_clicked_hook"
         cui_menu_callback     "$menu" "$MENU_ESCAPE"  "$win" "module_menu_escape_hook"
         cui_menu_callback     "$menu" "$MENU_POSTKEY" "$win" "module_menu_postkey_hook"
@@ -830,7 +800,7 @@ function groups_listview_clicked_hook()
         if [ "$result" == "$IDOK" ]
         then
             cui_menu_getselitem "$menu" && item="$p2"
-            
+
             case $item in
             1)
                 cui_window_destroy  "$menu"
@@ -876,23 +846,21 @@ function groups_listview_clicked_hook()
             cui_window_destroy  "$menu"
         fi
     fi
-    
     cui_return 1
 }
 
 #----------------------------------------------------------------------------
-#  groups_list_postkey_hook (catch ENTER key)      
+#  groups_list_postkey_hook (catch ENTER key)
 #    $p2 --> window handle of main window
 #    $p3 --> window handle of list control
 #    $p4 --> key
 #----------------------------------------------------------------------------
-
 function groups_list_postkey_hook()
 {
     local win="$p2"
     local ctrl="$p3"
     local key="$p4"
-    
+
     if [ "$key" == "${KEY_ENTER}" ]
     then
         groups_listview_clicked_hook "$win" "$ctrl"
@@ -905,7 +873,6 @@ function groups_list_postkey_hook()
 # groups_init (init the grous module)
 #    $1 --> window handle of main window
 #----------------------------------------------------------------------------
-
 function groups_init()
 {
     local win="$1"
@@ -922,7 +889,7 @@ function groups_init()
         cui_listview_callback   "$ctrl" "$LISTVIEW_POSTKEY" "$win" groups_list_postkey_hook
         cui_window_create "$ctrl"
     fi
-    
+
     cui_window_getctrl "$win" "${IDC_HELPTEXT}" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
@@ -933,7 +900,7 @@ If the group shall be populated with member users, this can be \
 changed by pressing F5 key."
         cui_window_totop "$ctrl"
     fi
-    
+
     cui_window_setlstatustext "$win" "Commands: F4=Edit F5=Members F7=Create F8=Delete F9=Sort F10=Exit"
 }
 
@@ -941,7 +908,6 @@ changed by pressing F5 key."
 # groups_close (close the groups module)
 #    $1 --> window handle of main window
 #----------------------------------------------------------------------------
-
 function groups_close()
 {
     local win="$1"
@@ -951,8 +917,7 @@ function groups_close()
     if cui_valid_handle "$ctrl"
     then
         cui_window_destroy "$ctrl"
-    fi   
-        
+    fi
     cui_window_getctrl "$win" "${IDC_HELPTEXT}" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
@@ -968,29 +933,27 @@ function groups_close()
 #    $4 --> w
 #    $5 --> h
 #----------------------------------------------------------------------------
-
 function groups_size()
 {
     cui_window_getctrl "$1" "${IDC_GROUPS_LIST}"
     if cui_valid_handle "$p2"
     then
         cui_window_move "$p2" "$2" "$3" "$4" "$5"
-    fi        
+    fi
 }
 
 #----------------------------------------------------------------------------
 # groups_readdata (read data of the groups module)
 #    $1 --> window handle of main window
 #----------------------------------------------------------------------------
-
 function groups_readdata()
 {
     local ctrl
     local win="$1"
-    local sel;  
+    local sel;
     local count;
     local index;
- 
+
     # read user inforamtion
     cui_window_getctrl "$win" "$IDC_GROUPS_LIST" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
@@ -1013,7 +976,7 @@ function groups_readdata()
         else
             groups_sort_list    "$ctrl"
             cui_listview_setsel "$ctrl" "0"
-        fi        
+        fi
     fi
 }
 
@@ -1021,7 +984,6 @@ function groups_readdata()
 # groups_activate (activate the groups module)
 #    $1 --> window handle of main window
 #----------------------------------------------------------------------------
-
 function groups_activate()
 {
     local ctrl
@@ -1040,7 +1002,6 @@ function groups_activate()
 #    $1 --> window handle of main window
 #    $2 --> keyboard input
 #----------------------------------------------------------------------------
-
 function groups_key()
 {
     local win="$1"
@@ -1073,17 +1034,16 @@ function groups_key()
             groups_readdata $win
         fi
         return 0
-        ;;      
+        ;;
     "$KEY_F9")
         groups_select_sort_column $win
-        return 0  
+        return 0
         ;;
-    esac        
+    esac
 
     return 1
-} 
- 
+}
+
 #============================================================================
 # end of groups module
 #============================================================================
-
