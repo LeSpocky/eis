@@ -96,7 +96,7 @@ enum
 	EF_PASSWORD       = 0x01000000,
 
 	/* memo control flags */
-	MF_WORDWRAP       = 0x01000000,
+	MF_AUTOWORDWRAP   = 0x01000000,
 	
 	/* listbox control flags */
 	LB_SORTED         = 0x01000000,
@@ -513,6 +513,7 @@ void MemoSetPostKeyHook  (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW
 void MemoSetChangedHook  (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
 void MemoSetText         (CUIWINDOW* win, const wchar_t* text);
 const wchar_t* MemoGetText (CUIWINDOW* win, wchar_t* text, int len);
+void MemoSetWrapColumns  (CUIWINDOW* win, int cols);
 
 /* ---------------------------------------------------------------------
  * label control

@@ -13,7 +13,7 @@ int MbStrLen(const char* str)
 
 int MbByteLen(const wchar_t* str)
 {
-	return wcsrtombs(NULL, &str, SIZE_MAX, NULL);	
+	return wcsrtombs(NULL, &str, SIZE_MAX, NULL);
 }
 
 wchar_t* MbToTCharDup(const char*  str)
@@ -60,15 +60,14 @@ wchar_t *CuuToUtf16(wchar_t *buffer, const char *str, int bufsize)
 
 wchar_t *CuuEncToUtf16(const char *encoding, wchar_t *buffer, const char *str, int bufsize)
 {
-	size_t      numc;
 	size_t      inlen;
 	size_t      outlen;
 	char       *in;
 	char       *out;
 	iconv_t     ic;
 
-	ic     = iconv_open ("UCS-4LE", encoding);
-	if ((int)ic >= 0)
+	ic     = iconv_open("UCS-4LE", encoding);
+	if (ic != (iconv_t)-1)
 	{
 		in     = (char*) str;
 		out    = (char*) buffer;
@@ -77,7 +76,7 @@ wchar_t *CuuEncToUtf16(const char *encoding, wchar_t *buffer, const char *str, i
 		
 		buffer[0] = 0;
 		
-		numc = iconv (ic, &in, &inlen, &out, &outlen);
+		iconv(ic, &in, &inlen, &out, &outlen);
 		if (outlen >= sizeof(wchar_t))
 		{
 			*((wchar_t*)out) = 0;
@@ -94,15 +93,14 @@ char *CuuFromUtf16(char *buffer, const wchar_t *str, int bufsize)
 
 char *CuuEncFromUtf16(const char *encoding, char *buffer, const wchar_t *str, int bufsize)
 {
-	size_t      numc;
 	size_t      inlen;
 	size_t      outlen;
 	char       *in;
 	char       *out;
 	iconv_t     ic;
 
-	ic     = iconv_open (encoding, "UCS-4LE");
-	if ((int)ic >= 0)
+	ic     = iconv_open(encoding, "UCS-4LE");
+	if (ic != (iconv_t)-1)
 	{
 		in     = (char*) str;
 		out    = (char*) buffer;
@@ -110,8 +108,8 @@ char *CuuEncFromUtf16(const char *encoding, char *buffer, const wchar_t *str, in
 		outlen = bufsize;
 
 		buffer[0] = 0;
-		
-		numc = iconv (ic, &in, &inlen, &out, &outlen);
+
+		iconv(ic, &in, &inlen, &out, &outlen);
 		if (outlen >= sizeof(char))
 		{
 			*((char*)out) = 0;

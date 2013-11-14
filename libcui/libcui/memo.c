@@ -46,7 +46,7 @@ typedef struct PARAStruct
 typedef struct MEMODATAStruct
 {
 	int                     WordWrapLimit;     /* char limit for word wrap */
-	int                     DoWordWrapping;    /* is word wrapping enabled */	
+	int                     DoAutoWordWrap;    /* is word wrapping enabled */	
 	int                     ScrollPosX;        /* horizontal scroll offset */
 	int                     ScrollPosY;        /* vertical scroll offset */
 	CUISIZE                 VirtualSize;       /* virtual window rectangle */
@@ -229,6 +229,17 @@ MemoPaintHook(void* w)
 		y   += para->NumLines;
 		para = para->pNext;
 	}
+	
+	y -= data->ScrollPosY;
+	while (y < rc.H)
+	{
+		if (y >= 0)
+		{
+			MOVEYX(win->Win, y, 0);
+			ParaShowLine(win, L"", 0, rc.W, 0);
+		}
+		y++;
+	}
 		
 	MemoGetVisualCursor(data, &pt);
 	WindowSetCursor(win, pt.X - data->ScrollPosX, pt.Y - data->ScrollPosY);
@@ -338,7 +349,7 @@ MemoKeyHook(void* w, int key)
 					cursor.Y  = para->NumLines - 1;
 					cursor.X  = data->VirtualColumn;
 					
-					data->LogicalCursor.X = ParaGetLogicalPos(para, data->WordWrapLimit, &cursor);					
+					data->LogicalCursor.X = ParaGetLogicalPos(para, data->WordWrapLimit, &cursor);	
 					data->LogicalCursor.Y--;
 					
 					MemoUpdateVisCursor(win, UF_NONE);
@@ -358,8 +369,13 @@ MemoKeyHook(void* w, int key)
 				}
 				else if (para->pNext)
 				{
+					para = para->pNext;
+
+					cursor.Y  = 0;
+					cursor.X  = data->VirtualColumn;
+					
 					data->LogicalCursor.Y++;
-					data->LogicalCursor.X = data->VirtualColumn;
+					data->LogicalCursor.X = ParaGetLogicalPos(para, data->WordWrapLimit, &cursor);
 					
 					MemoUpdateVisCursor(win, UF_NONE);
 				}
@@ -602,6 +618,14 @@ MemoDestroyHook(void* w)
 	free(data);
 }
 
+
+static void
+MemoCreateHook(void *w)
+{
+	MemoCalcTextPos((CUIWINDOW*) w);
+}
+
+
 /* ---------------------------------------------------------------------
  * MemoSetFocus
  * Handle EVENT_SETFOCUS events
@@ -671,6 +695,7 @@ MemoNew(CUIWINDOW* parent, const wchar_t* text,
 		WindowSetNcPaintHook  (memo, MemoNcPaintHook);		
 		WindowSetPaintHook    (memo, MemoPaintHook);
 		WindowSetKeyHook      (memo, MemoKeyHook);
+		WindowSetCreateHook   (memo, MemoCreateHook);
 		WindowSetDestroyHook  (memo, MemoDestroyHook);
 		WindowSetSetFocusHook (memo, MemoSetFocusHook);
 		WindowSetKillFocusHook(memo, MemoKillFocusHook);
@@ -680,7 +705,7 @@ MemoNew(CUIWINDOW* parent, const wchar_t* text,
 		
 
 		WindowEnableVScroll(memo, TRUE);
-		if ((flags & MF_WORDWRAP) == 0)
+		if ((flags & MF_AUTOWORDWRAP) == 0)
 		{
 			WindowEnableHScroll(memo, TRUE);
 		}
@@ -688,14 +713,14 @@ MemoNew(CUIWINDOW* parent, const wchar_t* text,
 		memo->InstData = (MEMODATA*) malloc(sizeof(MEMODATA));
 		memset(memo->InstData, 0, sizeof(MEMODATA));
 	
-		if (flags & MF_WORDWRAP)
+		if (flags & MF_AUTOWORDWRAP)
 		{
-			((MEMODATA*)memo->InstData)->DoWordWrapping = TRUE;
+			((MEMODATA*)memo->InstData)->DoAutoWordWrap = TRUE;
 			((MEMODATA*)memo->InstData)->WordWrapLimit  = w;
 		}
 		else
 		{
-			((MEMODATA*)memo->InstData)->DoWordWrapping = FALSE;
+			((MEMODATA*)memo->InstData)->DoAutoWordWrap = FALSE;
 			((MEMODATA*)memo->InstData)->WordWrapLimit  = WRAPLIMIT_MAX;
 		}
 		
@@ -862,6 +887,23 @@ MemoGetText(CUIWINDOW* win, wchar_t* text, int len)
 }
 
 
+void MemoSetWrapColumns(CUIWINDOW* win, int cols)
+{
+	if (win && (wcscmp(win->Class, _T("MEMO")) == 0))
+	{
+		MEMODATA *data = (MEMODATA*) win->InstData;
+		
+		data->WordWrapLimit = cols;
+
+		if (win->IsCreated)
+		{
+			MemoCalcTextPos(win);
+			WindowInvalidate(win);
+		}
+	}
+}
+
+
 /* local helper functions */
 
 /* ---------------------------------------------------------------------
@@ -888,13 +930,9 @@ MemoCalcTextPos(CUIWINDOW* win)
 		data->VisualSize.X = rc.W;
 		data->VisualSize.Y = rc.H;
 		
-		if (data->DoWordWrapping)
+		if (data->DoAutoWordWrap)
 		{
-			data->WordWrapLimit = data->VisualSize.X;
-		}
-		else
-		{
-			data->WordWrapLimit = WRAPLIMIT_MAX;
+			data->WordWrapLimit = (data->VisualSize.X - 1);
 		}
 
 		/* initialize dimensions to zero */
@@ -911,17 +949,13 @@ MemoCalcTextPos(CUIWINDOW* win)
 			{
 				data->VirtualSize.X = size.X;
 			}
-			if (size.Y > data->VirtualSize.Y)
-			{
-				data->VirtualSize.Y = size.Y;
-			}			
+			
+			data->VirtualSize.Y += size.Y;
+			
 			para    = para->pNext;
 		}
 		
-		if (!data->DoWordWrapping)
-		{
-			data->VirtualSize.X = data->WordWrapLimit;
-		}
+		data->VirtualSize.X = data->WordWrapLimit;
 
 		MemoGetVisualCursor  (data, &cursor);		
 		MemoUpdateScrollRange(win);
@@ -1007,6 +1041,24 @@ MemoUpdateScrollPos(CUIWINDOW* win, CUIPOINT cursor)
 		WindowSetHScrollPos(win, data->ScrollPosX);
 		WindowInvalidate   (win);
 	}
+#if 0
+	{
+		FILE *out = fopen("/tmp/test.log", "at");
+		if (out)
+		{
+			fprintf(out, "--------------------------------------------------\n");
+			fprintf(out, "VirtSize (%d,%d) VisSize (%d,%d) LogCurs (%d,%d) VisCurs (%d,%d) Scroll (%d,%d / %d,%d) VirtCol %d\n", 
+				data->VirtualSize.X, data->VirtualSize.Y,
+				data->VisualSize.X, data->VisualSize.Y,
+				data->LogicalCursor.X, data->LogicalCursor.Y,
+				cursor.X, cursor.Y,
+				data->ScrollPosX, data->ScrollPosY,
+				WindowGetHScrollRange(win), WindowGetVScrollRange(win),
+				data->VirtualColumn);
+			fclose(out);
+		}
+	}
+#endif
 }
 
 
@@ -1030,38 +1082,31 @@ MemoAppendText(MEMODATA* data, const wchar_t *text, int len)
 static void
 MemoGetVisualCursor(MEMODATA* data, CUIPOINT *pCursor)
 {
-	if (data->DoWordWrapping)
+	PARAGRAPH *para = data->pFirst;
+	int i;
+	
+	pCursor->Y = 0;
+	
+	for (i = 0; i < data->LogicalCursor.Y; i++)
 	{
-		PARAGRAPH *para = data->pFirst;
-		int i;
-		
-		pCursor->Y = 0;
-		
-		for (i = 0; i < data->LogicalCursor.Y; i++)
-		{
-			if (para)
-			{
-				pCursor->Y += para->NumLines;
-				para = para->pNext;
-			}
-		}
-		
 		if (para)
 		{
-			CUIPOINT pt;
-			pt = ParaGetVisualPos(para, data->WordWrapLimit, data->LogicalCursor.X);
-			
-			pCursor->Y += pt.Y;
-			pCursor->X  = pt.X;
+			pCursor->Y += para->NumLines;
+			para = para->pNext;
 		}
-		else
-		{
-			pCursor->X = 0;
-		}
+	}
+	
+	if (para)
+	{
+		CUIPOINT pt;
+		pt = ParaGetVisualPos(para, data->WordWrapLimit, data->LogicalCursor.X);
+		
+		pCursor->Y += pt.Y;
+		pCursor->X  = pt.X;
 	}
 	else
 	{
-		*pCursor = data->LogicalCursor;
+		pCursor->X = 0;
 	}
 }
 
@@ -1568,7 +1613,14 @@ ParaGetLogicalPos(PARAGRAPH *para, int width, const CUIPOINT *pt)
 			/* use remaining line */
 			if (pChar != pLineStart)
 			{
-				return pt->X + (pLineStart - para->pText);
+				if (pt->X + (pLineStart - para->pText) > para->Length)
+				{
+					return para->Length;
+				}
+				else
+				{
+					return pt->X + (pLineStart - para->pText);
+				}
 			}
 		}
 	}
