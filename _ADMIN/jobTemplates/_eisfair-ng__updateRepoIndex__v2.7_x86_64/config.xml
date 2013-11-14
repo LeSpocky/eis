@@ -5,14 +5,14 @@
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>18436</diskUsageWithoutBuilds>
+      <diskUsageWithoutBuilds>19579</diskUsageWithoutBuilds>
       <slaveWorkspacesUsage class="concurrent-hash-map">
         <entry>
           <string>alpine 2.7 x86-64 (b7)</string>
           <concurrent-hash-map>
             <entry>
               <string>/home/jenkins/ci/workspace/_eisfair-ng__updateRepoIndex__v2.7_x86_64</string>
-              <long>246766</long>
+              <long>408003</long>
             </entry>
           </concurrent-hash-map>
         </entry>
@@ -237,6 +237,43 @@
         <string>createPackageList.sh</string>
         <string>buildPackage.sh</string>
         <string>settings.txt</string>
+        <string>checkForNewPackages.sh</string>
+        <string>settings.default.txt</string>
+        <string>checkForChanges.sh</string>
+        <string>createRepoIndex.sh</string>
+        <string>readme.txt</string>
+        <string>jobTemplates</string>
+        <string>createPackageList.sh</string>
+        <string>buildPackage.sh</string>
+        <string>settings.txt</string>
+        <string>checkForNewPackages.sh</string>
+        <string>settings.default.txt</string>
+        <string>checkForChanges.sh</string>
+        <string>createRepoIndex.sh</string>
+        <string>readme.txt</string>
+        <string>jobTemplates</string>
+        <string>createPackageList.sh</string>
+        <string>buildPackage.sh</string>
+        <string>settings.txt</string>
+        <string>checkForNewPackages.sh</string>
+        <string>settings.default.txt</string>
+        <string>checkForChanges.sh</string>
+        <string>createRepoIndex.sh</string>
+        <string>readme.txt</string>
+        <string>jobTemplates</string>
+        <string>createPackageList.sh</string>
+        <string>buildPackage.sh</string>
+        <string>settings.txt</string>
+        <string>checkForNewPackages.sh</string>
+        <string>settings.default.txt</string>
+        <string>checkForChanges.sh</string>
+        <string>createRepoIndex.sh</string>
+        <string>readme.txt</string>
+        <string>jobTemplates</string>
+        <string>createPackageList.sh</string>
+        <string>buildPackage.sh</string>
+        <string>settings.txt</string>
+        <string>releasePackage.sh</string>
         <string>checkForNewPackages.sh</string>
         <string>settings.default.txt</string>
         <string>checkForChanges.sh</string>

@@ -5,14 +5,14 @@
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>35491</diskUsageWithoutBuilds>
+      <diskUsageWithoutBuilds>36634</diskUsageWithoutBuilds>
       <slaveWorkspacesUsage class="concurrent-hash-map">
         <entry>
           <string>alpine edge x86-64 (b6)</string>
           <concurrent-hash-map>
             <entry>
               <string>/home/jenkins/ci/workspace/_eisfair-ng__updateRepoIndex__edge_x86_64</string>
-              <long>246766</long>
+              <long>402399</long>
             </entry>
           </concurrent-hash-map>
         </entry>
@@ -311,6 +311,33 @@
         <string>createRepoIndex.sh</string>
         <string>readme.txt</string>
         <string>jobTemplates</string>
+        <string>buildPackage.sh</string>
+        <string>settings.txt</string>
+        <string>checkForNewPackages.sh</string>
+        <string>settings.default.txt</string>
+        <string>checkForChanges.sh</string>
+        <string>createRepoIndex.sh</string>
+        <string>readme.txt</string>
+        <string>jobTemplates</string>
+        <string>createPackageList.sh</string>
+        <string>buildPackage.sh</string>
+        <string>settings.txt</string>
+        <string>checkForNewPackages.sh</string>
+        <string>settings.default.txt</string>
+        <string>checkForChanges.sh</string>
+        <string>createRepoIndex.sh</string>
+        <string>readme.txt</string>
+        <string>jobTemplates</string>
+        <string>createPackageList.sh</string>
+        <string>buildPackage.sh</string>
+        <string>settings.txt</string>
+        <string>checkForNewPackages.sh</string>
+        <string>settings.default.txt</string>
+        <string>checkForChanges.sh</string>
+        <string>createRepoIndex.sh</string>
+        <string>readme.txt</string>
+        <string>jobTemplates</string>
+        <string>createPackageList.sh</string>
         <string>buildPackage.sh</string>
         <string>settings.txt</string>
         <string>checkForNewPackages.sh</string>
