@@ -188,6 +188,7 @@ while [ $# -ne 0 ] ; do
 done
 
 checkEnvironment
+extractVariables
 releasePackage
 syncMirror
 
