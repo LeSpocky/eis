@@ -114,7 +114,12 @@ releasePackage ()
             cp -f ~/packages/${JOB_NAME}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/${packageArch}
             rtc=$?
         fi
+        if [ "${rtc}" != 0 ] ; then
+            echo "ERROR - Unable to copy package to destination folder!"
+            exit ${rtc}
+        fi
     else
+        echo "ERROR - Package release build failed!"
         exit ${rtc}
     fi
     cd - > /dev/null
@@ -126,6 +131,11 @@ updateRepoIndex ()
 {
     # Example: -v v2.7 -b main -a x86_64
     ./createRepoIndex.sh -v ${alpineRelease} -b ${branch} -a ${packageArch}
+    rtc=$?
+    if [ ${rtc} != 0 ] ; then
+        echo "ERROR - Repository index could not be updated!"
+        exit ${rtc}
+    fi
 }
 
 
@@ -134,6 +144,10 @@ syncMirror ()
 {
     echo "ToDo: Sync with repo mirror"
     # rsync ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/ <mirror-location>
+    rtc=$?
+    if [ ${rtc} != 0 ] ; then
+        echo "WARN - Repository could not be synced to mirror!"
+    fi
 }
 
 
