@@ -104,6 +104,7 @@ buildPackage ()
     rtc=$?
     if [ "${rtc}" = 0 ] ; then
         echo "Copying apk file(s) to repository folder"
+        checkDeploymentDestination
         if ls *.apk >/dev/null 2>&1 ; then
             cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/testing/${packageArch}
             rtc=$?
@@ -113,6 +114,16 @@ buildPackage ()
         fi
     else
         exit ${rtc}
+    fi
+}
+
+
+
+checkDeploymentDestination ()
+{
+    if [ ! -d ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/${packageArch} ] ; then
+        echo "Repository directory not existing, creating it"
+        mkdir -p ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/${packageArch}
     fi
 }
 
