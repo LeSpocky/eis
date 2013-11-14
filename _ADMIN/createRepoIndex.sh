@@ -108,13 +108,13 @@ usage ()
 
   Optional parameters:
   -b <branch>
-        .. The branch to be used on the repository. Default value: 'main'
+        .. The branch to be used on the repository. Default value: 'testing'
 
 EOF
 }
 
 version=''
-branch='main'
+branch='testing'
 arch=''
 
 while [ $# -ne 0 ]

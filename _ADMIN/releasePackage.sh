@@ -124,7 +124,8 @@ releasePackage ()
 
 updateRepoIndex ()
 {
-    ./createRepoIndex.sh -v ${branch} -a ${packageArch}
+    # Example: -v v2.7 -b main -a x86_64
+    ./createRepoIndex.sh -v ${alpineRelease} -b ${branch} -a ${packageArch}
 }
 
 
