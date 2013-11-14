@@ -1,12 +1,10 @@
 #! /bin/bash
 # ----------------------------------------------------------------------------
-# buildPackage.sh - Build the package on the current folder
+# releasePackage.sh - Release the package on the current folder
 #
-# Jenkins environment variables must be set for proper functionality!
-# Build job name must follow the form:
-# <something>__<package-name>__<alpine-release>_<arch>
+# Environment variables must be set for proper functionality!
 #
-# Creation   :  2013-11-09  starwarsfan
+# Creation   :  2013-11-13  starwarsfan
 #
 # Copyright (c) 2013 the eisfair team, team(at)eisfair(dot)org>
 #
@@ -16,7 +14,7 @@
 # (at your option) any later version.
 # ----------------------------------------------------------------------------
 
-#exec 2> /tmp/buildPackage-trace$$.txt
+#exec 2> /tmp/releasePackage-trace$$.txt
 #set -x
 
 branch='main'
@@ -30,19 +28,16 @@ usage ()
 
   Usage:
   ${0} [options]
-        This script builds the package which is determined out of environment
-        variable JOB_NAME and stores the result on the appropriate folder
-        given by env var CI_RESULTFOLDER_EISFAIR_NG. These nvironment
-        variables might be set using options described below. Otherwise the
-        script will fail.
+        This script releases the package which is given by the environment
+        variable PACKAGE_TO_RELEASE. The package could be set using options
+        described below. Otherwise the script will fail.
         Script should be executed out of repository root.
 
   Optional parameters:
+    -p|--package-name <package-name>
+        The package which should be released.
     -j|--job-name <job-name>
         Set variable JOB_NAME.
-
-    -r|--result-folder <result-folder>
-        Set variable CI_RESULTFOLDER_EISFAIR_NG.
 
 EOF
 }
@@ -54,10 +49,12 @@ checkEnvironment ()
     echo "Checking environment:"
     if [ -z "${JOB_NAME}" ] ; then
         echo "ERROR: Env var 'JOB_NAME' must be set!"
+        usage
         exit 1
     fi
-    if [ -z "${CI_RESULTFOLDER_EISFAIR_NG}" ] ; then
-        echo "ERROR: Env var 'CI_RESULTFOLDER_EISFAIR_NG' must be set!"
+    if [ -z "${PACKAGE_TO_RELEASE}" ] ; then
+        echo "ERROR: Env var 'JOB_NAME' must be set!"
+        usage
         exit 1
     fi
     echo "Done"
@@ -65,27 +62,7 @@ checkEnvironment ()
 
 
 
-extractVariables ()
-{
-    # Extract package name from <some-text>__<package-name>__<release>_<arch>
-    # Example:
-    # eisfair-ng__cuimenu__edge_x86
-    # eisfair-ng__cuimenu__edge_x86_64
-    # eisfair-ng__cuimenu__v2.6_x86
-    # eisfair-ng__cuimenu__v2.6_x86_64
-    # eisfair-ng__eis-install__edge_x86
-    # eisfair-ng__eis-install__edge_x86_64
-    # eisfair-ng__eis-install__v2.6_x86
-    # eisfair-ng__eis-install__v2.6_x86_64
-    packageName=`echo ${JOB_NAME} | sed "s/\(.*__\)\(.*\)\(__.*\)/\2/g"`
-    releaseArch=`echo ${JOB_NAME} | sed "s/\(.*__\)\(.*\)\(__\)\(.*\)/\4/g"`
-    alpineRelease=`echo ${releaseArch%%_*}`
-    packageArch=`echo ${releaseArch#*_}`
-}
-
-
-
-buildPackage ()
+releasePackage ()
 {
     echo "Updating pkg repository"
     sudo apk update
@@ -105,15 +82,23 @@ buildPackage ()
     if [ "${rtc}" = 0 ] ; then
         echo "Copying apk file(s) to repository folder"
         if ls *.apk >/dev/null 2>&1 ; then
-            cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/testing/${packageArch}
+            cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/main/${packageArch}
             rtc=$?
         else
-            cp -f ~/packages/${JOB_NAME}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/testing/${packageArch}
+            cp -f ~/packages/${JOB_NAME}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/main/${packageArch}
             rtc=$?
         fi
     else
         exit ${rtc}
     fi
+}
+
+
+
+syncMirror ()
+{
+    echo "ToDo: Sync with repo mirror"
+    # rsync ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/main/ <mirror-location>
 }
 
 
@@ -134,9 +119,9 @@ do
             fi
             ;;
 
-        -r|--result-folder)
+        -p|--package-name)
             if [ $# -ge 2 ] ; then
-                CI_RESULTFOLDER_EISFAIR_NG=$2
+                PACKAGE_TO_RELEASE=$2
                 shift
             fi
             ;;
@@ -148,8 +133,8 @@ do
 done
 
 checkEnvironment
-extractVariables
-buildPackage
+releasePackage
+syncMirror
 
 exit ${rtc}
 
