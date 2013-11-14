@@ -47,7 +47,7 @@ usage ()
         The package which should be released.
     -j|--job-name <job-name>
         Set variable JOB_NAME.
-    -b <branch>
+    -b|--branch <branch>
         The branch to be used on the repository. Default value: 'main'
 
 EOF
@@ -93,8 +93,8 @@ releasePackage ()
     echo "Updating pkg repository"
     sudo apk update
 
-    echo "Cd to ${packageName}"
-    cd ../${packageName}
+    echo "Cd to ${PACKAGE_TO_RELEASE}"
+    cd ../${PACKAGE_TO_RELEASE}
 
     echo "Removing previously build apk files"
     rm -f *.apk
@@ -160,7 +160,7 @@ while [ $# -ne 0 ] ; do
             fi
             ;;
 
-        -b)
+        -b|--branch)
             if [ $# -ge 2 ] ; then
                 branch=$2
                 shift
