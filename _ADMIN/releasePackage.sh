@@ -201,6 +201,7 @@ done
 checkEnvironment
 extractVariables
 releasePackage
+updateRepoIndex
 syncMirror
 
 exit ${rtc}
