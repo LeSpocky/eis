@@ -17,6 +17,15 @@
 #exec 2> /tmp/releasePackage-trace$$.txt
 #set -x
 
+# Backup where we came from
+callDir=`pwd`
+
+# Go into the folder where the script is located and store the path.
+# So all other scripts can be used directly
+cd `dirname $0`
+scriptDir=`pwd`
+scriptName=`basename $0`
+
 branch='main'
 rtc=0
 
@@ -38,6 +47,8 @@ usage ()
         The package which should be released.
     -j|--job-name <job-name>
         Set variable JOB_NAME.
+    -b <branch>
+        The branch to be used on the repository. Default value: 'main'
 
 EOF
 }
@@ -83,7 +94,7 @@ releasePackage ()
     sudo apk update
 
     echo "Cd to ${packageName}"
-    cd ${packageName}
+    cd ../${packageName}
 
     echo "Removing previously build apk files"
     rm -f *.apk
@@ -97,15 +108,23 @@ releasePackage ()
     if [ "${rtc}" = 0 ] ; then
         echo "Copying apk file(s) to repository folder"
         if ls *.apk >/dev/null 2>&1 ; then
-            cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/main/${packageArch}
+            cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/${packageArch}
             rtc=$?
         else
-            cp -f ~/packages/${JOB_NAME}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/main/${packageArch}
+            cp -f ~/packages/${JOB_NAME}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/${packageArch}
             rtc=$?
         fi
     else
         exit ${rtc}
     fi
+    cd - > /dev/null
+}
+
+
+
+updateRepoIndex ()
+{
+    ./createRepoIndex.sh -v ${branch} -a ${packageArch}
 }
 
 
@@ -113,13 +132,12 @@ releasePackage ()
 syncMirror ()
 {
     echo "ToDo: Sync with repo mirror"
-    # rsync ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/main/ <mirror-location>
+    # rsync ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/ <mirror-location>
 }
 
 
 
-while [ $# -ne 0 ]
-do
+while [ $# -ne 0 ] ; do
     case $1 in
         -help|--help)
             # print usage
@@ -137,6 +155,13 @@ do
         -p|--package-name)
             if [ $# -ge 2 ] ; then
                 PACKAGE_TO_RELEASE=$2
+                shift
+            fi
+            ;;
+
+        -b)
+            if [ $# -ge 2 ] ; then
+                branch=$2
                 shift
             fi
             ;;
