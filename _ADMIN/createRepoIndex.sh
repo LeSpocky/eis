@@ -108,13 +108,13 @@ usage ()
 
   Optional parameters:
   -b <branch>
-        .. The branch to be used on the repository. Default value: 'main'
+        .. The branch to be used on the repository. Default value: 'testing'
 
 EOF
 }
 
 version=''
-branch='main'
+branch='testing'
 arch=''
 
 while [ $# -ne 0 ]
@@ -127,24 +127,21 @@ do
             ;;
 
         -v)
-            if [ $# -ge 2 ]
-            then
+            if [ $# -ge 2 ] ; then
                 version=$2
                 shift
             fi
             ;;
 
         -b)
-            if [ $# -ge 2 ]
-            then
+            if [ $# -ge 2 ] ; then
                 branch=$2
                 shift
             fi
             ;;
 
         -a)
-            if [ $# -ge 2 ]
-            then
+            if [ $# -ge 2 ] ; then
                 arch=$2
                 shift
             fi
