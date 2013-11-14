@@ -78,7 +78,7 @@ extractVariables ()
     # eisfair-ng__eis-install__v2.6_x86
     # eisfair-ng__eis-install__v2.6_x86_64
     packageName=`echo ${JOB_NAME} | sed "s/\(.*__\)\(.*\)\(__.*\)/\2/g"`
-    releaseArch=`echo ${JOB_NAME} | sed "s/\(.*__\)\(.*\)\(__\)\(.*\)/\4/g"`
+    releaseArch=`echo ${JOB_NAME} | sed "s/\(.*__.*__\)\(.*\)/\2/g"`
     alpineRelease=`echo ${releaseArch%%_*}`
     packageArch=`echo ${releaseArch#*_}`
 }
