@@ -127,24 +127,21 @@ do
             ;;
 
         -v)
-            if [ $# -ge 2 ]
-            then
+            if [ $# -ge 2 ] ; then
                 version=$2
                 shift
             fi
             ;;
 
         -b)
-            if [ $# -ge 2 ]
-            then
+            if [ $# -ge 2 ] ; then
                 branch=$2
                 shift
             fi
             ;;
 
         -a)
-            if [ $# -ge 2 ]
-            then
+            if [ $# -ge 2 ] ; then
                 arch=$2
                 shift
             fi

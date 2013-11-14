@@ -118,8 +118,7 @@ buildPackage ()
 
 
 
-while [ $# -ne 0 ]
-do
+while [ $# -ne 0 ] ; do
     case $1 in
         -help|--help)
             # print usage
