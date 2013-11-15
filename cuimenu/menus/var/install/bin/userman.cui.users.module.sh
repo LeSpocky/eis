@@ -230,7 +230,7 @@ function usersdlg_ok_clicked()
 # Cancel button clicked hook
 # expects: $1 : window handle of dialog window
 #          $2 : button control id
-# returns: 1  : event handled     
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
 function usersdlg_cancel_clicked()
 {
@@ -242,7 +242,7 @@ function usersdlg_cancel_clicked()
 # usersdlg_create_hook
 # Dialog create hook - create dialog controls
 # expects: $1 : window handle of dialog window
-# returns: 1  : event handled     
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
 function usersdlg_create_hook()
 {
@@ -329,7 +329,7 @@ function usersdlg_create_hook()
     fi
     cui_return 1
 }
- 
+
 #============================================================================
 # addgroupsdlg - dialog to manage additional groups
 #============================================================================
@@ -399,7 +399,6 @@ function addgroupsdlg_butrem_clicked()
             fi
         fi
     fi
-
     cui_return 1
 }
 
@@ -483,14 +482,14 @@ function addgroupsdlg_create_hook()
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" addgroupsdlg_butadd_clicked
-        cui_window_create     "$ctrl"    
+        cui_window_create     "$ctrl"
     fi
 
     cui_button_new "$dlg" "&<" 20 5 5 1 $IDC_ADDGROUPS_BUTREMOVE $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" addgroupsdlg_butrem_clicked
-        cui_window_create     "$ctrl"    
+        cui_window_create     "$ctrl"
     fi
 
     cui_listbox_new "$dlg" "Selected" 26 1 17 10 $IDC_ADDGROUPS_LSTSEL $LB_SORTED $CWS_NONE && ctrl="$p2"
@@ -501,7 +500,7 @@ function addgroupsdlg_create_hook()
     fi
 
     cui_label_new  "$dlg" "Tip: use Space-key to select!" 2 11 30 1 0 $CWS_NONE $CWS_NONE && ctrl="$p2"
-    if cui_valid_handle "$ctrl"  
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl"
     fi
@@ -758,7 +757,7 @@ function users_createuser_dialog()
     if cui_valid_handle "$dlg"
     then
         cui_window_setcolors "$dlg" "DIALOG"
-        cui_window_settext   "$dlg" "Create User"        
+        cui_window_settext   "$dlg" "Create User"
         cui_window_sethook   "$dlg" "$HOOK_CREATE"  usersdlg_create_hook
         cui_window_create    "$dlg"
 
@@ -937,7 +936,7 @@ function users_sortmenu_clicked_hook()
 
 #----------------------------------------------------------------------------
 # users_sortmenu_escape_hook
-# expects: $p2 : window handle                                          
+# expects: $p2 : window handle
 #          $p3 : control window handle
 # returns: nothing
 #----------------------------------------------------------------------------
@@ -949,7 +948,7 @@ function users_sortmenu_escape_hook()
 
 #----------------------------------------------------------------------------
 # users_sortmenu_postkey_hook
-# expects: $p2 : window handle                                          
+# expects: $p2 : window handle
 #          $p3 : control window handle
 #          $p4 : key code
 # returns: 1 : Key handled, 2 : Key ignored
@@ -1057,7 +1056,6 @@ function users_select_sort_column()
         fi
     fi
 }
-
 
 #============================================================================
 # users module (module functions called from userman.cui.sh)
