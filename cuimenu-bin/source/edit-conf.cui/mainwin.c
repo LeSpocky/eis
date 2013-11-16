@@ -1567,10 +1567,9 @@ static void
 MainwinManualSaveOptions(CUIWINDOW* win)
 {
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
-	CUIWINDOW* ctrl = WindowGetCtrl(win, IDC_CONFVIEW);
 	int result;
 
-	ctrl = WindowGetCtrl(win, IDC_CONFVIEW);
+	WindowGetCtrl(win, IDC_CONFVIEW);
 	if (!data->Config->ConfData)
 	{
 		return;

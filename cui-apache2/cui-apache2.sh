@@ -191,9 +191,9 @@ while [ "$idx" -le "$APACHE2_DIR_N" ]
 do
     eval webdav='$APACHE2_DIR_'$idx'_WEBDAV'
     if [ "$webdav" = "yes" ] ; then
-	    endav=""
-	    break
-	fi	
+	endav=""
+	break
+    fi
     idx=`expr $idx + 1`
 done
 vidx=1
@@ -661,7 +661,7 @@ else
     if [ "$APACHE2_SSL" = "yes" ] ; then
         [ ! "`echo \"$ipports\" | grep \"*:${APACHE2_SSL_PORT}\"`" ] && ipports="$ipports *:${APACHE2_SSL_PORT} "
     fi
-fi    
+fi
 
 (
 # if a vhost active $envhost=""
@@ -792,7 +792,7 @@ do
         echo "    <IfModule mod_cache_disk.c>"
         echo "        CacheEnable disk /"
         echo "    </IfModule>"
-    else    
+    else
         [ "$APACHE2_MOD_CACHE" = "yes" ] && echo "    CacheDisable /"
     fi
     echo "    <Directory \"${scriptdir}\">"
@@ -907,6 +907,7 @@ fi
 #----------------------------------------------------------------------------------------
 # setup logrotate
 #----------------------------------------------------------------------------------------
+rm -f /etc/logrotate.d/apache2*
 cat > /etc/logrotate.d/apache2 <<EOF
 /var/log/apache2/*log {
     ${APACHE2_LOG_INTERVAL}

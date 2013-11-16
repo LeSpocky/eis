@@ -165,7 +165,7 @@ safe_copy( char **dest, const char *source, int nsize)
         printf( "Error: Not enough memory!\n" );
         return 0;
     }
-    memset( *dest, 0, sizeof( *dest ) );
+    memset( *dest, 0, sizeof( nsize + 1 ) );
     strncat(*dest, source, nsize );
     return nsize;
 }

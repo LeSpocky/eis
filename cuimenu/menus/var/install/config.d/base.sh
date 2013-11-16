@@ -293,11 +293,11 @@ then
 	} >> /etc/logrotate.d/syslog
 	[ "$SYSLOG_SOURCE_UDP" = yes ] && echo "  udp( ip(0.0.0.0) port(514) );" >/etc/syslog-ng/syslog-ng-source.base
 	/etc/init.d/syslog stop >/dev/null 2>&1
-	/sbin/rc-update -q del syslog boot >/dev/null 2>&1   
-	/sbin/rc-update -q add syslog-ng boot >/dev/null 2>&1 
+	/sbin/rc-update -q del syslog boot >/dev/null 2>&1
+	/sbin/rc-update -q add syslog-ng boot >/dev/null 2>&1
 	/etc/init.d/syslog-ng update
-    if [ -e /var/run/syslog-ng.pid ]
-    then
+	if [ -e /var/run/syslog-ng.pid ]
+	then
 		/etc/init.d/syslog-ng reload
 	else
 		/etc/init.d/syslog-ng start
@@ -306,7 +306,7 @@ else
 	/etc/init.d/syslog-ng stop
 	/sbin/rc-update del syslog-ng boot
 	/sbin/rc-update add syslog boot
-	/etc/init.d/syslog start    
+	/etc/init.d/syslog start
 fi
 
 #----------------------------------------------------------------------------

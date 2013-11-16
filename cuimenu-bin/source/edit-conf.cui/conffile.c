@@ -2071,14 +2071,13 @@ ConfFileAddItemComment (CONFITEM* item, const wchar_t* name, const wchar_t* valu
 {
 	if (item)
 	{
-		int num;
 
 		CONFCOMMENT* newcomment = (CONFCOMMENT*) malloc(sizeof(CONFCOMMENT));
 		newcomment->Name = wcsdup(name);
 		newcomment->Text = wcsdup(value);
 		newcomment->Next = NULL;
 
-		num = swscanf(name,item->ReadMask,&newcomment->Index[0],
+		swscanf(name,item->ReadMask,&newcomment->Index[0],
 			&newcomment->Index[1],&newcomment->Index[2],
 			&newcomment->Index[3],&newcomment->Index[4]);
 
