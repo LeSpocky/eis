@@ -86,6 +86,17 @@ createRepoIndex ()
 
 
 # ============================================================================
+# If the main repo was updated, create repo trigger files
+createTriggerFiles ()
+{
+    if [ "$branch" = 'main' ] ; then
+        touch ${apkRepositoryBaseFolder}/syncTrigger/${version}__${alpineArch}
+    fi
+}
+
+
+
+# ============================================================================
 # The main part of the menu script
 # ============================================================================
 
@@ -115,7 +126,7 @@ EOF
 
 version=''
 branch='testing'
-arch=''
+alpineArch=''
 
 while [ $# -ne 0 ]
 do
@@ -142,7 +153,7 @@ do
 
         -a)
             if [ $# -ge 2 ] ; then
-                arch=$2
+                alpineArch=$2
                 shift
             fi
             ;;
@@ -153,15 +164,16 @@ do
     shift
 done
 
-if [ -z "$version" -o -z "$arch" ] ; then
+if [ -z "$version" -o -z "$alpineArch" ] ; then
     echo "Parameters -v and -a must be used!"
     exit 1
 fi
 
-repoPath=${apkRepositoryBaseFolder}/${version}/${branch}/${arch}
+repoPath=${apkRepositoryBaseFolder}/${version}/${branch}/${alpineArch}
 
 # Now do the job :-)
 createRepoIndex
+createTriggerFiles
 
 exit $rtc
 
