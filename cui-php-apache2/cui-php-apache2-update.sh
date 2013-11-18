@@ -96,6 +96,7 @@ package_name=php-apache2
     printvar "PHP_EXT_IMAP" "Activate IMAP mail extension for PHP."
     printvar "PHP_EXT_XML" "Activate XML extension for PHP."
     printvar "PHP_EXT_ZIP" "Activate ZIP extension for PHP."
+    printvar "PHP_EXT_ZLIB" "Activate ZLIB extension for PHP."
 
     # ------------------------------------------------------------------------
     printgroup "Extension Configuration - Database"
