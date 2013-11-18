@@ -141,23 +141,12 @@ checkDeploymentDestination ()
 updateRepoIndex ()
 {
     # Example: -v v2.7 -b main -a x86_64
+    echo "Calling './createRepoIndex.sh -v ${alpineRelease} -b ${branch} -a ${packageArch}'"
     ./createRepoIndex.sh -v ${alpineRelease} -b ${branch} -a ${packageArch}
     rtc=$?
     if [ ${rtc} != 0 ] ; then
         echo "ERROR - Repository index could not be updated!"
         exit ${rtc}
-    fi
-}
-
-
-
-syncMirror ()
-{
-    echo "ToDo: Sync with repo mirror"
-    # rsync ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/ <mirror-location>
-    rtc=$?
-    if [ ${rtc} != 0 ] ; then
-        echo "WARN - Repository could not be synced to mirror!"
     fi
 }
 
@@ -202,7 +191,6 @@ checkEnvironment
 extractVariables
 releasePackage
 updateRepoIndex
-syncMirror
 
 exit ${rtc}
 
