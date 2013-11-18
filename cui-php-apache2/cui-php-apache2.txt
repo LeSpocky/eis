@@ -175,7 +175,13 @@ Allgemeine Konfiguration
           Mit 'yes' wird das ZipArchive Modul geladen.
           Mit 'no' wird das Modul deaktiviert.
 
-          Standardeinstellung: PHP_EXT_ZIP='yes'
+          Standardeinstellung: PHP_EXT_ZIP='no'
+
+   PHP_EXT_ZLIB
+          Mit 'yes' wird das gzip Archiv Modul geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_ZLIB='no'
 
    PHP_EXT_MYSQL
           Hier kann die MySQL Erweiterung in PHP5 aktiviert werden

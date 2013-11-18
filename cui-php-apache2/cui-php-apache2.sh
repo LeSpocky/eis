@@ -620,6 +620,17 @@ EOF
     fi
 fi
 
+# -----------------------------------------------------------------------------
+# ZLIB
+rm -f /etc/php/conf.d/zlib.ini
+if [ "$PHP_EXT_ZLIB" = "yes" ] ; then
+    apk info -q -e php-zlib || apk add -q php-zlib
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/zlib.ini <<EOF
+extension=zlib.so
+EOF
+    fi
+fi
 
 
 # =============================================================================

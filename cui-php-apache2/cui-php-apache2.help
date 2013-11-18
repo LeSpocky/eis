@@ -126,6 +126,11 @@ Mit 'yes' wird das ZipArchive Modul geladen.<br/>
 Mit 'no' wird das Modul deaktiviert (default).
 </help>
 
+<help name="PHP_EXT_ZLIB">
+Mit 'yes' wird das gzip Archiv Modul geladen.<br/>
+Mit 'no' wird das Modul deaktiviert (default).
+</help>
+
 <help name="PHP_EXT_MYSQL">
 Mit 'yes' wird das Datenbank-Modul von MySQL beim starten in PHP mit eingebunden.<br/>
 Default: 'no' => nicht mit eingebunden

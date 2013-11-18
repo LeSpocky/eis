@@ -21,6 +21,7 @@ PHP_EXT_ICONV             -               -            YESNO
 PHP_EXT_IMAP              -               -            YESNO
 PHP_EXT_XML               -               -            YESNO
 PHP_EXT_ZIP               -               -            YESNO
+PHP_EXT_ZLIB              -               -            YESNO
 PHP_EXT_MYSQL             -               -            YESNO
 PHP_EXT_MYSQL_SOCKET      PHP_EXT_MYSQL   -            PHP_MYSQL_SOCKET
 PHP_EXT_MYSQL_HOST        PHP_EXT_MYSQL   -            PHP_MYSQL_HOST
