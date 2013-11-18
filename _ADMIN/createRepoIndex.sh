@@ -91,10 +91,10 @@ createRepoIndex ()
 createTriggerFiles ()
 {
     if [ "$branch" = 'main' ] ; then
-        echo "Creating trigger file ${apkRepositoryBaseFolder}/syncTrigger/${version}__${alpineArch}"
+        echo "Creating trigger file"
         touch ${apkRepositoryBaseFolder}/syncTrigger/${version}__${alpineArch}
     else
-        echo "Not on branch 'main', no trigger files will be created"
+        echo "Not on branch 'main', no pkg repo sync trigger files will be created"
     fi
 }
 
