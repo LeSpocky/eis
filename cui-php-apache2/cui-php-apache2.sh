@@ -15,6 +15,7 @@ retval=0
 APACHE_USER="apache"
 
 mkdir -p /etc/php/conf.d
+rm -f /etc/php/conf.d/*.apk-new
 
 if [ "$PHP_INFO" = "yes" ] ; then
     mkdir -p /var/www/localhost/htdocs
@@ -524,6 +525,8 @@ elif [ "${PHP_EXT_CACHE}" = "xcache" ] ; then
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/xcache.ini <<EOF
 extension=xcache.so
+xcache.size=64M
+xcache.var_size=64M
 EOF
     fi
 elif [ "${PHP_EXT_CACHE}" = "memcache" ] ; then

@@ -82,7 +82,7 @@ Standart ist hier /tmp
 <help name="PHP_EXT_CACHE">
 Mit 'apc' wird das APC Chaching Modul geladen.<br/>
 Mit 'memcache' wird das Memcache Modul geladen.<br/>
-Mit 'xcache' wird das XCache Modul geladen. (zur Zeit noch nicht verfuegbar)<br/>
+Mit 'xcache' wird das XCache Modul geladen.<br/>
 Mit 'no' wird das Chaching deaktiviert (default).
 </help>
 

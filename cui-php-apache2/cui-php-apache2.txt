@@ -125,7 +125,7 @@ Allgemeine Konfiguration
           Mit Hilfe dieser Variablen kann gesteuert werden, ob ein PHP
           Caching Modul verwendet werden soll. Soll ein solches Modul
           verwendet werden, so kann das zu verwendende ausgewaehlt werden
-          (zur Verfuegung stehen apc und eac).
+          (zur Verfuegung stehen apc, memcache und xcache).
 
           Standardeinstellung: PHP_EXT_CACHE='no'
 
