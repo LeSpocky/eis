@@ -26,9 +26,7 @@ callDir=`pwd`
 cd `dirname $0`
 scriptDir=`pwd`
 scriptName=`basename $0`
-
 rtc=0
-signingWorkDir=~/repoSigning
 
 # -----------------------------
 # Check if settings file exists
@@ -69,14 +67,29 @@ fi
 # repository folder.
 activateUploadedPackages ()
 {
-    echo ToDo
+    if [ -d "${sourcePath}" ] ; then
+        # ToDo: Cleanup previous package versions
+
+        mv -f ${sourcePath}/* ${repoPath}/
+        rtc=$?
+        if [ ${rtc} != 0 ] ; then
+            echo "ERROR - Unable to move uploaded packages to repository folder!"
+            exit ${rtc}
+        fi
+
+        ./createRepoIndex.sh -v ${alpineRelease} -b ${branch} -a ${alpineArch}
+        rtc=$?
+        if [ ${rtc} != 0 ] ; then
+            echo "ERROR - Repository index could not be updated!"
+            exit ${rtc}
+        fi
+    else
+        echo "Package source folder not existing!"
+        exit 1
+    fi
 }
 
 
-
-# ============================================================================
-# The main part of the menu script
-# ============================================================================
 
 usage ()
 {
@@ -102,7 +115,7 @@ usage ()
 EOF
 }
 
-version=''
+alpineRelease=''
 branch='main'
 alpineArch=''
 
@@ -117,7 +130,7 @@ do
 
         -v)
             if [ $# -ge 2 ] ; then
-                version=$2
+                alpineRelease=$2
                 shift
             fi
             ;;
@@ -142,18 +155,16 @@ do
     shift
 done
 
-if [ -z "$version" -o -z "$alpineArch" ] ; then
+if [ -z "$alpineRelease" -o -z "$alpineArch" ] ; then
     echo "Parameters -v and -a must be used!"
     exit 1
 fi
 
-sourcePath=${apkManualUploadSourceFolder}/${version}/${branch}/${alpineArch}
-repoPath=${apkRepositoryBaseFolder}/${version}/${branch}/${alpineArch}
+sourcePath=${apkManualUploadSourceFolder}/${alpineRelease}/${branch}/${alpineArch}
+repoPath=${apkRepositoryBaseFolder}/${alpineRelease}/${branch}/${alpineArch}
 
 # Now do the job :-)
 activateUploadedPackages
-
-exit $rtc
 
 # ============================================================================
 # End
