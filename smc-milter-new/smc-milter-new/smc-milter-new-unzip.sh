@@ -15,6 +15,10 @@ unpack() {
         then
             unzip -o "$file" >/dev/null
             rm "$file"
+        elif [ "${file%.[rR][aA][rR]}" != "${file}" ]
+        then
+            unrar e "$file" >/dev/null
+            rm "$file"
         elif [ "${file%.[eE][xX][eE]}" != "${file}" ]
         then
             exit 10
@@ -28,6 +32,12 @@ unpack() {
         then
             exit 10
         elif [ "${file%.[pP][iI][fF]}" != "${file}" ]
+        then
+            exit 10
+        elif [ "${file%.[sS][cC][fFrRtT]}" != "${file}" ]
+        then
+            exit 10
+        elif [ "${file%.[vV][bB][sS]}" != "${file}" ]
         then
             exit 10
         fi

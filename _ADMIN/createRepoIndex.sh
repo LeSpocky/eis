@@ -62,7 +62,8 @@ fi
 
 
 # ============================================================================
-#
+# Create the repository index based on all determined packages and store it
+# on pkg repository folder
 createRepoIndex ()
 {
     echo 'Creating repository index'
@@ -90,7 +91,10 @@ createRepoIndex ()
 createTriggerFiles ()
 {
     if [ "$branch" = 'main' ] ; then
+        echo "Creating trigger file"
         touch ${apkRepositoryBaseFolder}/syncTrigger/${version}__${alpineArch}
+    else
+        echo "Not on branch 'main', no pkg repo sync trigger files will be created"
     fi
 }
 

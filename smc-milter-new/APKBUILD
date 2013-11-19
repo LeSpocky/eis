@@ -2,12 +2,12 @@
 # Maintainer:
 pkgname=smc-milter-new
 pkgver=1.0.0
-pkgrel=0
+pkgrel=1
 pkgdesc="Virus scanner milter"
 url="http://www.eisfair.org"
 arch="all"
 license="GPLv2"
-depends="altermime ripmime"
+depends="altermime unrar zip"
 depends_dev="libmilter-dev mysql-dev"
 makedepends="$depends_dev"
 install="$pkgname.pre-install $pkgname.post-install"
