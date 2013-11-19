@@ -1,11 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>This job is called from the Jenkins job &lt;b&gt;_eisfair-ng__releasePackage&lt;/b&gt; to release the given package&lt;br/&gt;&#xd;
-&lt;br/&gt;&#xd;
-Additionally it is possible to start this job directly to release a package just for the platform depicted by&lt;br/&gt;&#xd;
-the suffix on this jobs name. To do so, a list of all packages is provided, from which the package to release &lt;br/&gt;&#xd;
-must be choosen. The choosen package will be released and deployed to the corresponding package repositories.</description>
+  <description>This job could be used to activate manually built packages, which must be located on the upload folder.</description>
   <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>-1</daysToKeep>
     <numToKeep>20</numToKeep>
@@ -14,32 +10,24 @@ must be choosen. The choosen package will be released and deployed to the corres
   </logRotator>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <hudson.model.ParametersDefinitionProperty>
-      <parameterDefinitions>
-        <com.cwctravel.hudson.plugins.extended__choice__parameter.ExtendedChoiceParameterDefinition plugin="extended-choice-parameter@0.28">
-          <name>PACKAGE_TO_RELEASE</name>
-          <description>Choose package which should be released</description>
-          <quoteValue>false</quoteValue>
-          <visibleItemCount>5</visibleItemCount>
-          <type>PT_SINGLE_SELECT</type>
-          <value></value>
-          <propertyFile>https://ssl.nettworks.org/ci/view/eisfair-ng/job/_eisfair-ng__checkBuildJobs/lastSuccessfulBuild/artifact/_ADMIN/packages.txt</propertyFile>
-          <propertyKey>packages</propertyKey>
-          <defaultValue></defaultValue>
-          <defaultPropertyFile></defaultPropertyFile>
-          <defaultPropertyKey></defaultPropertyKey>
-        </com.cwctravel.hudson.plugins.extended__choice__parameter.ExtendedChoiceParameterDefinition>
-      </parameterDefinitions>
-    </hudson.model.ParametersDefinitionProperty>
     <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>18129</diskUsageWithoutBuilds>
+      <diskUsageWithoutBuilds>0</diskUsageWithoutBuilds>
       <slaveWorkspacesUsage class="concurrent-hash-map">
         <entry>
-          <string>alpine edge x86 (b6b)</string>
+          <string>alpine 2.7 x86-64 (b7)</string>
           <concurrent-hash-map>
             <entry>
-              <string>/home/jenkins/ci/workspace/_eisfair-ng__releasePackage__edge_x86</string>
-              <long>9052491</long>
+              <string>/home/jenkins/ci/workspace/_eisfair-ng__includeUploadedPackages</string>
+              <long>8613662</long>
+            </entry>
+          </concurrent-hash-map>
+        </entry>
+        <entry>
+          <string></string>
+          <concurrent-hash-map>
+            <entry>
+              <string>/data/ci/jenkins/jobs/_eisfair-ng__includeUploadedPackages/workspace</string>
+              <long>0</long>
             </entry>
           </concurrent-hash-map>
         </entry>
@@ -65,7 +53,7 @@ must be choosen. The choosen package will be released and deployed to the corres
     <submoduleCfg class="list"/>
     <extensions/>
   </scm>
-  <assignedNode>alpine_edge_x86</assignedNode>
+  <assignedNode>&quot;alpine 2.7 x86-64 (b7)&quot;</assignedNode>
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -76,8 +64,15 @@ must be choosen. The choosen package will be released and deployed to the corres
   <builders>
     <hudson.tasks.Shell>
       <command>mv eisfair-ng.buildsettings.txt _ADMIN/settings.txt
-echo &quot;Package to release: $PACKAGE_TO_RELEASE&quot;
-_ADMIN/releasePackage.sh
+
+_ADMIN/includePackagesIntoRepository.sh -v v2.7 -a x86
+_ADMIN/includePackagesIntoRepository.sh -v v2.7 -a x86_64
+
+_ADMIN/includePackagesIntoRepository.sh -v v2.6 -a x86
+_ADMIN/includePackagesIntoRepository.sh -v v2.6 -a x86_64
+
+_ADMIN/includePackagesIntoRepository.sh -v edge -a x86
+_ADMIN/includePackagesIntoRepository.sh -v edge -a x86_64
 </command>
     </hudson.tasks.Shell>
   </builders>

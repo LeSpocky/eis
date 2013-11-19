@@ -11,14 +11,14 @@
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>11750511</diskUsageWithoutBuilds>
+      <diskUsageWithoutBuilds>11998151</diskUsageWithoutBuilds>
       <slaveWorkspacesUsage class="concurrent-hash-map">
         <entry>
           <string></string>
           <concurrent-hash-map>
             <entry>
               <string>/data/ci/jenkins/jobs/_eisfair-ng__checkBuildJobs/workspace</string>
-              <long>11732487</long>
+              <long>11980127</long>
             </entry>
           </concurrent-hash-map>
         </entry>
@@ -197,7 +197,6 @@ fi
       <notifyUpstreamCommitters>false</notifyUpstreamCommitters>
       <buildToChatNotifier class="hudson.plugins.im.build_notify.DefaultBuildToChatNotifier" plugin="instant-messaging@1.28"/>
       <matrixMultiplier>ONLY_CONFIGURATIONS</matrixMultiplier>
-      <channels/>
     </hudson.plugins.ircbot.IrcPublisher>
   </publishers>
   <buildWrappers>

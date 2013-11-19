@@ -32,14 +32,14 @@ must be choosen. The choosen package will be released and deployed to the corres
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
     <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>0</diskUsageWithoutBuilds>
+      <diskUsageWithoutBuilds>18128</diskUsageWithoutBuilds>
       <slaveWorkspacesUsage class="concurrent-hash-map">
         <entry>
           <string>alpine 2.7 x86 (eb1)</string>
           <concurrent-hash-map>
             <entry>
               <string>/home/jenkins/ci/workspace/_eisfair-ng__releasePackage__v2.7_x86</string>
-              <long>8500170</long>
+              <long>8682413</long>
             </entry>
           </concurrent-hash-map>
         </entry>
@@ -55,7 +55,7 @@ must be choosen. The choosen package will be released and deployed to the corres
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>*/AL-24-release-build-improvement</name>
+        <name>*/master</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
