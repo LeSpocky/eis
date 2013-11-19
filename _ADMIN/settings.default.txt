@@ -56,6 +56,12 @@ signingPublicKey=${signingPrivateKey}.pub
 apkRepoQualifier=eisfair-ng-ci
 apkRepositoryBaseFolder=/path/to/repository/
 
+# A folder where manually built and uploaded packages should be located.
+# These packages where grabbed and included into the corresponding apk
+# repository. The folder structure below this folder should follow the
+# alpine default, i. e. $apkManualUploadSourceFolder/v2.7/main/x86
+apkManualUploadSourceFolder=/path/to/folder
+
 # ----------------------------------------------------------------------------
 # Use the debug mode: 'true' or 'false'
 # If you switch this to 'true', the scripts will produce a lot of output...
