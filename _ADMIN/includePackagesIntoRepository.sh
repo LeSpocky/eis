@@ -70,18 +70,24 @@ activateUploadedPackages ()
     if [ -d "${sourcePath}" ] ; then
         # ToDo: Cleanup previous package versions
 
-        mv -f ${sourcePath}/* ${repoPath}/
-        rtc=$?
-        if [ ${rtc} != 0 ] ; then
-            echo "ERROR - Unable to move uploaded packages to repository folder!"
-            exit ${rtc}
-        fi
+        if [ "$(ls -A ${sourcePath}/)" ] ; then
+            echo "Moving uploaded packages to repository folder"
+            mv -f ${sourcePath}/* ${repoPath}/
+            rtc=$?
+            if [ ${rtc} != 0 ] ; then
+                echo "ERROR - Unable to move uploaded packages to repository folder!"
+                exit ${rtc}
+            fi
 
-        ./createRepoIndex.sh -v ${alpineRelease} -b ${branch} -a ${alpineArch}
-        rtc=$?
-        if [ ${rtc} != 0 ] ; then
-            echo "ERROR - Repository index could not be updated!"
-            exit ${rtc}
+            echo "Updating package repository index"
+            ./createRepoIndex.sh -v ${alpineRelease} -b ${branch} -a ${alpineArch}
+            rtc=$?
+            if [ ${rtc} != 0 ] ; then
+                echo "ERROR - Repository index could not be updated!"
+                exit ${rtc}
+            fi
+        else
+            echo "No uploaded packages found"
         fi
     else
         echo "Package source folder not existing!"
