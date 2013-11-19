@@ -2,4 +2,6 @@
 
 /var/install/bin/del-menu setup.services.apache2.menu setup.services.apache2.webalizer.menu
 rm -f /etc/backup.d/webalizer.*
+rm -f /etc/cron/root/webalizer
+rc-service --quiet fcron reload
 exit 0

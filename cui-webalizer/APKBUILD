@@ -2,7 +2,7 @@
 # Maintainer: jv <jens@eisfair.org>
 pkgname=cui-webalizer
 pkgver=1.0.0
-pkgrel=0
+pkgrel=1
 pkgdesc="CUI Setup Webalizer module for apache"
 url="http://www.eisfair.org"
 arch="noarch"
