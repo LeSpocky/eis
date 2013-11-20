@@ -306,7 +306,7 @@ EOF
 	mkdir -p /mnt/etc/apk/keys/
 	cp /etc/apk/keys/* /mnt/etc/apk/keys/
 
-	local apkflags="--initdb --quiet --progress --update-cache --clean-protected"
+	local apkflags="--initdb --update-cache --clean-protected"
 	[ -n "$USE_RAID" ] && raidpkg="mdadm"
 	pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libeventlog libcui fcron syslog-ng logrotate cuimenu-bin cuimenu syslinux"
 	if [ "$(rc --sys)" = "XEN0" ]; then
