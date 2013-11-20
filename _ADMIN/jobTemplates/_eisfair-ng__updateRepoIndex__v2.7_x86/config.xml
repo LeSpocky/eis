@@ -5,7 +5,7 @@
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>23986</diskUsageWithoutBuilds>
+      <diskUsageWithoutBuilds>32064</diskUsageWithoutBuilds>
       <slaveWorkspacesUsage class="concurrent-hash-map">
         <entry>
           <string>alpine 2.7 x86 (b6a)</string>
@@ -21,7 +21,7 @@
           <concurrent-hash-map>
             <entry>
               <string>/home/jenkins/ci/workspace/_eisfair-ng__updateRepoIndex__v2.7_x86</string>
-              <long>479956</long>
+              <long>541588</long>
             </entry>
           </concurrent-hash-map>
         </entry>
@@ -391,6 +391,61 @@
         <string>settings.txt</string>
         <string>releasePackage.sh</string>
         <string>checkForNewPackages.sh</string>
+        <string>settings.default.txt</string>
+        <string>checkForChanges.sh</string>
+        <string>createRepoIndex.sh</string>
+        <string>readme.txt</string>
+        <string>jobTemplates</string>
+        <string>createPackageList.sh</string>
+        <string>buildPackage.sh</string>
+        <string>settings.txt</string>
+        <string>releasePackage.sh</string>
+        <string>checkForNewPackages.sh</string>
+        <string>includePackagesIntoRepository.sh</string>
+        <string>settings.default.txt</string>
+        <string>checkForChanges.sh</string>
+        <string>createRepoIndex.sh</string>
+        <string>readme.txt</string>
+        <string>jobTemplates</string>
+        <string>createPackageList.sh</string>
+        <string>buildPackage.sh</string>
+        <string>settings.txt</string>
+        <string>releasePackage.sh</string>
+        <string>checkForNewPackages.sh</string>
+        <string>includePackagesIntoRepository.sh</string>
+        <string>settings.default.txt</string>
+        <string>checkForChanges.sh</string>
+        <string>createRepoIndex.sh</string>
+        <string>readme.txt</string>
+        <string>jobTemplates</string>
+        <string>createPackageList.sh</string>
+        <string>buildPackage.sh</string>
+        <string>settings.txt</string>
+        <string>releasePackage.sh</string>
+        <string>checkForNewPackages.sh</string>
+        <string>includePackagesIntoRepository.sh</string>
+        <string>settings.default.txt</string>
+        <string>checkForChanges.sh</string>
+        <string>createRepoIndex.sh</string>
+        <string>readme.txt</string>
+        <string>jobTemplates</string>
+        <string>createPackageList.sh</string>
+        <string>buildPackage.sh</string>
+        <string>settings.txt</string>
+        <string>releasePackage.sh</string>
+        <string>checkForNewPackages.sh</string>
+        <string>includePackagesIntoRepository.sh</string>
+        <string>settings.default.txt</string>
+        <string>checkForChanges.sh</string>
+        <string>createRepoIndex.sh</string>
+        <string>readme.txt</string>
+        <string>jobTemplates</string>
+        <string>createPackageList.sh</string>
+        <string>buildPackage.sh</string>
+        <string>settings.txt</string>
+        <string>releasePackage.sh</string>
+        <string>checkForNewPackages.sh</string>
+        <string>includePackagesIntoRepository.sh</string>
         <string>settings.default.txt</string>
         <string>checkForChanges.sh</string>
         <string>createRepoIndex.sh</string>

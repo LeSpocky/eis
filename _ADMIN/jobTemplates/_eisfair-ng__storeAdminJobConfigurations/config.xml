@@ -11,14 +11,14 @@
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>9807845</diskUsageWithoutBuilds>
+      <diskUsageWithoutBuilds>10206336</diskUsageWithoutBuilds>
       <slaveWorkspacesUsage class="concurrent-hash-map">
         <entry>
           <string></string>
           <concurrent-hash-map>
             <entry>
               <string>/data/ci/jenkins/jobs/_eisfair-ng__storeAdminJobConfigurations/workspace</string>
-              <long>9791110</long>
+              <long>10189600</long>
             </entry>
           </concurrent-hash-map>
         </entry>
