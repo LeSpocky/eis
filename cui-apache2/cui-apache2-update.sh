@@ -209,7 +209,7 @@ packages_name=apache2
 
 ) > /etc/config.d/${packages_name}
 # Set rights
-chmod 0644  /etc/config.d/${packages_name}
+chmod 0600  /etc/config.d/${packages_name}
 chown root  /etc/config.d/${packages_name}
 
 exit 0

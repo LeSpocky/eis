@@ -16,6 +16,14 @@ chmod 600 /etc/config.d/apache2
 # include base config for get ip setting
 . /etc/config.d/base
 
+# create error message if packages not installed
+errorsyslog()
+{
+    local tmp="Fail install: $1"
+    logger -p error -t cui-apache2 "$tmp"
+    echo "$tmp"
+}
+
 # -------------------------------------------------------------------------
 # function for dir access (host and vhosts)
 # -------------------------------------------------------------------------
@@ -191,9 +199,9 @@ while [ "$idx" -le "$APACHE2_DIR_N" ]
 do
     eval webdav='$APACHE2_DIR_'$idx'_WEBDAV'
     if [ "$webdav" = "yes" ] ; then
-	endav=""
-	break
-    fi
+	    endav=""
+	    break
+	fi
     idx=`expr $idx + 1`
 done
 vidx=1
@@ -218,12 +226,11 @@ do
 done
 
 if [ -z "$endav" ] ; then
-	mkdir -p /var/www/var
-	chown apache /var/www/var
-	if ! apk info -q -e apache2-webdav; then
-		apk add -q apache2-webdav 
-	fi
-	rm -f /etc/apache2/conf.d/http-dav.conf
+    mkdir -p /var/www/var
+    chown apache /var/www/var
+    apk info -q -e apache2-webdav || apk add -q apache2-webdav
+    [ $? -eq 0 ] || errorsyslog apache2-webdav
+    rm -f /etc/apache2/conf.d/http-dav.conf
 fi
 #----------------------------------------------------------------------------------------
 # use SSI
@@ -661,7 +668,7 @@ else
     if [ "$APACHE2_SSL" = "yes" ] ; then
         [ ! "`echo \"$ipports\" | grep \"*:${APACHE2_SSL_PORT}\"`" ] && ipports="$ipports *:${APACHE2_SSL_PORT} "
     fi
-fi
+fi    
 
 (
 # if a vhost active $envhost=""
@@ -792,7 +799,7 @@ do
         echo "    <IfModule mod_cache_disk.c>"
         echo "        CacheEnable disk /"
         echo "    </IfModule>"
-    else
+    else    
         [ "$APACHE2_MOD_CACHE" = "yes" ] && echo "    CacheDisable /"
     fi
     echo "    <Directory \"${scriptdir}\">"
@@ -907,7 +914,6 @@ fi
 #----------------------------------------------------------------------------------------
 # setup logrotate
 #----------------------------------------------------------------------------------------
-rm -f /etc/logrotate.d/apache2*
 cat > /etc/logrotate.d/apache2 <<EOF
 /var/log/apache2/*log {
     ${APACHE2_LOG_INTERVAL}
