@@ -18,7 +18,7 @@
           <concurrent-hash-map>
             <entry>
               <string>/data/ci/jenkins/jobs/_eisfair-ng__storeAdminJobConfigurations/workspace</string>
-              <long>10305138</long>
+              <long>10312067</long>
             </entry>
             <entry>
               <string>/data/ci/jenkins/jobs/_eisfair-ng__storeTemplateConfigurations/workspace</string>
