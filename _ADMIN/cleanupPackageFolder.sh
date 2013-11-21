@@ -186,7 +186,7 @@ usage ()
 
   Optional parameters:
   -b <branch>
-        .. The branch to be used on the repository. Default value: 'main'
+        .. The branch to be used on the repository. Default value: 'testing'
   -s <amount>
         .. Amount of versions per package which should be stay in place,
            all other (old) versions will be deleted. Default value: '3'
@@ -195,7 +195,7 @@ EOF
 }
 
 alpineRelease=''
-branch='main'
+branch='testing'
 alpineArch=''
 amountOfPackagesToHold=3
 
