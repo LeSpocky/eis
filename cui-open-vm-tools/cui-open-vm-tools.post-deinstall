@@ -1,0 +1,7 @@
+#!/bin/sh
+/var/install/bin/del-menu setup.services.menu setup.services.open-vm-tools.menu
+rc-update -q del vmware-modules-grsec >/dev/null 2>&1
+rc-update -q del open-vm-tools >/dev/null 2>&1
+rm -f /etc/vmware-tools/scripts/poweroff-vm-default.d/poweroff.sh
+rm -f /etc/backup.d/open-vm-tools.*
+exit 0

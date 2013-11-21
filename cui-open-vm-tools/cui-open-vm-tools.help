@@ -1,0 +1,8 @@
+<help name="START_VMTOOLS">
+Startet die Open-VM-Tools beim Booten des Servers
+</help>
+
+<help name="VMTOOLS_ALL_MODULES">
+Beim Booten werden die Kernelmodule vmblock, vmci, vmhgfs, vmsync, vmxnet,
+vsock und vmw_balloon zusaetzlich geladen.
+</help>

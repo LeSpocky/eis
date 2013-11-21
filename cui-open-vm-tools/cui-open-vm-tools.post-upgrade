@@ -1,0 +1,3 @@
+#!/bin/sh
+[ -f /etc/config.d/open-vm-tools ] && /var/install/config.d/open-vm-tools-update.sh
+exit 0
