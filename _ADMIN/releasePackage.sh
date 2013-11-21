@@ -28,7 +28,7 @@ scriptName=`basename $0`
 
 branch='main'
 rtc=0
-
+amountOfPackagesToHold=3
 
 
 usage ()
@@ -49,6 +49,9 @@ usage ()
         Set variable JOB_NAME.
     -b|--branch <branch>
         The branch to be used on the repository. Default value: 'main'
+    -s <amount>
+        Amount of versions per package which should be stay in place,
+        all other (old) versions will be deleted. Default value: '3'
 
 EOF
 }
@@ -138,6 +141,18 @@ checkDeploymentDestination ()
 
 
 
+cleanupPackageFolder ()
+{
+    echo "Removing old packages"
+    ./cleanupPackageFolder.sh -v ${alpineRelease} -b ${branch} -a ${packageArch} -s ${amountOfPackagesToHold}
+    rtc=$?
+    if [ ${rtc} != 0 ] ; then
+        echo "WARN - Old packages could not be removed!"
+    fi
+}
+
+
+
 updateRepoIndex ()
 {
     # Example: -v v2.7 -b main -a x86_64
@@ -181,6 +196,13 @@ while [ $# -ne 0 ] ; do
             fi
             ;;
 
+        -s)
+            if [ $# -ge 2 ] ; then
+                amountOfPackagesToHold=$2
+                shift
+            fi
+            ;;
+
         * )
             ;;
     esac
@@ -190,6 +212,7 @@ done
 checkEnvironment
 extractVariables
 releasePackage
+cleanupPackageFolder
 updateRepoIndex
 
 exit ${rtc}

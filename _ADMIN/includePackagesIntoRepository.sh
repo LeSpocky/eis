@@ -81,6 +81,10 @@ activateUploadedPackages ()
 
             echo "Removing old packages"
             ./cleanupPackageFolder.sh -v ${alpineRelease} -b ${branch} -a ${alpineArch} -s ${amountOfPackagesToHold}
+            rtc=$?
+            if [ ${rtc} != 0 ] ; then
+                echo "WARN - Old packages could not be removed!"
+            fi
 
             echo "Updating package repository index"
             ./createRepoIndex.sh -v ${alpineRelease} -b ${branch} -a ${alpineArch}
@@ -123,7 +127,7 @@ usage ()
         .. The branch to be used on the repository. Default value: 'main'
   -s <amount>
         .. Amount of versions per package which should be stay in place,
-           all other (old) versions will be deleted.
+           all other (old) versions will be deleted. Default value: '3'
 
 EOF
 }

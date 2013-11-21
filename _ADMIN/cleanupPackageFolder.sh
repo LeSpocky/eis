@@ -145,10 +145,14 @@ cleanupPackageFolder ()
         currentRevision=${currentPackage#*\%}
         currentPackage=${currentPackage%\%*}
         if [ "$currentPackage" = "$previousPackage" ] ; then
-            if [ ${counter} -gt ${amountOfPackagesToHold} ] ; then
+            if [ ${counter} -ge ${amountOfPackagesToHold} ] ; then
                 # Limit reached, remove package
                 echo "Removing ${currentPackage}-${currentRevision}"
                 rm -f ${repoPath}/${currentPackage}-${currentRevision}
+                rc=$?
+                if [ ${rc} != 0 ] ; then
+                    rtc=${rc}
+                fi
             fi
         else
             # First entry of a new package, reset counter
@@ -247,6 +251,8 @@ repoPath=${apkRepositoryBaseFolder}/${alpineRelease}/${branch}/${alpineArch}
 
 # Now do the job :-)
 cleanupPackageFolder
+
+exit ${rtc}
 
 # ============================================================================
 # End
