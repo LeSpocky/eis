@@ -1,11 +1,9 @@
 #! /bin/bash
 # ----------------------------------------------------------------------------
-# includePackagesIntoRepository.sh - Move manually uploaded apk's into the
-#                                    corresponding repository folder and
-#                                    update the repository index.
+# cleanupPackageFolder.sh - Remove old versions of packages from package
+#                           repository folder.
 #
-#
-# Creation   :  2013-11-19  starwarsfan
+# Creation   :  2013-11-21  starwarsfan
 #
 # Copyright (c) 2013 the eisfair team, team(at)eisfair(dot)org>
 #
@@ -61,41 +59,38 @@ fi
 
 
 
-# ============================================================================
-# Activate all uploaded packages for the given alpine version and architecture
-# by moving them from the upload folder into the corresponding package
-# repository folder.
-activateUploadedPackages ()
+getSortedContent ()
 {
-    if [ -d "${sourcePath}" ] ; then
-        # ToDo: Cleanup previous package versions
+    for i in `ls ${repoPath}/` ; do
+        rev=${i##*-r}
+        rev=${rev%.apk}
+        echo "${i%-r*} r${i##*-r} $rev"
+    done | LANG=C sort -b -k1,1 -k3,3nr | sed "s/ /%/g"
+}
 
-        if [ "$(ls -A ${sourcePath}/)" ] ; then
-            echo "Moving uploaded packages to repository folder"
-            mv -f ${sourcePath}/* ${repoPath}/
-            rtc=$?
-            if [ ${rtc} != 0 ] ; then
-                echo "ERROR - Unable to move uploaded packages to repository folder!"
-                exit ${rtc}
-            fi
 
-            echo "Removing old packages"
-            ./cleanupPackageFolder.sh -v ${alpineRelease} -b ${branch} -a ${alpineArch} -s ${amountOfPackagesToHold}
 
-            echo "Updating package repository index"
-            ./createRepoIndex.sh -v ${alpineRelease} -b ${branch} -a ${alpineArch}
-            rtc=$?
-            if [ ${rtc} != 0 ] ; then
-                echo "ERROR - Repository index could not be updated!"
-                exit ${rtc}
+cleanupPackageFolder ()
+{
+    counter=1
+    for currentEntry in `getSortedContent` ; do
+        #echo "Current package: $currentEntry"
+        currentPackage=${currentEntry%\%*}
+        currentRevision=${currentPackage#*\%}
+        currentPackage=${currentPackage%\%*}
+        echo "-> $currentPackage $currentRevision"
+        if [ "$currentPackage" = "$previousPackage" ] ; then
+            if [ ${counter} -gt ${amountOfPackagesToHold} ] ; then
+                # Limit reached, remove package
+                echo "rm -f ${currentPackage}-${currentRevision}"
             fi
         else
-            echo "No uploaded packages found"
+            # First entry of a new package, reset counter
+            previousPackage=${currentPackage}
+            counter=1
         fi
-    else
-        echo "Package source folder not existing!"
-        exit 1
-    fi
+        counter=$((counter+1))
+    done
 }
 
 
@@ -105,18 +100,18 @@ usage ()
     cat <<EOF
 
   Usage:
-  ${0} -v <version> -a <architecture> [-b <branch>]
-        Move manually uploaded packages into the corresponding repository
-        folder and update the repository index. Additionally old package
-        versions will be removed.
+  ${0} -v <version> -a <architecture> [Options]
+        Remove old package versions from pkg repository folder but let the
+        default amount of packages stay in place. See options on how to
+        modify this amount.
 
   Parameters:
   -v <version>
-        .. The version of the system, for which all manually uploaded
-           packages should be activated. Example: v2.7
+        .. The version of the system, for which the pkg repository folder
+           should be cleaned up. Example: v2.7
   -a <architecture>
-        .. The architecture of the system, for which all manually uploaded
-           packages should be activated. Example: x86_64
+        .. The architecture of the system, for which the pkg repository
+           folder should be cleaned up. Example: x86_64
 
   Optional parameters:
   -b <branch>
@@ -181,11 +176,10 @@ if [ -z "$alpineRelease" -o -z "$alpineArch" ] ; then
     exit 1
 fi
 
-sourcePath=${apkManualUploadSourceFolder}/${alpineRelease}/${branch}/${alpineArch}
 repoPath=${apkRepositoryBaseFolder}/${alpineRelease}/${branch}/${alpineArch}
 
 # Now do the job :-)
-activateUploadedPackages
+cleanupPackageFolder
 
 # ============================================================================
 # End
