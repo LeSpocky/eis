@@ -82,7 +82,7 @@ cleanupPackageFolder ()
         if [ "$currentPackage" = "$previousPackage" ] ; then
             if [ ${counter} -gt ${amountOfPackagesToHold} ] ; then
                 # Limit reached, remove package
-                echo "rm -f ${currentPackage}-${currentRevision}"
+                rm -f ${repoPath}/${currentPackage}-${currentRevision}
             fi
         else
             # First entry of a new package, reset counter
