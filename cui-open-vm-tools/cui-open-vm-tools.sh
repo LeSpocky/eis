@@ -22,7 +22,7 @@ errorsyslog()
     echo "$tmp"
 }
 
-if [ "VMTOOLS_START" = "yes" ]; then
+if [ "$VMTOOLS_START" = "yes" ]; then
     if [ "$VMTOOLS_ALL_MODULES" = "yes" ]; then
         rc-update -q add vmware-modules-grsec default
         rc-service -i -q vmware-modules-grsec start
