@@ -26,6 +26,9 @@ if [ "VMTOOLS_START" = "yes" ]; then
     if [ "$VMTOOLS_ALL_MODULES" = "yes" ]; then
         rc-update -q add vmware-modules-grsec default
         rc-service -i -q vmware-modules-grsec start
+    else
+        rc-update -q del vmware-modules-grsec >/dev/null 2>&1
+        rc-service -i -q vmware-modules-grsec stop >/dev/null 2>&1
     fi
 else
     rc-update -q del vmware-modules-grsec >/dev/null 2>&1
@@ -36,7 +39,7 @@ fi
 mkdir -p /etc/vmware-tools/scripts/poweroff-vm-default.d
 
 cat > /etc/vmware-tools/scripts/poweroff-vm-default.d/poweroff.sh <<EOF
-"#!/bin/sh"
+#!/bin/sh
 poweroff
 EOF
 

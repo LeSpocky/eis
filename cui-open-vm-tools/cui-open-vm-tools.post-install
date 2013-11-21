@@ -1,7 +1,8 @@
 #!/bin/sh
 /var/install/bin/add-menu setup.services.menu setup.services.open-vm-tools.menu "VMware tools administration"
 [ -e /etc/config.d/open-vm-tools ] || cp /etc/default.d/open-vm-tools /etc/config.d/
-rc-update -q add open-vm-tools default >/dev/null 2>&1
 /var/install/config.d/open-vm-tools.sh
+rc-update -q add open-vm-tools default >/dev/null 2>&1
+rc-service -i -q open-vm-tools start
 
 exit 0
