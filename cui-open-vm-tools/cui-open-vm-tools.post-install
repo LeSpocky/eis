@@ -4,5 +4,4 @@
 /var/install/config.d/open-vm-tools.sh
 rc-update -q add open-vm-tools default >/dev/null 2>&1
 rc-service -i -q open-vm-tools start
-
 exit 0

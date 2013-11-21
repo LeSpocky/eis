@@ -127,7 +127,7 @@ function install_package()
             then
                 cui_terminal_callback "$termwin" "$TERMINAL_EXIT" "$win" terminal_exit
                 cui_window_create     "$termwin"
- #               cui_terminal_write    "$termwin" "Install $package ..." 1
+                cui_terminal_write    "$termwin" "Install $package ..." 1
                 cui_terminal_run      "$termwin" "apk add $package && sleep 2"
             fi
         fi

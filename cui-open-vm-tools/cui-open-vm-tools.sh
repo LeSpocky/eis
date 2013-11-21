@@ -5,12 +5,8 @@
 #----------------------------------------------------------------------------
 
 #echo "Executing $0 ..."
-#exec 2> /tmp/apache2-trace$$.log
+#exec 2> /tmp/open-vm-tools-trace$$.log
 #set -x
-
-pgmname=$0
-
-chmod 600 /etc/config.d/open-vm-tools
 
 . /etc/config.d/open-vm-tools
 
@@ -22,15 +18,7 @@ errorsyslog()
     echo "$tmp"
 }
 
-if [ "$VMTOOLS_START" = "yes" ]; then
-    if [ "$VMTOOLS_ALL_MODULES" = "yes" ]; then
-        rc-update -q add vmware-modules-grsec default
-        rc-service -i -q vmware-modules-grsec start
-    else
-        rc-update -q del vmware-modules-grsec >/dev/null 2>&1
-        rc-service -i -q vmware-modules-grsec stop >/dev/null 2>&1
-    fi
-else
+if [ "$VMTOOLS_START" = "no" ]; then
     rc-update -q del vmware-modules-grsec >/dev/null 2>&1
     rc-service -i -q vmware-modules-grsec stop >/dev/null 2>&1
     exit 0
@@ -44,5 +32,14 @@ poweroff
 EOF
 
 chmod 0700 /etc/vmware-tools/scripts/poweroff-vm-default.d/poweroff.sh
+
+# load all optional vm kernel modules
+if [ "$VMTOOLS_ALL_MODULES" = "yes" ]; then
+    rc-update -q add vmware-modules-grsec default
+    rc-service -i -q vmware-modules-grsec start
+else
+    rc-update -q del vmware-modules-grsec >/dev/null 2>&1
+    rc-service -i -q vmware-modules-grsec stop >/dev/null 2>&1
+fi
 
 exit 0
