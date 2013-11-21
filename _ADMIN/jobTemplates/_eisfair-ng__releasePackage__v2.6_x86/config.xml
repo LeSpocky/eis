@@ -39,7 +39,7 @@ must be choosen. The choosen package will be released and deployed to the corres
           <concurrent-hash-map>
             <entry>
               <string>/home/jenkins/ci/workspace/_eisfair-ng__releasePackage__v2.6_x86</string>
-              <long>8999834</long>
+              <long>9294355</long>
             </entry>
           </concurrent-hash-map>
         </entry>

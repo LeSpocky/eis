@@ -18,7 +18,7 @@
           <concurrent-hash-map>
             <entry>
               <string>/home/jenkins/ci/workspace/_eisfair-ng__includeUploadedPackages</string>
-              <long>8858029</long>
+              <long>9042015</long>
             </entry>
           </concurrent-hash-map>
         </entry>
@@ -27,7 +27,7 @@
           <concurrent-hash-map>
             <entry>
               <string>/data/ci/jenkins/jobs/_eisfair-ng__includeUploadedPackages/workspace</string>
-              <long>8583439</long>
+              <long>8583495</long>
             </entry>
           </concurrent-hash-map>
         </entry>
