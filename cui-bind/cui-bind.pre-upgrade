@@ -1,0 +1,7 @@
+#!/bin/sh
+# remove default.d und check.d files
+rm -f /etc/default.d/bind
+rm -f /etc/check.d/bind
+rm -f /etc/check.d/bind.exp
+rm -f /etc/check.d/bind.ext
+exit 0

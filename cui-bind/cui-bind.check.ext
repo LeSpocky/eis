@@ -1,0 +1,18 @@
+foreach znr in bind_n
+do
+    if (bind_%_master[znr] == "no")
+    then
+        if (bind_%_master_ip[znr] == "")
+        then
+            error "You configured BIND_${znr}_MASTER_IP ist not set on slave zone!"
+        fi
+    else
+        if (bind_%_master_ip[znr] == "")
+        then
+            if (bind_%_master_ns[znr] == "")
+            then
+                error "You must set BIND_${znr}_MASTER_IP or BIND_${znr}_MASTER_NS!"
+            fi
+        fi
+    fi
+done

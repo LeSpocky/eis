@@ -1,0 +1,32 @@
+# Variable                OPT_VARIABLE   VARIABLE_N           VALUE
+START_BIND                  -            -                    YESNO
+BIND_FORWARDER_N            -            -                    BIND_NUMERIC
+BIND_FORWARDER_%_IP         -            BIND_FORWARDER_N     IPADDR
+BIND_FORWARDER_%_EDNS       -            BIND_FORWARDER_N     YESNO
+BIND_ALLOW_QUERY            -            -                    BIND_QUERY
+BIND_N                      -            -                    BIND_NUMERIC
+BIND_%_NAME                 -            BIND_N               DOMAIN
+BIND_%_MASTER               -            BIND_N               YESNO
+BIND_%_NETWORK              -            BIND_N               IPADDR
+BIND_%_NETMASK              -            BIND_N               IPADDR
+BIND_%_MASTER_IP            -            BIND_N               EIPADDR
+BIND_%_MASTER_NS          BIND_%_MASTER  BIND_N               EFQDN
+
+BIND_%_ALLOW_TRANSFER     BIND_%_MASTER  BIND_N               BIND_TRANSFER
+
+BIND_%_NS_N               BIND_%_MASTER  BIND_N               BIND_NUMERIC
+BIND_%_NS_%_NAME          BIND_%_MASTER  BIND_%_NS_N          FQDN
+BIND_%_NS_%_IP            BIND_%_MASTER  BIND_%_NS_N          EIPADDR
+
+BIND_%_MX_N               BIND_%_MASTER  BIND_N               BIND_NUMERIC
+BIND_%_MX_%_NAME          BIND_%_MASTER  BIND_%_MX_N          FQDN
+BIND_%_MX_%_PRIORITY      BIND_%_MASTER  BIND_%_MX_N          NUMERIC
+
+BIND_%_HOST_N             BIND_%_MASTER  BIND_N               BIND_NUMERIC
+BIND_%_HOST_%_NAME        BIND_%_MASTER  BIND_%_HOST_N        BIND_HOSTNAME
+BIND_%_HOST_%_IP          BIND_%_MASTER  BIND_%_HOST_N        IPADDR
+++BIND_%_HOST_%_ALIAS     BIND_%_MASTER  BIND_%_HOST_N        NONE
+
+BIND_BIND_IP_ADDRESS        -            -                    EIPADDRESSES
+BIND_PORT_53_ONLY           -            -                    YESNO
+BIND_DEBUG_LOGFILE          -            -                    YESNO

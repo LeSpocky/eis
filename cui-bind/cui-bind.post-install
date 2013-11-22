@@ -1,0 +1,4 @@
+#!/bin/sh
+/var/install/bin/add-menu setup.services.menu setup.services.bind.menu "BIND DNS Server"
+[ -e /etc/config.d/bind ] || cp /etc/default.d/bind /etc/config.d/
+exit 0

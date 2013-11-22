@@ -1,0 +1,160 @@
+<help name="START_BIND">
+Start the BIND daemon with booting server 'yes' or 'no'<br/>
+<br/>
+Default: START_BIND='yes'
+</help>
+
+<help name="BIND_FORWARDER_N">
+Number of forwarders<br/>
+Forwarder tell all DNS queries for which it doesn't have authoritative or<br/>
+cached data to another name server.<br/>
+Default: BIND_FORWARDER_N='1'
+</help>
+
+<help name="BIND_FORWARDER_%_IP">
+IP-Address of DNS forwarder<br/>
+<br/>
+Example: BIND_FORWARDER_1_IP='141.1.1.1'
+</help>
+
+<help name="BIND_FORWARDER_%_EDNS">
+Optinonal parameter.<br/>
+Defines whether to use EDNS (RFC 2671) communicating with the remote server.<br/>
+<br/>
+Default: BIND_FORWARDER_1_EDNS='yes'
+</help>
+
+<help name="BIND_ALLOW_QUERY">
+Enable DNS query from any, localnets or localhost<br/>
+<br/>
+Default: BIND_ALLOW_QUERY='any'
+</help>
+
+<help name="BIND_N">
+number of DNS zones (domains) primary and secondary<br/>
+<br/>
+Example: BIND_N='1'
+</help>
+
+<help name="BIND_%_NAME">
+Name of zone<br/>
+<br/>
+Example: BIND_1_NAME='foo.local'
+</help>
+
+<help name="BIND_%_MASTER">
+Server is master of zone 'yes' or 'no'<br/>
+<br/>
+Example: BIND_1_MASTER='yes'
+</help>
+
+<help name="BIND_%_NETWORK">
+Network of zone <br/>
+<br/>
+Example: BIND_1_NETWORK='192.168.1.0'
+</help>
+
+<help name="BIND_%_NETMASK">
+Netmask of zone<br/>
+<br/>
+Example: BIND_1_NETMASK='255.255.255.0'
+</help>
+
+<help name="BIND_%_MASTER_IP">
+IP-Adress of master server<br/>
+<br/>
+Example: BIND_1_MASTER_IP='192.168.1.1'
+</help>
+
+<help name="BIND_%_MASTER_NS">
+Full name of master server<br/>
+<br/>
+Example: BIND_1_MASTER_NS='mx.domain.local'
+</help>
+
+<help name="BIND_%_ALLOW_TRANSFER">
+any &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- no restrictions (default)<br/>
+localnets - zone transfer only on local network<br/>
+nslist &nbsp;&nbsp;&nbsp;- use list of IP-adresses from BIND_#_NS_#_IP<br/>
+none &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- no zone transfer<br/>
+</help>
+
+<help name="BIND_%_NS_N">
+Number of secondary name server<br/>
+<br/>
+Example: BIND_1_NS_N='1'
+</help>
+
+<help name="BIND_%_NS_%_NAME">
+Full name of secondary name server<br/>
+<br/>
+Example: BIND_1_NS_1_NAME='dns2.foo.local'
+</help>
+
+<help name="BIND_%_NS_%_IP">
+IP-Adress of secondary name server.<br/>
+Only on use, if set BIND_#_ALLOW_TRANSFER='nslist'
+</help>
+
+<help name="BIND_%_MX_N">
+Number of mail server in the zone<br/>
+<br/>
+Example: BIND_1_MX_N='1'
+</help>
+
+<help name="BIND_%_MX_%_NAME">
+Full name of mail server<br/>
+<br/>
+Example: BIND_1_MX_1_NAME='mail.foo.local'
+</help>
+
+<help name="BIND_%_MX_%_PRIORITY">
+Priority of mailserver 10=high 90=low<br/>
+<br/>
+Example: BIND_1_MX_1_PRIORITY='10'
+</help>
+
+<help name="BIND_%_HOST_N">
+Number of hosts<br/>
+<br/>
+Example: BIND_1_HOST_N='5'
+</help>
+
+<help name="BIND_%_HOST_%_NAME">
+BLANK &nbsp;&nbsp;&nbsp;set the IP-address to lookup domain.tld<br/>
+* &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;set the IP-address for wildcard lookups XYZ.domain.tld<br/>
+HOSTNAME if set the IP-address to hostname<br/>
+<br/>
+Example: BIND_1_HOST_1_NAME='host01'
+</help>
+
+<help name="BIND_%_HOST_%_IP">
+IP-address of host<br/>
+<br/>
+Example: BIND_1_HOST_1_IP='192.168.1.2'
+</help>
+
+<help name="BIND_%_HOST_%_ALIAS">
+List of optional alias names<br/>
+<br/>
+Example: BIND_1_HOST_1_ALIAS='www mail'
+</help>
+
+<help name="BIND_PORT_53_ONLY">
+Set 'yes' to restrict communication to port 53.<br/>
+Use only if a firewall tunnel stands between the local server and the external access.<br/>
+Default: BIND_PORT_53_ONLY='no'
+</help>
+
+<help name="BIND_BIND_IP_ADDRESS">
+Restrict communication to selected network interfaces<br/>
+<br/>
+Default: BIND_BIND_IP_ADDRESS=''<br/>
+Example: BIND_BIND_IP_ADDRESS='192.168.1.1 172.16.1.1'
+</help>
+
+<help name="BIND_DEBUG_LOGFILE">
+Write debugging output to logfile<br/>
+<br/>
+Default: BIND_DEBUG_LOGFILE='no'
+</help>

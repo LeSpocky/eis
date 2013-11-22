@@ -1,0 +1,92 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/bind - default configuration file for bind
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# General settings
+#------------------------------------------------------------------------------
+
+START_BIND='yes'                      # Namserver start 'yes' or 'no'
+BIND_FORWARDER_N='2'                  # Number of forwarders
+BIND_FORWARDER_1_IP='8.8.8.8 '        # IP-Address of forwarder
+BIND_FORWARDER_1_EDNS='yes'           # Use EDNS for communication
+BIND_FORWARDER_2_IP='8.8.4.4'
+BIND_FORWARDER_2_EDNS='yes'
+BIND_ALLOW_QUERY='any'                # any, localnets, localhost
+
+#------------------------------------------------------------------------------
+# DNS zones
+#------------------------------------------------------------------------------
+
+BIND_N='2'                            # number of DNS zones (domains)
+                                      # primary and secondary
+
+BIND_1_NAME='domain.local'            # Name of zone
+BIND_1_MASTER='yes'                   # Server is master of zone
+BIND_1_NETWORK='192.168.2.0'          # Network of zone 
+BIND_1_NETMASK='255.255.255.0'        # Netmask
+BIND_1_MASTER_IP='192.168.2.10'       # IP-Adress of master server
+BIND_1_MASTER_NS='mail.domain.local'
+                                      # Optional full name of master server
+
+BIND_1_ALLOW_TRANSFER='any'           # any, localnets, nslist, none
+
+BIND_1_NS_N='1'                       # Number of secondary name server
+BIND_1_NS_1_NAME='dns2.domain.local'
+                                      # Full name of secondary name server
+BIND_1_NS_1_IP=''                     # IP - only for use ALLOW_TRANSFER=nslist
+
+BIND_1_MX_N='2'                       # Number of mail server
+BIND_1_MX_1_NAME='mail.domain.local'
+                                      # Full name of mail server
+BIND_1_MX_1_PRIORITY='10'             # Priority 10=high 90=low
+
+BIND_1_MX_2_NAME='mail-backup.domain.local'
+BIND_1_MX_2_PRIORITY='20'
+
+BIND_1_HOST_N='2'                     # Number of hosts
+
+BIND_1_HOST_1_NAME='server1'          # Hostname
+BIND_1_HOST_1_IP='192.168.2.10'       # IP-address of host
+BIND_1_HOST_1_ALIAS='www1'            # Optional alias names
+
+
+BIND_1_HOST_2_NAME='server2'
+BIND_1_HOST_2_IP='192.168.2.11'
+BIND_1_HOST_2_ALIAS='www2 ftp'
+
+BIND_2_NAME='foo2.local'             # Name of zone
+BIND_2_MASTER='no'                   # Server is master of zone
+BIND_2_NETWORK='172.16.0.0'          # Network of zone 
+BIND_2_NETMASK='255.255.0.0'         # Netmask
+BIND_2_MASTER_IP='172.16.0.1'        # IP-Adress of master server
+BIND_2_MASTER_NS=''                  # Optional full name of master server
+
+BIND_2_ALLOW_TRANSFER='any'          # any, localnets, nslist, none
+
+BIND_2_NS_N='0'                      # Number of secondary name server
+BIND_2_NS_1_NAME=''                  # Full name of secondary name server
+BIND_2_NS_1_IP=''                    # IP - only for use ALLOW_TRANSFER=nslist
+
+BIND_2_MX_N='0'                      # Number of mail server
+BIND_2_MX_1_NAME=''                  # Full name of mail server
+BIND_2_MX_1_PRIORITY=''              # Priority 10=high 90=low
+
+BIND_2_HOST_N='0'                    # Number of hosts
+
+BIND_2_HOST_1_NAME=''                # Hostname
+BIND_2_HOST_1_IP=''                  # IP-address of host
+BIND_2_HOST_1_ALIAS=''               # Optional alias names
+
+
+#------------------------------------------------------------------------------
+# Special settings
+#------------------------------------------------------------------------------
+
+BIND_PORT_53_ONLY='no'               # Restrict communication; default no
+BIND_BIND_IP_ADDRESS=''              # Restrict network; default empty
+BIND_DEBUG_LOGFILE='no'              # Debug to logfile; default no
+
+#------------------------------------------------------------------------------
+# End
+#------------------------------------------------------------------------------
