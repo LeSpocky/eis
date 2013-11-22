@@ -1,27 +1,41 @@
 #!/sbin/runscript
 # firebird init.d file for alpine linux.
 
-daemon=/usr/lib/firebird/bin/fbmgr.bin
-FB_OPTS="-pidfile /var/run/firebird.pid -start -forever"
-export ISC_USER ISC_PASSWORD
-export FIREBIRD=${FIREBIRD:-/usr/lib/firebird}
+FBUSER=firebird
+FBGROUP=nogroup
+FIREBIRD=/usr/lib/firebird
+FBGUARD=/usr/lib/firebird/bin/fbmgr.bin
+PIDFILE=/run/firebird/firebird.pid
+FB_OPTS="-pidfile $PIDFILE -start -forever"
+LD_LIBRARY_PATH=/usr/lib/:/usr/lib/firebird/intl/:/usr/lib/firebird/plugins/:/usr/lib/firebird/UDF/
+export FIREBIRD
+export LD_LIBRARY_PATH
 
 depend() {
 	need net
 	after firewall
 }
 
+start_pre() {
+	checkpath --directory /var/firebird --owner $FBUSER
+	checkpath --directory /run/firebird --owner $FBUSER
+	chown -R $FBUSER:$FBGROUP /usr/lib/firebird
+}
+
 start() {
-	ebegin "Starting Firebird SQL"
-		start-stop-daemon --oknodo --start \
-			--pidfile /var/run/firebird.pid \
-			--chuid firebird --startas ${daemon} -- ${FB_OPTS}
+	ebegin "Starting Firebird server"
+		start-stop-daemon --start --pidfile $PIDFILE --user $FBUSER --group $FBGROUP --exec $FBGUARD -- $FB_OPTS
 	eend $?
 }
 
 stop() {
-	ebegin "Stopping Firebird SQL"
-		start-stop-daemon --stop --pidfile /var/run/firebird.pid \
-			--oknodo
+	ebegin "Stopping Firebird server"
+		start-stop-daemon --stop --name fbguard
 	eend $?
+}
+
+restart() {
+	svc_stop
+	sleep 1
+	svc_start
 }

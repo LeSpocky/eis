@@ -1,6 +1,4 @@
 #!/bin/sh
 # add something which happends before install
-
 adduser -S -h /usr/lib/firebird -s /bin/false -D firebird 2>/dev/null
-
 exit 0

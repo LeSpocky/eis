@@ -1,4 +1,3 @@
 #!/bin/sh
-
-# add something which happends after install
-
+[ -f /usr/lib/firebird/security2.fdb ] || cp -f /usr/lib/firebird/security2.fdb.default /usr/lib/firebird/security2.fdb
+exit 0
