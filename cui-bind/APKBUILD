@@ -7,7 +7,7 @@ pkgdesc="CUI setup for BIND DNS server"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
-depends="cuimenu bind bind-utils"
+depends="cuimenu bind"
 depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.post-deinstall"
@@ -23,8 +23,9 @@ source="${pkgname}.default
 		${pkgname}.dtransfer.sh
 		${pkgname}.txt
 "
-
+_pname="named"
 _builddir=
+
 prepare() {
 	cd "$_builddir"
 }
@@ -35,22 +36,23 @@ build() {
 
 package() {
 	cd "$_builddir"
-	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/bind || return 1
-	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/bind.exp || return 1
-	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/bind || return 1
-	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/bind || return 1	
-	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/bind.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/bind-update.sh || return 1
-	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.bind.menu || return 
+	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/${_pname} || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/${_pname}.exp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/${_pname} || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/${_pname} || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/${_pname}.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/${_pname}-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.${_pname}.menu || return 
 	install -D -m755 ${srcdir}/${pkgname}.dquery.sh     ${pkgdir}/var/install/dialog.d/BIND_QUERY.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}.dtransfer.sh  ${pkgdir}/var/install/dialog.d/BIND_TRANSFERL.sh || return 1
-	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/bind/bind.txt || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/${_pname}/${_pname}.txt || return 1
 }
 
 md5sums="fe79882f9ca0842acc9f5cb0494476bc  cui-bind.default
 422eac5675410b29331a35b3fe99f922  cui-bind.check
 21af6d88f65756adcc80d318773ec848  cui-bind.check.exp
 6fd79c1c140d457772111edd694c6ebf  cui-bind.help
+95e0282de97344c2597c1f0ff9bba5d8  cui-bind.initd
 d74851977e2f09fcb335664b42ef75cf  cui-bind.sh
 36bea79b5b711cf7c21487fad77c4c6f  cui-bind-update.sh
 4c74599440c95efcc44f3afe342e65c4  cui-bind.menu
@@ -61,6 +63,7 @@ sha256sums="44858329551088caaf42e15c636e533cbb8c9abb1baf06863c0362c13a99bba3  cu
 eee3bec238391faa89d3eabdb317278181b507f2c3e708be9f950e2ba4313ef8  cui-bind.check
 1d55e012bff4c26c573d652b787bd1c9c14c2384ad2362f1befd254fea6f6fa6  cui-bind.check.exp
 3276985d85637b43ae68c52e50f6e9fa2134368743cbe174ef74ce0789898ddd  cui-bind.help
+793347144acb35861b281f3e0303d763266d62128ef898b6481de6136b6a945d  cui-bind.initd
 cac927668854d070ffbb83fc98b749e0da92abb8564f1fee25b940904f3c9e92  cui-bind.sh
 6821a9d1dbd2d027466b83ec68d5f32694c7a8b7ee8165258509ddd807e9178b  cui-bind-update.sh
 83dd9077a6f8b4dfc465434f0dca6eddc804fe865cdecba7c8b7793dfa354854  cui-bind.menu
@@ -71,6 +74,7 @@ sha512sums="1f3090158ff3745997c5d73d3eb6302623ceff19585791f6ae16636ed5cad2b02d7c
 c4414743050be96cc47fb0da955d8504f1983495f248d573fa47d37f265d5837f1548483f8cb1d6a49b4a6688ec566a7c6d651524154b04df1220824f2b3bd2c  cui-bind.check
 0b7f375d941bb7bfb5350c73da42919f7eefc5a9f9296aa478a3fe30e4463ed4367dbc1ea81ba62505269c9422da6e95ad010db7773ebf52f566787a29183858  cui-bind.check.exp
 d5c2a25f33e7d94db854dba6e48d923ba36c2572d4f1080ced527c60032507a6e3469fece7ef64c7c9c64eb2c549d0822f72dcb6f7269fa6643a5f6290af6157  cui-bind.help
+eba28b3cbef127ce28b1da1ea6d3fa3b769a4ed28d8b476e91a713157c3b6639e368a1313b9cb2a94d52e3ed8c99999c77ddb7fa524c77aea06f0bebba22e74d  cui-bind.initd
 160ab43af9cc30f62d36a48b7cc031fd8e8b678ffa49ccbd0b9dffd1eb63fe8502762312f47839346495bf78783f36e6f606b73f5b5f2c019a0da32366cba47a  cui-bind.sh
 4010228bb90336ddefdcd8081b0d840f91ddb2f09c8e9ca976095ab4413f94b800ca22ed8e35b48773dd47a6c2f531b036455d17ba63dfc5900335601b4931e0  cui-bind-update.sh
 b5a88aa39529745dd9a5066dabd3f4bcb546371c63fe575d83a6edd0137509b428963672b1a10f983bcb02d96866011cf36fddb695fd230c2fb863f0b5df1ca6  cui-bind.menu
