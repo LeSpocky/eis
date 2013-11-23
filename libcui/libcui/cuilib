@@ -388,7 +388,7 @@ cui_init()
 # Expects: $1 .. $n  <-- Parameters to send
 # Returns: <nothing>
 #------------------------------------------------------------------------------
-function cui_send()
+cui_send()
 {
     local val=":$1"
     local tmp=""
@@ -561,7 +561,7 @@ cui_wait_ack()
 # Expects: $1  <-- Handle variable
 # Returns: exit code: (0 = Success, 1 = Failure)
 #----------------------------------------------------------------------------
-function cui_valid_handle()
+cui_valid_handle()
 {
     if [ "$1" != "" -a "$1" != "0" ]
     then
@@ -575,7 +575,7 @@ function cui_valid_handle()
 # Expects: $1  <-- Index variable
 # Returns: exit code: (0 = Success, 1 = Failure)
 #----------------------------------------------------------------------------
-function cui_valid_index()
+cui_valid_index()
 {
     if [ "$1" != "" -a "$1" -ge "0" ]
     then
