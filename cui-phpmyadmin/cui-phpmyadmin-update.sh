@@ -162,26 +162,21 @@ updateOldVariables()
 {
     # -------------------
     # Read current values
-    if [ -f /etc/config.d/${package_name} ]
-    then
+    if [ -f /etc/config.d/${package_name} ] ; then
         . /etc/config.d/${package_name}
 
         idx=1
-        while [ "${idx}" -le "${PHPMYADMIN_SERVER_N}" ]
-        do
+        while [ "${idx}" -le "${PHPMYADMIN_SERVER_N}" ] ; do
             eval authHTTP='${PHPMYADMIN_SERVER_'${idx}'_AUTH_HTTP}'
             eval authCookie='${PHPMYADMIN_SERVER_'${idx}'_AUTH_COOKIE}'
             eval authConfig='${PHPMYADMIN_SERVER_'${idx}'_AUTH_CONFIG}'
             eval authConfigUsername='${PHPMYADMIN_SERVER_'${idx}'_USER}'
             eval authConfigPassword='${PHPMYADMIN_SERVER_'${idx}'_PASSWORD}'
-            if [ "${authHTTP}" == "yes" ]
-            then
+            if [ "${authHTTP}" == "yes" ] ; then
                 eval PHPMYADMIN_SERVER_${idx}_AUTH_METHOD='http'
-            elif [ "${authCookie}" == "yes" ]
-            then
+            elif [ "${authCookie}" == "yes" ] ; then
                 eval PHPMYADMIN_SERVER_${idx}_AUTH_METHOD='cookie'
-            elif [ "${authConfig}" == "yes" ]
-            then
+            elif [ "${authConfig}" == "yes" ] ; then
                 eval PHPMYADMIN_SERVER_${idx}_AUTH_METHOD='config:${authConfigUsername}:${authConfigPassword}'
             fi
 
@@ -216,8 +211,7 @@ createConfigFile()
     # begin PHPMYADMIN_SERVER_N
     idx=1
 
-    while [ "${idx}" -le "${PHPMYADMIN_SERVER_N}" ]
-    do
+    while [ "${idx}" -le "${PHPMYADMIN_SERVER_N}" ] ; do
         printvar "PHPMYADMIN_SERVER_${idx}_NAME"                "Use a name what ever you want. The entered value is only for your overview of different servers"
         printvar "PHPMYADMIN_SERVER_${idx}_ACTIVE"              "Is this server active?"
         printcomment                                            "Use: yes or no"
@@ -229,8 +223,7 @@ createConfigFile()
         idx2=1
         eval sweKeys='${PHPMYADMIN_SERVER_'${idx}'_AUTH_SWEKEY_N}'
         sweKeys=${sweKeys:-0} # Set to 0 if empty
-        while [ "${idx2}" -le "${sweKeys}" ]
-	    do
+        while [ "${idx2}" -le "${sweKeys}" ] ; do
 	        printvar "PHPMYADMIN_SERVER_${idx}_AUTH_SWEKEY_${idx2}_ID"   "Swekey ID"
 	        printvar "PHPMYADMIN_SERVER_${idx}_AUTH_SWEKEY_${idx2}_NAME" "Username which should be used with this Swekey"
             idx2=$((idx2+1))
@@ -248,8 +241,7 @@ createConfigFile()
         idx2=1
         eval dbsToShow='${PHPMYADMIN_SERVER_'${idx}'_ONLY_DB_N}'
         dbsToShow=${dbsToShow:-0} # Set to 0 if empty
-        while [ "${idx2}" -le "${dbsToShow}" ]
-        do
+        while [ "${idx2}" -le "${dbsToShow}" ] ; do
             printvar "PHPMYADMIN_SERVER_${idx}_ONLY_DB_${idx2}_NAME" "Name of the db to show"
             idx2=$((idx2+1))
         done

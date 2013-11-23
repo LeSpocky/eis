@@ -1,6 +1,6 @@
 <!-- /var/install/menu/setup.services.phpmyadmin.menu -->
 <!-- Creation:         2006-09-15 starwarsfan -->
-<package>cui-phpmyadmin</package>
+<package>phpmyadmin</package>
 <title>phpMyAdmin Administration</title>
 <doc file="/usr/share/doc/phpmyadmin/phpmyadmin.txt">View short package documentation</doc>
 <edit>Edit configuration</edit>
