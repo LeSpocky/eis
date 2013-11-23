@@ -30,11 +30,9 @@ COLOR_NRM='\033[0;39m'
 # ----------------------------------------------------------------------------
 actionFinished ()
 {
-	if [ $# -eq 0 ]
-	then
+	if [ $# -eq 0 ] ; then
 		echo -e "\033[300C\033[$[9]D [ Done ]"
-	elif [ $1 == true ]
-	then
+	elif [ $1 == true ] ; then
 		echo -e "\033[300C\033[$[7]D [ OK ]"
 	else
 	    echo -e "\033[300C\033[$[11]D [ ${COLOR_RED}Failed${COLOR_NRM} ]"

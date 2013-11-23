@@ -31,11 +31,11 @@ tmpSQLScript=/tmp/tmpScript.sql
 ### -------------------------------------------------------------------------
 createSQLScriptHeader ()
 {
-givenHost=$1
-givenDBName=$2
-givenControluser=$3
+    givenHost=$1
+    givenDBName=$2
+    givenControluser=$3
 
-cat >${tmpSQLScript} <<EOF
+    cat >${tmpSQLScript} <<EOF
 -- --------------------------------------------------------
 -- SQL Commands to set up the pmadb as described in Documentation.html.
 --
@@ -58,7 +58,6 @@ cat >${tmpSQLScript} <<EOF
 -- --------------------------------------------------------
 
 EOF
-
 }
 
 
@@ -67,11 +66,11 @@ EOF
 ### -------------------------------------------------------------------------
 createSQLScriptDropDB ()
 {
-givenHost=$1
-givenDBName=$2
-givenControluser=$3
+    givenHost=$1
+    givenDBName=$2
+    givenControluser=$3
 
-cat >>${tmpSQLScript} <<EOF
+    cat >>${tmpSQLScript} <<EOF
 
 --
 -- Database : \`${givenDBName}\`
@@ -84,7 +83,6 @@ USE ${givenDBName};
 -- --------------------------------------------------------
 
 EOF
-
 }
 
 
@@ -93,11 +91,11 @@ EOF
 ### -------------------------------------------------------------------------
 createSQLScriptCreateDB ()
 {
-givenHost=$1
-givenDBName=$2
-givenControluser=$3
+	givenHost=$1
+	givenDBName=$2
+	givenControluser=$3
 
-cat >>${tmpSQLScript} <<EOF
+	cat >>${tmpSQLScript} <<EOF
 
 --
 -- Database : \`${givenDBName}\`
@@ -109,7 +107,6 @@ USE ${givenDBName};
 -- --------------------------------------------------------
 
 EOF
-
 }
 
 
@@ -118,11 +115,11 @@ EOF
 ### -------------------------------------------------------------------------
 createSQLScriptGrantPrivileges ()
 {
-givenHost=$1
-givenDBName=$2
-givenControluser=$3
+	givenHost=$1
+	givenDBName=$2
+	givenControluser=$3
 
-cat >>${tmpSQLScript} <<EOF
+	cat >>${tmpSQLScript} <<EOF
 --
 -- Privileges
 --
@@ -133,7 +130,6 @@ GRANT SELECT, INSERT, DELETE, UPDATE ON \`${givenDBName}\`.* TO
 
 
 EOF
-
 }
 
 
@@ -143,11 +139,11 @@ EOF
 ### -------------------------------------------------------------------------
 createSQLScriptCreateTables ()
 {
-givenHost=$1
-givenDBName=$2
-givenControluser=$3
+	givenHost=$1
+	givenDBName=$2
+	givenControluser=$3
 
-cat >>${tmpSQLScript} <<EOF
+	cat >>${tmpSQLScript} <<EOF
 --
 -- Table structure for table \`pma_bookmark\`
 --
@@ -289,7 +285,6 @@ CREATE TABLE IF NOT EXISTS \`pma_designer_coords\` (
   DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
 
 EOF
-
 }
 
 
@@ -299,11 +294,11 @@ EOF
 ### -------------------------------------------------------------------------
 createSQLScriptAlterDB ()
 {
-givenHost=$1
-givenDBName=$2
-givenControluser=$3
+	givenHost=$1
+	givenDBName=$2
+	givenControluser=$3
 
-cat >${tmpSQLScript} <<EOF
+	cat >${tmpSQLScript} <<EOF
 -- -------------------------------------------------------------
 -- SQL Commands to upgrade pmadb for normal phpMyAdmin operation
 -- with MySQL 4.1.2 and above.
@@ -474,7 +469,6 @@ CREATE TABLE IF NOT EXISTS \`pma_designer_coords\` (
 
 
 EOF
-
 }
 
 
@@ -487,18 +481,15 @@ doDBOperation ()
 	givenServernumber=$1
 
 	# check if $givenServernumber is in range
-	if [ "${givenServernumber}" -gt 0 -a "${givenServernumber}" -le "${PHPMYADMIN_SERVER_N}" ]
-	then
+	if [ "${givenServernumber}" -gt 0 -a "${givenServernumber}" -le "${PHPMYADMIN_SERVER_N}" ] ; then
 
 	    # check if entered server is active
 	    eval active='${PHPMYADMIN_SERVER_'${givenServernumber}'_ACTIVE}'
-	    if [ "${active}" = "yes" ]
-	    then
+	    if [ "${active}" = "yes" ] ; then
 
 	        # check if advanced features are activated
 	        eval advancedFeaturesActive='${PHPMYADMIN_SERVER_'${givenServernumber}'_ADVANCED_FEATURES}'
-			if [ "${advancedFeaturesActive}" == "yes" ]
-			then
+			if [ "${advancedFeaturesActive}" == "yes" ] ; then
 		        eval host='${PHPMYADMIN_SERVER_'${givenServernumber}'_HOST}'
 		        eval port='${PHPMYADMIN_SERVER_'${givenServernumber}'_PORT}'
 	            eval pmadb='${PHPMYADMIN_SERVER_'${givenServernumber}'_PMADB}'
@@ -519,8 +510,7 @@ doDBOperation ()
 				mecho "port: '${port}'"
 				mecho "pmadb: '${pmadb}'"
 				mecho "found: '${foundPMADB}'"
-				if [ ${foundPMADB} -eq 1 ]
-				then
+				if [ ${foundPMADB} -eq 1 ] ; then
 					# pmadb exists, ask for next steps
 					mecho ""
 					mecho -n "Database '"
@@ -531,8 +521,7 @@ doDBOperation ()
 					mecho " - 'A'lter existing database,"
 					mecho " - 'D'rop database or"
 					nextStep=`/var/install/bin/ask " - 'C'ancel: " "C" "N" "A" "D" "C"`
-					if [ "${nextStep}" = "N" ]
-					then
+					if [ "${nextStep}" = "N" ] ; then
 						# drop db and create new
 						mecho ""
 						mecho -n "Creating SQL script for server '"
@@ -551,8 +540,7 @@ doDBOperation ()
 						mecho -n "Removing SQL script... "
 						rm ${tmpSQLScript}
 						mecho "Done"
-					elif [ "${nextStep}" = "A" ]
-					then
+					elif [ "${nextStep}" = "A" ] ; then
 						# alter existing pma database
 						mecho ""
 						mecho -n "Creating SQL script for server '"
@@ -568,8 +556,7 @@ doDBOperation ()
 						mecho -n "Removing SQL script... "
 						rm ${tmpSQLScript}
 						mecho "Done"
-					elif [ "${nextStep}" = "D" ]
-					then
+					elif [ "${nextStep}" = "D" ] ; then
 						# drop pma database
 						mecho ""
 						mecho -n "Removing pma database '"
@@ -633,8 +620,7 @@ if [ ! -f /var/install/package/mysql ] ; then
     exit 1
 fi
 
-until [ "${inputValue}" = "q" ]
-  do
+until [ "${inputValue}" = "q" ] ; do
   	mecho ""
   	mecho "This script will create, alter or delete the pma database. To do"
   	mecho "this you have to choose one of the available servers and enter name"
@@ -643,8 +629,7 @@ until [ "${inputValue}" = "q" ]
 	/var/install/bin/phpmyadmin-tools-listservers
 
     inputValue=`/var/install/bin/ask "Please choose a server, 'q' for quit: " "" "*"`
-    if [ "${inputValue}" != "q" ] && [ ${inputValue} -gt 0 ]
-    then
+    if [ "${inputValue}" != "q" ] && [ ${inputValue} -gt 0 ] ; then
 		doDBOperation ${inputValue}
     fi
   done

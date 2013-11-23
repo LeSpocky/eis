@@ -32,18 +32,15 @@ doDBOperation ()
 	givenServernumber=$1
 
 	# check if $givenServernumber is in range
-	if [ "${givenServernumber}" -gt 0 -a "${givenServernumber}" -le "${PHPMYADMIN_SERVER_N}" ]
-	then
+	if [ "${givenServernumber}" -gt 0 -a "${givenServernumber}" -le "${PHPMYADMIN_SERVER_N}" ] ; then
 
 	    # check if entered server is active
 	    eval active='${PHPMYADMIN_SERVER_'${givenServernumber}'_ACTIVE}'
-	    if [ "${active}" = "yes" ]
-	    then
+	    if [ "${active}" = "yes" ] ; then
 
 	        # check if advanced features are activated
 	        eval advancedFeaturesActive='${PHPMYADMIN_SERVER_'${givenServernumber}'_ADVANCED_FEATURES}'
-			if [ "${advancedFeaturesActive}" == "yes" ]
-			then
+			if [ "${advancedFeaturesActive}" == "yes" ] ; then
 		        eval host='${PHPMYADMIN_SERVER_'${givenServernumber}'_HOST}'
 		        eval port='${PHPMYADMIN_SERVER_'${givenServernumber}'_PORT}'
 	            eval pmadb='${PHPMYADMIN_SERVER_'${givenServernumber}'_PMADB}'
@@ -68,8 +65,7 @@ doDBOperation ()
 				mecho "'."
 				mecho "If the pma user is not existing, it will be created."
 				executeSQLScript=`/var/install/bin/ask "Continue" "y"`
-				if [ "${executeSQLScript}" = "yes" ]
-				then
+				if [ "${executeSQLScript}" = "yes" ] ; then
 					${mysql_base_dir}/bin/mysql -h ${host} -u${dbAdmin} -p${dbAdminPass} -e"GRANT SELECT, INSERT, DELETE, UPDATE ON ${pmadb}.* TO ${controluser}@${pmaHost};"
 					mecho -info "Done"
 				else
@@ -108,8 +104,7 @@ if [ ! -f /var/install/package/mysql ] ; then
     exit 1
 fi
 
-until [ "${inputValue}" = "q" ]
-  do
+until [ "${inputValue}" = "q" ] ; do
   	mecho ""
   	mecho "This script will create the pma controluser or alter his rights"
   	mecho "if the user exists. To do this you have to choose one of the"
@@ -119,8 +114,7 @@ until [ "${inputValue}" = "q" ]
 	/var/install/bin/phpmyadmin-tools-listservers
 
     inputValue=`/var/install/bin/ask "Please choose a server, 'q' for quit: " "" "*"`
-    if [ "${inputValue}" != "q" ] && [ ${inputValue} -gt 0 ]
-    then
+    if [ "${inputValue}" != "q" ] && [ ${inputValue} -gt 0 ] ; then
 		doDBOperation ${inputValue}
     fi
   done

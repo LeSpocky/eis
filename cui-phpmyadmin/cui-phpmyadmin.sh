@@ -25,6 +25,8 @@ phpMyAdminVersion='3.5.5'
 
 config_php=/etc/phpmyadmin/config.inc.php
 sweKeyConfigured=false
+ownerToUse='root:root'
+
 
 # ----------------------------------------------------------------------------
 # Setup the boolean values as php they want
@@ -346,14 +348,12 @@ EOF
     # ------------------------
     # Count for active servers
     idx1=1
-    while [ "${idx}" -le "${PHPMYADMIN_SERVER_N}" ]
-    do
+    while [ "${idx}" -le "${PHPMYADMIN_SERVER_N}" ] ; do
 
         eval active='${PHPMYADMIN_SERVER_'${idx}'_ACTIVE}'
         # -------------
         # Begin $active
-        if [ "${active}" == 'yes' ]
-        then
+        if [ "${active}" = 'yes' ] ; then
 
             eval host='${PHPMYADMIN_SERVER_'${idx}'_HOST}'
 
@@ -384,26 +384,22 @@ EOF
 
             user=''
             password=''
-            if [ "${authType}" == 'http' ]
-            then
+            if [ "${authType}" = 'http' ] ; then
                 # ------------------------------------------------
                 # Auth via http is requested. No more steps to do.
                 fileconf='http'
-            elif [ "${authType}" == 'cookie' ]
-            then
+            elif [ "${authType}" = 'cookie' ] ; then
                 # --------------------------------------------------
                 # Auth via cookie is requested. No more steps to do.
                 fileconf='cookie'
-            elif [ "${authType}" == 'config' ]
-            then
+            elif [ "${authType}" = 'config' ] ; then
                 # ------------------------------------------------
                 # Auth via configuration is requested. Extract the
                 # username and password to use.
                 user=`echo ${authMethod} | cut -d ":" -f 2`
                 password=`echo ${authMethod} | cut -d ":" -f 3`
                 fileconf="config:${user}"
-            elif [ "${authType}" == 'signon' ]
-            then
+            elif [ "${authType}" = 'signon' ] ; then
                 # ----------------------------------------------------------
                 # Auth via single sign on is requested. No more steps to do.
                 fileconf='signon'
@@ -413,15 +409,13 @@ EOF
             # Extract the settings for swekeyfile usage
             eval authSweKey='${PHPMYADMIN_SERVER_'${idx}'_AUTH_SWEKEY}'
             authSweKey=${authSweKey:-no}  # Set to 'no' if empty
-            if [ ${authSweKey} == 'yes' ]
-            then
+            if [ ${authSweKey} = 'yes' ] ; then
 	            eval sweKeyNumber='${PHPMYADMIN_SERVER_'${idx}'_AUTH_SWEKEY_N}'
 				sweKeyNumber=${sweKeyNumber:-0}  # Set to 0 if empty
 	            # ---------------------------------
 	            # Extract swekey ID and name to use
                 idx2=1
-                while [ "${idx2}" -le "${sweKeyNumber}" ]
-                do
+                while [ "${idx2}" -le "${sweKeyNumber}" ] ; do
 		            eval sweKeyID='${PHPMYADMIN_SERVER_'${idx}'_AUTH_SWEKEY_'${idx2}'_ID}'
 	                eval sweKeyNameToUse='${PHPMYADMIN_SERVER_'${idx}'_AUTH_SWEKEY_'${idx2}'_NAME}'
 	                echo "${sweKeyID}:${sweKeyNameToUse}" >> /tmp/swekey-entries-$$
@@ -436,16 +430,14 @@ EOF
             # Create list of DBs to show
             eval onlyDBAmount='${PHPMYADMIN_SERVER_'${idx}'_ONLY_DB_N}'
             onlyDBAmount=${onlyDBAmount:-0}  # Set to 0 if empty
-            if [ ${onlyDBAmount} -eq 0 ]
-            then
+            if [ ${onlyDBAmount} -eq 0 ] ; then
                 # ------------
                 # Show all DBs
                 dbsToShow="'*'"
             else
                 idx2=1
                 separator=''
-                while [ "${idx2}" -le "${onlyDBAmount}" ]
-                do
+                while [ "${idx2}" -le "${onlyDBAmount}" ] ; do
                     eval currentDB='${PHPMYADMIN_SERVER_'${idx}'_ONLY_DB_'${idx2}'_NAME}'
                     dbsToShow="${dbsToShow}${separator}'${currentDB}'"
                     separator=', '
@@ -478,8 +470,7 @@ EOF
 \$cfg['Servers'][\$i]['extension']          = "${extension}";
 \$cfg['Servers'][\$i]['connect_type']       = "${connect_type}";
 EOF
-            if [ "${connect_type}" == 'socket' ]
-            then
+            if [ "${connect_type}" = 'socket' ] ; then
                 echo "\$cfg['Servers'][\$i]['socket']             = \"${PHP5_EXT_MYSQL_SOCKET}\";" >> ${config_php}
             fi
             cat >> ${config_php} <<EOF
@@ -490,8 +481,7 @@ EOF
 EOF
 
             eval advancedFeaturesActive='${PHPMYADMIN_SERVER_'${idx}'_ADVANCED_FEATURES}'
-            if [ "${advancedFeaturesActive}" == 'yes' ]
-            then
+            if [ "${advancedFeaturesActive}" = 'yes' ] ; then
                 eval pmadb='${PHPMYADMIN_SERVER_'${idx}'_PMADB}'
                 eval controluser='${PHPMYADMIN_SERVER_'${idx}'_CONTROLUSER}'
                 eval controlpass='${PHPMYADMIN_SERVER_'${idx}'_CONTROLPASS}'
@@ -532,7 +522,7 @@ EOF
             fi
 
 #        eval queryhistorydb='${PHPMYADMIN_SERVER_'${idx}'_QUERYHISTORYDB}'
-#        if [ "${queryhistorydb}" == 'yes' ]
+#        if [ "${queryhistorydb}" = 'yes' ]
 #        then
 #            eval queryhistorymax='${PHPMYADMIN_SERVER_'${idx}'_QUERYHISTORYMAX}'
 #            eval queryhistorytab='${PHPMYADMIN_SERVER_'${idx}'_QUERYHISTORYTAB}'
@@ -571,8 +561,7 @@ EOF
 
 EOF
 
-    if [ "${PHPMYADMIN_LAYOUT}" == 'yes' ]
-    then
+    if [ "${PHPMYADMIN_LAYOUT}" = 'yes' ] ; then
         cat >> ${config_php} <<EOF
 
 /* Configuration of left frame */
@@ -627,8 +616,7 @@ EOF
 
     fi
 
-    if [ "${PHPMYADMIN_MISC_FEATURES}" == 'yes' ]
-    then
+    if [ "${PHPMYADMIN_MISC_FEATURES}" = 'yes' ] ; then
         cat >> ${config_php} <<EOF
 
 /* Configuration of security settings */
@@ -687,28 +675,24 @@ checkCredentials ()
 {
     rtc=0
     idx=1
-    while [ "${idx}" -le "${PHPMYADMIN_SERVER_N}" ]
-    do
+    while [ "${idx}" -le "${PHPMYADMIN_SERVER_N}" ] ; do
         # ---------------------------------------------------
         # Extract the settings for the type of authentication
         eval authMethod='${PHPMYADMIN_SERVER_'${idx}'_AUTH_METHOD}'
         local authType=`echo ${authMethod} | cut -d ":" -f 1`
         local user=''
-        if [ "${authType}" == 'config' ]
-        then
+        if [ "${authType}" = 'config' ] ; then
             # ----------------------------------------------------------
             # Auth via configuration is requested. Extract the username.
             user=`echo ${authMethod} | cut -d ":" -f 2`
-            if [ "${user}" == 'root' ] || [ "${user}" == 'eis' ]
-            then
+            if [ "${user}" = 'root' ] || [ "${user}" = 'eis' ] ; then
                 mecho -error "Username '${user}' is not allowed, please change this!"
                 rtc=1
             fi
         fi
         idx=`/usr/bin/expr ${idx} + 1`
     done
-    if [ ${rtc} -ne 0 ]
-    then
+    if [ ${rtc} -ne 0 ] ; then
         exit ${rtc}
     fi
     return
@@ -726,14 +710,11 @@ checkSocketSetup ()
     # ------------------------------
     # Counter for configured servers
     idx=1
-    while [ "${idx}" -le "${PHPMYADMIN_SERVER_N}" ]
-    do
+    while [ "${idx}" -le "${PHPMYADMIN_SERVER_N}" ] ; do
         eval active='${PHPMYADMIN_SERVER_'${idx}'_ACTIVE}'
-        if [ "${active}" == 'yes' ]
-        then
+        if [ "${active}" = 'yes' ] ; then
             eval connect_type='${PHPMYADMIN_SERVER_'${idx}'_CONNECT_TYPE}'
-            if [ "${connect_type}" == 'socket' ]
-            then
+            if [ "${connect_type}" = 'socket' ] ; then
                 socketShouldBeUsed=true
                 break
             fi
@@ -741,23 +722,19 @@ checkSocketSetup ()
         idx=`/usr/bin/expr ${idx} + 1`
     done
 
-    if ${socketShouldBeUsed}
-    then
+    if ${socketShouldBeUsed} ; then
         # Check the values out of the php configuration
-        if [ "${PHP5_EXT_MYSQL}" != 'yes' ]
-        then
+        if [ "${PHP5_EXT_MYSQL}" != 'yes' ] ; then
             mecho -error " If you set PHPMYADMIN_SERVER_%_CONNECT_TYPE='socket', PHP5_EXT_MYSQL "
             mecho -error " must be activated on the php5 configuration together with a valid    "
             mecho -error " socket on PHP5_EXT_MYSQL_SOCKET!                                     "
             exit 1
         fi
-        if [ -z "${PHP5_EXT_MYSQL_SOCKET}" ]
-        then
+        if [ -z "${PHP5_EXT_MYSQL_SOCKET}" ] ; then
             mecho -error " No socket configured on php5 configuration under PHP5_EXT_MYSQL_SOCKET! "
             exit 1
         fi
-        if [ ! -S "${PHP5_EXT_MYSQL_SOCKET}" ]
-        then
+        if [ ! -S "${PHP5_EXT_MYSQL_SOCKET}" ] ; then
             mecho -error " The configured socket on PHP5_EXT_MYSQL_SOCKET on the php5 configuration "
             mecho -error " does not exist!                                                          "
             exit 1
@@ -772,8 +749,7 @@ checkSocketSetup ()
 # ----------------------------------------------------------------------------
 createSweKeyConfig ()
 {
-	if ${sweKeyConfigured}
-	then
+	if ${sweKeyConfigured} ; then
 		cat /etc/default.d/swekey.sample.conf.part1 >  /etc/swekey.conf
 		sort --unique /tmp/swekey-entries-$$        >> /etc/swekey.conf
 		echo "" >> /etc/swekey.conf
@@ -795,15 +771,13 @@ removePhpMyAdmin ()
 # ----------------------------------------------------------------------------
 # Main
 # ----------------------------------------------------------------------------
-if [ "$1" == '--quiet' ]
-then
+if [ "$1" = '--quiet' ] ; then
     quietmode=true
 else
     quietmode=false
 fi
 
-if [ "${START_PHPMYADMIN}" == 'yes' ]
-then
+if [ "${START_PHPMYADMIN}" = 'yes' ] ; then
     checkCredentials
 #    checkSocketSetup
     createBooleanValues
