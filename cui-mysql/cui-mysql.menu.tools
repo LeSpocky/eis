@@ -1,7 +1,7 @@
 <!-- /var/install/menu/setup.services.mysql.tools.menu -->
-<title>MySQL server administration tools</title>
+<title>MySQL server administration tools (dummy)</title>
 <package>mysql</package>
 <script file="">Set MySQL-root password</script>
-<script file="mysql-tools-userhandling.cui.sh">Edit, remove MySQL user</script>
+<script file="">Edit, remove MySQL user</script>
 <script file="">Backup database</script>
 <script file="">Restore database</script>
