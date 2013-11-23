@@ -26,7 +26,7 @@ pm_module_offs="99000"
 # Expects: <nothing>
 # Returns: <nothing> but success or failure
 #------------------------------------------------------------------------------
-function pm_initmodule()
+pm_initmodule()
 {
     cui_load_addon "/usr/lib/cui-addons/libapk-addon.so.2.0.0"
     if [ "$p2" != 0 ]
@@ -43,7 +43,7 @@ function pm_initmodule()
 # Expects: $1  <-- Handle         : menu window handle
 # Returns: nothing
 #------------------------------------------------------------------------------
-function pm_repos_tomenu()
+pm_repos_tomenu()
 {
     cui_send "C" "$[${pm_module_offs} + ${PM_API_REPOSTOMENU}]" "$@"
     cui_wait_ack
@@ -55,7 +55,7 @@ function pm_repos_tomenu()
 # Expects: $1  <-- Id         : repository id (menu index)
 # Returns: $p2 repository name
 #------------------------------------------------------------------------------
-function pm_get_repo_by_id()
+pm_get_repo_by_id()
 {
     cui_send "C" "$[${pm_module_offs} + ${PM_API_GETREPOBYID}]" "$@"
     cui_wait_ack
@@ -68,7 +68,7 @@ function pm_get_repo_by_id()
 #          $2  <-- Section        : Name of section or empty string
 # Returns: nothing
 #------------------------------------------------------------------------------
-function pm_packages_tolist()
+pm_packages_tolist()
 {
     cui_send "C" "$[${pm_module_offs} + ${PM_API_PACKAGESTOLIST}]" "$@"
     cui_wait_ack
@@ -83,7 +83,7 @@ function pm_packages_tolist()
 #          $4  <-- Version        : Package version or empty string
 # Returns: nothing
 #------------------------------------------------------------------------------
-function pm_info_totext()
+pm_info_totext()
 {
     cui_send "C" "$[${pm_module_offs} + ${PM_API_INFOTOTEXTVIEW}]" "$@"
     cui_wait_ack
@@ -96,7 +96,7 @@ function pm_info_totext()
 #          $2  <-- Section        : Name of section or empty string
 # Returns: nothing
 #------------------------------------------------------------------------------
-function pm_installed_tolist()
+pm_installed_tolist()
 {
     cui_send "C" "$[${pm_module_offs} + ${PM_API_INSTALLED_TOLIST}]" "$@"
     cui_wait_ack
@@ -108,7 +108,7 @@ function pm_installed_tolist()
 # Expects: $1  <-- Package        : Name of package
 # Returns: $p2 required from
 #------------------------------------------------------------------------------
-function pm_delpackage_tolist()
+pm_delpackage_tolist()
 {
     cui_send "C" "$[${pm_module_offs} + ${PM_API_DELPACKAGES_TOLIST}]" "$@"
     cui_wait_ack
