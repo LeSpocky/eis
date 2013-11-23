@@ -1,5 +1,5 @@
-phpMyAdmin for alpeis (eisfair-ng) - MySQL-Administration mit phpMyAdmin
-========================================================================
+phpMyAdmin for eisfair-ng - MySQL-Administration mit phpMyAdmin
+===============================================================
 
 1. phpMyAdmin - Was ist das?
 ============================
@@ -21,14 +21,12 @@ Im Folgenden werden die Moeglichkeiten des Setups erlaeutert.
      Zeigt diesen Text an.
 
   2. View original documentation
-     Seit der Version 2.11.5.1 des Basispaketes ist keine Plaintext-Doku mehr
-     enthalten. Aus diesem Grund bitte die html-Version verwenden, welche sich
-     bei Verwendung der Default-Einstellungen nach der Installation des
-     Paketes unter
+     Bei Verwendung der Default-Einstellungen laesst sich die html-Version
+     der Doku unter
 
-       http://<your-URL>/phpmyadmin/Documentation.html
+       http://<URL>/phpmyadmin/Documentation.html
 
-     aufrufen laesst.
+     aufrufen.
 
   3. Edit configuration
      Mit diesem Menuepunkt wird die Konfiguration von phpMyAdmin vorgenommen.

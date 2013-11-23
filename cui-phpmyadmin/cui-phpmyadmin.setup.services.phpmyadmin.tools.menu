@@ -1,6 +1,5 @@
 <!-- Creation:     25.01.2007 starwarsfan -->
-<!-- Last Update:   -->
-<package>phpmyadmin</package>
+<package>cui-phpmyadmin</package>
 <title>phpMyAdmin Tools</title>
-<script file="/var/install/bin/phpmyadmin-tools-pma-db">Create/Alter/Remove pma database</script>
-<script file="/var/install/bin/phpmyadmin-tools-pma-user">Create pma controluser</script>
+<script file="/var/install/bin/phpmyadmin-tools-pma-db.sh">Create/Alter/Remove pma database</script>
+<script file="/var/install/bin/phpmyadmin-tools-pma-user.sh">Create pma controluser</script>

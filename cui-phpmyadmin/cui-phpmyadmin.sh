@@ -1,9 +1,8 @@
 #!/bin/sh
 # ----------------------------------------------------------------------------
-# /var/install/config.d/phpmyadmin.sh   phpMyAdmin configuration
+# /var/install/config.d/cui-phpmyadmin.sh - phpMyAdmin configuration
 #
 # Creation:     2006-09-15 starwarsfan
-# Last Update:  
 #
 # Copyright (c) 2006--2013 The eisfair Team, <team(at)eisfair(dot)org>
 # Maintained by Yves Schumann <yves(at)eisfair(dot)org>
@@ -20,7 +19,7 @@ phpMyAdminVersion='3.5.5'
 #set -x
 
 . /etc/config.d/phpmyadmin
-. /etc/config.d/apache2_php5
+. /etc/config.d/php-apache2
 . /var/install/bin/phpmyadmin-helpers.sh
 . /var/install/include/eislib
 

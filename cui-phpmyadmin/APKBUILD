@@ -12,12 +12,15 @@ depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.post-install $pkgname.post-deinstall"
 subpackages=""
-source="${pkgname}.txt
-        ${pkgname}.sh
-        ${pkgname}-update.sh
-        ${pkgname}.help
+source="${pkgname}.help
         ${pkgname}.setup.services.phpmyadmin.menu
         ${pkgname}.setup.services.phpmyadmin.tools.menu
+        ${pkgname}.sh
+        ${pkgname}.txt
+        ${pkgname}-helpers.sh
+        ${pkgname}-tools-pma-db.sh
+        ${pkgname}-tools-pma-user.sh
+        ${pkgname}-update.sh
 "
 
 _builddir=
@@ -48,6 +51,9 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.help                                 ${pkgdir}/var/install/help/phpmyadmin || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.phpmyadmin.menu       ${pkgdir}/var/install/menu/setup.services.phpmyadmin.menu || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.phpmyadmin.tools.menu ${pkgdir}/var/install/menu/setup.services.phpmyadmin.tools.menu || return 1
+	install -D -m644 ${srcdir}/${pkgname}-helpers.sh                           ${pkgdir}/var/install/bin/phpmyadmin-helpers.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}-tools-pma-db.sh                      ${pkgdir}/var/install/bin/phpmyadmin-tools-pma-db.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}-tools-pma-user.sh                    ${pkgdir}/var/install/bin/phpmyadmin-tools-pma-user.sh || return 1
 }
 md5sums="2021f0d6dba1adc4ddd673fc033f469b  cui-phpmyadmin.txt
 d29d2e4d946181fd902c68a0ab387683  cui-phpmyadmin.sh
