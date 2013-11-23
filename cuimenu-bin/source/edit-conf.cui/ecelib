@@ -24,7 +24,7 @@ value=""
 #          $2  <-- Variable-Name  : String (something like "FOO_2_NAME")
 # Returns: $p2 --> Value          : String
 #------------------------------------------------------------------------------
-function ece_get_value()
+ece_get_value()
 {
     cui_send "C" "${ECE_API_GETVALUE}" "$@"
     cui_wait_ack
@@ -35,7 +35,7 @@ function ece_get_value()
 # setdata
 # ece --> preinitialize value before the dialog is opened
 #----------------------------------------------------------------------------
-function setdata()
+setdata()
 {
     value="$p2"
     cui_return ""
@@ -45,7 +45,7 @@ function setdata()
 # getdata
 # ece --> request modified value after the dialog has been closed with IDOK
 #----------------------------------------------------------------------------
-function getdata()
+getdata()
 {
     cui_return "$value"
 }
@@ -62,7 +62,7 @@ ECE_SELECT_LIST_DLG_IDC_CANCEL=12
 # ece_select_list_dlg_ok_button
 # OK button clicked callback
 #----------------------------------------------------------------------------
-function ece_select_list_dlg_ok_button()
+ece_select_list_dlg_ok_button()
 {
     local win="$p2"
     local ctrl
@@ -88,7 +88,7 @@ function ece_select_list_dlg_ok_button()
 # ece_select_list_dlg_cancel_button
 # Cancel button clicked callback
 #----------------------------------------------------------------------------
-function ece_select_list_dlg_cancel_button()
+ece_select_list_dlg_cancel_button()
 {
     local win="$p2"
     cui_window_close "$win" "${IDCANCEL}"
@@ -99,7 +99,7 @@ function ece_select_list_dlg_cancel_button()
 # ece_select_list_dlg_create_hook (for creation of child windows)
 #    $p2 --> dialog window handle
 #----------------------------------------------------------------------------
-function ece_select_list_create_hook()
+ece_select_list_create_hook()
 {
     local dlg="$p2"
     local ctrl
@@ -165,7 +165,7 @@ function ece_select_list_create_hook()
 #          $3  <-- SelList       : String ("Value1,Value2,Value3")
 # Returns: Nothing
 #----------------------------------------------------------------------------
-function ece_select_list_dlg()
+ece_select_list_dlg()
 {
     local win="$1"
     local title="$2"
@@ -203,7 +203,7 @@ ECE_COMMENT_LIST_DLG_IDC_CANCEL=12
 # ece_comment_list_dlg_ok_button
 # OK button clicked callback
 #----------------------------------------------------------------------------
-function ece_comment_list_dlg_ok_button()
+ece_comment_list_dlg_ok_button()
 {
     local win="$p2"
     local ctrl
@@ -230,7 +230,7 @@ function ece_comment_list_dlg_ok_button()
 # ece_comment_list_dlg_cancel_button
 # Cancel button clicked callback
 #----------------------------------------------------------------------------
-function ece_comment_list_dlg_cancel_button()
+ece_comment_list_dlg_cancel_button()
 {
     local win="$p2"
     cui_window_close "$win" "${IDCANCEL}"
@@ -241,7 +241,7 @@ function ece_comment_list_dlg_cancel_button()
 # ece_comment_list_dlg_create_hook (for creation of child windows)
 #    $p2 --> dialog window handle
 #----------------------------------------------------------------------------
-function ece_comment_list_create_hook()
+ece_comment_list_create_hook()
 {
     local dlg="$p2"
     local ctrl
@@ -364,7 +364,7 @@ function ece_comment_list_create_hook()
 #          $3  <-- SelList       : String ("Value1,Value2,Value3")
 # Returns: Nothing
 #----------------------------------------------------------------------------
-function ece_comment_list_dlg()
+ece_comment_list_dlg()
 {
     local win="$1"
     local title="$2"
