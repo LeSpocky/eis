@@ -9,7 +9,7 @@
 #
 #------------------------------------------------------------------------------
 packages_name="bind"
-DataDir="/var/lib/named"
+DataDir="/var/named"
 
 # include configlib
 . /var/install/include/configlib
@@ -75,77 +75,74 @@ BIND_BIND_IP_ADDRESS=""
 BIND_PORT_53_ONLY="no"
 BIND_DEBUG_LOGFILE="no"
 
+# include default values
+. /etc/default.d/${packages_name}
+
 ### ---------------------------------------------------------------------------
 ### rename old variables
 ### ---------------------------------------------------------------------------
 function rename_old_variables
 {
+    # read old config
+    [ -f /etc/config.d/${packages_name} ] &&  . /etc/config.d/${packages_name}
+
     # update from DNS package
-    if [ -f /etc/config.d/dns ]
-    then
-        . /etc/config.d/dns
-        START_BIND9="$START_DNS"
-        if [ -n "$DNS_FORWARDERS" ]
-        then
-            cnt="1"
+    [ -f /etc/config.d/bind9 ] || return 0
+    . /etc/config.d/bind9
+    START_BIND="$START_BIND9"
+    if [ -n "$DNS_FORWARDERS" ] ; then
+       cnt="1"
             for s in $DNS_FORWARDERS
             do
                 eval BIND_FORWARDER_${cnt}_IP=${s}
                 BIND_FORWARDER_N=${cnt}
                 cnt=`expr $cnt + 1`
             done
-        fi
-        BIND_DEBUG_LOGFILE="$DNS_VERBOSE"
-        BIND_N="1"
-        BIND_1_NAME="$DNS_DOMAIN_NAME"
-        BIND_1_MASTER="yes"
-        # no secondary NS records
-        BIND_1_NS_N="0"
-        # MX records
-        BIND_1_MX_N="$DNS_MX_N"
-        cnt="1"
-        while [ ${cnt} -le ${BIND_1_MX_N} ]
-        do
-            eval 'BIND_1_MX_'${cnt}'_NAME'='$DNS_MX_'${cnt}'_HOST'
-            eval 'BIND_1_MX_'${cnt}'_PRIORITY'='$DNS_MX_'${cnt}'_PRIORITY'
-            cnt=`expr $cnt + 1`
-        done
-        BIND_1_HOST_N="$DNS_HOST_N"
-        cnt="1"
-        while [ ${cnt} -le ${BIND_1_HOST_N} ]
-        do
-            eval 'BIND_1_HOST_'${cnt}'_NAME'='$DNS_HOST_'${cnt}'_NAME'
-            eval 'BIND_1_HOST_'${cnt}'_IP'='$DNS_HOST_'${cnt}'_IP'
-            eval n_alias='$DNS_HOST_'${cnt}'_ALIAS_N'
-            tmpnam1=""
-            if [ ! -z "$n_alias" ]
-            then
-                n="1"
-                while [ ${n} -le ${n_alias} ]
-                do
-                    eval tmpnam2='$DNS_HOST_'${cnt}'_ALIAS_'${n}
-                    tmpnam3=`echo $tmpnam2 | sed -e 's/^\([^\.]*\)\..*$/\1/'`
-                    if [ -z "$tmpnam1" ]
+    fi
+    BIND_DEBUG_LOGFILE="$DNS_VERBOSE"
+    BIND_N="1"
+    BIND_1_NAME="$DNS_DOMAIN_NAME"
+    BIND_1_MASTER="yes"
+    # no secondary NS records
+    BIND_1_NS_N="0"
+    # MX records
+    BIND_1_MX_N="$DNS_MX_N"
+    cnt="1"
+    while [ ${cnt} -le ${BIND_1_MX_N} ]
+    do
+        eval 'BIND_1_MX_'${cnt}'_NAME'='$DNS_MX_'${cnt}'_HOST'
+        eval 'BIND_1_MX_'${cnt}'_PRIORITY'='$DNS_MX_'${cnt}'_PRIORITY'
+        cnt=`expr $cnt + 1`
+    done
+    BIND_1_HOST_N="$DNS_HOST_N"
+    cnt="1"
+    while [ ${cnt} -le ${BIND_1_HOST_N} ]
+    do
+        eval 'BIND_1_HOST_'${cnt}'_NAME'='$DNS_HOST_'${cnt}'_NAME'
+        eval 'BIND_1_HOST_'${cnt}'_IP'='$DNS_HOST_'${cnt}'_IP'
+        eval n_alias='$DNS_HOST_'${cnt}'_ALIAS_N'
+        tmpnam1=""
+        if [ -n "$n_alias" ] ; then
+            n="1"
+            while [ ${n} -le ${n_alias} ]
+            do
+                eval tmpnam2='$DNS_HOST_'${cnt}'_ALIAS_'${n}
+                tmpnam3=`echo $tmpnam2 | sed -e 's/^\([^\.]*\)\..*$/\1/'`
+                if [ -z "$tmpnam1" ]
+                then
+                    tmpnam1="$tmpnam3"
+                else
+                    if [ -z "`echo $tmpnam1 | grep ${tmpnam3}`" ]
                     then
-                        tmpnam1="$tmpnam3"
-                    else
-                        if [ -z "`echo $tmpnam1 | grep ${tmpnam3}`" ]
-                        then
-                            tmpnam1="$tmpnam1 $tmpnam3"
-                        fi
+                        tmpnam1="$tmpnam1 $tmpnam3"
                     fi
-                    n=`expr $n + 1`
-                done
-            fi
-            eval BIND_1_HOST_${cnt}_ALIAS=\"$tmpnam1\"
-            cnt=`expr $cnt + 1`
-        done
-    fi
-    # read old values
-    if [ -f /etc/config.d/${packages_name} ]
-    then
-        . /etc/config.d/${packages_name}
-    fi
+                fi
+                n=`expr $n + 1`
+            done
+        fi
+        eval BIND_1_HOST_${cnt}_ALIAS=\"$tmpnam1\"
+        cnt=`expr $cnt + 1`
+    done
 }
 
 

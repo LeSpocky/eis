@@ -1,9 +1,9 @@
-<!-- /var/install/menu/setup.services.bind.menu  -->
-<package>bind</package>
+<!-- /var/install/menu/setup.services.named.menu  -->
+<package>named</package>
 <title>BIND domain name server administration</title>
-<doc file="bind.txt">View documentation</doc>
+<doc file="named.txt">View documentation</doc>
 <edit>Edit configuration</edit>
-<menu package="bind" file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
+<menu package="named" file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
 <init task="start">Start</init>
 <init task="stop">Stop</init>
 <init task="status">Show status</init>

@@ -3,11 +3,9 @@
 # /var/install/config.d/bind.sh - BIND configuration
 # Creation:     2004-08-19 jv jens@eisfair.org
 #-----------------------------------------------------------------------------
-bind_root='/var/lib/named'
 
-# include bind_run_user
-bind_run_user=`grep bind_run_user= /etc/init.d/bind | sed "s/bind_run_user=//g"`
-[ -z "$bind_run_user" ] && bind_run_user="bind"
+# define bind_run_user
+bind_run_user="named"
 
 # use unix-time for zone serial
 bind9_zoneserial=`date '+%s'`
@@ -19,47 +17,7 @@ bind9_hostname="$HOSTNAME"
 #include eisdate-time
 . /var/install/include/eistime
 # include name of bind run user for chroot and daemon
-. ${bind_root}/etc/bind/binduser.conf
-
-### --------------------------------------------------------------------------
-### Write dhcp leases list
-### --------------------------------------------------------------------------
-function write_DHCP_hostlist
-{
-    # exists a dhcp leases file (eisfair-1 only)
-    if [ -f /var/lib/dhcp/dhcpd.leases -a -x /usr/local/bind9/dhcpread ]
-    then
-        # extract dhcp zone, ip, hostname ,revers ip
-        /usr/local/bind9/dhcpread /var/lib/dhcp/dhcpd.leases > ${bind_root}/etc/bind/master/dhcp.txt
-    fi
-}
-
-### --------------------------------------------------------------------------
-### Append dhcp leases list
-### --------------------------------------------------------------------------
-function append_DHCP_A_records
-{
-    dhcp_zone_name=$1
-
-    if [ -f ${bind_root}/etc/bind/master/dhcp.txt ]
-    then
-        ### Set seperator
-        old_ifs=$IFS
-        IFS=";"
-
-        while read csv_zone_name csv_client_ip csv_client_name csv_reverse
-        do
-            if [ "$csv_zone_name" == "$dhcp_zone_name" ]
-            then
-                if ! grep -q "^${csv_client_name} " ${bind_root}/etc/bind/master/${dhcp_zone_name}.zone
-                then
-                    echo "${csv_client_name}    IN    A    ${csv_client_ip} " >> ${bind_root}/etc/bind/master/${dhcp_zone_name}.zone
-                fi
-            fi
-        done < ${bind_root}/etc/bind/master/dhcp.txt
-        IFS=$old_ifs
-    fi
-}
+. /etc/bind/binduser.conf
 
 
 ### --------------------------------------------------------------------------
@@ -70,15 +28,12 @@ function write_zone_file
     zone_name=$1
 
     eval dns_master='$BIND_'${znr}'_MASTER_NS'
-    if [ -z "$dns_master" ]
-    then
-        dns_master="${bind9_hostname}.${zone_name}"
-    fi
+    [ -z "$dns_master" ] && dns_master="${bind9_hostname}.${zone_name}"
 
     ### ---------------------------------------------------------------------------------
     ### write header
     ### ---------------------------------------------------------------------------------
-cat > ${bind_root}/etc/bind/master/${zone_name}.zone <<EOF
+cat > /etc/bind/master/${zone_name}.zone <<EOF
 \$TTL 86400              ; 1 day
 @              IN   SOA  ${dns_master}.   root.${zone_name}. (
                     ${bind9_zoneserial} ; serial
@@ -93,15 +48,14 @@ EOF
     ### create secondary NS records
     ### ---------------------------------------------------------------------------------
     eval ncnt='$BIND_'${znr}'_NS_N'
-    if [ ! -z "$ncnt" ]
-    then
+    if [ -n "$ncnt" ] ; then
         xn="1"
         while [ $xn -le $ncnt ]
         do
             eval tempname='$BIND_'${znr}'_NS_'$xn'_NAME'
-            if ! grep -q "^@              IN   NS   ${tempname}. " ${bind_root}/etc/bind/master/${zone_name}.zone
+            if ! grep -q "^@              IN   NS   ${tempname}. " /etc/bind/master/${zone_name}.zone
             then
-                echo "@              IN   NS   ${tempname}. " >> ${bind_root}/etc/bind/master/${zone_name}.zone
+                echo "@              IN   NS   ${tempname}. " >> /etc/bind/master/${zone_name}.zone
             fi
             xn=`expr $xn + 1`
         done
@@ -111,14 +65,13 @@ EOF
     ### create all MX records
     ### ---------------------------------------------------------------------------------
     eval ncnt='$BIND_'${znr}'_MX_N'
-    if [ ! -z "$ncnt" ]
-    then
+    if [ -n "$ncnt" ] ; then
         xn=1
         while [ $xn -le $ncnt ]
         do
             eval tempname='$BIND_'${znr}'_MX_'${xn}'_NAME'
             eval tempprio='$BIND_'${znr}'_MX_'${xn}'_PRIORITY'
-            echo "@              IN   MX   $tempprio   ${tempname}. " >> ${bind_root}/etc/bind/master/${zone_name}.zone
+            echo "@              IN   MX   $tempprio   ${tempname}. " >> /etc/bind/master/${zone_name}.zone
             xn=`expr $xn + 1`
         done
     fi
@@ -126,8 +79,7 @@ EOF
     ### check and append the "empty" A record
     ### ---------------------------------------------------------------------------------
     eval ncnt='$BIND_'${znr}'_HOST_N'
-    if [ ! -z "$ncnt" ]
-    then
+    if [ -n "$ncnt" ] ; then
         xn=1
         while [ $xn -le $ncnt ]
         do
@@ -137,7 +89,7 @@ EOF
                 eval tempipnr='$BIND_'${znr}'_HOST_'${xn}'_IP'
                 if [ -n "$tempipnr" ]
                 then
-                    echo "@              IN   A    $tempipnr " >> ${bind_root}/etc/bind/master/${zone_name}.zone
+                    echo "@              IN   A    $tempipnr " >> /etc/bind/master/${zone_name}.zone
                     break
                 fi
             fi
@@ -145,7 +97,7 @@ EOF
         done
         
         # add default localhost
-        echo "localhost      IN   A    127.0.0.1 " >> ${bind_root}/etc/bind/master/${zone_name}.zone
+        echo "localhost      IN   A    127.0.0.1 " >> /etc/bind/master/${zone_name}.zone
     ### ---------------------------------------------------------------------------------
     ### check and append the A records
     ### ---------------------------------------------------------------------------------
@@ -156,9 +108,9 @@ EOF
             eval tempipnr='$BIND_'${znr}'_HOST_'${xn}'_IP'
             if [ -n "$tempname" -a -n "$tempipnr" ]
             then
-                if ! grep -q "^$tempname " ${bind_root}/etc/bind/master/${zone_name}.zone
+                if ! grep -q "^$tempname " /etc/bind/master/${zone_name}.zone
                 then
-                    echo "$tempname    IN   A    ${tempipnr} " >> ${bind_root}/etc/bind/master/${zone_name}.zone
+                    echo "$tempname    IN   A    ${tempipnr} " >> /etc/bind/master/${zone_name}.zone
                 fi
             fi
             xn=`expr $xn + 1`
@@ -172,8 +124,7 @@ EOF
         while [ $xn -le $ncnt ]
         do
             eval tempalias='$BIND_'${znr}'_HOST_'${xn}'_ALIAS'
-            if [ -n "$tempalias" ]
-            then
+            if [ -n "$tempalias" ] ; then
                 eval tempname='$BIND_'${znr}'_HOST_'${xn}'_NAME'
                 if [ -n "$tempname" ]
                 then
@@ -182,9 +133,9 @@ EOF
                 for s in $tempalias
                 do
                     # exists entry?
-                    if ! grep -q  "^$s " ${bind_root}/etc/bind/master/${zone_name}.zone
+                    if ! grep -q  "^$s " /etc/bind/master/${zone_name}.zone
                     then
-                        echo "$s    IN   CNAME ${tempname}${zone_name}. " >> ${bind_root}/etc/bind/master/${zone_name}.zone
+                        echo "$s    IN   CNAME ${tempname}${zone_name}. " >> /etc/bind/master/${zone_name}.zone
                     fi
                 done
             fi
@@ -197,11 +148,10 @@ EOF
     ### create A record from SOA if not defined
     ### ---------------------------------------------------------------------------------
     eval tempipnr='$BIND_'${znr}'_MASTER_IP'
-    if [ -n "$tempipnr" ]
-    then
-        if ! grep -q "^$bind9_hostname " ${bind_root}/etc/bind/master/${zone_name}.zone
+    if [ -n "$tempipnr" ] ; then
+        if ! grep -q "^$bind9_hostname " /etc/bind/master/${zone_name}.zone
         then
-            echo "$bind9_hostname    IN   A    $tempipnr " >> ${bind_root}/etc/bind/master/${zone_name}.zone
+            echo "$bind9_hostname    IN   A    $tempipnr " >> /etc/bind/master/${zone_name}.zone
         fi
     fi
 
@@ -210,8 +160,8 @@ EOF
     ### ---------------------------------------------------------------------------------
     append_DHCP_A_records $zone_name
 
-    chmod 0640 ${bind_root}/etc/bind/master/${zone_name}.zone
-    chown ${bind_run_user}:${bind_run_user} ${bind_root}/etc/bind/master/${zone_name}.zone
+    chmod 0640 /etc/bind/master/${zone_name}.zone
+    chown ${bind_run_user}:${bind_run_user} /etc/bind/master/${zone_name}.zone
 }
 
 
@@ -245,7 +195,7 @@ function append_DHCP_PTR_records
     dhcp_zone_name=$1
     dhcp_rev_zone=$2
 
-    if [ -f ${bind_root}/etc/bind/master/dhcp.txt ]
+    if [ -f /etc/bind/master/dhcp.txt ]
     then
         ### Set seperator
         old_ifs=$IFS
@@ -253,15 +203,14 @@ function append_DHCP_PTR_records
 
         while read csv_zone_name csv_client_ip csv_client_name csv_reverse
         do
-            if [ "$csv_zone_name" == "$dhcp_zone_name" ]
-            then
-                if ! grep -q "PTR    ${csv_client_name}.${dhcp_zone_name}." ${bind_root}/etc/bind/master/${dhcp_rev_zone}.zone
+            if [ "$csv_zone_name" == "$dhcp_zone_name" ] ; then
+                if ! grep -q "PTR    ${csv_client_name}.${dhcp_zone_name}." /etc/bind/master/${dhcp_rev_zone}.zone
                 then
                     temprvip=`get_revip $csv_client_ip`
-                    echo "${temprvip}    IN     PTR    ${csv_client_name}.${csv_zone_name}. " >> ${bind_root}/etc/bind/master/${dhcp_rev_zone}.zone
+                    echo "${temprvip}    IN     PTR    ${csv_client_name}.${csv_zone_name}. " >> /etc/bind/master/${dhcp_rev_zone}.zone
                 fi
             fi
-        done < ${bind_root}/etc/bind/master/dhcp.txt
+        done < /etc/bind/master/dhcp.txt
         IFS=$old_ifs
     fi
 }
@@ -281,9 +230,8 @@ function write_reverse_zone_file
     local write_header="0"
 
     # check if exists a revers file with the same serial
-    if [ -f ${bind_root}/etc/bind/master/${zone_name}.zone  ]
-    then
-        if ! grep -q "${bind9_zoneserial} ; serial" ${bind_root}/etc/bind/master/${zone_name}.zone
+    if [ -f /etc/bind/master/${zone_name}.zone  ] ; then
+        if ! grep -q "${bind9_zoneserial} ; serial" /etc/bind/master/${zone_name}.zone
         then
             write_header='1'
         fi
@@ -291,14 +239,10 @@ function write_reverse_zone_file
         write_header='1'
     fi
 
-    if [ "$write_header" = '1' ]
-    then
+    if [ "$write_header" = '1' ] ; then
         eval dns_master='$BIND_'${znr}'_MASTER_NS'
-        if [ -z "$dns_master" ]
-        then
-            dns_master="${bind9_hostname}.${zone_name}"
-        fi
-cat > ${bind_root}/etc/bind/master/${zone_name}.zone <<EOF
+        [ -z "$dns_master" ] && dns_master="${bind9_hostname}.${zone_name}"
+cat > /etc/bind/master/${zone_name}.zone <<EOF
 \$TTL 86400                   ; 1 day
 @              IN   SOA  ${dns_master}.    root.${zone_name}. (
                          ${bind9_zoneserial} ; serial
@@ -314,15 +258,14 @@ EOF
     ### check and append all NS records
     ### ---------------------------------------------------------------------------------
     eval ncnt='$BIND_'${znr}'_NS_N'
-    if [ ! -z "$ncnt" ]
-    then
+    if [ -n "$ncnt" ] ; then
         xn="1"
         while [ $xn -le $ncnt ]
         do
             eval tempname='$BIND_'${znr}'_NS_'$xn'_NAME'
-            if ! grep -q "^@              IN   NS   ${tempname}." ${bind_root}/etc/bind/master/${zone_name}.zone
+            if ! grep -q "^@              IN   NS   ${tempname}." /etc/bind/master/${zone_name}.zone
             then
-                echo "@              IN   NS   ${tempname}. " >> ${bind_root}/etc/bind/master/${zone_name}.zone
+                echo "@              IN   NS   ${tempname}. " >> /etc/bind/master/${zone_name}.zone
             fi
             xn=`expr $xn + 1`
         done
@@ -331,13 +274,12 @@ EOF
     ### ---------------------------------------------------------------------------------
     ### append PTR for SOA
     ### ---------------------------------------------------------------------------------
-    if [ "$write_header" = '1' ]
-    then
+    if [ "$write_header" = '1' ] ; then
         eval tempipnr='$BIND_'${znr}'_MASTER_IP'
         if [ -n "$tempipnr" ]
         then
             temprvip=`get_revip $tempipnr`
-            echo "${temprvip}   IN   PTR  ${bind9_hostname}.${zonename}. " >> ${bind_root}/etc/bind/master/${zone_name}.zone
+            echo "${temprvip}   IN   PTR  ${bind9_hostname}.${zonename}. " >> /etc/bind/master/${zone_name}.zone
         fi
     fi
 
@@ -345,29 +287,25 @@ EOF
     ### check and append all PTR records
     ### ---------------------------------------------------------------------------------
     eval ncnt='$BIND_'${znr}'_HOST_N'
-    if [ ! -z "$ncnt" ]
-    then
+    if [ -n "$ncnt" ] ; then
         xn="1"
         while [ $xn -le $ncnt ]
         do
             eval tempname='$BIND_'${znr}'_HOST_'$xn'_NAME'
-            if [ ! "$tempname" = '*' ]
-            then
-                if [ -z "$tempname" ]
-                then
+            if [ ! "$tempname" = '*' ] ; then
+                if [ -z "$tempname" ] ; then
                     tempname="${zonename}."
                 else
                     tempname="${tempname}.${zonename}."
                 fi
-                if ! grep -q "PTR  $tempname" ${bind_root}/etc/bind/master/${zone_name}.zone
+                if ! grep -q "PTR  $tempname" /etc/bind/master/${zone_name}.zone
                 then
                     eval tempipnr='$BIND_'${znr}'_HOST_'$xn'_IP'
                     # if the reverse ip in the network?
                     tmpnetwork=`/usr/local/bin/netcalc dnsnet $tempipnr $zone_mask`
-                    if [ "$zone_netw" = "$tmpnetwork" ]
-                    then
+                    if [ "$zone_netw" = "$tmpnetwork" ] ; then
                         temprvip=`get_revip $tempipnr`
-                        echo "$temprvip   IN   PTR  $tempname " >> ${bind_root}/etc/bind/master/${zone_name}.zone
+                        echo "$temprvip   IN   PTR  $tempname " >> /etc/bind/master/${zone_name}.zone
                     fi
                 fi
             fi
@@ -376,8 +314,8 @@ EOF
     fi
     append_DHCP_PTR_records $zonename $zone_name
 
-    chmod 0640 ${bind_root}/etc/bind/master/${zone_name}.zone
-    chown ${bind_run_user}:${bind_run_user} ${bind_root}/etc/bind/master/${zone_name}.zone
+    chmod 0640 /etc/bind/master/${zone_name}.zone
+    chown ${bind_run_user}:${bind_run_user} /etc/bind/master/${zone_name}.zone
 }
 
 
@@ -387,14 +325,14 @@ EOF
 function write_named_file
 {
     # remove old zone files:
-    rm -f ${bind_root}/etc/bind/master/* >/dev/null
-    rm -f ${bind_root}/etc/bind/slave/* >/dev/null
-    rm -f ${bind_root}/etc/bind/named.conf.local
-    touch ${bind_root}/etc/bind/named.conf.local
+    rm -f /etc/bind/master/* >/dev/null
+    rm -f /etc/bind/slave/* >/dev/null
+    rm -f /etc/bind/named.conf.local
+    touch /etc/bind/named.conf.local
 
     {
     echo "# -----------------------------------------------------------------------------"
-    echo "# ${bind_root}/etc/bind/named.conf.options - configuration for BIND 9"
+    echo "# /etc/bind/named.conf.options - configuration for BIND 9"
     echo "# Creation: $EISDATE $EISTIME by eisfair BIND9 setup"
     echo "# -----------------------------------------------------------------------------"
     echo ""
@@ -417,14 +355,12 @@ function write_named_file
     while [ ${znr} -le $BIND_N ]
     do
         eval ncnt='$BIND_'${znr}'_NS_N'
-        if [ ! -z "$ncnt" ]
-        then
+        if [ -n "$ncnt" ] ; then
             idx="1"
             while [ $idx -le $ncnt ]
             do
                 eval ipaddr='$BIND_'${znr}'_NS_'$idx'_IP'
-                if [ ! -z "$ipaddr" ]
-                then
+                if [ -n "$ipaddr" ] ; then
                     echo "  ${ipaddr}; "
                     s_found='yes'
                 fi
@@ -433,10 +369,7 @@ function write_named_file
         fi
         znr=`expr ${znr} + 1`
     done
-    if [ -z "$s_found" ]
-    then
-        echo "  none; "
-    fi
+    [ -z "$s_found" ] && echo "  none; "
     echo "};"
     echo ""
     echo "acl internals {"
@@ -452,8 +385,7 @@ function write_named_file
     echo "  pid-file \"/var/run/named.pid\"; "
     echo "  dump-file \"/var/log/named_dump.db\"; "
     echo "  statistics-file \"/var/log/named.stats\"; "
-    if [ ! -z "$BIND_BIND_IP_ADDRESS" ]
-    then
+    if [ -n "$BIND_BIND_IP_ADDRESS" ] ; then
         echo "  listen-on port 53 { "
         for ipaddr in $BIND_BIND_IP_ADDRESS
         do
@@ -467,15 +399,13 @@ function write_named_file
     echo "  listen-on-v6 { any; }; "
     echo "  auth-nxdomain no;    # conform to RFC1035"
     # use for firewalled external access:
-    if [ $BIND_PORT_53_ONLY = 'yes' ]
-    then
+    if [ $BIND_PORT_53_ONLY = 'yes' ] ; then
         echo "  query-source address * port 53; "
         echo "  transfer-source * port 53; "
         echo "  notify-source * port 53; "
     fi
     # query and reverse query: any, localnets, localhost
-    if [ $BIND_ALLOW_QUERY = 'localnets' ]
-    then
+    if [ $BIND_ALLOW_QUERY = 'localnets' ] ; then
         echo "  allow-query { localhost; localnets; }; "
         echo "  allow-recursion { localhost; localnets; }; "
     else
@@ -499,10 +429,8 @@ function write_named_file
     done
     echo "  };"
     # read forwarders before use root server
-    if [ "$BIND_FORWARDER_N" -gt 0 ]
-    then
-        if [ "$BIND_N" -gt 0 ]
-        then
+    if [ "$BIND_FORWARDER_N" -gt 0 ] ; then
+        if [ "$BIND_N" -gt 0 ] ; then
             echo "  forward first; "
         else
             echo "  forward only; "
@@ -514,8 +442,7 @@ function write_named_file
     while [ $idx -le $BIND_FORWARDER_N ]
     do
         eval fwedns='$BIND_FORWARDER_'$idx'_EDNS'
-        if [ "$fwedns" = "no" ]
-        then
+        if [ "$fwedns" = "no" ] ; then
             eval ipaddr='$BIND_FORWARDER_'$idx'_IP'
             echo "server $ipaddr {edns no;}; "
         fi
@@ -540,7 +467,7 @@ function write_named_file
     echo "  }; "
     echo "}; "
     echo ""
-    } > ${bind_root}/etc/bind/named.conf.options
+    } > /etc/bind/named.conf.options
 
 
 
@@ -587,7 +514,7 @@ function write_named_file
             echo "  notify no;"
         fi
         echo "};"
-        } >> ${bind_root}/etc/bind/named.conf.local
+        } >> /etc/bind/named.conf.local
 
         #------------------------------------------------------------------
         # create reverse zone name
@@ -595,7 +522,7 @@ function write_named_file
         reversezone=`/usr/local/bin/netcalc dnsrev $zonenetw $zonemask`
         forwardzone=`/usr/local/bin/netcalc dnsnet $zonenetw $zonemask`
         # check for double reverse zone name
-        if ! grep -q "$reversezone"  ${bind_root}/etc/bind/named.conf.local
+        if ! grep -q "$reversezone"  /etc/bind/named.conf.local
         then
             {
             echo ""
@@ -618,7 +545,7 @@ function write_named_file
                 echo "  notify no;"
             fi
             echo "};"
-            } >> ${bind_root}/etc/bind/named.conf.local
+            } >> /etc/bind/named.conf.local
         fi
 
         # create or append reverse zone file
@@ -630,8 +557,8 @@ function write_named_file
         znr=`expr ${znr} + 1`
     done
 
-    chmod 0644 ${bind_root}/etc/bind/named.conf.options
-    chmod 0644 ${bind_root}/etc/bind/named.conf.local
+    chmod 0644 /etc/bind/named.conf.options
+    chmod 0644 /etc/bind/named.conf.local
 }
 
 
@@ -645,28 +572,28 @@ fi
 
 if [ "$START_BIND" = 'yes' ]; then
     # create chroot if not exists
-    for i in ${bind_root} ${bind_root}/etc/bind ${bind_root}/etc/bind/master \
-         ${bind_root}/etc/bind/slave ${bind_root}/dev ${bind_root}/var/cache/bind \
-         ${bind_root}/var/run ${bind_root}/var/log /etc/bind
+    for i in  /etc/bind /etc/bind/master \
+         /etc/bind/slave /dev /var/cache/bind \
+         /var/run /var/log /etc/bind
     do
         mkdir -p ${i}
     done
 
-    if [ ! -e ${bind_root}/dev/null ]
+    if [ ! -e /dev/null ]
     then
-        mknod -m 666 ${bind_root}/dev/null c 1 3
+        mknod -m 666 /dev/null c 1 3
     fi
-    if [ ! -e ${bind_root}/dev/random ]
+    if [ ! -e /dev/random ]
     then
-        mknod -m 666 ${bind_root}/dev/random c 1 8
+        mknod -m 666 /dev/random c 1 8
     fi
-    if [ ! -f ${bind_root}/var/log/named.log ]
+    if [ ! -f /var/log/named.log ]
     then
-        touch ${bind_root}/var/log/named.log
+        touch /var/log/named.log
     fi
-    chmod 0644 ${bind_root}/var/log/named.log
+    chmod 0644 /var/log/named.log
 
-    if [ ! -s ${bind_root}/etc/bind/rndc.key ]
+    if [ ! -s /etc/bind/rndc.key ]
     then
         if [ ! -e /etc/bind/rndc.key ]
         then
@@ -674,12 +601,12 @@ if [ "$START_BIND" = 'yes' ]; then
         fi
         chmod 0640 /etc/bind/rndc.key
         chown root:$bind_run_user /etc/bind/rndc.key
-        cp -f /etc/bind/rndc.key ${bind_root}/etc/bind/rndc.key >/dev/null 2>&1
+        cp -f /etc/bind/rndc.key /etc/bind/rndc.key >/dev/null 2>&1
     fi
 
-    chown -R ${bind_run_user}:${bind_run_user} ${bind_root}/var
-    chown -R ${bind_run_user}:${bind_run_user} ${bind_root}/etc/bind
-    chmod 0640 ${bind_root}/etc/bind/rndc.key
+    chown -R ${bind_run_user}:${bind_run_user} /var
+    chown -R ${bind_run_user}:${bind_run_user} /etc/bind
+    chmod 0640 /etc/bind/rndc.key
     write_named_file
 fi
 
