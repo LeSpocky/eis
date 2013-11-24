@@ -34,7 +34,6 @@ build() {
 	echo ""
 	cd ${_builddir}/edit-conf.cui
 	make -j1 -s || return 1
-	install -D -m644 ${_builddir}/edit-conf.cui/ecelib ${pkgdir}/var/install/include/ecelib
 	echo ""
 	cd ${_builddir}/eischk
 	make -j1 eischk || return 1
@@ -58,6 +57,7 @@ package() {
 	make -j1 DESTDIR="$pkgdir" install || return 1
 	cd ${_builddir}/edit-conf.cui
 	make -j1 DESTDIR="$pkgdir" install || return 1
+	install -D -m644 ${_builddir}/edit-conf.cui/ecelib ${pkgdir}/var/install/include/ecelib || return 1
 	cp ${_builddir}/eischk/eischk ${pkgdir}/var/install/bin/
 	cd ${_builddir}/list-files.cui
 	make -j1 DESTDIR="$pkgdir" install || return 1
