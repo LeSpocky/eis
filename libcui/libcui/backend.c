@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: backend.c 33467 2013-04-14 16:23:14Z dv $
+ * Last Update:  $Id: backend.c 34709 2013-11-23 13:34:20Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -63,7 +63,7 @@ static EXECBUFFER*  LastBuffer = NULL;
 static ApiProc      ExternalApi = NULL;
 static FILE*        DebugOut = NULL;
 
-static wchar_t*       BackendFrame = NULL;
+static wchar_t*     BackendFrame = NULL;
 static int          BackendFPos = 0;
 static int          BackendFSize = 0;
 
@@ -540,7 +540,7 @@ BackendExecFrame(void)
 						}
 						else if (size == -2)
 						{
-							break; /* character incompelte */
+							break; /* character incomplete */
 						}
 						else
 						{
@@ -628,262 +628,399 @@ BackendExecFrame(void)
 						switch(func_nr)
 						{
 						case API_MESSAGEBOX:
-							ApiMessageBox(argc, p); break;
+							ApiMessageBox(argc, p);
+							break;
 						case API_WINDOWNEW:
-							ApiWindowNew(argc, p); break;
+							ApiWindowNew(argc, p);
+							break;
 						case API_WINDOWCREATE:
-							ApiWindowCreate(argc, p); break;
+							ApiWindowCreate(argc, p);
+							break;
 						case API_WINDOWDESTROY:
-							ApiWindowDestroy(argc, p); break;
+							ApiWindowDestroy(argc, p);
+							break;
 						case API_WINDOWQUIT:
-							ApiWindowQuit(argc, p); break;
+							ApiWindowQuit(argc, p);
+							break;
 						case API_WINDOWMODAL:
-							ApiWindowModal(argc, p); break;
+							ApiWindowModal(argc, p);
+							break;
 						case API_WINDOWCLOSE:
-							ApiWindowClose(argc, p); break;
+							ApiWindowClose(argc, p);
+							break;
 						case API_WINDOWSETHOOK:
-							ApiWindowSetHook(argc, p); break;
+							ApiWindowSetHook(argc, p);
+							break;
 						case API_WINDOWGETCTRL:
-							ApiWindowGetCtrl(argc, p); break;
+							ApiWindowGetCtrl(argc, p);
+							break;
 						case API_WINDOWGETDESKTOP:
-							ApiWindowGetDesktop(argc, p); break;
+							ApiWindowGetDesktop(argc, p);
+							break;
 						case API_WINDOWMOVE:
-							ApiWindowMove(argc, p); break;
+							ApiWindowMove(argc, p);
+							break;
 						case API_WINDOWGETWINDOWRECT:
-							ApiWindowGetWindowRect(argc, p); break;
+							ApiWindowGetWindowRect(argc, p);
+							break;
 						case API_WINDOWGETCLIENTRECT:
-							ApiWindowGetClientRect(argc, p); break;
+							ApiWindowGetClientRect(argc, p);
+							break;
 						case API_WINDOWSETTIMER:
-							ApiWindowSetTimer(argc, p); break;
+							ApiWindowSetTimer(argc, p);
+							break;
 						case API_WINDOWKILLTIMER:
-							ApiWindowKillTimer(argc, p); break;
+							ApiWindowKillTimer(argc, p);
+							break;
 						case API_WINDOWADDCOLSCHEME:
-							ApiWindowAddColScheme(argc, p); break;
+							ApiWindowAddColScheme(argc, p);
+							break;
 						case API_WINDOWHASCOLSCHEME:
-							ApiWindowHasColScheme(argc, p); break;
+							ApiWindowHasColScheme(argc, p);
+							break;
 						case API_WINDOWCOLSCHEME:
-							ApiWindowColScheme(argc, p); break;
+							ApiWindowColScheme(argc, p);
+							break;
 						case API_WINDOWSETTEXT:
-							ApiWindowSetText(argc, p); break;
+							ApiWindowSetText(argc, p);
+							break;
 						case API_WINDOWSETLTEXT:
-							ApiWindowSetLText(argc, p); break;
+							ApiWindowSetLText(argc, p);
+							break;
 						case API_WINDOWSETRTEXT:
-							ApiWindowSetRText(argc, p); break;
+							ApiWindowSetRText(argc, p);
+							break;
 						case API_WINDOWSETSTATUSTEXT:
-							ApiWindowSetStatusText(argc, p); break;
+							ApiWindowSetStatusText(argc, p);
+							break;
 						case API_WINDOWSETLSTATUSTEXT:
-							ApiWindowSetLStatusText(argc, p); break;
+							ApiWindowSetLStatusText(argc, p);
+							break;
 						case API_WINDOWSETRSTATUSTEXT:
-							ApiWindowSetRStatusText(argc, p); break;
+							ApiWindowSetRStatusText(argc, p);
+							break;
 						case API_WINDOWGETTEXT:
-							ApiWindowGetText(argc, p); break;
+							ApiWindowGetText(argc, p);
+							break;
 						case API_WINDOWTOTOP:
-							ApiWindowToTop(argc, p); break;
+							ApiWindowToTop(argc, p);
+							break;
 						case API_WINDOWMAXIMIZE:
-							ApiWindowMaximize(argc, p); break;
+							ApiWindowMaximize(argc, p);
+							break;
 						case API_WINDOWMINIMIZE:
-							ApiWindowMinimize(argc, p); break;
+							ApiWindowMinimize(argc, p);
+							break;
 						case API_WINDOWHIDE:
-							ApiWindowHide(argc, p); break;
+							ApiWindowHide(argc, p);
+							break;
 						case API_WINDOWENABLE:
-							ApiWindowEnable(argc, p); break;
+							ApiWindowEnable(argc, p);
+							break;
 						case API_WINDOWSETFOCUS:
-							ApiWindowSetFocus(argc, p); break;
+							ApiWindowSetFocus(argc, p);
+							break;
 						case API_WINDOWGETFOCUS:
-							ApiWindowGetFocus(argc, p); break;
+							ApiWindowGetFocus(argc, p);
+							break;
 						case API_WINDOWINVALIDATE:
-							ApiWindowInvalidate(argc, p); break;
+							ApiWindowInvalidate(argc, p);
+							break;
 						case API_WINDOWINVALIDATELAYOUT:
-							ApiWindowInvalidateLayout(argc, p); break;
+							ApiWindowInvalidateLayout(argc, p);
+							break;
 						case API_WINDOWUPDATE:
-							ApiWindowUpdate(argc, p); break;
+							ApiWindowUpdate(argc, p);
+							break;
 								
 						case API_WINDOW_CURSES_LEAVE:
-							ApiWindowCursesLeave(argc, p); break;
+							ApiWindowCursesLeave(argc, p);
+							break;
 						case API_WINDOW_CURSES_RESUME:
-							ApiWindowCursesResume(argc, p); break;
+							ApiWindowCursesResume(argc, p);
+							break;
 						case API_WINDOW_SHELL_EXECUTE:
-							ApiWindowShellExecute(argc, p); break;
+							ApiWindowShellExecute(argc, p);
+							break;
 
 						case API_EDITNEW:
-							ApiEditNew(argc, p); break;
+							ApiEditNew(argc, p);
+							break;
 						case API_EDITSETCALLBACK:
-							ApiEditSetCallback(argc, p); break;
+							ApiEditSetCallback(argc, p);
+							break;
 						case API_EDITSETTEXT:
-							ApiEditSetText(argc, p); break;
+							ApiEditSetText(argc, p);
+							break;
 						case API_EDITGETTEXT:
-							ApiEditGetText(argc, p); break;
+							ApiEditGetText(argc, p);
+							break;
 
 						case API_LABELNEW:
-							ApiLabelNew(argc, p); break;
+							ApiLabelNew(argc, p);
+							break;
 						case API_LABELSETCALLBACK:
-							ApiEditSetCallback(argc, p); break;
+							ApiEditSetCallback(argc, p);
+							break;
 
 						case API_BUTTONNEW:
-							ApiButtonNew(argc, p); break;
+							ApiButtonNew(argc, p);
+							break;
 						case API_BUTTONSETCALLBACK:
-							ApiButtonSetCallback(argc, p); break;
+							ApiButtonSetCallback(argc, p);
+							break;
 
 						case API_GROUPBOXNEW:
-							ApiGroupboxNew(argc, p); break;
+							ApiGroupboxNew(argc, p);
+							break;
 
 						case API_RADIONEW:
-							ApiRadioNew(argc, p); break;
+							ApiRadioNew(argc, p);
+							break;
 						case API_RADIOSETCALLBACK:
-							ApiRadioSetCallback(argc, p); break;
+							ApiRadioSetCallback(argc, p);
+							break;
 						case API_RADIOSETCHECK:
-							ApiRadioSetCheck(argc, p); break;
+							ApiRadioSetCheck(argc, p);
+							break;
 						case API_RADIOGETCHECK:
-							ApiRadioGetCheck(argc, p); break;
+							ApiRadioGetCheck(argc, p);
+							break;
 
 						case API_CHECKBOXNEW:
-							ApiCheckboxNew(argc, p); break;
+							ApiCheckboxNew(argc, p);
+							break;
 						case API_CHECKBOXSETCALLBACK:
-							ApiCheckboxSetCallback(argc, p); break;
+							ApiCheckboxSetCallback(argc, p);
+							break;
 						case API_CHECKBOXSETCHECK:
-							ApiCheckboxSetCheck(argc, p); break;
+							ApiCheckboxSetCheck(argc, p);
+							break;
 						case API_CHECKBOXGETCHECK:
-							ApiCheckboxGetCheck(argc, p); break;
+							ApiCheckboxGetCheck(argc, p);
+							break;
 
 						case API_LISTBOXNEW:
-							ApiListboxNew(argc, p); break;
+							ApiListboxNew(argc, p);
+							break;
 						case API_LISTBOXSETCALLBACK:
-							ApiListboxSetCallback(argc, p); break;
+							ApiListboxSetCallback(argc, p);
+							break;
 						case API_LISTBOXADD:
-							ApiListboxAdd(argc, p); break;
+							ApiListboxAdd(argc, p);
+							break;
 						case API_LISTBOXDELETE:
-							ApiListboxDelete(argc, p); break;
+							ApiListboxDelete(argc, p);
+							break;
 						case API_LISTBOXGET:
-							ApiListboxGet(argc, p); break;
+							ApiListboxGet(argc, p);
+							break;
 						case API_LISTBOXSETDATA:
-							ApiListboxSetData(argc, p); break;
+							ApiListboxSetData(argc, p);
+							break;
 						case API_LISTBOXGETDATA:
-							ApiListboxGetData(argc, p); break;
+							ApiListboxGetData(argc, p);
+							break;
 						case API_LISTBOXSETSEL:
-							ApiListboxSetSel(argc, p); break;
+							ApiListboxSetSel(argc, p);
+							break;
 						case API_LISTBOXGETSEL:
-							ApiListboxGetSel(argc, p); break;
+							ApiListboxGetSel(argc, p);
+							break;
 						case API_LISTBOXCLEAR:
-							ApiListboxClear(argc, p); break;
+							ApiListboxClear(argc, p);
+							break;
 						case API_LISTBOXGETCOUNT:
-							ApiListboxGetCount(argc, p); break;
+							ApiListboxGetCount(argc, p);
+							break;
 						case API_LISTBOXSELECT:
-							ApiListboxSelect(argc, p); break;
+							ApiListboxSelect(argc, p);
+							break;
 
 						case API_COMBOBOXNEW:
-							ApiComboboxNew(argc, p); break;
+							ApiComboboxNew(argc, p);
+							break;
 						case API_COMBOBOXSETCALLBACK:
-							ApiComboboxSetCallback(argc, p); break;
+							ApiComboboxSetCallback(argc, p);
+							break;
 						case API_COMBOBOXADD:
-							ApiComboboxAdd(argc, p); break;
+							ApiComboboxAdd(argc, p);
+							break;
 						case API_COMBOBOXDELETE:
-							ApiComboboxDelete(argc, p); break;
+							ApiComboboxDelete(argc, p);
+							break;
 						case API_COMBOBOXGET:
-							ApiComboboxGet(argc, p); break;
+							ApiComboboxGet(argc, p);
+							break;
 						case API_COMBOBOXSETDATA:
-							ApiComboboxSetData(argc, p); break;
+							ApiComboboxSetData(argc, p);
+							break;
 						case API_COMBOBOXGETDATA:
-							ApiComboboxGetData(argc, p); break;
+							ApiComboboxGetData(argc, p);
+							break;
 						case API_COMBOBOXSETSEL:
-							ApiComboboxSetSel(argc, p); break;
+							ApiComboboxSetSel(argc, p);
+							break;
 						case API_COMBOBOXGETSEL:
-							ApiComboboxGetSel(argc, p); break;
+							ApiComboboxGetSel(argc, p);
+							break;
 						case API_COMBOBOXCLEAR:
-							ApiComboboxClear(argc, p); break;
+							ApiComboboxClear(argc, p);
+							break;
 						case API_COMBOBOXGETCOUNT:
-							ApiComboboxGetCount(argc, p); break;
+							ApiComboboxGetCount(argc, p);
+							break;
 						case API_COMBOBOXSELECT:
-						        ApiComboboxSelect(argc, p); break;
+						        ApiComboboxSelect(argc, p);
+							break;
 
 						case API_PROGRESSBARNEW:
-							ApiProgressbarNew(argc, p); break;
+							ApiProgressbarNew(argc, p);
+							break;
 						case API_PROGRESSBARSETRANGE:
-							ApiProgressbarSetRange(argc, p); break;
+							ApiProgressbarSetRange(argc, p);
+							break;
 						case API_PROGRESSBARSETPOS:
-							ApiProgressbarSetPos(argc, p); break;
+							ApiProgressbarSetPos(argc, p);
+							break;
 						case API_PROGRESSBARGETRANGE:
-							ApiProgressbarGetRange(argc, p); break;
+							ApiProgressbarGetRange(argc, p);
+							break;
 						case API_PROGRESSBARGETPOS:
-							ApiProgressbarGetPos(argc, p); break;
+							ApiProgressbarGetPos(argc, p);
+							break;
 
 						case API_TEXTVIEWNEW:
-							ApiTextviewNew(argc, p); break;
+							ApiTextviewNew(argc, p);
+							break;
 						case API_TEXTVIEWSETCALLBACK:
-							ApiTextviewSetCallback(argc, p); break;
+							ApiTextviewSetCallback(argc, p);
+							break;
 						case API_TEXTVIEWENABLEWORDWRAP:
-							ApiTextviewEnableWordWrap(argc, p); break;
+							ApiTextviewEnableWordWrap(argc, p);
+							break;
 						case API_TEXTVIEWADD:
-							ApiTextviewAdd(argc, p); break;
+							ApiTextviewAdd(argc, p);
+							break;
 						case API_TEXTVIEWCLEAR:
-							ApiTextviewClear(argc, p); break;
+							ApiTextviewClear(argc, p);
+							break;
 						case API_TEXTVIEWREAD:
-							ApiTextviewRead(argc, p); break;
+							ApiTextviewRead(argc, p);
+							break;
 						case API_TEXTVIEWSEARCH:
-							ApiTextviewSearch(argc, p); break;
+							ApiTextviewSearch(argc, p);
+							break;
 
 						case API_LISTVIEWNEW:
-							ApiListviewNew(argc, p); break;
+							ApiListviewNew(argc, p);
+							break;
 						case API_LISTVIEWSETCALLBACK:
-							ApiListviewSetCallback(argc, p); break;
+							ApiListviewSetCallback(argc, p);
+							break;
 						case API_LISTVIEWADDCOLUMN:
-							ApiListviewAddColumn(argc, p); break;
+							ApiListviewAddColumn(argc, p);
+							break;
 						case API_LISTVIEWSETTITLEALIGNMENT:
-							ApiListviewSetTitleAlignment(argc, p); break;
+							ApiListviewSetTitleAlignment(argc, p);
+							break;
 						case API_LISTVIEWCLEAR:
-							ApiListviewClear(argc, p); break;
+							ApiListviewClear(argc, p);
+							break;
 						case API_LISTVIEWADD:
-							ApiListviewAdd(argc, p); break;
+							ApiListviewAdd(argc, p);
+							break;
 						case API_LISTVIEWSETTEXT:
-							ApiListviewSetText(argc, p); break;
+							ApiListviewSetText(argc, p);
+							break;
 						case API_LISTVIEWGETTEXT:
-							ApiListviewGetText(argc, p); break;
+							ApiListviewGetText(argc, p);
+							break;
 						case API_LISTVIEWGETDATA:
-							ApiListviewGetData(argc, p); break;
+							ApiListviewGetData(argc, p);
+							break;
 						case API_LISTVIEWSETDATA:
-							ApiListviewSetData(argc, p); break;
+							ApiListviewSetData(argc, p);
+							break;
 						case API_LISTVIEWSETSEL:
-							ApiListviewSetSel(argc, p); break;
+							ApiListviewSetSel(argc, p);
+							break;
 						case API_LISTVIEWGETSEL:
-							ApiListviewGetSel(argc, p); break;
+							ApiListviewGetSel(argc, p);
+							break;
 						case API_LISTVIEWGETCOUNT:
-							ApiListviewGetCount(argc, p); break;
+							ApiListviewGetCount(argc, p);
+							break;
 						case API_LISTVIEWUPDATE:
-							ApiListviewUpdate(argc, p); break;
+							ApiListviewUpdate(argc, p);
+							break;
 						case API_LISTVIEWALPHASORT:
-							ApiListviewAlphaSort(argc, p); break;
+							ApiListviewAlphaSort(argc, p);
+							break;
 						case API_LISTVIEWNUMERICSORT:
-							ApiListviewNumericSort(argc, p); break;
+							ApiListviewNumericSort(argc, p);
+							break;
 
 						case API_TERMINALNEW:
-							ApiTerminalNew(argc, p); break;
+							ApiTerminalNew(argc, p);
+							break;
 						case API_TERMINALSETCALLBACK:
-							ApiTerminalSetCallback(argc, p); break;
+							ApiTerminalSetCallback(argc, p);
+							break;
 						case API_TERMINALWRITE:
-							ApiTerminalWrite(argc, p); break;
+							ApiTerminalWrite(argc, p);
+							break;
 						case API_TERMINALRUN:
-							ApiTerminalRun(argc, p); break;
+							ApiTerminalRun(argc, p);
+							break;
 						case API_TERMINALPIPEDATA:
-							ApiTerminalPipeData(argc, p); break;
+							ApiTerminalPipeData(argc, p);
+							break;
 
 						case API_MENUNEW:
-							ApiMenuNew(argc, p); break;
+							ApiMenuNew(argc, p);
+							break;
 						case API_MENUSETCALLBACK:
-							ApiMenuSetCallback(argc, p); break;
+							ApiMenuSetCallback(argc, p);
+							break;
 						case API_MENUADDITEM:
-							ApiMenuAddItem(argc, p); break;
+							ApiMenuAddItem(argc, p);
+							break;
 						case API_MENUADDSEPARATOR:
-							ApiMenuAddSeparator(argc, p); break;
+							ApiMenuAddSeparator(argc, p);
+							break;
 						case API_MENUSELECTITEM:
-							ApiMenuSelectItem(argc, p); break;
+							ApiMenuSelectItem(argc, p);
+							break;
 						case API_MENUGETSELITEM:
-							ApiMenuGetSelectedItem(argc, p); break;
+							ApiMenuGetSelectedItem(argc, p);
+							break;
 						case API_MENUCLEAR:
-							ApiMenuClear(argc, p); break;
+							ApiMenuClear(argc, p);
+							break;
 
 						case API_XMLREADTAG:
-							ApiXmlReadTag(argc, p); break;
+							ApiXmlReadTag(argc, p);
+							break;
 						case API_LOADADDON:
-							ApiLoadAddon(argc, p); break;
+							ApiLoadAddon(argc, p);
+							break;
+							
+						case API_MEMONEW:
+							ApiMemoNew(argc, p);
+							break;
+						case API_MEMOSETCALLBACK:
+							ApiMemoSetCallback(argc, p);
+							break;
+						case API_MEMOSETTEXT:
+							ApiMemoSetText(argc, p);
+							break;
+						case API_MEMOGETTEXT:
+							ApiMemoGetText(argc, p);
+							break;
+						case API_MEMOSETWRAPCOLUMNS:
+							ApiMemoSetWrapColumns(argc, p);
+							break;
 
 						default:
 							if (!ExternalApi || !ExternalApi(func_nr, argc, p))
@@ -1042,7 +1179,7 @@ BackendMakePipePath(void)
 	mode_t oldmask;
 
 	/* pipe path is in tmp directory */
-	strcpy(PipePath, "/run/cui");
+	strcpy(PipePath, "/var/run/cui");
 
 	/* make sure that the pipe path exists */
 	oldmask = umask(0);

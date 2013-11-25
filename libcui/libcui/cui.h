@@ -513,6 +513,7 @@ void MemoSetPostKeyHook  (CUIWINDOW* win, CustomBoolHook1IntProc proc, CUIWINDOW
 void MemoSetChangedHook  (CUIWINDOW* win, CustomHookProc proc, CUIWINDOW* target);
 void MemoSetText         (CUIWINDOW* win, const wchar_t* text);
 const wchar_t* MemoGetText (CUIWINDOW* win, wchar_t* text, int len);
+int  MemoGetTextBufSize  (CUIWINDOW* win);
 void MemoSetWrapColumns  (CUIWINDOW* win, int cols);
 
 /* ---------------------------------------------------------------------

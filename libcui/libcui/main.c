@@ -241,7 +241,7 @@ int main(void)
 	ctrl = MemoNew (window, _T(""), 1, 7, 34, 8, IDC_MEMO1, /* MF_AUTOWORDWRAP */ CWS_NONE, CWS_BORDER);
 	// WindowColScheme(ctrl, _T("MENU"));
 	WindowCreate      (ctrl);
-	MemoSetWrapColumns(ctrl, 80);
+	// MemoSetWrapColumns(ctrl, 80);
 	MemoSetText       (ctrl, _T("Hello World!\nThis is a multi line word wrapping edit control\nfor libcui"));
 
 	ctrl = ProgressbarNew(window, _T("Progress"), 37, 7, 17, 3, IDC_PROGRESS, CWS_NONE, CWS_NONE);

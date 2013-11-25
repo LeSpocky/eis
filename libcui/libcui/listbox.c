@@ -315,10 +315,11 @@ ListboxKeyHook(void* w, int key)
 static void
 ListboxMButtonHook(void* w, int x, int y, int flags)
 {
-        CUIWINDOW* win = (CUIWINDOW*) w;
-        LISTBOXDATA* data = (LISTBOXDATA*) win->InstData;
-        if ((flags & BUTTON1_CLICKED) || (flags & BUTTON1_DOUBLE_CLICKED))
-        {
+	CUIWINDOW* win = (CUIWINDOW*) w;
+	LISTBOXDATA* data = (LISTBOXDATA*) win->InstData;
+	
+	if ((flags & BUTTON1_CLICKED) || (flags & BUTTON1_DOUBLE_CLICKED))
+	{
 		int offsy = WindowGetVScrollPos(win);
 		int nochange = FALSE;
 		y += offsy;
@@ -342,29 +343,29 @@ ListboxMButtonHook(void* w, int x, int y, int flags)
 		   by the application */
 		if (!nochange)
 		{
-	                if ((flags & BUTTON1_DOUBLE_CLICKED) && 
-			    (data->LbClickedHook))
-                	{
-	                        data->LbClickedHook(data->LbClickedTarget, win);
-        	        }
+			if ((flags & BUTTON1_DOUBLE_CLICKED) && 
+				(data->LbClickedHook))
+			{
+				data->LbClickedHook(data->LbClickedTarget, win);
+			}
 		}
-        }
-        else if (flags & BUTTON1_PRESSED)
-        {
-                data->MouseDown = TRUE;
-                WindowSetCapture(win);
-        }
-        else if ((flags & BUTTON1_RELEASED) && (data->MouseDown))
-        {
-                CUIRECT rc;
-                WindowGetClientRect(win, &rc);
+	}
+	else if (flags & BUTTON1_PRESSED)
+	{
+		data->MouseDown = TRUE;
+		WindowSetCapture(win);
+	}
+	else if ((flags & BUTTON1_RELEASED) && (data->MouseDown))
+	{
+		CUIRECT rc;
+		WindowGetClientRect(win, &rc);
 
-                data->MouseDown = FALSE;
-                WindowReleaseCapture();
+		data->MouseDown = FALSE;
+		WindowReleaseCapture();
 
-                if ((x >= rc.X) && (x < (rc.X + rc.W)) &&
-                    (y >= rc.Y) && (y < (rc.Y + rc.H)))
-                {
+		if ((x >= rc.X) && (x < (rc.X + rc.W)) &&
+			(y >= rc.Y) && (y < (rc.Y + rc.H)))
+		{
 			int offsy = WindowGetVScrollPos(win);
 
 			y += offsy;
@@ -376,8 +377,8 @@ ListboxMButtonHook(void* w, int x, int y, int flags)
 				ListboxUpdate(win);
 				ListboxNotifyChange(win, data);
 			}
-                }
-        }
+		}
+	}
 }
 
 

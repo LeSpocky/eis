@@ -25,34 +25,36 @@
 
 #include "cui.h"
 
-#define INCREMENT_SIZE 32
-#define WRAPLIMIT_MAX  512
+/* general options */
+#define INCREMENT_SIZE   32                    /* text buffer increments */
+#define WRAPLIMIT_MAX    512                   /* max/default word wrap limit */
+#define SCROLL_STEP_X    8                     /* vertical scrolling increments */
 
-#define UF_NONE          0x00
-#define UF_SET_V_COLUMN  0x01
+/* flags for MemoUpdateVisCursor */
+#define UF_NONE          0x00                  /* empty flag for cursor updates */
+#define UF_SET_V_COLUMN  0x01                  /* move virtual column upon cursor updates */
 
-
+/* struct holding a single paragraph that might extend over multiple lines */
 typedef struct PARAStruct
 {
-	wchar_t                *pText;
-	int                     Length;
-	int                     BufferSize;
-	int                     NumLines;
-	struct PARAStruct      *pPrev;
-	struct PARAStruct      *pNext;
+	wchar_t                *pText;             /* pointer to text data */
+	int                     Length;            /* number of characters in buffer */
+	int                     BufferSize;        /* current buffer size */
+	int                     NumLines;          /* number of visual lines */
+	struct PARAStruct      *pPrev;             /* pointer to previous list item */
+	struct PARAStruct      *pNext;             /* pointer to next list item */
 } PARAGRAPH;
 
-
+/* struct holding of data of a memo control instance */
 typedef struct MEMODATAStruct
 {
 	int                     WordWrapLimit;     /* char limit for word wrap */
 	int                     DoAutoWordWrap;    /* is word wrapping enabled */	
-	int                     ScrollPosX;        /* horizontal scroll offset */
-	int                     ScrollPosY;        /* vertical scroll offset */
 	CUISIZE                 VirtualSize;       /* virtual window rectangle */
 	CUISIZE                 VisualSize;        /* visual window rectangle */
 	CUIPOINT                LogicalCursor;     /* row / column position */
-	int                     VirtualColumn;
+	int                     VirtualColumn;     /* virtual column position used */
+	                                           /* for vertical scrolling */
 	
 	unsigned int            NumPara;           /* number of text paragraphs */
 	PARAGRAPH              *pFirst;            /* pointer to first edit line */
@@ -71,32 +73,35 @@ typedef struct MEMODATAStruct
 } MEMODATA;
 
 
+/* prototypes of local functions */
 static wchar_t *wcsrcpy(wchar_t *dest, const wchar_t *source);
 
 static void       MemoCalcTextPos      (CUIWINDOW* win);
-static void       MemoAppendText       (MEMODATA* data, const wchar_t *text, int len);
-static void       MemoClearAllText     (MEMODATA* data);
-static void       MemoGetVisualCursor  (MEMODATA* data, CUIPOINT *pCursor);
-static void       MemoUpdateScrollRange(CUIWINDOW* win);
-static void       MemoUpdateScrollPos  (CUIWINDOW* win, CUIPOINT cursor);
-static PARAGRAPH* MemoFindParagraph    (MEMODATA* data, int index);
+static void       MemoAppendText       (MEMODATA  *data, const wchar_t *text, int len);
+static void       MemoClearAllText     (MEMODATA  *data);
+static void       MemoGetVisualCursor  (MEMODATA  *data, CUIPOINT *pCursor);
+static void       MemoSetLogicalCursor (MEMODATA  *data, const CUIPOINT *pCursor);
+static void       MemoUpdateScrollRange(CUIWINDOW *win);
+static void       MemoUpdateScrollPos  (CUIWINDOW *win, CUIPOINT cursor);
+static PARAGRAPH* MemoFindParagraph    (MEMODATA  *data, int index);
 static void       MemoUpdateVisCursor  (CUIWINDOW *win, unsigned int flags);
-static void       MemoAppendPara       (MEMODATA* data, PARAGRAPH *para);
+static void       MemoAppendPara       (MEMODATA  *data, PARAGRAPH *para);
+static void       MemoModify           (CUIWINDOW *win);
 
+static PARAGRAPH* ParaNew              (void);
+static void       ParaDelete           (PARAGRAPH *para);
+static void       ParaLink             (PARAGRAPH *para, PARAGRAPH *insertpos);
+static void       ParaUnlink           (PARAGRAPH *para);
+static void       ParaInsertText       (PARAGRAPH *para, int pos, const wchar_t *text, int len);
+static void       ParaAppendPara       (PARAGRAPH *para, PARAGRAPH *pappend);
+static PARAGRAPH *ParaSplitPara        (PARAGRAPH *para, int pos);
+static void       ParaDeleteText       (PARAGRAPH *para, int pos, int len);
+static void       ParaRenderText       (PARAGRAPH *para, int width, CUISIZE *virtualSize);
+static CUIPOINT   ParaGetVisualPos     (PARAGRAPH *para, int width, int colpos);
+static int        ParaGetLogicalPos    (PARAGRAPH *para, int width, const CUIPOINT *pt);
+static void       ParaShowText         (PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX, int limit);
+static void       ParaShowLine         (CUIWINDOW *win, const wchar_t *pText, int len, int width, int offs);
 
-static PARAGRAPH* ParaNew            (void);
-static void       ParaDelete         (PARAGRAPH *para);
-static void       ParaLink           (PARAGRAPH *para, PARAGRAPH *insertpos);
-static void       ParaUnlink         (PARAGRAPH *para);
-static void       ParaInsertText     (PARAGRAPH *para, int pos, const wchar_t *text, int len);
-static void       ParaAppendPara     (PARAGRAPH *para, PARAGRAPH *pappend);
-static PARAGRAPH *ParaSplitPara      (PARAGRAPH *para, int pos);
-static void       ParaDeleteText     (PARAGRAPH *para, int pos, int len);
-static void       ParaRenderText     (PARAGRAPH *para, int width, CUISIZE *virtualSize);
-static CUIPOINT   ParaGetVisualPos   (PARAGRAPH *para, int width, int colpos);
-static int        ParaGetLogicalPos  (PARAGRAPH *para, int width, const CUIPOINT *pt);
-static void       ParaShowText       (PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX, int limit);
-static void       ParaShowLine       (CUIWINDOW *win, const wchar_t *pText, int len, int width, int offs);
 
 /* ---------------------------------------------------------------------
  * MemoNcPaintHook
@@ -195,13 +200,26 @@ MemoPaintHook(void* w)
 	MEMODATA  *data;
 	PARAGRAPH *para;
 	int        y;
-	
+	int        scrollX;
+	int        scrollY;
+		
 	data = win->InstData;
-	if (!data) return;
+	if (!data) 
+	{
+		return;
+	}
 
 	WindowGetClientRect(win, &rc);
-	if ((rc.W <= 0)||(rc.H <= 0)) return;
+	if ((rc.W <= 0)||(rc.H <= 0)) 
+	{
+		return;
+	}
 	
+	/* get scroll position */
+	scrollX = WindowGetHScrollPos(win);
+	scrollY = WindowGetVScrollPos(win);
+
+	/* setup colors */
 	if (win->IsEnabled)
 	{
 		SetColor(win->Win, win->Color.SelTxtColor, win->Color.WndSelColor, TRUE);
@@ -215,13 +233,13 @@ MemoPaintHook(void* w)
 	para = data->pFirst;
 	while (para)
 	{
-		if (((y + para->NumLines) > data->ScrollPosY) && 
-		    (y < data->ScrollPosY + data->VisualSize.Y))
+		if (((y + para->NumLines) > scrollY) && 
+		    (y < scrollY + data->VisualSize.Y))
 		{
 			ParaShowText(para, 
 				win,
-				data->ScrollPosX, 
-				y - data->ScrollPosY, 
+				scrollX, 
+				y - scrollY, 
 				data->VisualSize.X,
 				data->WordWrapLimit);
 		}
@@ -230,7 +248,7 @@ MemoPaintHook(void* w)
 		para = para->pNext;
 	}
 	
-	y -= data->ScrollPosY;
+	y -= scrollY;
 	while (y < rc.H)
 	{
 		if (y >= 0)
@@ -242,9 +260,8 @@ MemoPaintHook(void* w)
 	}
 		
 	MemoGetVisualCursor(data, &pt);
-	WindowSetCursor(win, pt.X - data->ScrollPosX, pt.Y - data->ScrollPosY);
+	WindowSetCursor(win, pt.X - scrollX, pt.Y - scrollY);
 }
-
 
 /* ---------------------------------------------------------------------
  * MemoSizeHook
@@ -257,7 +274,6 @@ MemoSizeHook(void* w)
 	MemoCalcTextPos((CUIWINDOW*) w);
 	return TRUE;
 }
-
 
 /* ---------------------------------------------------------------------
  * MemoKeyHook
@@ -402,6 +418,90 @@ MemoKeyHook(void* w, int key)
 					MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
 				}
 				return TRUE;
+				
+			case KEY_PPAGE:
+				cursor = ParaGetVisualPos(para, data->WordWrapLimit, data->LogicalCursor.X);
+				if ((data->LogicalCursor.Y > 0) || (cursor.Y > 0))
+				{
+					int lines = data->VisualSize.Y;
+					int scrollY = WindowGetVScrollPos(win);
+					
+					if ((para->pPrev) && ((lines - cursor.Y) >= 0))
+					{
+						lines -= cursor.Y + 1;
+						para   = para->pPrev;
+						data->LogicalCursor.Y--;
+											
+						while ((para->pPrev) && (lines >= para->NumLines))
+						{
+							data->LogicalCursor.Y--;
+							lines -= para->NumLines;
+							para   = para->pPrev;
+						}
+						
+						cursor.Y = 0;
+					}
+					
+					cursor.Y -= lines;
+					cursor.X  = data->VirtualColumn;
+					if (cursor.Y < 0)
+					{
+						cursor.Y = 0;
+					}
+				
+					scrollY -= data->VisualSize.Y;
+					if (scrollY < 0)
+					{
+						scrollY = 0;
+						WindowSetVScrollPos(win, scrollY);
+					}
+					
+					data->LogicalCursor.X = ParaGetLogicalPos(para, data->WordWrapLimit, &cursor);
+					MemoUpdateVisCursor(win, UF_NONE);
+				}
+				return TRUE;
+
+			case KEY_NPAGE:	
+				cursor = ParaGetVisualPos(para, data->WordWrapLimit, data->LogicalCursor.X);				
+				if (data->LogicalCursor.Y + 1 < (int)data->NumPara)
+				{
+					int lines   = data->VisualSize.Y;
+					int scrollY = WindowGetVScrollPos(win);
+					
+					if ((para->pNext) && ((lines + cursor.Y) >= para->NumLines))
+					{
+						lines -= (para->NumLines - cursor.Y);
+						para   = para->pNext;
+						data->LogicalCursor.Y++;
+						
+						cursor.Y = 0;
+											
+						while ((para->pNext) && (lines >= para->NumLines))
+						{
+							data->LogicalCursor.Y++;
+							lines -= para->NumLines;
+							para   = para->pNext;
+						}
+					}
+					
+					cursor.Y += lines;
+					cursor.X  = data->VirtualColumn;
+					if (cursor.Y >= para->NumLines)
+					{
+						cursor.Y = (para->NumLines - 1);
+					}
+				
+					scrollY += data->VisualSize.Y;
+					if (scrollY > (data->VirtualSize.Y - data->VisualSize.Y))
+					{
+						scrollY = data->VirtualSize.Y - data->VisualSize.Y;
+						WindowSetVScrollPos(win, scrollY);
+					}
+					
+					data->LogicalCursor.X = ParaGetLogicalPos(para, data->WordWrapLimit, &cursor);
+					MemoUpdateVisCursor(win, UF_NONE);
+				}
+				return TRUE;
 
 			case KEY_BACKSPACE:
 				if ((data->LogicalCursor.X > 0) && (para->Length > 0))
@@ -431,6 +531,7 @@ MemoKeyHook(void* w, int key)
 					
 					MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
 					WindowInvalidate   (win);
+					MemoModify         (win);
 				}
 				else if (para->pPrev)
 				{
@@ -464,6 +565,7 @@ MemoKeyHook(void* w, int key)
 					
 					MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
 					WindowInvalidate   (win);
+					MemoModify         (win);
 				}
 				return TRUE;
 				
@@ -480,7 +582,7 @@ MemoKeyHook(void* w, int key)
 					}
 
 					/* modify paragraph and re-render text */
-					ParaDeleteText(para, data->LogicalCursor.X, 1);					
+					ParaDeleteText(para, data->LogicalCursor.X, 1);
 					ParaRenderText(para, data->WordWrapLimit, &virtualSize);
 					
 					/* if lines did change, update total visual range */
@@ -491,7 +593,8 @@ MemoKeyHook(void* w, int key)
 					}
 					
 					MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
-					WindowInvalidate   (win);					
+					WindowInvalidate   (win);
+					MemoModify         (win);
 				}
 				else if (para->pNext)
 				{
@@ -504,13 +607,13 @@ MemoKeyHook(void* w, int key)
 					delpara = para->pNext;
 
 					/* unlink paragraph and append*/
-					ParaUnlink    (delpara);					
+					ParaUnlink    (delpara);
 					ParaAppendPara(para, delpara);
 
 					/* update logical cursor */
 					data->LogicalCursor.X = length;
 
-					ParaRenderText(para, data->WordWrapLimit, &virtualSize);					
+					ParaRenderText(para, data->WordWrapLimit, &virtualSize);
 					if (lines != para->NumLines)
 					{
 						data->VirtualSize.Y += (para->NumLines - lines);
@@ -524,6 +627,7 @@ MemoKeyHook(void* w, int key)
 					
 					MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
 					WindowInvalidate   (win);
+					MemoModify         (win);
 				}
 				return TRUE;
 				
@@ -558,8 +662,9 @@ MemoKeyHook(void* w, int key)
 						data->NumPara++;
 						
 						MemoUpdateVisCursor(win, UF_SET_V_COLUMN);
-						WindowInvalidate   (win);						
+						WindowInvalidate   (win);
 					}
+					MemoModify(win);
 				}
 				return TRUE;
 
@@ -577,13 +682,12 @@ MemoKeyHook(void* w, int key)
 					if (lines != para->NumLines)
 					{
 						data->VirtualSize.Y += (para->NumLines - lines);
-						//MemoUpdateScrollRange(win);
 					}
-					
 					
 					MemoUpdateScrollRange(win);
 					MemoUpdateVisCursor  (win, UF_SET_V_COLUMN);
 					WindowInvalidate     (win);
+					MemoModify           (win);
 
 					return TRUE;
 				}
@@ -599,6 +703,143 @@ MemoKeyHook(void* w, int key)
 		}
 	}
 	return FALSE;
+}
+
+/* ---------------------------------------------------------------------
+ * MemoMButtonHook
+ * Button mouse click hook
+ * ---------------------------------------------------------------------
+ */
+static void
+MemoMButtonHook(void* w, int x, int y, int flags)
+{
+	CUIWINDOW *win = (CUIWINDOW*) w;
+	MEMODATA  *data = (MEMODATA*) win->InstData;
+	CUIPOINT   pt;
+	
+	CUI_USE_ARG(flags);
+	
+	pt.X = x;
+	pt.Y = y;
+	
+	MemoSetLogicalCursor(data, &pt);
+	MemoUpdateVisCursor (win, UF_NONE);
+}
+
+/* ---------------------------------------------------------------------
+ * MemoHScrollHook
+ * Memo scroll bar mouse hook
+ * ---------------------------------------------------------------------
+ */
+static void
+MemoHScrollHook(void* w, int sbcode, int pos)
+{
+	CUIWINDOW* win = (CUIWINDOW*) w;
+	CUIRECT rc;
+	int sbpos, range;
+	
+	CUI_USE_ARG(pos);
+
+	WindowGetClientRect(win, &rc);
+	sbpos = WindowGetHScrollPos(win);
+	range = WindowGetHScrollRange(win);
+
+	switch(sbcode)
+	{
+	case SB_LINEUP:
+		if (sbpos > 0)
+		{
+			WindowSetHScrollPos(win, sbpos - 1);
+			WindowInvalidate(win);
+		}
+		break;
+	case SB_LINEDOWN:
+		if (sbpos < range)
+		{
+			WindowSetHScrollPos(win, sbpos + 1);
+			WindowInvalidate(win);
+		}
+		break;
+	case SB_PAGEUP:
+		if (sbpos > 0)
+		{
+			sbpos -= (rc.W - 1);
+			sbpos  = (sbpos < 0) ? 0 : sbpos;
+			WindowSetHScrollPos(win, sbpos);
+			WindowInvalidate(win);
+		}
+		break;
+	case SB_PAGEDOWN:
+		if (sbpos < range)
+		{
+			sbpos += (rc.W - 1);
+			sbpos  = (sbpos > range) ? range : sbpos;
+			WindowSetHScrollPos(win, sbpos);
+			WindowInvalidate(win);
+		}
+		break;
+	case SB_THUMBTRACK:
+		WindowInvalidate(win);
+		break;
+	}
+}
+
+/* ---------------------------------------------------------------------
+ * MemoVScrollHook
+ * Memo scroll bar mouse hook
+ * ---------------------------------------------------------------------
+ */
+static void
+MemoVScrollHook(void* w, int sbcode, int pos)
+{
+	CUIWINDOW* win = (CUIWINDOW*) w;
+	CUIRECT rc;
+	int sbpos, range;
+	
+	CUI_USE_ARG(pos);
+
+	WindowGetClientRect(win, &rc);
+	sbpos = WindowGetVScrollPos(win);
+	range = WindowGetVScrollRange(win);
+
+	switch(sbcode)
+	{
+	case SB_LINEUP:
+		if (sbpos > 0)
+		{
+			WindowSetVScrollPos(win, sbpos - 1);
+			WindowInvalidate(win);
+		}
+		break;
+	case SB_LINEDOWN:
+		if (sbpos < range)
+		{
+			WindowSetVScrollPos(win, sbpos + 1);
+			WindowInvalidate(win);
+		}
+		break;
+	case SB_PAGEUP:
+		if (sbpos > 0)
+		{
+			sbpos -= (rc.H - 1);
+			sbpos  = (sbpos < 0) ? 0 : sbpos;
+			WindowSetVScrollPos(win, sbpos);
+			WindowInvalidate(win);
+		}
+		break;
+	case SB_PAGEDOWN:
+		if (sbpos < range)
+		{
+			sbpos += (rc.H - 1);
+			sbpos  = (sbpos > range) ? range : sbpos;
+			WindowSetVScrollPos(win, sbpos);
+			WindowInvalidate(win);
+		}
+		break;
+	case SB_THUMBTRACK:
+		WindowInvalidate(win);
+		break;
+	}
 }
 
 /* ---------------------------------------------------------------------
@@ -618,13 +859,16 @@ MemoDestroyHook(void* w)
 	free(data);
 }
 
-
+/* ---------------------------------------------------------------------
+ * MemoCreateHook
+ * Handle EVENT_CREATE events
+ * ---------------------------------------------------------------------
+ */
 static void
 MemoCreateHook(void *w)
 {
 	MemoCalcTextPos((CUIWINDOW*) w);
 }
-
 
 /* ---------------------------------------------------------------------
  * MemoSetFocus
@@ -640,8 +884,11 @@ MemoSetFocusHook(void* w, void* lastfocus)
 
 	if (data)
 	{
+		int scrollX = WindowGetHScrollPos(win);
+		int scrollY = WindowGetVScrollPos(win);
+		
 		MemoGetVisualCursor(data, &pt);
-		WindowSetCursor    (win, pt.X - data->ScrollPosX, pt.Y - data->ScrollPosY);	
+		WindowSetCursor    (win, pt.X - scrollX, pt.Y - scrollY);	
 		WindowCursorOn     ();
 
 		if (data->SetFocusHook)
@@ -672,7 +919,6 @@ MemoKillFocusHook(void* w)
 	}
 }
 
-
 /* ---------------------------------------------------------------------
  * MemoNew
  * Create a memo dialog control
@@ -699,8 +945,9 @@ MemoNew(CUIWINDOW* parent, const wchar_t* text,
 		WindowSetDestroyHook  (memo, MemoDestroyHook);
 		WindowSetSetFocusHook (memo, MemoSetFocusHook);
 		WindowSetKillFocusHook(memo, MemoKillFocusHook);
-/*		WindowSetMButtonHook  (memo, MemoMButtonHook);*/
-/*		WindowSetVScrollHook  (memo, MemoVScrollHook);*/
+		WindowSetMButtonHook  (memo, MemoMButtonHook);
+		WindowSetVScrollHook  (memo, MemoVScrollHook);
+		WindowSetHScrollHook  (memo, MemoHScrollHook);
 		WindowSetSizeHook     (memo, MemoSizeHook);
 		
 
@@ -726,8 +973,6 @@ MemoNew(CUIWINDOW* parent, const wchar_t* text,
 		
 		((MEMODATA*)memo->InstData)->LogicalCursor.X = 0;
 		((MEMODATA*)memo->InstData)->LogicalCursor.Y = 0;
-		((MEMODATA*)memo->InstData)->ScrollPosX      = 0;
-		((MEMODATA*)memo->InstData)->ScrollPosY      = 0;
 		((MEMODATA*)memo->InstData)->VirtualColumn   = 0;
 		((MEMODATA*)memo->InstData)->SetFocusHook    = NULL;
 		((MEMODATA*)memo->InstData)->KillFocusHook   = NULL;
@@ -855,9 +1100,10 @@ MemoSetText(CUIWINDOW* win, const wchar_t* text)
 				
 		data->LogicalCursor.X = 0;
 		data->LogicalCursor.Y = 0;
-		data->ScrollPosX = 0;
-		data->ScrollPosY = 0;
 		data->VirtualColumn = 0;
+		
+		WindowSetHScrollPos(win, 0);
+		WindowSetVScrollPos(win, 0);
 
 		if (win->IsCreated)
 		{
@@ -877,28 +1123,89 @@ MemoGetText(CUIWINDOW* win, wchar_t* text, int len)
 {
 	if (win && (wcscmp(win->Class, _T("MEMO")) == 0))
 	{
-		text = text;
-		len  = len;
-		//MEMODATA* data = (MEMODATA*) win->InstData;
-/*		wcsncpy(text, data->MemoText, len);*/
+		MEMODATA  *data = (MEMODATA*) win->InstData;
+		PARAGRAPH *para = data->pFirst;
+		
+		while (para && (len > 0))
+		{
+			if (para->pText)
+			{
+				int plen = para->Length;
+				if (plen > len)
+				{
+					plen = len;
+				}
+				
+				memcpy(text, para->pText, plen * sizeof(wchar_t));
+				
+				len  -= plen;
+				text += plen;
+			}
+			
+			if ((para->pNext) && (len > 0))
+			{
+				*(text++) = '\n';
+				len--;
+			}
+			
+			para = para->pNext;
+		}
+		
+		if (len > 0)
+		{
+			*(text++) = '\0';
+		}
 		return text;
 	}
 	return _T("");
 }
 
+/* ---------------------------------------------------------------------
+ * MemoGetTextBufSize
+ * Return required size of text buffer to store text data in
+ * ---------------------------------------------------------------------
+ */
+int MemoGetTextBufSize(CUIWINDOW* win)
+{
+	int result = 0;
+	
+	if (win && (wcscmp(win->Class, _T("MEMO")) == 0))
+	{
+		MEMODATA  *data = (MEMODATA*) win->InstData;
+		PARAGRAPH *para = data->pFirst;
+		
+		while (para)
+		{
+			result += (para->Length + 1);
+			para = para->pNext;
+		}
+		
+		/* zero termination */
+		result++;
+	}
+	return result;
+}
 
+/* ---------------------------------------------------------------------
+ * MemoSetWrapColumns
+ * Set limit for word wrapping if auto word wrap is not set!
+ * ---------------------------------------------------------------------
+ */
 void MemoSetWrapColumns(CUIWINDOW* win, int cols)
 {
 	if (win && (wcscmp(win->Class, _T("MEMO")) == 0))
 	{
 		MEMODATA *data = (MEMODATA*) win->InstData;
 		
-		data->WordWrapLimit = cols;
-
-		if (win->IsCreated)
+		if (!data->DoAutoWordWrap)
 		{
-			MemoCalcTextPos(win);
-			WindowInvalidate(win);
+			data->WordWrapLimit = cols;
+
+			if (win->IsCreated)
+			{
+				MemoCalcTextPos(win);
+				WindowInvalidate(win);
+			}
 		}
 	}
 }
@@ -963,7 +1270,12 @@ MemoCalcTextPos(CUIWINDOW* win)
 	}
 }
 
-
+/* ---------------------------------------------------------------------
+ * MemoUpdateScrollRange
+ * Check if virtual text size is larger than the visual text size and
+ * update scroll ranges accordingly
+ * ---------------------------------------------------------------------
+ */
 static void
 MemoUpdateScrollRange(CUIWINDOW* win)
 {
@@ -995,50 +1307,67 @@ MemoUpdateScrollRange(CUIWINDOW* win)
 	}	
 }
 
+/* ---------------------------------------------------------------------
+ * MemoUpdateScrollPos
+ * Check if the visual cursor is outside of the visual area of the window
+ * and change scroll position to bring it back into the visual range if 
+ * necessary.
+ * ---------------------------------------------------------------------
+ */
 static void
 MemoUpdateScrollPos(CUIWINDOW* win, CUIPOINT cursor)
 {
-	MEMODATA  *data = (MEMODATA*) win->InstData;
+	MEMODATA *data    = (MEMODATA*) win->InstData;
+	int       scrollX = WindowGetHScrollPos(win);
+	int       scrollY = WindowGetVScrollPos(win);
 	
 	if (data->VirtualSize.Y >= data->VisualSize.Y)
 	{
-		if (cursor.Y < data->ScrollPosY)
+		if (cursor.Y < scrollY)
 		{
-			data->ScrollPosY = cursor.Y;
+			scrollY = cursor.Y;
 		}
-		if (cursor.Y >= (data->ScrollPosY + data->VisualSize.Y))
+		if (cursor.Y >= (scrollY + data->VisualSize.Y))
 		{
-			data->ScrollPosY = (cursor.Y - data->VisualSize.Y + 1);
+			scrollY = (cursor.Y - data->VisualSize.Y + 1);
 		}
 	}
 	else
 	{
-		data->ScrollPosY = 0;		
+		scrollY = 0;		
 	}	
-	if (WindowGetVScrollPos(win) != data->ScrollPosY)
+	if (WindowGetVScrollPos(win) != scrollY)
 	{
-		WindowSetVScrollPos(win, data->ScrollPosY);
+		WindowSetVScrollPos(win, scrollY);
 		WindowInvalidate   (win);
 	}	
 
 	if (data->VirtualSize.X >= data->VisualSize.X)
 	{
-		if (cursor.X < data->ScrollPosX)
+		if (cursor.X < scrollX)
 		{
-			data->ScrollPosX = cursor.X;
+			scrollX = (cursor.X / SCROLL_STEP_X) * SCROLL_STEP_X;
+			if (scrollX < 0)
+			{
+				scrollX = 0;
+			}
 		}
-		if (cursor.X >= data->ScrollPosX + data->VisualSize.X)
+		if (cursor.X >= scrollX + data->VisualSize.X)
 		{
-			data->ScrollPosX = (cursor.X - data->VisualSize.X + 1);
+			scrollX = ((cursor.X - data->VisualSize.X) / SCROLL_STEP_X + 1) * SCROLL_STEP_X;
+			if (scrollX > data->VirtualSize.X)
+			{
+				scrollX = (cursor.X - data->VisualSize.X);
+			}
 		}		
 	}
 	else
 	{
-		data->ScrollPosX = 0;
+		scrollX = 0;
 	}
-	if (WindowGetHScrollPos(win) != data->ScrollPosX)
+	if (WindowGetHScrollPos(win) != scrollX)
 	{
-		WindowSetHScrollPos(win, data->ScrollPosX);
+		WindowSetHScrollPos(win, scrollX);
 		WindowInvalidate   (win);
 	}
 #if 0
@@ -1061,7 +1390,6 @@ MemoUpdateScrollPos(CUIWINDOW* win, CUIPOINT cursor)
 #endif
 }
 
-
 /* ---------------------------------------------------------------------
  * Append Paragraph
  * Append a single paragraph to 
@@ -1078,7 +1406,12 @@ MemoAppendText(MEMODATA* data, const wchar_t *text, int len)
 	}
 }
 
-
+/* ---------------------------------------------------------------------
+ * MemoGetVisualCursor
+ * Take to logical cursor position and render it into a visual cursor.
+ * The visual cursor is then returned within the parameter "pCursor"
+ * ---------------------------------------------------------------------
+ */
 static void
 MemoGetVisualCursor(MEMODATA* data, CUIPOINT *pCursor)
 {
@@ -1110,7 +1443,56 @@ MemoGetVisualCursor(MEMODATA* data, CUIPOINT *pCursor)
 	}
 }
 
+/* ---------------------------------------------------------------------
+ * MemoSetLogicalCursor
+ * Take a visual cursor position and convert it into a logical cursor.
+ * The logical cursor is then applied to the control
+ * ---------------------------------------------------------------------
+ */
+static void
+MemoSetLogicalCursor(MEMODATA *data, const CUIPOINT *pCursor)
+{
+	PARAGRAPH *para = data->pFirst;
+	int y;
+	
+	data->LogicalCursor.Y = 0;
+	data->LogicalCursor.X = 0;
+	
+	y = 0;
+	while (para && (y + para->NumLines <= pCursor->Y))
+	{
+		data->LogicalCursor.Y++;
+		y += para->NumLines;
+		
+		para = para->pNext;
+	}
+	
+	if (para)
+	{
+		CUIPOINT pt;
+		
+		pt.X = pCursor->X;
+		pt.Y = pCursor->Y - y;
+			
+		data->LogicalCursor.X = 
+			ParaGetLogicalPos(para, data->WordWrapLimit, &pt);			
+	}
+	else
+	{
+		if (data->LogicalCursor.Y > 0)
+		{
+			data->LogicalCursor.Y -= 1;
+		}
+		data->LogicalCursor.X = 0;
+	}
+}
 
+/* ---------------------------------------------------------------------
+ * MemoClearAllText
+ * Free all paragraphs actually present in the list of paragraphs and
+ * initialized pointers to NULL
+ * ---------------------------------------------------------------------
+ */
 static void
 MemoClearAllText(MEMODATA* data)
 {
@@ -1123,11 +1505,17 @@ MemoClearAllText(MEMODATA* data)
 		
 		para = next;
 	}
-	data->pFirst = NULL;
-	data->pLast  = NULL;
+	data->pFirst  = NULL;
+	data->pLast   = NULL;
+	data->NumPara = 0;
 }
 
-
+/* ---------------------------------------------------------------------
+ * MemoFindParagraph
+ * Take a logical paragraph index and deliver the correspondent paragraph
+ * struct in return
+ * ---------------------------------------------------------------------
+ */
 static PARAGRAPH*
 MemoFindParagraph(MEMODATA* data, int index)
 {
@@ -1146,7 +1534,13 @@ MemoFindParagraph(MEMODATA* data, int index)
 	return NULL;
 }
 
-
+/* ---------------------------------------------------------------------
+ * MemoUpdateVisCursor
+ * This converts the logical cursor into a visual cursor and checks
+ * scroll positions. Then the cursor is placed inside of the visual
+ * window area according to the previously calculated results.
+ * ---------------------------------------------------------------------
+ */
 static void
 MemoUpdateVisCursor(CUIWINDOW *win, unsigned int flags)
 {
@@ -1157,8 +1551,8 @@ MemoUpdateVisCursor(CUIWINDOW *win, unsigned int flags)
 	MemoUpdateScrollPos(win, cursor);
 	
 	WindowSetCursor(win, 
-		cursor.X - data->ScrollPosX, 
-		cursor.Y - data->ScrollPosY);
+		cursor.X - WindowGetHScrollPos(win), 
+		cursor.Y - WindowGetVScrollPos(win));
 		
 	if (flags & UF_SET_V_COLUMN)
 	{
@@ -1166,7 +1560,11 @@ MemoUpdateVisCursor(CUIWINDOW *win, unsigned int flags)
 	}
 }
 
-
+/* ---------------------------------------------------------------------
+ * MemoAppendPara
+ * Append a paragraph to the end of the list
+ * ---------------------------------------------------------------------
+ */
 static void
 MemoAppendPara(MEMODATA* data, PARAGRAPH *para)
 {
@@ -1183,9 +1581,32 @@ MemoAppendPara(MEMODATA* data, PARAGRAPH *para)
 		data->pFirst = para;
 	}
 	data->pLast = para;
+	data->NumPara++;
 }
 
+/* ---------------------------------------------------------------------
+ * MemoAppendPara
+ * Append a paragraph to the end of the list
+ * ---------------------------------------------------------------------
+ */
+static void 
+MemoModify(CUIWINDOW *win)
+{
+	MEMODATA *data = (MEMODATA*) win->InstData;
+	if (data->MemoChangedHook)
+	{
+		data->MemoChangedHook(data->MemoChangedTarget, win);
+	}
+}
 
+/* paragraph routines */
+
+/* ---------------------------------------------------------------------
+ * ParaNew
+ * Create a new empty paragraph and return a pointer. The new paragraph is 
+ * not attached to the linked list of paragraphs yet
+ * ---------------------------------------------------------------------
+ */
 static PARAGRAPH* 
 ParaNew(void)
 {
@@ -1198,7 +1619,11 @@ ParaNew(void)
 	return result;
 }
 
-
+/* ---------------------------------------------------------------------
+ * ParaDelete
+ * Delete a paragraph and free text data
+ * ---------------------------------------------------------------------
+ */
 static void
 ParaDelete(PARAGRAPH *para)
 {
@@ -1209,7 +1634,12 @@ ParaDelete(PARAGRAPH *para)
 	free(para);
 }
 
-
+/* ---------------------------------------------------------------------
+ * ParaLink
+ * Place a paragraph into the linked list next to the list item pointed
+ * to by "insertpos"
+ * ---------------------------------------------------------------------
+ */
 static void
 ParaLink(PARAGRAPH *para, PARAGRAPH *insertpos)
 {
@@ -1223,7 +1653,11 @@ ParaLink(PARAGRAPH *para, PARAGRAPH *insertpos)
 	}
 }
 
-
+/* ---------------------------------------------------------------------
+ * ParaUnlink
+ * Unlinks a given paragraph from the linked list
+ * ---------------------------------------------------------------------
+ */
 static void
 ParaUnlink(PARAGRAPH *para)
 {
@@ -1237,7 +1671,11 @@ ParaUnlink(PARAGRAPH *para)
 	}
 }
 
-
+/* ---------------------------------------------------------------------
+ * ParaInsertText
+ * Insert text into a paragraph
+ * ---------------------------------------------------------------------
+ */
 static void 
 ParaInsertText(PARAGRAPH *para, int pos, const wchar_t *text, int len)
 {
@@ -1269,7 +1707,12 @@ ParaInsertText(PARAGRAPH *para, int pos, const wchar_t *text, int len)
 	}
 }
 
-
+/* ---------------------------------------------------------------------
+ * ParaSplitPara
+ * Split a given paragraph at a specified position and return a yet
+ * unlinked new paragraph with the text data following "pos".
+ * ---------------------------------------------------------------------
+ */
 static PARAGRAPH *ParaSplitPara(PARAGRAPH *para, int pos)
 {
 	PARAGRAPH *result = ParaNew();
@@ -1284,7 +1727,11 @@ static PARAGRAPH *ParaSplitPara(PARAGRAPH *para, int pos)
 	return result;
 }
 
-
+/* ---------------------------------------------------------------------
+ * ParaAppendPara
+ * Append a paragraph's text at the end of an other paragraph
+ * ---------------------------------------------------------------------
+ */
 static void
 ParaAppendPara(PARAGRAPH *para, PARAGRAPH *pappend)
 {
@@ -1294,7 +1741,11 @@ ParaAppendPara(PARAGRAPH *para, PARAGRAPH *pappend)
 	}
 }
 
-
+/* ---------------------------------------------------------------------
+ * ParaDeleteText
+ * Delete text from the text buffer of a paragraph
+ * ---------------------------------------------------------------------
+ */
 static void
 ParaDeleteText(PARAGRAPH *para, int pos, int len)
 {
@@ -1310,6 +1761,13 @@ ParaDeleteText(PARAGRAPH *para, int pos, int len)
 	}
 }
 
+/* ---------------------------------------------------------------------
+ * ParaRenderText
+ * Calculate text positions according to the width of the available
+ * space on the display. This function returns the sizes of the paragraph's
+ * width and height within the struct "virtualSize"
+ * ---------------------------------------------------------------------
+ */
 static void
 ParaRenderText(PARAGRAPH *para, int width, CUISIZE *virtualSize)
 {
@@ -1377,7 +1835,15 @@ ParaRenderText(PARAGRAPH *para, int width, CUISIZE *virtualSize)
 	para->NumLines = virtualSize->Y;
 }
 
-
+/* ---------------------------------------------------------------------
+ * ParaShowText
+ * Like ParaRenderText, but does text output instead of calculation
+ * of dimensions.
+ * The function honors the X and Y offset that is related to the window's
+ * scroll position and fills the remaining available window width 'widthX' with
+ * spaces. The parameter 'limit' is the word wrapping limit.
+ * ---------------------------------------------------------------------
+ */
 static void
 ParaShowText(PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX, int limit)
 {
@@ -1465,7 +1931,13 @@ ParaShowText(PARAGRAPH *para, CUIWINDOW *win, int offsX, int offsY, int widthX, 
 	}
 }
 
-
+/* ---------------------------------------------------------------------
+ * ParaGetVisualPos
+ * Take a logical column position and return the according visual cursor
+ * relative to the text dimensions of the paragraphs text area. The parameter
+ * 'width' is the limit for word wrapping
+ * ---------------------------------------------------------------------
+ */
 static CUIPOINT 
 ParaGetVisualPos(PARAGRAPH *para, int width, int colpos)
 {
@@ -1542,7 +2014,12 @@ ParaGetVisualPos(PARAGRAPH *para, int width, int colpos)
 	return result;
 }
 
-
+/* ---------------------------------------------------------------------
+ * ParaGetLogicalPos
+ * Take a visual position (relative to the dimensions of the paragraph's
+ * text area and return the according logical column position.
+ * ---------------------------------------------------------------------
+ */
 static int 
 ParaGetLogicalPos(PARAGRAPH *para, int width, const CUIPOINT *pt)
 {
@@ -1568,7 +2045,7 @@ ParaGetLogicalPos(PARAGRAPH *para, int width, const CUIPOINT *pt)
 						/* use line from pLineStart to pSpaceChar (inc) */
 						if (pt->Y == y)
 						{
-							if (pt->X > (pSpaceChar - pLineStart + 1))
+							if (pt->X >= (pSpaceChar - pLineStart + 1))
 							{
 								return (pSpaceChar - para->pText);
 							}
@@ -1586,7 +2063,7 @@ ParaGetLogicalPos(PARAGRAPH *para, int width, const CUIPOINT *pt)
 						/* use line from pLineStart to (pChar - 1) */
 						if (pt->Y == y)
 						{
-							if (pt->X > (pChar - pLineStart))
+							if (pt->X >= (pChar - pLineStart))
 							{
 								return (pChar - para->pText - 1);
 							}
@@ -1627,7 +2104,11 @@ ParaGetLogicalPos(PARAGRAPH *para, int width, const CUIPOINT *pt)
 	return 0;
 }
 
-
+/* ---------------------------------------------------------------------
+ * ParaShowLine
+ * Show a single line of text and fill end of line with spaces. 
+ * ---------------------------------------------------------------------
+ */
 static void
 ParaShowLine(CUIWINDOW *win, const wchar_t *pText, int len, int width, int offs)
 {
@@ -1661,7 +2142,11 @@ ParaShowLine(CUIWINDOW *win, const wchar_t *pText, int len, int width, int offs)
 	}
 }
 
-
+/* ---------------------------------------------------------------------
+ * wcsrcpy
+ * Helper function used to copy a character string in reversed order
+ * ---------------------------------------------------------------------
+ */
 static wchar_t *
 wcsrcpy(wchar_t *dest, const wchar_t *source)
 {

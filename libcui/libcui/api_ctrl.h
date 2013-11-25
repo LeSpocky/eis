@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: api_ctrl.h 33397 2013-04-02 20:48:05Z dv $
+ * Last Update:  $Id: api_ctrl.h 34707 2013-11-19 21:21:11Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -217,5 +217,17 @@ void ApiMenuSelectItem(int argc, const wchar_t* argv[]);
 void ApiMenuGetSelectedItem(int argc, const wchar_t* argv[]);
 void ApiMenuClear(int argc, const wchar_t* argv[]);
 
+
+#define API_MEMONEW 250
+#define API_MEMOSETCALLBACK 251
+#define API_MEMOSETTEXT 252
+#define API_MEMOGETTEXT 253
+#define API_MEMOSETWRAPCOLUMNS 254
+
+void ApiMemoNew(int argc, const wchar_t* argv[]);
+void ApiMemoSetCallback(int argc, const wchar_t* argv[]);
+void ApiMemoSetText(int argc, const wchar_t* argv[]);
+void ApiMemoGetText(int argc, const wchar_t* argv[]);
+void ApiMemoSetWrapColumns(int argc, const wchar_t* argv[]);
 
 #endif

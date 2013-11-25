@@ -5,7 +5,7 @@
 # Copyright (c) 2007 eisfair-Team
 #
 # Creation:    2007-06-30 dv
-# Last update: $Id: cuilib 25003 2010-07-17 05:50:58Z dv $
+# Last update: $Id: cuilib 34713 2013-11-23 20:10:43Z dv $
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -189,6 +189,12 @@ API_MENUSELECTITEM=244
 API_MENUGETSELITEM=245
 API_MENUCLEAR=246
 
+API_MEMONEW=250
+API_MEMOSETCALLBACK=251
+API_MEMOSETTEXT=252
+API_MEMOGETTEXT=253
+API_MEMOSETWRAPCOLUMNS=254
+
 API_XMLREADTAG=500
 API_LOADADDON=999
 
@@ -301,6 +307,13 @@ MENU_CHANGING='5'
 MENU_CLICKED='6'
 MENU_ESCAPE='7'
 
+# Memo hook types
+MEMO_SETFOCUS='0'
+MEMO_KILLFOCUS='1'
+MEMO_PREKEY='2' 
+MEMO_POSTKEY='3'
+MEMO_CHANGED='4'
+
 # Window and control styles
 CWS_NONE='0'
 CWS_BORDER='1'
@@ -321,6 +334,7 @@ CWS_STATUSBAR='32768'
 CWS_DEFOK='65536'
 CWS_DEFCANCEL='131072'
 EF_PASSWORD='16777216'
+MF_AUTOWORDWRAP='16777216'
 LB_SORTED='16777216'
 LB_DESCENDING='33554432'
 
@@ -365,8 +379,8 @@ CUISEP=$'\x09'   #' tabulator / protocol seperator
 #------------------------------------------------------------------------------
 cui_init()
 {
-    pipe_in="/run/cui/cui${PARENTPID}rp"
-    pipe_out="/run/cui/cui${PARENTPID}wp"
+    pipe_in="/var/run/cui/cui${PARENTPID}rp"
+    pipe_out="/var/run/cui/cui${PARENTPID}wp"
 
     if [ "$CUIID" != "CUISHELL" ]
     then
@@ -388,7 +402,7 @@ cui_init()
 # Expects: $1 .. $n  <-- Parameters to send
 # Returns: <nothing>
 #------------------------------------------------------------------------------
-cui_send()
+function cui_send()
 {
     local val=":$1"
     local tmp=""
@@ -499,7 +513,7 @@ cui_wait_ack()
                 cmd=${cmd//'\s'/'\'}
 
                 # assign and remove colon
-                eval 'p'$cmdcount='${cmd:1}'      
+                eval 'p'$cmdcount='${cmd:1}'
 
                 cmdcount=$[$cmdcount + 1]
             done
@@ -561,7 +575,7 @@ cui_wait_ack()
 # Expects: $1  <-- Handle variable
 # Returns: exit code: (0 = Success, 1 = Failure)
 #----------------------------------------------------------------------------
-cui_valid_handle()
+function cui_valid_handle()
 {
     if [ "$1" != "" -a "$1" != "0" ]
     then
@@ -575,7 +589,7 @@ cui_valid_handle()
 # Expects: $1  <-- Index variable
 # Returns: exit code: (0 = Success, 1 = Failure)
 #----------------------------------------------------------------------------
-cui_valid_index()
+function cui_valid_index()
 {
     if [ "$1" != "" -a "$1" -ge "0" ]
     then
@@ -786,8 +800,8 @@ cui_settimer()
 cui_killtimer()
 {
     cui_send "C" "${API_WINDOWKILLTIMER}" "$@"
-    cui_wait_ack   
-    return $?  
+    cui_wait_ack
+    return $
 }
 
 #------------------------------------------------------------------------------
@@ -809,8 +823,8 @@ cui_killtimer()
 cui_addcolors()
 {
     cui_send "C" "${API_WINDOWADDCOLSCHEME}" "$@"
-    cui_wait_ack   
-    return $?      
+    cui_wait_ack
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -821,8 +835,8 @@ cui_addcolors()
 cui_hascolors()
 {
     cui_send "C" "${API_WINDOWHASCOLSCHEME}" "$@"
-    cui_wait_ack   
-    return $?  
+    cui_wait_ack
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -834,8 +848,8 @@ cui_hascolors()
 cui_window_setcolors()
 {
     cui_send "C" "${API_WINDOWCOLSCHEME}" "$@"
-    cui_wait_ack   
-    return $?  
+    cui_wait_ack
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -847,8 +861,8 @@ cui_window_setcolors()
 cui_window_settext()
 {
     cui_send "C" "${API_WINDOWSETTEXT}" "$@"
-    cui_wait_ack   
-    return $? 
+    cui_wait_ack
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -860,8 +874,8 @@ cui_window_settext()
 cui_window_setltext()
 {
     cui_send "C" "${API_WINDOWSETLTEXT}" "$@"
-    cui_wait_ack   
-    return $? 
+    cui_wait_ack
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -873,8 +887,8 @@ cui_window_setltext()
 cui_window_setrtext()
 {
     cui_send "C" "${API_WINDOWSETRTEXT}" "$@"
-    cui_wait_ack   
-    return $?  
+    cui_wait_ack
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -886,8 +900,8 @@ cui_window_setrtext()
 cui_window_setstatustext()
 {
     cui_send "C" "${API_WINDOWSETSTATUSTEXT}" "$@"
-    cui_wait_ack   
-    return $?  
+    cui_wait_ack
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -899,8 +913,8 @@ cui_window_setstatustext()
 cui_window_setlstatustext()
 {
     cui_send "C" "${API_WINDOWSETLSTATUSTEXT}" "$@"
-    cui_wait_ack   
-    return $?  
+    cui_wait_ack
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -912,8 +926,8 @@ cui_window_setlstatustext()
 cui_window_setrstatustext()
 {
     cui_send "C" "${API_WINDOWSETRSTATUSTEXT}" "$@"
-    cui_wait_ack   
-    return $?      
+    cui_wait_ack
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -1250,7 +1264,7 @@ cui_radio_new()
 {
     cui_send "C" "${API_RADIONEW}" "$@"
     cui_wait_ack
-    return $?   
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -1311,7 +1325,7 @@ cui_checkbox_new()
 {
     cui_send "C" "${API_CHECKBOXNEW}" "$@"
     cui_wait_ack
-    return $?   
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -1535,7 +1549,7 @@ cui_combobox_new()
 {
     cui_send "C" "${API_COMBOBOXNEW}" "$@"
     cui_wait_ack
-    return $?   
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -1750,7 +1764,7 @@ cui_progress_getpos()
 {
     cui_send "C" "${API_PROGRESSBARGETPOS}" "$@"
     cui_wait_ack
-    return $?   
+    return $?
 }
 
 
@@ -1771,7 +1785,7 @@ cui_textview_new()
 {
     cui_send "C" "${API_TEXTVIEWNEW}" "$@"
     cui_wait_ack
-    return $?   
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -2059,9 +2073,9 @@ cui_listview_update()
 # Expects: $1  <-- Window   : Window Handle
 #          $2  <-- Column   : Integer
 #          $3  <-- Dir      : 1 = up, 0 = down
-# Returns: <nothing>   
+# Returns: <nothing>
 #------------------------------------------------------------------------------
-cui_listview_alphasort() 
+cui_listview_alphasort()
 {
     cui_send "C" "${API_LISTVIEWALPHASORT}" "$@"
     cui_wait_ack
@@ -2258,6 +2272,80 @@ cui_menu_clear()
 
 
 #------------------------------------------------------------------------------
+# Make new memo: 
+# Expects: $1  <-- Parent Window : Window Handle
+#          $2  <-- Window title  : String
+#          $3  <-- X             : Integer
+#          $4  <-- Y             : Integer
+#          $5  <-- W             : Integer
+#          $6  <-- H             : Integer
+#          $7  <-- ID            : Integer
+#          $8  <-- Set style     : Integer (use $CWS_XXX constants)
+#          $9  <-- Clear style   : Integer (use $CWS_XXX constants)
+# Returns: $p2 --> New Window    : Window Handle
+#------------------------------------------------------------------------------
+cui_memo_new()
+{
+    cui_send "C" "${API_MEMONEW}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Assign a memo callback
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Hook   : Integer (use $HOOK_XXX constants)
+#          $3  <-- Target : Window Handle
+#          $4  <-- Proc   : String (name of shell function)
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_memo_callback()
+{
+    cui_send "C" "${API_MEMOSETCALLBACK}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Set memo text
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Text   : String
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_memo_settext()
+{
+    cui_send "C" "${API_MEMOSETTEXT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Get memo text
+# Expects: $1  <-- Window : Window Handle
+# Returns: $p2 --> Text   : String
+#------------------------------------------------------------------------------
+cui_memo_gettext()
+{
+    cui_send "C" "${API_MEMOGETTEXT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Set memo wrap columns
+# Expects: $1  <-- Window : Window Handle
+#          $2  <-- Columns: Integer
+# Returns: <nothing>
+#------------------------------------------------------------------------------
+cui_memo_setwrapcolumns()
+{
+    cui_send "C" "${API_MEMOSETWRAPCOLUMNS}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+
+#------------------------------------------------------------------------------
 # util functions
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
@@ -2270,7 +2358,7 @@ xml_read_tag()
 {
     cui_send "C" "${API_XMLREADTAG}" "$@"
     cui_wait_ack
-    return $?   
+    return $?
 }
 
 #------------------------------------------------------------------------------
@@ -2282,6 +2370,6 @@ cui_load_addon()
 {
     cui_send "C" "${API_LOADADDON}" "$@"
     cui_wait_ack
-    return $? 
+    return $?
 }
 

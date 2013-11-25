@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: api_ctrl.c 33402 2013-04-02 21:32:17Z dv $
+ * Last Update:  $Id: api_ctrl.c 34709 2013-11-23 13:34:20Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -5514,6 +5514,442 @@ ApiMenuEscapeHook(void* win, void* ctrl)
 		{
 			BackendStartFrame(_T('H'), wcslen(menustub->EscapeHookProc) + 64);
 			BackendInsertStr (menustub->EscapeHookProc);
+			BackendInsertLong((unsigned long) win);
+			BackendInsertLong((unsigned long) ctrl);
+			BackendExecFrame ();
+		}
+	}
+}
+
+
+/* ---------------------------------------------------------------------
+ *                 MEMO API
+ * ---------------------------------------------------------------------
+ */
+
+typedef enum
+{
+	MEMO_SETFOCUS = 0,
+	MEMO_KILLFOCUS,
+	MEMO_PREKEY,
+	MEMO_POSTKEY,
+	MEMO_CHANGED,
+} MEMOHOOKTYPE;
+
+typedef struct
+{
+	wchar_t*      SetFocusHookProc;     /* control got input focus */
+	wchar_t*      KillFocusHookProc;    /* control lost input focus */
+	wchar_t*      PreKeyHookProc;       /* control got input focus */
+	wchar_t*      PostKeyHookProc;      /* control lost input focus */
+	wchar_t*      ChangedHookProc;      /* changed hook function */
+} MEMOSTUB;
+
+static void ApiMemoSetFocusHook(void* win, void* ctrl, void* oldfocus);
+static void ApiMemoKillFocusHook(void* win, void* ctrl);
+static int  ApiMemoPreKeyHook(void* win, void* ctrl, int key);
+static int  ApiMemoPostKeyHook(void* win, void* ctrl, int key);
+static void ApiMemoChangedHook(void* win, void* ctrl);
+static void ApiMemoFreeStub(void* ctrlstub);
+
+void ApiMemoNew(int argc, const wchar_t* argv[])
+{
+	if (argc == 9)
+	{
+		WINDOWSTUB* stub;
+		CUIWINDOW*  memo;
+		CUIWINDOW*  win;
+		unsigned long wndnr;
+		int   x, y, w, h, id;
+		int   sflags, cflags;
+
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[2], _T("%d"), &x);
+		swscanf(argv[3], _T("%d"), &y);
+		swscanf(argv[4], _T("%d"), &w);
+		swscanf(argv[5], _T("%d"), &h);
+		swscanf(argv[6], _T("%d"), &id);
+		swscanf(argv[7], _T("%d"), &sflags);
+		swscanf(argv[8], _T("%d"), &cflags);
+
+		win = ApiLookupWindow(wndnr);
+
+		memo = MemoNew(
+			win,
+			argv[1],
+			x, y, w, h, id,
+			sflags, cflags);
+
+		stub = StubCreate(memo);
+		if (stub)
+		{
+			stub->CtrlStubClass = _T("MEMOSTUB");
+			stub->CtrlStub = malloc(sizeof(MEMOSTUB));
+			memset(stub->CtrlStub, 0, sizeof(MEMOSTUB));
+			stub->CtrlStubDelete = ApiMemoFreeStub;
+
+			BackendStartFrame(_T('R'), 48);
+			BackendInsertInt (ERROR_SUCCESS);
+			BackendInsertLong((unsigned long) stub->Window);
+			BackendSendFrame ();
+		}
+		else
+		{
+			BackendWriteError(ERROR_INVALID);
+		}
+	}
+	else
+	{
+		BackendWriteError(ERROR_ARGC);
+	}
+}
+
+void 
+ApiMemoSetCallback(int argc, const wchar_t* argv[])
+{
+	if (argc == 4)
+	{
+		WINDOWSTUB*   winstub;
+		WINDOWSTUB*   targetwin;
+		unsigned long wndnr;
+		unsigned long target;
+		int           hook;
+		const wchar_t*  procname;
+
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &hook);
+		swscanf(argv[2], _T("%ld"), &target);
+		procname = argv[3];
+
+		if ((hook >= MEMO_SETFOCUS) && (hook <= MEMO_CHANGED))
+		{
+			winstub   = StubFind(wndnr);
+			targetwin = StubFind(target);
+			if (targetwin && winstub && winstub->CtrlStubClass &&
+			   (wcscmp(winstub->CtrlStubClass, _T("MEMOSTUB")) == 0))
+			{
+				MEMOSTUB* memostub = (MEMOSTUB*) winstub->CtrlStub;
+
+				switch((MEMOHOOKTYPE) hook)
+				{
+				case MEMO_SETFOCUS:
+					StubSetProc(&memostub->SetFocusHookProc, procname);
+					if (memostub->SetFocusHookProc)
+					{
+						MemoSetSetFocusHook(winstub->Window, ApiMemoSetFocusHook, targetwin->Window);
+					}
+					else
+					{
+						MemoSetSetFocusHook(winstub->Window, NULL, targetwin->Window);
+					}
+					break;
+				case MEMO_KILLFOCUS:
+					StubSetProc(&memostub->KillFocusHookProc, procname);
+					if (memostub->KillFocusHookProc)
+					{
+						MemoSetKillFocusHook(winstub->Window, ApiMemoKillFocusHook, targetwin->Window);
+					}
+					else
+					{
+						MemoSetKillFocusHook(winstub->Window, NULL, targetwin->Window);
+					}
+					break;
+				case MEMO_PREKEY:
+					StubSetProc(&memostub->PreKeyHookProc, procname);
+					if (memostub->PreKeyHookProc)
+					{
+						MemoSetPreKeyHook(winstub->Window, ApiMemoPreKeyHook, targetwin->Window);
+					}
+					else
+					{
+						MemoSetPreKeyHook(winstub->Window, NULL, targetwin->Window);
+					}
+					break;
+				case MEMO_POSTKEY:
+					StubSetProc(&memostub->PostKeyHookProc, procname);
+					if (memostub->PostKeyHookProc)
+					{
+						MemoSetPostKeyHook(winstub->Window, ApiMemoPostKeyHook, targetwin->Window);
+					}
+					else
+					{
+						MemoSetPostKeyHook(winstub->Window, NULL, targetwin->Window);
+					}
+					break;
+				case MEMO_CHANGED:
+					StubSetProc(&memostub->ChangedHookProc, procname);
+					if (memostub->ChangedHookProc)
+					{
+						MemoSetChangedHook(winstub->Window, ApiMemoChangedHook, targetwin->Window);
+					}
+					else
+					{
+						MemoSetChangedHook(winstub->Window, NULL, targetwin->Window);
+					}
+					break;
+				}
+
+				BackendStartFrame(_T('R'), 32);
+				BackendInsertInt (ERROR_SUCCESS);
+				BackendSendFrame ();
+			}
+			else
+			{
+				BackendWriteError(ERROR_INVALID);
+			}
+		}
+		else
+		{
+			BackendWriteError(ERROR_INVALID);
+		}
+	}
+	else
+	{
+		BackendWriteError(ERROR_ARGC);
+	}
+}
+
+void 
+ApiMemoSetText(int argc, const wchar_t* argv[])
+{
+	if (argc == 2)
+	{
+		WINDOWSTUB*   winstub;
+		unsigned long wndnr;
+
+		swscanf(argv[0], _T("%ld"), &wndnr);
+
+		winstub = StubFind(wndnr);
+		if (winstub)
+		{
+			MemoSetText(winstub->Window, argv[1]);
+
+			BackendStartFrame(_T('R'), 32);
+			BackendInsertInt (ERROR_SUCCESS);
+			BackendSendFrame ();
+		}
+		else
+		{
+			BackendWriteError(ERROR_INVALID);
+		}
+	}
+	else
+	{
+		BackendWriteError(ERROR_ARGC);
+	}
+}
+
+void
+ApiMemoGetText(int argc, const wchar_t* argv[])
+{
+	if (argc == 1)
+	{
+		WINDOWSTUB*   winstub;
+		unsigned long wndnr;
+
+		swscanf(argv[0], _T("%ld"), &wndnr);
+
+		winstub = StubFind(wndnr);
+		if (winstub)
+		{
+			int      size   = MemoGetTextBufSize(winstub->Window);
+			wchar_t* result = (wchar_t*) malloc((size + 1) * sizeof(wchar_t));
+			
+			if (result)
+			{
+				wchar_t* str;
+				MemoGetText(winstub->Window, result, size + 1);
+
+				/* count number of escape characters to add to the max. buffer size */
+				str = result;
+				while (*str)
+				{
+					switch (*str)
+					{
+					case _T('\n'): 
+						size++;
+						break;
+					case _T('\t'):
+						size++;
+						break;
+					case _T('\\'):
+						size++;
+						break;
+					default:
+						break;
+					}
+					str++;
+				}
+
+				/* start frame */
+				BackendStartFrame(_T('R'), size + 32);
+				BackendInsertInt (ERROR_SUCCESS);
+				BackendInsertStr (result);
+				BackendSendFrame ();
+				free(result);
+			}
+		}
+		else
+		{
+			BackendWriteError(ERROR_INVALID);
+		}
+	}
+	else
+	{
+		BackendWriteError(ERROR_ARGC);
+	}
+}
+
+void 
+ApiMemoSetWrapColumns(int argc, const wchar_t* argv[])
+{
+	if (argc == 2)
+	{
+		WINDOWSTUB*   winstub;
+		unsigned long wndnr;
+		int           cols;
+
+		swscanf(argv[0], _T("%ld"), &wndnr);
+		swscanf(argv[1], _T("%d"),  &cols);
+
+		winstub = StubFind(wndnr);
+		if (winstub)
+		{
+			MemoSetWrapColumns(winstub->Window, cols);
+
+			BackendStartFrame(_T('R'), 32);
+			BackendInsertInt (ERROR_SUCCESS);
+			BackendSendFrame ();
+		}
+		else
+		{
+			BackendWriteError(ERROR_INVALID);
+		}
+	}
+	else
+	{
+		BackendWriteError(ERROR_ARGC);
+	}
+}
+
+static void
+ApiMemoFreeStub(void* ctrlstub)
+{
+	MEMOSTUB* memostub = (MEMOSTUB*) ctrlstub;
+	if (memostub)
+	{
+		if (memostub->SetFocusHookProc)  free(memostub->SetFocusHookProc);
+		if (memostub->KillFocusHookProc) free(memostub->KillFocusHookProc);
+		if (memostub->PreKeyHookProc)    free(memostub->PreKeyHookProc);
+		if (memostub->PostKeyHookProc)   free(memostub->PostKeyHookProc);
+		if (memostub->ChangedHookProc)   free(memostub->ChangedHookProc);
+		free(memostub);
+	}
+}
+
+
+static void 
+ApiMemoSetFocusHook(void* win, void* ctrl, void* oldfocus)
+{
+	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("MEMOSTUB")) == 0))
+	{
+		MEMOSTUB* memostub = (MEMOSTUB*) ctrlstub->CtrlStub;
+		if (memostub->SetFocusHookProc)
+		{
+			StubCheckStub(oldfocus);
+
+			BackendStartFrame(_T('H'), wcslen(memostub->SetFocusHookProc) + 64);
+			BackendInsertStr (memostub->SetFocusHookProc);
+			BackendInsertLong((unsigned long) win);
+			BackendInsertLong((unsigned long) ctrl);
+			BackendInsertLong((unsigned long) oldfocus);
+			BackendExecFrame ();
+		}
+	}
+}
+
+static void 
+ApiMemoKillFocusHook(void* win, void* ctrl)
+{
+	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("MEMOSTUB")) == 0))
+	{
+		MEMOSTUB* memostub = (MEMOSTUB*) ctrlstub->CtrlStub;
+		if (memostub->KillFocusHookProc)
+		{
+			BackendStartFrame(_T('H'), wcslen(memostub->KillFocusHookProc) + 64);
+			BackendInsertStr (memostub->KillFocusHookProc);
+			BackendInsertLong((unsigned long) win);
+			BackendInsertLong((unsigned long) ctrl);
+			BackendExecFrame ();
+		}
+	}
+}
+
+static int
+ApiMemoPreKeyHook(void* win, void* ctrl, int key)
+{
+	int result = FALSE;
+
+	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("MEMOSTUB")) == 0))
+	{
+		MEMOSTUB* memostub = (MEMOSTUB*) ctrlstub->CtrlStub;
+		if (memostub->PreKeyHookProc)
+		{
+			BackendStartFrame(_T('H'), wcslen(memostub->PreKeyHookProc) + 64);
+			BackendInsertStr (memostub->PreKeyHookProc);
+			BackendInsertLong((unsigned long) win);
+			BackendInsertLong((unsigned long) ctrl);
+			BackendInsertInt (key);
+			BackendExecFrame ();
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
+			{
+				result = TRUE;
+			}
+		}
+	}
+	return result;
+}
+
+static int
+ApiMemoPostKeyHook(void* win, void* ctrl, int key)
+{
+	int result = FALSE;
+
+	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("MEMOSTUB")) == 0))
+	{
+		MEMOSTUB* memostub = (MEMOSTUB*) ctrlstub->CtrlStub;
+		if (memostub->PostKeyHookProc)
+		{
+			BackendStartFrame(_T('H'), wcslen(memostub->PostKeyHookProc) + 64);
+			BackendInsertStr (memostub->PostKeyHookProc);
+			BackendInsertLong((unsigned long) win);
+			BackendInsertLong((unsigned long) ctrl);
+			BackendInsertInt (key);
+			BackendExecFrame ();
+			if ((BackendNumResultParams() > 0) && (wcscmp(BackendResultParam(0), _T("1")) == 0))
+			{
+				result = TRUE;
+			}
+		}
+	}
+	return result;
+}
+
+static void 
+ApiMemoChangedHook(void* win, void* ctrl)
+{
+	WINDOWSTUB* ctrlstub = StubFind((unsigned long)ctrl);
+	if (ctrlstub && (wcscmp(ctrlstub->CtrlStubClass, _T("MEMOSTUB")) == 0))
+	{
+		MEMOSTUB* memostub = (MEMOSTUB*) ctrlstub->CtrlStub;
+		if (memostub->ChangedHookProc)
+		{
+			BackendStartFrame(_T('H'), wcslen(memostub->ChangedHookProc) + 64);
+			BackendInsertStr (memostub->ChangedHookProc);
 			BackendInsertLong((unsigned long) win);
 			BackendInsertLong((unsigned long) ctrl);
 			BackendExecFrame ();
