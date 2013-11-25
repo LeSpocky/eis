@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #------------------------------------------------------------------------------
 # /var/install/dialog.d/PHPMYADMIN_SERVER_CONNECT_TYPE_CUI.sh - script dialog for ece
 #

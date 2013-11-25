@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #------------------------------------------------------------------------------
 # /var/install/dialog.d/PHPMYADMIN_DEFAULT_TAB_DATABASE_CUI.sh - script dialog for ece
 #

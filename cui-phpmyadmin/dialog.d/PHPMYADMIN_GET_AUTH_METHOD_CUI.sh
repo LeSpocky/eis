@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #----------------------------------------------------------------------------
 # /var/install/dialog.d/PHPMYADMIN_GET_AUTH_METHOD_CUI.sh - script dialog for
 # ece to get the authentication method and if requested the username and

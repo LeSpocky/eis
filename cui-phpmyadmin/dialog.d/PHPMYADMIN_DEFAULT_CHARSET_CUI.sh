@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #------------------------------------------------------------------------------
 # /var/install/dialog.d/PHPMYADMIN_DEFAULT_CHARSET_CUI.sh - script dialog for ece
 #

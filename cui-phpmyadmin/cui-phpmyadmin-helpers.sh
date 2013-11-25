@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ----------------------------------------------------------------------------
 # /var/install/bin/cui-phpmyadmin-helpers.sh
 #

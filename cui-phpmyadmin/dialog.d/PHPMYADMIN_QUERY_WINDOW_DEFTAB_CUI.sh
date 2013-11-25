@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #------------------------------------------------------------------------------
 # /var/install/dialog.d/PHPMYADMIN_QUERY_WINDOW_DEFTAB_CUI.sh - script dialog for ece
 #

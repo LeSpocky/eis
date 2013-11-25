@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ----------------------------------------------------------------------------
 # /var/install/config.d/cui-phpmyadmin.sh - phpMyAdmin configuration
 #
