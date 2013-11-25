@@ -1,7 +1,7 @@
 #!/bin/sh
 # remove default.d und check.d files
-rm -f /etc/default.d/bind
-rm -f /etc/check.d/bind
-rm -f /etc/check.d/bind.exp
-rm -f /etc/check.d/bind.ext
+rm -f /etc/default.d/named
+rm -f /etc/check.d/named
+rm -f /etc/check.d/named.exp
+rm -f /etc/check.d/named.ext
 exit 0

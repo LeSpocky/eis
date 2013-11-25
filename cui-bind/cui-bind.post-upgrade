@@ -1,3 +1,3 @@
 #!/bin/sh
-[ -f /etc/config.d/bind ] && /var/install/config.d/bind-update.sh
+[ -f /etc/config.d/named ] && /var/install/config.d/named-update.sh
 exit 0

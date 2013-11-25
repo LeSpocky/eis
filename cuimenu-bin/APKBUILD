@@ -2,7 +2,7 @@
 # Maintainer: team@eisfair.org
 pkgname=cuimenu-bin
 pkgver=2.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Eisfair CUI basis menu - binary files"
 url="http://www.eisfair.org"
 arch="all"
@@ -41,6 +41,9 @@ build() {
 	cd ${_builddir}/list-files.cui
 	make -j1 -s || return 1
 	echo ""
+	cd ${_builddir}/netcalc
+	make -j1 -s || return 1
+	echo ""
 	cd ${_builddir}/shellrun.cui
 	make -j1 -s || return 1
 	echo ""
@@ -61,6 +64,7 @@ package() {
 	cp ${_builddir}/eischk/eischk ${pkgdir}/var/install/bin/
 	cd ${_builddir}/list-files.cui
 	make -j1 DESTDIR="$pkgdir" install || return 1
+	cp ${_builddir}/netcalc/netcalc ${pkgdir}/var/install/bin/
 	cd ${_builddir}/shellrun.cui
 	make -j1 DESTDIR="$pkgdir" install || return 1
 	cd ${_builddir}/show-doc.cui
@@ -69,4 +73,3 @@ package() {
 	make -j1 DESTDIR="$pkgdir" install || return 1
 }
 
-md5sums=""

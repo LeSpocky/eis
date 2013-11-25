@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------
-# /etc/config.d/bind - default configuration file for bind
+# /etc/config.d/named - default configuration file for BIND
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
@@ -8,7 +8,7 @@
 
 START_BIND='yes'                      # Namserver start 'yes' or 'no'
 BIND_FORWARDER_N='2'                  # Number of forwarders
-BIND_FORWARDER_1_IP='8.8.8.8 '        # IP-Address of forwarder
+BIND_FORWARDER_1_IP='8.8.8.8'         # IP-Address of forwarder
 BIND_FORWARDER_1_EDNS='yes'           # Use EDNS for communication
 BIND_FORWARDER_2_IP='8.8.4.4'
 BIND_FORWARDER_2_EDNS='yes'
