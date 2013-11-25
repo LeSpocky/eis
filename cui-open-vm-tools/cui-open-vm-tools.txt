@@ -1,7 +1,7 @@
                                Die Open VM Tools
 
    Die Open Virtual Machine Tools (open-vm-tools) sind die quelloffene
-   Version der kommerziellen VMware Tools. Sie ermoeglichen ein Steuerung
+   Version der kommerziellen VMware Tools. Sie ermoeglichen die Steuerung
    des Servers durch den VMware Host.
 
    START_VMTOOLS
