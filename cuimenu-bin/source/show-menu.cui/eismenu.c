@@ -33,7 +33,6 @@ int MenuLevel = 0;
 
 static void     EisMenuClear(EISMENU* eismenu);
 static void     EisMenuInit(EISMENU* eismenu);
-static void     EisMenuKernelVersion(wchar_t* version, int len);
 static int      EisMenuGetNextMenu(const wchar_t* filename, wchar_t* menuname, int len);
 static wchar_t* EisMenuKillSpaces(wchar_t* buffer);
 static void     EisMenuReadClassicNode(EISMENU* eismenu, XMLNODE* node, int first);
@@ -826,51 +825,6 @@ EisMenuGetFileData(const wchar_t* filename, wchar_t* data, int len)
 }
 
 /* ---------------------------------------------------------------------
- * EisMenuKernelVersion
- * Read the package version number of the 'eis-kernel' package.
- * This information is found within the package info file
- * ---------------------------------------------------------------------
- */
-static void 
-EisMenuKernelVersion(wchar_t* version, int len)
-{
-	FILE* in;
-	char  buffer[256 + 1];
-
-	if (len <= 0) return;
-
-	version[0] = 0;
-
-	in  = FileOpen(_T("/var/install/packages/eiskernel"), _T("rt"));
-	if (in) 
-	{
-		while (fgets(buffer,256,in)) 
-		{
-			char* pos2;
-			char* pos1 = strrchr(buffer,'\n');
-			if (pos1) 
-			{
-				*pos1 = 0;
-			}
-
-			pos1 = strstr(buffer,"<version>");
-			pos2 = strstr(buffer,"</version>");
-			if (pos1 && pos2 && (pos2 > (pos1 + 9))) 
-			{
-				pos1 += 9;
-				*pos2 = 0;
-
-				mbstowcs(version, pos1, len);
-
-				version[len] = 0;
-				break;
-			}
-		}                                                                                        
-		FileClose(in);
-	}
-}
-
-/* ---------------------------------------------------------------------
  * EisMenuRemoveLoginInfo
  * Strip embedded login information (username and password) from URLs 
  * ---------------------------------------------------------------------
@@ -1373,7 +1327,7 @@ EisMenuWriteToFile(const wchar_t* text, FILE* out)
 
 /* ---------------------------------------------------------------------
  * EisMenuUpdateVersionTitle
- * Update kernel version in menu title
+ * Update Release version in menu title
  * ---------------------------------------------------------------------
  */
 static void
@@ -1384,7 +1338,7 @@ EisMenuUpdateVersionTitle(EISMENU* eismenu)
 
 	EisMenuGetFileData(_T("/etc/alpine-release"), base, 64);
 
-	if (eismenu->SubTitle) 
+	if (eismenu->SubTitle)
 	{
 		free(eismenu->SubTitle);
 	}

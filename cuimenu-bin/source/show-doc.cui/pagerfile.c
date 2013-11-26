@@ -106,7 +106,7 @@ PagerFileClose(PAGERFILE* pfile)
 	{
 		fclose(pfile->FileStream);
 	}
-	if ((int)pfile->IConvHandle >= 0)
+	if ( pfile->IConvHandle != ((iconv_t)-1))
 	{
 		iconv_close(pfile->IConvHandle);
 	}
@@ -338,17 +338,16 @@ PagerForwRawLine(PAGERFILE* pfile, long pos, wchar_t** lbuffer)
 		}
 		
 		/* convert string ... */
-		if ((int)pfile->IConvHandle >= 0)
+		if (pfile->IConvHandle != (iconv_t)-1)
 		{
 			char  *in  = (char*) pfile->LineBuffer;
 			char  *out = (char*) pfile->WcLineBuffer;
 			size_t inlen  = len;
 			size_t outlen = (pfile->WcLineBufferSize * sizeof(wchar_t));
-			size_t numc;
 			
 			/* ... using iconv with a specified encoding*/
 			pfile->WcLineBuffer[0] = 0;
-			numc = iconv (
+			iconv (
 				pfile->IConvHandle, 
 				&in,  &inlen, 
 				&out, &outlen);

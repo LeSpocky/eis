@@ -149,9 +149,7 @@ PagerviewPaintHook(void* w)
 	CUIWINDOW*    win = (CUIWINDOW*) w;
 	CUIRECT       rc;
 	PAGERVIEWDATA* data;
-	int           yscroll;
 	int           ypos;
-	int           index;
 	wchar_t*        lbuffer;
 
 	data = (PAGERVIEWDATA*) win->InstData;
@@ -160,11 +158,10 @@ PagerviewPaintHook(void* w)
 	WindowGetClientRect(win, &rc);
 	if ((rc.W <= 0)||(rc.H <= 0)) return;
 
-	yscroll = WindowGetVScrollPos(win);
+	WindowGetVScrollPos(win);
 
 	/* show text */
 	ypos = 0;
-	index = 0;
 
 	if (data->File)
 	{
