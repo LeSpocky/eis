@@ -704,22 +704,6 @@ makeResult(struct Address const *result, char const *err, BOOL includeNetmask)
  * from old sourcecode:
  ******************************************************************************/
 /*----------------------------------------------------------------------------
- *  is_numeric (str)
- *----------------------------------------------------------------------------
- */
-static int
-is_numeric (char * str)
-{
-    while (*str) {
-	    if (*str < '0' || *str > '9') {			    /* just for fun */
-	        return (FALSE);
-	    }
-	    str++;
-    }
-    return (TRUE);
-} /* is_numeric (str) */
-
-/*----------------------------------------------------------------------------
  *  set_netmask (netmask, n_bits)
  *----------------------------------------------------------------------------
  */
@@ -731,18 +715,18 @@ set_netmask (unsigned int * netmask, int n_bits)
     int	idx;
 
     for (i = 0; i < 4; i++) {
-	    netmask[i] = 0;
+        netmask[i] = 0;
     }
     for (b = 0; b < n_bits; b++)  {
-	    idx = b / 8;
-	    i = (31 - b) % 8;
-	    netmask[idx] |= (1 << i);
+        idx = b / 8;
+        i = (31 - b) % 8;
+        netmask[idx] |= (1 << i);
     }
     return;
 } /* set_netmask (netmask, n_bits) */
 
 static int
-dnsnet (int argc, char ** argv, int reverse)
+dnsnet (int argc, char ** argv)
 {
     unsigned int    network[4];				/* network address  */
     unsigned int    netmask[4];				/* netmask	    */
@@ -753,91 +737,47 @@ dnsnet (int argc, char ** argv, int reverse)
     ipp = argv[2];
 
     if (argc == 3) {
-	    netmp = strchr (ipp, ':');
-
-	    if (! netmp) {
-	        netmp = strchr (ipp, '/');
+        netmp = strchr (ipp, ':');
+        if (! netmp) {
+            netmp = strchr (ipp, '/');
             if (! netmp) {
-		        return 0;
-	        }
-	    }
-
-	    *netmp++ = '\0';
-    }
-    else
-    {
-	    netmp = argv[3];
+                return 0;
+            }
+        }
+        *netmp++ = '\0';
+    } else {
+        netmp = argv[3];
     }
 
-    if (sscanf (ipp, "%d.%d.%d.%d", &(network[0]), &(network[1]),
-					&(network[2]), &(network[3])) != 4) {
-	    fprintf (stderr, "%s: network: invalid address: %s\n", argv[0], ipp);
-	    exit (1);
+    if (sscanf (ipp, "%d.%d.%d.%d", &(network[0]), &(network[1]), &(network[2]), &(network[3])) != 4) {
+        fprintf (stderr, "%s: network: invalid address: %s\n", argv[0], ipp);
+        exit (1);
     }
 
-    if (sscanf (netmp, "%d.%d.%d.%d", &(netmask[0]), &(netmask[1]),
-					&(netmask[2]), &(netmask[3])) != 4) {
-	int n_bits;
-
-	if (! is_numeric (netmp) ||
-	    sscanf (netmp, "%d", &n_bits) != 1 ||
-	    (n_bits < 2 || n_bits > 32))
-	    {
-	        fprintf (stderr, "%s: netmask bits: invalid value: %s\n", argv[0], netmp);
-	        exit (1);
-	    }
-	    set_netmask (netmask, n_bits);
+    if (sscanf (netmp, "%d.%d.%d.%d", &(netmask[0]), &(netmask[1]), &(netmask[2]), &(netmask[3])) != 4) {
+        int n_bits;
+        if ( (sscanf (netmp, "%d", &n_bits) != 1) || (n_bits < 2 || n_bits > 32)) {
+            fprintf (stderr, "%s: netmask bits: invalid value: %s\n", argv[0], netmp);
+            exit (1);
+        }
+        set_netmask (netmask, n_bits);
     }
 
-    for (i = 0; i < 4; i++)
-    {
-	if (netmask[i] != 255)
-	{
-	    netmask[i] = 0;
-	}
-	network[i] &= netmask[i];
+    for (i = 0; i < 4; i++) {
+        if (netmask[i] != 255) {
+            netmask[i] = 0;
+        }
+        network[i] &= netmask[i];
     }
 
-    if (reverse)
-    {
-	if (netmask[3] != 0)
-	{
-	    printf ("%d.%d.%d.%d.in-addr.arpa\n", network[3], network[2],
-				     network[1], network[0]);
-	}
-	else if (netmask[2] != 0)
-	{
-	    printf ("%d.%d.%d.in-addr.arpa\n", network[2], network[1],
-		    network[0]);
-	}
-	else if (netmask[1] != 0)
-	{
-	    printf ("%d.%d.in-addr.arpa\n", network[1], network[0]);
-	}
-	else
-	{
-	    printf ("%d.in-addr.arpa\n", network[0]);
-	}
-    }
-    else
-    {
-	if (netmask[3] != 0)
-	{
-	    printf ("%d.%d.%d.%d\n", network[0], network[1],
-				     network[2], network[3]);
-	}
-	else if (netmask[2] != 0)
-	{
-	    printf ("%d.%d.%d\n", network[0], network[1], network[2]);
-	}
-	else if (netmask[1] != 0)
-	{
-	    printf ("%d.%d\n", network[0], network[1]);
-	}
-	else
-	{
-	    printf ("%d\n", network[0]);
-	}
+    if (netmask[3] != 0) {
+        printf ("%d.%d.%d.%d\n", network[0], network[1], network[2], network[3]);
+    } else if (netmask[2] != 0) {
+        printf ("%d.%d.%d\n", network[0], network[1], network[2]);
+    } else if (netmask[1] != 0) {
+        printf ("%d.%d\n", network[0], network[1]);
+    } else {
+        printf ("%d\n", network[0]);
     }
     return (0);
 }
@@ -1096,9 +1036,9 @@ main(int argc, char *argv[])
 
     // from old source:
     if (! strcmp (argv[1], "dnsnet")) {
-	    return (dnsnet (argc, argv, FALSE));
+        if (isValidAddress(&addr)) {
+            return (dnsnet (argc, argv));
+        }
     }
-
-
     return usage(argv[0]);
 }
