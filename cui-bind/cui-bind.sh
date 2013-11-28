@@ -26,7 +26,7 @@ bind9_sec="/var/bind/sec" # slave zone
 ### --------------------------------------------------------------------------
 ### generate a zone file
 ### --------------------------------------------------------------------------
-function write_zone_file
+write_zone_file()
 {
     zone_name=$1
 
@@ -96,7 +96,7 @@ EOF
             fi
             xn=`expr $xn + 1`
         done
-        
+
         # add default localhost
         echo "localhost      IN   A    127.0.0.1 " >> ${bind9_pri}/${zone_name}.zone
     ### ---------------------------------------------------------------------------------
@@ -126,10 +126,7 @@ EOF
             eval tempalias='$BIND_'${znr}'_HOST_'${xn}'_ALIAS'
             if [ -n "$tempalias" ] ; then
                 eval tempname='$BIND_'${znr}'_HOST_'${xn}'_NAME'
-                if [ -n "$tempname" ]
-                then
-                    tempname="${tempname}."
-                fi
+                [ -n "$tempname" ] && tempname="${tempname}."
                 for s in $tempalias
                 do
                     # exists entry?
@@ -162,7 +159,7 @@ EOF
 ### --------------------------------------------------------------------------
 ### generate a reverse ip number
 ### --------------------------------------------------------------------------
-function get_revip
+get_revip()
 {
     ip_addr=$1
     revip="0"
@@ -184,7 +181,7 @@ function get_revip
 ### --------------------------------------------------------------------------
 ### generate a reverse zone file
 ### --------------------------------------------------------------------------
-function write_reverse_zone_file
+write_reverse_zone_file()
 {
     local zone_name=$1
     local zone_netw=$2
@@ -289,7 +286,8 @@ write_named_file()
 {
     local ftmp=""
     # remove old zone files:
-    for ftmp in ${bind9_pri}/* do
+    for ftmp in ${bind9_pri}/*
+    do
         case "$ftmp" in
             */127.zone)
                 # don't remove local zone
@@ -308,19 +306,12 @@ write_named_file()
     echo "options {"
     echo "    directory \"/var/bind\";"
     echo "    pid-file \"/run/named/named.pid\";"
-    echo "    // uncomment the following lines to turn on DNS forwarding,"
-    echo "    // and change the forwarding ip address(es) :"
-    echo "    //forward first;"
-    echo "    //forwarders {"
-    echo "    //      123.123.123.123;"
-    echo "    //      123.123.123.123;"
-    echo "    //};"
     if [ -n "$BIND_BIND_IP_ADDRESS" ] ; then
         echo "    listen-on {"
         for ipaddr in $BIND_BIND_IP_ADDRESS
         do
             echo "        127.0.0.1; "
-            [ "$ipaddr" = "127.0.0.1" ] || echo "        ${ipaddr}; "
+            [ "$ipaddr" = "127.0.0.1" ] || echo "        ${ipaddr};"
         done
         echo "    }; "
         echo "    listen-on-v6 { none; };"
@@ -334,43 +325,93 @@ write_named_file()
     echo "    //};"
     if [ $BIND_PORT_53_ONLY = 'yes' ] ; then
         echo "    // if you have problems and are behind a firewall:"
-        echo "    query-source address * port 53; "
-        echo "    transfer-source * port 53; "
-        echo "    notify-source * port 53; "
+        echo "    query-source address * port 53;"
+        echo "    transfer-source * port 53;"
+        echo "    notify-source * port 53;"
+    fi
+    # query and reverse query: any, localnets, localhost
+    if [ "$BIND_ALLOW_QUERY" = 'localnets' ] ; then
+        echo "    allow-query { localhost; localnets; };"
+        echo "    allow-recursion { localhost; localnets; };"
+    else
+        echo "    allow-query { ${BIND_ALLOW_QUERY}; };"
+        echo "    allow-recursion { localhost; localnets; internals; };"
+    fi
+    # accept notify message
+    echo "    allow-notify { forwarder; localnets; };"
+    echo "    sortlist {"
+    echo "        { localhost; localnets; };"
+    echo "        { localnets; };"
+    echo "    };"
+    echo "    forwarders {"
+    idx="1"
+    while [ $idx -le $BIND_FORWARDER_N ]
+    do
+        eval ipaddr='$BIND_FORWARDER_'$idx'_IP'
+        echo "        ${ipaddr};"
+        idx=`expr $idx + 1`
+    done
+    echo "    };"
+    # read forwarders before use root server
+    if [ "$BIND_FORWARDER_N" -gt 0 ] ; then
+        if [ "$BIND_N" -gt 0 ] ; then
+            echo "    forward first;"
+        else
+            echo "    forward only;"
+        fi
     fi
     echo "    auth-nxdomain no;    # conform to RFC1035"
     echo "};"
-
-
-
-    echo "//zone \"COM\" { type delegation-only; };"
-    echo "//zone \"NET\" { type delegation-only; };"
-    echo "zone \".\" IN {"
-    echo "    type hint;"
-    echo "    file \"named.ca\";"
-    echo "};
-    echo "zone \"localhost\" IN {"
-    echo "    type master;"
-    echo "    file \"pri/localhost.zone\";"
-    echo "    allow-update { none; };"
-    echo "    notify no;"
+    echo ""
+    # edns settings
+    idx="1"
+    while [ $idx -le $BIND_FORWARDER_N ]
+    do
+        eval fwedns='$BIND_FORWARDER_'$idx'_EDNS'
+        if [ "$fwedns" = "no" ] ; then
+            eval ipaddr='$BIND_FORWARDER_'$idx'_IP'
+            echo "server $ipaddr {edns no;};"
+        fi
+        idx=`expr $idx + 1`
+    done
+    echo ""
+    # syslog setup
+    echo "logging {"
+    echo "    channel default_syslog {"
+    echo "        syslog daemon;"
+    echo "        print-category yes;"
+    if [ $BIND_DEBUG_LOGFILE = 'yes' ] ; then
+        echo "        severity debug;"
+    else
+        echo "        severity error;"
+    fi
+    echo "    };"
+#    echo "   category default { null; };"
+#    echo "   category general { null; };"
+#    echo "   category database { null; };"
+#    echo "   category security { null; };"
+#    echo "   category resolver { null; };"
+#    echo "   category xfer-in { null; };"
+#    echo "   category xfer-out { null; };"
+#    echo "   category client { null; };"
+#    echo "   category unmatched { null; };"
+#    echo "   category network { null; };"
+#    echo "   category update { null; };"
+#    echo "   category update-security { null; };"
+#    echo "   category queries { null; };"
+#    echo "   category dispatch { null; };"
+#    echo "   category dnssec { null; };"
+#    echo "   category lame-servers { null; };"
+#    echo "   category delegation-only { null; };"
     echo "};"
-    echo "zone \"127.in-addr.arpa\" IN {"
-    echo "    type master;"
-    echo "    file \"pri/127.zone\";"
-    echo "    allow-update { none; };"
-    echo "    notify no;"
-    echo "};"
-
-
-    #echo "include \"/etc/bind/rndc.key\";"
+    # acl's
     echo ""
     echo "acl forwarder {"
     idx="1"
     while [ $idx -le $BIND_FORWARDER_N ]
     do
         eval ipaddr='$BIND_FORWARDER_'$idx'_IP'
-        echo "  $ipaddr;"
+        echo "    ${ipaddr};"
         idx=`expr $idx + 1`
     done
     echo "};"
@@ -388,7 +429,7 @@ write_named_file()
             do
                 eval ipaddr='$BIND_'${znr}'_NS_'$idx'_IP'
                 if [ -n "$ipaddr" ] ; then
-                    echo "  ${ipaddr}; "
+                    echo "    ${ipaddr};"
                     s_found='yes'
                 fi
                 idx=`expr $idx + 1`
@@ -396,106 +437,63 @@ write_named_file()
         fi
         znr=`expr ${znr} + 1`
     done
-    [ -z "$s_found" ] && echo "  none; "
+    [ -z "$s_found" ] && echo "    none;"
     echo "};"
     echo ""
     echo "acl internals {"
-    echo "  127.0.0.0/8;"
-    echo "  10.0.0.0/8;"
-    echo "  169.254.0.0/16;"
-    echo "  172.16.0.0/12;"
-    echo "  192.168.0.0/16;"
+    echo "    127.0.0.0/8;"
+    echo "    10.0.0.0/8;"
+    echo "    169.254.0.0/16;"
+    echo "    172.16.0.0/12;"
+    echo "    192.168.0.0/16;"
     echo "};"
+    # zone entries
     echo ""
-    # query and reverse query: any, localnets, localhost
-    if [ $BIND_ALLOW_QUERY = 'localnets' ] ; then
-        echo "  allow-query { localhost; localnets; }; "
-        echo "  allow-recursion { localhost; localnets; }; "
-    else
-        echo "  allow-query { ${BIND_ALLOW_QUERY}; }; "
-        echo "  allow-recursion { localhost; localnets; internals; }; "
-    fi
-
-    # accept notify message
-    echo "  allow-notify { forwarder; localnets; }; "
-    echo "  sortlist { "
-    echo "    { localhost; localnets; }; "
-    echo "    { localnets; }; "
-    echo "  }; "
-    echo "  forwarders { "
-    idx="1"
-    while [ $idx -le $BIND_FORWARDER_N ]
-    do
-        eval ipaddr='$BIND_FORWARDER_'$idx'_IP'
-        echo "    $ipaddr;"
-        idx=`expr $idx + 1`
-    done
-    echo "  };"
-    # read forwarders before use root server
-    if [ "$BIND_FORWARDER_N" -gt 0 ] ; then
-        if [ "$BIND_N" -gt 0 ] ; then
-            echo "  forward first; "
-        else
-            echo "  forward only; "
-        fi
-    fi
-    echo "}; "
+    echo "//zone \"COM\" { type delegation-only; };"
+    echo "//zone \"NET\" { type delegation-only; };"
     echo ""
-    idx="1"
-    while [ $idx -le $BIND_FORWARDER_N ]
-    do
-        eval fwedns='$BIND_FORWARDER_'$idx'_EDNS'
-        if [ "$fwedns" = "no" ] ; then
-            eval ipaddr='$BIND_FORWARDER_'$idx'_IP'
-            echo "server $ipaddr {edns no;}; "
-        fi
-        idx=`expr $idx + 1`
-        echo ""
-    done
-    echo "logging { "
-    echo "  channel default_syslog { "
-    echo "          file \"/var/log/named.log\" versions 3 size 2M; "
-    echo "          print-time yes;     "
-    echo "          print-category yes; "
-    if [ $BIND_DEBUG_LOGFILE = 'yes' ] ; then
-        echo "          print-severity yes; "
-        echo "          severity debug; "
-    fi
-    echo "  }; "
-    echo "  # Log general name server errors to syslog. "
-    echo "  channel syslog_errors { "
-    echo "          syslog user; "
-    echo "          severity error; "
-    echo "  }; "
-    echo "}; "
-    echo ""
+    echo "zone \".\" IN {"
+    echo "    type hint;"
+    echo "    file \"named.ca\";"
+    echo "};"
+    echo "zone \"localhost\" IN {"
+    echo "    type master;"
+    echo "    file \"pri/localhost.zone\";"
+    echo "    allow-update { none; };"
+    echo "    notify no;"
+    echo "};"
+    echo "zone \"127.in-addr.arpa\" IN {"
+    echo "    type master;"
+    echo "    file \"pri/127.zone\";"
+    echo "    allow-update { none; };"
+    echo "    notify no;"
+    echo "};"
     } > /etc/bind/named.conf
-
 
     #------------------------------------------------------------------
     # append alle zone entries to config
     #------------------------------------------------------------------
     znr="1"
     # echo "BEGIN zone: $idx " >/dev/tty
-    while [ ${znr} -le $BIND_N ]
+    while [ "$znr" -le "$BIND_N" ]
     do
         eval zonename='$BIND_'${znr}'_NAME'
         eval zonemast='$BIND_'${znr}'_MASTER'
         eval zonenetw='$BIND_'${znr}'_NETWORK'
         eval zonemask='$BIND_'${znr}'_NETMASK'
         eval masterip='$BIND_'${znr}'_MASTER_IP'
-        [ "$zonemast" = 'yes' ] && zonetype='master' || zonetype='slave'
+        [ "$zonemast" = "yes" ] && zonetype='master' || zonetype='slave'
 
         #------------------------------------------------------------------
-        # create forward zone name
+        # create forward zone
         #------------------------------------------------------------------
         {
         echo ""
-        echo "zone \"$zonename\" IN {"
+        echo "zone \"${zonename}\" IN {"
         echo "    type ${zonetype};"
-        if [  ${zonetype} = 'master' ] ; then
+        if [  "$zonetype" = "master" ] ; then
             echo "    file \"pri/${zonename}.zone\";"
-            echo "    allow-update { localhost; key dns_updater; }; "
+            echo "    allow-update { localhost; key dns_updater; };"
             # transfer: any, localnets, nslist, none
             eval allow_tr='$BIND_'${znr}'_ALLOW_TRANSFER'
             [ -z "$allow_tr" ] && allow_tr='any'
@@ -513,61 +511,53 @@ write_named_file()
         } >> /etc/bind/named.conf
 
         #------------------------------------------------------------------
-        # create reverse zone name
+        # create reverse zone
         #------------------------------------------------------------------
         reversezone=`/var/install/bin/netcalc dnsrev $zonenetw $zonemask`
         forwardzone=`/var/install/bin/netcalc dnsnet $zonenetw $zonemask`
         # check for double reverse zone name
-        if ! grep -q "$reversezone"  /etc/bind/named.conf.local
+        if ! grep -q "$reversezone"  /etc/bind/named.conf
         then
             {
             echo ""
-            echo "zone \"$reversezone\" in {"
-            echo "  type ${zonetype};"
-            echo "  file \"/etc/bind/${zonetype}/${reversezone}.zone\";"
-            if [ ${zonetype} = 'master' ]
-            then
-                echo "  allow-update { localhost; key dns_updater; }; "
+            echo "zone \"${reversezone}\" in {"
+            echo "    type ${zonetype};"
+            if [ ${zonetype} = 'master' ] ; then
+                echo "    file \"pri/${zonename}.zone\";"
+                echo "    allow-update { localhost; key dns_updater; };"
                 # transfer: any, localnets, nslist, none
                 eval allow_tr='$BIND_'${znr}'_ALLOW_TRANSFER'
-                if [ -z "$allow_tr" ]
-                then
-                    allow_tr='any'
-                fi
-                echo "  allow-transfer { ${allow_tr}; };"
-                echo "  notify yes;"
+                [ -z "$allow_tr" ] && allow_tr='any'
+                echo "    allow-transfer { ${allow_tr}; };"
+                echo "    notify yes;"
+                # create  reverse zone file
+                write_reverse_zone_file $reversezone $forwardzone $zonemask
             else
-                echo "  masters { ${masterip}; };"
-                echo "  notify no;"
+                echo "    file \"sec/${zonename}.zone\";"
+                echo "    masters { ${masterip}; };"
+                echo "    notify no;"
             fi
             echo "};"
-            } >> /etc/bind/named.conf.local
-        fi
-
-        # create or append reverse zone file
-        if [ ${zonetype} = 'master' ] ; then
-            write_reverse_zone_file $reversezone $forwardzone $zonemask
+            } >> /etc/bind/named.conf
         fi
 
         znr=`expr ${znr} + 1`
     done
-
-    chmod 0644 /etc/bind/named.conf.options
-
+    chmod 0644 /etc/bind/named.conf
 }
 
 
 ### --------------------------------------------------------------------------
 ### Main
 ### --------------------------------------------------------------------------
-[ -f /etc/config.d/named ] . /etc/config.d/named
+[ -f /etc/config.d/named ] && . /etc/config.d/named
 
 if [ "$START_BIND" = 'yes' ]; then
-#    if [ ! -s /etc/bind/rndc.key ] ; then
-#        rndc-confgen -r /dev/urandom -a >/dev/null 2>&1
-#        chmod 0640 /etc/bind/rndc.key
-#        chown root:$bind_run_grp /etc/bind/rndc.key
-#    fi
+    if [ ! -f /etc/bind/rndc.key ] ; then
+        rndc-confgen -r /dev/urandom -a >/dev/null 2>&1
+        chmod 0640 /etc/bind/rndc.key
+        chown root:$bind_run_grp /etc/bind/rndc.key
+    fi
     write_named_file
 fi
 

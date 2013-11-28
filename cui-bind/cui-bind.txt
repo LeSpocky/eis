@@ -5,250 +5,250 @@ Allgemeines
 -----------
 
 Mit dem BIND (Berkeley Internet Name Daemon) Service werden Namen des DNS in
-IP-Adressen und umgekehrt, umgesetzt. Er kann gleichzeitig mehrer Domänen -
-auch als Zonen bezeichnet - im Master- oder Slavemodus verwalten. Über
-Forward und Root Einträge werden nicht beantwortbare Namesanfragen
+IP-Adressen und umgekehrt, umgesetzt. Er kann gleichzeitig mehrer Domaenen -
+auch als Zonen bezeichnet - im Master- oder Slavemodus verwalten. Ueber
+Forward und Root Eintraege werden nicht beantwortbare Namesanfragen
 weitergeleitet.
 
-In der Vergangenheit wurden immer wieder Sicherheitsprobleme in den älteren
+In der Vergangenheit wurden immer wieder Sicherheitsprobleme in den aelteren
 BIND-Versionen aufgedeckt. Deshalb liegen die Arbeitsverzeichnisse
 vorbeugend in einem Bereich, der BIND eine eigene Umgebung bietet. 
-BIND9 unterstützt in der vorliegenden Version auch SMP-Systeme und kann mit
-dem DHCPD Paket zusammen, Hostnamen dynamisch registrieren und auflösen.
+BIND9 unterstuetzt in der vorliegenden Version auch SMP-Systeme und kann mit
+dem DHCPD Paket zusammen, Hostnamen dynamisch registrieren und aufloesen.
 
 
 Installation
 ------------
 Das Installationsscript erkennt automatisch, ob bereits ein DNS oder BIND9
 Server installiert ist. Vorhandene DNS Einstellungen werden also komplett
-übernommen. Dennoch sollte die Konfiguration auf eventuelle Fehler überprüft
+uebernommen. Dennoch sollte die Konfiguration auf eventuelle Fehler ueberprueft
 werden.
-Bei einem Update vom DNS-Paket werden alle Daten in einer primäre Zone 
-abgelegt. Besonders die Hostnamen-Einträge sollte man sich ansehen. Sie
-dürfen keine Bestandteile der Domänenbezeichnung enthalten, da diese von BIND
-bei der Namensabfrage automatisch angefügt wird.
-Eine Ausnahme bildet der NS-Eintrag, der durchaus auf eine fremde Domäne
-verweisen kann und deshalb aus Hostname und der kompletten Domänenkennung
-bestehen muss.   
+Bei einem Update vom DNS-Paket werden alle Daten in einer primaere Zone
+abgelegt. Besonders die Hostnamen-Eintraege sollte man sich ansehen. Sie
+duerfen keine Bestandteile der Domaenenbezeichnung enthalten, da diese von BIND
+bei der Namensabfrage automatisch angefuegt wird.
+Eine Ausnahme bildet der NS-Eintrag, der durchaus auf eine fremde Domaene
+verweisen kann und deshalb aus Hostname und der kompletten Domaenenkennung
+bestehen muss.
 
 
 Allgemeine Konfiguration
 ------------------------
-Die Konfiguration kann über den Menüpunkt "Edit Configuration" geändert
+Die Konfiguration kann ueber den Menuepunkt "Edit Configuration" geaendert
 werden. Nach Beendigung des Editors wird die Konfiguration automatisch auf
-Fehler überprüft. Werden Fehler festgestellt, so sollten die entsprechenden
-Einträge in jedem Fall korrigiert werden.
+Fehler ueberprueft. Werden Fehler festgestellt, so sollten die entsprechenden
+Eintraege in jedem Fall korrigiert werden.
 
 START_BIND9
     Legt fest, ob der BIND 9 Server automatisch gestartet wird.
 
-    Gültige Werte: yes,no
+    Gueltige Werte: yes,no
 
-BIND9_ALLOW_QUERY
-    Legt fest, welche Clients Informationen über diese Zone anfordern
-    dürfen.
+BIND_ALLOW_QUERY
+    Legt fest, welche Clients Informationen ueber diese Zone anfordern
+    duerfen.
 
-    Gültige Werte:
-    any       = alle Anfragen zulässig
+    Gueltige Werte:
+    any       = alle Anfragen zulaessig
     localnets = Anfragen aus allen auf dem Server definierten Netzen
-    localhost = nur interne Abfragen sind zulässig
+    localhost = nur interne Abfragen sind zulaessig
 
-BIND9_FORWARDER_N
+BIND_FORWARDER_N
     Anzahl externer Nameserver welche alle Namensanfragen beantworten, die
     nicht in den eigenen Zonen definiert und auch nicht gearade im Cache 
-    vorhanden sind. Hier sollten nach Möglichkeit immer mindestens zwei 
-    Einträge vorhanden sein.
+    vorhanden sind. Hier sollten nach Moeglichkeit immer mindestens zwei
+    Eintraege vorhanden sein.
 
     Beispiel: 2
 
-BIND9_FORWARDER_x_IP
+BIND_FORWARDER_x_IP
     Die hier eingetragene IP-Adresse eines DNS-Servers sollte in gewissen 
-    Abständen auf Erreichbarkeit überprüft werden, da in der Vergangenheit
-    schon öfter Adressen von DNS-Server verändert wurden.
-    Für den Totalausfall aller Forwarder verfügt BIND 9 allerdings auch noch
-    über Möglichkeit zur Namensauflösung über die sogenannten Root-Server.
-    Das erhöht die Wartezeit für eine Antwort allerdings sehr.
+    Abstaenden auf Erreichbarkeit ueberprueft werden, da in der Vergangenheit
+    schon oefter Adressen von DNS-Server veraendert wurden.
+    Fuer den Totalausfall aller Forwarder verfuegt BIND 9 allerdings auch noch
+    ueber Moeglichkeit zur Namensaufloesung ueber die sogenannten Root-Server.
+    Das erhoeht die Wartezeit fuer eine Antwort allerdings sehr.
 
     Beispiel: 141.1.1.1
 
-BIND9_FORWARDER_x_EDNS
+BIND_FORWARDER_x_EDNS
     Optionaler Parameter
     Wird hier ein 'no' gesetzt, erfolgt die Abfrage nicht mehr mit RFC-
     Konformen EDNS.  Der Eintrag sollte nur dann auf 'no' gesetzt werden,
-    wenn die Kommunikation z.B. mit einem MS-Windows DNS-Server fehlschlägt.
+    wenn die Kommunikation z.B. mit einem MS-Windows DNS-Server fehlschlaegt.
 
     Standard: yes 
 
 
-BIND9_N
-    Bind verfügt über die Möglichkeit, mehrere unterschiedliche
+BIND_N
+    Bind verfuegt ueber die Moeglichkeit, mehrere unterschiedliche
     Namensbereiche (Zonen) zu verwalten.
     Die Gesamtanzahl wird hier eingetragen.
 
     Beispiel: 2
 
-BIND9_x_NAME
+BIND_x_NAME
     Hier steht der Name der zu verwaltenden Zone. Bei internen Namen sollte
     man zur Sicherheit keine existierenden Internet Kennungen verwenden.
     Also am besten statt einer '.de' Endung verwendet man '.local' Endung.
 
     Beispiel: foo.local
 
-BIND9_x_MASTER
+BIND_x_MASTER
     Die aktuelle Zone wird auf diesem Computer verwaltet. (Master-Zone)
 
-    Gültige Werte: yes,no
+    Gueltige Werte: yes,no
 
-BIND9_x_NETWORK
+BIND_x_NETWORK
     Netzwerk-Adresse der aktuellen Zone.
 
     Beispiel: 192.168.6.0 
 
-BIND9_x_NETMASK
+BIND_x_NETMASK
     Netzwerk-Maske der aktuellen Zone.
 
     Beispiel: 255.255.255.0 
 
-BIND9_x_MASTER_IP 
+BIND_x_MASTER_IP
     IP-Adresse des Masters, welche die Autorisierungsrechte der Zone besitzt.
-    Wenn BIND9_ZONE_1_MASTER='no' gesetzt ist, so muss hier die IP-Adresse
+    Wenn BIND_ZONE_1_MASTER='no' gesetzt ist, so muss hier die IP-Adresse
     des DNS-Masters, von dem die Daten geladen werden, eingtragen werden.
-    Wenn BIND9_ZONE_1_MASTER='yes' gesetzt ist, so kann hier die eigene
+    Wenn BIND_ZONE_1_MASTER='yes' gesetzt ist, so kann hier die eigene
     IP-Adresse eingtragen werden.
 
     Beispiel: 192.168.6.1 
 
 
-Folgende Einträge sind nur für Master-Zonen BIND9_x_MASTER='yes' definierbar:
+Folgende Eintraege sind nur fuer Master-Zonen BIND_x_MASTER='yes' definierbar:
 -----------------------------------------------------------------------------
 
-BIND9_x_MASTER_NS
-    Optional kompletter Name des DNS Servers. So können mehrere DNS-Zonen mit
+BIND_x_MASTER_NS
+    Optional kompletter Name des DNS Servers. So koennen mehrere DNS-Zonen mit
     einem Nameserver registriert werden. 
 
     Beispiel: mx.domain.local
 
 
-BIND9_x_NS_N
+BIND_x_NS_N
     Anzahl weiterer Name-Server, die Daten dieser Zone als Slave verwalten.
 
     Beispiel: 1
 
 
-BIND9_x_NS_x_NAME
-    Komplette Bezeichnung des Slave-Nameserver, inklusiv Domäne.
+BIND_x_NS_x_NAME
+    Komplette Bezeichnung des Slave-Nameserver, inklusiv Domaene.
 
     Beispiel: dns2.foo.local
 
-BIND9_x_NS_x_IP
+BIND_x_NS_x_IP
     IP Adresse des Slave-Nameserver.
-    Wird nur benötigt, wenn die Option BIND9_x_ALLOW_TRANSFER='nslist'
+    Wird nur benoetigt, wenn die Option BIND_x_ALLOW_TRANSFER='nslist'
     gesetzt ist
 
     Beispiel: 192.168.6.11
 
-BIND9_x_MX_N
-    Anzahl der zur Zone gehörenden E-Mail Server.
+BIND_x_MX_N
+    Anzahl der zur Zone gehoerenden E-Mail Server.
 
     Beispiel: 1
 
 
-BIND9_x_MX_x_NAME
+BIND_x_MX_x_NAME
     Kompletter Name des E-Mail Servers. Das kann auch ein Backup E-Mail
-    Server außerhalb der Domäne sein.
+    Server ausserhalb der Domaene sein.
 
     Beispiel: mail.foo.local
 
 
-BIND9_x_MX_x_PRIORITY
-    Empfangspriorität des E-Mail Server. Der Server mit dem niedrigsten Wert
+BIND_x_MX_x_PRIORITY
+    Empfangsprioritaet des E-Mail Server. Der Server mit dem niedrigsten Wert
     wird zuerst angesprochen. Ist dieser nicht erreichbar, dann wird der
-    Server mit der nächst größeren Zahl verwendet.
+    Server mit der naechst groesseren Zahl verwendet.
 
     Beispiel: 10
 
-BIND9_x_ALLOW_TRANSFER
-    Beschränkt den Kreis möglicher Slave-Nameserver. Hierdurch wird auch
-    das Abfragen aller Zoneneinträge mit dem Befehl: nslookup ls -d <zone>
-    eingeschränkt.
-    Folgende Werte sind möglich:
+BIND_x_ALLOW_TRANSFER
+    Beschraenkt den Kreis moeglicher Slave-Nameserver. Hierdurch wird auch
+    das Abfragen aller Zoneneintraege mit dem Befehl: nslookup ls -d <zone>
+    eingeschraenkt.
+    Folgende Werte sind moeglich:
     any       - Jeder beliebige Server kann Slave werden
-    localnets - Nur Server im gleichen Netz können Slave werden    
-    nslist    - Nur ein unter BIND9_x_NS_x_IP eingetragener Server
+    localnets - Nur Server im gleichen Netz koennen Slave werden
+    nslist    - Nur ein unter BIND_x_NS_x_IP eingetragener Server
                 kann Slave werden
     none      - Kein Zonen Transfer zugelassen
 
-BIND9_x_HOST_N
+BIND_x_HOST_N
     Anzahl der for diese Zone eingetragenen Hosts.
 
     Beispiel: 8
 
 
-BIND9_x_HOST_x_NAME
-    Hostname, der zur Namensauflösung der IP-Adresse verwendet wird.
+BIND_x_HOST_x_NAME
+    Hostname, der zur Namensaufloesung der IP-Adresse verwendet wird.
     Hier kann auch ein Platzhalter '*' verwendet werden. Alle DNS Anfragen 
-    nach beliebigen Hostnamen, werden dann mit der zugehörigen 
-    BIND9_x_HOST_x_IP beantwortet.
-    Ein leerer Eintrag ermöglicht das Auflösen von BIND9_x_NAME, also 
+    nach beliebigen Hostnamen, werden dann mit der zugehoerigen
+    BIND_x_HOST_x_IP beantwortet.
+    Ein leerer Eintrag ermoeglicht das Aufloesen von BIND_x_NAME, also
     ohne Angabe eines Hostnamens.
 
     Beispiel: mail
 
 
-BIND9_x_HOST_x_IP
-    IP-Adresse für den Host.
+BIND_x_HOST_x_IP
+    IP-Adresse fuer den Host.
 
     Beispiel: 192.168.6.10
 
 
-BIND9_x_HOST_x_ALIAS
+BIND_x_HOST_x_ALIAS
     Durch Leerzeichen getrennte Liste weiterer Hostnamen der IP-Adresse.
     BIND erweitert die Namen bei Abfragen automatisch, mit dem unter
-    BIND9_x_NAME eingetragenem Wert. 
+    BIND_x_NAME eingetragenem Wert.
 
     Beispiel: 'www ftp'
 
 
 ----------------------------------------------------------------------------
 
-BIND9_BIND_IP_ADDRESS
+BIND_BIND_IP_ADDRESS
     Sind mehrere Netzwerkkarten im BIND Server eingebaut, so kann hiermit die
-    Funktionalität auf eine oder mehrer bestimmte Karten reduziert werden.
+    Funktionalitaet auf eine oder mehrer bestimmte Karten reduziert werden.
 
     Beispiel: '192.168.1.1' oder
     Beispiel: '192.168.1.1 172.16.1.1' 
 
 
 
-BIND9_PORT_53_ONLY
+BIND_PORT_53_ONLY
     Wenn der Zugriff auf den BIND Server durch eine Firewall gesichert wird,
-    so wird hiermit die gesamte Kommunikation auf den Port 53 beschränkt.
+    so wird hiermit die gesamte Kommunikation auf den Port 53 beschraenkt.
     Dieser Port muss dann aber auch in der Firewall freigeschaltet werden.
 
-    Gültige Werte: yes,no      
+    Gueltige Werte: yes,no
 
 
-BIND9_DEBUG_LOGFILE
+BIND_DEBUG_LOGFILE
     Erweitert die Logfileausgabe um Debug Informationen.
     Diese werden im Verzeichnis /var/lib/named/var/log abgelegt. 
 
-    Gültige Werte: yes,no  
+    Gueltige Werte: yes,no
 
 -----------------------------------------------------------------------------
 
-Die Menüs des BIND9 Servers 
+Die Menues des BIND9 Servers
 ---------------------------
 
-Das BIND9 Hauptmenü 
+Das BIND9 Hauptmenue
 -------------------
-Das BIND9 Hauptmenü ist über den Menüpunkt "Service administration" im 
+Das BIND9 Hauptmenue ist ueber den Menuepunkt "Service administration" im
 zentralen Setup-Programm zu erreichen. Es ist wie folgt aufgebaut: 
   * View documentation
     Zeigt die Dokumentation an. 
   * Edit configuration 
     Damit kann die Konfigurationsdatei des BIND9-Packages bearbeitet werden. 
   * Advanced configuration file handling
-    Ermöglicht eine Versionsverwaltung der BIND9-Konfigurationsdatei 
+    Ermoeglicht eine Versionsverwaltung der BIND9-Konfigurationsdatei
   * Start BIND9 
     Hier kann der BIND9 Daemon gestartet werden. 
   * Stop BIND9 
