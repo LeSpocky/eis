@@ -45,6 +45,7 @@ package() {
 		install -D -m755 ${currentDialogScript} ${pkgdir}/var/install/dialog.d/${currentDialogScript} || return 1
 	done
 	cd -
+	cd "$_builddir"
 	cd ${startdir}/default.d
 	for currentDefaultConfig in `ls` ; do
 		install -D -m644 ${currentDefaultConfig} ${pkgdir}/etc/default.d/${currentDefaultConfig} || return 1
