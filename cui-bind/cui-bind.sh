@@ -264,7 +264,7 @@ EOF
                 then
                     eval tempipnr='$BIND_'${znr}'_HOST_'$xn'_IP'
                     # if the reverse ip in the network?
-                    tmpnetwork=`/usr/local/bin/netcalc dnsnet $tempipnr $zone_mask`
+                    tmpnetwork=$(/var/install/bin/netcalc dnsnet $tempipnr $zone_mask)
                     if [ "$zone_netw" = "$tmpnetwork" ] ; then
                         temprvip=`get_revip $tempipnr`
                         echo "$temprvip   IN   PTR  $tempname " >> ${bind9_pri}/${zone_name}.zone
@@ -513,8 +513,8 @@ write_named_file()
         #------------------------------------------------------------------
         # create reverse zone
         #------------------------------------------------------------------
-        reversezone=`/var/install/bin/netcalc dnsrev $zonenetw $zonemask`
-        forwardzone=`/var/install/bin/netcalc dnsnet $zonenetw $zonemask`
+        reversezone=$(/var/install/bin/netcalc dnsrev $zonenetw $zonemask)
+        forwardzone=$(/var/install/bin/netcalc dnsnet $zonenetw $zonemask)
         # check for double reverse zone name
         if ! grep -q "$reversezone"  /etc/bind/named.conf
         then
