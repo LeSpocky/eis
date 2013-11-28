@@ -28,14 +28,14 @@
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
     <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>9492515</diskUsageWithoutBuilds>
+      <diskUsageWithoutBuilds>9736917</diskUsageWithoutBuilds>
       <slaveWorkspacesUsage class="concurrent-hash-map">
         <entry>
           <string></string>
           <concurrent-hash-map>
             <entry>
               <string>/data/ci/jenkins/jobs/_eisfair-ng__releasePackage/workspace</string>
-              <long>9686515</long>
+              <long>9714874</long>
             </entry>
           </concurrent-hash-map>
         </entry>
