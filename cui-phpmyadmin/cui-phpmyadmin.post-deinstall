@@ -5,3 +5,5 @@
 rm -f /etc/backup.d/phpmyadmin.*
 rm -f /etc/check.d/phpmyadmin*
 rm -f /etc/default.d/phpmyadmin
+rm -f /etc/php/conf.d/*.phpmyadmin.ini
+

@@ -13,8 +13,6 @@
 # (at your option) any later version.
 # ----------------------------------------------------------------------------
 
-phpMyAdminVersion='3.5.5'
-
 #exec 2>/tmp/phpmyadmin-trace$$.log
 #set -x
 
@@ -26,7 +24,7 @@ phpMyAdminVersion='3.5.5'
 configFolder=/etc/phpmyadmin
 configPhp=${configFolder}/config.inc.php
 sweKeyConfigured=false
-ownerToUse='root:root'
+ownerToUse='apache:apache'
 
 
 # ----------------------------------------------------------------------------
@@ -763,9 +761,25 @@ createSweKeyConfig ()
 
 
 
-removePhpMyAdmin ()
+activatePhpMyAdmin ()
 {
-    echo "TODO: Deactivation of phpmyadmin"
+    cp /etc/default.d/*.phpmyadmin.ini /etc/php/conf.d/
+    restartWebserver
+}
+
+
+
+deactivatePhpMyAdmin ()
+{
+    rm -f /etc/php/conf.d/*.phpmyadmin.ini
+    restartWebserver
+}
+
+
+
+restartWebserver ()
+{
+    rc-service apache2 restart
 }
 
 
@@ -785,8 +799,9 @@ if [ "${START_PHPMYADMIN}" = 'yes' ] ; then
 #    createSelections
     createConfigIncPhp
 	createSweKeyConfig
+	activatePhpMyAdmin
 else
-    removePhpMyAdmin
+    deactivatePhpMyAdmin
 fi
 
 exit 0
