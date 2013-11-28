@@ -523,7 +523,7 @@ write_named_file()
             echo "zone \"${reversezone}\" in {"
             echo "    type ${zonetype};"
             if [ ${zonetype} = 'master' ] ; then
-                echo "    file \"pri/${zonename}.zone\";"
+                echo "    file \"pri/${reversezone}.zone\";"
                 echo "    allow-update { localhost; key dns_updater; };"
                 # transfer: any, localnets, nslist, none
                 eval allow_tr='$BIND_'${znr}'_ALLOW_TRANSFER'
@@ -533,7 +533,7 @@ write_named_file()
                 # create  reverse zone file
                 write_reverse_zone_file $reversezone $forwardzone $zonemask
             else
-                echo "    file \"sec/${zonename}.zone\";"
+                echo "    file \"sec/${reversezone}.zone\";"
                 echo "    masters { ${masterip}; };"
                 echo "    notify no;"
             fi
