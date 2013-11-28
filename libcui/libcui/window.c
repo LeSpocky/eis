@@ -2803,10 +2803,10 @@ WindowMButtonHScroll(CUIWINDOW* win, int x1, int x2, int x, int flags)
 
 	if (win->HScrollBar.Range > 0)
 	{
-		int h = x2 - x1 - 2;
-		if (h > 0)
+		int w = x2 - x1 - 2;
+		if (w > 0)
 		{
-			thumbpos = x1 + (h * win->HScrollBar.Pos) / win->HScrollBar.Range + 1;
+			thumbpos = x1 + (w * win->HScrollBar.Pos) / win->HScrollBar.Range + 1;
 		}
 	}
 
@@ -2840,7 +2840,7 @@ WindowMButtonHScroll(CUIWINDOW* win, int x1, int x2, int x, int flags)
 			win->MouseAction = MOUSE_NO_ACTION;
 		}
 	}
-
+	
 	/* make sure there is actually no mouse capture set */
 	WindowReleaseCapture();
 
@@ -3724,7 +3724,7 @@ WindowMButtonNc(CUIWINDOW* win, int x, int y, int flags, int size_x, int size_y)
 					     (win->MouseAction <= MOUSE_HSCROLL_TRACK)) ||
 					    (((y + 1) == size_y) && (x >= x1) && (x <= (x2 - 1))))
 					{
-						WindowMButtonHScroll(win, x1, x2 - 1, y, flags);
+						WindowMButtonHScroll(win, x1, x2 - 1, x, flags);
 					}
 				}
 				else if (win->HasVScroll)
@@ -4151,6 +4151,16 @@ WindowCursorXY(CUIWINDOW* win)
 	WindowGetWindowRect(win, &rc);
 	WindowMakeClientRect(win, &rc);
 	wmove(stdscr, rc.Y + win->CursorY, rc.X + win->CursorX);
+	
+	if ((win->CursorX < 0) || (win->CursorX >= rc.W) ||
+	    (win->CursorY < 0) || (win->CursorY >= rc.H))
+	{
+		curs_set(0);
+	}
+	else if (CursorOn)
+	{
+		curs_set(1);
+	}
 }
 
 /* ---------------------------------------------------------------------

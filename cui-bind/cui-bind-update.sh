@@ -3,7 +3,7 @@
 # /var/install/config.d/bind-update.sh - BIND config parameter update script
 # Creation:     2004-08-20 jv <jens@eisfair.org>
 #------------------------------------------------------------------------------
-packages_name="bind"
+packages_name="named"
 DataDir="/var/named"
 
 # include configlib
@@ -17,8 +17,9 @@ DataDir="/var/named"
 
 # convert old eisfair-1/eisfair-2 config files
 if [ -f /etc/config.d/bind9 ] ; then
-    sed -e -i "s|BIND9_|BIND_|g" /etc/config.d/bind9
-    mv -f /etc/config.d/bind9 /etc/config.d/${packages_name}
+    sed -i -e "s|BIND9_|BIND_|g" /etc/config.d/bind9
+    rm -f /etc/config.d/${packages_name}
+    cp -f /etc/config.d/bind9 /etc/config.d/${packages_name}
 fi
 
 [ -f /etc/config.d/${packages_name} ] && . /etc/config.d/${packages_name}
@@ -27,10 +28,7 @@ fi
 ### ---------------------------------------------------------------------------
 ### update config file
 ### ---------------------------------------------------------------------------
-function make_config_file
 {
-    internal_conf_file="$1"
-    {
     printgpl -conf "$packages_name" "2004-08-20" "jv" "Jens Vehlhaber"
 
     printgroup "General settings"
@@ -140,14 +138,10 @@ function make_config_file
     printvar "BIND_DEBUG_LOGFILE" "Debug to logfile; default no"
 
     printend
-    } > $internal_conf_file
-    # Set rights
-    chmod 0644 $internal_conf_file
-    chown root $internal_conf_file
-}
-
-# write new config file
-make_config_file /etc/config.d/${packages_name}
+} > /etc/config.d/${packages_name}
+# Set rights
+chmod 0644 /etc/config.d/${packages_name}
+chown root /etc/config.d/${packages_name}
 
 ### ---------------------------------------------------------------------------
 exit 0
