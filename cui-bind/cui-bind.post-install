@@ -1,4 +1,8 @@
 #!/bin/sh
+# add menu entry
 /var/install/bin/add-menu setup.services.menu setup.services.named.menu "BIND DNS Server"
-[ -e /etc/config.d/named ] || cp /etc/default.d/named /etc/config.d/
+# import from eisfair1/2
+[ -f /etc/config.d/bind9 ] && /var/install/config.d/named-update.sh
+# set start config
+[ -f /etc/config.d/named ] || cp /etc/default.d/named /etc/config.d/
 exit 0
