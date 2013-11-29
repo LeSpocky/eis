@@ -1,5 +1,8 @@
 #!/bin/sh
-
+# add menu entry
 /var/install/bin/add-menu setup.services.apache2.menu setup.services.apache2.webalizer.menu "Webalizer Administration"
+# import from eisfair1/2
+[ -f /etc/config.d/apache2_webalizer ] && /var/install/config.d/webalizer-update.sh
+# set start config
 [ -e /etc/config.d/webalizer ] || cp /etc/default.d/webalizer /etc/config.d/
 exit 0

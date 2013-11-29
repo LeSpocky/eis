@@ -12,14 +12,19 @@ packages_name=webalizer
 # ----------------------
 . /var/install/include/configlib
 
-
 # set the defaults from default.d file
 . /etc/default.d/${packages_name}
+
+# convert to import old eisfair-1/eisfair-2 config files
+if [ -f /etc/config.d/apache2_webalizer ] ; then
+    sed -i -e "s|START_APACHE2_WEBALIZER|START_WEBALIZER|g" /etc/config.d/apache2_webalizer
+    rm -f /etc/config.d/${packages_name}
+    cp -f /etc/config.d/apache2_webalizer /etc/config.d/${packages_name}
+fi
+
 # read old values if exists
 [ -f /etc/config.d/${packages_name} ] && . /etc/config.d/${packages_name}
-
-. /etc/config.d/apache2
-
+[ -f /etc/config.d/apache2 ] && . /etc/config.d/apache2
 
 # ----------------------------------------------------------------------------
 # Write config and default files
@@ -62,7 +67,7 @@ packages_name=webalizer
     # ------------------------------------------------------------------------
     printend
     # ------------------------------------------------------------------------
-) > /etc/config.d/${packages_name}
+} > /etc/config.d/${packages_name}
 # Set rights
 chmod 0644  /etc/config.d/${packages_name}
 chown root  /etc/config.d/${packages_name}
