@@ -19,7 +19,7 @@ DataDir="/var/named"
 if [ -f /etc/config.d/bind9 ] ; then
     sed -i -e "s|BIND9_|BIND_|g" /etc/config.d/bind9
     rm -f /etc/config.d/${packages_name}
-    cp -f /etc/config.d/bind9 /etc/config.d/${packages_name}
+    mv -f /etc/config.d/bind9 /etc/config.d/${packages_name}
 fi
 
 [ -f /etc/config.d/${packages_name} ] && . /etc/config.d/${packages_name}

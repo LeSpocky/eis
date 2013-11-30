@@ -19,7 +19,7 @@ packages_name=webalizer
 if [ -f /etc/config.d/apache2_webalizer ] ; then
     sed -i -e "s|START_APACHE2_WEBALIZER|START_WEBALIZER|g" /etc/config.d/apache2_webalizer
     rm -f /etc/config.d/${packages_name}
-    cp -f /etc/config.d/apache2_webalizer /etc/config.d/${packages_name}
+    mv -f /etc/config.d/apache2_webalizer /etc/config.d/${packages_name}
 fi
 
 # read old values if exists
