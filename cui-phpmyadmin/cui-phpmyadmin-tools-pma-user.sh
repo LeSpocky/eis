@@ -24,9 +24,8 @@ mysql_base_dir=/usr/local/mysql
 
 
 
-### -------------------------------------------------------------------------
-### create the sql script and execute it
-### -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# create the sql script and execute it
 doDBOperation ()
 {
 	givenServernumber=$1
@@ -93,13 +92,13 @@ doDBOperation ()
 }
 
 
-###----------------------------------------------------------------------------
-### main
-###----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# Main
+# ----------------------------------------------------------------------------
 
 inputValue="0"
 
-if [ ! -f /var/install/package/mysql ] ; then
+if [ ! `apk info | grep "^mysql$" ` ] ; then
     mecho --warn "You need to install package 'mysql' to use this feature!"
     exit 1
 fi
@@ -111,7 +110,7 @@ until [ "${inputValue}" = "q" ] ; do
   	mecho "available servers and enter name and password of a user with admin"
   	mecho "rights on the choosen server."
   	mecho ""
-	/var/install/bin/phpmyadmin-tools-listservers
+	/var/install/bin/phpmyadmin-tools-listservers.sh
 
     inputValue=`/var/install/bin/ask "Please choose a server, 'q' for quit: " "" "*"`
     if [ "${inputValue}" != "q" ] && [ ${inputValue} -gt 0 ] ; then
@@ -120,7 +119,3 @@ until [ "${inputValue}" = "q" ] ; do
   done
 
 exit 0
-
-### ---------------------------------------------------------------------------
-### End
-###----------------------------------------------------------------------------

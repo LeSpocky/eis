@@ -7,8 +7,6 @@ phpMyAdmin for eisfair-ng - MySQL-Administration mit phpMyAdmin
 Dieses Paket stellt das Datenbank-Administrationstool phpMyAdmin fuer MySQL
 zur Verfuegung.
 
-Im Folgenden werden die Moeglichkeiten des Setups erlaeutert.
-
 
 
 2. Die phpMyAdmin Menuepunkte

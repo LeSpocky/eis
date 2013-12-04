@@ -26,9 +26,8 @@ tmpSQLScript=/tmp/tmpScript.sql
 
 
 
-### -------------------------------------------------------------------------
-### Create Header for the SQL-Script
-### -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# Create Header for the SQL-Script
 createSQLScriptHeader ()
 {
     givenHost=$1
@@ -61,9 +60,8 @@ EOF
 }
 
 
-### -------------------------------------------------------------------------
-### Create scriptpart to drop pmaDB first
-### -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# Create scriptpart to drop pmaDB first
 createSQLScriptDropDB ()
 {
     givenHost=$1
@@ -86,9 +84,8 @@ EOF
 }
 
 
-### -------------------------------------------------------------------------
-### Create scriptpart to create pmaDB
-### -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# Create scriptpart to create pmaDB
 createSQLScriptCreateDB ()
 {
 	givenHost=$1
@@ -110,9 +107,8 @@ EOF
 }
 
 
-### -------------------------------------------------------------------------
-### Create scriptpart to grant privileges
-### -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# Create scriptpart to grant privileges
 createSQLScriptGrantPrivileges ()
 {
 	givenHost=$1
@@ -134,9 +130,8 @@ EOF
 
 
 
-### -------------------------------------------------------------------------
-### Create scriptpart to create pmaDB tables
-### -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# Create scriptpart to create pmaDB tables
 createSQLScriptCreateTables ()
 {
 	givenHost=$1
@@ -289,9 +284,8 @@ EOF
 
 
 
-### -------------------------------------------------------------------------
-### Create Header for the SQL-Script
-### -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# Create Header for the SQL-Script
 createSQLScriptAlterDB ()
 {
 	givenHost=$1
@@ -473,9 +467,8 @@ EOF
 
 
 
-### -------------------------------------------------------------------------
-### create the sql script and execute it
-### -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# create the sql script and execute it
 doDBOperation ()
 {
 	givenServernumber=$1
@@ -609,13 +602,12 @@ doDBOperation ()
 }
 
 
-###----------------------------------------------------------------------------
-### main
-###----------------------------------------------------------------------------
-
+# ----------------------------------------------------------------------------
+# Main
+# ----------------------------------------------------------------------------
 inputValue="0"
 
-if [ ! -f /var/install/package/mysql ] ; then
+if [ ! `apk info | grep "^mysql$" ` ] ; then
     mecho --warn "You need to install package 'mysql' to use this feature!"
     exit 1
 fi
@@ -626,7 +618,7 @@ until [ "${inputValue}" = "q" ] ; do
   	mecho "this you have to choose one of the available servers and enter name"
   	mecho "and password of a user with admin rights on the choosen server."
   	mecho ""
-	/var/install/bin/phpmyadmin-tools-listservers
+	/var/install/bin/phpmyadmin-tools-listservers.sh
 
     inputValue=`/var/install/bin/ask "Please choose a server, 'q' for quit: " "" "*"`
     if [ "${inputValue}" != "q" ] && [ ${inputValue} -gt 0 ] ; then
@@ -635,7 +627,3 @@ until [ "${inputValue}" = "q" ] ; do
   done
 
 exit 0
-
-### ---------------------------------------------------------------------------
-### End
-###----------------------------------------------------------------------------

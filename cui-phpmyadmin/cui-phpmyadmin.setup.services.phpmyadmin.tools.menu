@@ -1,4 +1,4 @@
-<!-- Creation:     25.01.2007 starwarsfan -->
+<!-- Creation: 25.01.2007 starwarsfan -->
 <package>phpmyadmin</package>
 <title>phpMyAdmin Tools</title>
 <script file="/var/install/bin/phpmyadmin-tools-pma-db.sh">Create/Alter/Remove pma database</script>
