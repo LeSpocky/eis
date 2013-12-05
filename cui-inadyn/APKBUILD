@@ -38,30 +38,35 @@ build() {
 
 package() {
 	cd "$_builddir"
-	install -D -m644 ${srcdir}/${pkgname}.txt                                  ${pkgdir}/usr/share/doc/inadyn/inadyn.txt || return 1
-	install -D -m755 ${srcdir}/${pkgname}.sh                                   ${pkgdir}/var/install/config.d/inadyn.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-update.sh                            ${pkgdir}/var/install/config.d/inadyn-update.sh || return 1
-	install -D -m644 ${srcdir}/${pkgname}.help                                 ${pkgdir}/var/install/help/inadyn || return 1
-	install -D -m644 ${srcdir}/${pkgname}.setup.services.inadyn.menu       ${pkgdir}/var/install/menu/setup.services.inadyn.menu || return 1
+	cd ${startdir}/dialog.d
+	for currentDialogScript in `ls` ; do
+		install -D -m755 ${currentDialogScript} ${pkgdir}/var/install/dialog.d/${currentDialogScript} || return 1
+	done
+	cd -
+	install -D -m644 ${srcdir}/${pkgname}.txt                        ${pkgdir}/usr/share/doc/inadyn/inadyn.txt || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh                         ${pkgdir}/var/install/config.d/inadyn.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh                  ${pkgdir}/var/install/config.d/inadyn-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help                       ${pkgdir}/var/install/help/inadyn || return 1
+	install -D -m644 ${srcdir}/${pkgname}.setup.services.inadyn.menu ${pkgdir}/var/install/menu/setup.services.inadyn.menu || return 1
 }
-md5sums="51da617a2fac7023471f520214894c2f  cui-inadyn.help
+md5sums="dd3d01fafe6fa73e5ced2871ed7abe27  cui-inadyn.help
 18ef23e92664716b73519584098ea956  cui-inadyn.initd
-62475ca38ec4440bd8079ce5c82cea17  cui-inadyn.setup.services.inadyn.menu
-0d624828252242ac4693a64c196cf5d9  cui-inadyn.sh
+4cc929fe63948f9b6ff9056a28648a2b  cui-inadyn.setup.services.inadyn.menu
+67934efc1230afa1683afa2e62a308bf  cui-inadyn.sh
 d868c2d198b6e099a40eabe5d2cfbf81  cui-inadyn.txt
-86b356c17cbf39803eaaa0fc07ef6c0c  cui-inadyn-status-mail.sh
-9c463f30ee40a70aebe33884ec7de761  cui-inadyn-update.sh"
-sha256sums="4cc861e5ba3295e9b12eca5560a20ddf1aded79bd25661a290f51cd56b48e6be  cui-inadyn.help
+c5e7aa5b4f29ed3a605223db35edc6a5  cui-inadyn-status-mail.sh
+ff9676606e7ee309798846da5fcaefcf  cui-inadyn-update.sh"
+sha256sums="9d66a753be1d382124f24d1b15710864a12125cacb2c8a8e4270a185dee6e4e3  cui-inadyn.help
 4428f04b831efc075895ec238c019f28fff5cb26b81b9e190980fa85303ce5b1  cui-inadyn.initd
-25899ed365a42d1498f732580d29beee8fdbefaa7572146aa73a64c437c9be6e  cui-inadyn.setup.services.inadyn.menu
-2dfd076a8d9d06e1ea9e2dc71c0a785ff737c17d9fda47522a3e918e7be5a7df  cui-inadyn.sh
+553a979b310ca8c7810155a4ef1743463f71390731dc58cd1703ad14088d6979  cui-inadyn.setup.services.inadyn.menu
+b7bc762459c033eb4daec85ee0d495ac85d7105b4ef4affe94fd3324dc1e3d95  cui-inadyn.sh
 7e4bdb53b13d38691cf12c21b975242ff2d29718b1c91063965afcba2664cd59  cui-inadyn.txt
-54b63c005cb4de2b7c55600562f1935ec1861876ef97522213550bda8d5dd0c9  cui-inadyn-status-mail.sh
-185f6633874e1f0c853a732c721f4dbf45e0ab2b5d05219de7a918e431df56c4  cui-inadyn-update.sh"
-sha512sums="d2104439308fcbd2f811543c398e4534d3c5d71394a9e3b7e2ea709af78315c30a6b7186fe6cb704636b07ba55bbdb8dec673529604d65cd6013b839feb0a878  cui-inadyn.help
+659b7efb6b8582e104647aaf52e363b2d6ba829281865ec16557a3f8ce4c8857  cui-inadyn-status-mail.sh
+bc3cdfd3f5f319a65974773dc89e64587e5d34e69d402cc5549aaabceee62fb6  cui-inadyn-update.sh"
+sha512sums="85988fef273ddc4093d13126b82519f2272ab1fdde1b6fe11a555854d213bc9e473d41f2813832780cb0c65fd5d8c9d9f3772949db0e5671c5fbdb2b0ec3e887  cui-inadyn.help
 fa242bfd184199c070e886c38dedcf21621c432575a81cfe1d1d1ebf571b50ead7bb2c345b9b081ef958fbdde4f9b1c9c38bb1fe42550026a6932e27a7b0b2f5  cui-inadyn.initd
-50b3eef39a5c80ebcd3d345be07053521685910895f7fef822b3cb726d318ffa44d3eb4918635e00b86db26950f4bccb0740c2aab9c3edad98f6512c94b4352f  cui-inadyn.setup.services.inadyn.menu
-ac876ce43e48018b8c52cee0e8c69696a0743735c0aa2b41261698f0bfb0bd16b62ca2d7612ca403a20d82bff86f3c1a6128daeb10b3f2ad43975f4e44738407  cui-inadyn.sh
+584983f37d8ebffca9821e1c23acbb4871bf0bfe1ed12e5528b72389d4afd95f04a53783286bfad7c0571349b97989d9c86c10377dc57c17d57ae730e4db1e42  cui-inadyn.setup.services.inadyn.menu
+720e9fc51ac42492debf68b34e185a458e6526c59b7074efb8dfdd6b93d17a8690be0ed17116aa6a6d583d636d93b14fb990289864fb4577c99b3eff993086e2  cui-inadyn.sh
 e6fafdbdd02b4c10ad69ef504df68641a4c47ead2dcfc4435bd4101b6ba33b84fd5c8b5388dd60bd98db64741124479992980221528b76b32373c28d75c56a59  cui-inadyn.txt
-e8f4e399ce9c2cd618686ae208225fb8c67d61a62241a7f87aa736cee59bacde4484a028c3d7fe9ea31f7ebe5ad83826bad6a700271daa9c7bef1b03c798d662  cui-inadyn-status-mail.sh
-ee69347592f9997f8e546585c2e5ceb7141b27d5d536fd516694eaf49d1cb2bf9394d1d98daec88be45243cc97a4102c9f8d65138f6c722a676ab254f81d077b  cui-inadyn-update.sh"
+55110ccfb3ea2d9f63d5edb35facbf2ed641ad0a8f9642b301d759a4953df876ae4e2045e080c99d7a9ecf60b688b3b117b44ee95698cde5eeda9eb920d027ad  cui-inadyn-status-mail.sh
+0a70a315459655fd9ad26637d1dcfebed12b255254d6799dea7b92ce4fd480d4caeb1cc65ec5f54478f0ff30feee6ffec865b952e41bbabf77700ef8f39563b7  cui-inadyn-update.sh"

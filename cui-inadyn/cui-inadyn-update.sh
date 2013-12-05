@@ -26,7 +26,6 @@ packageName=inadyn
 
 # ----------------------------------------------------------------------------
 # Set the default values for configuration
-# ----------------------------------------------------------------------------
 START_INADYN='no'
 
 INADYN_ACCOUNT_N=1
@@ -47,7 +46,6 @@ INADYN_ACCOUNT_1_LOG_LEVEL='0'
 
 # ----------------------------------------------------------------------------
 # Read old configuration and rename old variables
-# ----------------------------------------------------------------------------
 renameOldVariables()
 {
     # read old values
@@ -58,7 +56,6 @@ renameOldVariables()
 
 # ----------------------------------------------------------------------------
 # Write config and default files
-# ----------------------------------------------------------------------------
 makeConfigFile()
 {
     internal_conf_file=${1}
@@ -67,13 +64,12 @@ makeConfigFile()
     printgpl -conf ${packageName} '2011-02-12' 'starwarsfan'
     # ------------------------------------------------------------------------
 
-
     # ------------------------------------------------------------------------
     printgroup "Basic configuration"
     # ------------------------------------------------------------------------
     printvar 'START_INADYN' 'Use: yes or no'
 
-    printvar 'INADYN_ACCOUNT_N'                 ''
+    printvar 'INADYN_ACCOUNT_N' ''
 
     idx=1
     while [ "${idx}" -le "${INADYN_ACCOUNT_N}" ] ; do
@@ -115,7 +111,6 @@ makeConfigFile()
 
 # ----------------------------------------------------------------------------
 # Create the check.d file
-# ----------------------------------------------------------------------------
 makeCheckFile()
 {
     printgpl -check ${packageName} '2011-02-12' 'starwarsfan' >/etc/check.d/${packageName}
@@ -202,8 +197,6 @@ EOFG
 
 # ----------------------------------------------------------------------------
 # Main
-# ----------------------------------------------------------------------------
-# Write default config file
 mecho ''
 if [ -f /etc/config.d/${packageName} ] ; then
     mecho --info -n 'Updating configuration.'
@@ -229,6 +222,3 @@ mecho ''
 mecho --ok
 
 exit 0
-# ----------------------------------------------------------------------------
-# End
-# ----------------------------------------------------------------------------
