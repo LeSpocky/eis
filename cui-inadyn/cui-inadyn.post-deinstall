@@ -1,0 +1,36 @@
+#!/bin/sh
+# ----------------------------------------------------------------------------
+# /var/install/deinstall/inadyn - deinstall script
+#
+# Creation   : 2011-02-12 starwarsfan
+# Last update: $Id: inadyn 27560 2011-02-13 15:13:25Z starwarsfan $
+#
+# Copyright (c) 2011 the eisfair team, <team(at)eisfair(dot)org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# ----------------------------------------------------------------------------
+
+packageName=inadyn
+
+# ----------------------------------------------------------------------------
+# Remove init script links
+# ----------------------------------------------------------------------------
+levels="/etc/rcS.d /etc/rc0.d /etc/rc1.d /etc/rc2.d /etc/rc6.d"
+for level in $levels
+do
+    if [ -d "$level" ]
+    then
+        rm -f ${level}/S??${packageName}
+        rm -f ${level}/K??${packageName}
+    fi
+done
+
+/var/install/bin/del-menu setup.services.menu setup.services.inadyn.menu
+
+rm -f /etc/check.d/inadyn*
+rm -f /etc/default.d/inadyn*
+rm -f /etc/config.d/inadyn*
+rm -f /etc/backup.d/inadyn*

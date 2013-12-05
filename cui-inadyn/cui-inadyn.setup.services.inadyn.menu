@@ -1,0 +1,10 @@
+<!-- /var/install/menu/setup.services.inadyn.menu -->
+<!-- Creation: 2011-02-12 starwarsfan -->
+<package>inadyn</package>
+<title>Inadyn administration</title>
+<doc file="cui-inadyn.txt">View package documentation</doc>
+<edit>Edit configuration</edit>
+<init task="status">Show Inadyn status</init>
+<init task="stop">Stop Inadyn</init>
+<init task="start">Start Inadyn</init>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>

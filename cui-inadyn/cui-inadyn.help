@@ -1,0 +1,122 @@
+<!-- Creation:     2011-02-12 starwarsfan  -->
+<!-- Last Update:  $Id: inadyn 32191 2012-11-12 21:18:47Z starwarsfan $ -->
+
+<help name="START_INADYN">
+    Fuer die Aktivierung von 'INADYN' muss diese Variable
+    lediglich auf den Wert 'yes' gestellt werden. Die Einstellung
+    'no' schaltet 'INADYN' ab.<br/>
+<br/>
+    Gueltige Werte: yes, no<br/>
+<br/>
+    Standard-Einstellung: START_INADYN='yes'<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_N">
+    Anzahl der unterschiedlichen DynDNS-Accounts. Dies koennen mehrere Konten
+    beim gleichen Anbieter oder Konten bei unterschiedlichen Anbietern sein.<br/>
+<br/>
+    Gueltige Werte: Ziffern<br/>
+<br/>
+    Standard-Einstellung: INADYN_ACCOUNT_N='1'<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_%_NAME">
+    Bezeichner bzw. Name fuer diesen Account. Wird in der Statusmail verwendet.<br/>
+<br/>
+    Gueltige Werte: yes, no<br/>
+<br/>
+    Standard-Einstellung: INADYN_ACCOUNT_%_NAME='Account 1'<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_%_ACTIVE">
+    Den Account aktivieren ja oder nein.<br/>
+<br/>
+    Gueltige Werte: yes, no<br/>
+<br/>
+    Standard-Einstellung: INADYN_ACCOUNT_%_ACTIVE='yes'<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_%_SYSTEM">
+    Art des DynDNS-Accounts. Erlaubt sind:<br/>
+    * dynamic:  dyndns.org (dynamisch)<br/>
+    * static:   dyndns.org (statisch)<br/>
+    * custom:   dyndns.org (custom)<br/>
+    * zoneedit: zoneedit.com<br/>
+    * no-ip:    no-ip.com<br/>
+    * changeip: changeip.com<br/>
+<br/>
+    Standard-Einstellung: INADYN_ACCOUNT_%_SYSTEM='dynamic'<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_%_IP_SERVER">
+    FQDN oder IP des Servers, welcher die aktuelle IP zurueckliefert. Moeglich
+    sind Eintraege wie 'checkip.two-dns.de' oder 'checkip.dyndns.com'.<br/>
+    Achtung, bei Verwendung des Dienstes 'changeip' wird hier fix
+    'ip.changeip.com' eingetragen.<br/>
+<br/>
+    Standard-Einstellung: INADYN_ACCOUNT_%_IP_SERVER='checkip.two-dns.de'<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_%_USER">
+    Login-/Benutzername des DynDNS-Accounts.<br/>
+<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_%_PASSWORD">
+    Passwort des DynDNS-Accounts.<br/>
+<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_%_ALIAS_N">
+    Anzahl der Aliases des DynDNS-Accounts, welche ueberwacht und deren
+    IP-Adresse ggfs. erneuert werden sollen.<br/>
+<br/>
+    Standard-Einstellung: INADYN_ACCOUNT_%_ALIAS_N='1'<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_%_ALIAS_%">
+    Zwei Varianten sind moeglich:<br/>
+    1. Aliasname (FQDN, Full Qualified Domain Name) des DynDNS-Accounts.<br/>
+    2. Set-Nummer von 1-5, wenn changeip.com verwendet wird und ein Set
+    aktualisert werden soll.<br/>
+<br/>
+    Standard-Einstellung: INADYN_ACCOUNT_%_ALIAS_%='test.homeip.net'<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_%_UPDATE_INTERVAL">
+    Intervall in Sekunden, in dem die beim DynDNS-Anbieter gespeicherte
+    IP-Adresse ueberprueft und gegebenenfalls erneuert werden soll.<br/>
+<br/>
+    Standard-Einstellung: INADYN_ACCOUNT_%_UPDATE_INTERVAL='600'<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_%_MAIL_ON_UPDATE">
+    Wenn inadyn nach einem Update eine Mail verschicken soll, so kann dieses
+    Verhalten ueber diese Option aktiviert werden.<br/>
+<br/>
+    Standard-Einstellung: INADYN_ACCOUNT_%_MAIL_ON_UPDATE='no'<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_%_MAIL_TO">
+    Empfaenger der Update-Infomail.<br/>
+<br/>
+    Standard-Einstellung: INADYN_ACCOUNT_%_MAIL_TO='root'<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_%_LOGFILE">
+    Logfile, in welches INADYN seine Meldungen ausgeben soll. Wird hier nichts
+    (leerer Eintrag) angegeben, werden die Meldungen im Syslog ausgegeben.<br/>
+    Da INADYN in Log-Files keine Zeitangaben schreibt, wird das Loggen in das
+    Syslog empfohlen.<br/>
+<br/>
+    Standard-Einstellung: INADYN_ACCOUNT_%_LOGFILE=''<br/>
+</help>
+
+<help name="INADYN_ACCOUNT_%_LOG_LEVEL">
+    Debug-/Log-Level des ersten DynDNS-Accounts. '0' bedeutet die
+    Standard-Ausgabe (Start des Dienstes, Erneuerung der IP-Adresse), '5' voller
+    Debug-Modus (nur empfohlen, wenn INADYN_ACCOUNT_1_LOGFILE nicht leer
+    (Loggen in Syslog) gesetzt wurde).<br/>
+<br/>
+    Standard-Einstellung: INADYN_ACCOUNT_%_LOG_LEVEL='0'<br/>
+</help>

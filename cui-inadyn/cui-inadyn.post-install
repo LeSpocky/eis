@@ -1,0 +1,4 @@
+#!/bin/sh
+
+/var/install/bin/add-menu setup.services.menu setup.services.inadyn.menu "inadyn"
+/var/install/config.d/inadyn-update.sh

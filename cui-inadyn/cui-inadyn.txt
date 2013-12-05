@@ -1,0 +1,188 @@
+inadyn - package for eisfair-ng
+================================
+
+
+INADYN ist ein Client fuer dynamisches DNS (DynDNS). Das Programm ueberprueft
+periodisch, ob die IP-Adresse, welche beim DynDNS-Anbieter gespeichert ist, noch
+mit der aktuellen Adresse des Clients uebereinstimmt, und aendert den Eintrag
+gegebenenfalls. Dadurch kann erreicht werden, dass der Server immer unter den
+konfigurierten Alias-Namen erreichbar ist.
+
+- Unterstuetzt werden die folgenden DynDNS Anbieter:
+  * dyndns.org (in allen drei Versionen: dynamic, static, custom)
+  * freedns.afraid.org (bisher nicht auf eisfair umgesetzt)
+  * zoneedit.com
+  * no-ip.com
+- Verwaltet mehrere Aliases / Host-Namen derselben IP-Adresse
+- Funktioniert auch hinter einem NAT Router
+- Unterstuetzt http-Zugriff ueber einen Proxy (bisher nicht auf eisfair umgesetzt)
+- Zertifizierter Client fuer dyndns.org
+- Fuehrt keine unnoetigen Updates durch (wichtig z.B. fuer dyndns.org), nutzt
+  dazu die Seite http://checkip.dyndns.com/
+
+Link zu inadyn:
+http://www.dyndns.com/support/kb/using_inadyn_with_dyndns_services.html
+
+-----------------------------------------------------------------------------
+
+Installation
+
+Das INADYN-Package wird ueber das Setup-Menue installiert. Wird eine aeltere
+Package-Version vorgefunden, so wird dessen Konfiguration gesichert und das
+alte Paket deinstalliert, bevor die neuen Programmdateien installiert und die
+Konfiguration uebernommen wird.
+
+-----------------------------------------------------------------------------
+
+Menue im Setup-Programm
+
+Das Menue im Setup-Programm ist wie folgt aufgebaut:
+
+* View documentation: Anzeigen der Dokumentation
+* Edit configuration: Bearbeiten der Konfiguration
+* Advanced configuration file handling: Konfigurationen verwalten
+* Show status: Status des INADYN-Dienstes anzeigen
+* Start inadyn: INADYN-Dienst starten
+* Stop inadyn: INADYN-Dienst anhalten
+
+Die Menuepunkte duerften selbsterklaerend sein, da sie keinerlei weiteren Input
+erwarten. Deshalb wird auf deren Funktion vorerst nicht weiter eingegangen.
+
+-----------------------------------------------------------------------------
+
+Aenderung der Konfiguration
+
+Die Konfiguration kann ueber den Menuepunkt `Edit configuration' geaendert
+werden.
+
+Nachdem der Editor beendet wurde wird abgefragt, ob die Konfiguration aktiviert
+werden soll. Wird dies bestaetigt, werden ueber ein Skript die modifizierten
+Aenderungen umgehend wirksam gemacht. Es ist zu beachten, dass einige Programme
+eigenstaendig bei erneuter Aktivierung die Konfigurationsdatei neu einlesen,
+somit fuehrt ein Beantwortung dieser Abfrage mit 'Nein' nur zu einem kurzen
+Aufschub der Aktivierung.
+
+-----------------------------------------------------------------------------
+
+Die Konfigurationsdatei
+
+In der Konfigurationsdatei, welche ueber das Menue zugaenglich ist, sind
+folgende Parameter vorhanden; wer sie von Hand editieren will findet sie unter
+/etc/config.d/inadyn.
+
+Konfiguration:
+
+
+START_INADYN
+	Starten des INADYN-Paketes ja oder nein
+	Standardeinstellung: START_INADYN='yes'
+
+INADYN_ACCOUNT_N
+	Anzahl der unterschiedlichen DynDNS-Accounts. Dies koennen mehrere Konten
+	beim gleichen Anbieter oder Konten bei unterschiedlichen Anbietern sein.
+	Standardeinstellung: INADYN_ACCOUNT_N='1'
+
+INADYN_ACCOUNT_1_ACTIVE
+	Den ersten Account aktivieren ja oder nein.
+	Standardeinstellung: INADYN_ACCOUNT_1_ACTIVE='yes'
+
+INADYN_ACCOUNT_1_SYSTEM
+	Art des ersten DynDNS-Accounts. Erlaubt sind:
+		* 'dynamic':  dyndns.org (dynamisch)
+		* 'static':   dyndns.org (statisch)
+		* 'custom':   dyndns.org (custom)
+		* 'zoneedit': zoneedit.com
+		* 'no-ip':    no-ip.com
+	Standardeinstellung: INADYN_ACCOUNT_1_SYSTEM='dynamic'
+
+INADYN_ACCOUNT_1_IP_SERVER
+    FQDN oder IP des Servers, welcher die aktuelle IP zurueckliefert. Moeglich
+    sind Eintraege wie 'checkip.two-dns.de' oder 'checkip.dyndns.com'.
+    Achtung, bei Verwendung des Dienstes 'changeip' wird hier fix
+    'ip.changeip.com' eingetragen.
+    Standard-Einstellung: INADYN_ACCOUNT_1_IP_SERVER='checkip.two-dns.de'
+
+INADYN_ACCOUNT_1_USER
+	Login-/Benutzername des ersten DynDNS-Accounts
+	Standardeinstellung: INADYN_ACCOUNT_1_USER=''
+
+INADYN_ACCOUNT_1_PASSWORD
+	Passwort des ersten DynDNS-Accounts
+	Standardeinstellung: INADYN_ACCOUNT_1_PASSWORD=''
+
+INADYN_ACCOUNT_1_ALIAS_N
+	Anzahl der Aliases des ersten DynDNS-Accounts, die ueberwacht und
+	deren IP-Adresse ggfs. erneuert werden sollen.
+	Standardeinstellung: INADYN_ACCOUNT_1_ALIAS_N='1'
+
+INADYN_ACCOUNT_1_ALIAS_1
+	Erster Alias des ersten DynDNS-Accounts.
+	Standardeinstellung: INADYN_ACCOUNT_1_ALIAS_1='test.homeip.net'
+
+INADYN_ACCOUNT_1_UPDATE_INTERVAL
+	Intervall, in dem die beim ersten DynDNS-Anbieter gespeicherte
+	IP-Adresse ueberprueft und gegebenenfalls erneuert werden soll.
+	Standardeinstellung: INADYN_ACCOUNT_1_UPDATE_INTERVAL='600'
+	(ueberpruefen alle 10 Minuten)
+
+INADYN_ACCOUNT_1_LOGFILE
+	Logfile, in das INADYN seine Meldungen ausgeben soll. Wird hier ''
+	(leerer Eintrag) gewaehlt, werden die Meldungen im Syslog ausgegeben.
+	Da INADYN in Log-Files keine Zeitangaben schreibt, wird das Loggen in
+	das Syslog empfohlen.
+	Die Log-Files werden mittels logrotate taeglich rotiert, sieben werden
+	dabei jeweils beibehalten.
+	Standardeinstellung: INADYN_ACCOUNT_1_LOGFILE=''
+
+INADYN_ACCOUNT_1_LOG_LEVEL
+	Debug-/Log-Level des ersten DynDNS-Accounts. '0' bedeutet die Standard-
+	Ausgabe (Start des Dienstes, Erneuerung der IP-Adresse), '5' voller
+	Debug-Modus (nur empfohlen, wenn INADYN_ACCOUNT_1_LOGFILE nicht auf ''
+	(Loggen in Syslog) gesetzt wurde).
+	Standardeinstellung: INADYN_ACCOUNT_1_LOG_LEVEL='0'
+
+
+Die weiteren Eintraege (INADYN_ACCOUNT_2_*) in der Beispielkonfiguration
+entsprechen den obigen. Hier wird ein zweiter Account bei dyndns.org
+konfiguriert, der den statischen Dienst nutzt und zwei Alias-Namen
+('test1.dyndns.org' / 'test2.dyndns.org') alle 30 Minuten auf ihre Gueltigkeit
+ueberprueft. Zusaetzlich werden alle moeglichen Meldungen diesen Account
+betreffend in der Log-Datei '/var/log/ddaccount2.log' ausgegeben.
+
+Dieser Account ist nicht aktiviert (INADYN_ACCOUNT_2_ACTIVE='no'), so dass
+INADYN fuer diesen Account nicht gestartet wird.
+
+INADYN_ACCOUNT_2_ACTIVE='no'	# 2nd account active 'yes' or 'no'
+
+INADYN_ACCOUNT_2_SYSTEM='static'	# type of 1st DynDNS-account:
+				# 'dynamic':  dyndns.org (dynamic)
+				# 'static':   dyndns.org (static)
+				# 'custom':   dyndns.org (custom)
+				# 'zoneedit': zoneedit.com
+				# 'no-ip':    no-ip.com
+
+INADYN_ACCOUNT_2_USER='user2'		# username of 2nd DynDNS-account
+
+INADYN_ACCOUNT_2_PASSWORD='password2'	# password of 2nd DynDNS-account
+
+INADYN_ACCOUNT_2_ALIAS_N='2'		# number of aliases / hosts of
+					# 2nd DynDNS-account
+
+INADYN_ACCOUNT_2_ALIAS_1='test1.dyndns.org'
+					# 1st alias of 2nd DynDNS-account
+					# example 'test1.dyndns.org'
+
+INADYN_ACCOUNT_2_ALIAS_2='test2.dyndns.org'
+					# 2nd alias of 2nd DynDNS-account
+					# example 'test2.dyndns.org'
+
+INADYN_ACCOUNT_2_UPDATE_INTERVAL='1800'	# interval to look if IP has changed,
+					# in seconds (example 30 minutes)
+
+INADYN_ACCOUNT_2_LOGFILE='/var/log/ddaccount2.log'
+					# path and name of logfile for
+					# 2nd account
+					# log to syslog if empty
+
+INADYN_ACCOUNT_2_LOG_LEVEL='5'	# debug / log level
+				# '0': standard, '5': full debug
