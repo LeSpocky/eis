@@ -3,9 +3,8 @@
 # /var/install/config.d/inadyn-update.sh - paramater update script
 #
 # Creation   : 2011-02-12 starwarsfan
-# Last update: $Id: inadyn-update.sh 32189 2012-11-12 21:14:50Z starwarsfan $
 #
-# Copyright (c) 2011 the eisfair team, <team(at)eisfair(dot)org>
+# Copyright (c) 2011-2013 the eisfair team, <team(at)eisfair(dot)org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,8 +51,7 @@ INADYN_ACCOUNT_1_LOG_LEVEL='0'
 renameOldVariables()
 {
     # read old values
-    if [ -f /etc/config.d/${packageName} ]
-    then
+    if [ -f /etc/config.d/${packageName} ] ; then
         . /etc/config.d/${packageName}
     fi
 }
@@ -78,8 +76,7 @@ makeConfigFile()
     printvar 'INADYN_ACCOUNT_N'                 ''
 
     idx=1
-    while [ "${idx}" -le "${INADYN_ACCOUNT_N}" ]
-    do
+    while [ "${idx}" -le "${INADYN_ACCOUNT_N}" ] ; do
         printvar "INADYN_ACCOUNT_${idx}_NAME"            "Just a name for the account, used on status mail"
         printvar "INADYN_ACCOUNT_${idx}_ACTIVE"          "Is this account active or not"
         printvar "INADYN_ACCOUNT_${idx}_SYSTEM"          "dynamic, static, custom, zoneedit or no-ip"
@@ -92,8 +89,7 @@ makeConfigFile()
         aliasAmount=${aliasAmount:-0} # Set to 0 if empty
 
         idx2=1
-        while [ "${idx2}" -le "${aliasAmount}" ]
-        do
+        while [ "${idx2}" -le "${aliasAmount}" ] ; do
             printvar "INADYN_ACCOUNT_${idx}_ALIAS_${idx2}" "test.homeip.net"
             idx2=$((idx2+1))
         done
@@ -174,29 +170,22 @@ EOFG
 
 set mail_used = "no"
 
-foreach i in inadyn_account_n
-do
-    if (inadyn_account_%_active[i] == "yes")
-    then
-        if (inadyn_account_%_mail_on_update[i] == "yes")
-        then
+foreach i in inadyn_account_n ; do
+    if (inadyn_account_%_active[i] == "yes") ; then
+        if (inadyn_account_%_mail_on_update[i] == "yes") ; then
             set mail_used = "yes"
         fi
     fi
 done
 
 
-if ( mail_used == "yes" )
-then
+if ( mail_used == "yes" ) ; then
     stat ("/var/install/packages/mail", test)
-    if ("\$test_res" != "OK")
-    then
+    if ("\$test_res" != "OK") ; then
         stat ("/var/install/packages/vmail", test)
-        if ("\$test_res" != "OK")
-        then
+        if ("\$test_res" != "OK") ; then
             stat ("/var/install/packages/ssmtp", test)
-            if ("\$test_res" != "OK")
-            then
+            if ("\$test_res" != "OK") ; then
                 error "A mail package is required to enable sending status mails on update!"
             fi
         fi
@@ -216,8 +205,7 @@ EOFG
 # ----------------------------------------------------------------------------
 # Write default config file
 mecho ''
-if [ -f /etc/config.d/${packageName} ]
-then
+if [ -f /etc/config.d/${packageName} ] ; then
     mecho --info -n 'Updating configuration.'
 else
     mecho --info -n 'Creating configuration.'
