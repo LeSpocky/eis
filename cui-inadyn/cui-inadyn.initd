@@ -25,14 +25,12 @@
 # ----------------------------------------------------------------------------
 checkCacheDir()
 {
-    if [ ! -d /tmp/inadyn_cache ]
-    then
+    if [ ! -d /tmp/inadyn_cache ] ; then
         mkdir /tmp/inadyn_cache
     fi
 }
 
-case $1
-in
+case $1 ; in
     start)
         mecho --info "Starting inadyn..."
         # Check if start of inadyn is allowed
