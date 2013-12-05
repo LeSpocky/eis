@@ -1,0 +1,45 @@
+# Contributor: starwarsfan <yves@eisfair.org>
+# Maintainer: starwarsfan <yves@eisfair.org>
+pkgname=cui-inadyn
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="CUI Setup for inadyn dynamic dns client"
+url="http://www.eisfair.org"
+arch="noarch"
+license="GPL"
+depends="cuimenu inadyn"
+depends_dev=""
+makedepends="$depends_dev"
+install="$pkgname.post-install $pkgname.post-deinstall"
+subpackages=""
+source="${pkgname}.help
+        ${pkgname}.setup.services.inadyn.menu
+        ${pkgname}.sh
+        ${pkgname}.txt
+        ${pkgname}-helpers.sh
+        ${pkgname}-update.sh
+"
+
+_builddir=
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source ; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+}
+
+package() {
+	cd "$_builddir"
+	install -D -m644 ${srcdir}/${pkgname}.txt                                  ${pkgdir}/usr/share/doc/inadyn/inadyn.txt || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh                                   ${pkgdir}/var/install/config.d/inadyn.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh                            ${pkgdir}/var/install/config.d/inadyn-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help                                 ${pkgdir}/var/install/help/inadyn || return 1
+	install -D -m644 ${srcdir}/${pkgname}.setup.services.inadyn.menu       ${pkgdir}/var/install/menu/setup.services.inadyn.menu || return 1
+}
