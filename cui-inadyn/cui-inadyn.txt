@@ -1,5 +1,5 @@
 inadyn - package for eisfair-ng
-================================
+===============================
 
 
 INADYN ist ein Client fuer dynamisches DNS (DynDNS). Das Programm ueberprueft
