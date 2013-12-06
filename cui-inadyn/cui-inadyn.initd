@@ -1,18 +1,5 @@
-#!/bin/sh
-# ----------------------------------------------------------------------------
-# /etc/init.d/inadyn init script for inadyn
-#
-# Creation:    2008-03-04 Rene Hanke
-# Last Update: $Id: inadyn 28604 2011-07-12 21:21:59Z starwarsfan $
-#
-# Copyright (c) 2008-2010 Rene Hanke, hanker(at)rpg-domain(dot)de
-# Copyright (c) 2011 the eisfair team, <team(at)eisfair(dot)org>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-# ----------------------------------------------------------------------------
+#!/sbin/runscript
+# init.d file for alpine linux.
 
 # Include eislib
 . /var/install/include/eislib
@@ -20,115 +7,101 @@
 # Include configuration
 . /etc/config.d/inadyn
 
+depend() {
+	need net
+	after firewall
+}
+
 # ----------------------------------------------------------------------------
 # Check if directory for cache files exists. If not, create it
 # ----------------------------------------------------------------------------
-checkCacheDir()
-{
+checkCacheDir() {
     if [ ! -d /tmp/inadyn_cache ] ; then
         mkdir /tmp/inadyn_cache
     fi
 }
 
-case $1 ; in
-    start)
-        mecho --info "Starting inadyn..."
-        # Check if start of inadyn is allowed
-        if [ "$START_INADYN" != "yes" ]
-        then
-            mecho --error "Skipping start of INADYN because START_INADYN is set to 'no'"
-            mecho "If you want to start INADYN manually,"
-            mecho "use the parameter 'forcestart' instead of 'start' with the init.d script"
-            exit 1
-        fi
+start() {
+    mecho --info "Starting inadyn..."
+    # Check if start of inadyn is allowed
+    if [ "$START_INADYN" != "yes" ] ; then
+        mecho --error "Skipping start of INADYN because START_INADYN is set to 'no'"
+        mecho "If you want to start INADYN manually,"
+        mecho "use the parameter 'forcestart instead of 'start' with the init.d script"
+        exit 1
+    fi
 
-        checkCacheDir
+    checkCacheDir
 
-        if [ `ls -l /etc/inadyn-mt/inadyn*.conf 2>/dev/null | wc -l` -ge 1 ]
+    if [ `ls -l /etc/inadyn-mt/inadyn*.conf 2>/dev/null | wc -l` -ge 1 ] ; then
         # Only start if config-file(s) are really present
-        then
-            for configfile in `eval ls -1 /etc/inadyn-mt/inadyn*.conf`
-            do
-                /usr/local/bin/inadyn-mt --input_file $configfile
-            done
-        else
-            mecho --error "Cannot start inadyn because no configuartion file(s) present."
-            exit 1
-        fi
-        mecho --ok
-        ;;
+        for configfile in `eval ls -1 /etc/inadyn-mt/inadyn*.conf` ; do
+            /usr/bin/inadyn --input_file ${configfile}
+        done
+    else
+        mecho --error "Cannot start inadyn because no configuartion file(s) present."
+        exit 1
+    fi
+    mecho --ok
+}
 
-    forcestart)
-        mecho --info "Starting inadyn..."
+forcestart() {
+    mecho --info "Starting inadyn..."
 
-        checkCacheDir
+    checkCacheDir
 
-        if [ `ls -l /etc/inadyn-mt/inadyn*.conf 2>/dev/null | wc -l` -ge 1 ]
+    if [ `ls -l /etc/inadyn-mt/inadyn*.conf 2>/dev/null | wc -l` -ge 1 ] ; then
         ## only start if config-file(s) are really present
-        then
-            for configfile in `eval ls -1 /etc/inadyn-mt/inadyn*.conf`
-            do
-                /usr/local/bin/inadyn-mt --input_file $configfile
-            done
-        else
-            mecho --error "Cannot start inadyn because no configuartion file(s) present."
-            exit 1
-        fi
-        mecho --ok
-        ;;
+        for configfile in `eval ls -1 /etc/inadyn-mt/inadyn*.conf` ; do
+            /usr/bin/inadyn --input_file ${configfile}
+        done
+    else
+        mecho --error "Cannot start inadyn because no configuartion file(s) present."
+        exit 1
+    fi
+    mecho --ok
+}
 
-    stop)
-        mecho --info "Shutting down inadyn..."
-        killproc -t2 /usr/local/bin/inadyn-mt
-        sleep 2
+stop() {
+    mecho --info "Shutting down inadyn..."
+    killproc -t2 /usr/bin/inadyn
+    sleep 2
 
-        # Log service shutdown
-        if [ `pidof /usr/local/bin/inadyn-mt | wc -w` -le 0 ]
-        then
-             /usr/bin/logger -t INADYN    \
-                             -p user.info \
-                             "INADYN: Stopped all 'INADYN' - processes."
+    # Log service shutdown
+    if [ `pidof /usr/bin/inadyn | wc -w` -le 0 ] ; then
+         /usr/bin/logger -t INADYN    \
+                         -p user.info \
+                         "INADYN: Stopped all 'INADYN' - processes."
 
-            # Check log type for every account and write stop into proper log file
-            idx=1
-            while [ $idx -le $INADYN_ACCOUNT_N ];
-            do
-                eval inadyn_active='$INADYN_ACCOUNT_'$idx'_ACTIVE'
-                if [ "$inadyn_active" = 'yes' ]
+        # Check log type for every account and write stop into proper log file
+        idx=1
+        while [ ${idx} -le ${INADYN_ACCOUNT_N} ] ; do
+            eval inadyn_active='$INADYN_ACCOUNT_'${idx}'_ACTIVE'
+            if [ "$inadyn_active" = 'yes' ] ; then
                 # Only write if account active
-                then
-                    eval inadyn_log='$INADYN_ACCOUNT_'$idx'_LOGFILE'
-                    if [ "$inadyn_log" != '' ]
-                    then
-                        echo "INADYN: Stopped all 'INADYN' - processes." >> $inadyn_log
-                    fi
+                eval inadyn_log='$INADYN_ACCOUNT_'${idx}'_LOGFILE'
+                if [ "$inadyn_log" != '' ] ; then
+                    echo "INADYN: Stopped all 'INADYN' - processes." >> ${inadyn_log}
                 fi
-                idx=$((idx+1))
-            done
-        fi
-        mecho --ok
-        ;;
+            fi
+            idx=$((idx+1))
+        done
+    fi
+    mecho --ok
+}
 
-    restart)
-        $0 stop
-        $0 start
-        ;;
+restart() {
+    stop
+    start
+}
 
-    status)
-        if [ `pidof /usr/local/bin/inadyn-mt | wc -w` -gt 0 ]
-        then
-            mecho --info "Inadyn is running"
-            exit 0
-        else
-            mecho --warn "Inadyn is not running"
-            # See http://refspecs.freestandards.org/LSB_3.1.1/LSB-Core-generic/LSB-Core-generic/iniscrptact.html
-            exit 3
-        fi
-        ;;
-
-    *)
-        echo "Usage: $0 {start|forcestart|stop|restart|status}"
-        ;;
-esac
-
-exit 0
+status() {
+    if [ `pidof /usr/bin/inadyn | wc -w` -gt 0 ] ; then
+        mecho --info "Inadyn is running"
+        exit 0
+    else
+        mecho --warn "Inadyn is not running"
+        # See http://refspecs.freestandards.org/LSB_3.1.1/LSB-Core-generic/LSB-Core-generic/iniscrptact.html
+        exit 3
+    fi
+}
