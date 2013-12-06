@@ -165,22 +165,29 @@ EOFG
 
 set mail_used = "no"
 
-foreach i in inadyn_account_n ; do
-    if (inadyn_account_%_active[i] == "yes") ; then
-        if (inadyn_account_%_mail_on_update[i] == "yes") ; then
+foreach i in inadyn_account_n
+do
+    if (inadyn_account_%_active[i] == "yes")
+    then
+        if (inadyn_account_%_mail_on_update[i] == "yes")
+        then
             set mail_used = "yes"
         fi
     fi
 done
 
 
-if ( mail_used == "yes" ) ; then
+if ( mail_used == "yes" )
+then
     stat ("/var/install/packages/mail", test)
-    if ("\$test_res" != "OK") ; then
+    if ("\$test_res" != "OK")
+    then
         stat ("/var/install/packages/vmail", test)
-        if ("\$test_res" != "OK") ; then
+        if ("\$test_res" != "OK")
+        then
             stat ("/var/install/packages/ssmtp", test)
-            if ("\$test_res" != "OK") ; then
+            if ("\$test_res" != "OK")
+            then
                 error "A mail package is required to enable sending status mails on update!"
             fi
         fi
