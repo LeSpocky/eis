@@ -49,21 +49,21 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.help                       ${pkgdir}/var/install/help/inadyn || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.inadyn.menu ${pkgdir}/var/install/menu/setup.services.inadyn.menu || return 1
 }
-md5sums="51da617a2fac7023471f520214894c2f  cui-inadyn.help
+md5sums="03ba5ca1d2eba509c2356fa163e557a0  cui-inadyn.help
 07edc2cd3d640f899c8e6db226c026e9  cui-inadyn.initd
 62475ca38ec4440bd8079ce5c82cea17  cui-inadyn.setup.services.inadyn.menu
 2dc572b5a425b2f79c2d0b6eae9a6b43  cui-inadyn.sh
 d868c2d198b6e099a40eabe5d2cfbf81  cui-inadyn.txt
 86b356c17cbf39803eaaa0fc07ef6c0c  cui-inadyn-status-mail.sh
 ff9676606e7ee309798846da5fcaefcf  cui-inadyn-update.sh"
-sha256sums="4cc861e5ba3295e9b12eca5560a20ddf1aded79bd25661a290f51cd56b48e6be  cui-inadyn.help
+sha256sums="f239ec3ef4342b0c7cbcc358d9a91a33a7b77a357d45aa8c8895cb8b6e689ec1  cui-inadyn.help
 da9d3c5b33ef1a3669fc8e05a77a185151eaf5506d5e3c1f802f262b2f2b2f84  cui-inadyn.initd
 25899ed365a42d1498f732580d29beee8fdbefaa7572146aa73a64c437c9be6e  cui-inadyn.setup.services.inadyn.menu
 75f21fb3813ea8ea515d192904ecc0afbd0ec3787778d58a21f29d73251bac21  cui-inadyn.sh
 7e4bdb53b13d38691cf12c21b975242ff2d29718b1c91063965afcba2664cd59  cui-inadyn.txt
 54b63c005cb4de2b7c55600562f1935ec1861876ef97522213550bda8d5dd0c9  cui-inadyn-status-mail.sh
 bc3cdfd3f5f319a65974773dc89e64587e5d34e69d402cc5549aaabceee62fb6  cui-inadyn-update.sh"
-sha512sums="d2104439308fcbd2f811543c398e4534d3c5d71394a9e3b7e2ea709af78315c30a6b7186fe6cb704636b07ba55bbdb8dec673529604d65cd6013b839feb0a878  cui-inadyn.help
+sha512sums="7dfb41bcb6b8dd4f898b721f5e94a4aa47bca863c7347ae0dad7bf2b3510e985c6cb61964d520c5e64a3e4f06246b26af113d2b5015297e03ef80d3a9958a255  cui-inadyn.help
 15dd94475badc84c4c0feedd7228e97dd9a8553240d663d579d8091f17e77d0bafc551922ecea802ce10dcdad5c1a4f4e5be3ec62256dfbdfd5bb1942f7b7f97  cui-inadyn.initd
 50b3eef39a5c80ebcd3d345be07053521685910895f7fef822b3cb726d318ffa44d3eb4918635e00b86db26950f4bccb0740c2aab9c3edad98f6512c94b4352f  cui-inadyn.setup.services.inadyn.menu
 9869c47bcd000e528d6236af7cca9bd40e10bdd0a9db51ac1507e20ef6fb68ce51ab78ac6ffa40a42df9ab10f8eb4f50791fe350ca90c171c93a74fd581764cd  cui-inadyn.sh
