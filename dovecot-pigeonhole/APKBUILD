@@ -1,0 +1,54 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
+pkgname=dovecot-pigeonhole
+pkgver=0.4.2
+pkgrel=0
+pkgdesc="Pigeonhole for Dovecot - sieve service"
+url="http://pigeonhole.dovecot.org"
+arch="all"
+license="GNU"
+depends=""
+depends_dev="openssl-dev dovecot-dev"
+makedepends="$depends_dev"
+install=""
+subpackages="$pkgname-dev $pkgname-doc"
+source="http://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-${pkgver}.tar.gz
+	"
+
+_builddir="$srcdir/dovecot-2.2-pigeonhole-$pkgver"
+
+prepare() {
+	local i
+	cd ${_builddir}
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i ${srcdir}/$i || return 1;;
+		esac
+	done
+	sleep 1
+}
+
+build() {
+	cd ${_builddir}
+	./configure --prefix=/usr \
+	--libexec=/usr/sbin \
+	--with-dovecot=/usr/lib/dovecot \
+	--with-managesieve=yes \
+	--disable-static || return 1
+	sleep 1
+	make -j1 || return 1
+}
+
+package() {
+	cd ${_builddir}
+	make -j1 DESTDIR="$pkgdir" install || return 1
+	rm -f ${pkgdir}/usr/lib/dovecot/*.la \
+		rm -f ${pkgdir}/usr/lib/dovecot/*/*.la
+	mkdir -p ${pkgdir}/etc/dovecot/conf.d
+	cp -f ${pkgdir}/usr/share/doc/dovecot/example-config/conf.d/* ${pkgdir}/etc/dovecot/conf.d/
+}
+
+
+md5sums="e8cb4976db9811d37e9d870f2f75ffef  dovecot-2.2-pigeonhole-0.4.2.tar.gz"
+sha256sums="0499f07037b86489fdc1d48fb19e298d5360ec41273bccaec230eb1bcf5a3e13  dovecot-2.2-pigeonhole-0.4.2.tar.gz"
+sha512sums="3b66d00a8462ee668b8671f5eaa48bb91d47ed8bf8b331f7d879ba8c581e2bef11e236b06a8c5da9f1248572348ad0b3e2b867fd0a17badf32152fedbe61c1ed  dovecot-2.2-pigeonhole-0.4.2.tar.gz"
