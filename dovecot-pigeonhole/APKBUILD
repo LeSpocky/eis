@@ -30,6 +30,7 @@ prepare() {
 
 build() {
 	cd ${_builddir}
+	export LDFLAGS="-Wl,-rpath=/usr/lib/dovecot"
 	./configure --prefix=/usr \
 	--libexec=/usr/sbin \
 	--with-dovecot=/usr/lib/dovecot \
