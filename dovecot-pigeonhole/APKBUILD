@@ -11,7 +11,7 @@ depends=""
 depends_dev="openssl-dev dovecot-dev"
 makedepends="$depends_dev"
 install=""
-subpackages="$pkgname-dev $pkgname-doc"
+subpackages="$pkgname-doc"
 source="http://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-${pkgver}.tar.gz
 	"
 
@@ -47,6 +47,7 @@ package() {
 		rm -f ${pkgdir}/usr/lib/dovecot/*/*.la
 	mkdir -p ${pkgdir}/etc/dovecot/conf.d
 	cp -f ${pkgdir}/usr/share/doc/dovecot/example-config/conf.d/* ${pkgdir}/etc/dovecot/conf.d/
+	rm -rf ${pkgdir}/usr/include
 }
 
 
