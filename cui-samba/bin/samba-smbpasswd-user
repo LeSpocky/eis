@@ -1,0 +1,93 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-smbpasswd-user - change password of an existing samba user
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-smbpasswd-user
+#    or: /var/install/bin/samba-smbpasswd-user "user" "password"
+#
+# Creation   : 2002-12-16 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+# set -x
+. /var/install/include/eislib
+
+debuglevel=`grep 'debug level =' /etc/smb.conf | cut -d'=' -f2 | sed 's# ##g'`
+smbpasswdbin='/usr/bin/smbpasswd'
+pdbeditbin='/usr/bin/pdbedit'
+tdbsamfile='/etc/passdb.tdb'
+
+case $# in
+0)
+    interactive='true'
+    user=''
+    password=''
+    ;;
+2)
+    interactive='false'
+    user="$1"
+    password="$2"
+    (echo "$password"; echo "$password") | "$smbpasswdbin" -D "$debuglevel" -s "$user" 1>/dev/null
+    if [ $? -eq 0 ]
+    then
+        mecho --info "Password changed for samba user $user."
+    fi
+    ;;
+*)
+    echo "usage: /var/install/bin/samba-smbpasswd-user" >&2
+    echo "   or: /var/install/bin/samba-smbpasswd-user \"user\" \"password\"" >&2
+    exit 1
+    ;;
+esac
+
+if [ "$interactive" = "true" ]
+then
+    clrhome
+    mecho --info "Change Samba Password of existing Samba User"
+    echo
+
+    if [ -z "$user" ]
+    then
+        echo "Existing Samba User to change password (e.g. 'www'):"
+        echo
+        read user
+    fi
+
+    if [ -z "$user" ]
+    then
+        mecho --error "No Password changed!"
+        exit 1
+    fi
+
+    if ! `$pdbeditbin -Lw | grep -q "^$user:"`
+    then
+        mecho --error "Failed to find entry for samba user $user in $tdbsamfile!"
+        exit 1
+    fi
+
+    if [ -z "$password" ]
+    then
+        echo
+        echo "Please Enter your Password."
+        echo "The password will not be written to console for security reasons:"
+        stty -echo
+        read password
+        stty echo
+    fi
+
+   (echo "$password"; echo "$password") | "$smbpasswdbin" -D "$debuglevel" -s "$user" 1>/dev/null
+    if [ $? -eq 0 ]
+    then
+        mecho --info "Password changed for samba user $user."
+    else
+        mecho --error "Cannot change password for samba user $user."
+    fi
+
+    anykey
+fi

@@ -1,0 +1,43 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-add-domain-auto-user - add samba user for external domain autom.
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-add-domain-auto-user "user"
+#
+# Creation   : 2002-09-22 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+. /var/install/include/eislib
+
+case $# in
+1)
+    interactive='false'
+    user="$1"
+    password='*'
+    uid=''
+    gid='100'
+    name='samba_auto_user'
+    home="/home/$user"
+    shell='/bin/false'
+    ;;
+*)
+    echo "usage: /var/install/bin/samba-add-domain-auto-user \"user\"" >&2
+    exit 1
+    ;;
+esac
+
+case "$user" in
+???????????????*)
+    mecho --error "User name is too long!"
+    ;;
+*)
+    /var/install/bin/add-user "$user" "$password" "$uid" "$gid" "$name" "$home" "$shell"
+    ;;
+esac

@@ -1,0 +1,29 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-netbios-mail - mail netbios messages
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# Creation   : 2007-05-29 tb
+# Last Update: 2013-05-08 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+# $1 from (%f)
+# $2 message_file (%s)
+
+case $# in
+2)
+    from="$1"
+    message_file="$2"
+    /bin/mail -s "message from $from" root < "$message_file"; /bin/rm "$message_file" &
+    ;;
+*)
+    exit 1
+    ;;
+esac
+
+exit 0

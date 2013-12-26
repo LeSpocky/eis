@@ -1,0 +1,117 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-add-workstation - add samba workstation
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-add-workstation
+#    or: /var/install/bin/samba-add-workstation "workstation"
+#
+# Creation   : 2002-06-02 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+# set -x
+. /var/install/include/eislib
+
+debuglevel=`grep 'debug level =' /etc/smb.conf | cut -d'=' -f2 | sed 's# ##g'`
+groupfile='/etc/group'
+smbpasswdbin='/usr/bin/smbpasswd'
+passwdfile='/etc/passwd'
+pdbeditbin='/usr/bin/pdbedit'
+tdbsamfile='/etc/passdb.tdb'
+
+case $# in
+0)
+    interactive='true'
+    workstation=''
+    password='*'
+    uid=''
+    gid='777'
+    name='machine_account'
+    home='/dev/null'
+    shell='/bin/false'
+    ;;
+1)
+    interactive='false'
+    workstation="$1" # comes as workstation$ from add machine script
+    password='*'
+    uid=''
+    gid='777'
+    name='machine_account'
+    home='/dev/null'
+    shell='/bin/false'
+    ;;
+*)
+    echo "usage: /var/install/bin/samba-add-workstation" >&2
+    echo "   or: /var/install/bin/samba-add-workstation \"workstation\"" >&2
+    exit 1
+    ;;
+esac
+
+if [ "$interactive" = "true" ]
+then
+    clrhome
+    mecho --info "Add Samba Workstation"
+    echo
+fi
+
+if [ -z "$workstation" ]
+then
+    echo "NETBIOS name of the Workstation"
+    echo "(e.g. 'client1')"
+    echo "This name will always be in lower case:"
+    echo
+    read workstation
+    workstation="$workstation\$"
+fi
+
+workstation=`echo $workstation | tr [:upper:] [:lower:]`
+
+case "$workstation" in
+????????????????*)
+    if [ "$interactive" = "true" ]
+    then
+        mecho --error "Workstation name $workstation is too long!"
+    fi
+    ;;
+"\$")
+    if [ "$interactive" = "true" ]
+    then
+        mecho --error "No Workstation added!"
+    fi
+    ;;
+*)
+    if ! grep -q "^machines:" $groupfile
+    then
+        /var/install/bin/add-group "machines" "777"
+    fi
+
+    if grep -q "^$workstation:" "$passwdfile"
+    then
+        mecho --warn "Workstation $workstation already exist in $passwdfile!"
+    else
+        echo "Workstation $workstation don't exist in $passwdfile."
+        /var/install/bin/add-user "$workstation" "$password" "$uid" "$gid" "$name" "$home" "$shell"
+    fi
+
+    if ! `$pdbeditbin -Lw | grep -q "^$workstation:"`
+    then
+        echo "Workstation $workstation don't exist in $tdbsamfile."
+        "$smbpasswdbin" -D "$debuglevel" -a -m "$workstation"
+        "$smbpasswdbin" -D "$debuglevel" -e -m "$workstation"
+    else
+        mecho --warn "Workstation $workstation already exist in $tdbsamfile!"
+        "$smbpasswdbin" -D "$debuglevel" -e -m "$workstation"
+    fi
+    ;;
+esac
+
+if [ "$interactive" = "true" ]
+then
+    anykey
+fi

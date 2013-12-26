@@ -1,0 +1,65 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-lookup-all - show SMB Hosts
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-lookup-all
+#
+# Creation   : 2005-10-04 tb
+# Last Update: 2013-05-08 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+#set -x
+
+list=`/bin/mktemp -t samba-lookup-all-XXXXXXXXXX`
+if [ $? -ne 0 ]
+then
+    list="/tmp/samba-lookup-all-$$"
+fi
+
+#/usr/bin/smbtree -bSN | awk '{print $1}' | grep '\\\\' | sort -u | cut -c3-
+for x in `grep 'interfaces = ' /etc/smb.conf | cut -d'=' -f2 | sed 's#127.0.0.1/8##g'`
+do
+    ipaddr=`echo $x | cut -d'/' -f1`
+    netmask=`echo $x | cut -d'/' -f2`
+    network=`/usr/local/bin/netcalc network $ipaddr $netmask`
+    newbroadcast=`/usr/local/bin/netcalc broadcast $network $netmask`
+
+    case $broadcast in
+    *$newbroadcast*)
+        ;;
+    *)
+        broadcast="$broadcast $newbroadcast"
+        ;;
+    esac
+done
+
+>"$list"
+for y in $broadcast
+do
+    for z in `/usr/bin/nmblookup '*' -B $y \
+       | grep -v '^querying '              \
+       | grep -v '^name_query failed to '  \
+       | cut -d' ' -f1                     \
+       | sort`
+    do
+        name=`/usr/bin/nmblookup -A $z \
+              | grep \<00\>            \
+              | grep -v GROUP          \
+              | grep -v 'IS~'          \
+              | sed 's# .*##'          \
+              | sort -u`
+        name=`echo $name    \
+              | sed 's# ##' \
+              | sed 's#\t##'`
+       echo "$z $name" >> "$list"
+    done
+done
+
+cat "$list" | sort -u -k 2
+rm -f "$list"

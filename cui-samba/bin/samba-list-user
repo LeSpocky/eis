@@ -1,0 +1,78 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-list-user - list samba users
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# Creation   : 2001-11-04 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+#set -x
+. /var/install/include/eislib
+
+pdbeditbin='/usr/bin/pdbedit'
+
+tty=`tty`
+$pdbeditbin -Lw | grep -v "^.*$:" | sort -t: -k2n |
+(
+    clrhome
+    mecho --info "List Samba Users"
+    echo
+
+    techo begin 2 25 13 20 20
+    techo row '' -info User -info Uid -info Password -info Active
+    row=4
+
+    while read line
+    do
+        oldifs="$IFS"
+        IFS=':'
+        set -- $line
+        user="$1"
+        uid="$2"
+        pass="$4"
+        active="$5"
+        IFS="$oldifs"
+
+        if [ "$pass" != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ]
+        then
+            pass='set'
+            passcolor='-std'
+        else
+            pass='not_set'
+            passcolor='-warn'
+        fi
+
+        if [ -n "`echo $active | grep "\[U"`" -a "$pass" != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ]
+        then
+            active='yes'
+            activecolor='-std'
+        else
+            active='no'
+            activecolor='-warn'
+        fi
+
+        techo row '' "$user" "$uid" "$passcolor" "$pass" "$activecolor" "$active"
+        row=`expr $row + 1`
+
+        if [ $row = 21 ]
+        then
+            echo
+            anykey <$tty
+            clrhome
+            mecho --info "List Samba Users"
+            echo
+            techo begin 2 25 13 20 20
+            techo row '' -info User -info Uid -info Password -info Active
+            row=4
+        fi
+    done
+)
+
+echo
+anykey

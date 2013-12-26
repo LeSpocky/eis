@@ -1,0 +1,483 @@
+#-----------------------------------------------------------------------------
+# /etc/check.d/samba.ext - extended file for samba configuration check
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# Creation   : 2003-12-22 tb
+# Last Update: 2013-05-14 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#-----------------------------------------------------------------------------
+set eisfair1 = "no"
+set eisfair2 = "no"
+set kernel26 = "no"
+set utf8 = "no"
+set runasdomu = "no"
+
+stat ("/var/install/packages/eiskernel", res)
+if (res_res != "OK")
+then
+    # we have a no kernel-package-info-file, we run on Xen
+    set runasdomu
+fi
+
+stat ("/etc/eisfair-system", res)
+if (res_res == "OK")
+then
+    fgrep("/etc/eisfair-system", "eisfair-1")
+    if (fgrep_match_n != 0)
+    then
+        set eisfair1
+    fi
+
+    fgrep("/etc/eisfair-system", "eisfair-2")
+    if (fgrep_match_n != 0)
+    then
+        set eisfair2
+    fi
+fi
+
+if (eisfair1)
+then
+    if (samba_localization == "UTF-8")
+    then
+        if (!runasdomu)
+        then
+            fgrep("/var/install/packages/eiskernel", "2.6.32-eisfair-1")
+            if (fgrep_match_n != 0)
+            then
+                set kernel26
+            fi
+
+            if (!kernel26)
+            then
+                error "You need a running kernel 2.6.32-eisfair-1 for SAMBA_LOCALIZATION='$SAMBA_LOCALIZATION'!"
+            fi
+        fi
+
+        fgrep("/etc/config.d/environment", "LC_CTYPE='[[:lower:]]{2}_[[:upper:]]{2}[[:punct:]]utf8'")
+        if (fgrep_match_n != 0)
+        then
+            set utf8
+        fi
+
+        fgrep("/etc/config.d/environment", "LC_CTYPE='[[:lower:]]{2}_[[:upper:]]{2}[[:punct:]]UTF-8'")
+        if (fgrep_match_n != 0)
+        then
+            set utf8
+        fi
+
+        if (!utf8)
+        then
+            error "You need LC_CTYPE='xx_XX.UTF-8' in environment configuration for SAMBA_LOCALIZATION='$SAMBA_LOCALIZATION'!"
+        fi
+    fi
+fi
+
+if (eisfair2)
+then
+    if (samba_localization != "UTF-8")
+    then
+        error "You cannot use SAMBA_LOCALIZATION='$SAMBA_LOCALIZATION' with eisfair-2!"
+    fi
+fi
+
+if (samba_winsserver && samba_extwinsip != "")
+then
+    error "You cannot use Samba as wins server and wins client at the same time!"
+fi
+
+if (samba_pdc)
+then
+    if (!samba_masterbrowser)
+    then
+        error "If Samba is an PDC, you have to set SAMBA_MASTERBROWSER='yes'!"
+    fi
+
+    if (samba_password_server != "")
+    then
+        error "You cannot use Samba as PDC and external SAMBA_PASSWORD_SERVER at the same time!"
+    fi
+fi
+
+if (samba_winshook_message_send && !samba_winshook)
+then
+    warning "You have to activate SAMBA_WINSHOOK, if you set SAMBA_WINSHOOK_MESSAGE_SEND='yes'!"
+fi
+
+if (samba_winshook_dnsupdate && !samba_winshook)
+then
+    warning "You have to activate SAMBA_WINSHOOK, if you set SAMBA_WINSHOOK_DNSUPDATE='yes'!"
+fi
+
+if (samba_winsserver && samba_winshook)
+then
+    if (samba_winshook_dnsupdate)
+    then
+        stat ("/usr/bin/nsupdate", res)
+        if (res_res != "OK")
+        then
+            error "Bind is not installed, you cannot set SAMBA_WINSHOOK_DNSUPDATE='yes'!"
+        fi
+    fi
+fi
+
+if (samba_smbwebclient)
+then
+    set apache = "no"
+    stat ("/usr/local/apache/bin/httpd", res)
+    if (res_res == "OK")
+    then
+        set apache
+    fi
+
+    stat ("/usr/local/apache2/bin/httpd", res)
+    if (res_res == "OK")
+    then
+        set apache
+    fi
+
+    if (!apache)
+    then
+        error "Apache is not installed, you cannot set SAMBA_SMBWEBCLIENT='yes'!"
+    fi
+fi
+
+if (samba_pdf_target == "mail")
+then
+    stat ("/usr/local/exim/bin/exim", res)
+    if (res_res != "OK")
+    then
+        error "You configured SAMBA_PDF_TARGET='mail', but there is no /usr/local/exim/bin/exim installed!"
+    else
+        set base64 = "no"
+        stat ("/var/install/packages/perl_mime_base64", res)
+        if (res_res == "OK")
+        then
+            set base64
+        fi
+
+        stat ("/usr/bin/corelist", res)
+        if (res_res == "OK")
+        then
+            set base64
+        fi
+
+        if (!base64)
+        then
+            error "You configured SAMBA_PDF_TARGET='mail', but there is no perl module perl_mime_base64 installed! This is an additional module for perl package 1.0.0 or part of later perl packages."
+        fi
+    fi
+fi
+
+if (samba_expert_exec)
+then
+    stat ("/etc/config.d/samba-expert", res)
+    if (res_res == "OK")
+    then
+        error "Your sambaexpert version is too old!"
+    fi
+fi
+
+if (samba_manual_configuration)
+then
+    set defaultmap
+    if (samba_usermap_n < "1")
+    then
+        set defaultmap = "no"
+    fi
+
+    if (!samba_usermap_1_active)
+    then
+        set defaultmap = "no"
+    fi
+
+    if (samba_usermap_1_eisname != "root")
+    then
+        set defaultmap = "no"
+    fi
+
+    if (samba_usermap_1_winname_n < "1")
+    then
+        set defaultmap = "no"
+    fi
+
+    if (samba_usermap_1_winname_1 != "Administrator")
+    then
+        set defaultmap = "no"
+    fi
+
+    if (!defaultmap)
+    then
+        error "Default usermapping from Administrator to root is not configured - read documentation! You need at least:"
+        error "SAMBA_USERMAP_N='1'            (or more than 1)"
+        error "SAMBA_USERMAP_1_ACTIVE='yes'"
+        error "SAMBA_USERMAP_1_EISNAME='root'"
+        error "SAMBA_USERMAP_1_WINNAME_N='1'  (or more than 1)"
+        error "SAMBA_USERMAP_1_WINNAME_1='Administrator'"
+    fi
+
+    foreach i in samba_printer_n
+    do
+      if (samba_printer_%_active[i] == "yes")
+      then
+          if (samba_printer_%_pdf_ownerpass[i] == "")
+          then
+              if (samba_printer_%_pdf_userpass[i] != "")
+              then
+                  error "You cannot set SAMBA_PRINTER_${i}_PDF_USERPASS without SAMBA_PRINTER_${i}_PDF_OWNERPASS!"
+              fi
+
+              if (samba_printer_%_pdf_perms[i] != "")
+              then
+                  error "You cannot set SAMBA_PRINTER_${i}_PDF_PERMS without SAMBA_PRINTER_${i}_PDF_OWNERPASS!"
+              fi
+          fi
+
+          set publicdefined = "no"
+          set userdefined = "no"
+
+          if (samba_printer_%_public[i] == "yes")
+          then
+              set publicdefined
+          fi
+
+          if (samba_printer_%_user[i] != "")
+          then
+              set userdefined
+          fi
+
+          if (userdefined && publicdefined)
+          then
+              warning "If you set SAMBA_PRINTER_${i}_PUBLIC='yes', SAMBA_PRINTER_${i}_USER will be ignored!"
+          fi
+
+          if (!userdefined && !publicdefined)
+          then
+              warning "Set SAMBA_PRINTER_${i}_PUBLIC='yes', if SAMBA_PRINTER_${i}_USER is empty!"
+          fi
+      fi
+    done
+
+    # in allen freigaben
+    set homes_name = "no"
+    set homes_path = "no"
+    set homes_exists = "no"
+    set public_name = "no"
+    set public_path = "no"
+    set public_exists = "no"
+
+    foreach i in samba_share_n
+    do
+      if (samba_share_%_active[i] == "yes")
+      then
+          if (samba_share_%_name[i] == "homes")
+          then
+              set homes_name
+          fi
+
+          if (samba_share_%_path[i] == "%%H")
+          then
+              set homes_path
+          fi
+
+          if (samba_share_%_name[i] == "public")
+          then
+              set public_name
+          fi
+
+          if (samba_share_%_path[i] == "/public")
+          then
+              set public_path
+          fi
+
+          if (public_name && public_path)
+          then
+              set public_exists
+          fi
+
+          if (homes_name && homes_path)
+          then
+              set homes_exists
+          fi
+      fi
+    done
+
+    if (samba_pdf_target == "public")
+    then
+        if (!public_exists)
+        then
+            error "You set SAMBA_PDF_TARGET='public' but there is no correctly defined public share found (SAMBA_SHARE_x_ACTIVE='yes', SAMBA_SHARE_x_NAME='public', SAMBA_SHARE_x_PATH='/public')!"
+        fi
+    fi
+
+    if (samba_pdc && samba_pdc_profiles)
+    then
+        if (!homes_exists)
+        then
+            error "You set SAMBA_PDC_PROFILES='yes' but there is no correctly defined homes share found (SAMBA_SHARE_x_ACTIVE='yes', SAMBA_SHARE_x_NAME='homes', SAMBA_SHARE_x_PATH='%%H')!"
+        fi
+    fi
+
+    # in jeder freigabe
+    foreach i in samba_share_n
+    do
+      if (samba_share_%_active[i] == "yes")
+      then
+          set publicdefined = "no"
+          set userdefined = "no"
+          set browseabledefined = "no"
+          set homes_name = "no"
+          set homes_path = "no"
+          set homes_exists = "no"
+
+          if (samba_share_%_public[i] == "yes")
+          then
+              set publicdefined
+          fi
+
+          if (samba_share_%_user[i] != "")
+          then
+              set userdefined
+          fi
+
+          if (samba_share_%_browse[i] == "yes")
+          then
+              set browseabledefined
+          fi
+
+          if (samba_share_%_name[i] == "homes")
+          then
+              set homes_name
+          fi
+
+          if (samba_share_%_path[i] == "%%H")
+          then
+              set homes_path
+          fi
+
+          if (samba_share_%_path[i] == "/samba_dfs")
+          then
+              error "The special path '/samba_dfs' is not possible. Change SAMBA_SHARE_${i}_PATH!"
+          fi
+
+          if (homes_name && homes_path)
+          then
+              set homes_exists
+          fi
+
+          if (userdefined && publicdefined)
+          then
+              warning "If you set SAMBA_SHARE_${i}_PUBLIC='yes', SAMBA_SHARE_${i}_USER will be ignored!"
+          fi
+
+          if (!userdefined && !publicdefined)
+          then
+              warning "Set SAMBA_SHARE_${i}_PUBLIC='yes', if SAMBA_SHARE_${i}_USER is empty!"
+          fi
+
+          if (homes_exists && browseabledefined)
+          then
+              error "The special share homes must not be browseable, set SAMBA_SHARE_${i}_BROWSE='no'!"
+          fi
+      fi
+    done
+
+    foreach i in samba_dfsroot_n
+    do
+      if (samba_dfsroot_%_active[i] == "yes")
+      then
+          foreach j in samba_dfsroot_n
+          do
+            if (i != j && samba_dfsroot_%_active[j] == "yes")
+            then
+                set namei=samba_dfsroot_%_name[i]
+                set namej=samba_dfsroot_%_name[j]
+
+                if (namei == namej)
+                then
+                    error "SAMBA_DFSROOT_${i}_NAME='$namei' is the same as SAMBA_DFSROOT_${j}_NAME='$namej'. This is not possible!"
+                fi
+            fi
+          done
+
+          set publicdefined = "no"
+          set userdefined = "no"
+          set dfslnkn=samba_dfsroot_%_dfslnk_n[i]
+          set path="/samba_dfs"
+          set name=samba_dfsroot_%_name[i]
+          set path="/samba_dfs"
+          set path="$path/$name"
+
+          foreach j in samba_share_n
+          do
+            set sharename=samba_share_%_name[j]
+            if (name == sharename)
+            then
+                error "SAMBA_SHARE_${j}_NAME='$sharename' is the same as SAMBA_DFSROOT_${i}_NAME='$name'. This is not possible!"
+            fi
+          done
+
+          if (samba_dfsroot_%_public[i] == "yes")
+          then
+              set publicdefined
+          fi
+
+          if (samba_dfsroot_%_user[i] != "")
+          then
+              set userdefined
+          fi
+
+          if (userdefined && publicdefined)
+          then
+              warning "If you set SAMBA_DFSROOT_${i}_PUBLIC='yes', SAMBA_DFSROOT_${i}_USER will be ignored!"
+          fi
+
+          if (!userdefined && !publicdefined)
+          then
+              warning "Set SAMBA_DFSROOT_${i}_PUBLIC='yes', if SAMBA_DFSROOT_${i}_USER is empty!"
+          fi
+
+          foreach a in dfslnkn
+          do
+            foreach b in dfslnkn
+            do
+              if (a != b && samba_dfsroot_%_dfslnk_%_active[i][a] == "yes" && samba_dfsroot_%_dfslnk_%_active[i][b] == "yes")
+              then
+                  set subpath1=samba_dfsroot_%_dfslnk_%_subpath[i][a]
+                  set lnkname1=samba_dfsroot_%_dfslnk_%_name[i][a]
+                  set subpath2=samba_dfsroot_%_dfslnk_%_subpath[i][b]
+                  set lnkname2=samba_dfsroot_%_dfslnk_%_name[i][b]
+
+                  if (samba_dfsroot_%_dfslnk_%_subpath[i][a] != "")
+                  then
+                      set lnkpath1="$path/$subpath1/$lnkname1"
+                  else
+                      set lnkpath1="$path/$lnkname1"
+                  fi
+
+                  if (samba_dfsroot_%_dfslnk_%_subpath[i][b] != "")
+                  then
+                      set lnkpath2="$path/$subpath2/$lnkname2"
+                      set lnkpath3="$path/$subpath2"
+                      if (lnkpath1 == lnkpath3)
+                      then
+                          error "SAMBA_DFSROOT_${i}_DFSLNK_${a}_NAME is the same as SAMBA_DFSROOT_${i}_DFSLNK_${b}_SUBPATH. This is not possible!"
+                      fi
+                  else
+                      set lnkpath2="$path/$lnkname2"
+                  fi
+
+                  if (lnkpath1 == lnkpath2)
+                  then
+                      error "Link pathes must be unique. SAMBA_DFSROOT_${i}_DFSLNK_${a}_x and SAMBA_DFSROOT_${i}_DFSLNK_${b}_x using both $lnkpath1!"
+                  fi
+              fi
+            done
+          done
+      fi
+    done
+fi

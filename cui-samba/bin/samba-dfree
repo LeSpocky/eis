@@ -1,0 +1,27 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-dfree - show free space
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# Creation   : 2002-07-28 tb
+# Last Update: 2013-05-08 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+#/bin/df $1 | tail -1 | awk '{print $2" "$4}'
+
+case $# in
+0)
+    echo "usage: /var/install/bin/samba-dfree filename" >&2
+    exit 1
+    ;;
+esac
+
+set -f # kein globbing
+#set -- `/bin/df -P "$1" | sed -n '$p'`
+set -- `/bin/df -P "$*" | sed -n '$p'`
+echo "$2 $4"

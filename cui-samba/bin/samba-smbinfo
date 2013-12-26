@@ -1,0 +1,70 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-smbinfo - send info with samba vars to machine
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# Creation   : 2002-07-28 tb
+# Last Update: 2013-05-12 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+outputfile=`/bin/mktemp -t samba-smbinfo-XXXXXXXXXX`
+if [ $? -ne 0 ]
+then
+    outputfile="/tmp/samba-smbinfo-$$"
+fi
+
+msgcommand ()
+{
+    cat "$outputfile" | awk '{print gensub("<tab>","\t","g",gensub("<newline>","\n","g"))}' | /usr/bin/smbclient -U "eisfair Samba Server" -N -M "$machine" -I "$ip" 1>/dev/null
+    rm -f "$outputfile"
+}
+
+>"$outputfile"
+
+oldifs="$IFS"
+IFS='|'
+set -- $1
+while [ -n "$1" ]
+do
+    if [ -n "`echo "$1" | grep '='`" ]
+    then
+        index=`echo "$1" | cut -d'=' -f1`
+        value=`echo "$1" | cut -d'=' -f2`
+        case $index in
+        T ) message="Datum/Zeit<tab><tab><tab><tab>(%$index)<tab>=       $value";;
+        d ) message="PID des Servers<tab><tab><tab><tab>(%$index)<tab>=       $value";;
+        v ) message="Samba-Version<tab><tab><tab><tab>(%$index)<tab>=       $value";;
+        h ) message="(Internet)Hostname des Servers<tab><tab>(%$index)<tab>=       $value";;
+        L ) message="NETBIOS-Name des Servers<tab><tab><tab>(%$index)<tab>=       $value";;
+        N ) message="NIS Heimat-Verzeichnis<tab><tab><tab>(%$index)<tab>=       $value";;
+        p ) message="Pfad des NIS-Heimatverzeichnisses<tab><tab>(%$index)<tab>=       $value";;
+        R ) message="Ausgehandeltes Protokoll-Level<tab><tab>(%$index)<tab>=       $value";;
+        S ) message="Name der aktuellen Freigabe<tab><tab><tab>(%$index)<tab>=       $value";;
+        P ) message="Hauptverzeichnis der aktuellen Freigabe<tab>(%$index)<tab>=       $value";;
+        U ) message="Vom Client angeforderter Benutzername<tab>(%$index)<tab>=       $value";;
+        G ) message="Primaere Gruppe des angeforderten Benutzers<tab>(%$index)<tab>=       $value";;
+        u ) message="Name des effektiven Benutzers<tab><tab>(%$index)<tab>=       $value";;
+        g ) message="Primaerer Gruppenname des effektiven Benutzers<tab>(%$index)<tab>=       $value";;
+        H ) message="Heimatverzeichnis des effektiven Benutzers<tab>(%$index)<tab>=       $value";;
+        I ) message="IP Adresse des Client-Rechners<tab><tab>(%$index)<tab>=       $value"
+            ip="$value"
+            ;;
+        M ) message="(Internet)Hostname des Client-Rechners<tab>(%$index)<tab>=       $value";;
+        m ) message="NETBIOS-Name des Client-Rechners<tab><tab>(%$index)<tab>=       $value"
+            machine="$value"
+            ;;
+        a ) message="Betriebssystem des Client-Rechners<tab><tab>(%$index)<tab>=       $value";;
+        esac
+
+        echo "$message" >>"$outputfile"
+    fi
+    shift
+done
+
+IFS="$oldifs"
+msgcommand

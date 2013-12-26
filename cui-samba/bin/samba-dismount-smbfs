@@ -1,0 +1,146 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-dismount-smbfs - dismount smb filesystem
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-dismount-smbfs
+#    or: /var/install/bin/samba-dismount-smbfs {"all"|"mountpoint1 mountpoint2"}
+#
+# Creation   : 2002-07-20 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+#set -x
+. /var/install/include/eislib
+
+mountbin='/bin/mount'
+umountbin='/bin/umount'
+
+do_crlhome ()
+{
+    if [ "$interactive" = "true" ]
+    then
+        clrhome
+        mecho --info "Dismount SMB Filesystems"
+        echo
+    fi
+}
+
+case $# in
+0)
+    interactive='true'
+    mountpoint=''
+    ;;
+1)
+    interactive='false'
+    mountpoint="$1"
+    ;;
+*)
+    echo "usage: /var/install/bin/samba-dismount-smbfs" >&2
+    echo "   or: /var/install/bin/samba-dismount-smbfs {\"all\"|\"mountpoint1 mountpoint2\"}" >&2
+    exit 1
+    ;;
+esac
+
+do_crlhome
+if [ -n "`"$mountbin" -t smbfs,cifs`" ]
+then
+    if [ "$interactive" = "true" ]
+    then
+        echo "Currently mountpoints of SMB filesystems:"
+        echo
+
+        "$mountbin" -t smbfs,cifs |
+        while read service on mountpoint type vfstype rest
+        do
+            echo -n "$vfstype service $service on mountpoint "
+            mecho --info "$mountpoint"
+        done
+        echo
+    fi
+else
+    mecho --error "There are no SMB filesystems mounted!"
+    exit 1
+fi
+
+if [ -z "$mountpoint" ]
+then
+    echo "Which mountpoint do you want to dismount?"
+    echo
+    echo "Choice 1"
+    echo "--------"
+    echo "All mounted SMB filesystems on all mountpoints - type 'all'."
+    echo
+    echo "Choice 2"
+    echo "--------"
+    echo "One ore more mountpoints, type in exact names"
+    echo "separated with a blank, for instance '/mountpoint1 /mountpoint2':"
+    echo
+    read mountpoint
+fi
+
+do_crlhome
+if [ -z "$mountpoint" ]
+then
+    mecho --error "No mountpoint specified!"
+    exit 1
+else
+    if [ "`echo "$mountpoint" | tr [:upper:] [:lower:]`" = "all" ]
+    then
+        cd /
+        /bin/sync
+
+        "$mountbin" -t smbfs,cifs |
+        while read service on mountpoint type vfstype rest
+        do
+            "$umountbin" "$mountpoint"
+            if [ $? -eq 0 ]
+            then
+                mecho --info "Dismounted $vfstype mounted service $service on mountpoint $mountpoint."
+            else
+                mecho --error "Cannot dismount $vfstype mounted service $service on mountpoint $mountpoint!"
+            fi
+        done
+    else
+        cd /
+        /bin/sync
+
+        for i in $mountpoint
+        do
+            if [ "`echo $i | cut -c1`" != "/" ]
+            then
+                mecho --error "$i is not an absolut path with a leading '/'!"
+            else
+                if grep -q "$i " /proc/mounts
+                then
+                    "$mountbin" -t smbfs,cifs |
+                    while read service on point type vfstype rest
+                    do
+                        if [ "$i" = "$point" ]
+                        then
+                            "$umountbin" $i
+                            if [ $? -eq 0 ]
+                            then
+                                mecho --info "Dismounted $vfstype mounted service $service on mountpoint $point."
+                            else
+                                mecho --error "Cannot dismount $vfstype mounted service $service on mountpoint $point!"
+                            fi
+                        fi
+                    done
+                else
+                    mecho --error "Cannot find mountpoint $i in mounts!"
+                fi
+            fi
+        done
+    fi
+fi
+
+if [ "$interactive" = "true" ]
+then
+    anykey
+fi

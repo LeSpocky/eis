@@ -1,0 +1,109 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-debug - debug samba problems with log level 10
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-debug {start|stop [debug level]}
+#
+# Creation   : 2005-09-26 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+#set -x
+. /var/install/include/eislib
+
+olddebuglevel=`grep 'debug level =' /etc/smb.conf | cut -d'=' -f2 | sed 's# ##g'`
+newdebuglevel='10'
+smbdlogfile='/var/log/log.smbd'
+nmbdlogfile='/var/log/log.nmbd'
+smbcontrolbin='/usr/bin/smbcontrol'
+varfile='/var/run/samba-debug'
+oldpwd=`pwd`
+
+if [ -d /public ]
+then
+    logdir='/public'
+else
+    logdir='/tmp'
+fi
+
+case $# in
+[12])
+    action=`echo "$1" | tr [:upper:] [:lower:]`
+
+    if [ -n "$2" ]
+    then
+        newdebuglevel="$2"
+    fi
+
+    case "$action" in
+    start)
+        do_it='true'
+        if [ -f "$varfile" ]
+        then
+            mecho --warn "`basename $0` is already running, $varfile exist!"
+            if ! /var/install/bin/ask "Start logging anyway" "n"
+            then
+                do_it='false'
+            fi
+        fi
+
+        if [ "$do_it" = "true" ]
+        then
+            mecho --info "Start logging to $logdir/log.smbd and $logdir/log.nmbd with level $newdebuglevel ..."
+            >"$varfile"
+            >"$smbdlogfile"
+            >"$nmbdlogfile"
+            "$smbcontrolbin" smbd debug "$newdebuglevel"
+            "$smbcontrolbin" nmbd debug "$newdebuglevel"
+        fi
+        ;;
+    stop)
+        if [ ! -f "$varfile" ]
+        then
+            mecho --warn "`basename $0` is not running, $varfile doesn't exist!"
+        else
+            mecho --info "Stop logging to $logdir/log.smbd and $logdir/log.nmbd ..."
+            "$smbcontrolbin" smbd debug "$olddebuglevel"
+            "$smbcontrolbin" nmbd debug "$olddebuglevel"
+            cp -f "$smbdlogfile" "$logdir"
+            cp -f "$nmbdlogfile" "$logdir"
+            cd "$logdir"
+            chown nobody.nogroup "$logdir"/log.smbd "$logdir"/log.nmbd
+            chmod 0777 "$logdir"/log.smbd "$logdir"/log.nmbd
+
+            samba_debug_tarfile="$logdir/samba-debug-`date +%F_%H-%M-%S`.tar.gz"
+            mecho --std "Creating archiv file $samba_debug_tarfile ..."
+            tar cfz "$samba_debug_tarfile" log.smbd log.nmbd
+
+            if [ $? -eq 0 ]
+            then
+                chown nobody.nogroup "$samba_debug_tarfile"
+                chmod 0777 "$samba_debug_tarfile"
+                mecho --info "You find the log files log.smbd and log.nmbd in $samba_debug_tarfile."
+                rm -f "$logdir"/log.smbd "$logdir"/log.nmbd
+            else
+                mecho --error "Cannot create $samba_debug_tarfile!"
+                mecho --info "Logfiles are "$logdir"/log.smbd "$logdir"/log.nmbd."
+            fi
+
+            cd "$oldpwd"
+            rm -f "$varfile"
+        fi
+        ;;
+    *)
+        mecho --error "usage: /var/install/bin/`basename $0` {start|stop [debug level]}" >&2
+        exit 1
+        ;;
+    esac
+    ;;
+*)
+    mecho --error "usage: /var/install/bin/`basename $0` {start|stop [debug level]}" >&2
+    exit 1
+    ;;
+esac

@@ -1,0 +1,4562 @@
+
+
+                                Das Samba-Paket
+
+   Dokumentation des Sambapaketes fuer eisfair von Thomas Bork (E-MAIL
+   tom@eisfair.net), zusammengestellt mit Hilfe von Ralf Koester
+   (E-MAIL ralf@familie-koester.de). Die Dokumentation zu smbwebclient
+   stammt von Marcus Hochhuth (E-MAIL marcus.hochhuth@web.de), die
+   Dokumentation zu SAMBA_PRINTER_x_PDF_PERMS von Jan Mader (E-MAIL
+   jan.mader@jan-mader.de) und die Dokumentation zu DFS von Raphael
+   Gradenwitz (E-MAIL raphael@gradenwitz.ath.cx).
+
+   Version 2.4.1
+
+                           Copyrights/Paket-Ersteller
+
+   Samba ist ein OpenSource-Projekt und unterliegt der GNU General Public
+   Licence. Die Heimat von Samba im WWW ist
+
+   http://www.samba.org
+
+   Wer deutsche Dokumentationen bevorzugt, wird vielleicht bei
+
+   http://www.samba.sernet.de
+
+   fuendig.
+
+   Fuer eisfair habe ich Teile von Samba als Paket implementiert. Aus dem
+   rechtlichen Status von Samba leitet sich der rechtliche Status der
+   Implementierung her:
+
+   Ich gebe weder eine Garantie auf die Funktionsfaehigkeit des
+   Samba-Paketes, noch hafte ich fuer Schaeden, z.B. Datenverlust, die
+   durch den Einsatz des Samba-Paketes entstehen.
+
+   Bitte unbedingt lesen:
+
+   http://www.pwr.ch/produkte/linux/gpl-ger.html
+
+                                 Einsatzgebiet
+
+Was ist Samba?
+
+   Samba im Allgemeinen ist die Implementierung eines
+   Server-Message-Block-(SMB-) Protokoll-Servers, der auf fast jeder
+   existierenden Variante von Unix laufen kann. Microsoft-Clients koennen
+   dieses Protokoll benutzen, um auf Datei- und Druck-Services
+   zuzugreifen, die sich auf einem lokalen Unix-Rechner befinden, als
+   waere dieser ein normaler Windows-Server.
+
+   Folgende Funktionen werden dabei konkret geboten:
+
+     * Samba kann als Freigabe-Server fungieren. Das bedeutet, ein
+       Samba-Server bietet die Freigaben (Shares) an, die normalerweise
+       ein Windows-Server anbietet. Eine Freigabe ist ein fuer bestimmte
+       User freigebenes Verzeichnis mit einem definierten Freigabenamen
+       auf dem Server. Dieser Dienst entspricht der Verzeichnis-Freigabe
+       eines normalen Windows-Arbeitsplatzes.
+     * Samba kann auf dem Server installierte Drucker bestimmten Usern zur
+       Verfuegung stellen. Damit fungiert der Samba-Server auch als
+       Print-Server in Windows- Umgebungen. Dieser Dienst entspricht der
+       Drucker-Freigabe eines normalen Windows-Arbeitsplatzes. Es koennen
+       Druckertreiber auf dem Samba-Server hinterlegt werden, die beim
+       ersten Zugriff auf einen freigegebenen Drucker automatisch
+       installiert werden.
+     * Samba kann als WINS-Server dienen. Das bedeutet, dass Samba die
+       Registrierung der NETBIOS-Namenszuordnungen in einem
+       Windows-Netzwerk uebernehmen kann.
+     * Samba kann als Primary Domain Controller (PDC) vergleichbar zu einem
+       Windows- NT-Server eingesetzt werden. Wenn Samba als
+       Domaenen-Controller arbeitet, werden Benutzer-Accounts der Domaene
+       zentral verwaltet. Benutzer haben bei Anmeldung an der Domaene
+       netzwerkweit Ihr Arbeitsprofil zur Verfuegung.
+     * Samba bietet noch einige weitere Dienste in einem Windows-Netz an.
+       Details kann man auf den oben genannten Internetseiten nachlesen.
+       Zusammengefasst bietet Samba weitestgehend die Funktionalitaet
+       eines Windows-(NT-4.0-)Servers.
+
+   ACHTUNG
+   Samba fuer eisfair beinhaltet nicht alle Bestandteile von Samba,
+   sondern wurde auf die wichtigsten Bestandteile reduziert!
+
+                     Installation, Update und Konfiguration
+
+Installation und Update
+
+   Das Samba-Paket wird derzeit wie jedes andere Paket ueber das eisfair-
+   Setup-Menue installiert:
+
+   Im Menue-Punkt
+
+   Package administration
+
+   waehlt man
+
+   Install new package
+
+   , dann
+
+   Printer and File Services
+
+   und hier das Paket
+
+   Samba File Services
+
+   Ueber die entsprechende Nummer aus und bestaetig mit Enter. Nachdem man
+   die Infomationsdatei gelesen hat, beantwortet man die Frage
+
+   Install (y/n)?
+
+   mit ,,y``. Nach dem Bestaetigen mit <Enter> wird unmittelbar der
+   Download gestartet.
+
+   Sollte bereits eine fruehere Version installiert sein, so wird Samba
+   angehalten, einige Sicherungsdateien werden angelegt und die alte
+   Version wird bis auf fuer das Update relevante Dateien deinstalliert.
+   Bei einem Update wird im Rahmen der Moeglichkeiten die alte
+   Konfiguration uebernommen, dabei wird auf neue, geaenderte oder
+   hinzugefuegte Variablen speziell hingewiesen. War Samba noch nicht
+   installiert, wird eine Beispiel-Konfigurationsdatei erzeugt.
+
+   Nach dem Download wird bei Neuinstallationen angeboten, die
+   Konfigurationsdatei zu editieren. Die Konfigurationsdatei wird vom
+   eingestellten Editor geoeffnet und ist zum Editieren bereit. Fuer einen
+   ersten Start muss im Abschnitt ,,General Settings`` unbedingt der
+   Parameter
+
+   SAMBA_WORKGROUP='WORKGROUP'
+
+   angepasst werden. Hier wird die Arbeitsgruppe von Windows eingetragen.
+   Hat man diese in seinem Windowsnetzwerk nicht geaendert, so steht hier
+   bei deutschen Windows-Versionen ,,Arbeitsgruppe`` und bei englischen
+   Versionen ,,WORKGROUP``.
+
+   Nun speichert man die Aenderungen und verlaesst den Editor.
+
+   Die Frage ,,Activate Samba configuration now (y/n)?`` beantwortet man
+   mit ,,y`` und <ENTER> und bendet damit die Installation. Jetzt werden
+   einige Warnungen angezeigt, weil vom Installationsskript
+   vorsichtshalber noch einmal das Skript zum Beenden von Samba aufgerufen
+   wird. Danach wird das Skript zum Starten von Samba aufgerufen - hierbei
+   sollten keine Fehler auftauchen.
+
+   Bevor man sich das erste Mal am Samba-Server anmelden kann, muessen
+   alle User, die Zugriff haben sollen, als eisfair-System-User und als
+   Samba-User angelegt werden! Siehe dazu
+
+   Samba-User anlegen
+
+   weiter unten. Ein anonymer Zugriff ist ohne manuelle Aenderungen nicht
+   moeglich. Wer das Paket so manipuliert, dass ein anonymer Zugriff
+   moeglich wird, muss damit rechnen, dass viele Dinge nicht mehr sauber
+   funktionieren. Ich werde niemandem helfen, der das tut.
+
+   Danach kommt der grosse Moment: Wir versuchen uns das erste Mal mit dem
+   Samba-Server zu verbinden. Dazu wechseln wir z.B. im Windows-Explorer
+   in die Netzwerkumgebung. Hier sollten wir als Server den Samba-Server
+   mit dem Namen unseres eisfair-Servers sehen. Waehlen wir diesen an, so
+   sollten wir ein Verzeichnis mit dem Namen ,,public`` sehen.
+
+   Wie man das Paket auf seine persoenlichen Beduerfnisse anpasst, sehen
+   wir im naechsten Kapitel - der Beschreibung der Konfiguration.
+
+Konfiguration ueber das Samba-Service-Menue
+
+   Die Konfiguration wird ueber das Samba-Service-Menue vorgenommen.
+   Hierhin gelangt man, wenn man sich als User ,,eis`` an der Konsole
+   anmeldet, bzw. wenn man sich als User ,,root`` an der Konsole anmeldet
+   und hinterher ,,setup`` eingibt. Weiter geht es mit
+
+   Service administration
+   Samba
+
+   Folgende Punkte stehen zur Auswahl:
+
+   1: Read Samba Documentation
+
+   2: Samba Configuration Handling
+
+   3: Samba User Handling
+
+   4: Samba Server Handling
+
+   5: Samba Domain Handling
+
+   6: SMB Filesystem Handling
+
+   7: Send Message to SMB Hosts
+
+   0: Exit
+
+    Samba-Service-Menue Punkt 1: Read Samba Documentation
+
+   Um sich vor der Konfiguration erst einmal einen Ueberblick ueber die
+   Moeglichkeiten des Samba-Paketes zu verschaffen, waehlt man
+
+      1: Read Samba Configuration
+
+   Mit diesem Menue-Punkt wird die hier vorliegende Dokumentation zum
+   Lesen mit dem vom User konfigurierten Pager geoeffnet.
+
+    Samba-Service-Menue Punkt 2: Samba Configuration Handling
+
+   Um die grundlegenden Samba-Funktionen zu konfigurieren, waehlt man
+
+      2: Samba Configuration Handling
+
+   und hier
+
+   Edit Samba Configuration
+
+   Die auftauchende Frage
+
+   Since there is no eisfair configuration tool, you must edit the eisfair
+   configuration file /etc/config.d/samba with the editor joe.
+
+   You can get help by joe if you press 'Ctrl-K H'.
+
+   Continue (y/n)?
+
+   beantwortet man mit ,,y``. Damit befindet man sich dann im Editor joe
+   und editiert damit die Datei
+
+   /etc/config.d/samba
+
+   Die verschiedenen Abschnitte dieser Datei werden im Folgenden
+   beschrieben:
+
+      Abschnitt ,,General Settings``:
+
+   Der Abschnitt wird eingeleitet mit
+
+#------------------------------------------------------------------------------
+# General Settings
+#
+# Minimum requirement if SAMBA_MANUAL_CONFIGURATION='no' is to change
+# SAMBA_WORKGROUP to workgroup name of your windows clients!
+#
+#------------------------------------------------------------------------------
+
+   und beinhaltet 2 Variablen:
+
+   START_SAMBA
+          Um Samba bei jedem Neustart automatisch starten zu lassen, muss
+          die Variable START_SAMBA den Wert ,,yes`` erhalten. Wenn
+          START_SAMBA='no' ist, muss Samba von Hand gestartet werden. Dazu
+          ist im eisfair-Setup-Menue
+
+          Service administration
+
+          auszuwaehlen, dann
+
+          Samba
+
+          dann
+
+          Samba Server Handling
+
+          und hier
+
+          Start Samba
+
+          oder auf der Befehlszeile
+
+          /etc/init.d/samba forcestart
+
+          einzugeben.
+
+          Standardeinstellung: START_SAMBA='yes'
+
+   SAMBA_WORKGROUP
+          Damit die Freigaben in der unter Windows definierten
+          Arbeitsgruppe sichtbar werden (wo diese auf dem Client
+          eingestellt wird, kann man in der Dokumentation seines
+          Windows-Systems nachlesen), muss die Arbeitsgruppe fuer Samba
+          mit der unter Windows definierten Arbeitsgruppe uebereinstimmen.
+          Wenn also unter Windows die Arbeitsgruppe ,,WORKGROUP`` heisst,
+          muss diese Variable folgendermassen definiert werden:
+
+          SAMBA_WORKGROUP='WORKGROUP'
+
+          Standardeinstellung: SAMBA_WORKGROUP='WORKGROUP'
+
+      Abschnitt ,,Samba Manual Configuration``:
+
+   Der Abschnitt wird eingeleitet mit
+
+#------------------------------------------------------------------------------
+# Samba Manual or Automatic Configuration
+#
+# Manual or Automatic Configuration of Shares and Printers
+#
+#  ********************************* ATTENTION ******************************
+#  *                                                                        *
+#  *     If you set SAMBA_MANUAL_CONFIGURATION to 'no', the Settings        *
+#  *    in the Section 'Samba Advanced Configuration/Samba Shares' and      *
+#  *    in the Section 'Samba Advanced Configuration/Samba Printers' and    *
+#  *    in the Section 'Samba Advanced Configuration/Samba Mounts'          *
+#  *                         don't have an Effect!                          *
+#  *                                                                        *
+#  ******************************** ATTENTION *******************************
+#
+# If you set SAMBA_MANUAL_CONFIGURATION='no', following Shares automatically
+# created for you:
+#
+# - a share with your eisfair-username and full access only for you
+# - a share 'public' with full access for all eisfair-users
+# - an unvisible share 'all' with full access for user root
+#   for the whole filesystem
+# - shares for your printers in /etc/printcap, if lprng is installed
+# - a printer share for eisfax printer, if eisfax is installed
+# - a printer share for pdf printing, if ghostscript is installed
+#
+#------------------------------------------------------------------------------
+
+   und beinhaltet nur eine Variable, die es aber in sich hat:
+
+   SAMBA_MANUAL_CONFIGURATION
+          Um so wenig wie moeglich falsch zu machen, kann man eine
+          automatische Konfiguration von Samba durchfuehren lassen. Wenn
+          dazu
+
+          SAMBA_MANUAL_CONFIGURATION='no'
+
+          konfiguriert ist, werden automatisch folgende Freigaben
+          erstellt:
+
+         1. Eine Freigabe mit dem entsprechenden Samba-Usernamen und
+            vollen Rechten fuer jeden User, der sich bei Samba anmeldet
+            und natuerlich vorher als eisfair- und Samba-User angelegt
+            wurde (siehe entsprechenden Punkt in der Dokumentation). Diese
+            Freigabe gibt das Heimat-Verzeichnisses des entsprechenden
+            Users frei, also /home/<User-Name>.
+         2. Eine Freigabe mit dem Namen ,,public`` und vollen Rechten fuer
+            alle angelegten Samba-User. Das dazugehoerige Verzeichnis
+            findet sich unter
+
+            /public
+
+            und wird bei Installation oder Update des Paketes automatisch
+            angelegt, wenn es noch nicht existiert.
+         3. Eine unsichtbare Freigabe mit dem Namen ,,all`` und vollen
+            Rechten fuer den/die als ,,root`` angemeldeten User. Ueber
+            diese Freigabe hat man Zugriff auf das gesamte Dateisystem von
+            eisfair, deshalb haben nur spezielle Benutzer darauf Zugriff
+            und die Freigabe wird in der Netzwerkumgebung nicht angezeigt.
+            Dieses Verzeichnis ist folgendermassen zu erreichen: Unter
+
+            Start/Ausfuehren
+
+            gibt man
+            \\eisfair\all
+
+            ein, wobei ,,eisfair`` mit dem Namen zu ersetzen ist, den Ihr
+            bei der Konfiguration der boot.txt als Inhalt der Variablen
+
+            HOSTNAME
+
+            angegeben habt.
+         4. Es werden alle unter eisfair eingerichteten Drucker
+            automatisch fuer alle registrierten Samba-Benutzer
+            freigegeben. Dazu ist es allerdings vorher notwendig, das
+            Paket LPRng von mir zu installieren:
+
+            Package administration
+            Install new package
+            Printer / File Services
+            LPRng Print Services
+
+            Die Einrichtung der von Samba freigegebenen Drucker auf
+            Windows-Clients wird in Abschnitt 5 beschrieben.
+         5. Bei installiertem eisfax-Paket wird automatisch die dafuer
+            notwendige Druckerfreigabe erzeugt. Die Einrichtung der von
+            Samba freigegebenen Drucker auf Windows-Clients wird in
+            Abschnitt 5 beschrieben.
+         6. Bei installiertem Ghostscript-Paket wird automatisch eine
+            Drucker-Freigabe fuer einen PDF-Drucker erzeugt, der von den
+            Windows-Clients aus dafuer verwendet werden kann, aus jeder
+            druckfaehigen Anwendung heraus PDF-Dateien zu erzeugen. Die
+            Einrichtung der von Samba freigegebenen Drucker auf
+            Windows-Clients wird in Abschnitt 5 beschrieben.
+
+      Abschnitt ,,Samba Advanced Configuration``:
+
+   Dieser Abschnitt wird eingeleitet mit:
+
+#------------------------------------------------------------------------------
+# Samba Advanced Configuration
+#
+# Please don't use this, if you are not very familar with Samba!
+# Support for this Section is not available!
+#
+# Special General Settings
+# and
+# Individual Configuration of Shares and Printers
+#
+#------------------------------------------------------------------------------
+
+   Es gibt auf unbestimmte Zeit keinen Support fuer diese Sektion. Wer
+   hier Veraenderungen vornimmt, sollte also genau wissen, was er tut!
+
+   Fuer die Spezialisten von Samba sei erwaehnt, dass auch hier nur eine
+   kleine Anzahl an Variablen gesetzt werden kann. Die
+   Standardeinstellungen der automatischen Konfiguration mittels
+
+   SAMBA_MANUAL_CONFIGURATION='no'
+
+   reichen ueblicherweise aus, um Samba in einer kleinen
+   Windows-Arbeitsgruppe laufen zu lassen.
+
+      Abschnitt ,,Samba Advanced Configuration/Special General Settings``:
+
+   Der Abschnitt wird eingeleitet mit
+
+#------------------------------------------------------------------------------
+# Samba Advanced Configuration/Special General Settings
+#------------------------------------------------------------------------------
+
+   ACHTUNG
+   Die Einstellungen in diesem Abschnitt wirken sich sowohl bei
+
+   SAMBA_MANUAL_CONFIGURATION='yes'
+
+   als auch bei
+
+   SAMBA_MANUAL_CONFIGURATION='no'
+
+   aus!
+
+   SAMBA_INTERFACES
+          Auf welchen Interfaces (Netzwerkkarten) soll Samba ansprechbar
+          sein?
+
+          Mit diesem Parameter wird eingestellt, auf welchen Interfaces
+          Samba auf Anforderungen reagiert. Samba ermittelt und
+          beruecksichtigt beim Erstellen einer neuen Konfiguration die
+          konfigurierten Interfaces (Netzwerkkarten) aus den
+          Grundeinstellungen von eisfair. Es werden also automatisch
+          Verbindungen auf allen diesen Netzwerkkarten zugelassen. Moechte
+          man bei mehreren Netzwerkkarten Samba aber nur auf einem oder
+          einigen dieser Interfaces laufen lassen, so sind diese hier
+          einzutragen. Die Angabe hat dabei in der Form
+
+          IP/NETMASK
+
+          zu erfolgen, also z.B.:
+
+          SAMBA_INTERFACES='192.168.6.1/255.255.255.0'
+
+          Mehrere Eintraege sind durch ein Leerzeichen zu trennen. Diese
+          Angaben sollten unbedingt mit /etc/config.d/base und den
+          dortigen Eintraegen in
+
+          IP_ETH_x_IPADDR
+          IP_ETH_x_NETMASK
+
+          verglichen werden, da Samba bei falscher Angabe nicht mehr
+          startet!
+
+          Standardeinstellung: SAMBA_INTERFACES=''
+
+   SAMBA_TRUSTED_NETS
+          Von welchen Netzen aus ist der Zugriff auf Samba gestattet?
+
+          Mit diesem Parameter wird eingestellt, welche Netze auf Samba
+          zugreifen duerfen. Samba ermittelt und beruecksichtigt beim
+          Erstellen einer neuen Konfiguration die internen Netze aus den
+          Grundeinstellungen von eisfair. Aus Sicherheitsgruenden wird nur
+          Rechnern aus diesen Netzen ein Zugriff gestattet. Sollen Rechner
+          aus anderen Netzen zugreifen duerfen, muessen diese hier
+          gesondert konfiguriert werden. Es reicht dabei aus, nur die
+          zusaetzlichen Netze anzugeben. Die Angabe hat in der Form
+
+          NETZWERKNUMMER/ANZAHL-DER-GESETZTEN-BITS-IN-NETMASK
+
+          zu erfolgen, also z.B. fuer Netze der Form 192.168.x.0:
+
+          SAMBA_TRUSTED_NETS='192.168.6.0/24'
+
+          Standardeinstellung: SAMBA_TRUSTED_NETS=''
+
+   SAMBA_DEBUGLEVEL
+          Hier kann man den Grad der Anzahl der Fehlermeldungen der Samba-
+          Programme einstellen. Es kann ein Level von 0-10 angegeben
+          werden, wobei maximal 3 eingestellt werden sollte. Das ist nur
+          erforderlich, wenn Schwierigkeiten auftreten. Mit den Meldungen
+          unter /var/log/log.smbd und /var/log/log.nmbd laesst sich der
+          Fehler dann oft besser eingrenzen. Bei
+
+          SAMBA_DEBUGLEVEL='3'
+
+          und hoeher wird beim Zugriff auf Verzeichnis-Freigaben eine
+          NETBIOS-Nachricht mit von Samba ermittelten Daten an den
+          zugreifenden Rechner versendet:
+
+          %T )  Datum/Zeit
+          %d )  PID des Servers
+          %v )  Samba-Version
+          %h )  (Internet)Hostname des Servers
+          %L )  NETBIOS-Name des Servers
+          %N )  NIS Heimat-Verzeichnis
+          %p )  Pfad des NIS-Heimatverzeichnisses
+          %R )  Ausgehandeltes Protokoll-Level
+          %S )  Name der aktuellen Freigabe
+          %P )  Hauptverzeichnis der aktuellen Freigabe
+          %U )  Vom Client angeforderter Benutzername
+          %G )  Primaere Gruppe des angeforderten Benutzers
+          %u )  Name des effektiven Benutzers
+          %g )  Primaerer Gruppenname des effektiven Benutzers
+          %H )  Heimatverzeichnis des effektiven Benutzers
+          %I )  IP Adresse des Client-Rechners
+          %M )  (Internet)Hostname des Client-Rechners
+          %m )  NETBIOS-Name des Client-Rechners
+          %a )  Betriebssystem des Client-Rechners
+
+          Bei der Erzeugung von PDF-Dateien werden in der Benachrichtigung
+          per NETBIOS-Nachricht Debug-Informationen zur Ermittlung des
+          Dokumentnamens mit angezeigt. Ohne diese Informationen kann ich
+          bei Problemen nicht weiterhelfen, meldet Euch deswegen mit dem
+          genauen Wortlaut in der Newsgroup.
+
+          Ich rate dringend davon ab, Samba mit einem Debuglevel groesser
+          0 zu betreiben, wenn alles zufriedenstellend laeuft. Das
+          Schreiben der Informationen kostet sehr viel Performance!
+          Ausserdem soll bestimmt nicht jeder die von Samba ermittelten
+          Informationen lesen. Die Einstellung ist fuer Administratoren
+          zum Debuggen in einer ruhigen Minute gedacht!
+
+          Standardeinstellung: SAMBA_DEBUGLEVEL='0'
+
+   SAMBA_MASTERBROWSER
+          Samba als Masterbrowser: 'yes' oder 'no'
+
+          Da der eisfair-Rechner bei vielen durchgehend laeuft, ist es
+          mitunter sinnvoll, ihn auch als Masterbrowser einzusetzen. Ein
+          Masterbrowser ist in Windowsnetzwerken der Rechner, der eine
+          Liste aller verfuegbaren SMB- Server, wozu alle Rechner mit
+          aktivierter Datei- und Druckerfreigabe gehoeren, fuehrt. Die
+          Windows-Clients erfahren also vom Masterbrowser, welche Rechner
+          mit aktivierter Datei- und Druckerfreigabe sich im Netzwerk
+          befinden. In Netzwerken mit einem NT-Server sollte man lieber NT
+          diese Aufgabe ueberlassen. In Netzwerken mit ein paar
+          WIN9x-Rechnern kann eisfair diese Aufgabe problemlos
+          uebernehmen.
+
+          Bei SAMBA_MASTERBROWSER='yes' gewinnt eisfair die Wahl zum
+          Masterbrowser gegen alle anderen Windowsmaschinen.
+
+          Standardeinstellung: SAMBA_MASTERBROWSER='no'
+
+   SAMBA_WINSSERVER
+          Samba als WINS-Server: 'yes' oder 'no'
+
+          Um NETBIOS-Namen in Windows-Netzen aufzuloesen, gibt es zwei
+          Moeglichkeiten. Die erste benutzt eine statische Aufloesung mit
+          der Datei lmhosts und ist wie die DNS-Namensaufloesung mit der
+          Datei hosts schwer zu pflegen. Deshalb wurde von Microsoft WINS
+          entwickelt:
+
+          W indows I nternet N ame S ervice
+
+          WINS hat den Vorteil, dass die NETBIOS-Namensaufloesung per
+          gerichteter Anfrage an einen WINS-Server passiert und nicht
+          durch Broadcasts. Die WINS-Datenbank wird vom Server dynamisch
+          aufgebaut, hat aber den Nachteil, dass der Server in den
+          TCP/IP-Protokolleigenschaften auf jedem Client eingetragen
+          werden muss. Samba hat diesen Server teilweise implementiert und
+          damit steht er eisfair auch zur Verfuegung.
+
+          Um eisfair als WINS-Server zu betreiben, ist
+
+          SAMBA_WINSSERVER='yes'
+
+          zu setzen und auf den Windows-Clients in den TCP/IP-
+          Protokolleigenschaften der Netzwerkkarte unter
+          /Start/Einstellungen/Systemsteuerung/Netzwerk/Lasche
+          Konfiguration/ TCP/IP auf der Lasche WINS-Konfiguration
+          ,,WINS-Aufloesung aktivieren`` auszuwaehlen. Unter WINS-Server
+          Suchreihenfolge ist dabei die IP-Adresse des eisfair- Rechners
+          zu hinterlegen, welche mit ,,Hinzufuegen`` uebernommen werden
+          muss.
+
+          Obwohl man hier nur die Wahl zwischen WINS ODER DHCP hat,
+          entbindet die Angabe der IP-Adresse des eisfair-WINS-Servers
+          nicht von einer korrekten TCP/IP-Konfiguration, entweder ueber
+          Angabe der IP-Adresse jedes Clients oder ueber DHCP. In
+          Netzwerken mit einem NT-Server, auf dem der WINS-Serverdienst
+          aktiviert ist, sollte man lieber NT diese Aufgabe ueberlassen.
+          Aber in Netzwerken mit ein paar WIN9x-Rechnern kann auch eisfair
+          diese Aufgabe problemlos uebernehmen.
+
+          SAMBA_WINSSERVER='yes'
+
+          aktiviert diese Funktion (benoetigt SAMBA_EXTWINSIP='').
+
+          Standardeinstellung: SAMBA_WINSSERVER='no'
+
+   SAMBA_WINSHOOK
+          (benoetigt SAMBA_WINSSERVER='yes') Fuehre Aktionen aus, wenn
+          sich ein WINS-Client registriert: 'yes' oder 'no'
+
+          Wenn sich ein Client bei einem auf eisfair laufenden WINS-Server
+          registriert, koennen daraufhin spezielle Aktionen ausgeloest
+          werden.
+
+          Voraussetzung fuer die Ausfuehrung dieser speziellen Aktionen
+          ist die Aktivierung dieser Variable mittels
+          SAMBA_WINSHOOK='yes', ein auf eisfair laufender WINS-Server, ein
+          Client, der darauf konfiguriert wurde, sich beim
+          eisfair-WINS-Server zu registrieren, sowie die weiter unten
+          folgenden Aktionen, die nach Bedarf aktiviert werden muessen.
+
+          Achtung: Es liegen bisher keine Erfahrungen vor, welche Last die
+          folgenden Funktionen in einem grossen Netzwerk mit vielen
+          Clients verursachen. Ich kann mir gut vorstellen, dass dieses
+          Szenario einen Server in die Knie zwingen kann:
+
+          Zum Arbeitsbeginn um 8 Uhr morgens melden sich 250 Clients
+          gleichzeitig bei einem eisfair-Server an, der als PDC arbeitet.
+          250 Clients ziehen sich parallel ihr Profil vom Server,
+          registrieren sich beim WINS-Server, worauf 250 Nachrichten
+          versendet werden. Nebenbei wird jeder Client bei dem DNS-Server
+          Bind registriert. Eventuell erhalten diese 250 Clients ihre
+          IP-Adresse von einem DHCP- Server auf eisfair und es laufen
+          nebenbei noch einige andere Dienste...
+
+          Bei Problemen solltet Ihr diese Funktionen deaktivieren, bevor
+          Ihr Euch in der Newsgroup wegen ploetzlich auftretender Probleme
+          beschwert.
+
+          Standardeinstellung: SAMBA_WINSHOOK='no'
+
+   SAMBA_WINSHOOK_MESSAGE_SEND
+          (benoetigt SAMBA_WINSSERVER='yes' und SAMBA_WINSHOOK='yes')
+          Sende SAMBA_WINSHOOK_MESSAGE: 'yes' oder 'no'
+
+          Wenn diese Variable auf 'yes' gesetzt ist, wird auf
+          WINS-Clients, die sich am eisfair-WINS-Server registrieren, die
+          in SAMBA_WINSHOOK_MESSAGE definierte Nachricht ausgegeben. Da
+          einige Zeit vergeht, bis der Client nach dem Laden des
+          Netzwerk-Stacks den Nachrichtendienst gestartet hat, wird die
+          Meldung erst 60 Sekunden nach der Registrierung beim WINS-Server
+          versendet.
+
+          Voraussetzung ist die Aktivierung dieser Variable mittels
+          SAMBA_WINSHOOK_MESSAGE_SEND='yes', ein auf eisfair laufender
+          WINS-Server (SAMBA_WINSSERVER='yes'), ein Client, der darauf
+          konfiguriert wurde, sich beim eisfair-WINS-Server zu
+          registrieren, ein aktivierter Nachrichtendienst auf dem Client,
+          sowie die Moeglichkeit, Meldungen an den Nachrichtendienst zu
+          versenden (ein eventuell installierter Paketfilter auf dem
+          Client muss das zulassen).
+
+          Standardeinstellung: SAMBA_WINSHOOK_MESSAGE_SEND='no'
+
+   SAMBA_WINSHOOK_MESSAGE
+          (benoetigt SAMBA_WINSSERVER='yes', SAMBA_WINSHOOK='yes' und
+          SAMBA_WINSHOOK_MESSAGE_SEND='yes')
+
+          Diese Nachricht wird bei der Registrierung eines WINS-Clients
+          beim eisfair-WINS-Server auf diesem Client mit aktiviertem
+          Nachrichtendienst ausgegeben, wenn die Variable
+
+          SAMBA_WINSHOOK_MESSAGE_SEND
+
+          auf 'yes' gesetzt ist.
+
+          Der Nachrichtendienst ist auf Windows-NT, Windows-2000 und
+          Windows XP normalerweise aktiviert und muss anderenfalls
+          nachinstalliert/aktiviert werden. Unter Windows-9x-Clients wie
+          Windows 98 oder Windows Me muss dazu das Programm WinPopUp
+          laufen.
+
+          Beachtet die Voraussetzungen und die Warnung unter
+
+          SAMBA_WINSHOOK
+
+          Standardeinstellung: SAMBA_WINSHOOK_MESSAGE='Welcome to eisfair
+          server'
+
+   SAMBA_WINSHOOK_DNSUPDATE
+          (benoetigt SAMBA_WINSSERVER='yes' und SAMBA_WINSHOOK='yes')
+          Registriere WINS-Clients beim DNS-Server Bind: 'yes' oder 'no'
+
+          Wenn auf eisfair das Paket Bind als DNS-Server laeuft, koennen
+          WINS-Clients dort automatisch registriert werden (mit ens als
+          DNS-Server funktioniert das nicht). Dazu ist
+          SAMBA_WINSHOOK_DNSUPDATE='yes' zu setzen.
+
+          Beachtet die Voraussetzungen und die Warnung unter
+
+          SAMBA_WINSHOOK
+
+          Standardeinstellung: SAMBA_WINSHOOK_DNSUPDATE='no'
+
+   SAMBA_EXTWINSIP
+          (benoetigt SAMBA_WINSSERVER='no') Die IP-Adresse des externen
+          WINS-Servers fuer Samba
+
+          Wenn man, wie oben bereits erwaehnt, in Netzwerken mit einem
+          NT-Server arbeitet, sollte man diesem die Aufgabe ueberlassen,
+          die WINS-Datenbank zu verwalten. Dabei kann man eisfair als
+          WINS-Client konfigurieren. Der eisfair-Rechner versucht dann,
+          sich bei dem konfigurierten WINS-Server zu registrieren. Hierbei
+          ist darauf zu achten, dass eisfair nicht gleichzeitig als Server
+          und Client konfiguriert werden kann - die Optionen
+
+          SAMBA_WINSSERVER='yes'
+
+          und
+
+          SAMBA_EXTWINSIP='IP-Adresse'
+
+          schliessen einander also aus und werden bei der Ueberpruefung
+          der Konfiguration bemaengelt! Wenn man den eisfair-Rechner als
+          WINS-Client betreiben moechte, muss man ihm die IP-Adresse des
+          externen WINS-Servers bekanntmachen, bei dem er sich
+          registrieren soll.
+
+          Hier ein Beispiel mit der IP-Adresse 192.168.6.11:
+
+          SAMBA_EXTWINSIP='192.168.6.11'
+
+          In diesem Modus arbeitet Samba ausserdem als WINS-Proxy. Das ist
+          von Vorteil, wenn sich nicht nur WINS-Clients im Netzwerk
+          befinden, der WINS-Server in einem anderen Netzwerk liegt und
+          nicht per Broadcast erreichbar ist und die Nicht-WINS-Clients
+          aber eine NETBIOS-Namensaufloesung benoetigen. Hierbei faengt
+          der eisfair-Rechner Broadcasts der Nicht-WINS-Clients auf, fragt
+          den eingetragenen WINS-Server ab und schickt die Antwort per
+          Broadcast an den anfragenden Rechner.
+
+          Standardeinstellung: SAMBA_EXTWINSIP=''
+
+   SAMBA_START_MESSAGE_SEND
+          Sende SAMBA_START_MESSAGE: 'yes' oder 'no'
+
+          Wenn diese Variable auf 'yes' gesetzt ist, wird beim Starten von
+          Samba die in SAMBA_START_MESSAGE definierte Nachricht auf allen
+          SMB-Hosts mit aktiviertem Nachrichtendienst ausgegeben (siehe
+          auch SAMBA_START_MESSAGE). Da das bei grossen Netzwerken mit
+          vielen Clients sehr lange dauern kann und Netzwerkbandbreite
+          braucht, wurde als Voreinstellung 'no' definiert.
+
+          Standardeinstellung: SAMBA_START_MESSAGE_SEND='no'
+
+   SAMBA_START_MESSAGE
+          Diese Nachricht wird beim Starten des Samba-Servers auf allen
+          SMB-Hosts mit aktiviertem Nachrichtendienst ausgegeben, wenn die
+          Variable
+
+          SAMBA_START_MESSAGE_SEND
+
+          auf 'yes' gesetzt ist.
+
+          Der Nachrichtendienst ist auf Windows-NT, Windows-2000 und
+          Windows XP normalerweise aktiviert und muss anderenfalls
+          nachinstalliert/aktiviert werden. Unter Windows-9x-Clients wie
+          Windows 98 oder Windows Me muss dazu das Programm WinPopUp
+          laufen.
+
+          Standardeinstellung: SAMBA_START_MESSAGE='eisfair Samba Server
+          is up now ...'
+
+   SAMBA_SHUTDOWN_MESSAGE_SEND
+          Sende SAMBA_SHUTDOWN_MESSAGE: 'yes' oder 'no'
+
+          Wenn diese Variable auf 'yes' gesetzt ist, wird beim
+          Herunterfahren von Samba die in SAMBA_SHUTDOWN_MESSAGE
+          definierte Nachricht auf den in
+
+          SAMBA_SHUTDOWN_MESSAGE_HOSTS
+
+          definierten SMB-Hosts mit aktiviertem Nachrichtendienst
+          ausgegeben (siehe auch SAMBA_SHUTDOWN_MESSAGE). Da das bei
+          grossen Netzwerken mit vielen Clients sehr lange dauern kann und
+          Netzwerkbandbreite braucht, wurde als Voreinstellung 'no'
+          definiert.
+
+          Standardeinstellung: SAMBA_SHUTDOWN_MESSAGE_SEND='no'
+
+   SAMBA_SHUTDOWN_MESSAGE
+          (benoetigt SAMBA_SHUTDOWN_MESSAGE_SEND='yes') Diese Nachricht
+          wird beim Stoppen des Samba-Servers auf den in
+
+          SAMBA_SHUTDOWN_MESSAGE_HOSTS
+
+          definierten SMB-Hosts mit aktiviertem Nachrichtendienst
+          ausgegeben, wenn die Variable
+
+          SAMBA_SHUTDOWN_MESSAGE_SEND
+
+          auf 'yes' gesetzt ist.
+
+          Der Nachrichtendienst ist auf Windows-NT, Windows-2000 und
+          Windows XP normalerweise aktiviert und muss anderenfalls
+          nachinstalliert/aktiviert werden. Unter Windows-9x-Clients wie
+          Windows 98 oder Windows ME muss dazu das Programm WinPopUp
+          laufen.
+
+          Standardeinstellung: SAMBA_SHUTDOWN_MESSAGE='eisfair Samba
+          Server is going down now ...'
+
+   SAMBA_SHUTDOWN_MESSAGE_HOSTS
+          (benoetigt SAMBA_SHUTDOWN_MESSAGE='yes')
+
+          Sende SAMBA_SHUTDOWN_MESSAGE an Hosts: 'all' oder 'active'
+
+          Hier gibt man an, an welche Rechner die
+          SAMBA_SHUTDOWN_MESSAGE versendet werden soll. Moegliche
+          Eintraege sind:
+
+          all   : Alle SMB-Hosts im Netzwerk.
+
+          active: Alle SMB-Hosts im Netzwerk mit aktiven SMB-Verbindungen zu
+                  eisfair.
+
+          Wer hier 'active' auswaehlt, sollte sich darueber im Klaren
+          sein, dass ein Client, der ueber das Windows-Netzwerk eine Datei
+          auf eisfair bearbeitet und dabei lange Pausen einlegt,
+          irgendwann in einen Timeout laeuft und die Verbindung nicht mehr
+          aktiv ist! Samba auf eisfair deklariert eine solche Verbindung
+          nach 60 Minuten fuer tot und trennt sie, was bei modernen
+          Windows-Clients keine Probleme verursacht, da beim Speichern
+          einfach wiederverbunden wird. Wurde die Verbindung aber von
+          eisfair oder vom Client wegen zu hohem Timeout getrennt, erhaelt
+          dieser Client keine Nachricht!
+
+          Standardeinstellung: SAMBA_SHUTDOWN_MESSAGE_HOSTS='all'
+
+   SAMBA_LOCALIZATION
+          Da Windows-Clients in verschiedenen Sprachen unterschiedliche
+          Codepages benutzen (per chcp in der DOS-Box kann man die
+          verwendete Codepage anzeigen lassen), muss dem Samba-Server
+          diese Codepage bekannt gemacht werden. Die Angabe dieser
+          Codepages (client codepage =) wird von Samba benutzt, um
+          ankommende Dateinamen von der DOS-Codepage auf den verwendeten
+          UNIX-Zeichensatz (character set =) umzusetzen. In der
+          Konfigurationsdatei kann man folgende Werte einstellen, die wie
+          folgt umgesetzt werden:
+
+          Einstellung Sprachraum       character set client codepage
+          US          Amerika          -             437
+          ISO8859-1   Western Europe   iso8859-1     850
+          ISO8859-2   Eastern Europe   iso8859-2     852
+          ISO8859-5   Russian Cyrillic iso8859-5     866
+          ISO8859-7   Greek            iso8859-7     737
+          ISO8859-15  Western Europe   iso8859-15    850
+          UTF-8       International    UTF-8         unicode
+
+          Bitte nicht aendern, wenn schon Dateien mit Umlauten oder
+          Sonderzeichen auf eisfair kopiert wurden!
+
+          Da wir uns in Deutschland befinden, muss man eigentlich nur
+          wissen, dass hier die Einstellung ISO8859-15 fuer den EURO bzw.
+          ISO8859-1 fuer Deutsch ohne Euro-Zeichen bzw. UTF-8 vorgenommen
+          werden muss.
+
+          Auf eisfair-2 wird immer UTF-8 verwendet.
+          Auf eisfair-1 sollte immer UTF-8 verwendet werden, wenn in
+          /etc/config.d/environment LC_CTYPE mit xxx.UTF-8 belegt ist.
+
+          Standardeinstellung: SAMBA_LOCALIZATION='ISO8859-15'
+                               (eisfair-1 ohne UTF-8)
+
+                               SAMBA_LOCALIZATION='UTF-8'
+                               (eisfair-1 mit UTF-8 und eisfair-2)
+
+   SAMBA_PDC
+          Soll SAMBA als Primary Domain Controller arbeiten: 'yes' oder
+          'no'
+
+          Wenn diese Variable auf 'yes' gesetzt ist, stellt Samba die
+          Funktionen eines Primary Domain Controllers (PDC), vergleichbar
+          zu einem Windows-NT-4.0-Server-PDC, fuer Windows-9x,
+          Windows-2000 und Windows-XP-Professional-Clients zur Verfuegung.
+          Windows-XP-Home wird dabei nicht unterstuetzt, da es von
+          Microsoft kuenstlich beschnitten wurde! Die
+          Active-Directory-Funktionen der Windows-2000- und Windows-2003-
+          Server werden von Samba bisher nicht unterstuetzt!
+
+          Will man Samba als PDC nutzen, ist folgende Vorgehensweise
+          notwendig:
+
+         1. Der Benutzer ,,root`` wurde als Samba-Benutzer angelegt. Davon
+            kann man sich im Samba-Service-Menue mittels
+
+            Samba User Handling
+            List Samba User
+
+            ueberzeugen. Hier die Ausgabe von meinem eisfair-Rechner:
+
+            List Samba Users
+
+                User      Uid      Password    Active
+                root      0        set         yes
+                tb        2001     set         yes
+                test      2003     set         yes
+
+            Press ENTER to continue
+
+         2. In der Datei /etc/user.map wird der Benutzer ,,Administrator``
+            der Workstation auf den Benutzer ,,root`` gemappt. Wenn nicht
+            gegen einen externen Passwortserver authentifiziert wird,
+            sieht das so aus:
+
+            root = "Administrator"
+
+            Wenn gegen einen externen Passwortserver authentifiziert wird,
+            muss die Domaene vor dem Windows-Usernamen angegeben werden:
+            root = "DOM\Administrator"
+
+            Die Datei /etc/user.map wird aus der Samba-Konfiguration
+            heraus erzeugt. Wenn in der /etc/user.map der obige Eintrag
+            fehlt, habt Ihr etwas falsch gemacht. Siehe auch
+            SAMBA_USERMAP_N.
+         3. Samba laeuft noch im Arbeitsgruppen-Modus (SAMBA_PDC='no').
+         4. Jetzt benennt man als ,,Administrator`` temporaer die
+            Arbeitsgruppe auf den Clients um (z.B. in TESTGROUP), weil es
+            zu Schwierigkeiten kommt, wenn der Name der Arbeitsgruppe, in
+            der man sich befindet und der Name der Domaene, in die man
+            wechseln moechte, identisch ist. Dabei wird man aufgefordert,
+            den Client neu zu starten, was auch unbedingt erforderlich
+            ist.
+         5. Jetzt erst setzt man SAMBA_PDC='yes' und hinterlegt in der
+            Variable SAMBA_WORKGROUP den gewuenschten Domaenennamen,
+            z.B. SAMBA_WORKGROUP='DOMAIN'.
+         6. Nachdem die neue Konfiguration aktiviert wurde, muss folgende
+            Meldung in /var/log/log.nmbd auftauchen:
+
+            Samba server XXX is now a domain master browser for workgroup
+            YYY on subnet ZZZ.
+
+            Dabei stehen XXX, YYY und ZZZ fuer Eure individuelle
+            Konfiguration.
+         7. Jetzt trennt man alle eventuell geoeffneten Freigaben und
+            gemappten Laufwerke, da diese eine erfolgreiche Integration in
+            die Domaene verhindern. Dazu oeffnet man eine DOS-Box, indem
+            man unter
+
+            Start/Ausfuehren
+
+            command
+
+            eingibt und dort folgenden Befehl ausfuehrt:
+
+            net use * /delete
+
+         8. Man kann nun als Benutzer ,,Administrator`` unter Windows die
+            Workstation zur Domaene hinzufuegen:
+            Per Rechtsklick auf
+            Arbeitsplatz/Eigenschaften/Netzwerkidentifikation/Eigenschafte
+            n (Beispiel Windows 2000) oder
+            Arbeitsplatz/Eigenschaften/Computername/Aendern (Beispiel
+            Windows XP Professional) definiert man, dass diese Workstation
+            ein Mitglied der Domaene YYY (siehe oben, jetzige Einstellung
+            von SAMBA_WORKGROUP) sein soll.
+            Bei der Abfrage
+
+            Geben Sie Namen und Kennwort eines Kontos mit der Berechtigung
+            dieser Domaene beizutreten ein.
+
+            gibt man einfach ,,Administrator`` und das entsprechende
+            Passwort von ,,root`` an (da in der Datei /etc/user.map der
+            Benutzer ,,Administrator`` auf ,,root`` umgesetzt wird, wenn
+            Ihr Euch an die Beschreibung gehalten habt) und erhaelt, wenn
+            man alles richtig gemacht hat, die nette Bestaetigung:
+            ,,Willkommen in der Domaene YYY.`` (siehe oben)
+         9. Es wurde von Samba automatisch ein Maschinenkonto fuer die
+            Workstation erzeugt, wovon man sich im Samba-Service-Menue
+            ueberzeugen kann:
+
+            Samba Domain Handling
+            Samba PDC Workstation Configuration (NT, 2000, XP)
+            List Samba Workstations
+
+        10. Aus der Ereignisanzeige/System von NT/2000/XP:
+            Dieser Computer wurde erfolgreich ,,domain`` hinzugefuegt:
+            ,,YYY``.
+            YYY steht fuer Euren Domaenen-Namen.
+        11. Nach einem Neustart kann man sich als angelegter
+            Samba-Benutzer an der Domaene anmelden und gibt dabei bei
+            ,,Anmelden an`` nicht den lokalen Rechner an, sondern die
+            Domaene. Windows-Benutzer, die in der Datei /etc/user.map auf
+            andere Samba-Benutzer umgesetzt werden, muessen dabei das
+            Passwort des Benutzers eingeben, auf den sie umgesetzt werden!
+            Siehe auch SAMBA_USERMAP_N.
+        12. Startet Samba das erste Mal als PDC, so wird eine eindeutige
+            SID (Security ID) fuer diesen PDC erzeugt. Diese SID
+            identifiziert die Domaene eindeutig. Bei Integration von
+            Clients in die Domaene wird diesen die SID zugeordnet. Daraus
+            ergibt sich, dass es nicht ausreicht, einen Client als
+            Domaenenmitglied einfach identisch zu benennen, um wieder in
+            die Domaene zu kommen, da der Client diese SID nicht kennt.
+            Das ist aus Sicherheitsgruenden absolut sinnvoll!
+            Setzt man bei irgendwelchen Tests spaeter einmal
+            SAMBA_PDC='no' und danach wieder SAMBA_PDC='yes', kann es
+            passieren, dass wiederum eine eindeutige SID generiert wird,
+            welche von der vorigen abweicht. Das Ergebnis ist verheerend:
+            Kein Client kommt mehr in die Domaene, da die Clients ihren
+            PDC mit einer anderen SID assoziieren. Es ist in diesem Fall
+            notwendig, alle Clients wieder neu in die Domaene zu
+            integrieren. Das gleiche Problem ergibt sich auch bei einer
+            Namensaenderung des PDC, also genau dann, wenn man den
+            Hostnamen des eisfair-Rechners aendert! Man kann das Problem
+            umgehen, indem man vor Aenderung von SAMBA_PDC='yes' auf
+            SAMBA_PDC='no' und vor einer Namensaenderung die SID
+            abspeichert und nach Aenderung von SAMBA_PDC='no' auf
+            SAMBA_PDC='yes' oder Aenderung des Namens wieder in Samba
+            einliest. Siehe dazu
+
+            Save Samba SID to /root/MACHINE.SID
+
+            und
+
+            Restore Samba SID from /root/MACHINE.SID.
+
+            Wenn Samba als PDC laeuft, werden statische Group-Mappings
+            eingerichtet (dynamische Mappings werden von mir noch nicht
+            unterstuetzt). Die Namen der Windows-Gruppen sind dabei von
+            den Spracheinstellungen des Samba-Paketes abhaengig. Bei
+
+            SAMBA_LOCALIZATION='ISO8859-15'
+
+            oder
+
+            SAMBA_LOCALIZATION='ISO8859-1'
+
+            werden folgende Namen verwendet:
+
+            Windows-Gruppe           eisfair-Gruppe GID
+            Domaenen-Administratoren root           0
+            Domaenen-Gaeste          nogroup        65534
+            Domaenen-Hauptbenutzer   sys            3
+            Domaenen-Benutzer        users          100
+            Domaenen-Computer        machines       777
+
+            Bei allen anderen Spracheinstellungen:
+
+            Windows-Gruppe        eisfair-Gruppe GID
+            Domain-Administrators root           0
+            Domain-Guests         nogroup        65534
+            Domain-Power-Users    sys            3
+            Domain-Users          users          100
+            Domain-Computers      machines       777
+
+            Das Mapping kann mittels
+
+            net groupmap list
+
+            auf der Konsole oder ueber die Samba-Startmeldungen
+            ueberprueft werden. Die globale Windows-Gruppe der
+            Domaenen-Administratoren wird bei Integration der Workstation
+            in die Domaene automatisch der lokalen Gruppe der
+            Administratoren hinzugefuegt, so dass bei Anmeldung an der
+            Domaene lokale Administratoren Rechte zur
+            Domaenenadministration besitzen.
+
+            Standardeinstellung: SAMBA_PDC='no'
+
+   SAMBA_PDC_PROFILES
+          (benoetigt SAMBA_PDC) Sollen servergespeicherte Profile
+          verwendet werden: 'yes' oder 'no'
+
+          Bei Verwendung von
+
+          SAMBA_PDC='yes'
+
+          kann man sein Userprofil auf dem Server speichern lassen und bei
+          jeder Anmeldung wieder davon laden. Das bietet den Vorteil, auf
+          allen Rechnern der Domaene die selbe Arbeitsumgebung
+          vorzufinden, hat aber den Nachteil, dass je nach Umfang der
+          Userprofile ziemlich viel Platz auf dem Server benoetigt wird
+          und An- oder Abmeldungen am Server laenger dauern, da das Profil
+          herunter- oder heraufgeladen werden muss. Wer diese Funktion
+          nicht benoetigt, kann sie mit
+
+          SAMBA_PDC_PROFILES='no'
+
+          abschalten.
+
+          Standardeinstellung: SAMBA_PDC_PROFILES='yes'
+
+   SAMBA_PDC_LOGONSCRIPT
+          (benoetigt SAMBA_PDC) Basieren die Logon-Skripte auf 'user',
+          'group', 'machine' oder 'all'
+
+          Bei Verwendung von
+
+          SAMBA_PDC='yes'
+
+          koennen im Verzeichnis /netlogon Batchdateien abgelegt werden,
+          die nach erfolgreicher Anmeldung an der Domaene auf den Client
+          geladen und in der dortigen Umgebung verarbeitet werden. Die
+          Batchdateien sollten auf einem Windows-Client angelegt und auch
+          dort getestet werden, um Probleme mit den unterschiedlichen
+          Zeilenenden von DOS und Unix auszuschliessen.
+
+          Je nach Einstellung dieses Parameters werden unterschiedlich
+          benannte Batchdateien erwartet:
+
+          Waehlt man SAMBA_PDC_LOGONSCRIPT='user', so wird nach der Datei
+          username.bat gesucht, wobei ,,username`` fuer den Namen des
+          angemeldeten Benutzers steht. Es ist der effektive Name des
+          Benutzers gemeint, bei gemappten Benutzern also der Name, auf
+          den gemappt wird. An diese Batchdatei wird der Gruppenname des
+          angemeldeten Users sowie der NETBIOS-Name der Anmeldemaschine
+          mit uebergeben und kann dort weiter ausgewertet werden, z.B. um
+          aus der Batchdatei des Users mittels
+
+          call %1.bat
+
+          eine gruppenabhaengige Batchdatei aufzurufen, die fuer alle
+          Mitglieder einer Gruppe ein Netzlaufwerk mappt. Aus der
+          Batchdatei des Users kann ausserdem mittels
+
+          call %2.bat
+
+          eine weitere Batchdatei mit dem NETBIOS-Namen des Clients
+          aufgerufen werden, an dem der User sich gerade anmeldet, um
+          maschinenbezogene Aktionen auszufuehren.
+
+          Waehlt man SAMBA_PDC_LOGONSCRIPT='group', so wird nach der Datei
+          groupname.bat gesucht, wobei ,,groupname`` fuer den Gruppennamen
+          des angemeldeten Benutzers steht. Es ist die effektive Gruppe
+          gemeint, bei gemappten Usern also die primaere Gruppe des Users,
+          auf den gemappt wird. An diese Batchdatei wird der Username des
+          angemeldeten Users sowie der NETBIOS-Name der angemeldeten
+          Maschine mit uebergeben und kann dort weiter ausgewertet werden,
+          z.B. um aus der Batchdatei der Gruppe mittels
+
+          call %1.bat
+
+          eine userabhaengige Batchdatei aufzurufen, die spezielle
+          Aktionen fuer diesen User ausfuehrt. Aus der Batchdatei der
+          Gruppe kann ausserdem mittels
+
+          call %2.bat
+
+          eine weitere Batchdatei mit dem NETBIOS-Namen des Clients
+          aufgerufen werden, an dem der User sich gerade anmeldet, um
+          maschinenbezogene Aktionen auszufuehren.
+
+          Waehlt man SAMBA_PDC_LOGONSCRIPT='machine', so wird nach der
+          Datei machinename.bat gesucht, wobei ,,machinename`` fuer den
+          NETBIOS-Namen der Anmeldemaschine steht. An diese Batchdatei
+          wird der effektive Username sowie der effektive Gruppenname des
+          angemeldeten Users mit uebergeben und kann dort weiter
+          ausgewertet werden, z.B. um aus der Batchdatei der Maschine
+          mittels
+
+          call %1.bat
+
+          eine userabhaengige Batchdatei aufzurufen, die spezielle
+          Aktionen fuer diesen User ausfuehrt. Aus der Batchdatei der
+          Maschine kann ausserdem mittels
+
+          call %2.bat
+
+          eine weitere Batchdatei mit dem Gruppennamen des angemeldeten
+          Users aufgerufen werden, um gruppenbezogene Aktionen
+          auszufuehren.
+
+          Waehlt man SAMBA_PDC_LOGONSCRIPT='all', so wird nach der Datei
+          logon.bat gesucht. An diese Batchdatei werden der effektive
+          Username, der effektive Gruppenname des angemeldeten Users sowie
+          der NETBIOS-Name der Anmeldemaschine mit uebergeben und kann
+          dort weiter ausgewertet werden, z.B. um aus der Batchdatei
+          logon.bat mittels
+
+          call %1.bat
+
+          eine userabhaengige Batchdatei aufzurufen, die spezielle
+          Aktionen fuer diesen User ausfuehrt. Mittels
+
+          call %2.bat
+
+          kann man aus der logon.bat die gruppenabhaengige Batchdatei
+          aufrufen und mit
+
+          call %3.bat
+
+          die maschinenspezifische Batchdatei. In allen 3 Faellen lassen
+          sich beliebig komplexe Szenarien realisieren, wenn man sich ein
+          wenig mit Batchprogrammierung auskennt. Bitte recherchiert bei
+          Interesse im Internet - ich bin in dem Fall der falsche
+          Ansprechpartner fuer Euch. Aber um Euch den Einstieg zu
+          erleichtern, liegt eine Beispieldatei namens logon.bat im
+          Verzeichnis /netlogon, die Ihr anpassen und unter dem erwarteten
+          Namen abspeichern koennt.
+
+          Noch einmal der Hinweis: Bearbeitet die Dateien auf einem
+          Windows-Client, denn Zeilenenden im Unix-Format fuehren dazu,
+          dass die Logon-Skripte nicht verarbeitet werden koennen! Die
+          Rechte der Batchdateien muessen natuerlich so gesetzt werden,
+          dass sie einen Zugriff (Lesen, Ausfuehren) gestatten.
+
+          Standardeinstellung: SAMBA_PDC_LOGONSCRIPT='user'
+
+   SAMBA_PASSWORD_SERVER
+          Nutzung eines externen Passwort-Servers in einer Domain:
+          z.B. 'NT-SERVER'
+
+          Ueber SAMBA_PASSWORD_SERVER kann der NETBIOS-Name eines externen
+          Passwortservers in einer Domain eingetragen werden, der die
+          Authentifizierung uebernimmt.
+
+          Es wird ein Primary Domain Controller auf Basis von Windows NT
+          4.0 genutzt. Dazu muss eisfair aber erst einmal Mitglied
+          dieser Domaene werden.
+          Das passiert in 2 Schritten: Als erstes wird auf dem Primary
+          Domain Controller (Windows NT 4.0) eisfair mit dem Server
+          Manager unter dem Menue-Punkt
+
+            Computer
+            Neuer Computer
+
+          hinzugefuegt. Dann wird mit dem Menue-Punkt
+
+          Samba Domain Handling
+          Add eisfair Samba Server into an Windows NT Domain
+
+          im Samba-Service-Menue (siehe Dokumentation weiter unten)
+          eisfair in die NT-Domaene integriert.
+          In diesem Fall kann man mehrere Namen hinterlegen, z.B. den
+          Primary Domain Controller und einen oder mehrere Backup Domain
+          Controller (BDC). Dazu traegt man die Namen mit Komma und
+          Leerzeichen getrennt hintereinander ein, z.B.:
+
+          SAMBA_PASSWORD_SERVER='NT-PDC, NT-BDC1'
+
+          Es ist auch moeglich, hier einfach
+
+          SAMBA_PASSWORD_SERVER='*'
+
+          einzusetzen. Damit werden von Samba der PDC und die BDC's
+          selbststaendig ermittelt.
+
+          Noch ein paar Hinweise und Warnungen: Obwohl die User auf dem
+          externen Passwortserver authentifiziert werden, muss ein
+          gueltiger Unix-Account auf eisfair fuer sie existieren, da die
+          von den Usern auf eisfair abgelegten Dateien immer mit den
+          Rechten dieses Users gelesen und geschrieben werden. Das ist
+          zwingend notwendig, schraenkt den Nutzwert der obigen Optionen
+          in meinen Augen aber stark ein. Deshalb werden erfolgreich gegen
+          den externen Passwortserver authentifizierte Benutzer
+          automatisch als Unix-Benutzer in der Gruppe 'users' angelegt.
+          Tragt niemals den NETBIOS-Namen von eisfair selbst hier ein, da
+          dann versucht wird, gegen einen Domain Controller auf eisfair zu
+          authentifizieren, der hier gar nicht laeuft! Tragt nur einen
+          Passwortserver ein, dem Ihr absolut vertraut, denn Samba ist in
+          diesem Fall nur so sicher, wie der externe Passwortserver!
+
+          Standardeinstellung: SAMBA_PASSWORD_SERVER=''
+
+   SAMBA_RECYCLE_BIN
+          Aktiviere einen Papierkorb pro Freigabe: 'yes' oder 'no'
+
+          Hiermit kann ein Papierkorb pro Freigabe aktiviert werden, in
+          den geloeschte Dateien mitsamt ihrem Pfad relativ zum
+          Freigabepfad verschoben werden. Der Papierkorb ist ein
+          Verzeichnis namens samba_recycle_bin, das durch die
+          Samba-Konfiguration mit den Rechten 0777 nobody:nogroup angelegt
+          wird. Wenn jemand dieses Verzeichnis loescht, wird es beim
+          Loeschen von Dateien oder Verzeichnissen mit den Rechten 0777
+          und dem Eigentuemer und der Gruppe des loeschenden Users erneut
+          angelegt. In diesem Verzeichnis samba_recycle_bin wird fuer
+          jeden effektiven User beim Loeschen ein Unterverzeichnis mit
+          dessen Namen angelegt. Wer effektiver User ist, wird unter
+          anderem durch das Usermapping und
+
+          SAMBA_SHARE_x_FORCE_USER
+
+          bestimmt.
+
+          ACHTUNG
+          Aus mehreren Gruenden muss ich vor Aktivierung dieser Funktion
+          warnen. Der Papierkorb fuer Freigaben hat nicht die
+          Eigenschaften des von Windows bekannten Papierkorbes. Er weiss
+          nichts von dem auf der Festplatte noch zur Verfuegung stehenden
+          Platz und kann im Gegensatz zum Windows-Papierkorb nicht auf
+          eine maximale Groesse in Prozent anteilig der Festplattengroesse
+          eingestellt werden. Er hat daher auch keine Funktion, die durch
+          endgueltiges Loeschen von Elementen im Papierkorb automatisch so
+          viel Speicherplatz freigibt, dass die zuletzt geloeschten
+          Dateien und Ordner in den Papierkorb verschoben werden koennten.
+          Geloeschte Dateien werden lediglich anhand Ihres Alters mittels
+          Cron-Jobs endgueltig geloescht, wobei mit
+
+          SAMBA_RECYCLE_BIN_HOLD_DAYS
+
+          die Anzahl von Tagen bestimmt wird, nach der endgueltig
+          geloescht wird. Dieser Cron-Job laeuft nachts um 03:15 Uhr, um
+          den Server tagsueber mit dem zeitintensiven und
+          leistungshungrigen find-Skript nicht so stark zu belasten.
+          Faehrt jemand seinen Server jeden Abend vor diesem Zeitpunkt
+          herunter, werden alte Dateien nie geloescht und die Festplatte
+          laeuft im Laufe der Zeit voll. Um das zu verhindern, muss das
+          Skript /var/install/bin/samba-recycle-cron ab und an von Hand
+          gestartet oder in der Cron Administration ein Job mit passendem
+          Zeitpunkt angelegt werden. Bei Einsatz von Quotas fuehrt ein
+          Loeschen von Dateien mit aktiviertem Papierkorb nicht mehr
+          automatisch dazu, dass Platz freigemacht wird. Jeder User muss
+          Dateien in den einzelnen Papierkoerben der Freigaben noch einmal
+          loeschen, um seine Quota wieder zu unterschreiten.
+          Generell gilt also: Aktiviert den Papierkorb nur, wenn Ihr
+          ausreichend Platz auf allen Partitionen habt, Quotas nicht
+          einsetzt und Euer Server permanent laeuft.
+
+          Standardeinstellung: SAMBA_RECYCLE_BIN='no'
+
+   SAMBA_RECYCLE_BIN_HOLD_DAYS
+          (benoetigt SAMBA_RECYCLE_BIN='yes')
+
+          Anzahl von Tagen, nach der Dateien im Papierkorb geloescht
+          werden
+
+          Hiermit kann eine Anzahl von Tagen eingestellt werden, nach der
+          Dateien in den Papierkoerben der Freigaben als veraltet gelten
+          und durch ein nachts um 03:15 Uhr laufendes Cron-Skript
+          geloescht werden. Laeuft der Server zu diesem Zeitpunkt nicht,
+          sollte man den Papierkorb abschalten oder das Skript
+
+          /var/install/bin/samba-recycle-cron
+
+          nach Bedarf von Hand starten oder in der Cron Administration
+          einen Job mit passendem Zeitpunkt anlegen. In der
+          Standardeinstellung gelten Dateien in den Papierkoerben nach 7
+          Tagen als veraltet und werden durch das Cron-Skript geloescht.
+          Die je nach Eurer Konfiguration ueber das Dateisystem
+          verstreuten Papierkorb-Verzeichnisse koennen mit folgendem
+          Befehl angezeigt werden:
+
+          find / -path '/proc' -prune -o -name samba_recycle_bin -type d \
+          -print
+
+          Wenn die Notwendigkeit besteht, alle Papierkoerbe mitsamt Inhalt
+          zu loeschen und Ihr Euch mit dem vorigen Befehl versichert habt,
+          dass auch wirklich nur die gewuenschten Papierkoerbe von dem
+          find-Befehl erfasst werden, loescht folgender Befehl
+          unwiederbringlich (achtet unbedingt darauf, keine wichtigen
+          Dateien oder Verzeichnisse zu verlieren!):
+
+          find / -path '/proc' -prune -o -name samba_recycle_bin -type d \
+          -print -exec rm -rf {} \; 2>/dev/null
+
+          Standardeinstellung: SAMBA_RECYCLE_BIN_HOLD_DAYS='7'
+
+   SAMBA_PDF_TARGET
+          Das Ziel fuer erzeugte PDF-Dateien:
+
+          Es gibt drei moegliche Ziele fuer durch PDF-Drucker erzeugte
+          PDF-Dateien, welche jeweils global, also fuer alle PDF-Drucker
+          gelten:
+
+         1. Die Dateien werden im Home-Verzeichnis des druckenden Users
+            abgelegt. Dazu ist 'homedir' einzutragen:
+
+            SAMBA_PDF_TARGET='homedir'
+
+         2. Die Dateien werden in dem fuer alle erreichbaren
+            Public-Verzeichnis abgelegt. Dazu ist 'public' einzutragen:
+
+            SAMBA_PDF_TARGET='public'
+
+            Bei manueller Konfiguration mittels
+
+            SAMBA_MANUAL_CONFIGURATION='yes'
+
+            muss dazu natuerlich eine solche Freigabe definiert sein. Wenn
+            man annimmt, dass die dritte Freigabe die Public-Freigabe sein
+            soll, dann wuerde die Freigabe-Definition so aussehen:
+
+            SAMBA_SHARE_3_ACTIVE='yes'
+            SAMBA_SHARE_3_NAME='public'
+            SAMBA_SHARE_3_COMMENT='public directory on %h'
+            SAMBA_SHARE_3_RW='yes'
+            SAMBA_SHARE_3_BROWSE='yes'
+            SAMBA_SHARE_3_PATH='/public'
+            SAMBA_SHARE_3_USER=''
+            SAMBA_SHARE_3_PUBLIC='yes'
+            SAMBA_SHARE_3_READ_LIST=''
+            SAMBA_SHARE_3_WRITE_LIST=''
+            SAMBA_SHARE_3_FORCE_CMODE='0777'
+            SAMBA_SHARE_3_FORCE_DIRMODE='0777'
+            SAMBA_SHARE_3_FORCE_USER=''
+            SAMBA_SHARE_3_FORCE_GROUP=''
+
+         3. Die Dateien werden dem druckenden User per Mail geschickt.
+            Dazu ist 'mail' einzutragen:
+
+            SAMBA_PDF_TARGET='mail'
+
+            Fuer diesen Fall sind natuerlich ein installierter und korrekt
+            konfigurierter Mailserver, ein eingerichteter Mail-Account
+            fuer den druckenden User sowie das Perl-Paket perl_mime_base64
+            zur Erzeugung der Mail-Anhaenge notwendig. Achtet bei grossen
+            Dateien auch auf die Groessenbeschraenkungen fuer Mails,
+            welche in der Mailserverkonfiguration vorgegeben sind!
+
+          Da nicht alle User intern einen Mailserver einsetzen und bei
+          manueller Konfiguration nicht unbedingt eine Public-Freigabe
+          vorausgesetzt werden kann, wurde 'homedir' als Voreinstellung
+          festgelegt.
+
+          Standardeinstellung: SAMBA_PDF_TARGET='homedir'
+
+   SAMBA_SERVERSTRING
+          Der Kommentar des Samba-Servers in der Netzwerkumgebung:
+
+          Hier kann man eine Zeichenkette eingeben, die in der
+          Netzwerkumgebung als Kommentar/Beschreibung des Servers
+          erscheint. Damit kann man dem Samba-Server eine individuelle
+          Note verleihen. Wenn die Variable nicht gefuellt ist, wird kein
+          Kommentar angezeigt.
+
+          Standardeinstellung: SAMBA_SERVERSTRING=''
+
+   SAMBA_EXPERT_EXEC
+          Uebernahme der im Paket sambaexpert definierten Optionen: 'yes'
+          oder 'no'
+
+          Wenn diese Variable auf 'yes' gesetzt ist, werden die im
+          zusaetzlichen Paket sambaexpert definierten Optionen in die
+          Datei /etc/smb.conf uebernommen, wobei gleichnamige Variablen
+          ueberschrieben bzw. neue Variablen hinzugefuegt werden. Das
+          kommt denjenigen entgegen, die einzelne Parameter der
+          Samba-Konfigurationsdatei direkt veraendern wollen oder muessen,
+          weil mein Paket nicht jede erdenkliche Konfiguration
+          unterstuetzen kann und will. Dazu ist es erforderlich, dass das
+          Paket sambaexpert korrekt installiert wurde und die gewuenschten
+          Optionen vor dem Editieren der Samba-Konfiguration vorgenommen
+          wurden. Da bei diesem Vorgang direkte Veraenderungen in der
+          Datei /etc/smb.conf vorgenommen werden und ich Fehler des
+          Anwenders so nicht abfangen kann, werde ich niemandem Fragen zu
+          daraus resultierenden Problemen beantworten. Bei Problemen ist
+          es in jedem Fall ratsam, diese Option zu deaktivieren und zu
+          ueberpruefen, ob der Fehler immer noch auftritt. Damit keiner
+          vergisst, dass er sich ein potentielles Problem durch selbst
+          definierte Parameter einhandelt, wird man mittels einer Meldung
+          auf den Umstand hingewiesen, dass diese Option aktiviert ist.
+
+          Noch einmal: Ich werde niemanden supporten, der diese Option
+          setzt und Fragen dazu stillschweigend ignorieren.
+
+          Standardeinstellung: SAMBA_EXPERT_EXEC='no'
+
+   SAMBA_SMBWEBCLIENT
+          (benoetigt Apache und PHP) Installiere das PHP-Skript
+          smbwebclient.php: 'yes' oder 'no'
+
+          Durch Setzen des Parameters SAMBA_SMBWEBCLIENT='yes' wird das
+          PHP-Skript smbwebclient.php in das mit dem Parameter
+          SAMBA_SMBWEBCLIENT_PATH definierte Verzeichnis kopiert
+          (Default: /var/www/htdocs).
+
+          Sinn des SMB-Webclients ist es, ueber einen Web-Browser Zugriff
+          auf Samba-Ressourcen zu erlangen. So koennen Rechner, die keinen
+          SMB-Client mitbringen oder sich in Netzen befinden, aus denen
+          man keinen direkten Zugriff auf Samba zulassen moechte, trotzdem
+          auf Freigaben zugreifen.
+
+          Hier ein dicker Hinweis zu den moeglichen Sicherheitsrisiken:
+
+          Fehler in Apache-, PHP- oder Samba-Funktionen koennen zu
+          ungewollten Zugriffen bis hin zur Uebernahme des Servers
+          fuehren! Bei Bekanntwerden von Sicherheitsluecken in einer der 3
+          beteiligten Komponenten sollte man diese Zugriffsmoeglichkeit
+          sofort deaktivieren. Eine weitere Gefahr stellen manuelle
+          Aenderungen in den Dateien smbwebclient.php oder smb.conf dar.
+          Auch mittels sambaexpert ist es z.B. moeglich, unauthorisierten
+          Zugriff auf Samba zu ermoeglichen. Daher sollten solche
+          Aenderungen nur vorgenommen werden, wenn man sich ueber die
+          Folgen im klaren und bereit ist, auftretende Schwierigkeiten
+          allein zu meistern.
+
+          Eine zusaetzliche Absicherungsmoeglichkeit bietet eine
+          .htaccess-Datei ueber die Apache-Konfiguration. Leider kommt es
+          durch die doppelte Abfrage von Benutzername und Passwort
+          anscheinend zu Schwierigkeiten. Bei der Beseitigung dieser
+          Schwierigkeiten kann ich nicht helfen, da ich weder Apache- noch
+          PHP-Profi bin. Ich bitte deshalb, bei Fehlern oder Fragen
+          bezueglich smbwebclient.php folgende E-Mail-Adresse des
+          Entwicklers des PHP-Skriptes zu benutzen:
+
+          (E-MAIL vmvarela@gmail.com)
+
+          Die Homepage des Projektes befindet sich hier:
+
+          http://smbwebclient.sourceforge.net
+
+          Der SMB-Webclient besteht aus einem PHP-Script
+          (smbwebclient.php), daher sind Apache und PHP Voraussetzung zum
+          Einsatz des Clients. Weiterhin muss auf dem Rechner, auf dem das
+          Script laeuft, ein 'echter' SMB-Client installiert sein, was
+          durch mein installiertes Samba-Paket gegeben ist. Hilfreich ist,
+          wenn man sich bereits grundlegend mit der
+          Samba-/Apache-Konfiguration und mit der Rechte-Vergabe unter
+          Linux beschaeftigt hat. Wenn nicht, ist der SMB-Webclient die
+          Gelegenheit, dies endlich nachzuholen ;-)
+
+          Der SMB-Webclient kann durch Aufruf von
+
+          http://Name-des-eisfair-Servers/smbwebclient.php
+
+          im Browser gestartet werden, wobei Name-des-eisfair-Servers
+          natuerlich durch den Namen Eures eisfair-Servers bzw. dessen
+          IP-Adresse ersetzt werden muss. Zunaechst wird hier die
+          Anmeldung mittels einer in Samba definierten
+          Benutzer-ID/Kennwort-Kombination verlangt.
+
+          Nach erfolgreicher Anmeldung erscheint im Browser eine Liste mit
+          den Freigaben, die dieser Server ueber Samba zur Verfuegung
+          stellt. Klickt man auf den Namen einer Freigabe, wird im Browser
+          das Hauptverzeichnis dieser Freigabe angezeigt.
+          Unterverzeichnisse und Dateien werden mit verschiedenen Symbolen
+          aehnlich denen des Explorers unter Windows dargestellt. In
+          weiteren Spalten werden die Dateigroesse, der Typ
+          (Datei/Verzeichnis) und das Datum der letzen Aenderung
+          angezeigt. Ein Klick auf ein Verzeichnis wechselt in dieses, ein
+          Klick auf eine Datei laedt diese herunter. Hinter dem Klappmenue
+          in der ersten Zeile des Browsers verbergen sich die Funktionen
+          zum Erstellen eines neuen Verzeichnises (Neuer Ordner), zum
+          Hochladen einer Datei (Neue Datei (hochladen)) und zum Loeschen
+          der Dateien oder Verzeichnisse (Markierte Datei(en) loeschen),
+          die ueber die Checkbox jeweils links ausgewaehlt wurden. Weitere
+          Details der Funktionen sind selbsterklaerend und von jedem, der
+          einen Browser bedienen kann, zu beherrschen.
+
+          Die Freigaben, auf die man zugreifen moechte, muessen im Setup
+          des Samba-Paketes so konfiguriert sein, als solle der Benutzer,
+          mit dem man sich angemeldet hat, z.B. von einem Windows-Rechner
+          aus zugreifen.
+
+          Durch das Samba-Setup wird smbwebclient.php so konfiguriert,
+          dass alle Samba-Freigaben des eisfair-Servers sichtbar sind. Das
+          laesst sich durch eine Aenderung der Zeile
+
+          var $cfgSambaRoot =
+
+          in smbwebclient.php aendern:
+
+          var $cfgSambaRoot = 'domain/server/share';
+
+          Damit ist nur die einzelne Freigabe 'share' des Servers 'server'
+          in der Domain 'domain' sichtbar.
+
+          Beim Hochladen von Dateien ist zu beachten, dass die maximale
+          Dateigroesse von Dateien, die hochgeladen werden koennen, von
+          zwei Parametern in der PHP-Konfiguration des Apache-Webservers
+          abhaengt:
+
+          Bei Verwendung von Apache1/PHP4:
+          PHP_MAX_POST_SIZE='8M'
+          PHP_MAX_UPLOAD_FILESIZE='8M'
+
+          Bei Verwendung von Apache2/PHP5:
+          PHP5_MAX_POST_SIZE='8M'
+          PHP5_MAX_UPLOAD_FILESIZE='8M'
+
+          Hier sind also jeweils Uploads von bis zu 8Mbyte pro Datei
+          moeglich. In Tests stellte sich heraus, dass beim Hochladen von
+          Dateien durch smbwebclient ab ca. 200MB selbst im lokalen Netz
+          Performanceprobleme auftreten koennen. Dies kann sich je nach
+          Leistungsfaehigkeit der verwendeten Hardware unterscheiden. Wenn
+          jemand etwas Anderes ertestet hat oder Abhilfe weiss, moege er
+          sich bei mir melden.
+
+          Standardeinstellung: SAMBA_SMBWEBCLIENT='no'
+
+   SAMBA_SMBWEBCLIENT_PATH
+          Installationspfad des PHP-Skriptes smbwebclient.php
+
+          In diesen Pfad wird smbwebclient.php installiert. Der Pfad muss
+          existieren und ein gueltiges document-root von Apache sein. Aus
+          Sicherheitsgruenden werden die smbwebclient-Aufrufe auf das
+          sichere https umgebogen. Das funktioniert leider nur sauber,
+          wenn der Pfad /var/www/htdocs verwendet wird, SSL in Apache
+          aktiviert ist und ein gueltiges Zertifikat erstellt wurde. Bei
+          Schwierigkeiten sollten diese Dinge ueberprueft werden.
+
+          Standardeinstellung: SAMBA_SMBWEBCLIENT_PATH='/var/www/htdocs'
+
+   SAMBA_OPLOCKS
+          Aktiviere Oplocking: 'yes' oder 'no'
+
+          Durch Setzen von SAMBA_OPLOCKS='yes' aktiviert man das
+          clientseitige Zwischenspeichern von Dateien. Diese Option kann
+          zu einem erheblichen Performancegewinn - aber auch zu dem
+          genauen Gegenteil fuehren. Eine genaue Betrachtung zu Vorteilen,
+          Nachteilen und Risiken ist hier zu finden:
+
+          http://gertranssmb3.berlios.de/output/locking.html#id2540840
+          http://us1.samba.org/samba/docs/man/Samba3-HOWTO/locking.html#id377839
+
+          Bisher war in den eisfair-Samba-Paketen das opportunistische
+          Locking komplett deaktiviert. Mit SAMBA_OPLOCKS='yes' wird das
+          opportunistische Locking fuer unkritische Dateien aktiviert.
+          Problematische Dateien werden anhand ihrer Endungen
+          ausgefiltert.
+
+          Vom Oplocking ausgeschlossen sind Dateien nach folgendem Muster:
+
+          /*.bak/*.cd*/*.cur/*.*db/*.db*/*.*dx/*.dxf/*.dwg/*.doc/
+          /*.fpt/*.igs/*.ia*/*.id*/*.in*/*.ip*/*.log/*.mpp/*.ndx/
+          /*.ntx/*.opt/*.ord/*.ppt/*.pst/*.qb*/*.sjb/*.sbs/*.slp/
+          /*.st*/*.vsd/*.xl*/
+
+          Bei Schwierigkeiten oder sogar Datenverlusten ist diese Option
+          mittels SAMBA_OPLOCKS='no' zu deaktivieren!
+
+          Standardeinstellung: SAMBA_OPLOCKS='no'
+
+      Abschnitt ,,Samba Advanced Configuration/User Mapping``:
+
+   Der Abschnitt beginnt mit
+
+#------------------------------------------------------------------------------
+# Samba Advanced Configuration/User Mapping
+#
+#  ********************************* ATTENTION ******************************
+#  *                                                                        *
+#  *                The following Sections only have an Effect,             *
+#  *                if you set SAMBA_MANUAL_CONFIGURATION='yes'             *
+#  *                                                                        *
+#  ******************************** ATTENTION *******************************
+#
+# Definition of User Mappings
+#
+# Set the number of Samba Usermap to create in SAMBA_USERMAP_N.
+#
+# Values below are only an example and are not used if
+# SAMBA_USERMAP_N is '0'
+#-----------------------------------------------------------------------------
+
+   ACHTUNG
+   Die Angaben in diesem Abschnitt haben nur eine Wirkung, wenn
+
+   SAMBA_MANUAL_CONFIGURATION='yes'
+
+   gesetzt wird!
+
+   In diesem Abschnitt werden Windows-Usernamen auf eisfair-Usernamen
+   gemappt. Das ist notwendig, wenn auf Windows-Seite Anmeldenamen mit
+   Leerzeichen oder Sonderzeichen verwendet werden. Mit solchen Usernamen
+   kann eisfair nichts anfangen, deshalb muessen diese Windows-Namen auf
+   konforme eisfair-Usernamen gemappt werden. Es ist ausserdem
+   empfehlenswert, System-User und Samba-User nur in Kleinbuchstaben
+   anzulegen!
+
+   Die Umsetzung der Namen wird in der Datei
+
+   /etc/user.map
+
+   vorgenommen, die aus diesem Abschnitt der Konfiguration erzeugt wird.
+   Die Kommentare in der Datei mit dem # am Anfang verdeutlichen den
+   Aufbau:
+
+   Rechts stehen einer oder mehrere Windows-Anmeldenamen mit oder ohne
+   Leerzeichen, links steht ein Samba-Benutzername.
+
+   root = "Administrator"
+
+   Wenn gegen einen externen Passwortserver authentifziert wird, steht vor
+   den Windows-Anmeldenamen ausserdem der Name der Domaene:
+
+   root = "DOM\Administrator"
+
+   Der Windows-Anmeldename ,,Administrator`` wird hier auf den
+   Samba-Benutzer ,,root`` umgesetzt. Es ist deswegen nicht notwendig (und
+   sogar falsch), ,,Administrator`` als Samba-Benutzer anzulegen. ,,root``
+   hingegen muss als Samba-User angelegt worden sein, da dessen
+   Samba-Passwort zur Ueberpruefung herangezogen wird, wenn man sich vom
+   Client aus als ,,Administrator`` einloggt.
+
+   Beispiel: Wenn auf einem Client ein Windows-Anmeldename ,,Jim Knopf``
+   existiert und mit diesem User auf Samba-Freigaben zugegriffen werden
+   soll, so muss ein eisfair-User und Samba-User eingerichtet werden, der
+   den Unix-Konventionen gehorcht und kein Leerzeichen beinhaltet. In
+   diesem Beispiel entscheiden wir uns fuer den eisfair-Namen
+   ,,jimknopf``. Dieser User wird wie ueblich als normaler eisfair-User
+   und Samba-User eingerichtet. Per Usermapping muss Samba nun noch
+   mitgeteilt werden, dass Anmeldeversuche des Windows-Users ,,Jim Knopf``
+   auf den eisfair-User und Samba-User ,,jimknopf`` umgebogen werden
+   sollen. Das zeigt das zweite Mapping der Beispielkonfiguration.
+
+   Achtung! Es muss in jedem Fall ein Mapping von ,,Administrator`` auf
+   ,,root`` durchgefuehrt werden! Wenn Ihr weitere Windows-User auf
+   ,,root`` mappen wollt, muesst Ihr dieses Beispiel erweitern. Dabei ist
+   es wichtig, dass die Erweiterungen unter der bisherigen Definition
+   erfolgen, also in etwa so:
+
+   SAMBA_USERMAP_1_ACTIVE='yes'
+   SAMBA_USERMAP_1_EISNAME='root'
+   SAMBA_USERMAP_1_WINNAME_N='2'
+   SAMBA_USERMAP_1_WINNAME_1='Administrator'
+   SAMBA_USERMAP_1_WINNAME_2='xyz'
+
+   Das heisst, die Reihenfolge ,,Administrator`` und dann erst alle
+   anderen User muss erhalten bleiben! Wenn gegen einen externen
+   Passwortserver authentifiziert wird, wird automatisch in /etc/user.map
+   der Name der Domaene vor die Windows-Usernamen gesetzt.
+
+   SAMBA_USERMAP_N
+          Erstellung einer bestimmten Anzahl von Usermappings: z.B. '2'
+
+          Ueber SAMBA_USERMAP_N wird die Anzahl der zu erstellenden bzw.
+          zu benutzenden Usermappings eingestellt. Bei einem Mapping ist
+          eine '1' anzugeben, bei zwei Mappings eine '2' usw.
+
+          Wird hier eine 2 eingegeben, muessen mindestens die folgenden
+          Variablen
+
+          SAMBA_USERMAP_1_ACTIVE
+          SAMBA_USERMAP_1_EISNAME
+          SAMBA_USERMAP_1_WINNAME_N
+          SAMBA_USERMAP_1_WINNAME_1
+
+          und
+
+          SAMBA_USERMAP_2_ACTIVE
+          SAMBA_USERMAP_2_EISNAME
+          SAMBA_USERMAP_2_WINNAME_N
+          SAMBA_USERMAP_2_WINNAME_1
+
+          existieren und sinnvoll gefuellt werden, wobei die Anzahl zu
+          mappenden Windows-Namen variabel ist.
+
+          Standardeinstellung: SAMBA_USERMAP_N='2'
+
+   SAMBA_USERMAP_x_ACTIVE
+          Soll das Mapping aktiv sein: 'yes' oder 'no'
+
+          Mit SAMBA_USERMAP_x_ACTIVE wird bestimmt, ob ein Mapping aktiv
+          ist oder nicht. Moechte man ein Mapping voruebergehend
+          deaktivieren, so setzt man die Variable auf 'no'.
+
+          Standardeinstellung: SAMBA_USERMAP_1_ACTIVE='yes'
+
+   SAMBA_USERMAP_x_EISNAME
+          Mit SAMBA_USERMAP_x_EISNAME wird der Name des x'ten
+          eisfair-Users eingestellt, auf den gemappt werden soll. Dieser
+          Name muss schon als eisfair- und Samba-User existieren, vorher
+          also angelegt worden sein.
+
+          Standardeinstellung: SAMBA_USERMAP_1_EISNAME='root'
+
+   SAMBA_USERMAP_x_WINNAME_N
+          Mit SAMBA_USERMAP_x_WINNAME_N wird eingestellt, wie viele
+          Windows-Usernamen auf den x'ten eisfair-User gemappt werden
+          sollen. Mitunter macht es Sinn, mehrere Windows-User auf einen
+          eisfair-User umsetzen zu lassen. Dazu legt man hier die Anzahl
+          der Windows-Usernamen fest. Im ersten Mapping, welches zwingend
+          notwendig ist, moechten wir einen Windows-Usernamen auf den
+          eisfair-User ,,root`` mappen lassen, naemlich ,,Administrator``.
+          Demzufolge muss mit den naechsten Variablen auch nur ein
+          Username definiert werden.
+
+          Standardeinstellung: SAMBA_USERMAP_1_WINNAME_N='1'
+
+   SAMBA_USERMAP_x_WINNAME_y
+          Mit SAMBA_USERMAP_x_WINNAME_y wird der y'te Windows-Username
+          eingestellt, der auf den x'ten eisfair-Usernamen gemappt wird.
+          Um sich das besser vorstellen zu koennen, hier das erste
+          Beispiel:
+
+          SAMBA_USERMAP_1_ACTIVE='yes'
+          SAMBA_USERMAP_1_EISNAME='root'
+          SAMBA_USERMAP_1_WINNAME_N='1'
+          SAMBA_USERMAP_1_WINNAME_1='Administrator'
+
+          Im zweiten Beispiel werden zwei Windows-Usernamen auf den
+          zweiten eisfair-Usernamen gemappt:
+
+          SAMBA_USERMAP_2_ACTIVE='yes'
+          SAMBA_USERMAP_2_EISNAME='jimknopf'
+          SAMBA_USERMAP_2_WINNAME_N='2'
+          SAMBA_USERMAP_2_WINNAME_1='Jim Knopf'
+          SAMBA_USERMAP_2_WINNAME_2='Jim Jeremy Knopf'
+
+          Ein beliebter Fehler besteht darin, das Mapping zu deaktivieren
+          bzw. eine weitere Variable SAMBA_USERMAP_x_WINNAME_y zu
+          definieren aber SAMBA_USERMAP_x_WINNAME_N nicht hochzuzaehlen.
+
+      Abschnitt ,,Samba Advanced Configuration/Samba Shares``:
+
+   Der Abschnitt wird eingeleitet mit
+
+#------------------------------------------------------------------------------
+# Samba Advanced Configuration/Samba Shares
+#
+#  ********************************* ATTENTION ******************************
+#  *                                                                        *
+#  *                The following Sections only have an Effect,             *
+#  *                if you set SAMBA_MANUAL_CONFIGURATION='yes'             *
+#  *                                                                        *
+#  ******************************** ATTENTION *******************************
+#
+# Definition of Samba Shares
+#
+# Set the number of Samba Shares to create in SAMBA_SHARE_N.
+#
+# Values below are only an example and are not used if
+# SAMBA_SHARE_N is '0'
+#------------------------------------------------------------------------------
+
+   ACHTUNG
+   Die Angaben in diesem Abschnitt haben nur eine Wirkung, wenn
+
+   SAMBA_MANUAL_CONFIGURATION='yes'
+
+   gesetzt wird!
+
+   SAMBA_SHARE_N
+          Erstellung einer bestimmten Anzahl von Freigaben: z.B. '2'
+
+          Ueber SAMBA_SHARE_N wird die Anzahl der zu erstellenden bzw. zu
+          benutzenden Freigaben eingestellt. Wenn die Freigaben nicht
+          existieren, werden sie automatisch angelegt und wenn sie
+          existieren, werden sie einfach benutzt. Werden die Freigaben
+          schon vorher manuell angelegt, so ist darauf zu achten, dass die
+          Rechte so gestaltet werden, dass ein Zugriff der vorgesehenen
+          User und Gruppen moeglich ist.
+
+          Wird hier eine 2 eingegeben, muessen die folgenden Variablen
+
+          SAMBA_SHARE_1_ACTIVE
+          SAMBA_SHARE_1_NAME
+          SAMBA_SHARE_1_COMMENT
+          SAMBA_SHARE_1_RW
+          SAMBA_SHARE_1_BROWSE
+          SAMBA_SHARE_1_PATH
+          SAMBA_SHARE_1_USER
+          SAMBA_SHARE_1_PUBLIC
+          SAMBA_SHARE_1_READ_LIST
+          SAMBA_SHARE_1_WRITE_LIST
+          SAMBA_SHARE_1_FORCE_CMODE
+          SAMBA_SHARE_1_FORCE_DIRMODE
+          SAMBA_SHARE_1_FORCE_USER
+          SAMBA_SHARE_1_FORCE_GROUP
+
+          und
+
+          SAMBA_SHARE_2_ACTIVE
+          SAMBA_SHARE_2_NAME
+          SAMBA_SHARE_2_COMMENT
+          SAMBA_SHARE_2_RW
+          SAMBA_SHARE_2_BROWSE
+          SAMBA_SHARE_2_PATH
+          SAMBA_SHARE_2_USER
+          SAMBA_SHARE_2_PUBLIC
+          SAMBA_SHARE_2_READ_LIST
+          SAMBA_SHARE_2_WRITE_LIST
+          SAMBA_SHARE_2_FORCE_CMODE
+          SAMBA_SHARE_2_FORCE_DIRMODE
+          SAMBA_SHARE_2_FORCE_USER
+          SAMBA_SHARE_2_FORCE_GROUP
+
+          vorhanden und mit sinnvollen Werten gefuellt sein.
+
+          Standardeinstellung: SAMBA_SHARE_N='0'
+
+   SAMBA_SHARE_x_ACTIVE
+          Soll die Freigabe aktiv sein: 'yes' oder 'no'
+
+          Mit SAMBA_SHARE_x_ACTIVE wird bestimmt, ob eine Freigabe aktiv
+          ist oder nicht. Moechte man eine Freigabe voruebergehend
+          deaktivieren, so setzt man die Variable auf 'no'.
+
+          Standardeinstellung: SAMBA_SHARE_1_ACTIVE='yes'
+
+   SAMBA_SHARE_x_NAME
+          Mit SAMBA_SHARE_x_NAME wird der Name der x'ten Freigabe
+          eingestellt. Unter diesem Namen ist die Freigabe zu erreichen
+          bzw. in der Netzwerkumgebung von Windows-Rechnern sichtbar
+          (siehe auch SAMBA_SHARE_x_BROWSE weiter unten).
+
+          Trotzdem eine Kombination aus 12 Buchstaben und Zahlen ohne
+          Umlaute sowie der Bindestrich fuer den Freigabenamen
+          hinterlegbar ist, sollte man sich aus
+          DOS-Kompatibilitaetsgruenden auf maximal 8 Zeichen beschraenken,
+          z.B.
+
+          SAMBA_SHARE_1_NAME='share1'
+
+          Das Programm eischk, welches die Konfiguration vor dem
+          Abspeichern ueberprueft, gibt bei laengeren Namen eine Warnung
+          aus:
+
+          Checking configuration file ...
+
+          (/etc/config.d/samba:274) problematical value of variable
+              SAMBA_SHARE_4_NAME: '01234-567890' (More than 8 characters will
+              break compatibility with DOS clients!)
+
+          An 'problematical' erkennt man, dass das lediglich eine Warnung
+          ist. Das Abspeichern der Konfiguration ist trotz dieser Warnung
+          moeglich.
+
+          Freigabenamen muessen im Netzwerk eindeutig sein, duerfen also
+          nicht doppelt vorkommen. Ausserdem ist es keine gute Idee
+          Freigabenamen zu vergeben, die identisch mit einem User- oder
+          Gruppennamen oder mit dem NETBIOS-Namen eines Rechners sind.
+
+          Standardeinstellung: SAMBA_SHARE_1_NAME='share1'
+
+   SAMBA_SHARE_x_RW
+          Soll die Freigabe beschreibbar sein: 'yes' oder 'no'
+
+          Ueber SAMBA_SHARE_x_RW wird eingestellt, ob die x'te Freigabe
+          beschreibbar sein soll.
+
+          Wird hier 'no' gewaehlt, koennen Dateien von dieser Freigabe
+          gelesen aber nicht dorthin gespeichert werden. Das ist vor allem
+          bei Dateien sinnvoll, die man anderen zur Verfuegung stellen
+          moechte aber dabei unbedingt verhindern will, dass diese Dateien
+          veraendert oder sogar geloescht werden.
+
+          Wird 'yes' gewaehlt, ist diese Freigabe fuer alle in den
+          Variablen
+
+          SAMBA_SHARE_x_USER
+
+          eingestellten User bzw. bei
+
+          SAMBA_SHARE_x_PUBLIC='yes'
+
+          fuer alle definierten Samba-User les- und beschreibbar.
+
+          Achtung! Die Wirkung dieser Variable wird durch
+
+          SAMBA_SHARE_x_READ_LIST
+
+          und
+
+          SAMBA_SHARE_x_WRITE_LIST
+
+          beeinflusst und eventuell aufgehoben!
+
+          Standardeinstellung: SAMBA_SHARE_x_RW='yes'
+
+   SAMBA_SHARE_x_BROWSE
+          Soll die x'te Freigabe sichtbar sein: 'yes' oder 'no'
+
+          Mit SAMBA_SHARE_x_BROWSE wird eingestellt, ob die x'te Freigabe
+          in der Netzwerkumgebung sichtbar sein soll oder nicht. Moechte
+          man verhindern, dass andere User in der Netzwerkumgebung die
+          Freigabe sehen koennen, setzt man
+
+          SAMBA_SHARE_x_BROWSE='no'
+
+          Nutzer, die wissen, dass die Freigabe existiert, koennen
+          trotzdem darauf zugreifen, indem sie z.B. unter Start/Ausfuehren
+
+          \\eisfair\sharename
+
+          eingeben. Dabei ist ,,eisfair`` durch den Namen des
+          eisfair-Rechners zu ersetzen - wenn er davon abweicht - und
+          ,,sharename`` mit dem Namen, den man in SAMBA_SHARE_x_NAME
+          eingetragen hat.
+
+          Standardeinstellung: SAMBA_SHARE_x_BROWSE='yes'
+
+   SAMBA_SHARE_x_PATH
+          Der Pfad zur x'ten Freigabe
+
+          Ueber SAMBA_SHARE_x_PATH wird der Pfad zur x'ten Freigabe
+          eingestellt.
+
+          Dazu ein Beispiel:
+
+          Das vordefinierte public-Verzeichnis ist so definiert:
+
+          SAMBA_SHARE_3_ACTIVE='yes'
+          SAMBA_SHARE_3_NAME='public'
+          SAMBA_SHARE_3_COMMENT='public directory on %h'
+          SAMBA_SHARE_3_RW='yes'
+          SAMBA_SHARE_3_BROWSE='yes'
+          SAMBA_SHARE_3_PATH='/public'
+          SAMBA_SHARE_3_USER='user1 user2'
+          SAMBA_SHARE_3_PUBLIC='yes'
+          SAMBA_SHARE_3_READ_LIST=''
+          SAMBA_SHARE_3_WRITE_LIST=''
+          SAMBA_SHARE_3_FORCE_CMODE='0777'
+          SAMBA_SHARE_3_FORCE_DIRMODE='0777'
+          SAMBA_SHARE_3_FORCE_USER=''
+          SAMBA_SHARE_3_FORCE_GROUP=''
+
+          Durch die Angaben
+
+          SAMBA_SHARE_3_NAME='public'
+          SAMBA_SHARE_3_PATH='/public'
+
+          wird das Verzeichnis namens ,,public`` unter / erstellt und
+          freigeben. Als Freigabename wird der Inhalt der Variablen
+
+          SAMBA_SHARE_3_NAME
+
+          , also in diesem Fall
+
+          public
+
+          benutzt. Wenn das Verzeichnis nicht existiert, wird es
+          automatisch angelegt und wenn es existiert, wird es einfach
+          benutzt, damit schon abgelegte Daten erhalten bleiben. Es gibt
+          im Moment keine Moeglichkeit, einmal erstellte Verzeichnisse
+          ueber die Samba-Konfiguration zu loeschen, da bei einer
+          Fehleingabe die schon abgelegten Dateien geloescht werden
+          wuerden.
+
+          Die im Verzeichnis liegenden Dateien koennen ueber den Explorer
+          geloescht werden, wenn die Freigabe in der Variablen
+
+          SAMBA_SHARE_x_RW
+
+          schreibbar definiert wurde; das Verzeichnis selbst nur ueber die
+          Kommandozeile.
+
+   SAMBA_SHARE_x_USER
+          Die User der x'ten Freigabe
+
+          Mit dieser Variable wird definiert, welche User oder Gruppen auf
+          die x'te Freigabe zugreifen duerfen. Mehrere User werden
+          hintereinander geschrieben und durch ein Leerzeichen getrennt,
+          Gruppen werden mit einem + davor angegeben. Ein Beispiel:
+
+          SAMBA_SHARE_x_USER='user1 user2 +samba'
+
+          Auf die Freigabe haben also der ,,user1``, der ,,user2`` und die
+          Gruppe ,,samba`` Zugriff. Wird die Variable nicht gefuellt, hat
+          nur der User ,,root`` Zugriff. Aber Achtung! Eine Besonderheit
+          gibt es. Wird die folgende Variable
+
+          SAMBA_SHARE_x_PUBLIC
+
+          auf 'yes' gesetzt, dominiert sie ueber den Eintrag in
+
+          SAMBA_SHARE_x_USER
+
+          Es haben dann wieder alle Benutzer Zugriff!
+
+   SAMBA_SHARE_x_PUBLIC
+          Wird diese Variable auf 'yes' gesetzt, haben alle registrierten
+          Samba- User auf die Freigabe Zugriff. Diese Variable dominiert
+          ueber
+
+          SAMBA_SHARE_x_USER
+
+   SAMBA_SHARE_x_READ_LIST
+          Die User der x'ten Freigabe mit ausschliesslich lesendem Zugriff
+
+          Mit dieser Variable wird definiert, welche User oder Gruppen auf
+          die x'te Freigabe ausschliesslich lesend zugreifen duerfen,
+          wobei unerheblich ist, was in
+
+          SAMBA_SHARE_x_RW
+
+          definiert wurde. Die Fuellung dieser Variable setzt also
+
+          SAMBA_SHARE_x_RW='yes'
+
+          fuer die angegebenen User und Gruppen ausser Kraft. Mehrere User
+          werden hintereinander geschrieben und durch ein Leerzeichen
+          getrennt, Gruppen werden mit einem + davor angegeben.
+
+          Ein Beispiel:
+
+          SAMBA_SHARE_x_RW='yes'
+          SAMBA_SHARE_x_READ_LIST='user1 user2 +samba'
+
+          Trotzdem die Freigabe schreibbar definiert wurde, duerfen user1,
+          user2 und die Gruppe samba nur lesen. Bei der Erstellung der
+          Samba-Konfiguration wird ueberprueft, ob die hier angegebenen
+          User oder Gruppen tatsaechlich existieren. Ist das nicht der
+          Fall, so wird diese Freigabe mit einer Warnung uebersprungen und
+          ist damit nicht erreichbar. Wer eine solche Warnung erhaelt,
+          sollte peinlichst genau kontrollieren, ob er sich bei den User-
+          oder Gruppennamen nicht verschrieben hat.
+
+          Siehe auch:
+
+          SAMBA_SHARE_x_WRITE_LIST
+
+          Standardeinstellung: SAMBA_SHARE_x_READ_LIST=''
+
+   SAMBA_SHARE_x_WRITE_LIST
+          Die User der x'ten Freigabe mit schreibendem Zugriff
+
+          Mit dieser Variable wird definiert, welche User oder Gruppen auf
+          die x'te Freigabe schreibend zugreifen duerfen, wobei
+          unerheblich ist, was in
+
+          SAMBA_SHARE_x_RW
+
+          definiert wurde. Die Fuellung dieser Variable setzt also
+
+          SAMBA_SHARE_x_RW='no'
+
+          fuer die angegebenen User und Gruppen ausser Kraft.
+
+          Mehrere User werden hintereinander geschrieben und durch ein
+          Leerzeichen getrennt, Gruppen werden mit einem + davor
+          angegeben.
+
+          Ein Beispiel:
+
+          SAMBA_SHARE_x_RW='no'
+          SAMBA_SHARE_x_WRITE_LIST='user1 user2 +samba'
+
+          Trotzdem die Freigabe nur lesbar definiert wurde, duerfen user1,
+          user2 und die Gruppe samba auch schreiben. Ist ein User sowohl
+          in
+
+          SAMBA_SHARE_x_READ_LIST
+
+          als auch in
+
+          SAMBA_SHARE_x_WRITE_LIST
+
+          enthalten, bekommt er schreibenden Zugriff. Bei der Erstellung
+          der Samba-Konfiguration wird ueberprueft, ob die hier
+          angegebenen User oder Gruppen tatsaechlich existieren. Ist das
+          nicht der Fall, so wird diese Freigabe mit einer Warnung
+          uebersprungen und ist damit nicht erreichbar. Wer eine solche
+          Warnung erhaelt, sollte peinlichst genau kontrollieren, ob er
+          sich bei den User- oder Gruppennamen nicht verschrieben hat.
+
+          Siehe auch:
+
+          SAMBA_SHARE_x_READ_LIST
+
+          Standardeinstellung: SAMBA_SHARE_x_WRITE_LIST=''
+
+   SAMBA_SHARE_x_FORCE_CMODE
+          Dateirechte fuer neue Dateien der x'ten Freigabe
+
+          Samba baut auf dem Sicherheitssystem des darunter liegenden
+          Linux- Systems auf. Sobald eine Verbindung aufgebaut wird, nimmt
+          der Server fuer diese Verbindung die Dateirechte des
+          eingeloggten Benutzers an. Der Benutzer kann also auch weiterhin
+          keine Dinge tun, die ihm unter Linux verboten sind. Samba
+          veraendert die Rechte bestehender Linux-Dateien nicht. Wenn aber
+          eine Datei neu erstellt wird, muss Samba wissen, welche Rechte
+          der Eigentuemer, die Gruppe und alle andere Benutzer bekommen
+          sollen. Ueber diese Variable werden diese Rechte eingestellt
+          aber noch weiter verarbeitet - es kann also sein, dass sie nicht
+          wirklich auf dem Linux-Dateisystem ankommen. Beispiel:
+
+          SAMBA_SHARE_1_FORCE_CMODE='0600'
+
+          Die Rechtemaske wird wie bei chmod in Oktal-Schreibweise
+          angegeben. Wer weiterfuehrende Informationen benoetigt, muss
+          sich darum selbst bemuehen ;o)
+
+   SAMBA_SHARE_x_FORCE_DIRMODE
+          Rechte fuer neue Verzeichnisse der x'ten Freigabe
+
+          Fuer neue Verzeichnisse in der x'ten Freigabe werden die hier
+          angegebenen Zugriffsrechte zugewiesen. Auch hier gilt, dass
+          diese Zugriffsrechte erst noch weiter verarbeitet werden, siehe
+
+          SAMBA_SHARE_x_FORCE_CMODE
+
+          Beispiel:
+
+          SAMBA_SHARE_1_FORCE_DIRMODE='0700'
+
+   SAMBA_SHARE_x_FORCE_USER
+          Eigentuemer von Dateien und Verzeichnissen ueberschreiben
+
+          Normalerweise gehoeren in einer Freigabe angelegte Dateien und
+          Verzeichnisse dem angemeldeten Benutzer - er ist der
+          Eigentuemer. Mitunter ist das aber nicht gewollt, z.B. wenn man
+          Dateien fuer den Webserver per Samba in die entsprechenden
+          Verzeichnisse kopieren will. Um als User xyz diese Dateien per
+          Samba kopieren zu koennen und sie dabei dem User www zu
+          uebereignen, setzt man in der entsprechenden Freigabe
+
+          SAMBA_SHARE_x_FORCE_USER='www'
+
+          Wird die Variable
+
+          SAMBA_SHARE_x_FORCE_GROUP
+
+          dabei nicht gefuellt, so wird von Samba neben dem Eigentuemer
+          gleichzeitig auch die primaere Gruppe der angelegten Dateien auf
+          den in
+
+          SAMBA_SHARE_x_FORCE_USER
+
+          definierten User gesetzt. Siehe auch die Dokumentation zu
+          SAMBA_SHARE_x_FORCE_CMODE und SAMBA_SHARE_x_FORCE_GROUP.
+
+          Aber eine Ausnahme gibt es: Ist man als User ,,root`` bei der
+          Freigabe angemeldet oder wird der Benutzer, mit dem man sich
+          angemeldet hat, auf ,,root`` gemappt (/etc/user.map), gehoeren
+          die Dateien trotz dieser Einstellung immer ,,root``! Bei der
+          Erstellung der Samba-Konfiguration wird ueberprueft, ob der hier
+          angegebene User tatsaechlich existiert. Ist das nicht der Fall,
+          so wird diese Freigabe mit einer Warnung uebersprungen und ist
+          damit nicht erreichbar. Wer eine solche Warnung erhaelt, sollte
+          peinlichst genau kontrollieren, ob er sich bei dem Usernamen
+          nicht verschrieben hat.
+
+          Standardeinstellung: SAMBA_SHARE_x_FORCE_USER=''
+
+   SAMBA_SHARE_x_FORCE_GROUP
+          Eigentuemer-Gruppe von Dateien und Verzeichnissen ueberschreiben
+
+          Normalerweise werden in einer Freigabe angelegte Dateien und
+          Verzeichnisse der primaeren Gruppe des angemeldeten Benutzers
+          zugeordnet. Will am das aendern, setzt man in der entsprechenden
+          Freigabe
+
+          SAMBA_SHARE_x_FORCE_GROUP
+
+          auf den Gruppennamen der gewuenschten Gruppe. Ist auch die
+          Variable
+
+          SAMBA_SHARE_x_FORCE_USER
+
+          gefuellt, so dominiert die in
+
+          SAMBA_SHARE_x_FORCE_GROUP
+
+          definierte Gruppe ueber die primaere Gruppe des Users in
+
+          SAMBA_SHARE_x_FORCE_USER
+
+          Siehe die Dokumentation zu
+
+          SAMBA_SHARE_x_FORCE_CMODE und SAMBA_SHARE_x_FORCE_USER.
+
+          Bei der Erstellung der Samba-Konfiguration wird ueberprueft, ob
+          die hier angegebene Gruppe tatsaechlich existiert. Ist das nicht
+          der Fall, so wird diese Freigabe mit einer Warnung uebersprungen
+          und ist damit nicht erreichbar. Wer eine solche Warnung erhaelt,
+          sollte peinlichst genau kontrollieren, ob er sich bei dem
+          Gruppenamen nicht verschrieben hat.
+
+          Standardeinstellung: SAMBA_SHARE_x_FORCE_GROUP=''
+
+      Abschnitt ,,Samba Advanced Configuration/Samba DFS roots``:
+
+   Der Abschnitt wird eingeleitet mit
+
+#------------------------------------------------------------------------------
+# Samba Advanced Configuration/Samba DFS roots
+#
+#  ********************************* ATTENTION ******************************
+#  *                                                                        *
+#  *                The following Sections only have an Effect,             *
+#  *                if you set SAMBA_MANUAL_CONFIGURATION='yes'             *
+#  *                                                                        *
+#  ******************************** ATTENTION *******************************
+#
+# Definition of Samba DFS roots
+#
+# Values below are only an example and are not used if
+# SAMBA_DFSROOT_N is '0'
+#------------------------------------------------------------------------------
+
+   ACHTUNG
+   Die Angaben in diesem Abschnitt haben nur eine Wirkung, wenn
+
+   SAMBA_MANUAL_CONFIGURATION='yes'
+
+   gesetzt wird!
+
+   SAMBA_DFSROOT_N
+          Erstellung einer bestimmten Anzahl von DFS-roots: z.B. '2'
+
+          Ueber SAMBA_DFSROOT_N wird die Anzahl der zu erstellenden bzw.
+          zu benutzenden DFS-roots eingestellt. Zur Erzeugung einer
+          sauberen DFS-Konfiguration ist es notwendig, nach jeder
+          Aenderung die Verzeichnisse mit den Links komplett zu loeschen
+          und wieder neu anzulegen. Deshalb werden die DFS-roots
+          automatisch in einer zur Laufzeit nur lesbar gemounteten
+          Image-Datei angelegt, damit nicht direkt in die DFS-roots oder
+          in ein Container-Verzeichnis fuer die Links Dateien gespeichert
+          werden koennen.
+
+          Wird hier eine 2 eingegeben, muessen die folgenden Variablen
+
+          SAMBA_DFSROOT_1_ACTIVE
+          SAMBA_DFSROOT_1_NAME
+          SAMBA_DFSROOT_1_COMMENT
+          SAMBA_DFSROOT_1_RW
+          SAMBA_DFSROOT_1_BROWSE
+          SAMBA_DFSROOT_1_USER
+          SAMBA_DFSROOT_1_PUBLIC
+          SAMBA_DFSROOT_1_READ_LIST
+          SAMBA_DFSROOT_1_WRITE_LIST
+          SAMBA_DFSROOT_1_FORCE_CMODE
+          SAMBA_DFSROOT_1_FORCE_DIRMODE
+          SAMBA_DFSROOT_1_FORCE_USER
+          SAMBA_DFSROOT_1_FORCE_GROUP
+          SAMBA_DFSROOT_1_DFSLNK_N
+          SAMBA_DFSROOT_1_DFSLNK_1_ACTIVE
+          SAMBA_DFSROOT_1_DFSLNK_1_SUBPATH
+          SAMBA_DFSROOT_1_DFSLNK_1_NAME
+          SAMBA_DFSROOT_1_DFSLNK_1_UNC_N
+          SAMBA_DFSROOT_1_DFSLNK_1_UNC_1_PATH
+
+          und
+
+          SAMBA_DFSROOT_2_ACTIVE
+          SAMBA_DFSROOT_2_NAME
+          SAMBA_DFSROOT_2_COMMENT
+          SAMBA_DFSROOT_2_RW
+          SAMBA_DFSROOT_2_BROWSE
+          SAMBA_DFSROOT_2_USER
+          SAMBA_DFSROOT_2_PUBLIC
+          SAMBA_DFSROOT_2_READ_LIST
+          SAMBA_DFSROOT_2_WRITE_LIST
+          SAMBA_DFSROOT_2_FORCE_CMODE
+          SAMBA_DFSROOT_2_FORCE_DIRMODE
+          SAMBA_DFSROOT_2_FORCE_USER
+          SAMBA_DFSROOT_2_FORCE_GROUP
+          SAMBA_DFSROOT_2_DFSLNK_N
+          SAMBA_DFSROOT_2_DFSLNK_1_ACTIVE
+          SAMBA_DFSROOT_2_DFSLNK_1_SUBPATH
+          SAMBA_DFSROOT_2_DFSLNK_1_NAME
+          SAMBA_DFSROOT_2_DFSLNK_1_UNC_N
+          SAMBA_DFSROOT_2_DFSLNK_1_UNC_1_PATH
+
+          vorhanden und mit sinnvollen Werten gefuellt sein.
+
+          Standardeinstellung: SAMBA_DFSROOT_N='0'
+
+   SAMBA_DFSROOT_x_ACTIVE
+          Soll das DFS-root aktiv sein: 'yes' oder 'no'
+
+          Mit SAMBA_DFSROOT_x_ACTIVE wird bestimmt, ob ein DFS-root aktiv
+          ist oder nicht. Moechte man ein DFS-root voruebergehend
+          deaktivieren, so setzt man die Variable auf 'no'.
+
+          Standardeinstellung: SAMBA_DFSROOT_1_ACTIVE='yes'
+
+   SAMBA_DFSROOT_x_NAME
+          Mit SAMBA_DFSROOT_x_NAME wird der Name des x'ten DFS-roots
+          eingestellt. Unter diesem Namen ist das DFS-root zu erreichen
+          bzw. in der Netzwerkumgebung von Windows-Rechnern sichtbar
+          (siehe auch SAMBA_DFSROOT_x_BROWSE weiter unten).
+
+          Da es fuer DFS-Freigaben keinen DOS Client gibt, muss keine
+          Ruecksicht auf DOS-Kompatibilitaet des Namens genommen werden.
+
+          SAMBA_DFSROOT_1_NAME='dfs1'
+
+          DFS-root-Namen muessen im Netzwerk eindeutig sein, duerfen also
+          nicht doppelt vorkommen. Auserdem ist es keine gute Idee
+          DFS-root-Namen zu vergeben, die identisch mit einem User- oder
+          Gruppennamen oder mit dem NETBIOS-Namen eines Rechners sind.
+
+          Standardeinstellung: SAMBA_DFSROOT_1_NAME='dfs1'
+
+   SAMBA_DFSROOT_x_RW
+          Soll das DFS-root beschreibbar sein: 'yes' oder 'no'
+
+          Ueber SAMBA_DFSROOT_x_RW wird eingestellt, ob das x'te DFS-root
+          beschreibbar sein soll.
+
+          Wird hier 'no' gewaehlt, koennen Dateien von diesem DFS-root
+          gelesen aber nicht dorthin gespeichert werden. Das ist vor allem
+          bei Dateien sinnvoll, die man anderen zur Verfuegung stellen
+          moechte aber dabei unbedingt verhindern will, dass diese Dateien
+          veraendert oder sogar geloescht werden.
+
+          Wird 'yes' gewaehlt, ist dieses DFS-root fuer alle in den
+          Variablen
+
+          SAMBA_DFSROOT_x_USER
+
+          eingestellten User bzw. bei
+
+          SAMBA_DFSROOT_x_PUBLIC='yes'
+
+          fuer alle definierten Samba-User les- und beschreibbar.
+
+          ACHTUNG
+          Hinweis zur Zugriffsberechtigung und Datei-Rechte:
+
+          Abgesehen vom Erteilen der erforderlichen Berechtigungen, werden
+          vom DFS-Dienst keine weiteren Sicherheitsmassnahmen neben denen
+          implementiert, die im Samba-Paket zur Verfuegung stehen.
+          Berechtigungen fuer ein Ziel beziehen sich nicht auf die DFS-
+          Topologie. Angenommen, es ist eine DFS-Verknuepfung mit dem
+          Namen MarketingDocs vorhanden (weiter unten in den Variablen
+          SAMBA_DFSROOT_x_DFSLNK_N und folgenden definiert), und Sie
+          verfuegen ueber die entsprechenden Berechtigungen fuer den
+          Zugriff auf ein bestimmtes Ziel (weiter unten definiert in der
+          Variablen SAMBA_DFSROOT_x_DFSLNK_y_UNC_z_PATH), auf das
+          MarketingDocs zeigt: In diesem Fall koennen Sie auf alle anderen
+          Ziele in der Gruppe der Ziele zugreifen, auch wenn Sie nicht zum
+          Zugriff auf die anderen Ziele berechtigt sind. Durch die
+          Berechtigung zum Zugreifen auf diese Ziele wird jedoch
+          festgelegt, ob Sie auf die Informationen in diesen Zielen
+          zugreifen koennen. Dieser Zugriff wird durch die
+          Standardsteuerelemente fuer die Sicherheit des Samba-Paketes
+          oder des jeweiligen Freigabe-Servers festgelegt. Wenn ein
+          Benutzer versucht, auf ein Ziel und dessen Inhalte zuzugreifen,
+          wird die Sicherheit von dem zugrunde liegenden Dateisystem
+          erzwungen. Dabei bietet ein FAT-Volume nur Sicherheit fuer
+          Dateien auf Freigabeebene, waehrend bei einem NTFS-Datentraeger
+          die vollstaendige Sicherheit des Samba-Paketes zur Verfuegung
+          steht. Zur Wahrung der Sicherheit sollten Sie auf
+          Windows-Rechnern NTFS und Dateifreigabeberechtigungen verwenden,
+          um durch DFS verwendete freigegebene Ordner zu sichern, so dass
+          nur autorisierte Benutzer auf diese zugreifen koennen.
+          Achtung! Die Wirkung dieser Variable wird durch
+
+          SAMBA_DFSROOT_x_READ_LIST
+
+          und
+
+          SAMBA_DFSROOT_x_WRITE_LIST
+
+          beeinflusst und eventuell aufgehoben!
+
+          Standardeinstellung: SAMBA_DFSROOT_x_RW='yes'
+
+   SAMBA_DFSROOT_x_BROWSE
+          Soll das x'te DFS-root sichtbar sein: 'yes' oder 'no'
+
+          Mit SAMBA_DFSROOT_x_BROWSE wird eingestellt, ob das x'te
+          DFS-root in der Netzwerkumgebung sichtbar sein soll oder nicht.
+          Moechte man verhindern, dass andere User in der Netzwerkumgebung
+          das DFS-root sehen koennen, setzt man
+
+          SAMBA_DFSROOT_x_BROWSE='no'
+
+          Nutzer, die wissen, dass die DFS-Freigabe existiert, koennen
+          trotzdem darauf zugreifen, indem sie z.B. unter Start/Ausfuehren
+
+          \\eisfair\dfsname
+
+          eingeben. Dabei ist ,,eisfair`` durch den Namen des
+          eisfair-Rechners zu ersetzen - wenn er davon abweicht - und
+          ,,dfsname`` mit dem Namen, den man in SAMBA_DFSROOT_x_NAME
+          eingetragen hat.
+
+          Standardeinstellung: SAMBA_DFSROOT_x_BROWSE='yes'
+
+   SAMBA_DFSROOT_x_USER
+          Die User des x'ten DFS-roots
+
+          Mit dieser Variable wird definiert, welche User oder Gruppen auf
+          das x'te DFS-root zugreifen duerfen. Mehrere User werden
+          hintereinander geschrieben und durch ein Leerzeichen getrennt,
+          Gruppen werden mit einem + davor angegeben. Ein Beispiel:
+
+          SAMBA_DFSROOT_x_USER='user1 user2 +samba'
+
+          Auf das DFS-root haben also der ,,user1``, der ,,user2`` und die
+          Gruppe ,,samba`` Zugriff. Wird die Variable nicht gefuellt, hat
+          nur der User ,,root`` Zugriff. Aber Achtung! Eine Besonderheit
+          gibt es. Wird die folgende Variable
+
+          SAMBA_DFSROOT_x_PUBLIC
+
+          auf 'yes' gesetzt, dominiert sie ueber den Eintrag in
+
+          SAMBA_DFSROOT_x_USER
+
+          Es haben dann wieder alle Benutzer Zugriff! Siehe auch den
+          Hinweis zu Zugriffsberechtigungen und Datei-Rechten unter dem
+          Punkt
+
+          SAMBA_DFSROOT_x_RW
+
+   SAMBA_DFSROOT_x_PUBLIC
+          Wird diese Variable auf 'yes' gesetzt, haben alle registrierten
+          Samba- User auf die Freigabe Zugriff. Diese Variable dominiert
+          ueber
+
+          SAMBA_DFSROOT_x_USER
+
+          Siehe auch den Hinweis zu Zugriffsberechtigungen und
+          Datei-Rechten unter dem Punkt
+
+          SAMBA_DFSROOT_x_RW
+
+   SAMBA_DFSROOT_x_READ_LIST
+          Die User des x'ten DFS-roots mit ausschliesslich lesendem
+          Zugriff
+
+          Mit dieser Variable wird definiert, welche User oder Gruppen auf
+          das x'te DFS-root ausschliesslich lesend zugreifen duerfen,
+          wobei unerheblich ist, was in
+
+          SAMBA_DFSROOT_x_RW
+
+          definiert wurde. Die Fuellung dieser Variable setzt also
+
+          SAMBA_DFSROOT_x_RW='yes'
+
+          fuer die angegebenen User und Gruppen ausser Kraft. Mehrere User
+          werden hintereinander geschrieben und durch ein Leerzeichen
+          getrennt, Gruppen werden mit einem + davor angegeben.
+
+          Ein Beispiel:
+
+          SAMBA_DFSROOT_x_RW='yes'
+          SAMBA_DFSROOT_x_READ_LIST='user1 user2 +samba'
+
+          Trotzdem das DFS-root schreibbar definiert wurde, duerfen user1,
+          user2 und die Gruppe samba nur lesen. Bei der Erstellung der
+          Samba-Konfiguration wird ueberprueft, ob die hier angegebenen
+          User oder Gruppen tatsaechlich existieren. Ist das nicht der
+          Fall, so wird diese Freigabe mit einer Warnung uebersprungen und
+          ist damit nicht erreichbar. Wer eine solche Warnung erhaelt,
+          sollte peinlichst genau kontrollieren, ob er sich bei den User-
+          oder Gruppennamen nicht verschrieben hat.
+
+          Siehe auch:
+
+          SAMBA_DFSROOT_x_WRITE_LIST
+
+          Standardeinstellung: SAMBA_DFSROOT_x_READ_LIST=''
+
+   SAMBA_DFSROOT_x_WRITE_LIST
+          Die User des x'ten DFS-roots mit schreibendem Zugriff
+
+          Mit dieser Variable wird definiert, welche User oder Gruppen auf
+          das x'te DFS-root schreibend zugreifen duerfen, wobei
+          unerheblich ist, was in
+
+          SAMBA_DFSROOT_x_RW
+
+          definiert wurde. Die Fuellung dieser Variable setzt also
+
+          SAMBA_DFSROOT_x_RW='no'
+
+          fuer die angegebenen User und Gruppen ausser Kraft.
+
+          Mehrere User werden hintereinander geschrieben und durch ein
+          Leerzeichen getrennt, Gruppen werden mit einem + davor
+          angegeben.
+
+          Ein Beispiel:
+
+          SAMBA_DFSROOT_x_RW='no'
+          SAMBA_DFSROOT_x_WRITE_LIST='user1 user2 +samba'
+
+          Trotzdem das DFS-root nur lesbar definiert wurde, duerfen user1,
+          user2 und die Gruppe samba auch schreiben. Ist ein User sowohl
+          in
+
+          SAMBA_DFSROOT_x_READ_LIST
+
+          als auch in
+
+          SAMBA_DFSROOT_x_WRITE_LIST
+
+          enthalten, bekommt er schreibenden Zugriff. Bei der Erstellung
+          der Samba-Konfiguration wird ueberprueft, ob die hier
+          angegebenen User oder Gruppen tatsaechlich existieren. Ist das
+          nicht der Fall, so wird diese Freigabe mit einer Warnung
+          uebersprungen und ist damit nicht erreichbar. Wer eine solche
+          Warnung erhaelt, sollte peinlichst genau kontrollieren, ob er
+          sich bei den User- oder Gruppennamen nicht verschrieben hat.
+
+          Siehe auch
+
+          SAMBA_DFSROOT_x_READ_LIST
+
+          und den Hinweis zu Zugriffsberechtigungen und Datei-Rechten
+          unter dem Punkt
+
+          SAMBA_DFSROOT_x_RW
+
+          Standardeinstellung: SAMBA_DFSROOT_x_WRITE_LIST=''
+
+   SAMBA_DFSROOT_x_FORCE_CMODE
+          Dateirechte fuer neue Dateien des x'ten DFS-roots
+
+          Samba baut auf dem Sicherheitssystem des darunter liegenden
+          Linux- Systems auf. Sobald eine Verbindung aufgebaut wird, nimmt
+          der Server fuer diese Verbindung die Dateirechte des
+          eingeloggten Benutzers an. Der Benutzer kann also auch weiterhin
+          keine Dinge tun, die ihm unter Linux verboten sind. Samba
+          veraendert die Rechte bestehender Linux-Dateien nicht. Wenn aber
+          eine Datei neu erstellt wird, muss Samba wissen, welche Rechte
+          der Eigentuemer, die Gruppe und alle andere Benutzer bekommen
+          sollen. Ueber diese Variable werden diese Rechte eingestellt
+          aber noch weiter verarbeitet - es kann also sein, dass sie nicht
+          wirklich auf dem Linux-Dateisystem ankommen. Beispiel:
+
+          SAMBA_DFSROOT_1_FORCE_CMODE='0600'
+
+          Die Rechtemaske wird wie bei chmod in Oktal-Schreibweise
+          angegeben. Wer weiterfuehrende Informationen benoetigt, muss
+          sich darum selbst bemuehen ;o)
+
+   SAMBA_DFSROOT_x_FORCE_DIRMODE
+          Rechte fuer neue Verzeichnisse des x'ten DFS-roots
+
+          Fuer neue Verzeichnisse im x'ten DFS-root werden die hier
+          angegebenen Zugriffsrechte zugewiesen. Auch hier gilt, dass
+          diese Zugriffsrechte erst noch weiter verarbeitet werden, siehe
+
+          SAMBA_DFSROOT_x_FORCE_CMODE
+
+          Beispiel:
+
+          SAMBA_DFSROOT_1_FORCE_DIRMODE='0700'
+
+   SAMBA_DFSROOT_x_FORCE_USER
+          Eigentuemer von Dateien und Verzeichnissen ueberschreiben
+
+          Normalerweise gehoeren in einem DFS-root angelegte Dateien und
+          Verzeichnisse dem angemeldeten Benutzer - er ist der
+          Eigentuemer. Mitunter ist das aber nicht gewollt, z.B. wenn man
+          Dateien fuer den Webserver per Samba in die entsprechenden
+          Verzeichnisse kopieren will. Um als User xyz diese Dateien per
+          Samba kopieren zu koennen und sie dabei dem User www zu
+          uebereignen, setzt man in der entsprechenden Freigabe
+
+          SAMBA_DFSROOT_x_FORCE_USER='www'
+
+          Wird die Variable
+
+          SAMBA_DFSROOT_x_FORCE_GROUP
+
+          dabei nicht gefuellt, so wird von Samba fuer neu angelegte
+          Dateien neben dem Eigentuemer aus
+
+          SAMBA_DFSROOT_x_FORCE_USER
+
+          gleichzeitig auch GID der angelegten Dateien auf die GID der
+          primaeren Gruppe des Users aus
+
+          SAMBA_DFSROOT_x_FORCE_USER
+
+          gesetzt. Siehe auch die Dokumentation zu
+
+          SAMBA_DFSROOT_x_FORCE_CMODE und SAMBA_DFSROOT_x_FORCE_GROUP.
+
+          Aber eine Ausnahme gibt es: Ist man als User ,,root`` beim
+          DFS-root angemeldet oder wird der Benutzer, mit dem man sich
+          angemeldet hat, auf ,,root`` gemappt (/etc/user.map), gehoeren
+          die Dateien trotz dieser Einstellung immer ,,root``! Bei der
+          Erstellung der Samba-Konfiguration wird ueberprueft, ob der hier
+          angegebene User tatsaechlich existiert. Ist das nicht der Fall,
+          so wird dieses DFS-root mit einer Warnung uebersprungen und ist
+          damit nicht erreichbar. Wer eine solche Warnung erhaelt, sollte
+          peinlichst genau kontrollieren, ob er sich bei dem Usernamen
+          nicht verschrieben hat.
+
+          Standardeinstellung: SAMBA_DFSROOT_x_FORCE_USER=''
+
+   SAMBA_DFSROOT_x_FORCE_GROUP
+          Eigentuemer-Gruppe von Dateien und Verzeichnissen ueberschreiben
+
+          Normalerweise werden in einem DFS.root angelegte Dateien und
+          Verzeichnisse der primaeren Gruppe des angemeldeten Benutzers
+          zugeordnet. Will am das aendern, setzt man in dem entsprechenden
+          DFS-root
+
+          SAMBA_DFSROOT_x_FORCE_GROUP
+
+          auf den Gruppennamen der gewuenschten Gruppe. Ist auch die
+          Variable
+
+          SAMBA_DFSROOT_x_FORCE_USER
+
+          gefuellt, so dominiert die in
+
+          SAMBA_DFSROOT_x_FORCE_GROUP
+
+          definierte Gruppe ueber die primaere Gruppe des Users in
+
+          SAMBA_DFSROOT_x_FORCE_USER
+
+          Siehe die Dokumentation zu
+
+          SAMBA_DFSROOT_x_FORCE_CMODE und SAMBA_DFSROOT_x_FORCE_USER.
+
+          Bei der Erstellung der Samba-Konfiguration wird ueberprueft, ob
+          die hier angegebene Gruppe tatsaechlich existiert. Ist das nicht
+          der Fall, so wird dieses DFS-root mit einer Warnung
+          uebersprungen und ist damit nicht erreichbar. Wer eine solche
+          Warnung erhaelt, sollte peinlichst genau kontrollieren, ob er
+          sich bei dem Gruppenamen nicht verschrieben hat.
+
+          Standardeinstellung: SAMBA_DFSROOT_x_FORCE_GROUP=''
+
+   SAMBA_DFSROOT_x_DFSLNK_N
+          Erstellung einer bestimmten Anzahl von DFS-Links: z.B. '2'
+
+          Ueber SAMBA_DFSROOT_x_DFSLNK_N wird die Anzahl der im
+          entsprechenden DFS-root zu erstellenden bzw. zu benutzenden
+          DFS-Links eingestellt. Wird hier eine 2 eingegeben, muessen die
+          folgenden Variablen
+
+          SAMBA_DFSROOT_1_DFSLNK_1_ACTIVE
+          SAMBA_DFSROOT_1_DFSLNK_1_SUBPATH
+          SAMBA_DFSROOT_1_DFSLNK_1_NAME
+          SAMBA_DFSROOT_1_DFSLNK_1_UNC_N
+
+          und
+
+          SAMBA_DFSROOT_1_DFSLNK_2_ACTIVE
+          SAMBA_DFSROOT_1_DFSLNK_2_SUBPATH
+          SAMBA_DFSROOT_1_DFSLNK_2_NAME
+          SAMBA_DFSROOT_1_DFSLNK_2_UNC_N
+
+          vorhanden und mit sinnvollen Werten gefuellt sein.
+
+   SAMBA_DFSROOT_x_DFSLNK_y_ACTIVE
+          Soll der DFS-Link aktiv sein: 'yes' oder 'no'
+
+          Mit SAMBA_DFSROOT_x_DFSLNK_y_ACTIVE wird bestimmt, ob ein
+          DFS-Link aktiv ist oder nicht. Moechte man einen DFS-Link
+          voruebergehend deaktivieren, so setzt man die Variable auf 'no'.
+
+          Standardeinstellung: SAMBA_DFSROOT_x_DFSLNK_y_ACTIVE='yes'
+
+   SAMBA_DFSROOT_x_DFSLNK_y_SUBPATH
+          Unterverzeichnis fuer diesen DFS-Link
+
+          Mit dieser Variable kann ein Unterverzeichnis erstellt werden,
+          in dem der DFS-Link angelegt werden soll. Dieses
+          Unterverzeichnis befindet sich physisch in der zur Laufzeit nur
+          lesbar gemounteten Image-Datei und darf nicht den gleichen Namen
+          haben, wie ein auf dieser Ebene angebrachter DFS-Link. Aber es
+          ist bei mehreren DFS-Links moeglich, die verschiedenen
+          Unterverzeichnisse ein Stueck des Weges gemeinsam gehen zu
+          lassen.
+
+          Beispiel:
+
+          SAMBA_DFSROOT_1_DFSLNK_1_SUBPATH='sport'
+          SAMBA_DFSROOT_1_DFSLNK_2_SUBPATH='sport/fussball'
+          SAMBA_DFSROOT_1_DFSLNK_3_SUBPATH='sport/handball'
+
+          Das sieht nachher so aus:
+
+          \\eisfair\dfsname\sport
+          \\eisfair\dfsname\sport\fussball
+          \\eisfair\dfsname\sport\handball
+
+          Dabei ist ,,eisfair`` durch den Namen des eisfair-Rechners zu
+          ersetzen - wenn er davon abweicht - und ,,dfsname`` mit dem
+          Namen, den man in SAMBA_DFSROOT_x_NAME eingetragen hat.
+
+   SAMBA_DFSROOT_x_DFSLNK_y_NAME
+          Name fuer diesen DFS-Link
+
+          Mit dieser Variable wird der Name des DFS-Links bestimmt. Dieser
+          Name muss eindeutig sein, darf also nicht identisch mit einem
+          eventuell auf gleicher Ebene vorhandenen Unterverzeichnis oder
+          einem anderen Link sein.
+
+          Um beim obigen Beispiel zu bleiben:
+
+          SAMBA_DFSROOT_1_DFSLNK_1_SUBPATH='sport'
+          SAMBA_DFSROOT_1_DFSLNK_2_SUBPATH='sport/fussball'
+          SAMBA_DFSROOT_1_DFSLNK_3_SUBPATH='sport/handball'
+
+          Das so aussieht:
+
+          \\eisfair\dfsname\sport
+          \\eisfair\dfsname\sport\fussball
+          \\eisfair\dfsname\sport\handball
+
+          Hier darf SAMBA_DFSROOT_1_DFSLNK_1_NAME also nicht 'fussball'
+          oder 'handball' genannt werden - wohl aber 'tennis', 'abcdef'
+          etc.
+
+   SAMBA_DFSROOT_x_DFSLNK_y_UNC_N
+          Einbindung einer bestimmten Anzahl von DFS-Zielen
+
+          Ueber SAMBA_DFSROOT_x_DFSLNK_y_UNC_N wird die Anzahl der
+          DFS-Ziele eingestellt, auf die SAMBA_DFSROOT_x_DFSLNK_y zeigt.
+          Normalerweise wird hier eine 1 eingegeben. Bei 2 und mehr kann
+          ein Lastenausgleich (load balancing) erzielt werden, falls
+          Replikations-Server im Netz sind. Wird hier eine 1 eingegeben,
+          muss die folgende Variable SAMBA_DFSROOT_x_DFSLNK_y_UNC_z_PATH
+          vorhanden und sinnvoll gefuellt sein.
+
+   SAMBA_DFSROOT_x_DFSLNK_y_UNC_z_PATH
+          UNC-Pfad zu diesem DFS-Ziel
+
+          In dieser Variable wird der UNC-Pfad zu diesem DFS-Ziel
+          untergebracht.
+
+          Moeglich ist die Angabe aller Freigaben, die ueber einen
+          UNC-Pfad erreichbar sind, also
+
+          //servername/freigabe
+
+          bzw.
+
+          //servername/pfad/freigabe
+
+          oder
+
+          //192.168.10.12/freigabe
+
+          bzw.
+
+          //192.168.10.12/pfad/freigabe
+
+          oder auch lokal
+
+          //eisfairname/freigabe
+
+          bzw.
+
+          //127.0.0.1/pfad/freigabe
+
+      Abschnitt ,,Samba Advanced Configuration/Samba Printers``:
+
+   Der Abschnitt wird eingeleitet mit
+
+#------------------------------------------------------------------------------
+# Samba Advanced Configuration/Samba Printers
+#
+#  ********************************* ATTENTION ******************************
+#  *                                                                        *
+#  *                The following Sections only have an Effect,             *
+#  *                if you set SAMBA_MANUAL_CONFIGURATION='yes'             *
+#  *                                                                        *
+#  ********************************* ATTENTION ******************************
+#
+# Definition of Samba Printers
+#
+# Set the number of Samba Printer to use in SAMBA_PRINTER_N.
+#
+# Values below are only an example and are not used if
+# SAMBA_PRINTER_N is '0'
+#------------------------------------------------------------------------------
+
+   ACHTUNG
+   Die Angaben in diesem Abschnitt haben nur eine Wirkung, wenn
+
+   SAMBA_MANUAL_CONFIGURATION='yes'
+
+   gesetzt wird!
+
+   SAMBA_PRINTER_N
+          Erstellung einer bestimmten Anzahl von Freigaben fuer Drucker:
+          z.B. '2'
+
+          Ueber SAMBA_PRINTER_N wird die Anzahl der zu benutzenden
+          Freigaben fuer Drucker eingestellt. Dazu ist es allerdings
+          vorher notwendig, das Paket lprng von mir zu installieren:
+
+          Package administration
+          Install new package
+          Printer and File Services
+          LPRng Print Services
+
+          Bei einem zu nutzenden Drucker ist
+
+          SAMBA_PRINTER_N='1'
+
+          einzutragen. Bei 2 Druckern ist SAMBA_PRINTER_N zu
+          inkrementieren, also
+
+          SAMBA_PRINTER_N='2'
+
+          Weiterhin muessen dann auch die korrespondierenden Einstellungen
+
+          SAMBA_PRINTER_1_ACTIVE
+          SAMBA_PRINTER_1_NAME
+          SAMBA_PRINTER_1_TYPE
+          SAMBA_PRINTER_1_PDF_QUALITY
+          SAMBA_PRINTER_1_PDF_OWNERPASS
+          SAMBA_PRINTER_1_PDF_USERPASS
+          SAMBA_PRINTER_1_PDF_PERMS
+          SAMBA_PRINTER_1_PDF_MESSAGES
+          SAMBA_PRINTER_1_CAPNAME
+          SAMBA_PRINTER_1_COMMENT
+          SAMBA_PRINTER_1_CLIENTDRIVER
+          SAMBA_PRINTER_1_BROWSE
+          SAMBA_PRINTER_1_USER
+          SAMBA_PRINTER_1_PUBLIC
+
+          und
+
+          SAMBA_PRINTER_2_ACTIVE
+          SAMBA_PRINTER_2_NAME
+          SAMBA_PRINTER_2_TYPE
+          SAMBA_PRINTER_2_PDF_QUALITY
+          SAMBA_PRINTER_1_PDF_OWNERPASS
+          SAMBA_PRINTER_1_PDF_USERPASS
+          SAMBA_PRINTER_1_PDF_PERMS
+          SAMBA_PRINTER_1_PDF_MESSAGES
+          SAMBA_PRINTER_2_CAPNAME
+          SAMBA_PRINTER_2_COMMENT
+          SAMBA_PRINTER_2_CLIENTDRIVER
+          SAMBA_PRINTER_2_BROWSE
+          SAMBA_PRINTER_2_USER
+          SAMBA_PRINTER_2_PUBLIC
+
+          vorhanden und mit sinnvollen Werten gefuellt sein.
+
+          Standardeinstellung: SAMBA_PRINTER_N='0'
+
+   SAMBA_PRINTER_x_ACTIVE
+          Soll der Drucker aktiv sein: 'yes' oder 'no'
+
+          Mit SAMBA_PRINTER_x_ACTIVE wird bestimmt, ob ein Drucker aktiv
+          ist oder nicht. Moechte man einen Drucker voruebergehend
+          deaktivieren, so setzt man die Variable auf 'no'.
+
+          Standardeinstellung: SAMBA_PRINTER_1_ACTIVE='yes'
+
+   SAMBA_PRINTER_x_NAME
+          Der Name der x'ten Druckerfreigabe
+
+          Ueber diese Variable wird der Name der Druckerfreigabe
+          eingestellt. Der Drucker ist unter diesem Namen in der
+          Netzwerkumgebung zu sehen und ansprechbar.
+
+          Trotzdem eine Kombination aus 12 Buchstaben und Zahlen ohne
+          Umlaute sowie der Bindestrich fuer den Druckernamen hinterlegbar
+          ist, sollte man sich aus DOS-Kompatibilitaetsgruenden auf
+          maximal 8 Zeichen beschraenken, z.B.
+
+          SAMBA_PRINTER_1_NAME='Laserjet'
+
+          Das Programm eischk, welches die Konfiguration vor dem
+          Abspeichern ueberprueft, bemaengelt laengere Namen folgerichtig:
+
+          Checking configuration file ...
+
+          (/etc/config.d/samba:343) problematical value of variable
+              SAMBA_PRINTER_3_NAME: 'printerlong' (More than 8 characters will
+              break compatibility with DOS clients!)
+
+          An 'problematical' erkennt man, dass das lediglich eine Warnung
+          ist. Das Abspeichern der Konfiguration ist trotz dieser Warnung
+          moeglich.
+
+   SAMBA_PRINTER_x_TYPE
+          Um welchen Druckertyp handelt es sich:
+
+          Durch diese Variable muss festgelegt werden, um welche Art von
+          Drucker es sich handelt. Das Samba-Paket unterscheidet 3 Arten
+          von Druckern: Drucker, die mittels LPRng konfiguriert werden und
+          deshalb in der Datei /etc/printcap stehen, PDF-Drucker, die
+          ueber /var/install/bin/samba-print-pdf angesprochen werden und
+          Fax-Drucker.
+
+         Einstellung Druckertyp
+         printcap    Fuer Drucker, die mittels LPRng konfiguriert wurden
+         pdf         Fuer Drucker, die PDF-Dateien erzeugen
+         fax         Fuer Drucker, ueber die Hyla- oder eisfax angesprochen wird
+
+   SAMBA_PRINTER_x_PDF_QUALITY
+          Mit welcher Qualitaet sollen PDF-Dateien erzeugt werden:
+
+          Durch diese Variable wird festgelegt, mit welcher Qualitaet
+          PDF-Dateien erzeugt werden. Diese Variable wird nur ausgewertet,
+          wenn
+
+          SAMBA_PRINTER_x_TYPE='pdf'
+
+          gesetzt ist.
+
+          Dabei gilt: Qualitativ hochwertigere Dateien sind gleichzeitig
+          groesser.
+
+          Es werden wie beim Vorbild Acrobat Distiller verschiedene
+          Qualitaetsstufen unterstuetzt:
+
+          Einstellung Auswirkung
+          ''          Leer bei Verwendung von ghostpdf.ppd als Druckertreiber
+          default     Bester Kompromiss zwischen Qualitaet und Groesse
+          screen      Schlechteste Qualitaet aber dafuer kleine Dateien
+          ebook       Mittlere Qualitaet und mittlere Groesse der Dateien
+          printer     Bessere Qualitaet, groessere Dateien
+          prepress    Beste Qualitaet, dafuer aber sehr grosse Dateien
+
+          Die Qualitaet ebook ist erst ab der Version 8 von Ghostscript
+          verfuegbar.
+
+   SAMBA_PRINTER_x_PDF_OWNERPASS
+          Das Eigentuemerpasswort fuer erzeugte PDF-Dateien:
+
+          Ghostscript ab Version 8 unterstuetzt die Vergabe von
+          Eigentuemerpassworten fuer PDF-Dateien. Dieses Passwort ist fuer
+          das weitere Editieren der PDF-Dateien mit Software zur
+          Bearbeitung von PDF-Dateien notwendig, wenn es bei der
+          Erstellung vergeben wurde. Diese Variable wird nur ausgewertet,
+          wenn
+
+          SAMBA_PRINTER_x_TYPE='pdf'
+
+          gesetzt ist.
+
+          Moechte man
+
+          SAMBA_PRINTER_x_PDF_USERPASS
+
+          setzen, ist es notwendig, auch diese Variable hier zu fuellen.
+
+   SAMBA_PRINTER_x_PDF_USERPASS
+          Das Passwort zum Oeffnen erzeugter PDF-Dateien:
+
+          Ghostscript ab Version 8 unterstuetzt die Vergabe von
+          User-Passworten fuer PDF-Dateien. Dieses Passwort ist fuer das
+          Oeffnen der PDF-Dateien mit dem Acrobar-Reader notwendig, wenn
+          es bei der Erstellung vergeben wurde. Diese Variable wird nur
+          ausgewertet, wenn
+
+          SAMBA_PRINTER_x_TYPE='pdf'
+
+          gesetzt ist.
+
+          Weitere Voraussetzung ist die Vergabe von
+
+          SAMBA_PRINTER_x_PDF_OWNERPASS.
+
+   SAMBA_PRINTER_x_PDF_PERMS
+          Mit welchen Berechtigungen sollen die PDF-Dateien erzeugt
+          werden:
+
+          Ghostscript ab Version 8 unterstuetzt bei verschluesselten
+          PDF-Dateien die Vergabe von Berechtigungen. Diese Berechtigungen
+          steuern Ausdruck, Aenderungen des Inhaltes, Kopieren des Inhalts
+          und das Hinzufuegen und Aendern von Kommentaren. Diese Variable
+          wird nur ausgewertet, wenn
+
+          SAMBA_PRINTER_x_TYPE='pdf'
+
+          und
+
+          SAMBA_PRINTER_x_PDF_OWNERPASS
+
+          gesetzt sind. Der Wert der Variablen SAMBA_PRINTER_x_PDF_PERMS
+          wird wie folgt berechnet:
+
+          Der Standard-Wert ist -4. Hierbei besteht keine Beschraenkung
+          des Dokumentes. Um die gewuenschte Kombination der
+          Berechtigungen zu erhalten, ist der entsprechende Wert (s.u.)
+          vom Standard-Wert zu subtrahieren.
+
+          1. -4  = Drucken
+          2. -8  = Aendern
+          3. -16 = Kopieren des Inhaltes
+          4. -32 = Hinzuf"ugen und Aendern von Kommentaren
+
+          Einstellung Auswirkung
+          ''          wie -4, alle erlaubt
+          -4          wie '', alle erlaubt
+          -8          alle ausser 1 erlaubt
+          -12         alle ausser 2 erlaubt
+          -16         alle ausser 1,2 erlaubt
+          -20         alle ausser 3 erlaubt
+          -24         alle ausser 1,3 erlaubt
+          -28         alle ausser 2,3 erlaubt
+          -32         alle ausser 1,2,3 erlaubt
+          -36         alle ausser 4 erlaubt
+          -40         alle ausser 1,4 erlaubt
+          -44         alle ausser 2,4 erlaubt
+          -48         alle ausser 1,2,4 erlaubt
+          -52         alle ausser 3,4 erlaubt
+          -56         alle ausser 1,3,4 erlaubt
+          -60         alle ausser 2,3,4 erlaubt
+          -64         nichts erlaubt
+
+          Standardeinstellung: SAMBA_PRINTER_x_PDF_PERMS=''
+
+   SAMBA_PRINTER_x_PDF_MESSAGES
+          Sollen bei der Erzeugung von PDF-Dateien NETBIOS-Nachrichten
+          versendet werden: 'yes' oder 'no'
+
+          Mit SAMBA_PRINTER_x_PDF_MESSAGES wird bestimmt, ob bei der
+          Erzeugung von PDF-Dateien NETBIOS-Nachrichten versendet werden
+          sollen oder nicht. Moechte man keine Nachrichten versenden, so
+          setzt man die Variable auf 'no'. Das kann zum Beispiel in
+          Terminal-Server-Umgebungen nuetzlich sein, da die Nachrichten
+          immer an die IP-Adresse bzw. den NETBIOS-Namen des Rechners
+          versendet werden, der den Druckjob abgeschickt hat. Da auf einem
+          Terminal-Server der Terminal-Server selbst der absendende
+          Rechner ist, erhalten hier alle Nutzer mit offener
+          Terminal-Sitzung die Benachrichtigungen, die eigentlich nur fuer
+          einen bestimmten Benutzer gedacht sind. Schaltet man die
+          Benachrichtigungen hier ab, erhaelt man allerdings auch keine
+          Fehlermeldungen mehr.
+
+          Standardeinstellung: SAMBA_PRINTER_x_PDF_MESSAGES='yes'
+
+   SAMBA_PRINTER_x_CAPNAME
+          Der Name der x'ten Druckers in der Datei /etc/printcap
+
+          Hiermit muss der Name des x'ten Druckers in der Datei
+          /etc/printcap angegeben werden, damit die fertig gespoolte Datei
+          auf dem richtigen Drucker ausgegeben werden kann. Wer bei dieser
+          Angabe einen Fehler macht, wird keinen Ausdruck erhalten, obwohl
+          die Windows-Clients der Meinung sind, korrekt gedruckt zu haben.
+          Diese Variable wird nur ausgewertet, wenn
+
+          SAMBA_PRINTER_x_TYPE='printcap'
+
+          gesetzt ist. Lokale parallele Drucker werden in der Datei
+          /etc/printcap beginnend mit pr1 durchnummeriert (pr1, pr2, pr3),
+          USB-Drucker mit usbpr1 (usbpr1, usbpr2, usbpr3, ...) und
+          Remote-Drucker beginnend mit repr1 (repr1, repr2, repr3, repr4
+          usw.). Die Druckerdefinitionen fuer eisfax und die PDF-Drucker
+          befinden sich nicht in /etc/printcap, deshalb muss die Variable
+          dabei leer bleiben! Beispiel:
+
+          SAMBA_PRINTER_1_CAPNAME='pr1'
+
+   SAMBA_PRINTER_x_COMMENT
+          Der Kommentar der x'ten Druckers in der Netzwerkumgebung
+
+          In dieser Variable kann der in der Netzwerkumgebung angezeigte
+          Kommentar konfiguriert werden. Die Variable ,,%h`` wird von
+          Samba dabei durch den Hostnamen des eisfair-Rechners ersetzt.
+          Beispiel:
+
+          SAMBA_PRINTER_1_COMMENT='Laserjet on %h'
+
+   SAMBA_PRINTER_x_CLIENTDRIVER
+          Soll fuer den x'ten Drucker der Treiber auf dem Client genutzt
+          werden: 'yes' oder 'no'
+
+          Diese Variable muss immer dann auf 'yes' gesetzt werden, wenn
+          man auf den Clients lokal einen Druckertreiber fuer den Zugriff
+          auf den/die Drucker an eisfair installiert und den automatischen
+          Treiber-Download von Samba nicht benutzt. Das Hinterlegen von
+          Treibern auf dem Server funktioniert mit dieser Einstellung
+          nicht! Daraus ergibt sich, dass die Variable genau dann auf 'no'
+          gesetzt werden muss, wenn man den automatischen Treiber-Download
+          von Samba benutzt. Setzt man hier 'no' aber benutzt einen
+          lokalen Treiber auf den Clients, kommt es zu Schwierigkeiten mit
+          der Drucker-Status-Abfrage, wenn man auf Windows-NT/-2000/-XP
+          Mitglied der Gruppe der Administratoren ist und auf eisfair in
+          der /etc/user.map nicht auf den User 'root' umgesetzt wird.
+
+          Standardeinstellung: SAMBA_PRINTER_x_CLIENTDRIVER='yes'
+
+   SAMBA_PRINTER_x_BROWSE
+          Soll der x'te Drucker sichtbar sein: 'yes' oder 'no'
+
+          Mit SAMBA_PRINTER_x_BROWSE wird eingestellt, ob der x'te Drucker
+          sichtbar sein soll oder nicht. Moechte man verhindern, dass
+          andere User in der Netzwerkumgebung den Drucker sehen koennen,
+          setzt man
+
+          SAMBA_PRINTER_x_BROWSE='no'
+
+          Nutzer, die wissen, dass der Drucker existiert, koennen trotzdem
+          darauf zugreifen, indem sie z.B. bei der Konfiguration als
+          Netzwerkpfad
+
+          \\eisfair\printer
+
+          eingeben. Dabei ist ,,eisfair`` durch den Namen des
+          eisfair-Rechners zu ersetzen - wenn er davon abweicht - und
+          ,,printer`` mit dem Namen, den man in SAMBA_PRINTER_x_NAME
+          eingetragen hat.
+
+          Standardeinstellung: SAMBA_PRINTER_x_BROWSE='yes'
+
+   SAMBA_PRINTER_x_USER
+          Die User des x'ten Druckers
+
+          Mit dieser Variable wird definiert, welche User oder Gruppen auf
+          den x'ten Drucker zugreifen duerfen. Mehrere User werden
+          hintereinander geschrieben und durch ein Leerzeichen getrennt,
+          Gruppen werden mit einem + davor angegeben. Ein Beispiel:
+
+          SAMBA_PRINTER_1_USER='user1 user2 +samba'
+
+          Auf die Druckerfreigabe haben also der User ,,user1``, der User
+          ,,user2`` und die Gruppe ,,samba`` Zugriff. Wird die Variable
+          nicht gefuellt, hat nur der User ,,root`` Zugriff. Aber Achtung!
+          Eine Besonderheit gibt es. Wird die Variable
+
+          SAMBA_PRINTER_1_PUBLIC
+
+          auf 'yes' gesetzt, dominiert sie ueber den Eintrag in
+
+          SAMBA_PRINTER_1_USER
+
+          Es haben dann wieder alle Benutzer Zugriff! Bei der Erstellung
+          der Samba-Konfiguration wird ueberprueft, ob die hier
+          angegebenen User oder Gruppen tatsaechlich existieren. Ist das
+          nicht der Fall, so wird diese Freigabe mit einer Warnung
+          uebersprungen und ist damit nicht erreichbar. Wer eine solche
+          Warnung erhaelt, sollte peinlichst genau kontrollieren, ob er
+          sich bei den User- oder Gruppennamen nicht verschrieben hat.
+
+   SAMBA_PRINTER_x_PUBLIC
+          Sollen alle Samba-Benutzer Zugriff haben: 'yes' oder 'no'
+
+          Wird diese Variable auf 'yes' gesetzt, haben alle registrierten
+          Samba- User auf den Drucker Zugriff. Diese Variable dominiert
+          ueber
+
+          SAMBA_PRINTER_x_USER='yes'
+
+      Abschnitt ,,Samba Advanced Configuration/Samba Mounts``:
+
+   Der Abschnitt wird eingeleitet mit
+
+#------------------------------------------------------------------------------
+# Samba Advanced Configuration/Samba Mounts
+#
+#  ********************************* ATTENTION ******************************
+#  *                                                                        *
+#  *                The following Sections only have an Effect,             *
+#  *                if you set SAMBA_MANUAL_CONFIGURATION='yes'             *
+#  *                                                                        *
+#  ********************************* ATTENTION ******************************
+#
+# Definition of Samba Mounts
+#
+# Set the number of Samba Mounts to use in SAMBA_MOUNT_N.
+#
+# Values below are only an example and are not used if
+# SAMBA_MOUNT_N is '0'
+#------------------------------------------------------------------------------
+
+   ACHTUNG
+   Die Angaben in diesem Abschnitt haben nur eine Wirkung, wenn
+
+   SAMBA_MANUAL_CONFIGURATION='yes'
+
+   gesetzt wird!
+
+   SAMBA_MOUNT_N
+          Definition einer bestimmten Anzahl von einzumountenden Freigaben
+          anderer Rechner: z.B. '2'
+
+          Ueber SAMBA_MOUNT_N wird die Anzahl der zu mountenden Freigaben
+          anderer SMB-Server eingestellt. Diese Freigaben werden bei
+          korrekter Definition beim Starten von Samba mit den weiter unten
+          stehenden Optionen gemountet und beim Beenden von Samba wieder
+          dismountet. Bei einer zu nutzenden Freigabe ist
+
+          SAMBA_MOUNT_N='1'
+
+          einzutragen. Bei 2 Freigaben ist SAMBA_MOUNT_N zu
+          inkrementieren, also
+
+          SAMBA_MOUNT_N='2'
+
+          Weiterhin muessen dann auch die korrespondierenden Einstellungen
+
+          SAMBA_MOUNT_1_ACTIVE
+          SAMBA_MOUNT_1_SERVER
+          SAMBA_MOUNT_1_SHARE
+          SAMBA_MOUNT_1_POINT
+          SAMBA_MOUNT_1_USER
+          SAMBA_MOUNT_1_PASS
+          SAMBA_MOUNT_1_RW
+          SAMBA_MOUNT_1_UID
+          SAMBA_MOUNT_1_GID
+          SAMBA_MOUNT_1_FMASK
+          SAMBA_MOUNT_1_DMASK
+          SAMBA_MOUNT_1_IOCHARSET
+          SAMBA_MOUNT_1_CODEPAGE
+
+          und
+
+          SAMBA_MOUNT_2_ACTIVE
+          SAMBA_MOUNT_2_SERVER
+          SAMBA_MOUNT_2_SHARE
+          SAMBA_MOUNT_2_POINT
+          SAMBA_MOUNT_2_USER
+          SAMBA_MOUNT_2_PASS
+          SAMBA_MOUNT_2_RW
+          SAMBA_MOUNT_2_UID
+          SAMBA_MOUNT_2_GID
+          SAMBA_MOUNT_2_FMASK
+          SAMBA_MOUNT_2_DMASK
+          SAMBA_MOUNT_2_IOCARSET
+          SAMBA_MOUNT_2_CODEPAGE
+
+          vorhanden und mit sinnvollen Werten gefuellt sein.
+
+          Standardeinstellung: SAMBA_MOUNT_N='0'
+
+   SAMBA_MOUNT_x_ACTIVE
+          Soll die Mount-Definition aktiv sein: 'yes' oder 'no'
+
+          Mit SAMBA_MOUNT_x_ACTIVE wird bestimmt, ob diese Definition zum
+          Einmounten von Freigaben anderer SMB-Server aktiv ist oder
+          nicht. Moechte man eine Mount-Definition voruebergehend
+          deaktivieren, so setzt man die Variable auf 'no'.
+
+          Standardeinstellung: SAMBA_MOUNT_1_ACTIVE='yes'
+
+   SAMBA_MOUNT_x_SERVER
+          Der NETBIOS-Name des x'ten Servers der einzumountenden Freigabe
+
+          Ueber diese Variable wird der NETBIOS-Name des Servers
+          eingestellt, der die Freigabe zur Verfuegung stellt. Es versteht
+          sich sicherlich von selbst, dass ein Server im Netzwerk nicht
+          gefunden werden kann, dessen Name hier falsch angegeben wurde.
+          Wenn die Freigabe nicht gemountet werden kann, sollte man
+          zuallererst kontrollieren, ob die Angabe hier richtig ist. Die
+          Konfiguration von SAMBA_MOUNT_x_SERVER ist in jedem Fall
+          zwingend erforderlich.
+
+   SAMBA_MOUNT_x_SHARE
+          Mit SAMBA_MOUNT_x_SHARE wird der Name der x'ten einzumountenden
+          Freigabe eingestellt. Diesen Namen habt Ihr bei Erstellung der
+          Freigabe auf dem entfernten Rechner konfiguriert und er muss
+          hier genau so hinterlegt werden. Es versteht sich von selbst,
+          dass keine Verbindung zu einer Freigabe im Netzwerk hergestellt
+          werden kann, die namentlich nicht existiert. Wenn die Freigabe
+          nicht gemountet werden kann, sollte man also ueberpruefen, ob
+          die Angabe hier richtig ist. Die Konfiguration von
+          SAMBA_MOUNT_x_SHARE ist in jedem Fall zwingend erforderlich.
+
+   SAMBA_MOUNT_x_POINT
+          Der Punkt im Verzeichnisbaum, in den die Freigabe eingemountet
+          werden soll: z.B. '/mountpoint1'
+
+          Die entfernte Freigabe muss in den Verzeichnisbaum eingehangen
+          werden. In dieser Variable definiert man, an welcher Stelle das
+          geschehen soll. Dazu ist ein absoluter Pfad beginnend mit dem
+          '/' anzugeben. Moechte man die Freigabe also unter
+
+          /mountpoint1
+
+          in den Verzeichnisbaum einbinden, ist beim ersten Mount
+
+          SAMBA_MOUNT_1_POINT='/mountpoint1'
+
+          anzugeben. Wenn das Verzeichnis nicht existiert, wird es
+          automatisch angelegt und wenn es existiert, wird es einfach
+          benutzt. Es gibt im Moment keine Moeglichkeit, einmal erstellte
+          Verzeichnisse ueber die Samba-Konfiguration zu loeschen.
+          Beachtet ausserdem, dass nicht zwei verschiedene Freigaben unter
+          dem selben Mountpoint eingehangen werden koennen. Hat man also
+          fuer den Mountpoint der ersten entfernten Freigabe
+
+          SAMBA_MOUNT_1_POINT='/mountpoint1'
+
+          gesetzt, darf dieser Mountpoint fuer weitere Freigaben nicht
+          mehr benutzt werden. Die Konfiguration von SAMBA_MOUNT_x_POINT
+          ist in jedem Fall zwingend erforderlich.
+
+   SAMBA_MOUNT_x_USER
+          Die User fuer die Anmeldung an der x'ten Freigabe
+
+          Mit dieser Variable wird der Benutzername definiert, mit welchem
+          auf die entfernte Freigabe zugegriffen wird. Wenn der Zugriff
+          auf die entfernte Freigabe nur mittels Benutzername gestattet
+          ist, muss dieser Benutzername hier angegeben werden. Ein
+          Beispiel:
+
+          SAMBA_MOUNT_x_USER='user1'
+
+          Die Angabe ist optional, also nur unter der oben beschriebenen
+          Voraussetzung notwendig.
+
+   SAMBA_MOUNT_x_PASS
+          Das Passwort fuer die Anmeldung an der x'ten Freigabe
+
+          Wurde die entfernte Freigabe mit einem Passwort oder mit einer
+          Kombination von Benutzernamen und Passwort gesichert, so ist das
+          Passwort in dieser Variable wie folgt anzugeben:
+
+          SAMBA_MOUNT_x_PASS='geheim'
+
+          Die Angabe ist optional, also nur unter den oben beschriebenen
+          Voraussetzungen notwendig.
+
+   SAMBA_MOUNT_x_RW
+          Soll die eingemountete Freigabe beschreibbar sein: 'yes' oder
+          'no'
+
+          Ueber SAMBA_MOUNT_x_RW wird eingestellt, ob die x'te
+          eingemountete Freigabe beschreibbar sein soll.
+
+          Wird hier 'no' gewaehlt, koennen Dateien von dieser Freigabe
+          gelesen aber nicht dorthin gespeichert werden. Das ist vor allem
+          bei Dateien sinnvoll, die man anderen zur Verfuegung stellen
+          moechte aber dabei unbedingt verhindern will, dass diese Dateien
+          veraendert oder sogar geloescht werden.
+
+   SAMBA_MOUNT_x_UID
+          Welchem User sollen die Dateien der eingemounteten Freigabe
+          gehoeren?
+
+          Ueber SAMBA_MOUNT_x_UID wird bestimmt, wer der Besitzer der
+          eingemounteten Dateien ist. Das bedarf einer naeheren
+          Erklaerung:
+
+          Das smbfs-Modul, welches nicht direkt zu Samba gehoert, sondern
+          ein Bestandteil des Kernels ist, hat leider ein paar
+          Einschraenkungen. So ist es unter anderem nicht moeglich,
+          Berechtigungen der entfernten Dateien im lokalen Dateisystem
+          abzubilden. Deshalb muessen ersatzweise andere Berechtigungen
+          definiert werden. Das macht man mittels der Variablen
+
+          SAMBA_MOUNT_x_UID
+
+          und
+
+          SAMBA_MOUNT_x_GID
+
+          Werden diese nicht gefuellt, so gehoeren die Dateien dem User
+          und der Gruppe 'root', mit dem die Freigabe gemountet wird. Wenn
+          man eingemountete Dateien als einfacher User nicht bearbeiten
+          kann, dann weiss man jetzt, warum das so ist. Die Variable kann
+          wie folgt gefuellt werden:
+
+          SAMBA_MOUNT_x_UID='user1'
+
+          oder
+
+          SAMBA_MOUNT_x_UID='2002'
+
+          Im ersten Beispiel wurde ein existierender Benutzername
+          angegeben, im zweiten Beispiel die numerische User-Id. Die
+          Angabe ist optional, also nur unter den oben beschriebenen
+          Voraussetzungen notwendig.
+
+   SAMBA_MOUNT_x_GID
+          Welcher Gruppe sollen die Dateien der eingemounteten Freigabe
+          gehoeren?
+
+          Ueber SAMBA_MOUNT_x_GID wird bestimmt, welche Gruppe der
+          Besitzer der eingemounteten Dateien ist. Siehe dazu die
+          Erklaerungen unter
+
+          SAMBA_MOUNT_x_UID
+
+          Die Variable kann wie folgt gefuellt werden:
+
+          SAMBA_MOUNT_x_GID='users'
+
+          oder
+
+          SAMBA_MOUNT_x_GID='100'
+
+          Im ersten Beispiel wurde ein existierender Gruppenname
+          angegeben, im zweiten Beispiel die numerische Gruppen-Id. Die
+          Angabe ist optional, also nur unter den oben beschriebenen
+          Voraussetzungen notwendig.
+
+   SAMBA_MOUNT_x_FMASK
+          Welche Rechte sollen neu erzeugte Dateien in der eingemounteten
+          Freigabe erhalten?
+
+          Ueber SAMBA_MOUNT_x_FMASK wird eingestellt, welche Rechte
+          Dateien erhalten, die in der eingemounteten Freigabe neu
+          erstellt werden. Wird die Variable nicht gefuellt, so werden die
+          Rechte basierend auf der aktuellen umask des mountenden Users
+          gesetzt.
+
+          Die Variable kann wie folgt gefuellt werden:
+
+          SAMBA_MOUNT_x_FMASK='0755'
+
+   SAMBA_MOUNT_x_DMASK
+          Welche Rechte sollen neu erzeugte Verzeichnisse in der
+          eingemounteten Freigabe erhalten?
+
+          Siehe dazu die Erklaerungen unter
+
+          SAMBA_MOUNT_x_FMASK
+
+          Die Variable kann wie folgt gefuellt werden:
+
+          SAMBA_MOUNT_x_DMASK='0755'
+
+   SAMBA_MOUNT_x_IOCHARSET
+          Angabe des Character-Sets
+
+          Mit SAMBA_MOUNT_x_IOCHARSET wird eingestellt, welches charset
+          auf eisfair-Seite fuer die Umsetzung von Codepages zu
+          Character-Sets fuer die x'te einzumountende Freigabe benutzt
+          werden soll. Die Variable kann mit folgenden Werten gefuellt
+          werden:
+
+          iso8859-1
+          iso8859-2
+          iso8859-3
+          iso8859-4
+          iso8859-5
+          iso8859-6
+          iso8859-7
+          iso8859-8
+          iso8859-9
+          iso8859-14
+          iso8859-15
+          koi8-r
+          koi8-ru
+          utf8
+
+          Diese optionale Variable wirkt sich nur bei einer Kernelversion
+          hoeher als 2.4.0 aus.
+
+   SAMBA_MOUNT_x_CODEPAGE
+          Mittels SAMBA_MOUNT_x_CODEPAGE wird bestimmt, welche codepage
+          auf eisfair-Seite fuer die Umsetzung von Codepages zu
+          Character-Sets fuer die x'te einzumountende Freigabe benutzt
+          werden soll. Die Variable kann wie folgt gefuellt werden:
+
+          SAMBA_MOUNT_x_CODEPAGE='cp850'
+
+          Diese optionale Variable wirkt sich nur bei einer Kernelversion
+          hoeher als 2.4.0 aus.
+
+   Der naechste Eintrag im Menue
+
+   Samba Configuration Handling
+
+   heisst
+
+   Show all Samba Variables
+
+   und gibt ausfuehrliche Informationen zur aktiven Konfiguration aus.
+   Dafuer werden diese Informationen gesammelt und gemeinsam angezeigt.
+   Zur Zeit wird der Inhalt der Datei
+
+   /etc/user.map
+
+   ausgegeben, in welcher Windows-Benutzer auf eisfair-Benutzer umgesetzt
+   werden, sowie alle von Samba verwendeten Parameter der Datei
+
+   /etc/smb.conf
+
+   und auch alle Voreinstellungen von Samba, die dort nicht explizit
+   gesetzt wurden aber trotzdem wirksam sind.
+
+   Der naechste Eintrag im Menue
+
+   Samba Configuration Handling
+
+   heisst
+
+   Samba Advanced configuration file handling
+
+   und ist weitgehend selbsterklaerend.
+
+    Samba-Service-Menue Punkt 3: Samba User Handling
+
+   Hier finden wir folgende Menue-Punkte:
+
+   1: List Samba User
+
+   2: Add Samba User
+
+   3: Remove Samba User
+
+   4: Activate Existing Samba User
+
+   5: Deactivate Existing Samba User
+
+   6: Change Samba Password of existing Samba User
+
+   7: Create Samba Users from eisfair Users
+
+   0: Exit
+
+   Um sich einen Ueberblick ueber schon existierende Samba-User zu
+   verschaffen, waehlt man
+
+   1: List Samba User
+
+   Zusaetzlich zum Namen wird die UID des dem Samba-User zugeordneten
+   eisfair-Users (es koennen nur Samba-User angelegt werden, die schon als
+   eisfair-User existieren), der Status des Passwortes (gesetzt oder
+   nicht) und der augenblickliche Status des Samba-Accounts (aktiviert
+   oder nicht) ausgegeben.
+
+   Damit die Benutzer der Windows-Clients den Sambaserver nutzen koennen,
+   muessen sie beim Sambaserver bekannt sein. Als Samba-User koennen nur
+   bereits bekannte (angelegte) User des eisfair-Systems angelegt werden.
+   Moechte man also einen Samba-User anlegen, der noch nicht als
+   eisfair-User existiert, so wird das nicht gelingen! eisfair-User werden
+   nicht im Samba-Menue angelegt, sondern im eisfair-Setup-Menue unter
+
+   4: User administration
+
+   2: Add a new user
+
+   Wenn man sicher ist, dass der entsprechende eisfair-User existiert,
+   kann man unter
+
+   Add Samba User2: Add Samba User
+
+   die Samba-User anlegen.
+
+   Hier werden Benutzername und das Passwort des anzulegenden Users
+   abgefragt. Das sind die Daten, mit denen man sich am Windows-Client
+   anmeldet.
+
+   Ein paar Hinweise dazu: Es ist unbedingt der User ,,root`` als
+   Samba-User anzulegen (als eisfair-User existiert ,,root`` schon). Fuer
+   jeden Benutzer muss bei der Windows-Anmeldung zwingend ein Passwort
+   hinterlegt sein und der Samba-User muss das identische Passwort haben!
+   Unter Windows XP sollte unbedingt die schnelle Benutzerumschaltung
+   deaktiviert werden. Benutzernamen mit Leerzeichen kann man beim Anlegen
+   der Samba-User genauso wenig verwenden, wie bei den eisfair-Usern.
+   Verwendet man solch einen Namen auf seinem Windows-Client zur
+   Anmeldung, muss man einen Namen ohne Leerzeichen als eisfair-User und
+   als Samba-User einrichten und zu diesem Namen hier ein Passwort
+   definieren. Siehe dazu:
+
+   SAMBA_USERMAP_N
+
+   Um User als Samba-User zu entfernen, waehlt man den Eintrag
+
+   3: Remove Samba User
+
+   und gibt den Namen des zu entfernenden Samba-Users ein. Dabei wird nach
+   Angabe des Usernamens der entsprechende Samba-User geloescht (das
+   bezieht sich nicht auf den Account auf der Ebene des eisfair-Systems,
+   sondern nur auf Samba).
+
+   Um einen schon angelegten aber voruebergehend deaktivierten Samba-User
+   zu aktivieren, waehlt man
+
+   4: Activate Existing Samba User
+
+   Noch einmal: Man kann nur schon als System-User und Samba-User
+   angelegte User aktivieren! Das ist nur notwendig, wenn ein User
+   voruebergehend deaktiviert worden ist.
+
+   Um einen schon angelegten (und damit automatisch aktivierten)
+   Samba-User zu deaktivieren, waehlt man
+
+   5: Deactivate Existing Samba User
+
+   Noch einmal: Man kann nur schon als System-User und Samba-User
+   angelegte User deaktivieren! Damit wird nur der Zugriff ueber Samba
+   ausgeschlossen. Das macht nur Sinn, wenn der User zeitweise keinen
+   Zugriff ueber die Netzwerkumgebung erhalten soll.
+
+   6: Change Samba Password of existing Samba User
+
+   Hiermit kann das Samba-Passwort existierender Samba-User geaendert
+   werden.
+
+   7: Create Samba Users from eisfair Users
+
+   Da es viel Arbeit macht, jeden einzelnen auf eisfair existierenden User
+   als Samba-User anzulegen, ist es mit diesem Punkt moeglich, alle
+   existierenden eisfair-User auf einmal in die Samba-Datenbank
+   aufzunehmen. Die schon vorhandenen Eintraege bleiben dabei erhalten.
+   Die Passwoerter muessen hinterher fuer jeden neuen User gesetzt werden.
+   Es gibt einige existierenden eisfair-User, die keine Samba-User sein
+   sollten, wie z.B.
+
+   daemon
+   bin
+   eis
+   halt
+   reboot
+   fcron
+
+   usw. Diese User stehen nun zwar in der Samba-Account-Datenbank, sind
+   aber nicht aktiviert. Die Passwoerter der Samba-User koennen im
+   Samba-Menue mit Punkt 6 hinterlegt werden (Change Samba Password of
+   existing Samba User). Unerwuenschte User koennen mit Punkt 3 geloescht
+   werden (Remove Samba User).
+
+    Samba-Service-Menue Punkt 4: Samba Server Handling
+
+   Dieser Punkt des Samba-Service-Menues oeffnet ein Untermenue mit den
+   folgenden Moeglichkeiten:
+
+   1: Show Status of Samba
+
+   2: Stop Samba
+
+   3: Stop Samba delayed
+
+   4: Start Samba
+
+   5: Restart Samba
+
+   6: Reload Samba
+
+   0: Exit
+
+   Die Punkte sind selbsterklaerend. Der Unterschied zwischen 'Restart'
+   und 'Reload' besteht darin, dass Samba bei 'Restart' komplett beendet
+   und neu gestartet wird, waehrend 'Reload' nur die Konfiguration neu
+   einliest - bestehende Verbindungen werden dabei nicht gekappt. Eine
+   Ausnahme bilden die auf eisfair eingemounteten Freigaben anderer
+   Rechner. Diese werden sowohl bei 'Restart' als auch bei 'Reload'
+   beendet und wieder neu aufgebaut.
+
+    Samba-Service-Menue Punkt 5: Samba Domain Handling
+
+   Hier findet man folgende Menue-Punkte:
+
+   1: Samba PDC Workstation Configuration (NT, 2000, XP)
+
+   2: Add eisfair Samba Server into an Windows NT Domain
+
+   3: Save Samba SID to /root/MACHINE.SID
+
+   4: Restore Samba SID from /root/MACHINE.SID
+
+   0: Exit
+
+      Samba PDC Workstation Configuration (NT, 2000, XP)
+
+   1: List Samba Workstations
+
+   Mit dem ersten Punkt kann man sich die erzeugten Workstation-Accounts
+   anzeigen lassen.
+
+   2: Add Samba Workstation
+
+   Mit dem zweiten Punkt kann man manuell Workstation-Accounts anlegen,
+   die fuer den Zugriff von Windows-NT-, Windows-2000- oder
+   Windows-XP-Clients auf den als Primary Domain Controller (PDC)
+   konfigurierten eisfair-Samba-Server benoetigt werden
+   (Windows-9x-Clients muessen nicht eingetragen werden!). Da das
+   fehleranfaellig ist (Gross- und Kleinschreibung der NETBIOS-Namen ist
+   zu beachten), sollte man das aber lieber Samba selbst ueberlassen,
+   welches bei korrekter Konfiguration diese Accounts automatisch erzeugt.
+
+   3: Remove Samba Workstation
+
+   Der dritte Punkt erlaubt es, Workstation-Accounts zu loeschen; damit
+   ist von diesen Clients aus kein Zugriff mehr auf den als PDC
+   konfigurierten eisfair-Samba-Server moeglich. Das sollte man sich
+   jedoch gut ueberlegen, denn auch wenn manuell wieder ein Account mit
+   dem selben NETBIOS-Namen erzeugt wird, so ist es doch ein neuer Account
+   und die Workstation kann sich erst wieder an der Domaene anmelden, wenn
+   sie ihr neu hinzugefuegt wurde!
+
+      Add eisfair Samba Server into an Windows NT Domain
+
+   Hier kann man den eisfair-Rechner in eine Windows-NT-4.0-Domaene
+   integrieren. Das ist nur sinnvoll, wenn man in seinem Netzwerk eine
+   solche Domaene hat und die auf den eisfair-Samba-Server zugreifenden
+   Benutzer in dieser Domaene authentifizieren moechte.
+
+   Bevor man diesen Punkt ausfuehren kann, muss man auf dem Primary Domain
+   Controller den eisfair-Rechner mit dem Server Manager unter dem
+   Menue-Punkt
+
+   Computer
+   Neuer Computer
+
+   als neuen Rechner hinzugefuegen (Maschinenkonto). Bei einer
+   Windows-2000-Domaene muss ausserdem fuer dieses Maschinenkonto folgende
+   Eigenschaft aktiviert werden:
+
+   ,,Windows NT 3.5x/4.0-Computern die Verwendung dieses Kontos
+   gestatten``
+
+   Dann waehlt man den Eintrag
+
+   Add eisfair Samba Server into an Windows NT Domain
+
+   Hierbei ist zu beachten, dass zum erfolgreichen Hinzufuegen zur Domaene
+   die Samba-Dienste gestoppt werden muessen! Beim Aufruf wird
+   ueberprueft, ob Samba laeuft. Wenn das der Fall, wird das Skript mit
+   einer entsprechenden Warnung beendet. Man sollte mit der Ausfuehrung
+   also warten, bis keine Clients mehr auf den eisfair-Samba-Server
+   zugreifen. Dann kann man Samba stoppen und diesen Menue-Punkt
+   ausfuehren.
+
+   Zuallererst wird dann der Benutzernamen und das Passwort des
+   Administrator-Accounts auf dem Primary Domain Controller (NT 4.0)
+   abgefragt, da nur dieser Maschinen zur Domaene hinzufuegen darf. Das
+   Passwort wird aus Sicherheitsgruenden bei der Eingabe auf dem
+   Bildschirm nicht angezeigt - man muss es also blind eintippen! Dann
+   muss der NETBIOS-Name des Primary Domain Controllers (NT 4.0) angegeben
+   werden und zum Schluss der Name der Domaene.
+
+   Wenn alles geklappt hat, erhaelt man die erfreuliche Meldung
+
+   Joined domain YYY.
+
+   , wenn nicht
+
+   Error connecting to XXX
+   Unable to join domain YYY.
+
+   , wobei XXX fuer den Namen des Primary Domain Controllers steht und YYY
+   fuer den Namen der Domaene. Wenn man Erfolg hatte, muss nun noch die
+   Samba-Konfiguration editiert werden (Edit Samba Configuration):
+
+   Die Variable
+
+   SAMBA_PASSWORD_SERVER
+
+   muss mit dem NETBIOS-Namen des Primary Domain Controllers oder mit '*'
+   gefuellt werden, siehe auch die Erlaeuterungen unter
+
+   SAMBA_PASSWORD_SERVER.
+
+      Save Samba SID to /root/MACHINE.SID
+
+   Muss man irgendwann einmal den Hostnamen des eisfair-Rechners aendern
+   und laeuft dieser als Primary Domain Controller, so hat das einen
+   unschoenen Nebeneffekt:
+
+   Clients wie Windows-NT, Windows-2000 oder Windows-XP, welche schon zur
+   Domaene hinzugefuegt waren, koennen sich nicht mehr an dieser anmelden.
+
+   Woran das liegt?
+
+   Beim Hinzufuegen zur Domaene bekommt der Client vom PDC eine
+   Sicherheits-ID mitgeteilt und speichert diese ab. Diese Sicherheits-ID
+   wird aber von Samba nach einer Aenderung des Hostnamens neu generiert.
+   Da nun die SID des PDC und der Clients nicht mehr uebereinstimmen, kann
+   sich von den Clients niemand mehr an der Domaene anmelden.
+
+   Normalerweise muss man nun alle Clients wieder muehsam neu in der
+   Domaene anmelden: Jede einzelne Workstation muss temporaer in eine
+   Arbeitsgruppe mit anderem Namen als dem Domaenennamen aufgenommen und
+   hinterher wieder neu in die Domaene integriert werden. Das erfordert
+   ein zweimaliges Booten der Clients und kann bei vielen Maschinen sehr
+   zeitaufwendig werden...
+
+   Eleganter ist daher folgende Methode: Vor einer Aenderung des
+   Hostnamens von eisfair speichert man die SID und stellt diese hinterher
+   wieder her. Mit diesem Menue-Punkt wird die vor den Blicken anderer zu
+   schuetzende SID im Home-Verzeichnis von root in der Datei
+
+   /root/MACHINE.SID
+
+   abgespeichert.
+
+      Restore Samba SID from /root/MACHINE.SID
+
+   Hiermit wird die SID aus der Datei
+
+   /root/MACHINE.SID
+
+   in die Samba-Datenbank zurueckgesichert.
+
+    Samba-Service-Menue Punkt 6: SMB Filesystem Handling
+
+   Hier findet man:
+
+   1: List Mounted SMB Filesystems
+
+   2: Mount SMB Filesystems
+
+   3: Mount predefined SMB Filesystems
+
+   4: Dismount SMB Filesystems
+
+   0: Exit
+
+   Diese Punkte sind dazu gedacht, Freigaben von SMB-Servern (das koennen
+   Rechner fast beliebiger Betriebssysteme sein, die das SMB-Protokoll
+   unterstuetzen) in das Dateisystem von eisfair einzumounten und wieder
+   zu dismounten.
+
+   1: List Mounted SMB Filesystems
+
+   Hier werden, wenn vorhanden, die eingemounteten Freigaben angezeigt.
+   Den Mountpoint (das Verzeichnis, in welches gemountet wurde) findet man
+   unter dem gleichnamigen Eintrag.
+
+   2: Mount SMB Filesystems
+
+   Um diesen Punkt benutzen zu koennen, muss Samba gestartet sein. Ist das
+   nicht der Fall, erhaelt man eine entsprechende Warnung und das Skript
+   wird beendet. Laeuft Samba, wird zuerst der NETBIOS-Name des Rechners
+   angegeben, dessen Freigabe man einbinden will. Diese Eingabe ist nicht
+   case-sensitiv, was bedeutet, dass nicht auf die Gross- und
+   Kleinschreibung geachtet werden muss. Wird der SMB-Server nicht
+   gefunden, erhaelt man sofort eine entsprechende Fehlermeldung. Als
+   naechstes ist der Name der Freigabe einzugeben. Auch diese Eingabe ist
+   nicht case-sensitiv. Hier kann leider nicht geprueft werden, ob die
+   Freigabe existiert, da je nach Einstellung ein Benutzername und ein
+   Passwort fuer die Abfrage der Shares notwendig ist. Nun ist das
+   Verzeichnis anzugeben, in welches man die Freigabe einmounten moechte.
+   Hier ist ein absoluter Pfad im Dateisystem anzugeben. Solch ein Pfad
+   muss immer mit einem '/', z.B.:
+
+   /mountpoint
+
+   beginnen! Das Verzeichnis wird automatisch erstellt, wenn es nicht
+   vorhanden ist. Wenn es schon vorhanden ist, kann es nur benutzt werden,
+   wenn sich keinerlei Dateien oder Verzeichnisse darin befinden. Ist das
+   Verzeichnis nicht leer, erhaelt man eine Fehlermeldung. Ist das
+   Verzeichnis nicht leer, weil man hier schon eine Freigabe eingemountet
+   hat, erhaelt man die Moeglichkeit, die schon gemountete Freigabe zu
+   trennen, um die neue Freigabe statt dessen einmounten zu koennen. Das
+   sollte man nur tun, wenn man sicher ist, dass niemand mehr auf diese
+   Dateien zugreift! Uebergeht man die Frage mit Enter, so wird als
+   Mountpoint die Vorgabe
+
+   /mountpoint
+
+   verwendet. Nun muessen fuer den Zugriff Benutzername und Passwort
+   angegeben werden, wenn diese fuer die Freigabe definiert wurden. Diese
+   Angaben sind case-sensitiv! Das Passwort wird aus Sicherheitsgruenden
+   bei der Eingabe auf dem Bildschirm nicht angezeigt - man muss es also
+   blind eintippen!
+
+   In naechsten Schritt wird abgefragt, ob die Freigabe nur lesbar (ro)
+   oder auch schreibbar eingemountet werden soll (rw). Betaetigen von
+   Enter verwendet die Voreinstellung 'rw'.
+
+   Als naechstes wird gefragt, unter welcher User-Id die Freigabe
+   gemountet werden soll. Betaetigen von Enter verwendet die
+   Voreinstellung 'root'.
+
+   Danach wird die Group-Id abgefragt. Auch hier uebernimmt ein einfaches
+   Enter die Voreinstellung 'root'. In den naechsten Schritten folgen file
+   mask, directory mask, iocharset und codepage.
+
+   Wenn alle Angaben korrekt waren, kann man nun in dem Verzeichnis
+   (Mountpoint) mit den Dateien arbeiten, als ob sie lokal auf dem Rechner
+   liegen wuerden.
+
+   Achtung: Wurden die Dateien ohne Schreibschutz freigegeben, kann man
+   sie natuerlich auf dem entfernten Rechner loeschen, indem man sie im
+   Dateisystem auf eisfair loescht. Loescht man z.B. das Verzeichnis, in
+   welches die Freigabe eingemountet wurde, werden ohne Schreibschutz
+   saemtliche Dateien dieser Freigabe auf dem entfernten Rechner
+   geloescht!
+
+   3: Mount predefined SMB Filesystems
+
+   Hiermit kann man in der Samba-Konfiguration vordefinierte Mounts
+   unabhaengig davon, ob sie aktiv sind oder nicht, einmounten.
+
+   4: Dismount SMB Filesystems
+
+   Hierueber kann man die eingemounteten Freigaben wieder dismounten. Man
+   hat die Wahl zwischen zwei Optionen:
+
+   1. Option
+
+   Alle Freigaben trennen. Dazu gibt man
+
+   all
+
+   ein.
+
+   2. Option
+
+   Einzelne Freigaben trennen. Dazu gibt man die exakten Namen der
+   Verzeichnisse an, in die sie gemountet wurden, getrennt durch ein
+   Leerzeichen. Dazu ist es notwendig, auch das fuehrende '/' mit
+   anzugeben. Die Eingabe ist case-sensitiv - Gross- und Kleinschreibung
+   muss also beachtet werden, also z.B.:
+
+   /mountpoint1 /MOUNTPOINT2
+
+    Samba-Service-Menue Punkt 7: Send Message to SMB Hosts
+
+   Unter
+
+   6: Send Message to SMB Hosts
+
+   kann man interaktiv Nachrichten an SMB-Hosts versenden. Bei Auswahl
+   dieses Eintrags erscheint folgende Ausgabe:
+
+   Send Message to SMB Hosts
+
+   To which SMB Hosts the message should be send?
+
+   Choice 1
+   --------
+   All SMB Hosts on configured Subnets on eisfair - type 'all'.
+
+   Choice 2
+   --------
+   eisfair Samba Clients with active connections - type 'active'.
+
+   Choice 3
+   --------
+   One ore more active SMB Hosts, type NETBIOS Names
+   separated with a blank, for instance 'client1 client2':
+
+   Wie man hier sieht, gibt es im ersten Schritt 3 Auswahlmoeglickeiten:
+
+    1. Das Versenden von Nachrichten an alle SMB-Rechner an den
+       konfigurierten Netzen des eisfair-Rechners. Da Samba bei Erstellung
+       seiner Konfiguration auf die Datei
+       /etc/config.d/base
+
+       zugreift, werden alle Netzwerkkarten, die hier konfiguriert sind,
+       auch in die Samba-Konfiguration eingetragen. Hieraus wird nun die
+       Information gewonnen, in welchen Netzen nach SMB-Rechnern gesucht
+       werden muss und an alle diese Rechner (bis auf den eisfair-Rechner
+       selbst) die noch zu definierende Nachricht verschickt. Dabei werden
+       die ermittelten Broadcast-Adressen und die NETBIOS-Namen der
+       Rechner ausgegeben, an die die Nachricht verschickt wurde. Um diese
+       Option zu waehlen, ist
+       all
+
+       einzugeben.
+    2. Das Versenden von Nachrichten an alle eisfair-Samba-Clients mit
+       aktiven Verbindungen zu eisfair - damit sind nicht alle Clients
+       gemeint, die sich am Server angemeldet haben, sondern nur die, die
+       wirklich noch Verbindungen zum Server offen halten. Hierzu ist
+       active
+
+       einzugeben.
+    3. Das Versenden von Nachrichten an einen oder mehrere aktive
+       SMB-Hosts. Die Rechner sind mit ihren NETBIOS-Namen anzugeben.
+       Mehrere Rechner muessen durch ein Leerzeichen getrennt angegeben
+       werden. Wurden die erforderlichen Angaben gemacht, kommen wir zum
+       2. Schritt:
+       Send Message to SMB Hosts
+
+       Which Message should be send?
+       For instance 'eisfair-Samba-Server is going down in 3 Minutes ...':
+
+       Hier gibt man nun die Nachricht ein, die gesendet werden soll.
+       Diese Nachricht wird nur auf Clients mit aktiviertem
+       Nachrichtendienst ausgegeben. Der Nachrichtendienst ist auf
+       Windows-NT, Windows-2000 und Windows XP normalerweise aktiviert und
+       muss anderenfalls nachinstalliert/aktiviert werden. Unter
+       Windows-9x-Clients wie Windows 98 oder Windows ME muss dazu das
+       Programm WinPopUp laufen. Das Skript, welches hier verwendet wird,
+       kann man auch per Kommandozeile mittels
+       /var/install/bin/samba-netsend
+
+       aufrufen.
+
+    Samba-Service-Menue Punkt 7: Read Samba Documentation
+
+   Mit diesem Menue-Punkt wird die hier vorliegende Dokumentation zum
+   Lesen mittels more oder einem anderen konfigurierten Pager geoeffnet.
+   more ist ein Programm, welches es erlaubt, auch laengere Textdateien,
+   wie diese Dokumentation, komfortabel zu lesen. Mittels Leertaste
+   blaettert man ganze Seiten weiter und mittels Entertaste einzelne
+   Zeilen. Zum Verlassen der Dokumentation drueckt man die Taste 'q'.
+
+                              Client-Konfiguration
+
+Konfiguration der Windows-Clients
+
+   Auf den Windows-Rechnern muss das Netzwerkprotokoll TCP/IP installiert
+   und konfiguriert sein. Als Standardeinstellung ist unter Windows 9x/Me
+   ,,NETBIOS over TCP/IP`` aktiviert, das Protokoll, welches Samba
+   benutzt. Unter Windows NT /2000 /XP muss diese Einstellung explizit
+   vorgenommen werden!
+
+4.1.1 WIN 9x/ME
+
+   Das Protokoll TCP/IP muss installiert und konfiguriert werden. Als
+   Standardeinstellung ist unter Windows 9x/Me ,,NETBIOS over TCP/IP``
+   aktiviert, das Protokoll, welches Samba benutzt. Alle nicht genutzten
+   Netzwerkprotokolle sollten entfernt werden, z.B. NETBUI, IPX/SPX,
+   Fritz-Web, T-Online-Speedmanager usw. ... Die Datei- und
+   Druckerfreigabe sollte installiert werden - damit kann man
+   kontrollieren, ob der eigene Rechner im Netzwerk auftaucht. Der
+   ,,Client fuer Microsoftnetzwerke`` sollte installiert und konfiguriert
+   werden. Die verschiedenen Clients muessen unterschiedliche
+   NETBIOS-Namen erhalten: Unter
+   /Start/Einstellungen/Systemsteuerung/Netzwerk/Lasche
+   Identifikation/Rechnername muss ein im Netzwerk einmaliger NETBIOS-Name
+   vergeben werden. Unter /Start/Einstellungen/Systemsteuerung/Lasche
+   Identifikation/Arbeitsgruppe muss der Arbeitsgruppename identisch zu
+   der Einstellung von Samba gewaehlt werden (SAMBA_WORKGROUP).
+   Personal Firewalls sollten deaktiviert bzw. richtig konfiguriert sein:
+   Die Ports 137-139 muessen freigeschaltet sein!
+
+   Um Samba mit WIN9x zu nutzen, ist es sinnvoll, in der Systemsteuerung
+   ein Benutzerprofil anzulegen. Das bringt neben der Vorbereitung auf
+   Samba im Domaenen-Modus und damit verbundenen ,,Roaming Profiles`` den
+   Vorteil, dass bei mehreren Benutzern am Client-Rechner jeder seine
+   eigenen Einstellungen fuer Desktop, Startmenue usw. einrichten kann.
+   Ausserdem kann man hierbei nachholen, ein Passwort fuer seine Anmeldung
+   zu vergeben.
+
+   Laeuft Samba als PDC, so ist in den Eigenschaften des ,,Client fuer
+   Microsoftnetzwerke`` unter ,,Anmeldebestaetigung`` ein Haken fuer ,,An
+   Windows NT-Domaene anmelden`` zu setzen, unter ,,Windows NT-Domaene``
+   ist der Namen der Samba-Domaene anzugeben. Um die Benutzerkonten der
+   Domaene fuer eigene Freigaben nutzen zu koennen, muss unter
+   ,,Netzwerk/Zugriffssteuerung`` von ,,Zugriffssteuerung auf
+   Freigabeebene`` auf ,,Zugriffssteuerung auf Benutzerebene``
+   umgeschaltet werden. Die Benutzerkonten werden von Samba als PDC
+   bezogen. Um die Benutzerliste beziehen zu koennen, muss man bereits als
+   Domaenenbenutzer angemeldet sein!
+
+WIN-NT
+
+   please fill in
+
+Windows 2000
+
+   Das Protokoll TCP/IP muss installiert und konfiguriert werden. Folgende
+   Dienste sind auf dem Rechner fuer Samba notwendig/sinnvoll:
+
+     * Arbeitsstationsdienst
+     * Computerbrowser
+     * Nachrichtendienst
+     * Server
+
+   Alle nicht genutzten Netzwerkdienste sollten beendet und nicht
+   automatisch gestartet werden, z.B. NETBUI, NWLink IPX/SPX, Fritz-Web,
+   T-Online-Speedmanager. Der ,,Client fuer Microsoft-Netzwerke`` sollte
+   installiert und konfiguriert werden. Die verschiedenen Clients muessen
+   unterschiedliche NETBIOS-Namen erhalten: Unter
+   /Start/Einstellungen/Systemsteuerung/System/Eigenschaften/Computername
+   muss ein im Netzwerk einmaliger NETBIOS-Name vergeben werden. Unter
+   /Start/Einstellungen/Systemsteuerung/System/Eigenschaften/Arbeitsgruppe
+   muss der Arbeitsgruppename identisch zu der Einstellung von Samba
+   gewaehlt werden (SAMBA_WORKGROUP). Personal Firewalls sollten
+   deaktiviert bzw. richtig konfiguriert sein: Die Ports 137-139 muessen
+   freigeschaltet sein!
+
+Windows XP
+
+   Das Protokoll TCP/IP muss installiert und konfiguriert werden. Folgende
+   Dienste sind auf dem Rechner fuer Samba notwendig/sinnvoll:
+
+     * Arbeitsstationsdienst
+     * Computerbrowser
+     * Nachrichtendienst
+     * Server
+
+   Alle nicht genutzten Netzwerkdienste sollten beendet und nicht
+   automatisch gestartet werden, z.B. NETBUI, NWLink IPX/SPX, Fritz-Web,
+   T-Online-Speedmanager usw. ... Der ,,Client fuer Microsoft-Netzwerke``
+   sollte installiert und konfiguriert werden. Die verschiedenen Clients
+   muessen unterschiedliche NETBIOS-Namen erhalten: Unter
+   /Start/Einstellungen/Systemsteuerung/System/Eigenschaften/Computername
+   muss ein im Netzwerk einmaliger NETBIOS-Name vergeben werden. Unter
+   /Start/Einstellungen/Systemsteuerung/System/Eigenschaften/Arbeitsgruppe
+   muss der Arbeitsgruppename identisch zu der Einstellung von Samba
+   gewaehlt werden (SAMBA_WORKGROUP). Personal Firewalls sollten
+   deaktiviert bzw. richtig konfiguriert sein: Die Ports 137-139 muessen
+   freigeschaltet sein!
+
+           Einrichtung der Windows-Clients fuer den Druck ueber Samba
+
+   Um ueber Samba auf an eisfair angeschlossene lokale Drucker oder auf
+   Remote-Drucker oder auf die speziellen Freigaben von eisfax oder von
+   PDF-Druckern drucken zu koennen, muessen die Client-Rechner dafuer
+   konfiguriert werden. Dafuer sind folgende Schritte notwendig:
+
+   Ausdruck auf physikalisch vorhandene Drucker
+
+    1. Fuer den Ausdruck auf physikalisch vorhandene Drucker wurde
+       mindestens ein funktionstuechtiger Drucker an eine
+       funktionstuechtige parallele oder USB- Schnittstelle des
+       eisfair-Rechners angeschlossen oder es wurde der entsprechende
+       Remotedrucker korrekt im Netzwerk verfuegbar gemacht und
+       konfiguriert (bitte konsultiert dazu die entsprechende Handbuecher
+       oder Webseiten, denn ich kenne Eure Drucker nicht!).
+    2. Es wurde das Paket lprng von mir installiert:
+
+       Package administration
+       Install new package
+       Printer and File Services
+       Line Printer Daemon
+
+    3. Das Paket lprng wurde korrekt konfiguriert.
+    4. Die weitere Konfiguration ist unter ,,Weitere Konfiguration``
+       beschrieben.
+
+   Ausdruck auf die speziellen Druckerfreigaben von eisfax und von
+   PDF-Druckern zur Erstellung von PDF-Dateien
+
+    1. Fuer den Ausdruck auf die Freigabe von eisfax muss das Paket eisfax
+       installiert und korrekt konfiguriert worden sein.
+    2. Ausserdem ist ein installiertes Ghostscript ab Version 1.0.2
+       notwendig.
+    3. Fuer den Ausdruck auf die Freigaben von PDF-Druckern muss das Paket
+       Ghostscript ab Version 1.0.2 installiert sein.
+    4. Die weitere Konfiguration ist unter ,,Weitere Konfiguration``
+       beschrieben.
+
+   Weitere Konfiguration
+
+    1. Es wurde hinterher eine neue Sambakonfiguration ueber das
+       Samba-Service-Menue erstellt (Hinweise dazu finden sich unter Punkt
+       3.2.2).
+    2. Dabei wurde entweder
+
+       SAMBA_MANUAL_CONFIGURATION='yes'
+
+       oder
+
+       SAMBA_MANUAL_CONFIGURATION='no'
+
+       gewaehlt. Bei SAMBA_MANUAL_CONFIGURATION='no' sind die lokalen
+       Druckernamen fuer Parallel-Drucker beginnend mit pr1, die lokalen
+       USB-Drucker beginnend mit usbpr1 und die entfernten Druckernamen
+       beginnend mit repr1 durchnummeriert, bei
+       SAMBA_MANUAL_CONFIGURATION='yes' habt Ihr die Druckernamen mittels
+       SAMBA_PRINTER_x_NAME selbst bestimmt.
+
+   Wenn alles korrekt konfiguriert wurde, sind die eisfair-Drucker in der
+   Netzwerkumgebung des Windows-PCs sichtbar. Bei Erstellung eines neuen
+   Druckers (Start/Einstellungen/Drucker/ Neuer Drucker) ist
+   ,,Netzwerkdrucker`` auszuwaehlen. Bei ,,Netzwerkpfad oder
+   Warteschlangenname`` kann man den ,,Durchsuchen``-Button benutzen. Hier
+   findet man unter Namen des eisfair-Rechners Druckerfreigaben, deren
+   Namen davon abhaengen, ob man bei SAMBA_MANUAL_CONFIGURATION 'yes' oder
+   'no' gewaehlt hat - siehe oben. Hier waehlt man den gewuenschten
+   Drucker aus.
+
+   Die weiteren Einstellungen sind vom Betriebssystem abhaengig:
+
+   Windows 9x/Me:
+
+   Hier waehlt man auf der linken Seite den Druckerhersteller und auf der
+   rechten Seite den Druckertyp aus und bestaetigt mit ,,Weiter``. Fuer
+   eisfax und PDF-Drucker muss hier zwingend ein Postscript-Druckertreiber
+   ausgewaehlt werden. Ich arbeite erfolgreich mit dem Apple Color LW
+   12/660 PS (Farbe) oder dem Apple LaserWriter 16/600 PS (Schwarz/Weiss).
+   Auf dem naechsten Konfigurationsbildschirm aktiviert man, wenn
+   gewuenscht, dass dieser Drucker der Standard-Drucker unter Windows
+   werden soll. Nach dem unvermeidlichen Klick auf ,,Weiter`` verneint man
+   die Frage, ob eine Testseite gedruckt werden soll. Nach Betaetigen von
+   ,,Fertigstellen`` und dem Kopieren der Treiberdateien erscheint ein
+   neues Icon fuer diesen Drucker im Druckerordner. Auf der Lasche
+   ,,Details`` sind ausserdem die ,,Spool-Einstellungen`` zu bearbeiten,
+   man setzt dort ,,Druckauftraege in Warteschlange stellen (Druckvorgang
+   schneller)`` und ,,Druck nach letzter Seite beginnen``. Unter
+   Datenformat waehlt man ,,RAW`` und setzt ausserdem ,,Bidirektionale
+   Unterstuetzung deaktivieren``.
+
+   Im Druckertreiber fuer eisfax setzt man unter
+   Druckeinstellungen/Erweitert/Postscriptoptionen die
+   TrueType-Downloadoption auf ,,Bitmap``.
+
+   Im Druckertreiber fuer die PDF-Drucker setzt man unter
+   Druckeinstellungen/Erweitert/Grafik/TrueType-Schriftart ,,Als Softfont
+   in den Drucker laden``. In Optionen fuer Dokument/PostScript-Optionen
+   setzt man die TrueType-Downloadoption auf ,,Umriss``, die
+   PostScript-Ausgabeoption auf ,,Portabilitaet optimieren``.
+
+   Jetzt uebernimmt man alle bisher gemachten Einstellungen mit der
+   Schaltflaeche ,,Uebernehmen`` und verlaesst das komplette
+   Konfigurationsfenster ueber ,,OK``, da Windows 9x/Me die Einstellungen
+   sonst nicht korrekt abspeichert.
+
+   Windows NT 4.0/2000/XP:
+
+   Hier waehlt man auf der linken Seite den Druckerhersteller und auf der
+   rechten Seite den Druckertyp aus und bestaetigt mit ,,Weiter``. Fuer
+   eisfax und PDF-Drucker muss hier zwingend ein Postscript-Druckertreiber
+   ausgewaehlt werden. Ich arbeite unter Windows 2000 erfolgreich mit dem
+   Apple Color LW 12/660 PS (Farbe) oder dem Apple LaserWriter 16/600 PS
+   (Schwarz/Weiss). Unter Windows-NT-4.0 ist der HP Laserjet 9000
+   anscheinend besser geeignet. Auf dem naechsten Konfigurationsbildschirm
+   aktiviert man, wenn gewuenscht, dass dieser Drucker der
+   Standard-Drucker unter Windows werden soll. Nach dem unvermeidlichen
+   Klick auf ,,Weiter`` verneint man die Frage, ob eine Testseite gedruckt
+   werden soll. Nach Betaetigen von ,,Fertigstellen`` und dem Kopieren der
+   Treiberdateien erscheint ein neues Icon fuer diesen Drucker im
+   Druckerordner. Auf der Lasche ,,Anschluesse`` deaktiviert man
+   ,,Bidirektionale Unterstuetzung aktivieren``. Auf der Lasche
+   ,,Erweitert`` betaetigt man die Schaltflaeche ,,Druckprozessor`` und
+   stellt unter ,,Druckprozessor`` ,,WinPrint``, unter
+   ,,Standarddatentyp`` ,,RAW`` ein und verlaesst diese Dialogbox mit
+   ,,OK`` (bei Windows NT 4.0 ist hier noch ein Haekchen bei
+   ,,Raw-Datentyp immer spoolen`` zu setzen). Wieder auf der Lasche
+   ,,Erweitert`` aktiviert man ,,ueber Spooler drucken, um Druckvorgaenge
+   schneller abzuschliessen`` und ,,Drucken beginnen, nachdem letzte Seite
+   gespoolt wurde``. Bei ,,Erweiterte Druckfunktionen aktivieren``
+   entfernt man den Haken, damit diese Funktionen nicht genutzt werden.
+
+   Im Druckertreiber fuer eisfax setzt man unter
+   Druckeinstellungen/Erweitert/Postscriptoptionen die
+   TrueType-Downloadoption auf ,,Bitmap``.
+
+   Im Druckertreiber fuer die PDF-Drucker setzt man unter
+   Druckeinstellungen/Erweitert/Grafik/TrueType-Schriftart ,,Als Softfont
+   in den Drucker laden``. In Optionen fuer Dokument/PostScript-Optionen
+   setzt man die TrueType-Downloadoption auf ,,Umriss``, die
+   PostScript-Ausgabeoption auf ,,Portabilitaet optimieren``.
+
+   Jetzt uebernimmt man alle bisher gemachten Einstellungen mit der
+   Schaltflaeche ,,Uebernehmen`` und verlaesst das komplette
+   Konfigurationsfenster ueber ,,OK``, da Windows NT 4.0/2000/XP die
+   Einstellungen sonst nicht korrekt abspeichert.
+
+   Windows Vista/7:
+
+   Hier waehlt man auf der linken Seite den Druckerhersteller und auf der
+   rechten Seite den Druckertyp aus und bestaetigt mit ,,Weiter``. Fuer
+   eisfax und PDF-Drucker muss hier zwingend ein Postscript-Druckertreiber
+   ausgewaehlt werden. Einige User arbeiten unter Windows 7 erfolgreich
+   mit dem Xerox Phaser 6120 PS. Auf dem naechsten
+   Konfigurationsbildschirm aktiviert man, wenn gewuenscht, dass dieser
+   Drucker der Standard-Drucker unter Windows werden soll. Nach dem
+   unvermeidlichen Klick auf ,,Weiter`` verneint man die Frage, ob eine
+   Testseite gedruckt werden soll. Nach Betaetigen von ,,Fertigstellen``
+   und dem Kopieren der Treiberdateien erscheint ein neues Icon fuer
+   diesen Drucker im Druckerordner. Auf der Lasche ,,Anschluesse``
+   deaktiviert man ,,Bidirektionale Unterstuetzung aktivieren``. Auf der
+   Lasche ,,Erweitert`` betaetigt man die Schaltflaeche ,,Druckprozessor``
+   und stellt unter ,,Druckprozessor`` ,,WinPrint``, unter
+   ,,Standarddatentyp`` ,,RAW`` ein und verlaesst diese Dialogbox mit
+   ,,OK``. Wieder auf der Lasche ,,Erweitert`` aktiviert man ,,ueber
+   Spooler drucken, um Druckvorgaenge schneller abzuschliessen`` und
+   ,,Drucken beginnen, nachdem letzte Seite gespoolt wurde``. Bei
+   ,,Erweiterte Druckfunktionen aktivieren`` entfernt man den Haken, damit
+   diese Funktionen nicht genutzt werden.
+
+   Im Druckertreiber fuer eisfax setzt man unter
+   Druckeinstellungen/Erweitert/Postscriptoptionen die
+   TrueType-Downloadoption auf ,,Bitmap``.
+
+   Im Druckertreiber fuer die PDF-Drucker setzt man unter
+   Druckeinstellungen/Erweitert/Grafik/TrueType-Schriftart ,,Als Softfont
+   in den Drucker laden``. In Optionen fuer Dokument/PostScript-Optionen
+   setzt man die TrueType-Downloadoption auf ,,Umriss``, die
+   PostScript-Ausgabeoption auf ,,Portabilitaet optimieren``.
+
+   Jetzt uebernimmt man alle bisher gemachten Einstellungen mit der
+   Schaltflaeche ,,Uebernehmen`` und verlaesst das komplette
+   Konfigurationsfenster ueber ,,OK``.
+
+   Noch ein Hinweis dazu:
+
+   Auf dem Windows-Rechner muss das Netzwerkprotokoll TCP/IP installiert
+   und konfiguriert sein. Als Standardeinstellung muss dabei unter Windows
+   ,,NETBIOS over TCP/IP`` aktiviert sein, das Protokoll, welches Samba
+   benutzt.
+
+                      Hinweise fuer fortgeschrittene User
+
+Einmounten von Windows-Freigaben
+
+   Es ist moeglich, Windows-Freigaben auf eisfair einzumounten. Das kann
+   man auf mehreren Wegen erreichen. Zwingende Voraussetzung ist aber
+   immer die Erstellung eines Verzeichnisses als Benutzer root (oder eis),
+   in welches das ,,fremde`` Dateisystem eingehangen wird (ein
+   Mountpoint).
+
+   Ich demonstriere den Vorgang anhand eines Beispiels (wir sind root!).
+   Dabei will ich von einem Windows-2000-Rechner mit dem (NETBIOS-)Namen
+   ,,tb2`` eine Freigabe mit dem Freigabenamen ,,bbi`` einmounten. Auf
+   diese Freigabe darf der Benutzer ,,tb`` mit seinem Passwort ,,tb``
+   zugreifen. Dieser Benutzer muss zwingend als lokaler Benutzer auf
+   Windows 2000 angelegt sein, wenn Samba auf eisfair nicht als
+   Domaenenkontroler konfiguriert ist und Windows 2000 nicht dazu
+   konfiguriert wurde, sich an dieser Domaene anzumelden.
+
+  linux 1.0 > mkdir /mountpoint
+  linux 1.0 > mount -t smbfs //tb2/bbi /mountpoint -o username=tb,password=tb
+  linux 1.0 > cd /mountpoint
+  linux 1.0 > ls -l
+  total 1728
+  -rwxr-xr-x    1 root     root      1420006 Jan  6  2002 BBIagent.img
+  -rwxr-xr-x    1 root     root       348160 Jan  6  2002 BBIwrite.exe
+  -rwxr-xr-x    1 root     root            8 May 16 03:24 Neu Textdatei.txt
+  -rwxr-xr-x    1 root     root            0 May 16 03:24 Neu Textdatei.txt.bak
+  -rwxr-xr-x    1 root     root            4 May 14 22:10 test.txt
+  -rwxr-xr-x    1 root     root            0 May 14 22:10 test.txt.bak
+  linux 1.0 >
+
+   Hier wurde mittels mkdir das Verzeichnis (der Mountpoint) /mountpoint
+   erzeugt. Danach wurde mit dem Kommando mount -t smbfs die entfernte
+   Freigabe unter /mountpoint eingemountet, wobei die Syntax des Kommandos
+   mount so aussieht:
+
+   mount -t smbfs //Server/Share /Mountpoint \
+   -o username=Benutzername,password=Passwort
+
+   ,,Server`` ist der Name des Rechners mit der einzumountenden Freigabe.
+   ,,Share`` ist der Name der Freigabe. Hinter ,,-o`` werden als Optionen
+   der Benutzername und das Passwort angegeben, was aber nur notwendig
+   ist, wenn ein Benutzername und ein Passwort fuer den Zugriff definiert
+   wurde. Mittels
+
+   cd /mountpoint
+
+   bin ich in das Verzeichnis gewechselt und habe mir mit
+
+   ls -l
+
+   den Inhalt der Freigabe anzeigen lassen.
+
+   Aber Vorsicht:
+
+  linux 1.0 > rm test.txt
+  linux 1.0 > ls -l
+  total 1728
+  -rwxr-xr-x    1 root     root      1420006 Jan  6  2002 BBIagent.img
+  -rwxr-xr-x    1 root     root       348160 Jan  6  2002 BBIwrite.exe
+  -rwxr-xr-x    1 root     root            8 May 16 03:24 Neu Textdatei.txt
+  -rwxr-xr-x    1 root     root            0 May 16 03:24 Neu Textdatei.txt.bak
+  -rwxr-xr-x    1 root     root            0 May 14 22:10 test.txt.bak
+  linux 1.0 >
+
+   Ich habe gerade die Datei ,,test.txt`` auf dem entferneten Rechner
+   ,,tb2`` geloescht. Also sollte man vorsichtshalber die Freigabe unter
+   Windows mit einem Schreibschutz versehen, um das zu verhindern.
+
+   Um die Freigabe wieder zu trennen, wird das Kommando ,,umount``
+   benutzt, wobei gleichzeitig der Mountpoint angegeben werden muss:
+
+   linux 1.0 > umount /mountpoint
+   Could not umount /mountpoint: Device or resource busy
+   linux 1.0 > cd /
+   linux 1.0 > umount /mountpoint
+   linux 1.0 > cd /mountpoint
+   linux 1.0 > ls -l
+   total 0
+   linux 1.0 >
+
+   Wir sehen hier, dass man dieses Kommando erst ausfuehren kann, wenn
+   man nicht mehr im Mountpoint-Verzeichnis steht.
+
+Hochladen von Druckertreibern fuer die automatische Installation
+
+   Um bei groesseren Netzwerken die Installation der Druckertreiber zu
+   vereinfachen und dem Netzverwalter zu ersparen, per
+   Turnschuh-Administration bei z.B. 400 Clients die Druckertreiber an
+   jedem Arbeitsplatz von Hand zu installieren, ist es moeglich, mittels
+   Samba eine automatische Treiberinstallation auf den Clients zu
+   realisieren. Die Vorgehensweise ist dabei leider etwas kompliziert. Wer
+   das hier nicht sehr genau liest, wird es nicht schaffen und ist selbst
+   daran schuld. Mehr, als ich hier beschreibe, weiss ich auch nicht und
+   kann deswegen in einem solchen Fall auch nicht helfen... Die
+   vorliegende Beschreibung wurde mit Windows 2000 Workstation und Windows
+   XP Professional erstellt, es kann also sein, dass etwaige Abweichungen
+   bei Euch darauf zurueckzufuehren sind, dass Ihr Windows NT 4.0
+   Workstation einsetzt - Ihr muesst in diesem Fall also notgedrungen
+   etwas improvisieren.
+
+   Zu den Voraussetzungen:
+
+   Der Upload der Treiber kann nur ueber NT-basierende Betriebssysteme
+   vorgenommen werden. Dazu gehoeren Windows NT 4.0, Windows 2000 und
+   Windows XP. Der Benutzer, welcher die Treiber hochladen will, muss
+   ueber Samba zwingend mit der User-ID (UID) 0 bei eisfair angemeldet
+   sein. Die UID 0 hat neben dem User ,,eis`` vor allem der User ,,root``.
+   Laesst man seinen Windows Benutzernamen per /etc/user.map auf den User
+   ,,root`` mappen und ist der User ,,root`` als Samba-Benutzer angelegt
+   worden, hat man diese Voraussetzung also schon einmal erfuellt. Die
+   /etc/user.map setzt in der Standardeinstellung den Windows-User
+   ,,Administrator`` auf den eisfair-User ,,root`` um:
+
+   root = "Administrator"
+
+   Auf dem NT-basierenden Client, von welchem aus die Druckertreiber
+   hochgeladen werden sollen, muessen die entsprechenden Treiber schon
+   einmal installiert worden sein, da man sich hiermit erspart, die
+   relevanten Treiberdateien muehsam zu extrahieren und selbst
+   zusammenzustellen. Wurde der Druckertreiber dabei fuer den Zugriff auf
+   den Netzwerkdrucker an eisfair eingerichtet, muss der Drucker selbst
+   aber aus dem Druckerordner geloescht werden (ohne die Treiberdateien
+   loeschen zu lassen), da ein Upload nur funktioniert, wenn die Zuordnung
+   des lokalen Treibers zum Netzwerkdrucker an eisfair auf dem Client
+   nicht mehr existiert! In den Drucker-Freigaben muss die Variable
+
+   SAMBA_PRINTER_x_CLIENTDRIVER
+
+   auf 'no' gesetzt sein, da eben nicht der lokale Treiber auf dem Client
+   verwendet werden soll. Daraus ergibt sich, dass die automatische
+   Samba-Konfiguration per
+
+   SAMBA_MANUAL_CONFIGURATION='no'
+
+   nicht genutzt werden kann! Ich erwaehne es ungern - aber da es
+   wahrscheinlich doch wieder Leute gibt, denen das nicht klar ist: Um
+   erfolgreich Treiber hochladen zu koennen, muss Samba gestartet sein ;o)
+
+   Nach diesen Vorbereitungen kann der Upload beginnen.
+
+   Windows 2000:
+
+   Man lokalisiert ueber die Netzwerkumgebung den eisfair-Server und
+   navigiert hier zum Verzeichnis ,,Drucker``. Darin sieht man alle durch
+   Samba angebotenen Drucker. Nun markiert man den Drucker, fuer welchen
+   man einen Treiber hochladen will und waehlt im Kontextmenue (rechte
+   Maustaste) den Punkt ,,Eigenschaften`` aus. Daraufhin wird folgende
+   Fehlermeldung angezeigt:
+
+   ,,Die Geraeteeinstellungen koennen nicht angezeigt werden. Der Treiber
+   fuer den angegebenen Drucker ist nicht installiert. Es werden nur
+   Spoolereigenschaften angezeigt. Moechten Sie den Treiber jetzt
+   installieren?``
+
+   Hier ist ,,Nein`` auszuwaehlen!
+
+   Bei Manipulationen in dem folgenden Eigenschafts-Dialog bitte nicht in
+   Panik geraten, wenn der Zugriff sehr lange dauert (die Lasche
+   ,,Anschluesse`` ist z.B. so ein Kandidat, auch das Schliessen des
+   kompletten Dialoges mittels ,,OK``). Der Rechner ist nicht abgestuerzt,
+   es dauert nur etwas ...
+
+   Auf der Lasche ,,Erweitert`` kann nun mit ,,Neuer Treiber`` der
+   korrekte Treiber fuer den Drucker auswaehlt und hochgeladen werden.
+   Dazu bestaetigt man die erste Seite des Assistenten mit ,,Weiter``,
+   waehlt auf der linken Seite den Druckerhersteller und auf der rechten
+   Seite den Druckertyp aus, navigiert nach dem Klick auf ,,Weiter``,
+   ,,Fertigstellen`` und ,,OK`` mittels ,,Durchsuchen`` zum
+   Windows-Verzeichnis (%WINDIR%) und dort zum Verzeichnis INF, also z.B.
+   nach
+
+   C:\WINNT\INF
+
+   und laedt per Klick auf ,,Oeffnen`` und ,,OK`` den Treiber hoch.
+   Eventuell muss dabei noch die Installation eines unsignierten Treibers
+   zugelassen werden. Dann schliesst man den kompletten
+   Eigenschaften-Dialog mit ,,OK``, was sehr lange dauern kann.
+
+   Windows XP:
+
+   Man lokalisiert ueber die Netzwerkumgebung den eisfair-Server und
+   navigiert hier zum Verzeichnis ,,Drucker und Faxgeraete``. Darin sieht
+   man alle durch Samba angebotenen Drucker. Nun markiert man den Drucker,
+   fuer welchen man einen Treiber hochladen will, und waehlt im
+   Kontextmenue (rechte Maustaste) den Punkt ,,Eigenschaften`` aus.
+   Daraufhin wird folgende Fehlermeldung angezeigt:
+
+   ,,Der Druckertreiber '' ist nicht installiert. Auf manche
+   Druckereigenschaften kann ohne die Installation des Druckertreibers
+   nicht zugegriffen werden. Moechten Sie den Treiber jetzt
+   installieren?``
+
+   Hier ist ,,Nein`` auszuwaehlen!
+
+   Bei Manipulationen in dem folgenden Eigenschafts-Dialog bitte nicht in
+   Panik geraten, wenn der Zugriff sehr lange dauert (die Lasche
+   ,,Anschluesse`` ist z.B. so ein Kandidat, auch das Schliessen des
+   kompletten Dialoges mittels ,,OK``). Der Rechner ist nicht abgestuerzt,
+   es dauert nur etwas ...
+
+   Auf der Lasche ,,Erweitert`` kann nun mit ,,Neuer Treiber`` der
+   korrekte Treiber fuer den Drucker auswaehlt und hochgeladen werden.
+   Dazu bestaetigt man die erste Seite des Assistenten mit ,,Weiter``,
+   waehlt auf der linken Seite den Druckerhersteller und auf der rechten
+   Seite den Druckertyp aus, und waehlt dann ,,Weiter``,
+   ,,Fertigstellen``, um den Kopiervorgang zu starten. Eventuell muss
+   dabei noch die Installation eines unsignierten Treibers zugelassen
+   werden. Dann schliesst man den kompletten Eigenschaften-Dialog mit
+   ,,OK``, was sehr lange dauern kann.
+
+   Treiber fuer Betriebssysteme, die nicht NT-basiert sind, wie Windows
+   9x/Me, muessen ueber die Lasche ,,Freigabe`` und dort ueber
+   ,,Zusaetzliche Treiber`` hochgeladen werden. Das ist sehr viel
+   komplizierter, da man dabei Zugriff auf eine Partition dieses
+   Betriebssystems mit dem dort installierten Treiber haben muss.
+
+   Den Weg mit einem installierten Treiber und dem Inf-Verzeichnis kann
+   man sich sparen, wenn man alle benoetigten Treiberdateien und die
+   inf-Datei des Druckertreibers in ein Verzeichnis kopiert. Mir ist
+   leider kein einfaches Verfahren bekannt, die relevanten Dateien fuer
+   seinen Treiber zu extrahieren.
+
+                            Hinweise zur Fehlersuche
+
+   Bei Fehlern bitte ueberpruefen:
+     * Client fuer Microsoftnetzwerke installiert und konfiguriert?
+     * Protokoll TCP/IP installiert und konfiguriert?
+     * alle unnoetigen Netzwerkprotokolle entfernt (NETBUI, IPX/SPX,
+       Fritz-Web, T-Online-Speedmanager)?
+     * den verschiedenen Rechnern verschiedene (NETBIOS!-)Namen gegeben?
+     * Datei -und Druckerfreigabe installiert?
+     * Personal Firewalls richtig konfiguriert oder deaktiviert (Ports
+       137-139 muessen freigeschaltet sein!)?
+     * NETBIOS over TCP/IP konfiguriert (nur bei Win2k notwendig)?
+     * identischen Arbeitsgruppennamen auf allen Rechnern konfiguriert?
+
+
+
+    Thomas Bork 2013-12-09

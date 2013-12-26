@@ -1,0 +1,9 @@
+<!-- /var/install/menu/setup.smbfs.samba.menu -->
+<!-- Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net -->
+<!-- Creation: 2005-06-16 tb -->
+<package>cui-samba</package>
+<title>SMB Filesystem Handling</title>
+<script file="samba-list-smbfs">List Mounted SMB Filesystems</script>
+<script file="samba-mount-smbfs">Mount SMB Filesystems</script>
+<script file="samba-mount-predefined-smbfs">Mount predefined SMB Filesystems</script>
+<script file="samba-dismount-smbfs">Dismount SMB Filesystems</script>

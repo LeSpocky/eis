@@ -1,0 +1,196 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-netsend - send message to SMB Hosts
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-netsend
+#    or: /var/install/bin/samba-netsend {"all"|"active"|"host1 host2 ..."} "message"
+#
+# Creation   : 2001-11-04 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+#set -x
+. /var/install/include/eislib
+
+error='no'
+samba_lookup_all='/var/install/bin/samba-lookup-all'
+samba_lookup_active='/var/install/bin/samba-lookup-active'
+net_lookup_cmd='/usr/bin/net lookup'
+nmblookup_cmd='/usr/bin/nmblookup'
+smbclient_cmd='/usr/bin/smbclient'
+hostname=`echo $HOSTNAME | tr [:lower:] [:upper:]`
+from="eisfair Samba Server on $hostname"
+
+if [ ! -f /etc/smb.conf ]
+then
+    mecho --error "No /etc/smb.conf found!"
+    exit 1
+fi
+
+case $# in
+0)
+    interactive='true'
+    hosts=''
+    message=''
+    broadcast=''
+    ;;
+2)
+    interactive='false'
+    hosts="$1"
+    message="$2"
+    broadcast=''
+    ;;
+*)
+    echo "usage: /var/install/bin/samba-netsend" >&2
+    echo "   or: /var/install/bin/samba-netsend {\"all\"|\"active\"|\"host1 host2 ...\"} \"message\"" >&2
+    exit 1
+    ;;
+esac
+
+do_interactive ()
+{
+    if [ "$interactive" = "true" ]
+    then
+        clrhome
+        mecho --info "Send Message to SMB Hosts"
+        echo
+    fi
+}
+
+do_interactive
+if [ -z "$hosts" ]
+then
+    echo "To which SMB Hosts the message should be send?"
+    echo
+    echo "Choice 1"
+    echo "--------"
+    echo "All SMB Hosts on configured Subnets on eisfair - type 'all'."
+    echo
+    echo "Choice 2"
+    echo "--------"
+    echo "eisfair Samba Clients with active connections - type 'active'."
+    echo
+    echo "Choice 3"
+    echo "--------"
+    echo "One ore more active SMB Hosts, type NETBIOS Names"
+    echo "separated with a blank, for instance 'client1 client2':"
+    echo
+    read hosts
+    if [ -z "$hosts" ]
+    then
+        mecho --error "No Host specified"
+        exit 1
+    fi
+    hosts=`echo $hosts | tr [:upper:] [:lower:]`
+fi
+
+do_interactive
+if [ -z "$message" ]
+then
+    echo "Which Message should be send?"
+    echo "For instance 'eisfair Samba Server is going down in 3 Minutes ...':"
+    echo
+
+    read message
+    if [ -z "$message" ]
+    then
+        mecho --error "No Message specified!"
+        exit 1
+    fi
+fi
+
+do_sendmessage ()
+{
+    name=`echo $name | tr [:lower:] [:upper:]`
+    if [ "$name" != "$hostname" -a -n "$name" ]
+    then
+        if [ -z "$ip" ]
+        then
+            ip=`$nmblookup_cmd "$name"         \
+            | grep -v '^querying '             \
+            | grep -v '^name_query failed to ' \
+            | cut -d' ' -f1`
+            #ip=`$net_lookup_cmd "$name"`
+            #ip=`$net_lookup_cmd "$name#00"`
+        fi
+
+        if [ -n "$ip" ]
+        then
+            for i in $ip
+            do
+                if [ -n "$i" ]
+                then
+                    echo "Sending message to netbios name $name ($i) ..."
+                    echo "$message" | "$smbclient_cmd" -U "$from" -N -M "$name" -I "$i" 1>/dev/null
+                    if [ $? -ne 0 ]
+                    then
+                        mecho --error "Sending Message to netbios name $name ($i) failed!"
+                        error="yes"
+                    fi
+                fi
+            done
+        else
+            mecho --error "Sending Message to netbios name $name (no ip) failed!"
+            error="yes"
+        fi
+    fi
+}
+
+do_interactive
+case "$hosts" in
+all)
+    if [ -z "`$samba_lookup_all`" ]
+    then
+        echo "No SMB host found."
+        exit 1
+    else
+        $samba_lookup_all |
+        while read line
+        do
+            set -- $line
+            ip="$1"
+            name="$2"
+            do_sendmessage
+        done
+    fi
+    ;;
+active)
+    if [ -z "`$samba_lookup_active`" ]
+    then
+        mecho --error "No eisfair Samba Client active!"
+        exit 1
+    else
+        $samba_lookup_active |
+        while read line
+        do
+            set -- $line
+            ip="$1"
+            name="$2"
+            do_sendmessage
+        done
+    fi
+    ;;
+*)
+    # hosts = separate list
+    for name in $hosts
+    do
+        do_sendmessage
+    done
+    ;;
+esac
+
+if [ "$interactive" = "true" ]
+then
+    anykey
+fi
+
+if [ "$error" = "yes" ]
+then
+    exit 1
+fi

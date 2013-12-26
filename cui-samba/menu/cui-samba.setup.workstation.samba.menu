@@ -1,0 +1,8 @@
+<!-- /var/install/menu/setup.workstation.samba.menu -->
+<!-- Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net -->
+<!-- Creation: 2005-06-16 tb -->
+<package>cui-samba</package>
+<title>Samba Workstation Administration</title>
+<script file="samba-list-workstation">List Samba Workstations</script>
+<script file="samba-add-workstation">Add Samba Workstation</script>
+<script file="samba-remove-workstation">Remove Samba Workstation</script>

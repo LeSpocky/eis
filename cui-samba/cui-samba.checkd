@@ -1,0 +1,123 @@
+#-----------------------------------------------------------------------------
+# /etc/check.d/samba - check file for samba configuration parameters
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# Creation   : 2003-12-22 tb
+# Last Update: 2013-05-07 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#-----------------------------------------------------------------------------
+# Variable                           OPT_VARIABLE                     VARIABLE_N                      VALUE
+START_SAMBA                          -                                -                               YESNO
+SAMBA_WORKGROUP                      -                                -                               NOTEMPTY
+SAMBA_MANUAL_CONFIGURATION           -                                -                               YESNO
+
+SAMBA_INTERFACES                     -                                -                               NONE
+SAMBA_TRUSTED_NETS                   -                                -                               ENETWORKS
+SAMBA_DEBUGLEVEL                     -                                -                               NUMERIC
+SAMBA_MASTERBROWSER                  -                                -                               YESNO
+SAMBA_WINSSERVER                     -                                -                               YESNO
+SAMBA_WINSHOOK                       SAMBA_WINSSERVER                 -                               YESNO
+SAMBA_WINSHOOK_MESSAGE_SEND          SAMBA_WINSHOOK                   -                               YESNO
+SAMBA_WINSHOOK_MESSAGE               SAMBA_WINSHOOK_MESSAGE_SEND      -                               NOTEMPTY
+SAMBA_WINSHOOK_DNSUPDATE             SAMBA_WINSHOOK                   -                               YESNO
+SAMBA_EXTWINSIP                      !SAMBA_WINSSERVER                -                               EIPADDR
+SAMBA_START_MESSAGE_SEND             -                                -                               YESNO
+SAMBA_START_MESSAGE                  SAMBA_START_MESSAGE_SEND         -                               NOTEMPTY
+SAMBA_SHUTDOWN_MESSAGE_SEND          -                                -                               YESNO
+SAMBA_SHUTDOWN_MESSAGE               SAMBA_SHUTDOWN_MESSAGE_SEND      -                               NOTEMPTY
+SAMBA_SHUTDOWN_MESSAGE_HOSTS         SAMBA_SHUTDOWN_MESSAGE_SEND      -                               SAMBA_SHTDMESHOS
+SAMBA_LOCALIZATION                   -                                -                               SAMBA_LOCAL
+SAMBA_PDC                            -                                -                               YESNO
+SAMBA_PDC_PROFILES                   SAMBA_PDC                        -                               YESNO
+SAMBA_PDC_LOGONSCRIPT                SAMBA_PDC                        -                               SAMBA_LOGONSCRIPT
+SAMBA_PASSWORD_SERVER                !SAMBA_PDC                       -                               NONE
+SAMBA_RECYCLE_BIN                    -                                -                               YESNO
+SAMBA_RECYCLE_BIN_HOLD_DAYS          SAMBA_RECYCLE_BIN                -                               NUMERIC
+SAMBA_PDF_TARGET                     -                                -                               SAMBA_PDFTARGET
+SAMBA_SERVERSTRING                   -                                -                               NONE
+SAMBA_EXPERT_EXEC                    -                                -                               YESNO
+SAMBA_SMBWEBCLIENT                   -                                -                               YESNO
+SAMBA_SMBWEBCLIENT_PATH              SAMBA_SMBWEBCLIENT               -                               ABS_PATH
+SAMBA_OPLOCKS                        -                                -                               YESNO
+
+SAMBA_USERMAP_N                      SAMBA_MANUAL_CONFIGURATION       -                               NUMERIC
+SAMBA_USERMAP_%_ACTIVE               SAMBA_MANUAL_CONFIGURATION       SAMBA_USERMAP_N                 YESNO
+SAMBA_USERMAP_%_EISNAME              SAMBA_USERMAP_%_ACTIVE           SAMBA_USERMAP_N                 NOTEMPTY
+SAMBA_USERMAP_%_WINNAME_N            SAMBA_USERMAP_%_ACTIVE           SAMBA_USERMAP_N                 NUMERIC
+SAMBA_USERMAP_%_WINNAME_%            SAMBA_USERMAP_%_ACTIVE           SAMBA_USERMAP_%_WINNAME_N       NOTEMPTY
+
+SAMBA_SHARE_N                        SAMBA_MANUAL_CONFIGURATION       -                               NUMERIC
+SAMBA_SHARE_%_ACTIVE                 SAMBA_MANUAL_CONFIGURATION       SAMBA_SHARE_N                   YESNO
+SAMBA_SHARE_%_NAME                   SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   SAMBA_NAME_ERR
+SAMBA_SHARE_%_NAME                   SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   WARN_SAMBA_NAME_WARN
+SAMBA_SHARE_%_COMMENT                SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   NONE
+SAMBA_SHARE_%_RW                     SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   YESNO
+SAMBA_SHARE_%_BROWSE                 SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   YESNO
+SAMBA_SHARE_%_PATH                   SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   NONE
+SAMBA_SHARE_%_USER                   SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   NONE
+SAMBA_SHARE_%_PUBLIC                 SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   YESNO
+SAMBA_SHARE_%_READ_LIST              SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   NONE
+SAMBA_SHARE_%_WRITE_LIST             SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   NONE
+SAMBA_SHARE_%_FORCE_CMODE            SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   NONE
+SAMBA_SHARE_%_FORCE_DIRMODE          SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   NONE
+SAMBA_SHARE_%_FORCE_USER             SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   NONE
+SAMBA_SHARE_%_FORCE_GROUP            SAMBA_SHARE_%_ACTIVE             SAMBA_SHARE_N                   NONE
+
+SAMBA_DFSROOT_N                      SAMBA_MANUAL_CONFIGURATION       -                               NUMERIC
+SAMBA_DFSROOT_%_ACTIVE               SAMBA_MANUAL_CONFIGURATION       SAMBA_DFSROOT_N                 YESNO
+SAMBA_DFSROOT_%_NAME                 SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_N                 SAMBA_NAME_ERR
+SAMBA_DFSROOT_%_COMMENT              SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_N                 NONE
+SAMBA_DFSROOT_%_RW                   SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_N                 YESNO
+SAMBA_DFSROOT_%_BROWSE               SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_N                 YESNO
+SAMBA_DFSROOT_%_USER                 SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_N                 NONE
+SAMBA_DFSROOT_%_PUBLIC               SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_N                 YESNO
+SAMBA_DFSROOT_%_READ_LIST            SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_N                 NONE
+SAMBA_DFSROOT_%_WRITE_LIST           SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_N                 NONE
+SAMBA_DFSROOT_%_FORCE_CMODE          SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_N                 NONE
+SAMBA_DFSROOT_%_FORCE_DIRMODE        SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_N                 NONE
+SAMBA_DFSROOT_%_FORCE_USER           SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_N                 NONE
+SAMBA_DFSROOT_%_FORCE_GROUP          SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_N                 NONE
+SAMBA_DFSROOT_%_DFSLNK_N             SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_N                 NUMERIC
+SAMBA_DFSROOT_%_DFSLNK_%_ACTIVE      SAMBA_DFSROOT_%_ACTIVE           SAMBA_DFSROOT_%_DFSLNK_N        YESNO
+SAMBA_DFSROOT_%_DFSLNK_%_SUBPATH     SAMBA_DFSROOT_%_DFSLNK_%_ACTIVE  SAMBA_DFSROOT_%_DFSLNK_N        E_REL_PATH
+SAMBA_DFSROOT_%_DFSLNK_%_NAME        SAMBA_DFSROOT_%_DFSLNK_%_ACTIVE  SAMBA_DFSROOT_%_DFSLNK_N        SAMBA_LNKNAME
+SAMBA_DFSROOT_%_DFSLNK_%_UNC_N       SAMBA_DFSROOT_%_DFSLNK_%_ACTIVE  SAMBA_DFSROOT_%_DFSLNK_N        NUMERIC
+SAMBA_DFSROOT_%_DFSLNK_%_UNC_%_PATH  SAMBA_DFSROOT_%_DFSLNK_%_ACTIVE  SAMBA_DFSROOT_%_DFSLNK_%_UNC_N  SAMBA_UNCPATH
+
+SAMBA_PRINTER_N                      SAMBA_MANUAL_CONFIGURATION       -                               NUMERIC
+SAMBA_PRINTER_%_ACTIVE               SAMBA_MANUAL_CONFIGURATION       SAMBA_PRINTER_N                 YESNO
+SAMBA_PRINTER_%_NAME                 SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 SAMBA_PRINTERNAME_ERR
+SAMBA_PRINTER_%_NAME                 SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 WARN_SAMBA_PRINTERNAME_WARN
+SAMBA_PRINTER_%_TYPE                 SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 SAMBA_PRINTERTYPE
+SAMBA_PRINTER_%_PDF_QUALITY          SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 SAMBA_PRNPDFOPT
+SAMBA_PRINTER_%_PDF_USERPASS         SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 PASSWD
+SAMBA_PRINTER_%_PDF_OWNERPASS        SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 PASSWD
+SAMBA_PRINTER_%_PDF_PERMS            SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 SAMBA_PDFPERMS
+SAMBA_PRINTER_%_PDF_MESSAGES         SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 YESNO
+SAMBA_PRINTER_%_CAPNAME              SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 SAMBA_PRNCAPNAM
+SAMBA_PRINTER_%_COMMENT              SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 NONE
+SAMBA_PRINTER_%_CLIENTDRIVER         SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 YESNO
+SAMBA_PRINTER_%_BROWSE               SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 YESNO
+SAMBA_PRINTER_%_USER                 SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 NONE
+SAMBA_PRINTER_%_PUBLIC               SAMBA_PRINTER_%_ACTIVE           SAMBA_PRINTER_N                 YESNO
+
+SAMBA_MOUNT_N                        SAMBA_MANUAL_CONFIGURATION       -                               NUMERIC
+SAMBA_MOUNT_%_ACTIVE                 SAMBA_MANUAL_CONFIGURATION       SAMBA_MOUNT_N                   YESNO
+SAMBA_MOUNT_%_VFSTYPE                SAMBA_MOUNT_%_ACTIVE             SAMBA_MOUNT_N                   SAMBA_VFSTYPE
+SAMBA_MOUNT_%_SERVER                 SAMBA_MOUNT_%_ACTIVE             SAMBA_MOUNT_N                   NONE
+SAMBA_MOUNT_%_SHARE                  SAMBA_MOUNT_%_ACTIVE             SAMBA_MOUNT_N                   NONE
+SAMBA_MOUNT_%_POINT                  SAMBA_MOUNT_%_ACTIVE             SAMBA_MOUNT_N                   ABS_PATH
+SAMBA_MOUNT_%_USER                   SAMBA_MOUNT_%_ACTIVE             SAMBA_MOUNT_N                   NONE
+SAMBA_MOUNT_%_PASS                   SAMBA_MOUNT_%_ACTIVE             SAMBA_MOUNT_N                   PASSWD
+SAMBA_MOUNT_%_RW                     SAMBA_MOUNT_%_ACTIVE             SAMBA_MOUNT_N                   YESNO
+SAMBA_MOUNT_%_UID                    SAMBA_MOUNT_%_ACTIVE             SAMBA_MOUNT_N                   NONE
+SAMBA_MOUNT_%_GID                    SAMBA_MOUNT_%_ACTIVE             SAMBA_MOUNT_N                   NONE
+SAMBA_MOUNT_%_FMASK                  SAMBA_MOUNT_%_ACTIVE             SAMBA_MOUNT_N                   NONE
+SAMBA_MOUNT_%_DMASK                  SAMBA_MOUNT_%_ACTIVE             SAMBA_MOUNT_N                   NONE
+SAMBA_MOUNT_%_IOCHARSET              SAMBA_MOUNT_%_ACTIVE             SAMBA_MOUNT_N                   SAMBA_IOCHARSET
+SAMBA_MOUNT_%_CODEPAGE               SAMBA_MOUNT_%_ACTIVE             SAMBA_MOUNT_N                   SAMBA_CODEPAGE

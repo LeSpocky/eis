@@ -1,0 +1,567 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-print-pdf - print to an pdf-file
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# Creation   : 2002-07-23 Buchan Milne
+# Last Update: 2013-05-09 tb
+#
+# Arguments:
+# $1  = file (usually passed with %s from samba)
+# $2  = jobname (usually passed with %J from samba)
+# $3  = unix prefix to where to place the file (~%u should work)
+# $4  = windows prefix to the same location (\\%L\%u should work)
+# $5  = computer to send a notification to (%m)
+# $6  = ip address of client (%I)
+# $7  = user (%u)
+# $8  = pdfquality
+# $9  = pdfownerpass
+# $10 = pdfuserpass
+# $11 = pdfpermissions
+# $12 = pdftarget: homedir or public or mail
+# $13 = smbinfo yes/no
+# $14 = pdfmessages yes/no
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+if [ "$1" = "status" ]
+then
+    echo "Printer: PDF-generator bogus status"
+    echo "Queue: no printable jobs in queue"
+    echo "Server: no server active"
+    echo "Filter_status: done"
+    echo "Rank  Owner/ID             Class Job Files    Size Time"
+    exit 0
+fi
+
+PATH="/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin"
+input="$1"
+shift
+jobname="$1"
+shift
+prefix="$1"
+shift
+winprefix="$1"
+shift
+machine="$1"
+shift
+ip="$1"
+shift
+user="$1"
+shift
+pdfquality="$1"
+shift
+pdfownerpass="$1"
+shift
+pdfuserpass="$1"
+shift
+pdfpermissions="$1"
+shift
+pdftarget="$1"
+shift
+smbinfo="$1"
+shift
+pdfmessages="$1"
+
+#smbinfo=yes
+version=`cat /etc/version`
+samba_version=`cat /usr/share/doc/samba/version`
+samba_intversion=`/usr/sbin/smbd -V | cut -d' ' -f2`
+samba="$samba_version<tab>($samba_intversion)"
+gs_version=`cat /usr/share/doc/ghostscript/version`
+gs_intversion=`/usr/local/bin/gs --version`
+gs="$gs_version<tab>($gs_intversion)"
+eiskernelversion=`grep '<version>' /var/install/packages/eiskernel 2>/dev/null | sed 's#</*version>##g'`
+eiskerneluname=`uname -r`
+eiskernel="$eiskernelversion<tab>($eiskerneluname)"
+
+logfile=`/bin/mktemp -t samba-print-pdf-XXXXXXXXXX.log`
+if [ $? -ne 0 ]
+then
+    logfile="/tmp/samba-print-pdf-$$.log"
+fi
+
+gslogfile=`/bin/mktemp -t ghostscript-XXXXXXXXXX.log`
+if [ $? -ne 0 ]
+then
+    gslogfile="/tmp/ghostscript-$$.log"
+fi
+
+mailfile=`/bin/mktemp -t samba-print-pdf-mailtemp-XXXXXXXXXX`
+if [ $? -ne 0 ]
+then
+    mailfile="/tmp/samba-print-pdf-mailtemp-$$"
+fi
+
+encode='base64'
+converterror='false'
+ps2pdf='/usr/local/bin/ps2pdf13'
+lang='en'
+from="eisfair pdf-service on $HOSTNAME"
+subject='your print job'
+infile=$(basename $input)
+basefile='pdf-service'
+output="$prefix/$basefile-$machine-$$"
+tempfile="/tmp/$basefile-$machine-$$.pdf"
+basetempfile=`basename "$tempfile"`
+winbase=$(echo "$winprefix"|sed -e 's,/,\\,g')
+
+doscharset=`/usr/bin/testparm -vs 2> /dev/null | grep "dos charset =" | cut -d" " -f4 | tr [:lower:] [:upper:]`
+iocharset=`/usr/bin/testparm -vs 2> /dev/null | grep "unix charset =" | cut -d" " -f4 | tr [:lower:] [:upper:]`
+if [ "$doscharset" = "CP850" ]
+then
+    if [ "$iocharset" = "ISO8859-1" -o "$iocharset" = "ISO8859-15" -o "$iocharset" = "UTF-8" ]
+    then
+        lang='de'
+        from="eisfair pdf-service auf $HOSTNAME"
+        subject='Ihr Druck-Auftrag'
+    fi
+fi
+
+if [ "$pdftarget" = "public" ]
+then
+    perms='0666'
+else
+    perms='0600'
+fi
+
+msgcommand ()
+{
+    if [ "$pdfmessages" = "yes" ]
+    then
+        cat "$logfile" |awk '{print gensub("<tab>","\t","g",gensub("<newline>","\n","g"))}'|/usr/bin/smbclient -U "$from" -N -M "$machine" -I "$ip" 1> /dev/null
+    else
+        /bin/true
+    fi
+}
+
+rmcommand ()
+{
+    rm -f "$logfile"
+    rm -f "$input"
+    rm -f "$tempfile"
+    rm -f "$gslogfile"
+    rm -f "$mailfile"
+}
+
+do_verbose ()
+{
+    if [ "$smbinfo" = "yes" ]
+    then
+       {
+        echo
+        echo "#######################################"
+        if [ "$lang" = "de" ]
+        then
+            echo "Ein paar Informationen ueber diesen Job:"
+        else
+            echo "Some informations about the job:"
+        fi
+
+        echo
+        echo "(user)<tab><tab>: "$user""
+        echo "(prefix/homedir)<tab>: "$prefix""
+        echo "(quality)<tab><tab>: "$quality""
+        echo "(permissions)<tab>: "$pdfpermissions""
+        echo "(jobname)<tab>: "$jobname""
+        echo "(psjobname)<tab>: "$psjobname""
+        echo "(trim0)<tab><tab>: ->"$trim0"<-"
+        echo "(trim1)<tab><tab>: ->"$trim1"<-"
+        echo "(trim2)<tab><tab>: ->"$trim2"<-"
+        echo "(trim3)<tab><tab>: ->"$trim3"<-"
+        echo "(trim4)<tab><tab>: ->"$trim4"<-"
+        echo "(trim5)<tab><tab>: ->"$trim5"<-"
+        echo "(trim6)<tab><tab>: ->"$trim6"<-"
+        echo "(trim7)<tab><tab>: ->"$trim7"<-"
+        echo "(name)<tab><tab>: ->"$name"<-"
+        echo "(basefile)<tab><tab>: $basefile"
+        echo "(output)<tab><tab>: $output"
+        echo "(tempfile)<tab><tab>: $tempfile"
+        echo "(finaloutput)<tab>: $finaloutput"
+        echo "(winbase)<tab><tab>: $winbase"
+
+        if [ "$pdftarget" != "mail" ]
+        then
+            echo "(win_output)<tab>: $win_output"
+        fi
+
+        echo "#######################################"
+        echo
+        echo "<tab><tab>>>>> powered by eisfair <<<<"
+        echo
+        echo " - base<tab><tab>: $version"
+        echo " - eiskernel<tab>: $eiskernel"
+        echo " - Samba<tab><tab>: $samba"
+        echo " - GPL Ghostscript<tab>: $gs"
+       } >>"$logfile"
+    fi
+}
+
+case "$gs_intversion" in
+8.*|9.*)
+    if grep -q '^.distillersettings /' "$input"
+    then
+        pdfquality=''
+        quality=`grep '^.distillersettings /' "$input" | cut -d' ' -f2 | cut -d'/' -f2`
+    else
+        if [ "$pdfquality" = "-dPDFSETTINGS=/" ]
+        then
+            pdfquality='-dPDFSETTINGS=/default'
+        fi
+
+        quality=`echo $pdfquality | cut -d'/' -f2`
+    fi
+
+    if [ "$pdfpermissions" = "-dPermissions=" ]
+    then
+        pdfpermissions="-dPermissions=-4"
+    fi
+
+    options="$pdfquality"
+    if [ "$pdfownerpass" != "-sOwnerPassword=" ]
+    then
+        options="$options -dEncryptionR=2 -dKeyLength=40 $pdfpermissions $pdfownerpass"
+    fi
+
+    if [ "$pdfuserpass" != "-sUserPassword=" ]
+    then
+        options="$options $pdfuserpass"
+    fi
+    ;;
+*)
+   {
+    if [ "$lang" = "de" ]
+    then
+        echo "Lieber $user,"
+        echo
+        echo "Ghostscript 8.x/9.x wurde nicht gefunden ..."
+    else
+        echo "Dear $user,"
+        echo
+        echo "no Ghostscript 8.x/9.x found ..."
+    fi
+   } >>"$logfile"
+
+    msgcommand
+    rmcommand
+    exit 1
+    ;;
+esac
+
+if [ -z "$jobname" ]
+then
+    # grep title as jobname, remove return and newline
+    psjobname=`grep "^%%Title:" "$input" | sed 's#^%%Title: ##g' | tr -d "\r\n"`
+    # recover umlauts and replace '\' with '/'
+    #trim0=`echo -en "$psjobname" | sed 's#\\\#/#g'`
+    trim0=`echo -en "$psjobname"`
+else
+    # use %J
+    psjobname="$jobname"
+    # replace '\' with '/'
+    #trim0=`echo "$psjobname" | sed 's#\\\#/#g'`
+    #trim0=`basename "$psjobname" | sed 's#\\\#/#g'`
+    trim0=`echo "$psjobname"`
+fi
+
+# replace '"' with '_'
+trim1=`echo "$trim0" | sed 's#"#_#g'`
+# replace leading '(' and trailing ')' with '_'
+trim2=`echo "$trim1" | sed 's#^(##g; s#)$##g'`
+# remove last extension
+#trim2=`echo "$trim1" | sed 's/\(.*\)\..*$/\1/g'`
+# build basename
+#trim3=`basename "$trim2"`
+# replace '<>|?*:/\' with '_'
+trim3=`echo "$trim2" | sed 's#<#_#g; s#>#_#g; s#|#_#g; s#?#_#g; s#*#_#g; s#:#_#g; s#\\/#_#g; s#\\\#_#g'`
+# remove leading and trailing ' ' and tabs
+#trim4=`echo "$trim3" | sed 's/[ ][^ ]$//'`
+trim4=`echo "$trim3" | sed 's#^[	]*##; s#[ ^]*$##'`
+# remove 'Microsoft Word - ', 'Microsoft Excel - ', 'Microsoft PowerPoint - ' and ' - Editor'
+trim5=`echo "$trim4" | sed 's#Microsoft Word - ##g; s#Microsoft Excel - ##g; s#Microsoft PowerPoint - ##g; s# - Editor##g'`
+# replace ' ' with '_'
+trim6=`echo "$trim5" | sed 's# #_#g'`
+# remove char '\205'
+trim7=`echo "$trim6" | sed 's#\\\205##g'`
+# build basename
+name=`basename "$trim7"`
+#name=`echo "$trim8"`
+
+# make a temp file to use for the output of the PDF
+>"$tempfile"
+if [ $? -ne 0 ]
+then
+   {
+    # Generate a failure message to send to the user
+    if [ "$lang" = "de" ]
+    then
+        echo "Lieber $user,"
+        echo
+        echo "kann temporaere Datei $tempfile nicht erstellen ..."
+    else
+        echo "Dear $user,"
+        echo
+        echo "can't create temp file $tempfile ..."
+    fi
+   } >>"$logfile"
+
+    msgcommand
+    rmcommand
+    exit 1
+fi
+
+# create the PDF
+"$ps2pdf" $options "$input" "$tempfile" >/dev/null 2>> "$gslogfile"
+if [ $? -ne 0 ]
+then
+   {
+    # Generate a failure message to send to the user
+    if [ "$lang" = "de" ]
+    then
+        echo "Lieber $user,"
+        echo
+        echo "kann PDF-Datei $tempfile nicht erstellen..."
+    else
+        echo "Dear $user,"
+        echo
+        echo "can't create pdf file $tempfile..."
+    fi
+   } >>"$logfile"
+
+    if [ -s "$gslogfile" ]
+    then
+       {
+        if [ "$lang" = "de" ]
+        then
+            echo "Ghostscript-Fehler:"
+        else
+            echo "Ghostscript error:"
+        fi
+        echo
+       } >>"$logfile"
+        cat "$gslogfile" >>"$logfile"
+    fi
+
+    msgcommand
+    rmcommand
+    exit 1
+fi
+
+if [ "$pdftarget" = "mail" ]
+then
+    from="$from <root>"
+    if [ -z "$name" -o -n "`echo $name | grep :`" ]
+    then
+        finaloutput="$basefile-$machine-$$.pdf"
+    else
+        finaloutput="$name-$$.pdf"
+    fi
+
+    mv "$tempfile" "/tmp/$finaloutput"
+    tempfile="/tmp/$finaloutput"
+   {
+    echo "From: $from"
+    echo "To: $user"
+    #echo "Cc: $cc"
+    #echo "Bcc: $bcc"
+    echo "Subject: $subject $finaloutput"
+
+    if [ "$encode" = "base64" ]
+    then
+        echo "Mime-Version: 1.0"
+        echo "Content-Type: multipart/mixed; boundary=\"DMW.Boundary.605592468\""
+        echo
+        echo "This is a Mime message, which your mail program may not understand."
+        echo "Parts of the message will appear as text. If the remainder appears"
+        echo "as random characters in the message body, instead of as attachments,"
+        echo "then you'll have to extract these parts and decode them manually."
+        echo
+        echo "--DMW.Boundary.605592468"
+        echo "Content-Type: text/plain; name=\"message.txt\"; charset=US-ASCII"
+        echo "Content-Disposition: inline; filename=\"message.txt\""
+        echo "Content-Transfer-Encoding: 7bit"
+        echo
+    fi
+
+    if [ "$lang" = "de" ]
+    then
+        echo "Lieber $user,"
+        echo
+        echo "wenn die PDF-Datei nicht angehaengt wurde, leiten"
+        echo "Sie diese Mail bitte an den Support weiter oder"
+        echo "antworten Sie mit einer Fehlerbeschreibung."
+    else
+        echo "Dear $user,"
+        echo
+        echo "if your pdf job is not attached to this email,"
+        echo "please forward this message to the help desk or"
+        echo "or reply with a description of this error."
+    fi
+
+    echo
+   } >"$mailfile"
+
+    if [ "$encode" != "base64" ]
+    then
+        /usr/local/bin/uuencode "$tempfile" "$finaloutput" >>"$mailfile"
+        if [ $? -ne 0 ]
+        then
+            converterror='true'
+        fi
+    else
+       {
+        echo "--DMW.Boundary.605592468"
+        echo "Content-Type: application/pdf; name=\"$finaloutput\""
+        echo "Content-Disposition: attachment; filename=\"$finaloutput\""
+        echo "Content-Transfer-Encoding: base64"
+        echo
+       } >>"$mailfile"
+
+        perl -e 'use MIME::Base64 qw(encode_base64);
+                 open(FILEIN, "$ARGV[0]") or die "$!";
+                 open(FILEOUT, ">> $ARGV[1]") or die "$!";
+                 while (read(FILEIN, $buf, 60*57)) {
+                     print FILEOUT encode_base64($buf);
+                 }
+                 close(FILEIN);
+                 close(FILEOUT);
+                 ' "$tempfile" "$mailfile"
+
+        if [ $? -ne 0 ]
+        then
+            converterror='true'
+        else
+            echo "--DMW.Boundary.605592468--" >>"$mailfile"
+        fi
+    fi
+
+    if [ "$coverterror" = "true" ]
+    then
+       {
+        # Generate a failure message to send to the user
+        if [ "$lang" = "de" ]
+        then
+            echo "Lieber $user,"
+            echo
+            if [ "$encode" != "base64" ]
+            then
+                echo "kann die Datei $tempfile nicht mit uuencode verarbeiten ..."
+            else
+                echo "kann die Datei $tempfile nicht mit base64 verarbeiten ..."
+            fi
+        else
+            echo "Dear $user,"
+            echo
+            if [ "$encode" != "base64" ]
+            then
+                echo "can't uuencode file $tempfile ..."
+            else
+                echo "can't base64 encode file $tempfile ..."
+            fi
+        fi
+       } >>"$logfile"
+
+        msgcommand
+        rmcommand
+        exit 1
+    fi
+
+    cat "$mailfile" | /usr/lib/sendmail -t
+    if [ $? -ne 0 ]
+    then
+       {
+        # Generate a failure message to send to the user
+        if [ "$lang" = "de" ]
+        then
+            echo "Lieber $user,"
+            echo
+            echo "kann Datei $mailfile nicht mailen ..."
+        else
+            echo "Dear $user,"
+            echo
+            echo "can't mail file $mailfile ..."
+        fi
+       } >>"$logfile"
+
+        msgcommand
+        rmcommand
+        exit 1
+    fi
+
+   {
+    # Generate a message to send to the user
+    if [ "$lang" = "de" ]
+    then
+        echo "Lieber $user,"
+        echo
+        echo "Ihre Datei wurde konvertiert und an Sie gemailt."
+    else
+        echo "Dear $user,"
+        echo
+        echo "your file was converted and mailed to you."
+    fi
+   } >>"$logfile"
+
+    do_verbose
+else
+    if [ -z "$name" -o -n "`echo $name | grep :`" ]
+    then
+        # output="$prefix/$basefile-$machine-$$"
+        finaloutput="$output".pdf
+    else
+        finaloutput="$prefix/$name-$$".pdf
+    fi
+
+    win_output="$winbase\\"`basename "$finaloutput"`
+    mv -f "$tempfile" "$finaloutput"
+    if [ $? -ne 0 ]
+    then
+       {
+        # Generate a failure message to send to the user
+        if [ "$lang" = "de" ]
+        then
+            echo "Lieber $user,"
+            echo
+            echo "kann $tempfile nicht nach $finaloutput verschieben ..."
+        else
+            echo "Dear $user,"
+            echo
+            echo "can't move $tempfile to $finaloutput ..."
+        fi
+       } >>"$logfile"
+
+        msgcommand
+        rmcommand
+        exit 1
+    fi
+
+    chmod "$perms" "${finaloutput}"
+
+   {
+    # Generate a message to send to the user
+    if [ "$lang" = "de" ]
+    then
+        echo "Lieber $user,"
+        echo
+        echo "Ihre Datei wurde konvertiert. Sie finden sie hier:"
+        echo
+        echo "$win_output"
+    else
+        echo "Dear $user,"
+        echo
+        echo "your file was converted. You will find it here:"
+        echo
+        echo "$win_output"
+    fi
+   } >>"$logfile"
+
+    do_verbose
+fi
+
+# Send notification to user
+msgcommand
+rmcommand

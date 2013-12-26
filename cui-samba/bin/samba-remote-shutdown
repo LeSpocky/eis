@@ -1,0 +1,396 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-remote-shutdown - remote shutdown samba clients
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-remote-shutdown
+#    or: /var/install/bin/samba-remote-shutdown "shutdown"|"reboot" "all"|"active"|"host1 host2" "excludehost1 excludehost2" "time" "adminuser" "adminpassword"
+#
+# Creation   : 2005-09-22 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+#set -x
+. /var/install/include/eislib
+
+debuglevel=`grep 'debug level =' /etc/smb.conf | cut -d'=' -f2 | sed 's# ##g'`
+hostname=`echo $HOSTNAME | tr [:lower:] [:upper:]`
+samba_netsend='/var/install/bin/samba-netsend'
+samba_lookup_all='/var/install/bin/samba-lookup-all'
+samba_lookup_active='/var/install/bin/samba-lookup-active'
+netbin='/usr/bin/net'
+error='no'
+
+list=`/bin/mktemp -t samba-remote-shutdown-XXXXXXXXXX`
+if [ $? -ne 0 ]
+then
+    list="/tmp/samba-remote-shutdown-$$"
+fi
+
+if [ ! -f /etc/smb.conf ]
+then
+    mecho --error "No /etc/smb.conf found"
+    exit 1
+fi
+
+case $# in
+0)
+    interactive='true'
+    shutdowntype=''
+    hosts=''
+    excludehosts=''
+    time=''
+    adminuser=''
+    adminpassword=''
+    ;;
+6)
+    interactive='false'
+    shutdowntype="$1"
+    hosts="$2"
+    excludehosts="$3"
+    time="$4"
+    adminuser="$5"
+    adminpassword="$6"
+    ;;
+*)
+    echo "usage: /var/install/bin/samba-remote-shutdown"    >&2
+    echo "   or: /var/install/bin/samba-remote-shutdown \\" >&2
+    echo "       \"shutdown\"|\"reboot\"                    \\" >&2
+    echo "       \"all\"|\"active\"|\"host1 host2\"           \\" >&2
+    echo "       \"excludehost1 excludehost2\"            \\" >&2
+    echo "       \"time\"                                 \\" >&2
+    echo "       \"adminuser\"                            \\" >&2
+    echo "       \"adminpassword\"                          " >&2
+    exit 1
+    ;;
+esac
+
+do_interactive ()
+{
+    if [ "$interactive" = "true" ]
+    then
+        clrhome
+        mecho --info "Delayed Remote Shutdown of Samba Windows Clients"
+        echo
+    fi
+}
+
+do_interactive
+if [ -z "$shutdowntype" ]
+then
+    echo "Do you want to reboot or shutdown the clients?"
+    echo
+    echo "Choice 1"
+    echo "--------"
+    echo "Shutdown - type 'shutdown'."
+    echo
+    echo "Choice 2"
+    echo "--------"
+    echo "Reboot - type 'reboot'."
+    echo
+    echo "If you only press ENTER, 'shutdown' will be used:"
+    echo
+    read shutdowntype
+
+    if [ -z "$shutdowntype" ]
+    then
+        shutdowntype="shutdown"
+    fi
+fi
+
+shutdowntype=`echo $shutdowntype | tr [:upper:] [:lower:]`
+if [ "$shutdowntype" != "shutdown" -a "$shutdowntype" != "reboot" ]
+then
+    mecho --error "Incorrect shutdown type $shutdowntype specified"
+    exit 1
+fi
+
+if [ "$shutdowntype" = "reboot" ]
+then
+    shutdowntype='rpc shutdown --reboot'
+    shutdowntext='reboot'
+else
+    shutdowntype='rpc shutdown'
+    shutdowntext='shutdown'
+fi
+
+do_interactive
+if [ -z "$hosts" ]
+then
+    echo "Which SMB Hosts should $shutdowntext?"
+    echo
+    echo "Choice 1"
+    echo "--------"
+    echo "All SMB Hosts on configured Subnets on eisfair - type 'all'."
+    echo
+    echo "Choice 2"
+    echo "--------"
+    echo "eisfair Samba Clients with active connections - type 'active'."
+    echo
+    echo "Choice 3"
+    echo "--------"
+    echo "One ore more active SMB Hosts, type NETBIOS Names"
+    echo "separated with a blank, for instance 'client1 client2'."
+    echo
+    echo "Choice 4"
+    echo "--------"
+    echo "If you only press ENTER, active hosts will be used."
+    echo
+
+    read hosts
+    if [ -z "$hosts" ]
+    then
+        hosts="active"
+    else
+        hosts=`echo $hosts | tr [:upper:] [:lower:]`
+    fi
+fi
+
+do_buildhostslist ()
+{
+    name=`echo $name | tr [:lower:] [:upper:]`
+    if [ "$name" != "$hostname" -a -n "$name" ]
+    then
+        if [ -z "$ip" ]
+        then
+            ip=`/usr/bin/nmblookup "$name"     \
+            | grep -v '^querying '             \
+            | grep -v '^name_query failed to ' \
+            | cut -d' ' -f1`
+        fi
+
+        if [ -n "$ip" ]
+        then
+            for i in $ip
+            do
+                if [ -n "$i" ]
+                then
+                    echo -n "$name " >>"$list"
+                fi
+            done
+        else
+            mecho --warn "Cannot find IP for name $name, skipping $name ..."
+        fi
+    fi
+}
+
+if [ -n "$hosts" ]
+then
+    case "$hosts" in
+    all)
+        mecho --info "Building list of hosts ..."
+        >"$list"
+
+        $samba_lookup_all |
+        while read line
+        do
+            ip=''
+            name=''
+            set -- $line
+            ip="$1"
+            name="$2"
+            do_buildhostslist
+        done
+
+        hostslist=`cat "$list"`
+        #echo "hostliste ist $hostslist"
+        rm -f "$list"
+        ;;
+    active)
+        mecho --info "Building list of hosts ..."
+        >"$list"
+
+        $samba_lookup_active |
+        while read line
+        do
+            ip=''
+            name=''
+            set -- $line
+            ip="$1"
+            name="$2"
+            do_buildhostslist
+        done
+
+        hostslist=`cat "$list"`
+        #echo "hostliste ist $hostslist"
+        rm -f "$list"
+        ;;
+    *)
+        mecho --info "Building list of hosts ..."
+        >"$list"
+
+        for name in $hosts
+        do
+            do_buildhostslist
+        done
+
+        hostslist=`cat "$list"`
+        #echo "hostliste ist $hostslist"
+        rm -f "$list"
+        ;;
+    esac
+else
+    mecho --error "No computer in hostslist, exiting ..."
+    exit 1
+fi
+
+if [ -z "$hostslist" ]
+then
+    do_interactive
+    mecho --error "No computer in hostslist, exiting ..."
+    exit 1
+fi
+
+do_interactive
+if [ -z "$excludehosts" ]
+then
+    echo "Which SMB Hosts should NOT $shutdowntext?"
+    echo "Warning! Not excluded clients will lost unsaved work!"
+    echo
+    read excludehosts
+fi
+
+if [ -n "$excludehosts" ]
+then
+    excludehosts="`echo $excludehosts | tr [:lower:] [:upper:]`"
+    for e in $hostslist
+    do
+        exclude='false'
+        for f in $excludehosts
+        do
+            if [ "$e" = "$f" ]
+            then
+                exclude='true'
+                #echo "found excludehost $f"
+            fi
+        done
+
+        if [ "$exclude" = "false" ]
+        then
+            if [ -z "$newlist" ]
+            then
+                #echo "adding $e to newlist"
+                newlist="$e"
+            else
+                #echo "adding $e to newlist"
+                newlist="$newlist $e"
+            fi
+        fi
+    done
+    hostslist="$newlist"
+fi
+
+#echo "hostslist ist $hostslist"
+if [ -z "$hostslist" ]
+then
+    do_interactive
+    mecho --error "No computer in hostslist, exiting ..."
+    exit 1
+fi
+
+>"$list"
+for host in $hostslist
+do
+    echo "$host" >>"$list"
+done
+
+for name in `cat "$list" | sort -u`
+do
+    if [ -z "$x" ]
+    then
+        x="$name"
+    else
+        x="$x $name"
+    fi
+done
+
+rm -f "$list"
+hostslist="$x"
+#echo "hostslist ist $hostslist"
+
+do_interactive
+if [ -z "$time" ]
+then
+    echo "After which time in minutes remote clients should $shutdowntext?"
+    echo "If you only press ENTER, 3 minutes will be used:"
+    echo
+
+    read time
+    if [ -z "$time" ]
+    then
+        time='3'
+    fi
+fi
+
+shutdownseconds=`expr $time \* 60`
+
+do_interactive
+if [ -z "$adminuser" ]
+then
+    if [ "$interactive" = "true" ]
+    then
+        echo "Enter username with administrative rights on the clients."
+        echo "If you only press ENTER, 'Administrator' will be used:"
+        echo
+        read adminuser
+
+        if [ -z "$adminuser" ]
+        then
+            adminuser="Administrator"
+        fi
+    fi
+fi
+
+if [ "$interactive" = "true" ]
+then
+    clrhome
+    mecho --info "Delayed Remote Shutdown of Samba Windows Clients"
+    echo
+    echo "Enter password for user $adminuser:"
+    echo
+    stty -echo
+    read adminpassword
+    stty echo
+
+    if [ -z "$adminpassword" ]
+    then
+        mecho --error "No password specified!"
+        exit 1
+    fi
+fi
+
+do_interactive
+for o in $hostslist
+do
+    #echo "o $o"
+    #echo "name $name"
+    #echo "adminuser $adminuser"
+    #echo "adminpassword $adminpassword"
+    #echo "shutdownseconds $shutdownseconds"
+    #echo "time $time"
+
+    echo "Trying to remote $shutdowntext $o ..."
+    shutdowntextbegin=`echo $shutdowntext | cut -c1 | tr [:lower:] [:upper:]`
+    shutdowntextend=`echo $shutdowntext | cut -c2-`
+    "$netbin" -S "$o" -d "$debuglevel" -U "$adminuser"%"$adminpassword" $shutdowntype -t "$shutdownseconds" -C "$shutdowntextbegin$shutdowntextend in $time minute(s). Please save your data and disconnect now!"
+    if [ $? -ne 0 ]
+    then
+        mecho --error "Remote $shutdowntext of $o failed!"
+        error='yes'
+    fi
+done
+
+if [ "$interactive" = "true" ]
+then
+    anykey
+fi
+
+if [ "$error" = "yes" ]
+then
+   exit 1
+fi

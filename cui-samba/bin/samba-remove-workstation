@@ -1,0 +1,99 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-remove-workstation - remove a samba workstation
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-remove-workstation
+#    or: /var/install/bin/samba-remove-workstation "workstation"
+#
+# Creation   : 2002-06-02 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+. /var/install/include/eislib
+
+debuglevel=`grep 'debug level =' /etc/smb.conf | cut -d'=' -f2 | sed 's# ##g'`
+smbpasswdbin='/usr/bin/smbpasswd'
+passwdfile='/etc/passwd'
+pdbeditbin='/usr/bin/pdbedit'
+tdbsamfile='/etc/passdb.tdb'
+
+case $# in
+0)
+    interactive='true'
+    workstation=''
+    ;;
+1)
+    interactive='false'
+    workstation="$1"
+    echo
+    ;;
+*)
+    echo "usage: /var/install/bin/samba-remove-workstation" >&2
+    echo "   or: /var/install/bin/samba-remove-workstation \"workstation\"" >&2
+    exit 1
+    ;;
+esac
+
+if [ "$interactive" = "true" ]
+then
+    clrhome
+    mecho --info "Remove Samba Workstation"
+    echo
+fi
+
+if [ -z "$workstation" ]
+then
+    echo "Samba Workstation to remove (e.g. 'ente'):"
+    echo
+    read workstation
+fi
+
+if [ -z "$workstation" ]
+then
+    mecho --error "No Workstation removed!"
+    exit 1
+fi
+
+workstation=`echo $workstation | tr [:upper:] [:lower:]`
+workstationlower="$workstation"
+workstationid="$workstation\$"
+
+if ! `$pdbeditbin -Lw | grep -q "^$workstationid:"`
+then
+    workstation=`echo $workstation | tr [:lower:] [:upper:]`
+    workstationupper="$workstation"
+    workstationid="$workstation\$"
+
+    if ! `$pdbeditbin -Lw | grep -q "^$workstationid:"`
+    then
+        mecho --error "Failed to find entry for workstation $workstationlower or $workstationupper in $tdbsamfile!"
+        exit 1
+    fi
+fi
+
+"$smbpasswdbin" -D "$debuglevel" -m -x "$workstation"
+
+if ! grep -q "^$workstationid:" "$passwdfile"
+then
+    workstation=`echo $workstation | tr [:upper:] [:lower:]`
+    workstationid="$workstation\$"
+
+    if ! grep -q "^$workstationid:" "$passwdfile"
+    then
+        mecho --error "Failed to find entry for workstation $workstationlower or $workstationupper in $passwdfile!"
+        exit 1
+    fi
+fi
+
+/var/install/bin/remove-user "$workstationid" 'no'
+
+if [ "$interactive" = "true" ]
+then
+    anykey
+fi

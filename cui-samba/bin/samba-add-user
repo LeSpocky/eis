@@ -1,0 +1,91 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-add-user - add samba user
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-add-user
+#    or: /var/install/bin/samba-add-user "user" "password"
+#
+# Creation   : 2002-02-13 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+. /var/install/include/eislib
+
+debuglevel=`grep 'debug level =' /etc/smb.conf | cut -d'=' -f2 | sed 's# ##g'`
+smbpasswdbin='/usr/bin/smbpasswd'
+passwdfile='/etc/passwd'
+pdbeditbin='/usr/bin/pdbedit'
+tdbsamfile='/etc/passdb.tdb'
+
+if [ ! -f "$tdbsamfile" ]
+then
+    >"$tdbsamfile"
+    chown root.root "$tdbsamfile"
+    chmod 0600 "$tdbsamfile"
+fi
+
+case $# in
+0)
+    interactive='true'
+    user=''
+    password=''
+    ;;
+2)
+    interactive='false'
+    user="$1"
+    password="$2"
+    (echo "$password"; echo "$password") | "$smbpasswdbin" -D "$debuglevel" -sa "$user"
+    (echo "$password"; echo "$password") | "$smbpasswdbin" -D "$debuglevel" -se "$user"
+    ;;
+*)
+    echo "usage: /var/install/bin/samba-add-user" >&2
+    echo "   or: /var/install/bin/samba-add-user \"user\" \"password\"" >&2
+    exit 1
+    ;;
+esac
+
+if [ "$interactive" = "true" ]
+then
+    clrhome
+    mecho --info "Add Samba User"
+
+    echo
+    if [ -z "$user" ]
+    then
+        echo "User-ID must exist in eisfair-User-Configuration"
+        echo "User-ID (e.g. 'samba1'):"
+        echo
+        read user
+    fi
+
+    case "$user" in
+    "")
+        mecho --error "No user added"
+        ;;
+    *)
+        if grep -q "^$user:" "$passwdfile"
+        then
+            echo "Found entry for samba user $user in $passwdfile."
+
+            if `$pdbeditbin -Lw | grep -q "^$user:"`
+            then
+                "$smbpasswdbin" -D "$debuglevel" -e "$user"
+            else
+                "$smbpasswdbin" -D "$debuglevel" -a "$user"
+                "$smbpasswdbin" -D "$debuglevel" -e "$user"
+            fi
+        else
+            mecho --error "Failed to find entry for samba user $user in $passwdfile!"
+            mecho --error "Create user $user at first with User Administration!"
+        fi
+        ;;
+    esac
+
+    anykey
+fi

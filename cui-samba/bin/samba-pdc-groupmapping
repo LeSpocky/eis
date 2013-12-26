@@ -1,0 +1,149 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-pdc-groupmapping - windows to unix group mapping
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-pdc-groupmapping [-q] {addall|delall}
+#
+# Creation   : 2004-10-22 tb
+# Last Update: 2013-05-08 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+#set -x
+if [ "$1" = "-q" ]
+then
+    quiet='true'
+    shift
+else
+    quiet='false'
+fi
+
+groups='root:0:Domain-Administrators:512
+        users:100:Domain-Users:513
+        nogroup:65534:Domain-Guests:514
+        machines:777:Domain-Computers:515
+        sys:3:Domain-Power-Users'
+
+netbin='/usr/bin/net'
+
+doscharset=`/usr/bin/testparm -vs 2>/dev/null | grep 'dos charset =' | cut -d' ' -f4 | tr [:lower:] [:upper:]`
+iocharset=`/usr/bin/testparm -vs 2>/dev/null | grep 'unix charset =' | cut -d' ' -f4 | tr [:lower:] [:upper:]`
+if [ "$doscharset" = "CP850" ]
+then
+    if [ "$iocharset" = "ISO8859-1" -o "$iocharset" = "ISO8859-15" -o "$iocharset" = "UTF-8" ]
+    then
+        groups='root:0:Domänen-Administratoren:512
+                users:100:Domänen-Benutzer:513
+                nogroup:65534:Domänen-Gäste:514
+                machines:777:Domänen-Computer:515
+                sys:3:Domänen-Hauptbenutzer'
+    fi
+fi
+
+case $# in
+1)
+    case $1 in
+    addall)
+        #adding domain groups
+        for x in $groups
+        do
+            unixgroup=`echo $x | cut -d':' -f1`
+            gid=`echo $x | cut -d':' -f2`
+            ntgroup=`echo $x | cut -d':' -f3`
+            rid=`echo $x | cut -d':' -f4`
+
+            if [ -n "$rid" ]
+            then
+                rid="rid=$rid"
+            fi
+
+            if [ "$quiet" = "true" ]
+            then
+                if ! grep -q "^$unixgroup:" /etc/group
+                then
+                    /var/install/bin/add-group $unixgroup $gid
+                fi
+                "$netbin" groupmap add $rid ntgroup="$ntgroup" unixgroup=$unixgroup type=d 1> /dev/null
+            else
+                if ! grep -q "^$unixgroup:" /etc/group
+                then
+                    echo "Group $unixgroup gid $gid don't exist, adding it ..."
+                    /var/install/bin/add-group $unixgroup $gid
+                else
+                    echo "Group $unixgroup gid $gid already exist."
+                fi
+
+                "$netbin" groupmap add $rid ntgroup="$ntgroup" unixgroup=$unixgroup type=d
+            fi
+        done
+        ;;
+    delall)
+        for i in `$netbin groupmap list | cut -d'(' -f2 | cut -d')' -f1`
+        do
+            # echo $i
+            if [ "$quiet" = "true" ]
+            then
+                "$netbin" groupmap delete sid=$i 1> /dev/null
+            else
+                "$netbin" groupmap delete sid=$i
+            fi
+        done
+        # $netbin groupmap list
+        ;;
+    *)
+        echo "usage: /var/install/bin/samba-pdc-groupmapping [-q] {addall|delall}" >&2
+        exit 1
+        ;;
+    esac
+    ;;
+#3)
+#    case $1 in
+#    add)
+#        ntgroup="$2"
+#        unixgroup="$3"
+#        if ! grep "^$unixgroup:" /etc/group >/dev/null
+#        then
+#            /var/install/bin/add-group $unixgroup
+#        fi
+#
+#        gid="`grep "^$unixgroup:" /etc/group | cut -d":" -f3`"
+#        # echo "gid is $gid"
+#        rid=`expr $gid \* 2 + 1001`
+#        # echo "rid is $rid"
+#        domsid=`/usr/bin/net getlocalsid | cut -d" " -f6`
+#        sid=$domsid-$rid
+#        # echo "sid is $sid"
+#        "$netbin" groupmap add sid=$sid ntgroup="$ntgroup" unixgroup=$unixgroup type=d
+#        rm -f /tmp/samba-rid-list-$$
+#        ;;
+#    del)
+#        ntgroup="$2"
+#        unixgroup="$3"
+#        if [ -n "`/usr/bin/net groupmap list | grep ^"$ntgroup" | grep $unixgroup$`" ]
+#        then
+#            sid=`/usr/bin/net groupmap list | cut -d"(" -f1 | grep ^"$ntgroup" | cut -d"(" -f2 | cut -d")" -f1 | sed 's/[ ]$//'`
+#           "$netbin" groupmap delete sid="$sid"
+#        else
+#            echo "cannot find "$ntgroup" in groupmapping database"
+#        fi
+#        ;;
+#    *)
+#        echo "usage: `basename $0` {addall|delall|add \"ntgroup\" \"unixgroup\"|del \"ntgroup\" \"unixgroup\"}" >&2
+#        exit 1
+#        ;;
+#    esac
+#    ;;
+#  *)
+#    echo "usage: `basename $0` {addall|delall|add \"ntgroup\" \"unixgroup\"|del \"ntgroup\" \"unixgroup\"}" >&2
+#    exit 1
+#    ;;
+*)
+    echo "usage: /var/install/bin/samba-pdc-groupmapping [-q] {addall|delall}" >&2
+    exit 1
+    ;;
+esac

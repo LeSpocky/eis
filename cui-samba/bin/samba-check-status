@@ -1,0 +1,75 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-check-status - check status of smbd and nmbd
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-check-status
+#
+# Creation   : 2005-10-04 tb
+# Last Update: 2013-05-08 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+#set -x
+smbdpidfile='/var/run/smbd.pid'
+nmbdpidfile='/var/run/nmbd.pid'
+winbinddpidfile='/var/run/winbindd.pid'
+
+do_smbdstatus ()
+{
+    smbdpid=`cat $smbdpidfile 2>/dev/null`
+    smbdstatus='dead'
+
+    if [ -n "$smbdpid" ]
+    then
+        /bin/kill -0 $smbdpid
+        if [ $? -eq 0 ]
+        then
+            smbdstatus='alive'
+        else
+            rm -f "$smbdpidfile"
+        fi
+    fi
+}
+
+do_nmbdstatus ()
+{
+    nmbdpid=`cat $nmbdpidfile 2>/dev/null`
+    nmbdstatus='dead'
+
+    if [ -n "$nmbdpid" ]
+    then
+        /bin/kill -0 $nmbdpid
+        if [ $? -eq 0 ]
+        then
+            nmbdstatus='alive'
+        else
+            rm -f "$nmbdpidfile"
+        fi
+    fi
+}
+
+do_winbinddstatus ()
+{
+    winbinddpid=`cat $winbinddpidfile 2>/dev/null`
+    winbinddstatus='dead'
+
+    if [ -n "$winbinddpid" ]
+    then
+        /bin/kill -0 $winbinddpid
+        if [ $? -eq 0 ]
+        then
+            winbinddstatus='alive'
+        else
+            rm -f "$winbinddpidfile"
+        fi
+    fi
+}
+
+do_smbdstatus
+do_nmbdstatus
+do_winbinddstatus

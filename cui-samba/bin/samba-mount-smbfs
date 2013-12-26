@@ -1,0 +1,492 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-mount-smbfs - mount smb filesystem
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: samba-mount-smbfs
+#    or: samba-mount-smbfs "vfstype" "server" "share" "mountpoint" "username" "password" "rwmode" "uid" "gid" "fmask" "dmask" "iocharset" "codepage"
+#
+# Creation   : 2001-11-04 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+# set -x
+. /var/install/include/eislib
+
+debuglevel=`grep 'debug level =' /etc/smb.conf | cut -d'=' -f2 | sed 's# ##g'`
+lsmodbin='/sbin/lsmod'
+modprobebin='/sbin/modprobe'
+rmmodbin='/sbin/rmmod'
+mountbin='/bin/mount'
+umountbin='/bin/umount'
+
+do_crlhome ()
+{
+    if [ "$interactive" = "true" ]
+    then
+        clrhome
+        mecho --info "Mount SMB Filesystems"
+        echo
+    fi
+}
+
+do_loadsmbfs ()
+{
+    if [ -z "`"$lsmodbin" | grep $vfstype`" ]
+    then
+        "$modprobebin" $vfstype >/dev/null 2>&1
+        if [ $? -eq 0 ]
+        then
+            mecho --info "$vfstype loaded."
+        else
+            mecho --error "Cannot load $vfstype, exiting ..."
+            exit 1
+        fi
+    fi
+}
+
+case $# in
+0)
+    interactive='true'
+    ;;
+*)
+    interactive='false'
+    vfstype="$1"
+    shift
+    smbserver="$1"
+    shift
+    sharename="$1"
+    shift
+    mountpoint="$1"
+    shift
+    username="$1"
+    shift
+    password="$1"
+    shift
+    rwmode="$1"
+    shift
+    uid="$1"
+    shift
+    gid="$1"
+    shift
+    fmask="$1"
+    shift
+    dmask="$1"
+    shift
+    iocharset="$1"
+    shift
+    codepage="$1"
+    ;;
+esac
+
+do_crlhome
+if [ -z "$vfstype" ]
+then
+    if [ "$interactive" = "true" ]
+    then
+        /var/install/bin/ask "Do you want to mount the share with the kernel module smbfs" "y"
+        if [ $? -eq 0 ]
+        then
+            vfstype='smbfs'
+        else
+            vfstype='cifs'
+        fi
+    else
+        if [ -z "$vfstype" ]
+        then
+            vfstype='smbfs'
+        fi
+    fi
+fi
+
+do_loadsmbfs
+
+do_crlhome
+if [ -z "$smbserver" -a "$interactive" = "true" ]
+then
+    echo "From which SMB server do you want to mount a share?"
+    echo
+    echo "This could be a windows or linux host with an active share."
+    echo "Type in the netbios name of the host,"
+    echo "for instance 'client1':"
+    echo
+    read smbserver
+fi
+
+if [ -z "$smbserver" ]
+then
+    mecho --error "No SMB server specified!"
+    exit 1
+else
+    if [ -n "`/usr/bin/nmblookup $smbserver | grep \"name_query failed to find name $smbserver\"`" ]
+    then
+        mecho --error "Cannot find netbios name $smbserver!"
+        exit 1
+    fi
+fi
+
+do_crlhome
+if [ -z "$sharename" -a "$interactive" = "true" ]
+then
+    echo "What is the name of the share?"
+    echo
+    echo "Type in the name of the share,"
+    echo "for instance 'Freigabe':"
+    echo
+    read sharename
+fi
+
+if [ -z "$sharename" ]
+then
+    mecho --error "No share name specified!"
+    exit 1
+fi
+
+if [ "$interactive" = "true" ]
+then
+    do_crlhome
+    if [ -z "$mountpoint" ]
+    then
+        echo "Where do you want to mount the share?"
+        echo
+        echo "This must be a absolut path! If the specified"
+        echo "directory does not exist, it will be created for you."
+        echo "If you are using an existing directory, it must be empty!"
+        echo "Type in the absolut path to an directory, for instance"
+        echo "'/mountpoint'."
+        echo "If you leave this empty, /mountpoint will be used:"
+        echo
+        read mountpoint
+        if [ -z "$mountpoint" ]
+        then
+            mountpoint="/mountpoint"
+        fi
+    fi
+fi
+
+if [ "`echo "$mountpoint" | cut -c1`" != "/" ]
+then
+    mecho --error "You must specify an absolut path with a leading '/'!"
+    exit 1
+else
+    mkdir -p "$mountpoint"
+    if [ $? -ne 0 ]
+    then
+        mecho --error "Cannot create mountpoint $mountpoint!"
+        exit 1
+    else
+        if [ "`ls $mountpoint | wc -l`" -gt "0" ]
+        then
+            mecho --warn "Mountpoint $mountpoint is not empty!"
+            if grep -q "$mountpoint " /proc/mounts
+            then
+                x=`grep "$mountpoint " /proc/mounts | cut -d" " -f1`
+                y=`grep "$mountpoint " /proc/mounts | cut -d" " -f2`
+                z=`grep "$mountpoint " /proc/mounts | cut -d" " -f3`
+
+                if [ "$y" = "$mountpoint" ]
+                then
+                    mecho --warn "There is already $z service "$x" mounted on mountpoint "$y"!"
+                    if [ "$interactive" = "true" ]
+                    then
+                        if /var/install/bin/ask "Do you want to dismount $z mounted service $x on mountpoint $y" "n"
+                        then
+                            /var/install/bin/samba-dismount-smbfs "$mountpoint"
+                            anykey
+                        else
+                            exit 1
+                        fi
+                    else
+                        exit 1
+                    fi
+                fi
+            else
+                exit 1
+            fi
+        fi
+    fi
+fi
+
+if [ -n "$smbserver" -a -n "$sharename" -a -n "$mountpoint" ]
+then
+    if [ "$interactive" = "true" ]
+    then
+        do_crlhome
+        if [ -z "$username" ]
+        then
+            echo "Do you need a username to mount the share?"
+            echo
+            echo "Press enter for connecting without a username"
+            echo "or type in the name, for instance 'user':"
+            echo
+            read username
+        fi
+
+        do_crlhome
+        if [ -z "$password" ]
+        then
+            echo "Do you need a password to mount the share?"
+            echo
+            echo "Press enter for connecting without a password"
+            echo "or type in the password, for instance 'pass'."
+            echo "The password will not be written to console for security reasons:"
+            echo
+            stty -echo
+            read password
+            stty echo
+        fi
+
+        do_crlhome
+        if [ -z "$rwmode" ]
+        then
+            /var/install/bin/ask "Do you want to mount the share read only or read writeable" "rw" "ro" "rw"
+            if [ $? -eq 1 ]
+            then
+                rwmode='rw'
+            else
+                rwmode='ro'
+            fi
+        fi
+
+        do_crlhome
+        if [ -z "$uid" ]
+        then
+            /var/install/bin/ask "Do you want to mount the share with user id root" "y"
+            if [ $? -eq 0 ]
+            then
+                uid='root'
+            else
+                echo "Please enter uid:"
+                echo
+                read uid
+                if ! grep -q "^$uid:" /etc/passwd
+                then
+                    mecho --error "User $uid don't exist!"
+                    exit 1
+                fi
+            fi
+        fi
+
+        do_crlhome
+        if [ -z "$gid" ]
+        then
+            /var/install/bin/ask "Do you want to mount the share with group id root" "y"
+            if [ $? -eq 0 ]
+            then
+                gid='root'
+            else
+                echo "Please enter gid:"
+                echo
+                read gid
+                if ! grep "^$gid:" /etc/group
+                then
+                    mecho --error "Group $gid don't exist!"
+                    exit 1
+                fi
+            fi
+        fi
+
+        do_crlhome
+        if [ -z "$fmask" ]
+        then
+            /var/install/bin/ask "Do you want to mount with normal file mask 0755" "y"
+            if [ $? -eq 0 ]
+            then
+                fmask='0755'
+            else
+                echo "Please enter fmask:"
+                echo
+                read fmask
+            fi
+        fi
+
+        do_crlhome
+        if [ -z "$dmask" ]
+        then
+            /var/install/bin/ask "Do you want to mount with normal directory mask 0755" "y"
+            if [ $? -eq 0 ]
+            then
+                dmask='0755'
+            else
+                echo "Please enter dmask:"
+                echo
+                read dmask
+            fi
+        fi
+
+        do_crlhome
+        if [ -z "$iocharset" ]
+        then
+            tmp_iocharset=`testparm -vs 2>/dev/null | grep 'unix charset =' | cut -d' ' -f4 | tr [:upper:] [:lower:]`
+            /var/install/bin/ask "Do you want the iocharset $tmp_iocharset from your current samba configuration" "y"
+            if [ $? -eq 0 ]
+            then
+                iocharset="$tmp_iocharset"
+            else
+                echo "Please enter iocharset:"
+                echo
+                read iocharset
+            fi
+        fi
+
+        do_crlhome
+        if [ -z "$codepage" ]
+        then
+            tmp_codepage=`testparm -vs 2>/dev/null | grep 'dos charset =' | cut -d' ' -f4 | tr [:upper:] [:lower:]`
+            /var/install/bin/ask "Do you want the codepage $tmp_codepage from your current samba configuration" "y"
+            if [ $? -eq 0 ]
+            then
+                codepage="$tmp_codepage"
+            else
+                echo "Please enter codepage:"
+                echo
+                read codepage
+            fi
+        fi
+
+        do_crlhome
+    fi
+
+    options="-o"
+    if [ -z "$username" -a -z "$password" ]
+    then
+        options="$options guest"
+    else
+        if [ -n "$username" ]
+        then
+            options="$options username=$username"
+        fi
+
+        if [ "$options" = "-o" ]
+        then
+            options="$options password=$password"
+        else
+            options="$options,password=$password"
+        fi
+    fi
+
+    if [ "$rwmode" = "rw" ]
+    then
+        if [ "$options" = "-o" ]
+        then
+            options="$options rw"
+        else
+            options="$options,rw"
+        fi
+    else
+        if [ "$options" = "-o" ]
+        then
+            options="$options ro"
+        else
+            options="$options,ro"
+        fi
+    fi
+
+    if [ -n "$uid" ]
+    then
+        if [ "$options" = "-o" ]
+        then
+            options="$options uid=$uid"
+        else
+            options="$options,uid=$uid"
+        fi
+    fi
+
+    if [ -n "$gid" ]
+    then
+        if [ "$options" = "-o" ]
+        then
+            options="$options gid=$gid"
+        else
+            options="$options,gid=$gid"
+        fi
+    fi
+
+    if [ -n "$fmask" ]
+    then
+        if [ "$vfstype" = "smbfs" ]
+        then
+            if [ "$options" = "-o" ]
+            then
+                options="$options fmask=$fmask"
+            else
+                options="$options,fmask=$fmask"
+            fi
+        else
+            if [ "$options" = "-o" ]
+            then
+                options="$options file_mode=$fmask"
+            else
+                options="$options,file_mode=$fmask"
+            fi
+        fi
+    fi
+
+    if [ -n "$dmask" ]
+    then
+        if [ "$vfstype" = "smbfs" ]
+        then
+            if [ "$options" = "-o" ]
+            then
+                options="$options dmask=$dmask"
+            else
+                options="$options,dmask=$dmask"
+            fi
+        else
+            if [ "$options" = "-o" ]
+            then
+                options="$options dir_mode=$dmask"
+            else
+                options="$options,dir_mode=$dmask"
+            fi
+        fi
+    fi
+
+    if [ -n "$iocharset" ]
+    then
+        if [ "$options" = "-o" ]
+        then
+            options="$options iocharset=$iocharset"
+        else
+            options="$options,iocharset=$iocharset"
+        fi
+    fi
+
+    if [ -n "$codepage" ]
+    then
+        if [ "$options" = "-o" ]
+        then
+            options="$options codepage=$codepage"
+        else
+            options="$options,codepage=$codepage"
+        fi
+    fi
+
+    if [ "$vfstype" = "smbfs" ]
+    then
+        if [ "$options" = "-o" ]
+        then
+            options="$options lfs,debug=$debuglevel"
+        else
+            options="$options,lfs,debug=$debuglevel"
+        fi
+    fi
+
+    "$mountbin" -t "$vfstype" "//$smbserver/$sharename" "$mountpoint" $options
+    if [ $? -ne 0 ]
+    then
+        mecho --error "Cannot mount $vfstype service //$smbserver/$sharename on mountpoint $mountpoint!"
+    else
+        mecho --info "$vfstype mounted service //$smbserver/$sharename on mountpoint $mountpoint."
+    fi
+fi
+
+if [ "$interactive" = "true" ]
+then
+    anykey
+fi

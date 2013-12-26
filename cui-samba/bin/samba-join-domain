@@ -1,0 +1,151 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-join-domain - Add eisfair Samba Server into an Windows NT Domain
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-join-domain
+#    or: /var/install/bin/samba-join-domain "user" "password" "pdc" "domain"
+#
+# Creation   : 2002-02-13 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+# set -x
+. /var/install/include/eislib
+
+debuglevel=`grep 'debug level =' /etc/smb.conf | cut -d'=' -f2 | sed 's# ##g'`
+sambastatus='/var/install/bin/samba-check-status'
+netbin='/usr/bin/net'
+
+do_crlhome ()
+{
+    clrhome
+    mecho --info "Add eisfair Samba Server into an Windows NT Domain"
+    echo
+}
+
+case $# in
+0)
+    interactive='true'
+    user=''
+    password=''
+    pdc=''
+    domain=''
+    ;;
+4)
+    interactive='false'
+    user="$1"
+    password="$2"
+    pdc="$3"
+    domain="$4"
+    echo
+    "$netbin" rpc join MEMBER -d "$debuglevel" -U "$user"%"$password" -S "$pdc" -w "$domain"
+    ;;
+*)
+    echo "usage: /var/install/bin/samba-join-domain" >&2
+    echo "   or: /var/install/bin/samba-join-domain \"user\" \"password\" \"pdc\" \"domain\"" >&2
+    exit 1
+    ;;
+esac
+
+if [ "$interactive" = "true" ]
+then
+    do_crlhome
+
+    . "$sambastatus"
+    if [ "$smbdstatus" = "alive" -o "$nmbdstatus" = "alive" ]
+    then
+        mecho --error "Stop Samba first!"
+        anykey
+        exit 1
+    fi
+
+    if [ -f /etc/smb.conf ]
+    then
+        if ! grep -q "security = domain" /etc/smb.conf
+        then
+            mecho --error "You have to set SAMBA_PASSWORD_SERVER to"
+            mecho --error "NETBIOS name(s) of PDC, BDC or to '*'!"
+            mecho --error "Read documentation!"
+            anykey
+            exit 1
+        fi
+    fi
+
+    if [ -z "$user" ]
+    then
+        echo "Enter Username with administrative rights for Domain."
+        echo "User must exist on the PDC as Domain Administrator"
+        echo "User (e.g. 'Administrator'):"
+        echo
+        read user
+    fi
+
+    if [ -z "$user" ]
+    then
+        mecho --error "No user specified!"
+        anykey
+        exit 1
+    fi
+
+    do_crlhome
+    if [ -z "$password" ]
+    then
+        echo "Enter Password for User $user."
+        echo "The password will not be written to console for security reasons."
+        echo "Password (e.g. 'secret'):"
+        echo
+        stty -echo
+        read password
+        stty echo
+    fi
+
+    if [ -z "$password" ]
+    then
+        mecho --error "No password specified!"
+        anykey
+        exit 1
+    fi
+
+    do_crlhome
+    if [ -z "$pdc" ]
+    then
+        echo "NETBIOS Name of your Primary Domain Controller."
+        echo "Name (e.g. 'PDC1'):"
+        echo
+        read pdc
+    fi
+
+    if [ -z "$pdc" ]
+    then
+        mecho --error "No PDC specified!"
+        anykey
+        exit 1
+    fi
+
+    do_crlhome
+    if [ -z "$domain" ]
+    then
+        echo "Domain Name of your Windows NT Domain."
+        echo "Name (e.g. 'MYDOMAIN'):"
+        echo
+        read domain
+    fi
+
+    if [ -z "$domain" ]
+    then
+        mecho --error "No Windows NT Domain specified!"
+        anykey
+        exit 1
+    fi
+
+    echo
+    "$netbin" rpc join MEMBER -d "$debuglevel" -U "$user"%"$password" -S "$pdc" -w "$domain"
+    echo
+    anykey
+fi

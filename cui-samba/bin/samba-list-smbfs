@@ -1,0 +1,51 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-list-smbfs - list mounted smb filesystems
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# Creation   : 2002-07-23 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+# set -x
+. /var/install/include/eislib
+
+mountbin='/bin/mount'
+tty=`tty`
+
+"$mountbin" -t smbfs,cifs |
+(
+    clrhome
+    mecho --info "List mounted SMB Filesystems"
+    echo
+
+    techo begin 2 48 30
+    techo row '' -info "SMB Filesystem" -info "Mountpoint"
+    row=4
+
+    while read service on mountpoint type vfstype rest
+    do
+        techo row '' "$service" "$mountpoint"
+        row=`expr $row + 1`
+
+        if [ $row = 21 ]
+        then
+            echo
+            anykey <$tty
+            clrhome
+            mecho --info "List mounted SMB Filesystems"
+            echo
+            techo begin 2 48 30
+            techo row '' -info "SMB Filesystem" -info Mountpoint
+            row=4
+        fi
+    done
+)
+
+echo
+anykey

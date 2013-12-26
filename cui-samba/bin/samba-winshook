@@ -1,0 +1,225 @@
+#! /bin/sh
+#-----------------------------------------------------------------------
+# /var/install/bin/samba-winshook - trigger actions, if wins.dat changed
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# Creation   : 2006-01-01 tb/jv
+# Last Update: 2013-05-08 tb
+#
+# With idees from Stephen Rothwell <sfr@linuxcare.com> and
+# Rod Smith <rodsmith@rodsbooks.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#-----------------------------------------------------------------------
+if [ $# -lt 4 ]
+then
+   {
+    echo "Usage: $0 op name type ttl [ip_addr ...]"
+    echo "       op is one of add, refresh, delete"
+    echo "       name is the NETBIOS name"
+    echo "       type is the NETBIOS name type"
+    echo "       ttl is the NETBIOS time to live"
+    echo "       ip_addr's are the remaining IP addresses for this name"
+   } 1>&2
+    exit 1
+fi
+
+op=$1
+name=$2
+type=$3
+wins_ttl=$4
+shift 4
+ip_addrs="$@"
+dns_server_ip='127.0.0.1'
+ttl=3600
+hostname=`echo $HOSTNAME | tr 'a-z' 'A-Z'`
+do_update='no'
+logfile='/var/log/log.winshook'
+log='no'
+delay='60'
+
+# The name of a cache file to use to avoid continual updates
+# of the same name and IP addresses.  If you comment this out
+# then the cache is not kept at all.
+cache_file=/var/lock/samba/wins_update.cache
+
+# NETBIOS name types that we want to create DNS records for:
+#    20 is server
+#    00 is workstation
+#    03 is user
+useful_types='20 00 03'
+
+if [ "$log" = "yes" ]
+then
+    echo "`date +"%d.%m.%Y %H:%M:%S"`: op is $op, name is $name, type is $type" >>"$logfile"
+fi
+
+for i in $useful_types
+do
+    if [ "$type" = "$i" ]
+    then
+        do_update='yes'
+        if [ "$log" = "yes" ]
+        then
+            echo "`date +"%d.%m.%Y %H:%M:%S"`: useful type $type, performing action..." >>"$logfile"
+        fi
+    fi
+done
+
+if [ "$do_update" = "no" ]
+then
+    if [ "$log" = "yes" ]
+    then
+        echo "`date +"%d.%m.%Y %H:%M:%S"`: no useful type $type, exiting..." >>"$logfile"
+    fi
+    exit 0
+fi
+
+if [ ! -f "$cache_file" ]
+then
+    >"$cache_file"
+fi
+
+# check cache file
+if [ ! -n "$cache_file" -o ! -r "$cache_file" ]
+then
+    if [ "$log" = "yes" ]
+    then
+        echo "`date +"%d.%m.%Y %H:%M:%S"`: cache file $cache_file don't exists or isn't readable, exiting..." >>"$logfile"
+    fi
+    exit 1
+fi
+
+add_change_cacheentry ()
+{
+    # check if entry exists
+    if [ "$log" = "yes" ]
+    then
+        echo "`date +"%d.%m.%Y %H:%M:%S"`: checking for cache entry $name..." >>"$logfile"
+    fi
+
+    if [ ! -z "`fgrep -q -x -i '${name};${ip_addrs}' $cache_file`" ]
+    then
+        if [ "$log" = "yes" ]
+        then
+            echo "`date +"%d.%m.%Y %H:%M:%S"`: cache entry $name exists, exiting..." >>"$logfile"
+        fi
+        exit 0
+    fi
+
+    # add or update cache file
+    if [ "$log" = "yes" ]
+    then
+        echo "`date +"%d.%m.%Y %H:%M:%S"`: adding or updating cache entry for $name..." >>"$logfile"
+    fi
+    grep -vi "^${name};" "$cache_file" >"$cache_file".$$
+    echo "${name};${ip_addrs}" >>"$cache_file".$$
+}
+
+delete_cacheentry ()
+{
+    # remove from cache file
+    if [ "$log" = "yes" ]
+    then
+        echo "`date +"%d.%m.%Y %H:%M:%S"`: deleting cache entry for $name..." >>"$logfile"
+    fi
+    grep -vi "^${name};" "$cache_file" >"$cache_file".$$
+}
+
+#-----------------------------------------------------------------------
+# add or change DNS entry
+#-----------------------------------------------------------------------
+add_change_dns ()
+{
+    # add or change DNS service
+    if [ "$log" = "yes" ]
+    then
+        echo "`date +"%d.%m.%Y %H:%M:%S"`: adding or changing dns entry for $name..." >>"$logfile"
+    fi
+
+   {
+    echo "server $dns_server_ip"
+    echo "update delete ${name}.${DOMAIN_NAME}."
+    for i in $ip_addrs
+    do
+        echo "update add ${name}.${DOMAIN_NAME}. $ttl A $i"
+    done
+    echo
+   } 2>/dev/null | "$nsupdate" >/dev/null 2>&1 &
+}
+
+#-----------------------------------------------------------------------
+# delete DNS entry
+#-----------------------------------------------------------------------
+delete_dns ()
+{
+    # remove from DNS service
+    if [ "$log" = "yes" ]
+    then
+        echo "`date +"%d.%m.%Y %H:%M:%S"`: deleting dns entry for $name..." >>"$logfile"
+    fi
+   {
+    echo "server $dns_server_ip"
+    echo "update delete ${name}.${DOMAIN_NAME}."
+    echo
+   } 2>/dev/null | "$nsupdate" >/dev/null 2>&1 &
+}
+
+case $op in
+delete)
+    delete_cacheentry
+    ;;
+*)
+    add_change_cacheentry
+    ;;
+esac
+
+# complete cache file and make backup
+mv "$cache_file" "$cache_file".old 2>/dev/null
+mv "$cache_file".$$ "$cache_file"
+
+# Read samba configuration
+. /etc/config.d/samba
+if [ "$SAMBA_WINSHOOK_MESSAGE_SEND" = "yes" ]
+then
+    if [ "$op" = "add" -a -n "$name" -a "$name" != "$hostname" -a "$type" = "20" ]
+    then
+        if [ "$log" = "yes" ]
+        then
+            echo "`date +"%d.%m.%Y %H:%M:%S"`: sending message to $name in $delay seconds..." >>"$logfile"
+        fi
+        /var/install/bin/samba-winshook-netsend "$name" "$SAMBA_WINSHOOK_MESSAGE" "$delay" "$log" "$logfile" &
+    fi
+fi
+
+if [ "$SAMBA_WINSHOOK_DNSUPDATE" = "yes" ]
+then
+    nsupdate='/usr/bin/nsupdate'
+    if [ ! -f "$nsupdate" ]
+    then
+        if [ "$log" = "yes" ]
+        then
+            echo "`date +"%d.%m.%Y %H:%M:%S"`: cannot find nsupdate." >>"$logfile"
+        fi
+        exit 1
+    fi
+
+    # Read DOMAIN_NAME
+    . /etc/config.d/base
+
+    # start operation
+    case $op in
+    delete)
+        delete_dns
+        ;;
+    *)
+        add_change_dns
+        ;;
+    esac
+fi
+
+exit 0

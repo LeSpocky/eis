@@ -1,0 +1,105 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-restore-sid - restore Samba SID from /root/MACHINE.SID
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-restore-sid
+#    or: /var/install/bin/samba-restore-sid noninteractive
+#
+# Creation   : 2003-05-02 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+# set -x
+. /var/install/include/eislib
+
+debuglevel=`grep 'debug level =' /etc/smb.conf | cut -d'=' -f2 | sed 's# ##g'`
+sambastatus='/var/install/bin/samba-check-status'
+doit='false'
+netbin='/usr/bin/net'
+sidfile='/root/MACHINE.SID'
+
+case $# in
+0)
+    interactive='true'
+    ;;
+1)
+    if [ "$1" = "noninteractive" ]
+    then
+      interactive='false'
+      doit='true'
+    fi
+    ;;
+*)
+    echo "usage: /var/install/bin/samba-restore-sid" >&2
+    echo "   or: /var/install/bin/samba-restore-sid noninteractive" >&2
+    exit 1
+    ;;
+esac
+
+if [ "$interactive" = "true" ]
+then
+    clrhome
+    mecho --info "Restore Samba SID from $sidfile"
+    echo
+fi
+
+. $sambastatus
+if [ "$smbdstatus" = "alive" -o "$nmbdstatus" = "alive" ]
+then
+    mecho --error "Stop Samba first!"
+    anykey
+    exit 1
+fi
+
+if [ "$interactive" = "true" ]
+then
+    if /var/install/bin/ask "Do you really want to restore Samba SID from $sidfile" "yes"
+    then
+        doit='true'
+    fi
+fi
+
+echo
+if [ "$doit" = "true" ]
+then
+    if [ -f $sidfile ]
+    then
+        sid=`cat $sidfile`
+        /var/install/bin/backup-file -quiet /etc/secrets.tdb sic
+        rm -f /etc/secrets.tdb
+
+        "$netbin" -d "$debuglevel" setlocalsid "$sid"
+        if [ $? -eq 0 ]
+        then
+            mecho --info "Samba SID"
+            echo
+            echo "$sid"
+            echo
+            mecho --info "restored from $sidfile."
+        else
+            mecho --error "Could not restore Samba SID"
+            echo
+            echo "$sid"
+            echo
+            mecho --error "from $sidfile!"
+
+            rm -f /etc/secrets.tdb
+            cp /etc/secrets.tdb.sic /etc/secrets.tdb
+        fi
+    else
+        mecho --error "File $sidfile don't exist!"
+    fi
+else
+    echo "Samba SID not restored."
+fi
+
+if [ "$interactive" = "true" ]
+then
+    anykey
+fi

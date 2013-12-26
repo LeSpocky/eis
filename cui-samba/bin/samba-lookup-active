@@ -1,0 +1,41 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-lookup-active - lookup active eisfair samba clients
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /var/install/bin/samba-lookup-active
+#
+# Creation   : 2005-10-04 tb
+# Last Update: 2013-05-08 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+#set -x
+
+list=`/bin/mktemp -t samba-lookup-active-XXXXXXXXXX`
+if [ $? -ne 0 ]
+then
+    list="/tmp/samba-lookup-active-$$"
+fi
+
+>"$list"
+int_samba_version=`/usr/sbin/smbd -V | cut -d' ' -f2`
+
+/usr/bin/smbstatus -b                             \
+| grep -vi "^Samba version $int_samba_version"    \
+| grep -vi '^PID     Username '                   \
+| sed -e 's#^[[:space:]]\+##;s#[[:space:]]\+# #g' \
+| grep '^[0-9]' |
+while read pid username groupname machine ip rest
+do
+    ip=`echo $ip | sed 's#^(##g; s#)$##g'`
+    machine=`echo $machine | tr [:lower:] [:upper:]`
+    echo "$ip $machine" >>"$list"
+done
+
+cat "$list" | sort -u -k 2
+rm -f "$list"

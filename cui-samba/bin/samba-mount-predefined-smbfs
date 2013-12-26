@@ -1,0 +1,284 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-mount-predefined-smbfs - mount predefined samba mounts
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# Creation   : 2005-06-05 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+. /var/install/include/eislib
+
+lsmodbin='/sbin/lsmod'
+modprobebin='/sbin/modprobe'
+mountbin='/bin/mount'
+umountbin='/bin/umount'
+do_mount='no'
+row='4'
+a=''
+tty=`tty`
+fstabsmbfsfile='/etc/fstab-smbfs'
+oldifs="$IFS"
+
+do_loadsmbfs ()
+{
+    if [ -z "`"$lsmodbin" | grep ^$vfstype`" ]
+    then
+        "$modprobebin" $vfstype >/dev/null 2>&1
+        if [ $? -eq 0 ]
+        then
+            mecho --info "$vfstype loaded"
+        else
+            mecho --error "cannot load $vfstype, exiting..."
+            exit 1
+        fi
+    else
+        mecho --info "$vfstype already loaded"
+    fi
+}
+
+do_loadiocharset ()
+{
+    if [ -z "`"$lsmodbin" | grep ^nls_$iocharset`" ]
+    then
+        "$modprobebin" nls_$iocharset >/dev/null 2>&1
+        if [ $? -eq 0 ]
+        then
+            mecho --info "nls_$iocharset loaded"
+        else
+            mecho --error "cannot load nls_$iocharset"
+        fi
+    else
+        mecho --info "nls_$iocharset already loaded"
+    fi
+}
+
+do_loadcodepage ()
+{
+    if [ -z "`"$lsmodbin" | grep ^nls_$codepage`" ]
+    then
+        "$modprobebin" nls_$codepage >/dev/null 2>&1
+        if [ $? -eq 0 ]
+        then
+            mecho --info "nls_$codepage loaded"
+        else
+            mecho --error "cannot load nls_$codepage"
+        fi
+    else
+        mecho --info "nls_$codepage already loaded"
+    fi
+}
+
+do_read_vars ()
+{
+    IFS=':'
+    set -- `grep -n '//' "$fstabsmbfsfile" | grep "$a://" | cut -d":" -f2-`
+    service="$1"
+    mountpoint="$2"
+    mounted='no'
+    mountedcolor='-std'
+    options=`echo "$3" | sed 's#^-o ##g'`
+    active="$4"
+    vfstype="$5"
+    IFS=','
+    guest='no'
+
+    for o in $options
+    do
+        case "$o" in
+        "username="*)
+            username="`echo $o | cut -d"=" -f2`"
+            ;;
+        "guest")
+            guest='yes'
+            ;;
+        "rw")
+            rwmode='rw'
+            ;;
+        "ro")
+            rwmode='ro'
+            ;;
+        "uid="*)
+            uid="`echo $o | cut -d'=' -f2`"
+            ;;
+        "gid="*)
+            gid="`echo $o | cut -d'=' -f2`"
+            ;;
+        "fmask="*|"file_mode="*)
+            fmask="`echo $o | cut -d'=' -f2`"
+            ;;
+        "dmask="*|"dir_mode="*)
+            dmask="`echo $o | cut -d'=' -f2`"
+            ;;
+        "iocharset="*)
+            iocharset="`echo $o | cut -d'=' -f2`"
+            ;;
+        "codepage="*)
+            codepage="`echo $o | cut -d'=' -f2`"
+            ;;
+        esac
+    done
+
+    IFS="$oldifs"
+    if grep -q "^$service $mountpoint " /proc/mounts
+    then
+        mounted='yes'
+        mountedcolor='-warn'
+    fi
+
+    clrhome
+    mecho --info "Mount definition information"
+    echo
+    echo "    mount no       : $a"
+    echo "    active         : $active"
+    echo "    vfstype        : $vfstype"
+    echo "    service        : $service"
+    echo "    mountpoint     : $mountpoint"
+    echo "    guest          : $guest"
+    echo "    username       : $username"
+    echo "    rwmode         : $rwmode"
+    echo "    uid            : $uid"
+    echo "    gid            : $gid"
+    echo "    fmask          : $fmask"
+    echo "    dmask          : $dmask"
+    echo "    iocharset      : $iocharset"
+    echo "    codepage       : $codepage"
+    #echo "    options        : $options"
+    mecho --n -std "    mounted        : "
+    mecho "$mountedcolor" "$mounted"
+    echo
+}
+
+clrhome
+mecho --info "Mount predefined samba mounts"
+echo
+
+techo begin 4 4 23 20 9 8
+techo row -info '' -info 'no' -info 'service' -info 'mountpoint' -info 'active' -info 'mounted'
+n=0
+
+while read line
+do
+    n=`expr $n + 1`
+    IFS=':'
+    set -- $line
+    service="$1"
+    mountpoint="$2"
+    mounted='no'
+    mountedcolor='-std'
+    options=`echo "$3" | sed 's#^-o ##g'`
+    active="$4"
+    vfstype="$5"
+    IFS="$oldifs"
+
+    if grep -q "^$service $mountpoint " /proc/mounts
+    then
+        mounted='yes'
+        mountedcolor='-warn'
+    fi
+
+    techo row '' "$n." "$service" "$mountpoint" "$active" "$mountedcolor" "$mounted"
+    row=`expr $row + 1`
+    if [ $row = 21 ]
+    then
+        echo
+        a=`/var/install/bin/ask "Which no do you want to select" '' "1-$n" "^$=Continue" "0=Return" <$tty`
+        if [ "$a" = "0" ]
+        then
+            techo end
+            exit 0
+        fi
+
+        if [ -n "$a" ]
+        then
+            break
+        fi
+
+        clrhome
+        mecho --info "Mount predefined samba mounts"
+        echo
+
+        techo begin 4 4 23 20 9 8
+        techo row -info '' -info 'no' -info 'service' -info 'mountpoint' -info 'active' -info 'mounted'
+        row=3
+    fi
+done <"$fstabsmbfsfile"
+techo end
+
+if [ -z "$a" ]
+then
+    echo
+    a=`/var/install/bin/ask "Which no do you want to select" "" "1-$n" "^$=Return" "0=Exit"`
+fi
+
+if [ "$a" = "0" ]
+then
+    exit 127
+fi
+
+if [ -z "$a" ]
+then
+    exit 0
+fi
+
+do_read_vars
+if /var/install/bin/ask "Do you want to $vfstype mount service $service to mountpoint $mountpoint" "y"
+then
+    if [ "`ls $mountpoint | wc -l`" -gt "0" ]
+    then
+        mecho --warn "mountpoint is not empty!"
+        if grep -q "$mountpoint " /proc/mounts
+        then
+            x=`grep "$mountpoint " /proc/mounts | cut -d" " -f1`
+            y=`grep "$mountpoint " /proc/mounts | cut -d" " -f2`
+            z=`grep "$mountpoint " /proc/mounts | cut -d" " -f3`
+
+            if [ "$y" = "$mountpoint" ]
+            then
+                mecho --warn "There is already $z service "$x" mounted on mountpoint "$y"!"
+                if /var/install/bin/ask "Do you want to dismount $z mounted service $x on mountpoint $y" "n"
+                then
+                    /var/install/bin/samba-dismount-smbfs "$mountpoint"
+                    if [ $? -eq 0 ]
+                    then
+                        do_mount='yes'
+                    else
+                        exit 1
+                    fi
+                else
+                    exit 1
+                fi
+            fi
+        fi
+    else
+        do_mount='yes'
+    fi
+
+    if [ "$do_mount" = "yes" ]
+    then
+        do_loadsmbfs
+        if [ -n "$iocharset" ]
+        then
+            do_loadiocharset
+        fi
+
+        if [ -n "$codepage" -a "$vfstype" = "smbfs" ]
+        then
+            do_loadcodepage
+        fi
+
+        "$mountbin" -t "$vfstype" "$service" "$mountpoint" -o $options
+        if [ $? -eq 0 ]
+        then
+            mecho --info "$vfstype mounted service $service on mountpoint $mountpoint."
+        else
+            mecho --error "Cannot mount $vfstype service $service on mountpoint $mountpoint!"
+        fi
+    fi
+fi
+anykey

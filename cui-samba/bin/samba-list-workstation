@@ -1,0 +1,59 @@
+#! /bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/samba-list-workstation - list samba workstations
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# Creation   : 2002-06-02 tb
+# Last Update: 2013-08-20 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+# set -x
+. /var/install/include/eislib
+
+pdbeditbin='/usr/bin/pdbedit'
+
+tty=`tty`
+$pdbeditbin -Lw | grep "^.*$:" | sort -t: -k2n |
+(
+    clrhome
+    mecho --info "List Samba Workstations"
+    echo
+
+    techo begin 2 48 30
+    techo row '' -info Workstation -info Uid
+    row=4
+
+    while read line
+    do
+        oldifs="$IFS"
+        IFS=':'
+        set -- $line
+        workstation=`echo "$1" | cut -d'$' -f1`
+        uid="$2"
+        IFS="$oldifs"
+        techo row '' "$workstation" "$uid"
+        row=`expr $row + 1`
+
+        if [ $row = 21 ]
+        then
+            echo
+            anykey <$tty
+
+            clrhome
+            mecho --info "List Samba Workstations"
+            echo
+
+            techo begin 2 48 30
+            techo row '' -info Workstation -info Uid
+            row=4
+        fi
+    done
+)
+
+echo
+anykey
