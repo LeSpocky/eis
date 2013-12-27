@@ -12,7 +12,8 @@ depends_dev=""
 makedepends="$depends_dev"
 install=""
 subpackages="${pkgname}-doc"
-source="http://inatech.eu/inadyn/inadyn.v${pkgver}.zip"
+source="http://inatech.eu/inadyn/inadyn.v${pkgver}.zip
+       ${pkgname}.initd"
 
 _builddir="$srcdir/${pkgname}-$pkgver"
 
@@ -33,6 +34,7 @@ build() {
 }
 
 package() {
+	install -D -m755 "$srcdir"/$pkgname.initd       ${pkgdir}/etc/init.d/$pkgname || return 1
 	cd "$_builddir"
 	install -D -m755 ${_builddir}/bin/linux/inadyn  ${pkgdir}/usr/bin/${pkgname} || return 1
 }
@@ -43,6 +45,6 @@ doc() {
     cd "$_builddir"
 }
 
-md5sums="702a127f13b96eee38d60c6f30b20efa  inadyn.v1.96.2.zip"
-sha256sums="981f29d12415637c8e3ad747c204a599ddb900360d04a9b4c351d54db3d2321c  inadyn.v1.96.2.zip"
-sha512sums="4315785a6bdb325ae2dc2b787ff9c9f72006ffb41eaad18fd30f971cff4694aae7721893bc85501f9ab0cf274ea93dcaa3df870e1410ee306b32e1c6aec0e08e  inadyn.v1.96.2.zip"
+md5sums="a4657141ea437a3bac781d052af6cd7a  inadyn.initd"
+sha256sums="e19c3774c68f3417db50b2f94bed2fe82998c66ee2e25f951cfa830b87ddcdaa  inadyn.initd"
+sha512sums="4c1ab6ace8c316cfae20fe385c2bb32421f365b23abcaca053909fb8f84d1263f53ff08bf180a6315f464984ab8aefc9ee4b8e2926d91796d33ffa465319c1c3  inadyn.initd"

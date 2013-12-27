@@ -32,13 +32,13 @@ packageName=inadyn
 createInadynConfiguration()
 {
     # Delete old configuration files if existing
-    rm -rf /etc/inadyn-mt/inadyn*.conf
+    rm -rf /etc/inadyn/inadyn*.conf
     rm -rf /etc/logrotate.d/inadyn*
 
     idx=1
     while [ ${idx} -le ${INADYN_ACCOUNT_N} ] ; do
         # Naming of config file
-        eval inadyn_configfile='/etc/inadyn-mt/inadyn'${idx}'.conf'
+        eval inadyn_configfile='/etc/inadyn/inadyn'${idx}'.conf'
 
         eval inadyn_account_name='$INADYN_ACCOUNT_'${idx}'_NAME'
         eval inadyn_active='$INADYN_ACCOUNT_'${idx}'_ACTIVE'
@@ -205,10 +205,8 @@ checkMailPackage()
 # Main
 if [ "$START_INADYN" = 'yes' ] ; then
     createInadynConfiguration
-    ln -sf /etc/init.d/${packageName} /etc/rc2.d/S65${packageName}
+    rc-update add inadyn
 else
-    if [ -f /etc/rc2.d/S65${packageName} ] ; then
-        rm -f /etc/rc2.d/S65${packageName}
-    fi
+    rc-update del inadyn
 fi
 exit 0
