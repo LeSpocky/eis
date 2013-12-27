@@ -31,6 +31,8 @@ packageName=inadyn
 # Create inadyn configuration file
 createInadynConfiguration()
 {
+    checkConfigDir
+
     # Delete old configuration files if existing
     rm -rf /etc/inadyn/inadyn*.conf
     rm -rf /etc/logrotate.d/inadyn*
@@ -198,6 +200,14 @@ checkMailPackage()
         return 0
     fi
     return 1
+}
+
+
+
+checkConfigDir () {
+    if [ ! -d /etc/inadyn/ ] ; then
+        mkdir /etc/inadyn
+    fi
 }
 
 
