@@ -1,21 +1,21 @@
 #! /bin/sh
-#------------------------------------------------------------------------------
-# /var/install/config.d/samba-update.sh - creating or updating /etc/config.d/samba
+# ----------------------------------------------------------------------------
+# /var/install/config.d/samba-update.sh - creating or updating 
+#                                         /etc/config.d/samba
 #
 # Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
 #
 # usage: /var/install/config.d/samba-update.sh {update|generate|sample}
 #
-# Creation   : 2002-12-03 tb
-# Last Update: 2013-12-09 tb
+# Creation: 2002-12-03 tb
 #
-# Version    : 2.4.1
+# Version: 2.4.1
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 #set -x
 . /var/install/include/eislib
 . /var/install/include/configlib
@@ -24,27 +24,22 @@ added='no'
 removed='no'
 changed='no'
 targetfile=''
-eisfair_system=`cat /etc/eisfair-system`
 
 case $# in
 1)
     mode="$1"
-    if [ "$mode" = "update" -o "$mode" = "generate" -o "$mode" = "sample" ]
-    then
-        if [ "$mode" = "update" ]
-        then
+    if [ "$mode" = "update" -o "$mode" = "generate" -o "$mode" = "sample" ] ; then
+        if [ "$mode" = "update" ] ; then
             targetfile='/etc/config.d/samba'
             mecho --info "Updating your configuration file $targetfile ..."
         fi
 
-        if [ "$mode" = "generate" ]
-        then
+        if [ "$mode" = "generate" ] ; then
             targetfile='/etc/config.d/samba'
             mecho --info "Generating configuration file $targetfile ..."
         fi
 
-        if [ "$mode" = "sample" ]
-        then
+        if [ "$mode" = "sample" ] ; then
             targetfile='/etc/default.d/samba'
             mecho --info "Generating sample configuration file $targetfile ..."
         fi
@@ -62,7 +57,7 @@ esac
 do_update ()
 {
  {
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------"
   echo "# /etc/config.d/samba - configuration for Samba on eisfair"
   echo "#"
   echo "# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net"
@@ -76,19 +71,18 @@ do_update ()
   echo "# it under the terms of the GNU General Public License as published by"
   echo "# the Free Software Foundation; either version 2 of the License, or"
   echo "# (at your option) any later version."
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------"
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------"
   echo "# General Settings"
   echo "#"
   echo "# Minimum requirement if SAMBA_MANUAL_CONFIGURATION='no' is to change"
   echo "# SAMBA_WORKGROUP to workgroup name of your windows clients!"
   echo "#"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
 
-  if [ -n "$SAMBA_START" ]
-  then
+  if [ -n "$SAMBA_START" ] ; then
       START_SAMBA="$SAMBA_START"
   fi
 
@@ -96,7 +90,7 @@ do_update ()
   echo
   printvar "SAMBA_WORKGROUP" "Workgroup name of windows-client"
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Manual or Automatic Configuration"
   echo "#"
   echo "# Manual or Automatic Configuration of Shares and Printers"
@@ -122,13 +116,11 @@ do_update ()
   echo "# - a printer share for eisfax printer, if eisfax is installed"
   echo "# - a printer share for pdf printing, if ghostscript is installed"
   echo "#"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
 
-  if [ -n "$SAMBA_AUTO_CONFIGURATION" ]
-  then
-      if [ "$SAMBA_AUTO_CONFIGURATION" = "yes" ]
-      then
+  if [ -n "$SAMBA_AUTO_CONFIGURATION" ] ; then
+      if [ "$SAMBA_AUTO_CONFIGURATION" = "yes" ] ; then
           SAMBA_MANUAL_CONFIGURATION='no'
       else
           SAMBA_MANUAL_CONFIGURATION='yes'
@@ -138,7 +130,7 @@ do_update ()
   printvar "SAMBA_MANUAL_CONFIGURATION" "Use manual configuration:"
   printvar "" "yes or no"
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration"
   echo "#"
   echo "# Please don't use this, if you are not very familar with Samba!"
@@ -148,11 +140,11 @@ do_update ()
   echo "# and"
   echo "# Individual Configuration of Shares and Printers"
   echo "#"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration/Special General Settings"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
   printvar "SAMBA_INTERFACES" "Userdefined interfaces for Samba"
   printvar "" "Be carefull, use this only, if you"
@@ -177,8 +169,7 @@ do_update ()
   printvar "" "If yes, don't set SAMBA_EXTWINSIP!"
   echo
 
-  if [ -z "$SAMBA_WINSHOOK" ]
-  then
+  if [ -z "$SAMBA_WINSHOOK" ] ; then
       SAMBA_WINSHOOK='no'
   fi
 
@@ -186,8 +177,7 @@ do_update ()
   printvar "" "WINS-Server: yes or no"
   echo
 
-  if [ -z "$SAMBA_WINSHOOK_MESSAGE_SEND" ]
-  then
+  if [ -z "$SAMBA_WINSHOOK_MESSAGE_SEND" ] ; then
       SAMBA_WINSHOOK_MESSAGE_SEND='no'
   fi
 
@@ -195,8 +185,7 @@ do_update ()
   printvar "" "yes or no"
   echo
 
-  if [ -z "$SAMBA_WINSHOOK_MESSAGE" ]
-  then
+  if [ -z "$SAMBA_WINSHOOK_MESSAGE" ] ; then
       SAMBA_WINSHOOK_MESSAGE="Welcome to eisfair server"
   fi
 
@@ -205,8 +194,7 @@ do_update ()
   printvar "" "registering to eisfair"
   echo
 
-  if [ -z "$SAMBA_WINSHOOK_DNSUPDATE" ]
-  then
+  if [ -z "$SAMBA_WINSHOOK_DNSUPDATE" ] ; then
       SAMBA_WINSHOOK_DNSUPDATE='no'
   fi
 
@@ -218,8 +206,7 @@ do_update ()
   printvar "" "Don't set SAMBA_WINSSERVER to 'yes'!"
   echo
 
-  if [ -n "$SAMBA_SHOW_START_MESSAGE" ]
-  then
+  if [ -n "$SAMBA_SHOW_START_MESSAGE" ] ; then
       SAMBA_START_MESSAGE_SEND="$SAMBA_SHOW_START_MESSAGE"
   fi
 
@@ -232,8 +219,7 @@ do_update ()
   printvar "" "WIN NT, WIN2K, WINXP"
   echo
 
-  if [ -n "$SAMBA_SHOW_SHUTDOWN_MESSAGE" ]
-  then
+  if [ -n "$SAMBA_SHOW_SHUTDOWN_MESSAGE" ] ; then
       SAMBA_SHUTDOWN_MESSAGE_SEND="$SAMBA_SHOW_SHUTDOWN_MESSAGE"
   fi
 
@@ -246,8 +232,7 @@ do_update ()
   printvar "" "WIN NT, WIN2K, WINXP"
   echo
 
-  if [ -z "$SAMBA_SHUTDOWN_MESSAGE_HOSTS" ]
-  then
+  if [ -z "$SAMBA_SHUTDOWN_MESSAGE_HOSTS" ] ; then
       SAMBA_SHUTDOWN_MESSAGE_HOSTS='all'
   fi
 
@@ -256,10 +241,7 @@ do_update ()
   printvar "" "all or active"
   echo
 
-  if [ "$eisfair_system" = "eisfair-2" ]
-  then
-      SAMBA_LOCALIZATION='UTF-8'
-  fi
+  SAMBA_LOCALIZATION='UTF-8'
 
   printvar "SAMBA_LOCALIZATION" "Language adjustment, affected to unix"
   printvar "" "character set and client codepage"
@@ -276,13 +258,11 @@ do_update ()
   printvar "" "Read Documentation!"
   echo
 
-  if [ -n "$SAMBA_PROFILES" ]
-  then
+  if [ -n "$SAMBA_PROFILES" ] ; then
       SAMBA_PDC_PROFILES="$SAMBA_PROFILES"
   fi
 
-  if [ -z "$SAMBA_PDC_PROFILES" ]
-  then
+  if [ -z "$SAMBA_PDC_PROFILES" ] ; then
       SAMBA_PDC_PROFILES='yes'
   fi
 
@@ -291,8 +271,7 @@ do_update ()
   printvar "" "Controller: yes or no"
   echo
 
-  if [ -z "$SAMBA_PDC_LOGONSCRIPT" ]
-  then
+  if [ -z "$SAMBA_PDC_LOGONSCRIPT" ] ; then
       SAMBA_PDC_LOGONSCRIPT='user'
   fi
 
@@ -308,24 +287,21 @@ do_update ()
   printvar "" "password server(s)!"
   echo
 
-  if [ -z "$SAMBA_RECYCLE_BIN" ]
-  then
+  if [ -z "$SAMBA_RECYCLE_BIN" ] ; then
       SAMBA_RECYCLE_BIN='no'
   fi
 
   printvar "SAMBA_RECYCLE_BIN" "Activate recycle bin in shares"
   echo
 
-  if [ -z "$SAMBA_RECYCLE_BIN_HOLD_DAYS" ]
-  then
+  if [ -z "$SAMBA_RECYCLE_BIN_HOLD_DAYS" ] ; then
       SAMBA_RECYCLE_BIN_HOLD_DAYS='7'
   fi
 
   printvar "SAMBA_RECYCLE_BIN_HOLD_DAYS" "Hold files for n days in recycle bin"
   echo
 
-  if [ -z "$SAMBA_PDF_TARGET" ]
-  then
+  if [ -z "$SAMBA_PDF_TARGET" ] ; then
       SAMBA_PDF_TARGET='homedir'
   fi
 
@@ -333,8 +309,7 @@ do_update ()
   printvar "" "'homedir', 'public' or 'mail'"
   echo
 
-  if [ -z "$SAMBA_SERVERSTRING" ]
-  then
+  if [ -z "$SAMBA_SERVERSTRING" ] ; then
       SAMBA_SERVERSTRING=''
   fi
 
@@ -343,8 +318,7 @@ do_update ()
   printvar "" "or anything else for your string"
   echo
 
-  if [ -z "$SAMBA_EXPERT_EXEC" ]
-  then
+  if [ -z "$SAMBA_EXPERT_EXEC" ] ; then
       SAMBA_EXPERT_EXEC='no'
   fi
 
@@ -353,16 +327,14 @@ do_update ()
   printvar "" "this is activated!"
   echo
 
-  if [ -z "$SAMBA_SMBWEBCLIENT" ]
-  then
+  if [ -z "$SAMBA_SMBWEBCLIENT" ] ; then
       SAMBA_SMBWEBCLIENT='no'
   fi
 
   printvar "SAMBA_SMBWEBCLIENT" "Install smbwebclient: yes or no"
   echo
 
-  if [ -z "$SAMBA_SMBWEBCLIENT_PATH" ]
-  then
+  if [ -z "$SAMBA_SMBWEBCLIENT_PATH" ] ; then
       SAMBA_SMBWEBCLIENT_PATH='/var/www/htdocs'
   fi
 
@@ -371,14 +343,13 @@ do_update ()
   printvar "" "document root"
   echo
 
-  if [ -z "$SAMBA_OPLOCKS" ]
-  then
+  if [ -z "$SAMBA_OPLOCKS" ] ; then
       SAMBA_OPLOCKS='no'
   fi
 
   printvar "SAMBA_OPLOCKS" "activate oplocking (caching): yes or no"
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration/Samba User Mappings"
   echo "#"
   echo "#  ********************************* ATTENTION ******************************"
@@ -397,8 +368,7 @@ do_update ()
   echo "#-----------------------------------------------------------------------------"
   echo
 
-  if [ -z "$SAMBA_USERMAP_N" ]
-  then
+  if [ -z "$SAMBA_USERMAP_N" ] ; then
       echo "SAMBA_USERMAP_N='2'                   # How many user mappings do you want to"
       echo "                                      # create"
       echo
@@ -431,16 +401,13 @@ do_update ()
       count=`/usr/bin/expr $SAMBA_USERMAP_N + 10`
       idx='1'
       eisname=''
-      while [ "$idx" -le "$count" ]
-      do
+      while [ "$idx" -le "$count" ] ; do
           eval active='$SAMBA_USERMAP_'$idx'_ACTIVE'
           eval eisname='$SAMBA_USERMAP_'$idx'_EISNAME'
           eval winname_n='$SAMBA_USERMAP_'$idx'_WINNAME_N'
 
-          if [ -n "$eisname" ]
-          then
-              if [ -z "$active" ]
-              then
+          if [ -n "$eisname" ] ; then
+              if [ -z "$active" ] ; then
                   eval SAMBA_USERMAP_"$idx"_ACTIVE='yes'
               fi
 
@@ -452,11 +419,9 @@ do_update ()
 
               count1=`/usr/bin/expr $winname_n + 10`
               idy='1'
-              while [ "$idy" -le "$count1" ]
-              do
+              while [ "$idy" -le "$count1" ] ; do
                   eval winname='$SAMBA_USERMAP_'$idx'_WINNAME_'$idy
-                  if [ -n "$winname" ]
-                  then
+                  if [ -n "$winname" ] ; then
                       printvar "SAMBA_USERMAP_"$idx"_WINNAME_"$idy"" ""
                       printvar "" "This is the $idy. windows name which"
                       printvar "" "should be mapped to the $idx. eisfair user"
@@ -469,7 +434,7 @@ do_update ()
       done
   fi
 
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration/Samba Shares"
   echo "#"
   echo "#  ********************************* ATTENTION ******************************"
@@ -485,7 +450,7 @@ do_update ()
   echo "#"
   echo "# Values below are only an example and are not used if"
   echo "# SAMBA_SHARE_N is '0'"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
   printvar "SAMBA_SHARE_N" "How many shares you want to create"
   echo
@@ -493,8 +458,7 @@ do_update ()
   count=`/usr/bin/expr $SAMBA_SHARE_N + 10`
   idx='1'
   name=''
-  while [ "$idx" -le "$count" ]
-  do
+  while [ "$idx" -le "$count" ] ; do
       eval active='$SAMBA_SHARE_'$idx'_ACTIVE'
       eval name='$SAMBA_SHARE_'$idx'_NAME'
       eval comment='$SAMBA_SHARE_'$idx'_COMMENT'
@@ -512,10 +476,8 @@ do_update ()
       eval force_user='$SAMBA_SHARE_'$idx'_FORCE_USER'
       eval force_group='$SAMBA_SHARE_'$idx'_FORCE_GROUP'
 
-      if [ -n "$name" ]
-      then
-          if [ -z "$active" ]
-          then
+      if [ -n "$name" ] ; then
+          if [ -z "$active" ] ; then
               eval SAMBA_SHARE_"$idx"_ACTIVE='yes'
           fi
 
@@ -527,8 +489,7 @@ do_update ()
           printvar "SAMBA_SHARE_"$idx"_BROWSE" "Should share browseable: yes or no"
           printvar "SAMBA_SHARE_"$idx"_PATH" "Path of the share in filesystem"
 
-          if [ "$name" = "homes" ]
-          then
+          if [ "$name" = "homes" ] ; then
               eval SAMBA_SHARE_"$idx"_USER='%S'
           fi
 
@@ -537,15 +498,13 @@ do_update ()
           printvar "SAMBA_SHARE_"$idx"_READ_LIST" "Share only readable for"
           printvar "SAMBA_SHARE_"$idx"_WRITE_LIST" "Share only writeable for"
 
-          if [ -n "$create_mask" ]
-          then
+          if [ -n "$create_mask" ] ; then
               eval SAMBA_SHARE_"$idx"_FORCE_CMODE='$SAMBA_SHARE_'$idx'_CREATE_MASK'
           fi
 
           printvar "SAMBA_SHARE_"$idx"_FORCE_CMODE" "Rights for created files"
 
-          if [ -n "$directory_mask" ]
-          then
+          if [ -n "$directory_mask" ] ; then
               eval SAMBA_SHARE_"$idx"_FORCE_DIRMODE='$SAMBA_SHARE_'$idx'_DIRECTORY_MASK'
           fi
 
@@ -557,7 +516,7 @@ do_update ()
       idx=`/usr/bin/expr $idx + 1`
   done
 
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration/Samba DFS Roots"
   echo "#"
   echo "#  ********************************* ATTENTION ******************************"
@@ -573,11 +532,10 @@ do_update ()
   echo "#"
   echo "# Values below are only an example and are not used if"
   echo "# SAMBA_DFSROOT_N is '0'"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
 
-  if [ -z "$SAMBA_DFSROOT_N" ]
-  then
+  if [ -z "$SAMBA_DFSROOT_N" ] ; then
       echo "SAMBA_DFSROOT_N='1'                   # How many DFS roots do you want"
       echo
       echo "SAMBA_DFSROOT_1_ACTIVE='no'           # Activate this DFS root: yes or no"
@@ -608,8 +566,7 @@ do_update ()
       count=`/usr/bin/expr $SAMBA_DFSROOT_N + 10`
       idx='1'
       name=''
-      while [ "$idx" -le "$count" ]
-      do
+      while [ "$idx" -le "$count" ] ; do
           eval active='$SAMBA_DFSROOT_'$idx'_ACTIVE'
           eval name='$SAMBA_DFSROOT_'$idx'_NAME'
           eval comment='$SAMBA_DFSROOT_'$idx'_COMMENT'
@@ -625,8 +582,7 @@ do_update ()
           eval force_group='$SAMBA_DFSROOT_'$idx'_FORCE_GROUP'
           eval msdfs_lnkn_count='$SAMBA_DFSROOT_'$idx'_DFSLNK_N'
 
-          if [ -n "$name" ]
-          then
+          if [ -n "$name" ] ; then
               printvar "SAMBA_DFSROOT_"$idx"_ACTIVE" "Activate this DFS root: yes or no"
               printvar "SAMBA_DFSROOT_"$idx"_NAME" "This is the name of the $idx. DFS root"
               printvar "SAMBA_DFSROOT_"$idx"_COMMENT" "Comment of the $idx. DFS root"
@@ -645,15 +601,13 @@ do_update ()
               msdfs_lnkn_count=`/usr/bin/expr $msdfs_lnkn_count + 10`
               idy='1'
               msdfs_lnkn_name=''
-              while [ "$idy" -le "$msdfs_lnkn_count" ]
-              do
+              while [ "$idy" -le "$msdfs_lnkn_count" ] ; do
                   eval msdfs_lnkn_active='$SAMBA_DFSROOT_'$idx'_DFSLNK_'$idy'_ACTIVE'
                   eval msdfs_lnkn_subpath='$SAMBA_DFSROOT_'$idx'_DFSLNK_'$idy'_SUBPATH'
                   eval msdfs_lnkn_name='$SAMBA_DFSROOT_'$idx'_DFSLNK_'$idy'_NAME'
                   eval msdfs_lnkn_uncn='$SAMBA_DFSROOT_'$idx'_DFSLNK_'$idy'_UNC_N'
 
-                  if [ -n "$msdfs_lnkn_name" ]
-                  then
+                  if [ -n "$msdfs_lnkn_name" ] ; then
                       printvar "SAMBA_DFSROOT_"$idx"_DFSLNK_"$idy"_ACTIVE" "Should this link active: yes or no"
                       printvar "SAMBA_DFSROOT_"$idx"_DFSLNK_"$idy"_SUBPATH" "Sub directory for this link"
                       printvar "SAMBA_DFSROOT_"$idx"_DFSLNK_"$idy"_NAME" "Name of the link"
@@ -662,11 +616,9 @@ do_update ()
                       eval msdfs_lnkn_uncn_count='$SAMBA_DFSROOT_'$idx'_DFSLNK_'$idy'_UNC_N'
                       idz='1'
                       msdfs_lnkn_uncn_count=`/usr/bin/expr $msdfs_lnkn_uncn_count + 10`
-                      while [ "$idz" -le "$msdfs_lnkn_uncn_count" ]
-                      do
+                      while [ "$idz" -le "$msdfs_lnkn_uncn_count" ] ; do
                           eval msdfs_lnkn_uncn_path='$SAMBA_DFSROOT_'$idx'_DFSLNK_'$idy'_UNC_'$idz'_PATH'
-                          if [ -n "$msdfs_lnkn_uncn_path" ]
-                          then
+                          if [ -n "$msdfs_lnkn_uncn_path" ] ; then
                               printvar "SAMBA_DFSROOT_"$idx"_DFSLNK_"$idy"_UNC_"$idz"_PATH" ""
                               printvar "" "unc path for this link"
                           fi
@@ -682,7 +634,7 @@ do_update ()
   fi
 
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration/Samba Printers"
   echo "#"
   echo "#  ********************************* ATTENTION ******************************"
@@ -698,7 +650,7 @@ do_update ()
   echo "#"
   echo "# Values below are only an example and are not used if"
   echo "# SAMBA_PRINTER_N is '0'"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
   printvar "SAMBA_PRINTER_N" "How many printers you want to use"
   echo
@@ -706,8 +658,7 @@ do_update ()
   count=`/usr/bin/expr $SAMBA_PRINTER_N + 10`
   idx='1'
   name=''
-  while [ "$idx" -le "$count" ]
-  do
+  while [ "$idx" -le "$count" ] ; do
       eval active='$SAMBA_PRINTER_'$idx'_ACTIVE'
       eval name='$SAMBA_PRINTER_'$idx'_NAME'
       eval type='$SAMBA_PRINTER_'$idx'_TYPE'
@@ -724,52 +675,42 @@ do_update ()
       eval user='$SAMBA_PRINTER_'$idx'_USER'
       eval public='$SAMBA_PRINTER_'$idx'_PUBLIC'
 
-      if [ -n "$name" ]
-      then
-          if [ -z "$active" ]
-          then
+      if [ -n "$name" ] ; then
+          if [ -z "$active" ] ; then
               eval SAMBA_PRINTER_"$idx"_ACTIVE='yes'
           fi
 
           printvar "SAMBA_PRINTER_"$idx"_ACTIVE" "Is this printer active: yes or no"
           printvar "SAMBA_PRINTER_"$idx"_NAME" "This is the name of the $idx. printer"
 
-          if [ -z "$type" ]
-          then
-              if [ -n "$pdfoption" -o -n "$pdfquality" ]
-              then
+          if [ -z "$type" ] ; then
+              if [ -n "$pdfoption" -o -n "$pdfquality" ] ; then
                   eval SAMBA_PRINTER_"$idx"_TYPE='pdf'
                   eval type='$SAMBA_PRINTER_'$idx'_TYPE'
               fi
 
-              if [ -n "$capname" ]
-              then
+              if [ -n "$capname" ] ; then
                   eval SAMBA_PRINTER_"$idx"_TYPE='printcap'
               fi
 
-              if [ "$name" = "eisfax" ]
-              then
+              if [ "$name" = "eisfax" ] ; then
                   eval SAMBA_PRINTER_"$idx"_TYPE='fax'
               fi
           fi
 
           printvar "SAMBA_PRINTER_"$idx"_TYPE" "Type of the $idx. printer"
 
-          if [ -z "$pdfquality" ]
-          then
-              if [ -n "$pdfoption" ]
-              then
+          if [ -z "$pdfquality" ] ; then
+              if [ -n "$pdfoption" ] ; then
                   eval SAMBA_PRINTER_"$idx"_PDF_QUALITY='$SAMBA_PRINTER_'$idx'_PDF_OPTION'
               else
-                  if [ "$name" = "pdf" ]
-                  then
+                  if [ "$name" = "pdf" ] ; then
                       eval SAMBA_PRINTER_"$idx"_PDF_QUALITY='default'
                   fi
               fi
           fi
 
-          if [ -z "$pdfmessages" ]
-          then
+          if [ -z "$pdfmessages" ] ; then
               eval SAMBA_PRINTER_"$idx"_PDF_MESSAGES='yes'
           fi
 
@@ -783,8 +724,7 @@ do_update ()
           printvar "SAMBA_PRINTER_"$idx"_COMMENT" ""
           printvar "" "Comment of the $idx. printer"
 
-          if [ -z "$clientdriver" ]
-          then
+          if [ -z "$clientdriver" ] ; then
               eval SAMBA_PRINTER_"$idx"_CLIENTDRIVER='yes'
           fi
 
@@ -798,7 +738,7 @@ do_update ()
       idx=`/usr/bin/expr $idx + 1`
   done
 
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration/Samba Mounts"
   echo "#"
   echo "#  ********************************* ATTENTION ******************************"
@@ -814,11 +754,10 @@ do_update ()
   echo "#"
   echo "# Values below are only an example and are not used if"
   echo "# SAMBA_MOUNT_N is '0'"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
 
-  if [ -z "$SAMBA_MOUNT_N" ]
-  then
+  if [ -z "$SAMBA_MOUNT_N" ] ; then
       echo "SAMBA_MOUNT_N='2'                     # How many remote shares you want to mount"
       echo
       echo "SAMBA_MOUNT_1_ACTIVE='no'             # Is this mount active: yes or no"
@@ -858,8 +797,7 @@ do_update ()
       count=`/usr/bin/expr $SAMBA_MOUNT_N + 10`
       idx='1'
       server=''
-      while [ "$idx" -le "$count" ]
-      do
+      while [ "$idx" -le "$count" ] ; do
           eval active='$SAMBA_MOUNT_'$idx'_ACTIVE'
           eval vfstype='$SAMBA_MOUNT_'$idx'_VFSTYPE'
           eval server='$SAMBA_MOUNT_'$idx'_SERVER'
@@ -875,17 +813,14 @@ do_update ()
           eval iocharset='$SAMBA_MOUNT_'$idx'_IOCHARSET'
           eval codepage='$SAMBA_MOUNT_'$idx'_CODEPAGE'
 
-          if [ -n "$server" ]
-          then
-              if [ -z "$active" ]
-              then
+          if [ -n "$server" ] ; then
+              if [ -z "$active" ] ; then
                   eval SAMBA_MOUNT_"$idx"_ACTIVE='yes'
               fi
 
               printvar "SAMBA_MOUNT_"$idx"_ACTIVE" "Is this mount active: yes or no"
 
-              if [ -z "$vfstype" ]
-              then
+              if [ -z "$vfstype" ] ; then
                   eval SAMBA_MOUNT_"$idx"_VFSTYPE='smbfs'
               fi
 
@@ -913,7 +848,7 @@ do_update ()
 do_generate ()
 {
  {
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# /etc/config.d/samba - configuration for Samba on eisfair"
   echo "#"
   echo "# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net"
@@ -927,21 +862,21 @@ do_generate ()
   echo "# it under the terms of the GNU General Public License as published by"
   echo "# the Free Software Foundation; either version 2 of the License, or"
   echo "# (at your option) any later version."
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo 
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# General Settings"
   echo "#"
   echo "# Minimum requirement if SAMBA_MANUAL_CONFIGURATION='no' is to change"
   echo "# SAMBA_WORKGROUP to workgroup name of your windows clients!"
   echo "#"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
   echo "START_SAMBA='no'                      # Start on boot: yes or no"
   echo
   echo "SAMBA_WORKGROUP='workgroup'           # Workgroup name of windows-clients"
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Manual or Automatic Configuration"
   echo "#"
   echo "# Manual or Automatic Configuration of Shares and Printers"
@@ -967,12 +902,12 @@ do_generate ()
   echo "# - a printer share for eisfax printer, if eisfax is installed"
   echo "# - a printer share for pdf printing, if ghostscript is installed"
   echo "#"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
   echo "SAMBA_MANUAL_CONFIGURATION='no'       # Use manual configuration:"
   echo "                                      # yes or no"
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration"
   echo "#"
   echo "# Please don't use this, if you are not very familar with Samba!"
@@ -982,11 +917,11 @@ do_generate ()
   echo "# and"
   echo "# Individual Configuration of Shares, Printers and Mounts"
   echo "#"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration/Special General Settings"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
   echo "SAMBA_INTERFACES=''                   # Userdefined interfaces for Samba"
   echo "                                      # Be carefull, use this only, if you"
@@ -1048,17 +983,7 @@ do_generate ()
   echo "                                      # all or active"
   echo
 
-  if [ "$eisfair_system" = "eisfair-1" ]
-  then
-      if `echo $LC_CTYPE | grep -qE '[[:lower:]]{2}_[[:upper:]]{2}[[:punct:]]utf8|UTF-8'`
-      then
-          echo "SAMBA_LOCALIZATION='UTF-8'            # Language adjustment, affected to unix"
-      else
-          echo "SAMBA_LOCALIZATION='ISO8859-15'       # Language adjustment, affected to unix"
-      fi
-  else
-      echo "SAMBA_LOCALIZATION='UTF-8'            # Language adjustment, affected to unix"
-  fi
+  echo "SAMBA_LOCALIZATION='UTF-8'            # Language adjustment, affected to unix"
 
   echo "                                      # character set and client codepage"
   echo "                                      # US        : United States (CP 437)"
@@ -1111,7 +1036,7 @@ do_generate ()
   echo
   echo "SAMBA_OPLOCKS='no'                    # activate oplocking (caching): yes or no"
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration/Samba User Mappings"
   echo "#"
   echo "#  ********************************* ATTENTION ******************************"
@@ -1153,7 +1078,7 @@ do_generate ()
   echo "                                      # This is the 2. windows name which"
   echo "                                      # should be mapped to the 2. eisfair user"
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration/Samba Shares"
   echo "#"
   echo "#  ********************************* ATTENTION ******************************"
@@ -1169,7 +1094,7 @@ do_generate ()
   echo "#"
   echo "# Values below are only an example and are not used if"
   echo "# SAMBA_SHARE_N is '0'"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
   echo "SAMBA_SHARE_N='4'                     # How many shares you want to create"
   echo
@@ -1237,7 +1162,7 @@ do_generate ()
   echo "SAMBA_SHARE_4_FORCE_USER='wwwrun'     # User for all file operations"
   echo "SAMBA_SHARE_4_FORCE_GROUP='nogroup'   # Group for all file operations"
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration/Samba DFS Roots"
   echo "#"
   echo "#  ********************************* ATTENTION ******************************"
@@ -1253,7 +1178,7 @@ do_generate ()
   echo "#"
   echo "# Values below are only an example and are not used if"
   echo "# SAMBA_DFSROOT_N is '0'"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
   echo "SAMBA_DFSROOT_N='1'                   # How many DFS roots do you want"
   echo
@@ -1278,7 +1203,7 @@ do_generate ()
   echo "SAMBA_DFSROOT_1_DFSLNK_1_UNC_1_PATH='\\\\userserver1\\users'"
   echo "                                      # unc path for this link"
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration/Samba Printers"
   echo "#"
   echo "#  ********************************* ATTENTION ******************************"
@@ -1294,7 +1219,7 @@ do_generate ()
   echo "#"
   echo "# Values below are only an example and are not used if"
   echo "# SAMBA_PRINTER_N is '0'"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
   echo "SAMBA_PRINTER_N='6'                   # How many printers you want to use"
   echo
@@ -1406,7 +1331,7 @@ do_generate ()
   echo "SAMBA_PRINTER_6_USER=''               # Allowed user/groups for 6. printer"
   echo "SAMBA_PRINTER_6_PUBLIC='yes'          # Printer accessable for all: yes or no"
   echo
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo "# Samba Advanced Configuration/Samba Mounts"
   echo "#"
   echo "#  ********************************* ATTENTION ******************************"
@@ -1422,7 +1347,7 @@ do_generate ()
   echo "#"
   echo "# Values below are only an example and are not used if"
   echo "# SAMBA_MOUNT_N is '0'"
-  echo "#------------------------------------------------------------------------------"
+  echo "# ----------------------------------------------------------------------------" 
   echo
   echo "SAMBA_MOUNT_N='2'                     # How many remote shares you want to mount"
   echo
@@ -1459,46 +1384,39 @@ do_generate ()
  } >"$targetfile"
 }
 
-if [ "$mode" = "update" ]
-then
+if [ "$mode" = "update" ] ; then
     . "$targetfile"
 
     #
     # section 'removed parameters'
     #
 
-    if [ -n "$SAMBA_ADMIN_USER" ]
-    then
+    if [ -n "$SAMBA_ADMIN_USER" ] ; then
         removed='yes'
         mecho --warn "Removed: SAMBA_ADMIN_USER"
     fi
 
-    if [ -n "$SAMBA_ENCRYPT" ]
-    then
+    if [ -n "$SAMBA_ENCRYPT" ] ; then
         removed='yes'
         mecho --warn "Removed: SAMBA_ENCRYPT"
     fi
 
-    if [ -n "$SAMBA_WINSCLIENT" ]
-    then
+    if [ -n "$SAMBA_WINSCLIENT" ] ; then
         removed='yes'
         mecho --warn "Removed: SAMBA_WINSCLIENT"
     fi
 
-    if [ -n "$SAMBA_SECURITY" ]
-    then
+    if [ -n "$SAMBA_SECURITY" ] ; then
         removed='yes'
         mecho --warn "Removed: SAMBA_SECURITY"
     fi
 
-    if [ -n "`grep SAMBA_DOMAIN_ADMINS $targetfile`" ]
-    then
+    if [ -n "`grep SAMBA_DOMAIN_ADMINS $targetfile`" ] ; then
         removed='yes'
         mecho --warn "Removed: SAMBA_DOMAIN_ADMINS"
     fi
 
-    if [ -n "`grep SAMBA_SHARE_._DFSROOT $targetfile`" ]
-    then
+    if [ -n "`grep SAMBA_SHARE_._DFSROOT $targetfile`" ] ; then
         removed='yes'
         mecho --warn "Removed: SAMBA_SHARE_x_DFSROOT"
         mecho --warn "Removed: SAMBA_SHARE_x_DFSLNK_N"
@@ -1509,8 +1427,7 @@ then
         mecho --warn "Removed: SAMBA_SHARE_x_DFSLNK_y_UNC_z_PATH"
     fi
 
-    if [ -n "`grep SAMBA_DFSROOT= $targetfile`" ]
-    then
+    if [ -n "`grep SAMBA_DFSROOT= $targetfile`" ] ; then
         removed='yes'
         mecho --warn "Removed: SAMBA_DFSROOT"
         mecho --warn "Removed: SAMBA_DFSROOT_RW"
@@ -1531,36 +1448,30 @@ then
         mecho --warn "Removed: SAMBA_DFSROOT_DFSLNK_x_UNC_y_PATH"
     fi
 
-    if [ -n "`grep SAMBA_VSCAN= $targetfile`" ]
-    then
+    if [ -n "`grep SAMBA_VSCAN= $targetfile`" ] ; then
         removed='yes'
         mecho --warn "Removed: SAMBA_VSCAN"
     fi
 
-    if [ -n "`grep SAMBA_VSCAN_TYPE= $targetfile`" ]
-    then
+    if [ -n "`grep SAMBA_VSCAN_TYPE= $targetfile`" ] ; then
         removed='yes'
         mecho --warn "Removed: SAMBA_VSCAN_TYPE"
     fi
 
-    if [ -n "`grep SAMBA_VSCAN_TYP= $targetfile`" ]
-    then
+    if [ -n "`grep SAMBA_VSCAN_TYP= $targetfile`" ] ; then
         removed='yes'
         mecho --warn "Removed: SAMBA_VSCAN_TYP"
     fi
 
-    if [ -n "`grep SAMBA_SHARE_._VSCAN $targetfile`" ]
-    then
+    if [ -n "`grep SAMBA_SHARE_._VSCAN $targetfile`" ] ; then
         removed='yes'
         mecho --warn "Removed: SAMBA_SHARE_x_VSCAN"
     fi
 
-    if [ -n "`grep SAMBA_PASSWORT_SERVER_TYP= $targetfile`" ]
-    then
+    if [ -n "`grep SAMBA_PASSWORT_SERVER_TYP= $targetfile`" ] ; then
         removed='yes'
         mecho --warn "Removed: SAMBA_PASSWORT_SERVER_TYP"
-        if [ "$SAMBA_PASSWORT_SERVER_TYP" = "server" -a -n "$SAMBA_PASSWORD_SERVER" ]
-        then
+        if [ "$SAMBA_PASSWORT_SERVER_TYP" = "server" -a -n "$SAMBA_PASSWORD_SERVER" ] ; then
             echo
             mecho --warn "Please join eisfair into the authenticating domain!"
             mecho --warn "Otherwise no authentification will pe possible!"
@@ -1572,12 +1483,10 @@ then
         fi
     fi
 
-    if [ -n "`grep SAMBA_PASSWORD_SERVER_TYPE= $targetfile`" ]
-    then
+    if [ -n "`grep SAMBA_PASSWORD_SERVER_TYPE= $targetfile`" ] ; then
         removed='yes'
         mecho --warn "Removed: SAMBA_PASSWORD_SERVER_TYPE"
-        if [ "$SAMBA_PASSWORD_SERVER_TYPE" = "server" -a -n "$SAMBA_PASSWORD_SERVER" ]
-        then
+        if [ "$SAMBA_PASSWORD_SERVER_TYPE" = "server" -a -n "$SAMBA_PASSWORD_SERVER" ] ; then
             echo
             mecho --warn "Please join eisfair into the authenticating domain!"
             mecho --warn "Otherwise no authentification will pe possible!"
@@ -1593,164 +1502,137 @@ then
     # section 'added parameters'
     #
 
-    if [ -z "`grep SAMBA_TRUSTED_NETS $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_TRUSTED_NETS $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_TRUSTED_NETS"
     fi
 
-    if [ -z "`grep SAMBA_PRINTER_._CLIENTDRIVER= $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_PRINTER_._CLIENTDRIVER= $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_PRINTER_x_CLIENTDRIVER"
     fi
 
-    if [ -z "$SAMBA_SHUTDOWN_MESSAGE_HOSTS" ]
-    then
+    if [ -z "$SAMBA_SHUTDOWN_MESSAGE_HOSTS" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_SHUTDOWN_MESSAGE_HOSTS"
     fi
 
-    if [ -z "`grep SAMBA_INTERFACES $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_INTERFACES $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_INTERFACES"
     fi
 
-    if [ -z "$SAMBA_PDF_TARGET" ]
-    then
+    if [ -z "$SAMBA_PDF_TARGET" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_PDF_TARGET"
     fi
 
-    if [ -z "`grep SAMBA_SERVERSTRING $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_SERVERSTRING $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_SERVERSTRING"
     fi
 
-    if [ -z "$SAMBA_PDC_PROFILES" ]
-    then
+    if [ -z "$SAMBA_PDC_PROFILES" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_PDC_PROFILES"
     fi
 
-    if [ -z "`grep SAMBA_SHARE_._READ_LIST $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_SHARE_._READ_LIST $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_SHARE_x_READ_LIST"
     fi
 
-    if [ -z "`grep SAMBA_SHARE_._WRITE_LIST $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_SHARE_._WRITE_LIST $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_SHARE_x_WRITE_LIST"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_N $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_N $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_N"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._SERVER $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._SERVER $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_SERVER"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._SHARE $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._SHARE $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_SHARE"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._POINT $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._POINT $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_POINT"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._USER $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._USER $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_USER"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._PASS $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._PASS $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_PASS"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._RW $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._RW $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_RW"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._UID $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._UID $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_UID"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._GID $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._GID $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_GID"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._FMASK $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._FMASK $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_FMASK"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._DMASK $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._DMASK $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_DMASK"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._IOCHARSET $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._IOCHARSET $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_IOCHARSET"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._CODEPAGE $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._CODEPAGE $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_CODEPAGE"
     fi
 
-    if [ -z "`grep SAMBA_EXPERT_EXEC $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_EXPERT_EXEC $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_EXPERT_EXEC"
     fi
 
-    if [ -z "`grep SAMBA_SHARE_._ACTIVE $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_SHARE_._ACTIVE $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_SHARE_x_ACTIVE"
     fi
 
-    if [ -z "`grep SAMBA_PRINTER_._ACTIVE $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_PRINTER_._ACTIVE $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_PRINTER_x_ACTIVE"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._ACTIVE $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._ACTIVE $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_ACTIVE"
     fi
 
-    if [ -z "$SAMBA_USERMAP_N" ]
-    then
+    if [ -z "$SAMBA_USERMAP_N" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_USERMAP_N"
         mecho --warn "Added  : SAMBA_USERMAP_x_EISNAME"
@@ -1758,92 +1640,77 @@ then
         mecho --warn "Added  : SAMBA_USERMAP_x_WINNAME_y"
     fi
 
-    if [ -z "`grep SAMBA_SMBWEBCLIENT $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_SMBWEBCLIENT $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_SMBWEBCLIENT"
     fi
 
-    if [ -z "`grep SAMBA_SMBWEBCLIENT_PATH $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_SMBWEBCLIENT_PATH $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_SMBWEBCLIENT_PATH"
     fi
 
-    if [ -z "`grep SAMBA_WINSHOOK $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_WINSHOOK $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_WINSHOOK"
     fi
 
-    if [ -z "`grep SAMBA_WINSHOOK_MESSAGE_SEND $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_WINSHOOK_MESSAGE_SEND $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_WINSHOOK_MESSAGE_SEND"
     fi
 
-    if [ -z "`grep SAMBA_WINSHOOK_MESSAGE $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_WINSHOOK_MESSAGE $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_WINSHOOK_MESSAGE"
     fi
 
-    if [ -z "`grep SAMBA_WINSHOOK_DNSUPDATE $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_WINSHOOK_DNSUPDATE $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_WINSHOOK_DNSUPDATE"
     fi
 
-    if [ -z "`grep SAMBA_OPLOCKS $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_OPLOCKS $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_OPLOCKS"
     fi
 
-    if [ -z "`grep SAMBA_PDC_LOGONSCRIPT $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_PDC_LOGONSCRIPT $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_PDC_LOGONSCRIPT"
     fi
 
-    if [ -z "`grep SAMBA_PRINTER_._TYPE $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_PRINTER_._TYPE $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_PRINTER_x_TYPE"
     fi
 
-    if [ -z "`grep SAMBA_PRINTER_._PDF_OWNERPASS $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_PRINTER_._PDF_OWNERPASS $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_PRINTER_x_PDF_OWNERPASS"
     fi
 
-    if [ -z "`grep SAMBA_PRINTER_._PDF_USERPASS $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_PRINTER_._PDF_USERPASS $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_PRINTER_x_PDF_USERPASS"
     fi
 
-    if [ -z "`grep SAMBA_RECYCLE_BIN= $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_RECYCLE_BIN= $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_RECYCLE_BIN"
     fi
 
-    if [ -z "`grep SAMBA_RECYCLE_BIN_HOLD_DAYS= $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_RECYCLE_BIN_HOLD_DAYS= $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_RECYCLE_BIN_HOLD_DAYS"
     fi
 
-    if [ -z "`grep SAMBA_PRINTER_._PDF_PERMS $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_PRINTER_._PDF_PERMS $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_PRINTER_x_PDF_PERMS"
     fi
 
-    if [ -z "`grep SAMBA_DFSROOT_N= $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_DFSROOT_N= $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_DFSROOT_N"
         mecho --warn "Added  : SAMBA_DFSROOT_x_ACTIVE"
@@ -1867,14 +1734,12 @@ then
         mecho --warn "Added  : SAMBA_DFSROOT_x_DFSLNK_y_UNC_z_PATH"
     fi
 
-    if [ -z "`grep SAMBA_MOUNT_._VFSTYPE $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_MOUNT_._VFSTYPE $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_MOUNT_x_VFSTYPE"
     fi
 
-    if [ -z "`grep SAMBA_PRINTER_._PDF_MESSAGES $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_PRINTER_._PDF_MESSAGES $targetfile`" ] ; then
         added='yes'
         mecho --warn "Added  : SAMBA_PRINTER_x_PDF_MESSAGES"
     fi
@@ -1883,50 +1748,42 @@ then
     # section 'changed parameters'
     #
 
-    if [ -n "`grep SAMBA_START= $targetfile`" ]
-    then
+    if [ -n "`grep SAMBA_START= $targetfile`" ] ; then
         changed='yes'
         mecho --warn "Changed: SAMBA_START to START_SAMBA"
     fi
 
-    if [ -n "$SAMBA_SHOW_START_MESSAGE" ]
-    then
+    if [ -n "$SAMBA_SHOW_START_MESSAGE" ] ; then
         changed='yes'
         mecho --warn "Changed: SAMBA_SHOW_START_MESSAGE to SAMBA_START_MESSAGE_SEND"
     fi
 
-    if [ -n "$SAMBA_SHOW_SHUTDOWN_MESSAGE" ]
-    then
+    if [ -n "$SAMBA_SHOW_SHUTDOWN_MESSAGE" ] ; then
         changed='yes'
         mecho --warn "Changed: SAMBA_SHOW_SHUTDOWN_MESSAGE to SAMBA_SHUTDOWN_MESSAGE_SEND"
     fi
 
-    if [ -n "`grep SAMBA_AUTO_CONFIGURATION= $targetfile`" ]
-    then
+    if [ -n "`grep SAMBA_AUTO_CONFIGURATION= $targetfile`" ] ; then
         changed='yes'
         mecho --warn "Changed: SAMBA_AUTO_CONFIGURATION to SAMBA_MANUAL_CONFIGURATION"
     fi
 
-    if [ -z "`grep SAMBA_SHARE_._FORCE_CMODE $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_SHARE_._FORCE_CMODE $targetfile`" ] ; then
         changed='yes'
         mecho --warn "Changed: SAMBA_SHARE_x_CREATE_MASK to SAMBA_SHARE_x_FORCE_CMODE"
     fi
 
-    if [ -z "`grep SAMBA_SHARE_._FORCE_DIRMODE $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_SHARE_._FORCE_DIRMODE $targetfile`" ] ; then
         changed='yes'
         mecho --warn "Changed: SAMBA_SHARE_x_DIRECTORY_MASK to SAMBA_SHARE_x_FORCE_DIRMODE"
     fi
 
-    if [ -n "`grep SAMBA_PROFILES= $targetfile`" ]
-    then
+    if [ -n "`grep SAMBA_PROFILES= $targetfile`" ] ; then
         changed='yes'
         mecho --warn "Changed: SAMBA_PROFILES to SAMBA_PDC_PROFILES"
     fi
 
-    if [ -z "`grep SAMBA_PRINTER_._PDF_QUALITY $targetfile`" ]
-    then
+    if [ -z "`grep SAMBA_PRINTER_._PDF_QUALITY $targetfile`" ] ; then
         changed='yes'
         mecho --warn "Changed: SAMBA_PRINTER_x_PDF_OPTION to SAMBA_PRINTER_x_PDF_QUALITY"
     fi
@@ -1935,8 +1792,7 @@ then
     # show info for removed/added/changed parameters
     #
 
-    if [ "$added" = "yes" -o "$changed" = "yes" -o "$removed" = "yes" ]
-    then
+    if [ "$added" = "yes" -o "$changed" = "yes" -o "$removed" = "yes" ] ; then
         mecho --warn "Read documentation for removed/added/changed parameter(s)!"
         anykey
     fi

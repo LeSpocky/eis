@@ -1,31 +1,28 @@
 #! /bin/sh
-#-------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # /var/install/config.d/samba.sh - configuration generator script for Samba
 #
 # Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
 #
-# Creation   : 2002-02-04 tb
-# Last Update: 2013-12-09 tb
+# Creation: 2002-02-04 tb
 #
-# Version    : 2.4.1
+# Version: 2.4.1
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#-------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 #set -x
 . /var/install/include/eislib
 . /etc/config.d/base
 . /etc/config.d/samba
 
-if [ -f /etc/config.d/lprng ]
-then
+if [ -f /etc/config.d/lprng ] ; then
     . /etc/config.d/lprng
 fi
 
-if [ -f /etc/config.d/cups ]
-then
+if [ -f /etc/config.d/cups ] ; then
     . /etc/config.d/cups
 fi
 
@@ -76,8 +73,7 @@ umountbin='/bin/umount'
 eisfair_system=`cat /etc/eisfair-system`
 pdfmessages='yes'
 
-if [ "$eisfair_system" = "eisfair-1" ]
-then
+if [ "$eisfair_system" = "eisfair-1" ] ; then
     crontab_file='/var/cron/etc/root/samba'
     crontab_update='/var/install/config.d/cron.sh'
 else
@@ -85,8 +81,7 @@ else
     crontab_update='/var/install/bin/update-cron'
 fi
 
-if [ "$SAMBA_PDF_TARGET" = "public" ]
-then
+if [ "$SAMBA_PDF_TARGET" = "public" ] ; then
     pdflinuxdir='/public'
     pdfwindir='//%L/public'
 else
@@ -94,33 +89,27 @@ else
     pdfwindir='//%L/%u'
 fi
 
-if [ -f /etc/mgetty+sendfax/new_fax ]
-then
+if [ -f /etc/mgetty+sendfax/new_fax ] ; then
     eisfax_exists='true'
 fi
 
-if [ -d /var/spool/hylafax ]
-then
+if [ -d /var/spool/hylafax ] ; then
     hylafax_exists='true'
 fi
 
-if [ "$eisfax_exists" = "true" -o "$hylafax_exists" = "true" ]
-then
-    if [ -f /usr/bin/printfax.pl ]
-    then
+if [ "$eisfax_exists" = "true" -o "$hylafax_exists" = "true" ] ; then
+    if [ -f /usr/bin/printfax.pl ] ; then
         printfaxfile='/usr/bin/printfax.pl'
     fi
 
-    if [ -f /usr/bin/printfax.sh ]
-    then
+    if [ -f /usr/bin/printfax.sh ] ; then
         printfaxfile='/usr/bin/printfax.sh'
     fi
 
     faxcommand="( $printfaxfile '%I' '%s' '%u' '%m' '%H' '%S'; rm %s ) &"
 fi
 
-if [ -f /usr/local/bin/gs ]
-then
+if [ -f /usr/local/bin/gs ] ; then
     gs_version=`/usr/local/bin/gs --version`
     case "$gs_version" in
     8.*|9.*)
@@ -138,17 +127,14 @@ then
     esac
 fi
 
-if [ -f /var/install/packages/sambaexpert ]
-then
+if [ -f /var/install/packages/sambaexpert ] ; then
     sambaexpert_exists='true'
 fi
 
-if [ $SAMBA_DEBUGLEVEL -gt 0 ]
-then
+if [ $SAMBA_DEBUGLEVEL -gt 0 ] ; then
     debuglevel="$SAMBA_DEBUGLEVEL"
 
-    if [ $debuglevel -gt 2 ]
-    then
+    if [ $debuglevel -gt 2 ] ; then
         smbinfo='yes'
     else
         smbinfo='no'
@@ -160,10 +146,8 @@ fi
 
 do_check_vfs_recycle ()
 {
-  if [ "$SAMBA_RECYCLE_BIN" = "yes" ]
-  then
-      if [ -z "$vfs_objects" ]
-      then
+  if [ "$SAMBA_RECYCLE_BIN" = "yes" ] ; then
+      if [ -z "$vfs_objects" ] ; then
           vfs_objects='recycle'
       else
           vfs_objects="recycle, $vfs_objects"
@@ -173,10 +157,8 @@ do_check_vfs_recycle ()
 
 do_check_vfs_fullaudit ()
 {
-  if [ "$SAMBA_FULL_AUDIT" = "yes" ]
-  then
-      if [ -z "$vfs_objects" ]
-      then
+  if [ "$SAMBA_FULL_AUDIT" = "yes" ] ; then
+      if [ -z "$vfs_objects" ] ; then
           vfs_objects='full_audit'
       else
           vfs_objects="full_audit, $vfs_objects"
@@ -187,10 +169,8 @@ do_check_vfs_fullaudit ()
 do_check_vfs_dirsort ()
 {
   #if [ -f /usr/lib/samba/vfs/dirsort.so ]
-  if [ "$SAMBA_DIRSORT" = "yes" ]
-  then
-      if [ -z "$vfs_objects" ]
-      then
+  if [ "$SAMBA_DIRSORT" = "yes" ] ; then
+      if [ -z "$vfs_objects" ] ; then
           vfs_objects='dirsort'
       else
           vfs_objects="dirsort, $vfs_objects"
@@ -200,16 +180,14 @@ do_check_vfs_dirsort ()
 
 do_write_vfs_objects ()
 {
-  if [ -n "$vfs_objects" ]
-  then
+  if [ -n "$vfs_objects" ] ; then
       echo " vfs objects = $vfs_objects"
   fi
 }
 
 do_write_vfs_fullaudit ()
 {
-  if [ "$SAMBA_FULL_AUDIT" = "yes" ]
-  then
+  if [ "$SAMBA_FULL_AUDIT" = "yes" ] ; then
      {
       echo " full_audit:prefix = %S|%u|%I"
       echo " full_audit:success = open mkdir read write rmdir unlink"
@@ -222,8 +200,7 @@ do_write_vfs_fullaudit ()
 
 do_write_vfs_recycle ()
 {
-  if [ "$SAMBA_RECYCLE_BIN" = "yes" ]
-  then
+  if [ "$SAMBA_RECYCLE_BIN" = "yes" ] ; then
      {
       echo " recycle:repository = samba_recycle_bin/%u"
       echo " recycle:versions = yes"
@@ -238,13 +215,11 @@ do_write_vfs_recycle ()
 
 do_remove_recycle_cron ()
 {
-  if [ -f /var/install/bin/samba-recycle-cron ]
-  then
+  if [ -f /var/install/bin/samba-recycle-cron ] ; then
       rm -f /var/install/bin/samba-recycle-cron
   fi
 
-  if [ -f "$crontab_file" ]
-  then
+  if [ -f "$crontab_file" ] ; then
       mecho --info "Removing cron job for SAMBA_RECYCLE_BIN ..."
       rm -f "$crontab_file"
       "$crontab_update"
@@ -253,8 +228,7 @@ do_remove_recycle_cron ()
 
 do_add_recycle_cron ()
 {
-  if [ "$SAMBA_RECYCLE_BIN" = "yes" ]
-  then
+  if [ "$SAMBA_RECYCLE_BIN" = "yes" ] ; then
       mecho --info "Adding cron job for SAMBA_RECYCLE_BIN ..."
      {
       echo "/usr/bin/find / -path '/proc' -prune -o -name samba_recycle_bin -type d -print |"
@@ -268,8 +242,7 @@ do_add_recycle_cron ()
       echo "  while read samba_recycle_bin_subdir"
       echo "  do"
 
-      if [ "$eisfair_system" = "eisfair-1" ]
-      then
+      if [ "$eisfair_system" = "eisfair-1" ] ; then
           echo "    samba_recycle_bin_rmdir=\`echo \"\$samba_recycle_bin_subdir\" | /usr/bin/sed \"s#^\$samba_recycle_bin_dir/##\"\`"
       else
           echo "    samba_recycle_bin_rmdir=\`echo \"\$samba_recycle_bin_subdir\" | /bin/sed \"s#^\$samba_recycle_bin_dir/##\"\`"
@@ -301,8 +274,7 @@ do_add_recycle_cron ()
 
 do_mkdir_recycle ()
 {
-  if [ "$SAMBA_RECYCLE_BIN" = "yes" ]
-  then
+  if [ "$SAMBA_RECYCLE_BIN" = "yes" ] ; then
       recycle_path="$path/samba_recycle_bin"
       mkdir -p "$recycle_path"
       chmod 0777 "$recycle_path"
@@ -312,16 +284,14 @@ do_mkdir_recycle ()
 
 #do_remove_all_recyclers ()
 #{
-#  if [ "$SAMBA_RECYCLE_BIN" = "no" ]
-#  then
+#  if [ "$SAMBA_RECYCLE_BIN" = "no" ] ; then
 #      find / -name samba_recycle_bin -type d -exec rm -rf {} \; 2>/dev/null &
 #  fi
 #}
 
 do_smbinfo ()
 {
-  if [ "$smbinfo" = "yes" ]
-  then
+  if [ "$smbinfo" = "yes" ] ; then
       x='T=%T|d=%d|v=%v|h=%h|L=%L|N=%N|p=%p|R=%R|S=%S|P=%P|U=%U|G=%G|u=%u|g=%g|H=%H|I=%I|M=%M|m=%m|a=%a'
       echo " root preexec = /var/install/bin/samba-smbinfo \"$x\" &"
   fi
@@ -344,8 +314,7 @@ do_smbinfo ()
 
 do_charset ()
 {
-  if [ "$eisfair_system" = "eisfair-1" ]
-  then
+  if [ "$eisfair_system" = "eisfair-1" ] ; then
       case $SAMBA_LOCALIZATION in
       US)
          {
@@ -490,8 +459,7 @@ do_macro ()
   is_macro='false'
   for macro in %T %d %v %h %L %N %p %R %S %P %U %G %u %g %H %I %M %m %a
   do
-      if [ "$a" = "$macro" ]
-      then
+      if [ "$a" = "$macro" ] ; then
           is_macro='true'
       fi
   done
@@ -502,14 +470,12 @@ do_valid_users ()
   found_adminuser='no'
   for u in $user
   do
-      if [ "$u" = "$adminuser" ]
-      then
+      if [ "$u" = "$adminuser" ] ; then
           found_adminuser='yes'
       fi
   done
 
-  if [ "$found_adminuser" = "no" ]
-  then
+  if [ "$found_adminuser" = "no" ] ; then
       user="$user $adminuser"
   fi
 
@@ -527,12 +493,10 @@ do_check_user_group ()
   do
       exists='yes'
       do_macro
-      if [ "$is_macro" = "false" ]
-      then
+      if [ "$is_macro" = "false" ] ; then
           case $checkfor in
           both)
-              if [ `echo $a | cut -c1` = "+" ]
-              then
+              if [ `echo $a | cut -c1` = "+" ] ; then
                   what='group'
                   a=`echo $a | cut -c2-`
                   if ! grep -q ^$a: /etc/group
@@ -563,8 +527,7 @@ do_check_user_group ()
               ;;
           esac
 
-          if [ "$exists" = "no" ]
-          then
+          if [ "$exists" = "no" ] ; then
               mecho --error "$what $a from $type_idx doesn't"
               mecho --error "  exists - skipping $type_n ..."
               create_share='false'
@@ -607,10 +570,8 @@ do_make_dfs_image ()
 
 do_mount_dfs_image ()
 {
-  if [ "$1" = "--u" ]
-  then
-      if [ -n "`"$mountbin" -t ext3 | grep "/dev/loop" | grep " $mountpoint "`" ]
-      then
+  if [ "$1" = "--u" ] ; then
+      if [ -n "`"$mountbin" -t ext3 | grep "/dev/loop" | grep " $mountpoint "`" ] ; then
           mecho --std "Umounting and removing $mountpoint ..."
           cd /
           "$mountbin" -t ext3 | grep "/dev/loop" | grep " $mountpoint " |
@@ -623,18 +584,15 @@ do_mount_dfs_image ()
       rm -rf "$mountpoint"
   else
       mountoption="$1"
-      if [ -z "$mountoption" ]
-      then
+      if [ -z "$mountoption" ] ; then
           mountoption='--rw'
       fi
-      if [ ! "`"$mountbin" -t ext3 | grep "/dev/loop" | grep " $mountpoint "`" ]
-      then
+      if [ ! "`"$mountbin" -t ext3 | grep "/dev/loop" | grep " $mountpoint "`" ] ; then
           mecho --std "Creating $mountpoint and mounting ..."
           modprobe loop 2>/dev/null
           mkdir "$mountpoint"
           "$mountbin" -o loop $mountoption "$dfsimage" "$mountpoint"
-          if [ $? -ne 0 ]
-          then
+          if [ $? -ne 0 ] ; then
               mecho --error "Cannot mount $dfsimage $mountoption!"
               rmdir "$mountpoint"
           else
@@ -644,17 +602,14 @@ do_mount_dfs_image ()
   fi
 }
 
-if [ "$SAMBA_MASTERBROWSER" = "yes" ]
-then
+if [ "$SAMBA_MASTERBROWSER" = "yes" ] ; then
     oslevel='255'
     localmaster='yes'
     preferredmaster='yes'
 fi
 
-if [ -z "$SAMBA_PASSWORD_SERVER" ]
-then
-    if [ "$SAMBA_PDC" = "yes" ]
-    then
+if [ -z "$SAMBA_PASSWORD_SERVER" ] ; then
+    if [ "$SAMBA_PDC" = "yes" ] ; then
         oslevel='255'
         localmaster='yes'
         preferredmaster='yes'
@@ -686,8 +641,7 @@ then
         chmod 0775 /netlogon
         # chmod 0777 /profile
 
-        if [ ! -f /netlogon/logon.bat ]
-        then
+        if [ ! -f /netlogon/logon.bat ] ; then
             echo "Copying example /usr/share/doc/samba/tools/logon.bat to /netlogon ..."
             cp -f /usr/share/doc/samba/tools/logon.bat /netlogon
             chmod 0755 /netlogon/logon.bat
@@ -703,17 +657,14 @@ fi
 #----------------------------------------------------------------------------
 # create wins options:
 #----------------------------------------------------------------------------
-if [ "$SAMBA_WINSSERVER" = "yes" ]
-then
+if [ "$SAMBA_WINSSERVER" = "yes" ] ; then
     wins_support='yes'
     nameresolveorder='wins lmhosts host bcast'
-    if [ "$SAMBA_WINSHOOK" = "yes" ]
-    then
+    if [ "$SAMBA_WINSHOOK" = "yes" ] ; then
         wins_hook='/var/install/bin/samba-winshook'
     fi
 else
-    if [ -n "$SAMBA_EXTWINSIP" ]
-    then
+    if [ -n "$SAMBA_EXTWINSIP" ] ; then
         wins_server="$SAMBA_EXTWINSIP"
         wins_proxy='yes'
         nameresolveorder='wins lmhosts host bcast'
@@ -726,15 +677,12 @@ fi
 idx='1'
 if grep -q 'IP_ETH_N=' /etc/config.d/base
 then
-    while [ "$idx" -le "$IP_ETH_N" ]
-    do
+    while [ "$idx" -le "$IP_ETH_N" ] ; do
         eval ipaddr='$IP_ETH_'$idx'_IPADDR'
-        if [ "$ipaddr" != "0.0.0.0" -a -n "$ipaddr" ]
-        then
+        if [ "$ipaddr" != "0.0.0.0" -a -n "$ipaddr" ] ; then
             eval netmask='$IP_ETH_'$idx'_NETMASK'
             network=`/usr/local/bin/netcalc network $ipaddr $netmask`
-            if [ -z "$interface_from_base" ]
-            then
+            if [ -z "$interface_from_base" ] ; then
                 interface_from_base="$ipaddr/$netmask"
                 sambahosts_from_base="$network/$netmask"
             else
@@ -745,15 +693,12 @@ then
         idx=`/usr/bin/expr $idx + 1`
     done
 else
-    while [ "$idx" -le "$IP_NET_N" ]
-    do
+    while [ "$idx" -le "$IP_NET_N" ] ; do
         eval ipaddr='$IP_NET_'$idx'_IPADDR'
-        if [ "$ipaddr" != "0.0.0.0" -a -n "$ipaddr" ]
-        then
+        if [ "$ipaddr" != "0.0.0.0" -a -n "$ipaddr" ] ; then
             eval netmask='$IP_NET_'$idx'_NETMASK'
             network=`/usr/local/bin/netcalc network $ipaddr $netmask`
-            if [ -z "$interface_from_base" ]
-            then
+            if [ -z "$interface_from_base" ] ; then
                 interface_from_base="$ipaddr/$netmask"
                 sambahosts_from_base="$network/$netmask"
             else
@@ -765,8 +710,7 @@ else
     done
 fi
 
-if [ -n "$SAMBA_INTERFACES" ]
-then
+if [ -n "$SAMBA_INTERFACES" ] ; then
     use_interface_from_base='false'
     for i in $SAMBA_INTERFACES
     do
@@ -778,16 +722,13 @@ then
 
         for i in $interface_from_base
         do
-            if [ "$i" = "$new_interface" ]
-            then
+            if [ "$i" = "$new_interface" ] ; then
                 interface_found='true'
             fi
         done
 
-        if [ "$interface_found" = "true" ]
-        then
-            if [ -z "$interface" ]
-            then
+        if [ "$interface_found" = "true" ] ; then
+            if [ -z "$interface" ] ; then
                 interface="$ipaddr/$netmask"
                 sambahosts="$network/$netmask"
             else
@@ -803,8 +744,7 @@ then
         fi
     done
 
-    if [ "$use_interface_from_base" = "true" ]
-    then
+    if [ "$use_interface_from_base" = "true" ] ; then
         interface="$interface_from_base"
         sambahosts="$sambahosts_from_base"
     fi
@@ -813,59 +753,49 @@ else
     sambahosts="$sambahosts_from_base"
 fi
 
-if [ -n "$SAMBA_TRUSTED_NETS" ]
-then
+if [ -n "$SAMBA_TRUSTED_NETS" ] ; then
     for i in $SAMBA_TRUSTED_NETS
     do
         network=`/usr/local/bin/netcalc network $i`
         netmask=`/usr/local/bin/netcalc netmask $i`
         var=$network/$netmask
-        if [ -z "$sambahosts" ]
-        then
+        if [ -z "$sambahosts" ] ; then
             sambahosts="$var"
         else
-            if [ -z "`echo $sambahosts | grep $var`" ]
-            then
+            if [ -z "`echo $sambahosts | grep $var`" ] ; then
                 sambahosts="$sambahosts $var"
             fi
         fi
     done
 fi
 
-if [ -z "$interface" ]
-then
+if [ -z "$interface" ] ; then
     mecho --error "No network interfaces available - cannot configure samba!"
     sleep 5
     exit 1
 fi
 
 
-if [ "`echo "$hostname" | wc -L`" -gt "15" ]
-then
+if [ "`echo "$hostname" | wc -L`" -gt "15" ] ; then
     mecho --error "Your hostname is too long. Use 1 - 15 characters!"
 fi
 
-if [ "$hostname" = "`echo "$SAMBA_WORKGROUP" | tr 'a-z' 'A-Z'`" ]
-then
+if [ "$hostname" = "`echo "$SAMBA_WORKGROUP" | tr 'a-z' 'A-Z'`" ] ; then
     mecho --error "Your hostname and SAMBA_WORKGROUP are the same!"
 fi
 
 # this is for updates
-if [ "$SAMBA_PDF_TARGET" = "mail" ]
-then
+if [ "$SAMBA_PDF_TARGET" = "mail" ] ; then
     base64='no'
-    if [ -e /var/install/packages/perl_mime_base64 ]
-    then
+    if [ -e /var/install/packages/perl_mime_base64 ] ; then
         base64='yes'
     fi
 
-    if [ -e /usr/bin/corelist ]
-    then
+    if [ -e /usr/bin/corelist ] ; then
         base64='yes'
     fi
 
-    if [ "$base64" = "no" ]
-    then
+    if [ "$base64" = "no" ] ; then
         mecho --error "You configured SAMBA_PDF_TARGET='mail' but there"
         mecho --error "is no perl module perl_mime_base64 installed!"
         mecho --error "This is an additional module for perl package 1.0.0"
@@ -878,8 +808,7 @@ fi
 #----------------------------------------------------------------------------
 # create global config (manual or automatic)
 #----------------------------------------------------------------------------
-if [ -f "$generate" ]
-then
+if [ -f "$generate" ] ; then
     /var/install/bin/backup-file $generate sic
 fi
 >"$generate"
@@ -922,8 +851,7 @@ echo " printcap cache time = 0"
 echo " load printers = no"
 echo " mangling method = hash2"
 
-if [ "$SAMBA_PDC" = "yes" ]
-then
+if [ "$SAMBA_PDC" = "yes" ] ; then
     echo " logon script = $logonscript"
     # xp is buggy
     echo " logon drive = x:"
@@ -934,8 +862,7 @@ then
     # echo " logon home = \\\%N\%U"               # 9x/me
     # echo " logon path = \\\%N\%U\profile"       # nt/w2k/xp
     # echo " logon path = \\\%N\%U\profiles\%a    # for different profile dirs for w2k and xp
-    if [ "$SAMBA_PDC_PROFILES" = "no" ]
-    then
+    if [ "$SAMBA_PDC_PROFILES" = "no" ] ; then
         echo " logon path ="
     fi
 fi
@@ -977,8 +904,7 @@ echo " acl group control = yes"
 
 for pseudofile in /proc/{ksyms,kallsyms}
 do
-    if [ -e "$pseudofile" ]
-    then
+    if [ -e "$pseudofile" ] ; then
         if grep -q 'posix_acl_' "$pseudofile"
         then
             if grep ' / ext' /etc/mtab | grep 'acl,user_xattr' >/dev/null 2>&1
@@ -1002,8 +928,7 @@ echo " oplocks = $SAMBA_OPLOCKS"
 echo " level2 oplocks = $SAMBA_OPLOCKS"
 echo " blocking locks = $SAMBA_OPLOCKS"
 
-if [ "$SAMBA_OPLOCKS" = "yes" ]
-then
+if [ "$SAMBA_OPLOCKS" = "yes" ] ; then
     echo " veto oplock files = /*.bak/*.cd*/*.cur/*.*db/*.db*/*.*dx/*.dxf/*.dwg/*.doc/*.fpt/*.igs/*.ia*/*.id*/*.in*/*.ip*/*.log/*.mpp/*.ndx/*.ntx/*.opt/*.ord/*.ppt/*.pst/*.qb*/*.sjb/*.sbs/*.slp/*.st*/*.vsd/*.xl*/"
     #echo " write cache size = 262144"
     #echo " veto oplock files = /*.b*/*.c*/*.*db/*.d*/*.f*/*.i*/*.l*/*.m*/*.n*/*.o*/*.p*/*.q*/*.s*/*.v*/*.x*/"
@@ -1035,8 +960,7 @@ echo
 #----------------------------------------------------------------------------
 # create netlogon (manual or automatic)
 #----------------------------------------------------------------------------
-if [ "$SAMBA_PDC" = "yes" ]
-then
+if [ "$SAMBA_PDC" = "yes" ] ; then
    {
     echo "[netlogon]"
     echo " comment = netlogon-service on $HOSTNAME"
@@ -1062,8 +986,7 @@ fi
 #----------------------------------------------------------------------------
 # begin automatic configuration (SAMBA_MANUAL_CONFIGURATION='no')
 #----------------------------------------------------------------------------
-if [ "$manual" = "no" ]
-then
+if [ "$manual" = "no" ] ; then
     #----------------------------------------------------------------------------
     # create share for eis homes directory, if SAMBA_MANUAL_CONFIGURATION='no'
     #----------------------------------------------------------------------------
@@ -1078,8 +1001,7 @@ then
     echo " browseable = no"
     echo " valid users = %S $adminuser"
 
-    if [ "$SAMBA_PDC" = "yes" -a "$SAMBA_PDC_PROFILES" = "yes" ]
-    then
+    if [ "$SAMBA_PDC" = "yes" -a "$SAMBA_PDC_PROFILES" = "yes" ] ; then
         echo " csc policy = disable"
         #echo " profile acls = yes"
     fi
@@ -1127,11 +1049,9 @@ then
     # create public share, if SAMBA_MANUAL_CONFIGURATION='no'
     #----------------------------------------------------------------------------
     path='/public'
-    if [ ! -d "$path" ]
-    then
+    if [ ! -d "$path" ] ; then
         mkdir -p "$path"
-        if [ $? -eq 0 ]
-        then
+        if [ $? -eq 0 ] ; then
             echo "Directory $path for share public on $HOSTNAME created."
         else
             mecho --error "Cannot create directory $path for share public on $HOSTNAME!"
@@ -1164,13 +1084,10 @@ then
     #----------------------------------------------------------------------------
     # create share(s) for printer(s), if SAMBA_MANUAL_CONFIGURATION='no'
     #----------------------------------------------------------------------------
-    if [ -f $printcap ]
-    then
-        if [ -n "$CUPS_PRINTER_N" ]
-        then
+    if [ -f $printcap ] ; then
+        if [ -n "$CUPS_PRINTER_N" ] ; then
             idx=1
-            while [ "$idx" -le "$CUPS_PRINTER_N" ]
-            do
+            while [ "$idx" -le "$CUPS_PRINTER_N" ] ; do
                 eval name='$CUPS_PRINTER_'$idx'_NAME'
                 eval comment='$CUPS_PRINTER_'$idx'_LOCATION'
                 if grep -q $name $printcap
@@ -1190,11 +1107,9 @@ then
             done
         fi
 
-        if [ -n "$LPRNG_LOCAL_PARPORT_PRINTER_N" ]
-        then
+        if [ -n "$LPRNG_LOCAL_PARPORT_PRINTER_N" ] ; then
             idx=1
-            while [ "$idx" -le "$LPRNG_LOCAL_PARPORT_PRINTER_N" ]
-            do
+            while [ "$idx" -le "$LPRNG_LOCAL_PARPORT_PRINTER_N" ] ; do
                 if grep -q :sd=/var/spool/lpd/pr$idx $printcap
                 then
                    {
@@ -1212,11 +1127,9 @@ then
             done
         fi
 
-        if [ -n "$LPRNG_LOCAL_USBPORT_PRINTER_N" ]
-        then
+        if [ -n "$LPRNG_LOCAL_USBPORT_PRINTER_N" ] ; then
             idx=1
-            while [ "$idx" -le "$LPRNG_LOCAL_USBPORT_PRINTER_N" ]
-            do
+            while [ "$idx" -le "$LPRNG_LOCAL_USBPORT_PRINTER_N" ] ; do
                 if grep -q :sd=/var/spool/lpd/usbpr$idx $printcap
                 then
                    {
@@ -1234,11 +1147,9 @@ then
             done
         fi
 
-        if [ -n "$LPRNG_REMOTE_PRINTER_N" ]
-        then
+        if [ -n "$LPRNG_REMOTE_PRINTER_N" ] ; then
             idx=1
-            while [ "$idx" -le "$LPRNG_REMOTE_PRINTER_N" ]
-            do
+            while [ "$idx" -le "$LPRNG_REMOTE_PRINTER_N" ] ; do
                 if grep -q :sd=/var/spool/lpd/repr$idx $printcap
                 then
                    {
@@ -1257,8 +1168,7 @@ then
         fi
     fi
 
-    if [ "$eisfax_exists" = "true" -o "$hylafax_exists" = "true" ]
-    then
+    if [ "$eisfax_exists" = "true" -o "$hylafax_exists" = "true" ] ; then
        {
         echo "[eisfax]"
         echo " comment = eisfax on %h"
@@ -1269,8 +1179,7 @@ then
         echo " path = $sambaspoolpath"
         echo " print command = $faxcommand"
 
-        if [ "$eisfax_exists" = "true" ]
-        then
+        if [ "$eisfax_exists" = "true" ] ; then
             echo " lpq command = /usr/bin/faxlpq %u"
             echo " lprm command = /usr/bin/faxlprm %j %u"
         else
@@ -1282,8 +1191,7 @@ then
        } >>"$generate"
     fi
 
-    if [ "$gs_exists" = "true" ]
-    then
+    if [ "$gs_exists" = "true" ] ; then
        {
         echo "[pdf]"
         echo " comment = pdf-service on %h"
@@ -1310,8 +1218,7 @@ then
     do_usermapheader
     winnameprefix=''
     administrator='Administrator'
-    if [ "$security" = "domain" ]
-    then
+    if [ "$security" = "domain" ] ; then
         winnameprefix="$SAMBA_WORKGROUP\\"
         administrator="$winnameprefix"Administrator
     fi
@@ -1340,40 +1247,33 @@ else
 
     idx=1
     winnameprefix=''
-    if [ "$security" = "domain" ]
-    then
+    if [ "$security" = "domain" ] ; then
         winnameprefix="$SAMBA_WORKGROUP\\"
     fi
 
-    while [ "$idx" -le "$SAMBA_USERMAP_N" ]
-    do
+    while [ "$idx" -le "$SAMBA_USERMAP_N" ] ; do
         eval active='$SAMBA_USERMAP_'$idx'_ACTIVE'
         eval eisname='$SAMBA_USERMAP_'$idx'_EISNAME'
         eval winname_n='$SAMBA_USERMAP_'$idx'_WINNAME_N'
         create_mapping='true'
 
-        if [ "$active" != "yes" ]
-        then
+        if [ "$active" != "yes" ] ; then
             mecho --std "SAMBA_USERMAP_$idx is not active - skipping SAMBA_USERMAP_$idx ..."
             create_mapping='false'
         else
-            if [ -z "`$pdbeditbin -Lw | grep "^$eisname:"`" ]
-            then
+            if [ -z "`$pdbeditbin -Lw | grep "^$eisname:"`" ] ; then
                 mecho --error "Samba user $eisname from SAMBA_USERMAP_"$idx"_EISNAME"
                 mecho --error "  doesn't exist - skipping SAMBA_USERMAP_$idx ..."
                 create_mapping='false'
             fi
         fi
 
-        if [ "$create_mapping" = "true" ]
-        then
+        if [ "$create_mapping" = "true" ] ; then
             idy=1
             winmap=''
-            while [ "$idy" -le "$winname_n" ]
-            do
+            while [ "$idy" -le "$winname_n" ] ; do
                 eval winname='$SAMBA_USERMAP_'$idx'_WINNAME_'$idy
-                if [ -z "$winmap" ]
-                then
+                if [ -z "$winmap" ] ; then
                     winmap=":$winnameprefix$winname:"
                 else
                     winmap="$winmap :$winnameprefix$winname:"
@@ -1393,8 +1293,7 @@ else
     # create share(s), if SAMBA_MANUAL_CONFIGURATION='yes'
     #----------------------------------------------------------------------------
     idx='1'
-    while [ "$idx" -le "$SAMBA_SHARE_N" ]
-    do
+    while [ "$idx" -le "$SAMBA_SHARE_N" ] ; do
         eval active='$SAMBA_SHARE_'$idx'_ACTIVE'
         eval name='$SAMBA_SHARE_'$idx'_NAME'
         eval comment='$SAMBA_SHARE_'$idx'_COMMENT'
@@ -1413,58 +1312,46 @@ else
         do_macro
         create_share='true'
 
-        if [ "$active" != "yes" ]
-        then
+        if [ "$active" != "yes" ] ; then
              mecho --std "SAMBA_SHARE_$idx is not active - skipping SAMBA_SHARE_$idx ..."
              create_share='false'
         fi
 
-        if [ "$create_share" = "true" ]
-        then
-            if [ -z "$name" ]
-            then
+        if [ "$create_share" = "true" ] ; then
+            if [ -z "$name" ] ; then
                 mecho --error "SAMBA_SHARE_"$idx"_NAME is not defined - skipping SAMBA_SHARE_$idx ..."
                 create_share='false'
             fi
 
-            if [ -z "$path" ]
-            then
+            if [ -z "$path" ] ; then
                 mecho --error "SAMBA_SHARE_"$idx"_PATH is not defined - skipping SAMBA_SHARE_$idx ..."
                 create_share='false'
             fi
 
-            if [ -n "$user" ]
-            then
+            if [ -n "$user" ] ; then
                 do_check_user_group "$user" "SAMBA_SHARE_"$idx"_USER" "SAMBA_SHARE_$idx" "both"
             fi
 
-            if [ -n "$readlist" ]
-            then
+            if [ -n "$readlist" ] ; then
                 do_check_user_group "$readlist" "SAMBA_SHARE_"$idx"_READ_LIST" "SAMBA_SHARE_$idx" "both"
             fi
 
-            if [ -n "$writelist" ]
-            then
+            if [ -n "$writelist" ] ; then
                 do_check_user_group "$writelist" "SAMBA_SHARE_"$idx"_WRITE_LIST" "SAMBA_SHARE_$idx" "both"
             fi
 
-            if [ -n "$force_user" ]
-            then
+            if [ -n "$force_user" ] ; then
                 do_check_user_group "$force_user" "SAMBA_SHARE_"$idx"_FORCE_USER" "SAMBA_SHARE_$idx" "user"
             fi
 
-            if [ -n "$force_group" ]
-            then
+            if [ -n "$force_group" ] ; then
                 do_check_user_group "$force_group" "SAMBA_SHARE_"$idx"_FORCE_GROUP" "SAMBA_SHARE_$idx" "group"
             fi
 
-            if [ ! -d "$path" ]
-            then
-                if [ "$is_macro" = "false" ]
-                then
+            if [ ! -d "$path" ] ; then
+                if [ "$is_macro" = "false" ] ; then
                     mkdir -p "$path"
-                    if [ $? -ne 0 ]
-                    then
+                    if [ $? -ne 0 ] ; then
                         mecho --error "Cannot create directory $path for share $name on $HOSTNAME,"
                         mecho --error "check SAMBA_SHARE_"$idx"_PATH!"
                         create_share='false'
@@ -1475,18 +1362,15 @@ else
             fi
         fi
 
-        if [ "$create_share" = "true" ]
-        then
+        if [ "$create_share" = "true" ] ; then
            {
             echo "[$name]"
             echo " comment = $comment"
             echo " writeable = $write"
 
-            if [ "`echo $name | tr [:upper:] [:lower:]`" = "homes" ]
-            then
+            if [ "`echo $name | tr [:upper:] [:lower:]`" = "homes" ] ; then
                 echo " browseable = no"
-                if [ "$SAMBA_PDC" = "yes" -a "$SAMBA_PDC_PROFILES" = "yes" ]
-                then
+                if [ "$SAMBA_PDC" = "yes" -a "$SAMBA_PDC_PROFILES" = "yes" ] ; then
                     echo " csc policy = disable"
                     #echo " profile acls = yes"
                 fi
@@ -1494,54 +1378,44 @@ else
                 echo " browseable = $browse"
                 echo " path = $path"
 
-                if [ "$is_macro" = "false" ]
-                then
+                if [ "$is_macro" = "false" ] ; then
                     do_mkdir_recycle
                 fi
             fi
 
-            if [ "$public" = "no" ]
-            then
-                if [ -n "$user" ]
-                then
+            if [ "$public" = "no" ] ; then
+                if [ -n "$user" ] ; then
                     do_valid_users
                 fi
             fi
 
-            if [ -n "$readlist" ]
-            then
+            if [ -n "$readlist" ] ; then
                 echo " read list = $readlist"
             fi
 
-            if [ -n "$writelist" ]
-            then
+            if [ -n "$writelist" ] ; then
                 echo " write list = $writelist"
             fi
 
-            if [ "$path" = "/" ]
-            then
+            if [ "$path" = "/" ] ; then
                 echo " dont descend = proc"
             fi
 
-            if [ -n "$create" ]
-            then
+            if [ -n "$create" ] ; then
                 echo " create mode = $create"
                 echo " force create mode = $create"
             fi
 
-            if [ -n "$directory" ]
-            then
+            if [ -n "$directory" ] ; then
                 echo " directory mode = $directory"
                 echo " force directory mode = $directory"
             fi
 
-            if [ -n "$force_user" ]
-            then
+            if [ -n "$force_user" ] ; then
                 echo " force user = $force_user"
             fi
 
-            if [ -n "$force_group" ]
-            then
+            if [ -n "$force_group" ] ; then
                 echo " force group = $force_group"
             fi
 
@@ -1565,15 +1439,13 @@ else
     do_mount_dfs_image --u
     rm -f "$dfsimage"
 
-    if [ "$SAMBA_DFSROOT_N" -gt 0 ]
-    then
+    if [ "$SAMBA_DFSROOT_N" -gt 0 ] ; then
         do_make_dfs_image
         do_mount_dfs_image
         if "$mountbin" -t ext3 | grep "/dev/loop" | grep " $mountpoint " | grep -q '(rw'
         then
             idx='1'
-            while [ "$idx" -le "$SAMBA_DFSROOT_N" ]
-            do
+            while [ "$idx" -le "$SAMBA_DFSROOT_N" ] ; do
                 eval active='$SAMBA_DFSROOT_'$idx'_ACTIVE'
                 eval name='$SAMBA_DFSROOT_'$idx'_NAME'
                 eval comment='$SAMBA_DFSROOT_'$idx'_COMMENT'
@@ -1591,50 +1463,40 @@ else
                 path="$mountpoint/$name"
                 create_share='true'
 
-                if [ "$active" != "yes" ]
-                then
+                if [ "$active" != "yes" ] ; then
                     mecho --std "SAMBA_DFSROOT_$idx is not active - skipping SAMBA_DFSROOT_$idx ..."
                     create_share='false'
                 fi
 
-                if [ "$create_share" = "true" ]
-                then
-                    if [ -z "$name" ]
-                    then
+                if [ "$create_share" = "true" ] ; then
+                    if [ -z "$name" ] ; then
                         mecho --error "SAMBA_DFSROOT_"$idx"_NAME is not defined - skipping SAMBA_DFSROOT_$idx ..."
                         create_share='false'
                     fi
 
-                    if [ -n "$user" ]
-                    then
+                    if [ -n "$user" ] ; then
                         do_check_user_group "$user" "SAMBA_DFSROOT_"$idx"_USER" "SAMBA_DFSROOT_$idx" "both"
                     fi
 
-                    if [ -n "$readlist" ]
-                    then
+                    if [ -n "$readlist" ] ; then
                         do_check_user_group "$readlist" "SAMBA_DFSROOT_"$idx"_READ_LIST" "SAMBA_DFSROOT_$idx" "both"
                     fi
 
-                    if [ -n "$writelist" ]
-                    then
+                    if [ -n "$writelist" ] ; then
                         do_check_user_group "$writelist" "SAMBA_DFSROOT_"$idx"_WRITE_LIST" "SAMBA_DFSROOT_$idx" "both"
                     fi
 
-                    if [ -n "$force_user" ]
-                    then
+                    if [ -n "$force_user" ] ; then
                         do_check_user_group "$force_user" "SAMBA_DFSROOT_"$idx"_FORCE_USER" "SAMBA_DFSROOT_$idx" "user"
                     fi
 
-                    if [ -n "$force_group" ]
-                    then
+                    if [ -n "$force_group" ] ; then
                         do_check_user_group "$force_group" "SAMBA_DFSROOT_"$idx"_FORCE_GROUP" "SAMBA_DFSROOT_$idx" "group"
                     fi
 
-                    if [ ! -d "$path" ]
-                    then
+                    if [ ! -d "$path" ] ; then
                         mkdir -p -m 755 "$path"
-                        if [ $? -ne 0 ]
-                        then
+                        if [ $? -ne 0 ] ; then
                             mecho --error "Cannot create directory $path for dfsroot $name on $HOSTNAME,"
                             mecho --error "skipping SAMBA_DFSROOT_$idx ..."
                             create_share='false'
@@ -1642,23 +1504,19 @@ else
                     fi
                 fi
 
-                if [ "$create_share" = "true" ]
-                then
+                if [ "$create_share" = "true" ] ; then
                     idy='1'
-                    while [ "$idy" -le "$msdfs_lnkn" ]
-                    do
+                    while [ "$idy" -le "$msdfs_lnkn" ] ; do
                         msdfs_lnk_path=''
                         eval msdfs_lnkn_active='$SAMBA_DFSROOT_'$idx'_DFSLNK_'$idy'_ACTIVE'
                         eval msdfs_lnkn_subpath='$SAMBA_DFSROOT_'$idx'_DFSLNK_'$idy'_SUBPATH'
                         eval msdfs_lnkn_name='$SAMBA_DFSROOT_'$idx'_DFSLNK_'$idy'_NAME'
                         eval msdfs_lnkn_uncn='$SAMBA_DFSROOT_'$idx'_DFSLNK_'$idy'_UNC_N'
-                        if [ "$msdfs_lnkn_active" = "yes" -a "$msdfs_lnkn_uncn" -gt 0 ]
-                        then
+                        if [ "$msdfs_lnkn_active" = "yes" -a "$msdfs_lnkn_uncn" -gt 0 ] ; then
                             # remove trailing /
                             msdfs_lnkn_subpath=`echo "$msdfs_lnkn_subpath" | sed 's#/$##'`
 
-                            if [ -z "$msdfs_lnkn_subpath" ]
-                            then
+                            if [ -z "$msdfs_lnkn_subpath" ] ; then
                                 msdfs_lnk_path="${path}/${msdfs_lnkn_name}"
                             else
                                 mkdir -p "${path}/${msdfs_lnkn_subpath}"
@@ -1666,21 +1524,18 @@ else
                             fi
 
                             # check for files or dirs with ${path}/$msdfssubpath/$msdfslnkname
-                            if [ -e "$msdfs_lnk_path" -o -h "$msdfs_lnk_path" ]
-                            then
+                            if [ -e "$msdfs_lnk_path" -o -h "$msdfs_lnk_path" ] ; then
                                 mecho --error "Cannot create msdfs link $msdfs_lnk_path,"
                                 mecho --error "file, directory or symlink already exists!"
                                 create_share='false'
                             else
                                 idz='1'
                                 msdfs_link=''
-                                while [ "$idz" -le "$msdfs_lnkn_uncn" ]
-                                do
+                                while [ "$idz" -le "$msdfs_lnkn_uncn" ] ; do
                                     eval msdfs_lnkn_uncn_path='$SAMBA_DFSROOT_'$idx'_DFSLNK_'$idy'_UNC_'$idz'_PATH'
                                     # remove leading and trailing \
                                     msdfs_lnkn_uncn_path=`echo "$msdfs_lnkn_uncn_path" | sed 's#^[\]*##; s#[\]*$##'`
-                                    if [ -z "$msdfs_link" ]
-                                    then
+                                    if [ -z "$msdfs_link" ] ; then
                                         msdfs_link="$msdfs_lnkn_uncn_path"
                                     else
                                         msdfs_link="$msdfs_link,$msdfs_lnkn_uncn_path"
@@ -1689,8 +1544,7 @@ else
                                 done
 
                                 ln -s msdfs:"$msdfs_link" "$msdfs_lnk_path"
-                                if [ $? -ne 0 ]
-                                then
+                                if [ $? -ne 0 ] ; then
                                     mecho --error "Cannot create $msdfs_link!"
                                     create_share='false'
                                 fi
@@ -1700,8 +1554,7 @@ else
                     done
                 fi
 
-                if [ "$create_share" = "true" -a -n "`ls -lR "$path" 2>/dev/null | grep ' -> msdfs:'`" ]
-                then
+                if [ "$create_share" = "true" -a -n "`ls -lR "$path" 2>/dev/null | grep ' -> msdfs:'`" ] ; then
                    {
                     echo "[$name]"
                     echo " comment = $comment"
@@ -1710,43 +1563,35 @@ else
                     echo " browseable = $browse"
                     echo " path = $path"
 
-                    if [ "$public" = "no" ]
-                    then
-                        if [ -n "$user" ]
-                        then
+                    if [ "$public" = "no" ] ; then
+                        if [ -n "$user" ] ; then
                             do_valid_users
                         fi
                     fi
 
-                    if [ -n "$readlist" ]
-                    then
+                    if [ -n "$readlist" ] ; then
                         echo " read list = $readlist"
                     fi
 
-                    if [ -n "$writelist" ]
-                    then
+                    if [ -n "$writelist" ] ; then
                         echo " write list = $writelist"
                     fi
 
-                    if [ -n "$force_cmode" ]
-                    then
+                    if [ -n "$force_cmode" ] ; then
                         echo " create mode = $force_cmode"
                         echo " force create mode = $force_cmode"
                     fi
 
-                    if [ -n "$force_dirmode" ]
-                    then
+                    if [ -n "$force_dirmode" ] ; then
                         echo " directory mode = $force_dirmode"
                         echo " force directory mode = $force_dirmode"
                     fi
 
-                    if [ -n "$force_user" ]
-                    then
+                    if [ -n "$force_user" ] ; then
                         echo " force user = $force_user"
                     fi
 
-                    if [ -n "$force_group" ]
-                    then
+                    if [ -n "$force_group" ] ; then
                         echo " force group = $force_group"
                     fi
 
@@ -1757,8 +1602,7 @@ else
                 idx=`/usr/bin/expr $idx + 1`
             done
 
-            if [ -f "$dfsimage" -a -n "`ls -lR "$mountpoint" | grep ' -> msdfs:'`" ]
-            then
+            if [ -f "$dfsimage" -a -n "`ls -lR "$mountpoint" | grep ' -> msdfs:'`" ] ; then
                 do_mount_dfs_image --u
                 do_mount_dfs_image --ro
             else
@@ -1775,8 +1619,7 @@ else
     # create share(s) for printer(s), if SAMBA_MANUAL_CONFIGURATION='yes'
     #----------------------------------------------------------------------------
     idx=1
-    while [ "$idx" -le "$SAMBA_PRINTER_N" ]
-    do
+    while [ "$idx" -le "$SAMBA_PRINTER_N" ] ; do
         eval active='$SAMBA_PRINTER_'$idx'_ACTIVE'
         eval name='$SAMBA_PRINTER_'$idx'_NAME'
         eval type='$SAMBA_PRINTER_'$idx'_TYPE'
@@ -1793,28 +1636,24 @@ else
         eval public='$SAMBA_PRINTER_'$idx'_PUBLIC'   
         create_printer='true'
 
-        if [ "$active" != "yes" ]
-        then
+        if [ "$active" != "yes" ] ; then
             mecho --std "SAMBA_PRINTER_$idx is not active - skipping SAMBA_PRINTER_$idx ..."
             create_printer='false'
         fi
 
-        if [ -z "$name" -a "$create_printer" = "true" ]
-        then
+        if [ -z "$name" -a "$create_printer" = "true" ] ; then
             mecho --error "SAMBA_PRINTER_"$idx"_NAME is not defined - skipping SAMBA_PRINTER_$idx ..."
             create_printer='false'
         fi
 
-        if [ "$create_printer" = "true" ]
-        then
+        if [ "$create_printer" = "true" ] ; then
             faxprinter=''
             pdfprinter=''
             doit='true'
 
             case "$type" in
             fax)
-                if [ "$eisfax_exists" = "true" -o "$hylafax_exists" = "true" ]
-                then
+                if [ "$eisfax_exists" = "true" -o "$hylafax_exists" = "true" ] ; then
                     faxprinter='true'
                     doit='true'
                 else
@@ -1825,8 +1664,7 @@ else
                 fi
                 ;;
             pdf)
-                if [ "$gs_exists" = "true" ]
-                then
+                if [ "$gs_exists" = "true" ] ; then
                     pdfprinter='true'
                     doit='true'
                 else
@@ -1837,15 +1675,13 @@ else
                 fi
                 ;;
             printcap)
-                if [ -z "$printer" ]
-                then
+                if [ -z "$printer" ] ; then
                     mecho --error "Skipping SAMBA_PRINTER_$idx because this is no pdf-printer"
                     mecho --error "and no faxprinter and SAMBA_PRINTER_"$idx"_CAPNAME"
                     mecho --error "is not defined - read documentation!"
                     doit='false'
                 else
-                    if [ -z "`grep ^$printer: $printcap`" ]
-                    then
+                    if [ -z "`grep ^$printer: $printcap`" ] ; then
                         mecho --error "Skipping SAMBA_PRINTER_$idx because there is no entry"
                         mecho --error "$printer in $printcap. Check SAMBA_PRINTER_"$idx"_CAPNAME"
                         mecho --error "and read documentation!"
@@ -1855,20 +1691,16 @@ else
                 ;;
             esac
 
-            if [ "$doit" = "true" ]
-            then
+            if [ "$doit" = "true" ] ; then
                {
                 echo "[$name]"
                 echo " comment = $comment"
 
-                if [ "$faxprinter" = "true" -o "$pdfprinter" = "true" ]
-                then
+                if [ "$faxprinter" = "true" -o "$pdfprinter" = "true" ] ; then
                     echo " printing = bsd"
-                    if [ "$faxprinter" = "true" ]
-                    then
+                    if [ "$faxprinter" = "true" ] ; then
                         echo " print command = $faxcommand"
-                        if [ "$eisfax_exists" = "true" ]
-                        then
+                        if [ "$eisfax_exists" = "true" ] ; then
                             echo " lpq command = /usr/bin/faxlpq '%u'"
                             echo " lprm command = /usr/bin/faxlprm %j '%u'"
                         else
@@ -1888,15 +1720,12 @@ else
                 echo " browseable = $browse"
                 echo " path = $sambaspoolpath"
 
-                if [ -n "$printer" ]
-                then
+                if [ -n "$printer" ] ; then
                     echo " printer = $printer"
                 fi
 
-                if [ "$public" = "no" ]
-                then
-                    if [ -n "$user" ]
-                    then
+                if [ "$public" = "no" ] ; then
+                    if [ -n "$user" ] ; then
                         do_valid_users
                     fi
                 fi
@@ -1914,8 +1743,7 @@ else
     #----------------------------------------------------------------------------
     >"$fstabsmbfsfile"
     idx=1
-    while [ "$idx" -le "$SAMBA_MOUNT_N" ]
-    do
+    while [ "$idx" -le "$SAMBA_MOUNT_N" ] ; do
         eval active='$SAMBA_MOUNT_'$idx'_ACTIVE'
         eval vfstype='$SAMBA_MOUNT_'$idx'_VFSTYPE'
         eval server='$SAMBA_MOUNT_'$idx'_SERVER'
@@ -1932,24 +1760,19 @@ else
         eval codepage='$SAMBA_MOUNT_'$idx'_CODEPAGE'
         create_mount='true'
 
-        if [ "$active" != "yes" ]
-        then
+        if [ "$active" != "yes" ] ; then
             mecho --std "SAMBA_MOUNT_$idx is not active - skipping SAMBA_MOUNT_$idx ..."
         fi
 
-        if [ "$create_mount" = "true" ]
-        then
-            if [ "`echo $point | cut -c1`" != "/" ]
-            then
+        if [ "$create_mount" = "true" ] ; then
+            if [ "`echo $point | cut -c1`" != "/" ] ; then
                 mecho --error "You must specify an absolut path with a leading '/',"
                 mecho --error "skipping SAMBA_MOUNT_$idx ..."
                 create_mount="false"
             else
-                if [ ! -d $point ]
-                then
+                if [ ! -d $point ] ; then
                     mkdir -p "$point"
-                    if [ $? -ne 0 ]
-                    then
+                    if [ $? -ne 0 ] ; then
                         mecho --error "Cannot create mountpoint - skipping SAMBA_MOUNT_$idx ..."
                         create_mount="false"
                     else
@@ -1960,81 +1783,65 @@ else
             fi
         fi
 
-        if [ "$create_mount" = "true" ]
-        then
-            if [ -z $vfstype ]
-            then
+        if [ "$create_mount" = "true" ] ; then
+            if [ -z $vfstype ] ; then
                 vfstype='smbfs'
             fi
 
             options="-o"
-            if [ -z "$username" -a -z "$password" ]
-            then
+            if [ -z "$username" -a -z "$password" ] ; then
                 options="$options guest"
             else
-                if [ -n "$username" ]
-                then
+                if [ -n "$username" ] ; then
                     options="$options username=$username"
                 fi
 
-                if [ "$options" = "-o" ]
-                then
+                if [ "$options" = "-o" ] ; then
                     options="$options password=$password"
                 else
                     options="$options,password=$password"
                 fi
             fi
 
-            if [ "$rw" = "yes" ]
-            then
-                if [ "$options" = "-o" ]
-                then
+            if [ "$rw" = "yes" ] ; then
+                if [ "$options" = "-o" ] ; then
                     options="$options rw"
                 else
                     options="$options,rw"
                 fi
             else
-                if [ "$options" = "-o" ]
-                then
+                if [ "$options" = "-o" ] ; then
                     options="$options ro"
                 else
                     options="$options,ro"
                 fi
             fi
 
-            if [ -n "$uid" ]
-            then
-                if [ "$options" = "-o" ]
-                then
+            if [ -n "$uid" ] ; then
+                if [ "$options" = "-o" ] ; then
                     options="$options uid=$uid"
                 else
                     options="$options,uid=$uid"
                 fi
             fi
 
-            if [ -n "$gid" ]
-            then
-                if [ "$options" = "-o" ]
-                then
+            if [ -n "$gid" ] ; then
+                if [ "$options" = "-o" ] ; then
                     options="$options gid=$gid"
                 else
                     options="$options,gid=$gid"
                 fi
             fi
 
-            if [ -n "$fmask" ]
-            then
-                if [ "$vfstype" = "smbfs" ]
-                then
-                    if [ "$options" = "-o" ]
-                    then
+            if [ -n "$fmask" ] ; then
+                if [ "$vfstype" = "smbfs" ] ; then
+                    if [ "$options" = "-o" ] ; then
                         options="$options fmask=$fmask"
                     else
                         options="$options,fmask=$fmask"
                     fi
                 else
-                    if [ "$options" = "-o" ]
-                    then
+                    if [ "$options" = "-o" ] ; then
                         options="$options file_mode=$fmask"
                     else
                         options="$options,file_mode=$fmask"
@@ -2042,19 +1849,15 @@ else
                 fi
             fi
 
-            if [ -n "$dmask" ]
-            then
-                if [ "$vfstype" = "smbfs" ]
-                then
-                    if [ "$options" = "-o" ]
-                    then
+            if [ -n "$dmask" ] ; then
+                if [ "$vfstype" = "smbfs" ] ; then
+                    if [ "$options" = "-o" ] ; then
                         options="$options dmask=$dmask"
                     else
                         options="$options,dmask=$dmask"
                     fi
                 else
-                    if [ "$options" = "-o" ]
-                    then
+                    if [ "$options" = "-o" ] ; then
                         options="$options dir_mode=$dmask"
                     else
                         options="$options,dir_mode=$dmask"
@@ -2062,30 +1865,24 @@ else
                 fi
             fi
 
-            if [ -n "$iocharset" ]
-            then
-                if [ "$options" = "-o" ]
-                then
+            if [ -n "$iocharset" ] ; then
+                if [ "$options" = "-o" ] ; then
                     options="$options iocharset=$iocharset"
                 else
                     options="$options,iocharset=$iocharset"
                 fi
             fi
 
-            if [ -n "$codepage" -a "$vfstype" = "smbfs" ]
-            then
-                if [ "$options" = "-o" ]
-                then
+            if [ -n "$codepage" -a "$vfstype" = "smbfs" ] ; then
+                if [ "$options" = "-o" ] ; then
                     options="$options codepage=$codepage"
                 else
                     options="$options,codepage=$codepage"
                 fi
             fi
 
-            if [ "$vfstype" = "smbfs" ]
-            then
-                if [ "$options" = "-o" ]
-                then
+            if [ "$vfstype" = "smbfs" ] ; then
+                if [ "$options" = "-o" ] ; then
                     options="$options lfs,debug=$debuglevel"
                 else
                     options="$options,lfs,debug=$debuglevel"
@@ -2107,8 +1904,7 @@ fi
 #
 # create share for printer drivers, if /etc/printcap exists:
 #----------------------------------------------------------------------------
-if [ -f $printcap ]
-then
+if [ -f $printcap ] ; then
     driverpath='/samba_printer_drivers'
     for dir in COLOR IA64 W32ALPHA W32MIPS W32PPC W32X86 WIN40 x64
     do 
@@ -2132,8 +1928,7 @@ fi
 #----------------------------------------------------------------------------
 # include definitions of sambaexpert, if exists and SAMBA_EXPERT_EXEC=yes
 #----------------------------------------------------------------------------
-if [ "$sambaexpert_exists" = "true" -a "$SAMBA_EXPERT_EXEC" = "yes" ]
-then
+if [ "$sambaexpert_exists" = "true" -a "$SAMBA_EXPERT_EXEC" = "yes" ] ; then
     mecho --warn "SAMBA_EXPERT_EXEC is activated,"
     mecho --warn "don't ask for help, while this option is set!"
     echo "Merging sambaexpert definitions ..."
@@ -2151,8 +1946,7 @@ smbwebclientconfpath="/etc/smbwebclient.conf"
 smbwebclientcharset="ISO-8859-1"
 smbwebclientlang="en"
 
-if [ "$SAMBA_SMBWEBCLIENT" = "yes" ]
-then
+if [ "$SAMBA_SMBWEBCLIENT" = "yes" ] ; then
     case "$SAMBA_LOCALIZATION" in
     ISO8859-1|ISO8859-15)
         smbwebclientcharset="ISO-8859-15"
@@ -2180,14 +1974,12 @@ then
     chmod 0644 $smbwebclientconfpath
     chown root.root $smbwebclientconfpath
 
-    if [ -d "$SAMBA_SMBWEBCLIENT_PATH" ]
-    then
+    if [ -d "$SAMBA_SMBWEBCLIENT_PATH" ] ; then
         cp -f $smbwebclientwwwpath $smbwebclientnewpath
         chmod 0755 $smbwebclientnewpath
         chmod 0755 $smbwebclientpath
 
-        if [ "$eisfair_system" = "eisfair-1" ]
-        then
+        if [ "$eisfair_system" = "eisfair-1" ] ; then
             chown wwwrun.nogroup $smbwebclientnewpath
             chown wwwrun.nogroup $smbwebclientpath
         else
@@ -2210,8 +2002,7 @@ touch $tdbsamfile
 chown root.root $tdbsamfile
 chmod 0600 $tdbsamfile
 
-if [ -f "$fstabsmbfsfile" ]
-then
+if [ -f "$fstabsmbfsfile" ] ; then
     chown root.root $fstabsmbfsfile
     chmod 0600 $fstabsmbfsfile
 fi
@@ -2221,13 +2012,11 @@ chmod 0644 $usermapfile
 chown root.root $generate
 chmod 0644 $generate
 
-if ! grep -q "^tty:" /etc/group
-then
+if ! grep -q "^tty:" /etc/group ; then
     /var/install/bin/add-group tty 5
 fi
 
-if [ "$eisfair_system" = "eisfair-1" ]
-then
+if [ "$eisfair_system" = "eisfair-1" ] ; then
     # do not do this on eisfair-2
     chmod 666 /dev/pty*
     chown root.tty /dev/pty*
@@ -2235,16 +2024,14 @@ then
     chown root.root /dev/ttyp*
 fi
 
-if [ -f /usr/share/doc/samba/tools/justpop.exe ]
-then
+if [ -f /usr/share/doc/samba/tools/justpop.exe ] ; then
     chown nobody.nogroup /usr/share/doc/samba/tools/justpop.exe
     chmod 0755 /usr/share/doc/samba/tools/justpop.exe
 fi
 
 /usr/bin/pdbedit -P "min password length" -C 1 >/dev/null
 
-if [ "`$pdbeditbin -Lw | wc -l`" -eq 0 ]
-then
+if [ "`$pdbeditbin -Lw | wc -l`" -eq 0 ] ; then
     mecho --error "There are no samba users configured!"
 else
     if ! "$pdbeditbin" -Lw | grep -q "^root:"
