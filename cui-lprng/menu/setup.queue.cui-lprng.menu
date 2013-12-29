@@ -1,0 +1,10 @@
+<!-- /var/install/menu/setup.queue.lprng.menu -->
+<!-- Creation:     19.07.2005  tb -->
+
+<package>cui-lprng</package>
+<title>LPRng Queue Handling</title>
+<script file="cui-lprng-enable-queues">Enable Printing and Spooling for all Queues</script>
+<script file="cui-lprng-disable-queues">Disable Printing and Spooling for all Queues</script>
+<script file="cui-lprng-show-jobs">Show Jobs in all Queues</script>
+<script file="cui-lprng-remove-jobs">Remove Jobs in all Queues</script>
+<script file="cui-lprng-remove-onejob">Remove one Job in one Queue</script>

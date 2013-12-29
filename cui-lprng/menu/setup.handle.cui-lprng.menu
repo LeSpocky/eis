@@ -1,0 +1,11 @@
+<!-- /var/install/menu/setup.handle.lprng.menu -->
+<!-- Creation:     19.07.2005  tb -->
+
+<package>cui-lprng</package>
+<title>LPRng Server Handling</title>
+<script file="cui-lprng-status">Show Status of LPRng</script>
+<script file="cui-lprng-stop">Stop LPRng</script>
+<script file="cui-lprng-start">Start LPRng</script>
+<script file="cui-lprng-restart">Restart LPRng</script>
+<script file="cui-lprng-reload">Reload LPRng</script>
+<menu file="setup.queue.cui-lprng.menu">LPRng Queue Handling</menu>

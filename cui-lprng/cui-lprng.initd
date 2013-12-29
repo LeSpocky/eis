@@ -1,0 +1,401 @@
+#!/bin/bash
+# ----------------------------------------------------------------------------
+# /etc/init.d/lprng - init lprng
+#
+# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+#
+# usage: /etc/init.d/lprng {start|forcestart|status|stop|restart|reload}
+#
+# Creation   : 2002-10-06 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# ----------------------------------------------------------------------------
+# set -x
+. /etc/config.d/lprng
+. /etc/init.d/functions
+
+lpdbin='/usr/sbin/lpd'
+parportconf_exists='false'
+usb_exists='false'
+lprngpidfile=/var/run/lpd.515
+modprobebin='/sbin/modprobe'
+rmmodbin='/sbin/rmmod'
+lsmodbin='/sbin/lsmod'
+
+if [ -f /etc/parport.conf ]
+then
+    . /etc/parport.conf
+    parportconf_exists='true'
+fi
+
+do_check_par ()
+{
+all_parports_configured='true'
+for port in `cat /etc/parport_found`
+do
+    if ! `echo $io | grep -q "$port"`
+    then
+        all_parports_configured='false'
+        boot_mesg "   Cannot find existing parport $port in LPRng configuration."
+        echo_failure
+    fi
+done
+
+if [ "$all_parports_configured" = "false" ]
+then
+    boot_mesg "   Please configure _all_ existing parports in LPRng configuration!"
+    echo_failure
+fi
+
+correct_parports_configured='true'
+for port in `IFS=','; echo $io`
+do
+    if ! `grep -q "$port" /etc/parport_found`
+    then
+        correct_parports_configured='false'
+        boot_mesg "   Cannot find configured parport $port in existing parports."
+        echo_failure
+    fi
+done
+
+if [ "$correct_parports_configured" = "false" ]
+then
+    boot_mesg "   Please configure only _existing_ parports!"
+    echo_failure
+fi
+}
+
+do_check_usb ()
+{
+idx='1'
+usb_any_active='no'
+while [ "$idx" -le "$LPRNG_LOCAL_USBPORT_PRINTER_N" ]
+do
+    eval active='$LPRNG_LOCAL_USBPORT_PRINTER_'$idx'_ACTIVE'
+    if [ "$active" = "yes" ]
+    then
+        usb_any_active='yes'
+    fi
+    idx=`expr $idx + 1`
+done
+
+if [ "$usb_any_active" = "yes" ]
+then
+    if [ -f /etc/config.d/usb ]
+    then
+        # eisfair-1 with kernel 2.6
+        . /etc/config.d/usb
+        if [ "$START_USB" = "yes" ]
+        then
+            if [ "$USB_PRINTER" = "yes" ]
+            then
+                if [ -n "`$lsmodbin | grep '^usblp '`" ]
+                then
+                    usb_exists='true'
+                fi
+            fi
+        fi
+    else
+        # eisfair-2 with kernel 2.6 or 3.x
+        usb_exists='true'
+    fi
+fi
+}
+
+do_parport ()
+{
+for modul in parport ppdev
+do
+    if [ -z "`$lsmodbin | grep "^$modul "`" ]
+    then
+        $modprobebin $modul >/dev/null 2>&1
+        if [ $? -ne 0 ]
+        then
+            boot_mesg "   Cannot load $modul."
+            echo_failure
+        fi
+    fi
+done
+}
+
+do_parport_pc ()
+{
+# udev is loading parport_pc on eisfair-2
+#if [ -z "`$lsmodbin | grep '^parport_pc '`" ]
+#then
+    # load without options, otherwise printing fails
+    $modprobebin parport_pc >/dev/null 2>&1
+    if [ $? -ne 0 ]
+    then
+        boot_mesg "   Cannot load parport_pc without options."
+        echo_failure
+    fi
+#fi
+}
+
+do_lp ()
+{
+if [ -z "`$lsmodbin | grep '^lp '`" ]
+then
+    $modprobebin lp parport=$parport >/dev/null 2>&1
+    if [ $? -ne 0 ]
+    then
+        boot_mesg "   Cannot load lp on parport $parport."
+        echo_failure
+    fi
+fi
+}
+
+do_modules_load ()
+{
+for modul in parport parport_pc lp
+do
+    if [ -z "`$lsmodbin | grep "^$modul "`" ]
+    then
+        $modprobebin $modul >/dev/null 2>&1
+        if [ $? -ne 0 ]
+        then
+            boot_mesg "   Cannot preload $modul."
+            echo_failure
+        else
+            if [ "$modul" = "parport_pc" ]
+            then
+                rm -f /etc/parport_found
+                if [ -d /proc/sys/dev/parport ]
+                then
+                    for i in $(ls -1 /proc/sys/dev/parport | grep -v default)
+                    do
+                        base=$(cat /proc/sys/dev/parport/$i/base-addr | cut -f1)
+                        base=`echo "obase=16; $base" | bc`
+                    done
+
+                    if [ -n "$base" ]
+                    then
+                        for i in $(ls -1 /proc/sys/dev/parport | grep -v default)
+                        do
+                            base=$(cat /proc/sys/dev/parport/$i/base-addr | cut -f1)
+                            base=`echo "obase=16; $base" | bc`
+                            echo "0x$base" >>/etc/parport_found
+                        done
+                    fi
+                fi
+            fi
+        fi
+    fi
+done
+}
+
+do_modules_del ()
+{
+for modul in lp ppdev parport_pc parport
+do
+    if [ -n "`$lsmodbin | grep "^$modul "`" ]
+    then
+        $rmmodbin $modul >/dev/null 2>&1
+        if [ $? -ne 0 ]
+        then
+            boot_mesg "   Cannot preunload $modul."
+            echo_failure
+        fi
+    fi
+done
+}
+
+do_lprngstatus ()
+{
+lprngpid=`cat $lprngpidfile 2>/dev/null`
+lprngstatus=dead
+if [ -n "$lprngpid" ]
+then
+    /bin/kill -0 $lprngpid
+    if [ $? -eq 0 ]
+    then
+        lprngstatus=alive
+    else
+        rm -f $lprngpidfile
+    fi
+fi
+}
+
+do_startlprng ()
+{
+boot_mesg " * Starting LPRng ..."
+
+do_lprngstatus
+if [ "$lprngstatus" = "alive" ]
+then
+    boot_mesg "   Warning: LPRng is already running."
+    echo_warning
+else
+    if [ "$parportconf_exists" = "true" ]
+    then
+        do_modules_del
+        do_modules_load
+        do_modules_del
+        do_parport
+        do_parport_pc
+        do_lp
+        do_check_par
+    fi
+
+    do_check_usb
+    if [ "$usb_any_active" = "yes" -a ! -f /etc/config.d/usb ]
+    then
+        # only load on eisfair-2
+        $modprobebin usblp >/dev/null 2>&1
+        if [ $? -ne 0 ]
+        then
+            boot_mesg "   Cannot load usblp."
+            echo_failure
+        fi
+    fi
+
+    if [ "$usb_any_active" = "yes" -a "$usb_exists" = "false" ]
+    then
+        boot_mesg "   USB printer support is not properly installed."
+        echo_failure
+    fi
+
+    /usr/sbin/checkpc -af
+
+    boot_mesg "   - Starting lpd ..."
+    $lpdbin
+    evaluate_retval
+fi
+}
+
+case "$1" in
+'start')
+    if [ "$START_LPRNG" = "yes" ]
+    then
+        do_startlprng
+    fi
+    ;;
+'forcestart')
+    do_startlprng
+    ;;
+'status')
+    /usr/local/bin/colecho "Checking status of LPRng ..." gn
+
+    do_lprngstatus
+    if [ "$lprngstatus" = "alive" ]
+    then
+        echo "LPRng is running."
+    else
+        echo "LPRng is not running."
+    fi
+
+    if [ "$parportconf_exists" = "true" ]
+    then
+        for modul in parport ppdev parport_pc lp
+        do
+            if [ -n "`$lsmodbin | grep "^$modul "`" ]
+            then
+                echo "$modul is loaded."
+            else
+                echo "$modul is not loaded."
+            fi
+        done
+
+        do_check_par
+    fi
+
+    do_check_usb
+    if [ "$usb_any_active" = "yes" -a "$usb_exists" = "false" ]
+    then
+        /usr/local/bin/colecho "USB printer support is not properly installed." rd w brinv
+    fi
+
+    if [ "$usb_any_active" = "yes" ]
+    then
+        usb_modules='usbcore ehci-hcd uhci_hcd ohci_hcd ehci_hcd xhci xhci-hcd usblp'
+        for modul in $usb_modules
+        do
+            if [ -n "`$lsmodbin | grep "^$modul "`" ]
+            then
+                echo "$modul is loaded."
+            fi
+        done
+    fi
+    ;;
+'stop')
+    boot_mesg " * Stopping LPRng ..."
+
+    do_lprngstatus
+    if [ "$lprngstatus" = "alive" ]
+    then
+        for signal in "TERM" "INT" "HUP" "KILL"
+        do
+            /usr/bin/killall -$signal lpd
+            if [ $? -eq 0 ]
+            then
+                echo_ok
+                break
+            fi
+            boot_mesg "   Warning: killall -$signal lpd failed."
+            echo_warning
+            sleep 1
+        done
+        rm -f $lprngpidfile
+    else
+        boot_mesg "   Warning: LPRng is not running."
+        echo_warning
+    fi
+
+    for modul in lp ppdev parport_pc parport
+    do
+        if [ -n "`$lsmodbin | grep "^$modul "`" ]
+        then
+            $rmmodbin $modul >/dev/null 2>&1
+            if [ $? -ne 0 ]
+            then
+                boot_mesg "   Cannot unload $modul."
+                echo_failure
+            fi
+        fi
+    done
+
+    do_check_usb
+    if [ "$usb_any_active" = "yes" -a ! -f /etc/config.d/usb ]
+    then
+        # only unload on eisfair-2
+        if [ -n "`$lsmodbin | grep '^usblp '`" ]
+        then
+            $rmmodbin usblp >/dev/null 2>&1
+            if [ $? -ne 0 ]
+            then
+                boot_mesg "   Cannot unload usblp."
+                echo_failure
+            fi
+        fi
+    fi
+    ;;
+'restart')
+    $0 stop && $0 forcestart
+    ;;
+'reload')
+    boot_mesg " * Reloading LPRng ..."
+
+    do_lprngstatus
+    if [ $lprngstatus = "alive" ]
+    then
+        for pid in `ps ax | grep 'lpd ' | grep -v grep | cut -c1-6`
+        do
+            boot_mesg "   - Reloading lpd with pid $pid ..."
+            /bin/kill -SIGHUP $pid
+            evaluate_retval
+        done
+    else
+        echo "   LPRng is not running, performing restart ..."
+        $0 restart
+    fi
+    ;;
+*)
+    echo "usage: /etc/init.d/`basename $0` {start|forcestart|status|stop|restart|reload}" >&2
+    exit 1
+    ;;
+esac
+set +x

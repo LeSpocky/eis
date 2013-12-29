@@ -1,0 +1,76 @@
+<help name="START_LPRNG">
+Should LPRng be started at boot time: yes or no<br/><br/>
+If you say 'yes' here, LPRng will be started at boot time.<br/>
+If you want to start LPRng by hand, you have to set this to 'no' and start<br/>
+LPRng with 'Service administration', 'LPRng', 'LPRng Server Handling',<br/>
+'Start LPRng' or on console with '/etc/init.d/lprng by_hand'.<br/><br/>
+Default: START_LPPNG='yes'
+</help>
+
+<help name="LPRNG_LOCAL_PARPORT_PRINTER_N">
+How many locale parallel printers do you want to configure
+</help>
+
+<help name="LPRNG_LOCAL_PARPORT_PRINTER_%_ACTIVE">
+Should the printer definition be active: yes or no
+</help>
+
+<help name="LPRNG_LOCAL_PARPORT_PRINTER_%_IO">
+This is the io-address of the x. parallel printer port
+</help>
+
+<help name="LPRNG_LOCAL_PARPORT_PRINTER_%_IRQ">
+Use interrupt: yes or no
+</help>
+
+<help name="LPRNG_LOCAL_PARPORT_PRINTER_%_COMMENT">
+Fill in a comment or a location
+</help>
+
+<help name="LPRNG_LOCAL_PARPORT_PRINTER_%_NOTIFY">
+Send printer messages: yes or no
+</help>
+
+<help name="LPRNG_LOCAL_USBPORT_PRINTER_N">
+How many locale usb printers do you want to configure
+</help>
+
+<help name="LPRNG_LOCAL_USBPORT_PRINTER_%_ACTIVE">
+Should the printer definition be active: yes or no
+</help>
+
+<help name="LPRNG_LOCAL_USBPORT_PRINTER_%_COMMENT">
+Fill in a comment or a location
+</help>
+
+<help name="LPRNG_LOCAL_USBPORT_PRINTER_%_NOTIFY">
+Send printer messages: yes or no
+</help>
+
+<help name="LPRNG_REMOTE_PRINTER_N">
+How many remote printers you want to use
+</help>
+
+<help name="LPRNG_REMOTE_PRINTER_%_ACTIVE">
+Should the printer definition be active: yes or no
+</help>
+
+<help name="LPRNG_REMOTE_PRINTER_%_IP">
+This is the ip of the x. remote printer
+</help>
+
+<help name="LPRNG_REMOTE_PRINTER_%_QUEUENAME">
+This is the queuename of the x. remote printer
+</help>
+
+<help name="LPRNG_REMOTE_PRINTER_%_PORT">
+This is the port of the x. remote printer
+</help>
+
+<help name="LPRNG_REMOTE_PRINTER_%_COMMENT">
+Fill in a comment or a location
+</help>
+
+<help name="LPRNG_REMOTE_PRINTER_%_NOTIFY">
+Send printer messages: yes or no
+</help>

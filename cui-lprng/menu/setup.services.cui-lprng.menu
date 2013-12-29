@@ -1,0 +1,9 @@
+<!-- /var/install/menu/setup.services.lprng.menu -->
+<!-- Creation:     19.07.2005  tb -->
+
+<package>cui-lprng</package>
+<title>LPRng Administration</title>
+<doc file="lprng.txt">Read LPRng Documentation</doc>
+<script file="/var/install/bin/show-doc.cui -f /var/spool/lprng/log.lprng">View LPRng printlog</script>
+<menu file="setup.configuration.cui-lprng.menu">LPRng Configuration Handling</menu>
+<menu file="setup.handle.cui-lprng.menu">LPRng Server Handling</menu>

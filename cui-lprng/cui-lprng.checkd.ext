@@ -1,0 +1,83 @@
+# ----------------------------------------------------------------------------
+# /etc/check.d/lprng.ext - extended file for LPRng configuration check
+#
+# Copyright (c) 2002-2010 Thomas Bork, tom(at)eisfair(dot)net
+#
+# Creation   : 2004-08-22 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# ----------------------------------------------------------------------------
+set parport_any_active = "no"
+set usb_any_active = "no"
+set remote_any_active = "no"
+set any_active = "no"
+
+foreach i in lprng_local_parport_printer_n
+do
+  if (lprng_local_parport_printer_%_active[i] == "yes")
+  then
+      set parport_any_active = "yes"
+  fi
+done
+
+foreach i in lprng_local_usbport_printer_n
+do
+  if (lprng_local_usbport_printer_%_active[i] == "yes")
+  then
+      set usb_any_active = "yes"
+  fi
+done
+
+foreach i in lprng_remote_printer_n
+do
+  if (lprng_remote_printer_%_active[i] == "yes")
+  then
+      set remote_any_active = "yes"
+      set queuename_defined = "no"
+      set port_defined = "no"
+
+      if (lprng_remote_printer_%_queuename[i] != "")
+      then
+          set queuename_defined
+          set queuename=lprng_remote_printer_%_queuename[i]
+      fi
+
+      if (lprng_remote_printer_%_port[i] != "")
+      then
+          set port_defined
+          set port=lprng_remote_printer_%_port[i]
+      fi
+
+      if (queuename_defined && port_defined)
+      then
+          error "You cannot set LPRNG_REMOTE_PRINTER_${i}_QUEUENAME='$queuename' and LPRNG_REMOTE_PRINTER_${i}_PORT='$port' at the ame time!"
+      fi
+  fi
+done
+
+# disabled for eisfair-2
+#if (lprng_local_usbport_printer_n > 0)
+#then
+#    if (usb_any_active == "yes")
+#    then
+#        stat ("/etc/config.d/usb", res)
+#
+#        if (res_res != "OK")
+#        then
+#	    error "You configured LPRNG_LOCAL_USBPORT_PRINTER, but there is no USB package installed!"
+#	fi
+#    fi
+#fi
+
+if (parport_any_active || usb_any_active || remote_any_active)
+then
+    set any_active = "yes"
+fi
+
+if (start_lprng && !any_active)
+then
+    error "no printer active, set START_LPRNG to 'no'!"
+fi

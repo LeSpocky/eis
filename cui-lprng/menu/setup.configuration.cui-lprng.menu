@@ -1,0 +1,7 @@
+<!-- /var/install/menu/setup.configuration.lprng.menu -->
+<!-- Creation:     19.07.2005  tb -->
+
+<package>cui-lprng</package>
+<title>LPRng Configuration Handling</title>
+<script file="cui-lprng-edit">Edit LPRng Configuration</script>
+<menu file="setup.services.advancedconfig.menu">LPRng Advanced Configuration File Handling</menu>

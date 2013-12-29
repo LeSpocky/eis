@@ -1,0 +1,949 @@
+1. Copyrights/Paket-Ersteller
+=============================
+
+LPRng ist ein OpenSource-Projekt und unterliegt der GNU General Public
+Licence. Die Heimat von LPRng im WWW ist
+
+    http://www.lprng.com
+
+Für eisfair habe ich Teile von LPRng als Paket implementiert. Aus dem 
+rechtlichen Status von LPRng leitet sich der rechtliche Status der 
+Implementierung her:
+
+Es wird im Besonderen keine Haftung für die Sicherheit der dem LPRng-Paket 
+anvertrauten Daten übernommen.
+
+Bitte unbedingt lesen:
+
+     http://www.pwr.ch/produkte/linux/gpl-ger.html
+
+
+2. Einsatzgebiet
+================
+2.1 Was ist LPRng?
+------------------
+
+Die LPRng Software ist eine erweiterte Version des Berkeley LPR
+Drucker-Spoolers. Sie unterstützt das gleiche Interface und erfüllt die
+RFC1179-Bedingungen.
+
+Folgende Funktionen werden dabei konkret geboten:
+
+- Einfache lpr, lpc und lprm Programme, die keine printcap Datenbank benütigen
+- Dynamische Umleitung von Drucker-Queues
+- Ausführliche Diagnosemeldungen
+- Verbesserte Berechtigungs- und Authorisierungs-Mechanismen.
+
+LPRng enthült Emulationstools für die SVR4-lp- und -lpstat-Programme, wodurch
+keine anderen Drucker-Spooler-Pakete notwendig sind. Diese Emulationen künnen
+an lokale Bedürfnisse angepasst werden.
+
+Achtung: LPRng für eisfair beinhaltet nicht alle Bestandteile von LPRng,
+sondern wurde auf die wichtigsten Bestandteile reduziert!
+Zur Zeit werden Drucker an parallelen Schnittstellen auf dem Mainboard,
+Drucker an parallelen Schnittstellen von ISA- und bestimmten
+PCI-Schnittstellenkarten, Drucker an USB-Anschlüssen, sowie Drucker
+an speziellen entfernten Printservern unterstützt.
+
+
+3. Installation, Update und Konfiguration
+=========================================
+
+Das LPRng-Paket wird derzeit wie jedes andere Paket über das eisfair-
+Setup-Menü installiert:
+
+Im Menüpunkt 
+
+     Package administration
+
+wühlt man 
+
+     Install new package
+
+, dann
+
+     Printer and File Services
+
+und hier das Paket
+
+     LPRng Print Services
+
+über die entsprechende Nummer aus und bestütig mit Enter.
+Nachdem man die Infomationsdatei gelesen hat, beantwortet man die Frage
+
+     Install (y/n)?
+
+mit "y". Nach dem Bestütigen mit <Enter> wird unmittelbar der Download
+gestartet.
+
+Sollte bereits eine frühere Version installiert sein, so wird LPRng
+angehalten, einige Sicherungsdateien werden angelegt und die alte Version wird
+deinstalliert.
+
+Nach dem Download wird angeboten, die Konfigurationsdatei zu editieren. Es
+werden dabei die gefundenen parallelen Schnittstellen aufgelistet, welche man
+sich, wie aufgefordert, notieren sollte. Hier ein Beispiel von meinem
+eisfair-Rechner:
+
+Found parallel port(s), please write down adress(es):
+
+                        0x378
+                        0x278
+
+Man beantwortet also die Aufforderung "Continue (y/n)" mit "y" und <ENTER>.
+
+Die Konfigurationsdatei wird geüffnet und ist zum Editieren bereit. Für einen
+ersten Start ist im Abschnitt
+
+# ------------------------------------------------------------------------------
+# Local parallel Printer Configuration
+#
+# Set the number of Printer to use in LPRNG_LOCAL_PARPORT_PRINTER_N.
+#
+# Values below are only an example and are not used if
+# LPRNG_LOCAL_PARPORT_PRINTER_N is '0'
+# ------------------------------------------------------------------------------
+
+die Anzahl der lokalen parallelen Schnittstellen unter
+
+    LPRNG_LOCAL_PARPORT_PRINTER_N
+
+einzutragen, in meinem Beispiel mit zwei parallelen Ports also
+
+    LPRNG_LOCAL_PARPORT_PRINTER_N='2'
+
+Dabei ist zu beachten, dass bei 2.6er Kerneln alle existierenden Schnittstellen
+konfiguriert werden müssen, ob daran nun Drucker hüngen oder nicht!
+
+Jetzt speichert man die ünderungen und verlüsst den Editor.
+
+Die Frage "Activate LPRng configuration now (y/n)?" beantwortet man mit "y" und
+<ENTER> und beendet damit die Installation. Jetzt wird vom Installationsscript
+vorsichtshalber noch einmal das Skript zum Beenden von LPRng aufgerufen und das
+komplette Spoolverzeichnis /var/spool/lpd wird, wenn vorhanden, gelüscht.
+Danach wird das Skript zum Starten von LPRng aufgerufen - hierbei werden die
+Treiber für die parallelen Schnittstellen und die Drucker-Devices geladen.
+LPRng ist dabei so intelligent, nicht vorhandene Spoolverzeichnisse anzulegen
+und mit den notwendigen Rechten zu versehen. Dieser Vorgang wird als Warnung
+angezeigt, ist aber ein normaler und notwendiger Vorgang. Hier das komplette
+Beispiel von meinem Rechner:
+
+Stopping LPRng...
+LPRng was stopped
+Removing /var/spool/lpd...
+Starting LPRng ...
+parport loaded
+parport_pc loaded on io 0x378 irq none
+lp loaded on parport 0
+Warning -   changing ownership '//var/spool/lpd' to 7/7
+Warning -   changing ownership '//var/spool/lpd' to 7/7
+Warning -   changing ownership '//var/spool/lpd/pr1' to 7/7
+Warning -   changing ownership '//var/spool/lpd/pr1' to 7/7
+LPRng is now running
+
+If your configuration changed and you want to print over Samba
+you have to create a new Samba Configuration now
+
+Press ENTER to continue
+
+Wie man sieht, erscheint hierbei ausserdem noch eine Meldung, die uns darauf
+hinweist, dass für den Druck von Windows-Rechnern aus über Samba auf den
+LPRng eine neue Samba-Konfiguration erstellt werden muss, da Samba von der
+neuen LPRng-Konfiguration nichts mitbekommen hat.
+
+Wie man das Paket auf seine persünlichen Bedürfnisse anpasst, sehen wir im
+nüchsten Kapitel, in der Beschreibung der Konfiguration.
+
+
+3.2 Konfiguration über das LPRng-Service-Menü
+=============================================
+
+Die Konfiguration wird über das LPRng-Service-Menü vorgenommen.
+Hierhin gelangt man, wenn man sich als User "eis" an der Konsole anmeldet,
+bzw. wenn man sich als User "root" an der Konsole anmeldet und hinterher
+"setup" eingibt. Weiter geht es mit
+
+     Service administration
+     LPRng
+
+Folgende Punkte stehen zur Auswahl:
+
+             1: Read LPRng Documentation
+
+             2: LPRng Configuration Handling
+
+             3: LPRng Server Handling
+
+             0: Exit
+
+
+3.2.1 LPRng-Service-Menü Punkt 1: Read LPRng Documentation
+----------------------------------------------------------
+
+Um sich vor der Konfiguration erst einmal einen überblick über die
+Müglichleiten des LPRng-Paketes zu verschaffen, wühlt man
+
+     1: Read LPRng Configuration
+
+Mit diesem Menüpunkt wird die hier vorliegende Dokumentation zum Lesen mit
+more oder einem anderen konfigurierten Pager geüffnet.
+More ist ein Programm, welches es erlaubt, auch lüngere Textdateien, wie diese
+Dokumentation, komfortabel zu lesen. Mittels Leertaste blüttert man ganze
+Seiten weiter und mittels Entertaste einzelne Zeilen. Zum Verlassen der
+Dokumentation drückt man die Taste 'q'.
+
+
+3.2.2 LPRng-Service-Menü Punkt 2: LPRng Configuration Handling
+--------------------------------------------------------------
+
+Um die grundlegenden LPRng-Funktionen zu konfigurieren, wühlt man
+
+     1: Edit LPRng Configuration
+
+Es werden hier die gefundenen parallelen Schnittstellen aufgelistet, welche
+man sich, wie aufgefordert, notieren sollte. Hier ein Beispiel von meinem
+eisfair-Rechner:
+
+Found parallel port(s), please write down adress(es):
+
+                        0x378
+                        0x278
+
+Man beantwortet die Aufforderung "Continue (y/n)" mit "y" und <ENTER>.
+
+Die Konfigurationsdatei wird geüffnet und ist zum Editieren bereit der
+Datei /etc/config.d/lprng bereit.
+
+Die verschiedenen Abschnitte dieser Datei werden im Folgenden beschrieben:
+
+
+Abschnitt "General Settings":
+-----------------------------
+
+Der Abschnitt wird eingeleitet mit
+
+# ------------------------------------------------------------------------------
+# General Settings
+#
+# ------------------------------------------------------------------------------
+
+In diesem Abschnitt gibt es nur eine Variable, mit der man entscheidet, ob man
+LPRng von Hand starten müchte oder ob LPRng bei jedem Booten des Rechners als
+Dienst automatisch gestartet werden soll.
+
+    START_LPRNG
+
+        Um LPRng mit jedem Neustart automatisch starten zu lassen, muss die
+        Variable START_LPRNG den Wert "yes" erhalten. Wenn START_LPRNG='no'
+        ist, muss LPRng von Hand gestartet werden. Dazu ist im
+        eisfair-Setup-Menü
+
+          Service administration
+
+        auszuwühlen, dann
+
+          LPRng
+
+        und hier
+
+          Start LPRng
+
+        oder auf der Befehlszeile
+
+          /etc/init.d/lprng forcestart
+
+        einzugeben.
+
+        Standard-Einstellung: START_LPRNG='yes'
+
+
+Abschnitt "Local Parallel Printer Configuration":
+-------------------------------------------------
+
+Der Abschnitt wird eingeleitet mit
+
+# ------------------------------------------------------------------------------
+# Local parallel Printer Configuration
+#
+# Set the number of Printer to use in LPRNG_LOCAL_PARPORT_PRINTER_N.
+#
+# Values below are only an example and are not used if
+# LPRNG_LOCAL_PARPORT_PRINTER_N is '0'
+# ------------------------------------------------------------------------------
+
+und ist zur Konfiguration der Drucker an den lokalen parallelen Schnittstellen
+gedacht.
+
+        Viele preiswerte Drucker sind host-based- oder GDI-Drucker. 
+        GDI-Drucker künnen aus meiner bisherigen Erfahrung an eisfair nicht
+        angesprochen werden.
+
+        Drucker müssen über verüffentlichte Standardprotokolle angesprochen
+        werden - z.B. die Druckersprachen PostScript, ESC/P und HP PCL.
+        Verzichtet der Hersteller auf ein Standardprotokoll und steuert den
+        Drucker direkt mit den Steuerimpulsen des speziellen Modells an, so hat
+        man einen sog. GDI-Drucker, der nur unter der Betriebssystemversion,
+        für die ein Treiber mitgeliefert wurde, lüuft.
+        GDI ist eine von Microsoft entwickelte Programmierschnittstelle zur
+        grafischen Darstellung. Das Problem ist nicht diese GDI API, sondern
+        dass die sog. GDI-Drucker nur über die proprietüre Druckersprache des
+        jeweiligen Druckermodells angesprochen werden künnen. Eigentlich würe
+        die Bezeichnung "Drucker, der nur über ein proprietüres Protokoll
+        angesprochen werden kann", korrekter.
+        Auch Drucker, die durch spezielle Steuersequenzen in einen besonderen
+        Modus umgeschaltet werden müssen oder Drucker, die nicht einmal eine
+        normale Parallelverbindung verwenden, sondern spezielle Treiber für
+        die Ansteuerung der Schnittstelle benütigen, fallen in diese
+        Kategorie, ebenso wie Drucker, die das "Windows-Printing-System"
+        benütigen.
+        
+        Die Nachteile von Druckern mit GDI-Technologie zusammengefasst:
+        Sie besitzen keine Eigenintelligenz und künnen Druckdaten nicht selbst
+        aufbereiten. Sie benütigen dafür die Ressourcen eines direkt
+        angeschlossenen PCs, auf dem der proprietüre Treiber lüuft. Die
+        Kommunikation erfolgt ausschliesslich über proprietüre Druckersprachen
+        und muss von entsprechenden Treibern zur Verfügung gestellt werden.
+        Daher künnen GDI-Drucker in der Regel nur lokal an einem PC betrieben
+        werden. Der Betrieb im Netz über Printserver ist nicht müglich, ebenso
+        wenig das Ansteuern über andere Betriebssysteme.
+
+        Ich werde nur Fragen zu Problemen mit Druckern beantworten, aus
+        denen hervorgeht, dass Ihr ausgeschlossen habt, dass der betroffene
+        Drucker ein GDI-Drucker ist! Ich habe weder Zeit noch Lust, für
+        Euch zu recherchieren, ob diese "Krücken" an eisfair doch irgendwie zu
+        einer normalen Funktion zu bewegen sind.
+        
+        Ob Euer Drucker ein GDI-Drucker ist, sollte aus der Dokumentation des
+        Druckers hervorgehen. Wenn das nicht der Fall ist oder Ihr diese
+        Dokumentation nicht mehr besitzt, dann mailt an den Support des
+        Druckerherstellers oder macht Euch auf dessen Webseite schlau.
+
+
+    LPRNG_LOCAL_PARPORT_PRINTER_N
+
+        über LPRNG_LOCAL_PARPORT_PRINTER_N wird die Anzahl der einzurichtenden
+        lokalen Drucker an parallelen Schnittstellen eingestellt.
+
+        Bei einer Schnittstelle auf dem Mainboard ist
+
+          LPRNG_LOCAL_PARPORT_PRINTER_N='1'
+
+        einzutragen.
+        Hat man eine parallele Schnittstelle onboard und eine
+        Schnittstellenkarte mit einer korrekt konfigurierten zweiten
+        parallelen Schnittstelle im Rechner und müchte an jeder einen Drucker
+        nutzen, ist LPRNG_LOCAL_PARPORT_PRINTER_N zu inkrementieren, also
+
+          LPRNG_LOCAL_PARPORT_PRINTER_N='2'
+
+        Weiterhin müssen dann auch die korrespondierenden
+        Einstellungen
+
+          LPRNG_LOCAL_PARPORT_PRINTER_1_ACTIVE
+          LPRNG_LOCAL_PARPORT_PRINTER_1_IO
+          LPRNG_LOCAL_PARPORT_PRINTER_1_IRQ
+          LPRNG_LOCAL_PARPORT_PRINTER_1_COMMENT
+          LPRNG_LOCAL_PARPORT_PRINTER_1_NOTIFY
+
+        und
+
+          LPRNG_LOCAL_PARPORT_PRINTER_2_ACTIVE
+          LPRNG_LOCAL_PARPORT_PRINTER_2_IO
+          LPRNG_LOCAL_PARPORT_PRINTER_2_IRQ
+          LPRNG_LOCAL_PARPORT_PRINTER_2_COMMENT
+          LPRNG_LOCAL_PARPORT_PRINTER_2_NOTIFY
+
+        vorhanden sein und sinnvoll konfiguriert werden.
+        Dabei ist zu beachten, dass bei 2.6er Kerneln alle existierenden
+        Schnittstellen konfiguriert werden müssen, ob daran nun Drucker hüngen
+        oder nicht!
+
+        Standard-Einstellung: LPRNG_LOCAL_PARPORT_PRINTER_N='3'
+
+
+    LPRNG_LOCAL_PARPORT_PRINTER_x_ACTIVE
+
+        Mit LPRNG_LOCAL_PARPORT_PRINTER_x_ACTIVE wird eingestellt, ob die
+        entsprechende Druckerdefinition aktiv ist und im Konfigurationsprozess
+        ausgewertet werden soll oder nicht.
+        Um den entsprechenden Drucker zu aktivieren, muss 'yes' gewühlt werden.
+        Will man den Drucker von der Konfiguration ausnehmen, setzt man die
+        Variable auf 'no'.
+
+        Standard-Einstellung: LPRNG_LOCAL_PARPORT_PRINTER_1_ACTIVE='no'
+
+
+    LPRNG_LOCAL_PARPORT_PRINTER_x_IO
+
+        Mit LPRNG_LOCAL_PARPORT_PRINTER_x_IO wird die IO-Adresse der parallelen
+        Schnittstelle eingestellt, an welcher der x'te lokale Drucker
+        angeschlossen ist.
+        Die von eisfair gefundenen parallelen IO-Adressen werden angezeigt, wenn
+        man den Menü-Punkt zum Editieren der LPRng-Konfiguration aufruft.
+        Bei 2 Druckern an 2 parallelen Schnittstellen von eisfair müssen 2
+        Eintrüge mit den müglichen Werten
+
+          0x3bc, 0x378 oder 0x278
+
+        existieren, also z.B.
+
+          LPRNG_LOCAL_PARPORT_PRINTER_1_IO='0x378'
+
+        und
+
+          LPRNG_LOCAL_PARPORT_PRINTER_2_IO='0x278'
+
+        Man sollte sich vor der Konfiguration unbedingt vergewissern,
+        auf welche IO-Adressen die eingebauten Schnittstellen
+        eingestellt sind, da der Druck sonst nicht funktioniert.
+        Die IO-Adressen kann man entweder im BIOS seines Rechners
+        einstellen oder sie sind bei sehr alten Rechnern nicht
+        konfigurierbar, werden aber beim Booten angezeigt. Zusützlich
+        verbaute Ports lassen sich meist über Jumper auf der IO-Karte
+        einstellen und werden in der (hoffentlich noch vorhandenen
+        Dokumentation) zur Einstellung der Druckerports beschrieben.
+
+        Wichtig:
+        Bisher wurden nur parallele Schnittstellen auf dem Mainboard oder
+        auf ISA-Schnittstellenkarten mit den oben beschriebenen müglichen
+        Werten unterstützt. PCI-Karten mit parallelen Schnittstellen
+        konnten nicht verwendet werden.
+        Diese Version hier erlaubt auch die Konfiguration von parallelen
+        Schnittstellen auf bestimmten PCI-Karten mit NETMOS-Chips. Hierzu
+        muss man sich mittels 'cat /proc/pci' die erkannten PCI-Gerüte
+        anzeigen lassen. Hier sucht man das Gerüt mit der passenden
+        Vendor-ID und Device-ID und wühlt als io-Adresse den oder die
+        folgenden Eintrüge aus:
+
+        Nm9705CV (Vendor id=9710, Device id=9705, Port1: 1. Eintrag)
+        Nm9735CV (Vendor id=9710, Device id=9735, Port1: 3. Eintrag)
+        Nm9805CV (Vendor id=9710, Device id=9805, Port1: 1. Eintrag)
+        Nm9715CV (Vendor id=9710, Device id=9815, Port1: 1. Eintrag,
+                                                  Port2: 3. Eintrag)
+        Nm9835CV (Vendor id=9710, Device id=9835, Port1: 3. Eintrag)
+        Nm9755CV (Vendor id=9710, Device id=9855, Port1: 1. Eintrag,
+                                                  Port2: 3. Eintrag)
+
+        Die Konfigurationsmüglichkeit wurde eingebaut, ohne entsprechende
+        Hardware zum Testen zur Verfügung zu haben. Daher ist das als
+        experimentelles Feature zu betrachten.
+        Bei Fehlern bitte ausführliche Informationen in die Newsgroup
+        posten!
+
+        Standard-Einstellung: LPRNG_LOCAL_PARPORT_PRINTER_1_IO='0x378'
+                              LPRNG_LOCAL_PARPORT_PRINTER_2_IO='0x278'
+                              LPRNG_LOCAL_PARPORT_PRINTER_3_IO='0x3bc'
+
+
+    LPRNG_LOCAL_PARPORT_PRINTER_x_IRQ
+
+        Mit LPRNG_LOCAL_PARPORT_PRINTER_x_IRQ wird eingestellt, ob im
+        Interruptbetrieb gedruckt werden soll, was den Prozessor entlastet.
+        Dazu muss bei Schnittstellen auf dem Mainboard oder auf ISA-Karten aber
+        im Rechnerbios oder per Jumperbelegung in jedem Fall der ECP/EPP-Modus
+        konfiguriert werden.
+        Um den Interruptbetrieb zu aktivieren, muss 'yes' gewühlt werden.
+        Will man diesen Modus nicht nutzen, so ist 'no' zu setzen und bei
+        Schnittstellen auf dem Mainboard oder auf ISA-Karten im Rechnerbios
+        oder per Jumperbelegung in jedem Fall der Normal- oder SPP-Modus
+        zu konfigurieren.
+        Wenn etwas nicht funktioniert, sollte auf jeden Fall erst einmal
+        mit 'no' getestet werden!
+
+        Standard-Einstellung: LPRNG_LOCAL_PARPORT_PRINTER_1_IRQ='no'
+
+
+    LPRNG_LOCAL_PARPORT_PRINTER_x_COMMENT
+
+        In LPRNG_LOCAL_PARPORT_PRINTER_x_COMMENT kann ein Kommentar
+        hinterlegt werden, der bei Druckbenachrichtigungen per NETBIOS-
+        Nachricht mit angezeigt wird.
+        Druckbenachrichtigungen werden nur versendet, wenn über Samba
+        auf einen LPRng-Drucker gedruckt wird - aber nicht, wenn
+        direkt auf einen LPRng-Drucker gedruckt wird.
+        Die Nachricht wird nur auf Clients mit aktiviertem
+        Nachrichtendienst ausgegeben. Der Nachrichtendienst ist auf
+        Windows-NT, Windows-2000 und Windows XP normalerweise aktiviert
+        und muss anderenfalls nachinstalliert/aktiviert werden. Unter
+        Windows-9x-Clients wie Windows 98 oder Windows ME muss dazu das
+        Programm WinPopUp laufen. Auf Linux-Clients kann das Programm
+        Linpopup installiert werden.
+        Ein eventuell auf dem Client installierter Paketfilter muss
+        für das Netz, in welchem der eisfair-Rechner steht, Verbindungen
+        zur Datei- und Druckerfreigabe zulassen.
+
+        Standard-Einstellung: LPRNG_LOCAL_PARPORT_PRINTER_1_COMMENT=''
+
+
+    LPRNG_LOCAL_PARPORT_PRINTER_x_NOTIFY
+
+        Mit LPRNG_LOCAL_PARPORT_PRINTER_x_NOTIFY wird festgelegt, ob
+        Druckbenachrichtigungen an den druckenden Client versendet werden
+        sollen.
+        Die Druckbenachrichtigungen werden per NETBIOS-Nachricht versendet.
+        Druckbenachrichtigungen werden nur versendet, wenn über Samba
+        auf einen LPRng-Drucker gedruckt wird - aber nicht, wenn
+        direkt auf einen LPRng-Drucker gedruckt wird.
+        Die Nachricht wird nur auf Clients mit aktiviertem
+        Nachrichtendienst ausgegeben. Der Nachrichtendienst ist auf
+        Windows-NT, Windows-2000 und Windows XP normalerweise aktiviert
+        und muss anderenfalls nachinstalliert/aktiviert werden. Unter
+        Windows-9x-Clients wie Windows 98 oder Windows ME muss dazu das
+        Programm WinPopUp laufen. Auf Linux-Clients kann das Programm
+        Linpopup installiert werden.
+        Ein eventuell auf dem Client installierter Paketfilter muss
+        für das Netz, in welchem der eisfair-Rechner steht, Verbindungen
+        zur Datei- und Druckerfreigabe zulassen.
+
+        Standard-Einstellung: LPRNG_LOCAL_PARPORT_PRINTER_1_NOTIFY='no'
+
+
+
+Abschnitt "Local USB Printer Configuration":
+--------------------------------------------
+
+Der Abschnitt wird eingeleitet mit
+
+# ------------------------------------------------------------------------------
+# Local USB Printer Configuration
+#
+# Set the number of USB printer to use in LPRNG_LOCAL_USBPORT_PRINTER_N.
+#
+# Values below are only an example and are not used if
+# LPRNG_LOCAL_USBPORT_PRINTER_N is '0'
+# ------------------------------------------------------------------------------
+
+und ist zur Konfiguration der Drucker an den lokalen USB-Schnittstellen
+gedacht.
+
+        Viele preiswerte USB-Drucker sind host-based- oder GDI-Drucker. 
+        GDI-Drucker künnen aus meiner bisherigen Erfahrung an eisfair nicht
+        angesprochen werden.
+
+        Drucker müssen über verüffentlichte Standardprotokolle angesprochen
+        werden - z.B. die Druckersprachen PostScript, ESC/P und HP PCL.
+        Verzichtet der Hersteller auf ein Standardprotokoll und steuert den
+        Drucker direkt mit den Steuerimpulsen des speziellen Modells an, so hat
+        man einen sog. GDI-Drucker, der nur unter der Betriebssystemversion,
+        für die ein Treiber mitgeliefert wurde, lüuft.
+        GDI ist eine von Microsoft entwickelte Programmierschnittstelle zur
+        grafischen Darstellung. Das Problem ist nicht diese GDI API, sondern
+        dass die sog. GDI-Drucker nur über die proprietüre Druckersprache des
+        jeweiligen Druckermodells angesprochen werden künnen. Eigentlich würe
+        die Bezeichnung "Drucker, der nur über ein proprietüres Protokoll
+        angesprochen werden kann" korrekter.
+        Auch Drucker, die durch spezielle Steuersequenzen in einen besonderen
+        Modus umgeschaltet werden müssen oder Drucker, die nicht einmal eine
+        normale Parallelverbindung verwenden, sondern spezielle Treiber für
+        die Ansteuerung der Schnittstelle benütigen, fallen in diese
+        Kategorie, ebenso wie Drucker, die das "Windows-Printing-System"
+        benütigen.
+
+        Die Nachteile von Druckern mit GDI-Technologie zusammengefasst:
+        Sie besitzen keine Eigenintelligenz und künnen Druckdaten nicht selbst
+        aufbereiten. Sie benütigen dafür die Ressourcen eines direkt
+        angeschlossenen PCs, auf dem der proprietüre Treiber lüuft. Die
+        Kommunikation erfolgt ausschliesslich über proprietüre Druckersprachen
+        und muss von entsprechenden Treibern zur Verfügung gestellt werden.
+        Daher künnen GDI-Drucker in der Regel nur lokal an einem PC betrieben
+        werden. Der Betrieb im Netz über Printserver ist nicht müglich, ebenso
+        wenig das Ansteuern über andere Betriebssysteme.
+
+        Ich werde nur Fragen zu Problemen mit Druckern beantworten, aus
+        denen hervorgeht, dass Ihr ausgeschlossen habt, dass der betroffene
+        Drucker ein GDI-Drucker ist! Ich habe weder Zeit noch Lust, für
+        Euch zu recherchieren, ob diese "Krücken" an eisfair doch irgendwie zu
+        einer normalen Funktion zu bewegen sind.
+
+        Ob Euer Drucker ein GDI-Drucker ist, sollte aus der Dokumentation des
+        Druckers hervorgehen. Wenn das nicht der Fall ist oder Ihr diese
+        Dokumentation nicht mehr besitzt, dann mailt an den Support des
+        Druckerherstellers oder macht Euch auf dessen Webseite schlau.
+
+
+    LPRNG_LOCAL_USBPORT_PRINTER_N
+
+        über LPRNG_LOCAL_USBPORT_PRINTER_N wird die Anzahl der einzurichtenden
+        lokalen Drucker an parallelen Schnittstellen eingestellt.
+
+        Bei einer Schnittstelle ist
+
+          LPRNG_LOCAL_PARPORT_PRINTER_N='1'
+
+        einzutragen.
+        Bei 2 USB-Schnittstellen ist LPRNG_LOCAL_PORT_PRINTER_N zu
+        inkrementieren, also
+
+          LPRNG_LOCAL_USBPORT_PRINTER_N='2'
+
+        Weiterhin müssen dann auch die korrespondierenden
+        Einstellungen
+
+          LPRNG_LOCAL_USBPORT_PRINTER_1_ACTIVE
+          LPRNG_LOCAL_USBPORT_PRINTER_1_COMMENT
+          LPRNG_LOCAL_USBPORT_PRINTER_1_NOTIFY
+
+        und
+
+          LPRNG_LOCAL_USBPORT_PRINTER_2_ACTIVE
+          LPRNG_LOCAL_USBPORT_PRINTER_2_COMMENT
+          LPRNG_LOCAL_USBPORT_PRINTER_2_NOTIFY
+
+        vorhanden sein und sinnvoll konfiguriert werden.
+
+        Wichtig: Die Konfigurationsmüglichkeit fur USB-Drucker wurde eingebaut,
+        ohne entsprechende Hardware zum Testen zur Verfügung zu haben. Daher
+        ist das als experimentelles Feature zu betrachten. Bei Fehlern bitte
+        ausführliche Informationen in die Newsgroup posten!
+
+        Standard-Einstellung: LPRNG_LOCAL_USBPORT_PRINTER_N='3'
+
+
+    LPRNG_LOCAL_USBPORT_PRINTER_x_ACTIVE
+
+        Mit LPRNG_LOCAL_USBPORT_PRINTER_x_ACTIVE wird eingestellt, ob die
+        entsprechende Druckerdefinition aktiv ist und im Konfigurationsprozess
+        ausgewertet werden soll oder nicht.
+        Um den entsprechenden Drucker zu aktivieren, muss 'yes' gewühlt werden.
+        Will man den Drucker von der Konfiguration ausnehmen, setzt man die
+        Variable auf 'no'.
+
+        Standard-Einstellung: LPRNG_LOCAL_USBPORT_PRINTER_1_ACTIVE='no'
+
+
+    LPRNG_LOCAL_USBPORT_PRINTER_x_COMMENT
+
+        In LPRNG_LOCAL_USBPORT_PRINTER_x_COMMENT kann ein Kommentar
+        hinterlegt werden, der bei Druckbenachrichtigungen per NETBIOS-
+        Nachricht mit angezeigt wird.
+        Druckbenachrichtigungen werden nur versendet, wenn über Samba
+        auf einen LPRng-Drucker gedruckt wird - aber nicht, wenn
+        direkt auf einen LPRng-Drucker gedruckt wird.
+        Die Nachricht wird nur auf Clients mit aktiviertem
+        Nachrichtendienst ausgegeben. Der Nachrichtendienst ist auf
+        Windows-NT, Windows-2000 und Windows XP normalerweise aktiviert
+        und muss anderenfalls nachinstalliert/aktiviert werden. Unter
+        Windows-9x-Clients wie Windows 98 oder Windows ME muss dazu das
+        Programm WinPopUp laufen. Auf Linux-Clients kann das Programm
+        Linpopup installiert werden.
+        Ein eventuell auf dem Client installierter Paketfilter muss
+        für das Netz, in welchem der eisfair-Rechner steht, Verbindungen
+        zur Datei- und Druckerfreigabe zulassen.
+
+        Standard-Einstellung: LPRNG_LOCAL_USBPORT_PRINTER_1_COMMENT=''
+
+
+    LPRNG_LOCAL_USBPORT_PRINTER_x_NOTIFY
+
+        Mit LPRNG_LOCAL_USBPORT_PRINTER_x_NOTIFY wird festgelegt, ob
+        Druckbenachrichtigungen an den druckenden Client versendet werden
+        sollen.
+        Die Druckbenachrichtigungen werden per NETBIOS-Nachricht versendet.
+        Druckbenachrichtigungen werden nur versendet, wenn über Samba
+        auf einen LPRng-Drucker gedruckt wird - aber nicht, wenn
+        direkt auf einen LPRng-Drucker gedruckt wird.
+        Die Nachricht wird nur auf Clients mit aktiviertem
+        Nachrichtendienst ausgegeben. Der Nachrichtendienst ist auf
+        Windows-NT, Windows-2000 und Windows XP normalerweise aktiviert
+        und muss anderenfalls nachinstalliert/aktiviert werden. Unter
+        Windows-9x-Clients wie Windows 98 oder Windows ME muss dazu das
+        Programm WinPopUp laufen. Auf Linux-Clients kann das Programm
+        Linpopup installiert werden.
+        Ein eventuell auf dem Client installierter Paketfilter muss
+        für das Netz, in welchem der eisfair-Rechner steht, Verbindungen
+        zur Datei- und Druckerfreigabe zulassen.
+
+        Standard-Einstellung: LPRNG_LOCAL_USBPORT_PRINTER_1_NOTIFY='no'
+
+
+
+Abschnitt "Remote Printer Configuration":
+-----------------------------------------
+
+Der Abschnitt wird eingeleitet mit
+
+# ------------------------------------------------------------------------------
+# Remote Printer Configuration
+#
+# Set the number of Printer to use in LPRNG_REMOTE_PRINTER_N.
+#
+# Values below are only an example and are not used if
+# LPRNG_REMOTE_PRINTER_N is '0'
+# ------------------------------------------------------------------------------
+
+und ist zur Konfiguration der Drucker an im Netzwerk erreichbaren Printservern
+gedacht.
+Hier muss man unterscheiden zwischen lpr/lpd-kompatiblen Printservern, welche
+über dieses Protokoll angesprochen werden künnen und zwischen Printservern,
+welche man nur mit Programmen wie telnet oder netcat ansprechen kann.
+LPRng unterstützt beide Arten von Printservern, muss dazu aber unterschiedlich
+konfiguriert werden.
+Allgemein kann man sagen, lpr/lpd-kompatible Printserver müssen per IP-Adresse
+und Warteschlangenname angesprochen werden und telnet/netcat-kompatible per
+IP-Adresse und speziellen Ports statt des Warteschlangen-Namens (es darf dann
+keine Warteschlange konfiguriert werden!).
+Es gibt auch Printserver, welche beide Müglichkeiten unterstützen. Aber auch
+hier darf nur eine von beiden verwendet werden.
+
+Die Information darüber, ob Euer Printserver zu der einen oder anderen Kategorie
+gehürt und welche Portnummern dieser Printserver an welchem Anschluss
+standardmüssig verwendet, entnehmt Ihr bitte dem mitgelieferten Handbuch oder
+der Webseite des Herstellers.
+Eine unvollstündige übersicht findet Ihr unter
+
+          http://members.cruzio.com/~jeffl/sco/lp/printservers.htm
+
+und einen weiteren kleinen überblick hier:
+
+          http://www.lprng.com/LPRng-HOWTO/LPRng-Reference.html#AEN4990
+
+Achtet ausserdem darauf, dass bei manchen Printservern die Portnummern
+konfigurierbar sind!
+Ich habe nicht vor, jedem die Einstellungen zu posten, die für seine
+Printserver benütigt werden. In mindestens 99,9% aller Fülle besitze ich diese
+Printserver selber nicht und müsste im Internet recherchieren. Dazu reicht
+meine Zeit bei Weitem nicht aus - deshalb dürft Ihr hierbei keine Hilfe von mir
+erwarten.
+
+
+    LPRNG_REMOTE_PRINTER_N
+
+        über LPRNG_REMOTE_PRINTER_N wird die Anzahl der einzurichtenden
+        entfernten Drucker an externen Printservern eingestellt. Dabei ist zu
+        beachten, dass manche Printserver mehrere Anschlüsse besitzen.
+        Müchte man 4 Drucker an 2 Printservern mit jeweils 2 Anschlüssen
+        ansteuern, ist
+
+          LPRNG_REMOTE_PRINTER_N='4'
+
+        einzustellen. Bei einem Drucker an einem Anschluss eines externen
+        Printservers konfiguriert man
+
+          LPRNG_REMOTE_PRINTER_N='1'
+
+        Bei 2 Druckern ist LPRNG_REMOTE_PRINTER_N zu erhühen, also
+
+          LPRNG_REMOTE_PRINTER_N='2'
+
+        Weiterhin müssen dann bei einem lpr/lpd-kompatiblen Printserver auch
+        die korrespondierenden Einstellungen
+
+          LPRNG_REMOTE_PRINTER_1_ACTIVE
+          LPRNG_REMOTE_PRINTER_1_QUEUENAME
+          LPRNG_REMOTE_PRINTER_1_IP
+          LPRNG_REMOTE_PRINTER_1_COMMENT
+          LPRNG_REMOTE_PRINTER_1_NOTIFY
+
+        und
+
+          LPRNG_REMOTE_PRINTER_2_ACTIVE
+          LPRNG_REMOTE_PRINTER_2_QUEUENAME
+          LPRNG_REMOTE_PRINTER_2_IP
+          LPRNG_REMOTE_PRINTER_2_COMMENT
+          LPRNG_REMOTE_PRINTER_2_NOTIFY
+
+        vorhanden und korrekt konfiguriert sein.
+
+        Bei einem telnet/netcat-kompatiblen Printserver hingegen müssen dann
+        die korrespondierenden Einstellungen
+
+          LPRNG_REMOTE_PRINTER_1_ACTIVE
+          LPRNG_REMOTE_PRINTER_1_IP
+          LPRNG_REMOTE_PRINTER_1_PORT
+          LPRNG_REMOTE_PRINTER_1_COMMENT
+          LPRNG_REMOTE_PRINTER_1_NOTIFY
+
+        und
+
+          LPRNG_REMOTE_PRINTER_2_ACTIVE
+          LPRNG_REMOTE_PRINTER_2_IP
+          LPRNG_REMOTE_PRINTER_2_PORT
+          LPRNG_REMOTE_PRINTER_2_COMMENT
+          LPRNG_REMOTE_PRINTER_2_NOTIFY
+
+        vorhanden und korrekt konfiguriert sein - es darf kein Eintrag in
+
+          LPRNG_REMOTE_PRINTER_x_QUEUENAME
+
+        erfolgen, da sonst versucht wird, auf eine Warteschlange zu drucken, die
+        nicht existiert. Der Druck wird dann nicht funktionieren!
+
+        Standard-Einstellung: LPRNG_REMOTE_PRINTER_N='4'
+
+
+    LPRNG_REMOTE_PRINTER_x_ACTIVE
+
+        Mit LPRNG_REMOTE_PRINTER_x_ACTIVE wird eingestellt, ob die entsprechende
+        Druckerdefinition aktiv ist und im Konfigurationsprozess ausgewertet
+        werden soll oder nicht.
+        Um den entsprechenden Drucker zu aktivieren, muss 'yes' gewühlt werden.
+        Will man den Drucker von der Konfiguration ausnehmen, setzt man die
+        Variable auf 'no'.
+
+        Standard-Einstellung: LPRNG_REMOTE_PRINTER_1_ACTIVE='no'
+
+
+    LPRNG_REMOTE_PRINTER_x_IP
+
+        Mit LPRNG_REMOTE_PRINTER_x_IP wird die IP-Adresse des x'ten Printserver-
+        anschlusses eingestellt. Hat man einen Printserver mit 2 benutzten
+        Anschlüssen, so wird
+
+          LPRNG_REMOTE_PRINTER_N='2'
+
+        und bei
+
+          LPRNG_REMOTE_PRINTER_1_IP
+
+        und
+
+          LPRNG_REMOTE_PRINTER_2_IP
+
+        die IP-Adresse dieses Printservers eingestellt (also zwei mal dieselbe
+        IP).
+        In meinem ersten und zweiten Beispiel wird von einem fli4l-Rechner 
+        ausgegangen, der zwei parallele Schnittstellen besitzt und dessen
+        IP-Adresse 192.168.6.99 lautet.
+        Die IP-Adresse muss in jedem Fall konfiguriert werden, egal ob es sich
+        um lpr/lpd- oder telnet/netcat-kompatible Printserver handelt.
+
+        Eine Standard-Einstellung gibt es hier nicht, da die IP-Adressen
+        an Euren Printservern vüllig anders lauten künnen.
+
+
+    LPRNG_REMOTE_PRINTER_x_QUEUENAME
+
+        Mit LPRNG_REMOTE_PRINTER_x_QUEUENAME wird der Warteschlangenname des
+        x'ten Remote-Druckers eingestellt.
+        Ein Warteschlangenname ist nur zu definieren, wenn eine Warteschlange
+        existiert! Das ist nur bei Printservern der Fall, welche
+        lpr/lpd-kompatibel sind, siehe oben! Wenn eine Warteschlangenname
+        konfiguriert wird, darf kein Port konfiguriert werden - und umgekehrt.
+        In meinem ersten und zweiten Beispiel wird von einem fli4l-Rechner 
+        ausgegangen, der zwei parallele Schnittstellen besitzt und dessen
+        Warteschlangennamen pr1 und pr2 lauten.
+
+        Eine Standard-Einstellung gibt es hier nicht, da die Warteschlangennamen
+        an Euren Printservern vüllig anders lauten künnen.
+
+
+    LPRNG_REMOTE_PRINTER_x_PORT
+
+        Mit LPRNG_REMOTE_PRINTER_x_PORT wird die Portnummer des x'ten
+        Printserver-Anschlusses eingestellt. Hinweise zu den Portnummern findet
+        Ihr weiter oben in der Dokumentation zu
+
+          LPRNG_REMOTE_PRINTER_N
+
+        Wenn ein Port konfiguriert wird, darf kein Warteschlangenname
+        konfiguriert werden - und umgekehrt.
+
+        In meinem dritten und vierten Beispiel wird von einem HP-Jet-Direct-
+        Printserver ausgegangen, der zwei parallele Schnittstellen besitzt und
+        dessen erster Anschluss per Port 9100 und dessen zweiter Anschluss per
+        Port 9101 erreichbar ist.
+
+        Eine Standard-Einstellung gibt es hier nicht, da die Printserver über
+        verschiedene Ports angesprochen werden und oft auch umkonfiguriert
+        werden künnen.
+
+
+    LPRNG_REMOTE_PRINTER_x_COMMENT
+
+        In LPRNG_REMOTE_PRINTER_x_COMMENT kann ein Kommentar
+        hinterlegt werden, der bei Druckbenachrichtigungen per NETBIOS-
+        Nachricht mit angezeigt wird.
+        Die Druckbenachrichtigungen werden per NETBIOS-Nachricht versendet.
+        Druckbenachrichtigungen werden nur versendet, wenn über Samba
+        auf einen LPRng-Drucker gedruckt wird - aber nicht, wenn
+        direkt auf einen LPRng-Drucker gedruckt wird.
+        Die Nachricht wird nur auf Clients mit aktiviertem
+        Nachrichtendienst ausgegeben. Der Nachrichtendienst ist auf
+        Windows-NT, Windows-2000 und Windows XP normalerweise aktiviert
+        und muss anderenfalls nachinstalliert/aktiviert werden. Unter
+        Windows-9x-Clients wie Windows 98 oder Windows ME muss dazu das
+        Programm WinPopUp laufen. Auf Linux-Clients kann das Programm
+        Linpopup installiert werden.
+        Ein eventuell auf dem Client installierter Paketfilter muss
+        für das Netz, in welchem der eisfair-Rechner steht, Verbindungen
+        zur Datei- und Druckerfreigabe zulassen.
+
+        Standard-Einstellung: LPRNG_REMOTE_PRINTER_1_COMMENT=''
+
+
+    LPRNG_REMOTE_PRINTER_x_NOTIFY
+
+        Mit LPRNG_REMOTE_PRINTER_x_NOTIFY wird festgelegt, ob
+        Druckbenachrichtigungen an den druckenden Client versendet werden
+        sollen.
+        Die Druckbenachrichtigungen werden per NETBIOS-Nachricht versendet.
+        Druckbenachrichtigungen werden nur versendet, wenn über Samba
+        auf einen LPRng-Drucker gedruckt wird - aber nicht, wenn
+        direkt auf einen LPRng-Drucker gedruckt wird.
+        Die Nachricht wird nur auf Clients mit aktiviertem
+        Nachrichtendienst ausgegeben. Der Nachrichtendienst ist auf
+        Windows-NT, Windows-2000 und Windows XP normalerweise aktiviert
+        und muss anderenfalls nachinstalliert/aktiviert werden. Unter
+        Windows-9x-Clients wie Windows 98 oder Windows ME muss dazu das
+        Programm WinPopUp laufen. Auf Linux-Clients kann das Programm
+        Linpopup installiert werden.
+        Ein eventuell auf dem Client installierter Paketfilter muss
+        für das Netz, in welchem der eisfair-Rechner steht, Verbindungen
+        zur Datei- und Druckerfreigabe zulassen.
+
+        Standard-Einstellung: LPRNG_REMOTE_PRINTER_1_NOTIFY='no'
+
+
+
+3.2.3 LPRng-Service-Menü Punkt 3: LPRng Server Handling
+-------------------------------------------------------
+
+Dieser Punkt des LPRng-Service-Menüs erüffnet ein Untermenü mit den
+folgenden Müglichkeiten:
+
+             1: Show Status of LPRng
+
+             2: Stop LPRng
+
+             3: Start LPRng
+
+             4: Restart LPRng
+
+             5: Reload LPRng
+
+             6: LPRng Queue Handling
+
+             0: Exit
+
+Die ersten 5 Punkte sind selbsterklürend. Punkt 6 führt uns in ein weiteres
+Menü, welches folgende Punkte beinhaltet:
+
+             1: Enable Printing and Spooling for all Queues
+
+             2: Disable Printing and Spooling for all Queues
+
+             3: Show Jobs in all Queues
+
+             4: Remove Jobs in all Queues
+
+             5: Remove one Job in one Queue
+
+             0: Exit
+
+Auch diese Punkte sind selbsterklürend.
+
+
+4. Ansteuerung des LPRng von anderen Rechnern
+=============================================
+
+Müchte man von anderen Rechnern direkt auf den LPRng drucken, ohne den
+Umweg über ein eventuell installiertes Samba zu nehmen, so muss man wissen,
+wie man die einzelnen Warteschlangen anspricht.
+
+Die lokalen Parallel-Drucker sind beginnend mit pr1, die lokalen
+USB-Drucker beginnend mit usbpr1 und die entfernten Drucker
+beginnend mit repr1 durchnummeriert.
+
+
+
+    Thomas Bork 2013-12-01

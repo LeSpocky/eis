@@ -1,0 +1,58 @@
+# Contributor: starwarsfan <yves@eisfair.org>
+# Maintainer: starwarsfan <yves@eisfair.org>
+pkgname=cui-lprng
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="CUI Setup for lprng printer spooler"
+url="http://www.eisfair.org"
+arch="noarch"
+license="GPL"
+depends="cuimenu lprng"
+depends_dev=""
+makedepends="$depends_dev"
+install="$pkgname.post-install $pkgname.post-deinstall"
+subpackages=""
+source="${pkgname}.checkd
+        ${pkgname}.checkd.ext
+        ${pkgname}.help
+        ${pkgname}.initd
+        ${pkgname}.sh
+        ${pkgname}.txt
+        ${pkgname}-update.sh
+"
+
+_builddir=
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in ${source} ; do
+		case ${i} in
+		*.patch) msg ${i}; patch -p1 -i "$srcdir"/${i} || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+}
+
+package() {
+	cd "$_builddir"
+	cd ${startdir}/bin
+	for currentHelperScript in `ls` ; do
+		install -D -m755 ${currentHelperScript} ${pkgdir}/var/install/bin/${currentHelperScript} || return 1
+	done
+	cd -
+	cd ${startdir}/menu
+	for currentMenu in `ls` ; do
+		install -D -m644 ${currentMenu} ${pkgdir}/var/install/menu/${currentMenu#cui-lprng.*} || return 1
+	done
+	cd -
+	install -D -m644 ${srcdir}/${pkgname}.checkd          ${pkgdir}/etc/check.d/cui-lprng || return 1
+	install -D -m644 ${srcdir}/${pkgname}.checkd.ext      ${pkgdir}/etc/check.d/cui-lprng.ext || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help            ${pkgdir}/var/install/help/cui-lprng || return 1
+	install -D -m644 ${srcdir}/${pkgname}.initd           ${pkgdir}/etc/init.d/lprng || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt             ${pkgdir}/usr/share/doc/cui-lprng/cui-lprng.txt || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh              ${pkgdir}/var/install/config.d/cui-lprng.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh       ${pkgdir}/var/install/config.d/cui-lprng-update.sh || return 1
+}

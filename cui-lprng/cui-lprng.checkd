@@ -1,0 +1,34 @@
+# ----------------------------------------------------------------------------
+# /etc/check.d/lprng - check file for lprng configuration parameters
+#
+# Copyright (c) 2002-2010 Thomas Bork, tom(at)eisfair(dot)net
+#
+# Creation   : 2004-05-01 tb
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# ----------------------------------------------------------------------------
+# Variable                            OPT_VARIABLE                         VARIABLE_N                     VALUE
+START_LPRNG                           -                                    -                              YESNO
+
+LPRNG_LOCAL_PARPORT_PRINTER_N         START_LPRNG                          -                              NUMERIC
+LPRNG_LOCAL_PARPORT_PRINTER_%_ACTIVE  START_LPRNG                          LPRNG_LOCAL_PARPORT_PRINTER_N  YESNO
+LPRNG_LOCAL_PARPORT_PRINTER_%_IO      LPRNG_LOCAL_PARPORT_PRINTER_%_ACTIVE LPRNG_LOCAL_PARPORT_PRINTER_N  NUM_HEX
+LPRNG_LOCAL_PARPORT_PRINTER_%_IRQ     LPRNG_LOCAL_PARPORT_PRINTER_%_ACTIVE LPRNG_LOCAL_PARPORT_PRINTER_N  YESNO
+LPRNG_LOCAL_PARPORT_PRINTER_%_COMMENT LPRNG_LOCAL_PARPORT_PRINTER_%_ACTIVE LPRNG_LOCAL_PARPORT_PRINTER_N  NONE
+LPRNG_LOCAL_PARPORT_PRINTER_%_NOTIFY  LPRNG_LOCAL_PARPORT_PRINTER_%_ACTIVE LPRNG_LOCAL_PARPORT_PRINTER_N  YESNO
+
+LPRNG_LOCAL_USBPORT_PRINTER_N         START_LPRNG                          -                              NUMERIC
+LPRNG_LOCAL_USBPORT_PRINTER_%_ACTIVE  START_LPRNG                          LPRNG_LOCAL_USBPORT_PRINTER_N  YESNO
+LPRNG_LOCAL_USBPORT_PRINTER_%_COMMENT LPRNG_LOCAL_USBPORT_PRINTER_%_ACTIVE LPRNG_LOCAL_USBPORT_PRINTER_N  NONE
+LPRNG_LOCAL_USBPORT_PRINTER_%_NOTIFY  LPRNG_LOCAL_USBPORT_PRINTER_%_ACTIVE LPRNG_LOCAL_USBPORT_PRINTER_N  YESNO
+
+LPRNG_REMOTE_PRINTER_N                START_LPRNG                          -                              NUMERIC
+LPRNG_REMOTE_PRINTER_%_ACTIVE         START_LPRNG                          LPRNG_REMOTE_PRINTER_N         YESNO
+LPRNG_REMOTE_PRINTER_%_IP             LPRNG_REMOTE_PRINTER_%_ACTIVE        LPRNG_REMOTE_PRINTER_N         IPADDR
+LPRNG_REMOTE_PRINTER_%_QUEUENAME      LPRNG_REMOTE_PRINTER_%_ACTIVE        LPRNG_REMOTE_PRINTER_N         NONE
+LPRNG_REMOTE_PRINTER_%_PORT           LPRNG_REMOTE_PRINTER_%_ACTIVE        LPRNG_REMOTE_PRINTER_N         ENUMERIC
+LPRNG_REMOTE_PRINTER_%_COMMENT        LPRNG_REMOTE_PRINTER_%_ACTIVE        LPRNG_REMOTE_PRINTER_N         NONE
+LPRNG_REMOTE_PRINTER_%_NOTIFY         LPRNG_REMOTE_PRINTER_%_ACTIVE        LPRNG_REMOTE_PRINTER_N         YESNO
