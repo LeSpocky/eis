@@ -1,0 +1,41 @@
+#!/sbin/runscript
+# Copyright 1999-2007 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+
+# Include eislib
+. /var/install/include/eislib
+
+# Include configuration
+. /etc/config.d/inadyn
+
+depend() {
+	need net
+}
+
+checkCacheDir() {
+    if [ ! -d /tmp/inadyn_cache ] ; then
+        mkdir /tmp/inadyn_cache
+    fi
+}
+
+start() {
+	ebegin "Starting inadyn"
+	checkCacheDir
+	rtc=0
+    if [ `ls -l /etc/inadyn/inadyn*.conf 2>/dev/null | wc -l` -ge 1 ] ; then
+        # Only start if config-file(s) are really present
+        for currentConfigfile in `eval ls -1 /etc/inadyn-mt/inadyn*.conf` ; do
+            /usr/bin/inadyn --input_file ${currentConfigfile}
+        done
+    else
+        mecho --error "Cannot start inadyn because no configuartion file(s) present."
+        rtc=1
+    fi
+	eend ${rtc}
+}
+
+stop() {
+	ebegin "Stopping inadyn"
+    killproc -t2 /usr/bin/inadyn
+	eend $?
+}
