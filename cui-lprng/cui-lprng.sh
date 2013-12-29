@@ -29,47 +29,41 @@ usb_any_active=no
 remote_any_active=no
 lsmodbin='/sbin/lsmod'
 eisfair_system=`cat /etc/eisfair-system`
-rm -f $parportconf
+rm -f ${parportconf}
 
 do_check_parport ()
 {
 idx='1'
-while [ "$idx" -le "$LPRNG_LOCAL_PARPORT_PRINTER_N" ]
+while [ "${idx}" -le "$LPRNG_LOCAL_PARPORT_PRINTER_N" ]
 do
     active=''
-    eval active='$LPRNG_LOCAL_PARPORT_PRINTER_'$idx'_ACTIVE'
-    if [ "$active" = "yes" ]
-    then
+    eval active='$LPRNG_LOCAL_PARPORT_PRINTER_'${idx}'_ACTIVE'
+    if [ "$active" = "yes" ] ; then
         parport_any_active=yes
     fi
-    idx=`expr $idx + 1`
+    idx=`expr ${idx} + 1`
 done
 }
 
 do_check_usbport ()
 {
 idx='1'
-while [ "$idx" -le "$LPRNG_LOCAL_USBPORT_PRINTER_N" ]
+while [ "${idx}" -le "$LPRNG_LOCAL_USBPORT_PRINTER_N" ]
 do
     active=''
-    eval active='$LPRNG_LOCAL_USBPORT_PRINTER_'$idx'_ACTIVE'
-    if [ "$active" = "yes" ]
-    then
+    eval active='$LPRNG_LOCAL_USBPORT_PRINTER_'${idx}'_ACTIVE'
+    if [ "$active" = "yes" ] ; then
         usb_any_active=yes
     fi
-    idx=`expr $idx + 1`
+    idx=`expr ${idx} + 1`
 done
 
-if [ -f /etc/config.d/usb ]
-then
+if [ -f /etc/config.d/usb ] ; then
     # eisfair-1 with kernel 2.6
     . /etc/config.d/usb
-    if [ "$START_USB" = "yes" ]
-    then
-        if [ "$USB_PRINTER" = "yes" ]
-        then
-            if [ -n "`$lsmodbin | grep '^usblp '`" ]
-            then
+    if [ "$START_USB" = "yes" ] ; then
+        if [ "$USB_PRINTER" = "yes" ] ; then
+            if [ -n "`${lsmodbin} | grep '^usblp '`" ] ; then
                 usb_exists="true"
             fi
         fi
@@ -83,21 +77,19 @@ fi
 do_check_remote ()
 {
 idx='1'
-while [ "$idx" -le "$LPRNG_REMOTE_PRINTER_N" ]
+while [ "${idx}" -le "$LPRNG_REMOTE_PRINTER_N" ]
 do
     active=''
-    eval active='$LPRNG_REMOTE_PRINTER_'$idx'_ACTIVE'
-    if [ "$active" = "yes" ]
-    then
+    eval active='$LPRNG_REMOTE_PRINTER_'${idx}'_ACTIVE'
+    if [ "$active" = "yes" ] ; then
         remote_any_active=yes
     fi
-    idx=`expr $idx + 1`
+    idx=`expr ${idx} + 1`
 done
 }
 
-if [ -f "$generate" ]
-then
-    /var/install/bin/backup-file $generate sic
+if [ -f "$generate" ] ; then
+    /var/install/bin/backup-file ${generate} sic
 fi
 
 {
@@ -116,11 +108,9 @@ fi
  echo "# ----------------------------------------------------------------------------"
 } > "$generate"
 
-if [ "$LPRNG_LOCAL_PARPORT_PRINTER_N" != 0 ]
-then
+if [ "$LPRNG_LOCAL_PARPORT_PRINTER_N" != 0 ] ; then
   do_check_parport
-  if [ "$parport_any_active" = "yes" ]
-  then
+  if [ "$parport_any_active" = "yes" ] ; then
    {
     echo
     echo "# ----------------------------------------------------------------------------"
@@ -130,71 +120,64 @@ then
 
     idx='1'
     idy='0'
-    while [ "$idx" -le "$LPRNG_LOCAL_PARPORT_PRINTER_N" ]
+    while [ "${idx}" -le "$LPRNG_LOCAL_PARPORT_PRINTER_N" ]
     do
       active=''
       port=''
       interrupt=''
-      eval active='$LPRNG_LOCAL_PARPORT_PRINTER_'$idx'_ACTIVE'
-      eval port='$LPRNG_LOCAL_PARPORT_PRINTER_'$idx'_IO'
-      eval interrupt='$LPRNG_LOCAL_PARPORT_PRINTER_'$idx'_IRQ'
-      eval comment='$LPRNG_LOCAL_PARPORT_PRINTER_'$idx'_COMMENT'
-      eval notify='$LPRNG_LOCAL_PARPORT_PRINTER_'$idx'_NOTIFY'
-      port=`echo $port | tr [:upper:] [:lower:]`
+      eval active='$LPRNG_LOCAL_PARPORT_PRINTER_'${idx}'_ACTIVE'
+      eval port='$LPRNG_LOCAL_PARPORT_PRINTER_'${idx}'_IO'
+      eval interrupt='$LPRNG_LOCAL_PARPORT_PRINTER_'${idx}'_IRQ'
+      eval comment='$LPRNG_LOCAL_PARPORT_PRINTER_'${idx}'_COMMENT'
+      eval notify='$LPRNG_LOCAL_PARPORT_PRINTER_'${idx}'_NOTIFY'
+      port=`echo ${port} | tr [:upper:] [:lower:]`
       create_printer=true
 
-      if [ "$active" != "yes" ]
-      then
-        mecho --std "LPRNG_LOCAL_PARPORT_PRINTER_"$idx" is not active -"
-        mecho --std " skipping LPRNG_LOCAL_PARPORT_PRINTER_"$idx" ..."
+      if [ "$active" != "yes" ] ; then
+        mecho --std "LPRNG_LOCAL_PARPORT_PRINTER_"${idx}" is not active -"
+        mecho --std " skipping LPRNG_LOCAL_PARPORT_PRINTER_"${idx}" ..."
         create_printer=false
       fi
 
-      if [ -z "$port" -a "$create_printer" = "true" ]
-      then
-        mecho --error "LPRNG_LOCAL_PARPORT_PRINTER_"$idx"_IO is not defined -"
-        mecho --error " skipping LPRNG_LOCAL_PARPORT_PRINTER_"$idx" ..."
+      if [ -z "$port" -a "$create_printer" = "true" ] ; then
+        mecho --error "LPRNG_LOCAL_PARPORT_PRINTER_"${idx}"_IO is not defined -"
+        mecho --error " skipping LPRNG_LOCAL_PARPORT_PRINTER_"${idx}" ..."
         create_printer=false
       fi
 
-      if [ "$create_printer" = "true" ]
-      then
-        if [ "$interrupt" = "yes" ]
-        then
+      if [ "$create_printer" = "true" ] ; then
+        if [ "$interrupt" = "yes" ] ; then
           interrupt=auto
         else
           interrupt=none
         fi
 
-        if [ -z "$irq" ]
-        then
-          irq=$interrupt
+        if [ -z "$irq" ] ; then
+          irq=${interrupt}
         else
-          irq=$irq,$interrupt
+          irq=${irq},${interrupt}
         fi
 
-        if [ -z "$parport" ]
-        then
-          parport=$idy
+        if [ -z "$parport" ] ; then
+          parport=${idy}
         else
-          parport=$parport,$idy
+          parport=${parport},${idy}
         fi
 
-        if [ -z "$io" ]
-        then
-          io=$port
+        if [ -z "$io" ] ; then
+          io=${port}
         else
-          io=$io,$port
+          io=${io},${port}
         fi
 
        {
-        echo "pr$idx:"
+        echo "pr${idx}:"
         echo "        :done_jobs=0"
         echo "        :mc=0"
         echo "        :rw@"
         echo "        :sh"
-        echo "        :lp=/dev/lp$idy"
-        echo "        :sd=$lpdir/pr$idx"
+        echo "        :lp=/dev/lp${idy}"
+        echo "        :sd=$lpdir/pr${idx}"
         echo "        :fx=flp"
         echo "        :filter_options=\$P \$b \$e \$j \$t \$f \$n \$h \$S"
         echo "        :filter=/var/install/bin/lprng-filter"
@@ -202,18 +185,17 @@ then
         echo "        :smbinfo=$notify"
         echo
        } >> "$generate"
-        idy=`expr $idy + 1`
+        idy=`expr ${idy} + 1`
       fi
-      idx=`expr $idx + 1`
+      idx=`expr ${idx} + 1`
     done
 
-    if [ -n "$io" ]
-    then
+    if [ -n "$io" ] ; then
      {
       echo "io=$io"
       echo "irq=$irq"
       echo "parport=$parport"
-     } > $parportconf
+     } > ${parportconf}
     fi
   else
     mecho --std "No parport printers active."
@@ -222,13 +204,10 @@ else
   mecho --std "No parport printers active."
 fi
 
-if [ "$LPRNG_LOCAL_USBPORT_PRINTER_N" != 0 ]
-then
+if [ "$LPRNG_LOCAL_USBPORT_PRINTER_N" != 0 ] ; then
   do_check_usbport
-  if [ "$usb_any_active" = "yes" ]
-  then
-    if [ "$usb_exists" = "true" ]
-    then
+  if [ "$usb_any_active" = "yes" ] ; then
+    if [ "$usb_exists" = "true" ] ; then
      {
       echo
       echo "# ----------------------------------------------------------------------------"
@@ -238,38 +217,35 @@ then
 
       idx='1'
       idy='0'
-      while [ "$idx" -le "$LPRNG_LOCAL_USBPORT_PRINTER_N" ]
+      while [ "${idx}" -le "$LPRNG_LOCAL_USBPORT_PRINTER_N" ]
       do
         active=''
-        eval active='$LPRNG_LOCAL_USBPORT_PRINTER_'$idx'_ACTIVE'
-        eval comment='$LPRNG_LOCAL_USBPORT_PRINTER_'$idx'_COMMENT'
-        eval notify='$LPRNG_LOCAL_USBPORT_PRINTER_'$idx'_NOTIFY'
+        eval active='$LPRNG_LOCAL_USBPORT_PRINTER_'${idx}'_ACTIVE'
+        eval comment='$LPRNG_LOCAL_USBPORT_PRINTER_'${idx}'_COMMENT'
+        eval notify='$LPRNG_LOCAL_USBPORT_PRINTER_'${idx}'_NOTIFY'
         create_printer=true
 
-        if [ "$active" != "yes" ]
-        then
-          mecho --std "LPRNG_LOCAL_USBPORT_PRINTER_"$idx" is not active -"
-          mecho --std " skipping LPRNG_LOCAL_USBPORT_PRINTER_"$idx" ..."
+        if [ "$active" != "yes" ] ; then
+          mecho --std "LPRNG_LOCAL_USBPORT_PRINTER_"${idx}" is not active -"
+          mecho --std " skipping LPRNG_LOCAL_USBPORT_PRINTER_"${idx}" ..."
           create_printer=false
         fi
 
-        if [ "$create_printer" = "true" ]
-        then
+        if [ "$create_printer" = "true" ] ; then
          {
-          echo "usbpr$idx:"
+          echo "usbpr${idx}:"
           echo "        :done_jobs=0"
           echo "        :mc=0"
           echo "        :rw@"
           echo "        :sh"
 
-          if [ "$eisfair_system" = "eisfair-1" ]
-          then
+          if [ "$eisfair_system" = "eisfair-1" ] ; then
               echo "        :lp=/dev/usb/lp$idy"
           else
               echo "        :lp=/dev/usblp$idy"
           fi
 
-          echo "        :sd=$lpdir/usbpr$idx"
+          echo "        :sd=$lpdir/usbpr${idx}"
           echo "        :fx=flp"
           echo "        :filter_options=\$P \$b \$e \$j \$t \$f \$n \$h \$S"
           echo "        :filter=/var/install/bin/lprng-filter"
@@ -279,12 +255,11 @@ then
          } >> "$generate"
         fi
 
-        idx=`expr $idx + 1`
-        idy=`expr $idy + 1`
+        idx=`expr ${idx} + 1`
+        idy=`expr ${idy} + 1`
       done
     else
-      if [ -f /etc/config.d/usb ]
-      then
+      if [ -f /etc/config.d/usb ] ; then
         mecho --error "If you want to print to USB printers, you have to set"
         mecho --error "\"START_USB\" and \"USB_PRINTER\" to 'yes' in USB configuration"
         mecho --error "skipping USB printers ..."
@@ -300,11 +275,9 @@ else
   mecho --std "No usbport printers active."
 fi
 
-if [ "$LPRNG_REMOTE_PRINTER_N" != 0 ]
-then
+if [ "$LPRNG_REMOTE_PRINTER_N" != 0 ] ; then
   do_check_remote
-  if [ "$remote_any_active" = "yes" ]
-  then
+  if [ "$remote_any_active" = "yes" ] ; then
    {
     echo
     echo "# ----------------------------------------------------------------------------"
@@ -313,55 +286,49 @@ then
    } >> "$generate"
 
     idx='1'
-    while [ "$idx" -le "$LPRNG_REMOTE_PRINTER_N" ]
+    while [ "${idx}" -le "$LPRNG_REMOTE_PRINTER_N" ]
     do
-      eval active='$LPRNG_REMOTE_PRINTER_'$idx'_ACTIVE'
-      eval remotequeuename='$LPRNG_REMOTE_PRINTER_'$idx'_QUEUENAME'
-      eval remoteip='$LPRNG_REMOTE_PRINTER_'$idx'_IP'
-      eval remoteport='$LPRNG_REMOTE_PRINTER_'$idx'_PORT'
-      eval comment='$LPRNG_REMOTE_PRINTER_'$idx'_COMMENT'
-      eval notify='$LPRNG_REMOTE_PRINTER_'$idx'_NOTIFY'
+      eval active='$LPRNG_REMOTE_PRINTER_'${idx}'_ACTIVE'
+      eval remotequeuename='$LPRNG_REMOTE_PRINTER_'${idx}'_QUEUENAME'
+      eval remoteip='$LPRNG_REMOTE_PRINTER_'${idx}'_IP'
+      eval remoteport='$LPRNG_REMOTE_PRINTER_'${idx}'_PORT'
+      eval comment='$LPRNG_REMOTE_PRINTER_'${idx}'_COMMENT'
+      eval notify='$LPRNG_REMOTE_PRINTER_'${idx}'_NOTIFY'
       create_printer=true
 
-      if [ "$active" != "yes" ]
-      then
-        mecho --std "LPRNG_REMOTE_PRINTER_"$idx" is not active -"
-        mecho --std " skipping LPRNG_REMOTE_PRINTER_"$idx" ..."
+      if [ "$active" != "yes" ] ; then
+        mecho --std "LPRNG_REMOTE_PRINTER_"${idx}" is not active -"
+        mecho --std " skipping LPRNG_REMOTE_PRINTER_"${idx}" ..."
         create_printer=false
       fi
 
-      if [ -z "$remoteip" -a "$create_printer" = "true" ]
-      then
-        mecho --error "LPRNG_REMOTE_PRINTER_"$idx"_IP is not defined -"
-        mecho --warn " skipping LPRNG_REMOTE_PRINTER_"$idx" ..."
+      if [ -z "$remoteip" -a "$create_printer" = "true" ] ; then
+        mecho --error "LPRNG_REMOTE_PRINTER_"${idx}"_IP is not defined -"
+        mecho --warn " skipping LPRNG_REMOTE_PRINTER_"${idx}" ..."
         create_printer=false
       fi
 
-      if [ "$create_printer" = "true" ]
-      then
-        if [ -n "$remotequeuename" ]
-        then
+      if [ "$create_printer" = "true" ] ; then
+        if [ -n "$remotequeuename" ] ; then
           lpvar="$remotequeuename@"
         else
           lpvar=''
         fi
 
-        if [ -n "$remoteip" ]
-        then
+        if [ -n "$remoteip" ] ; then
           lpvar="$lpvar$remoteip"
         else
           lpvar="$lpvar"
         fi
 
-        if [ -n "$remoteport" ]
-        then
+        if [ -n "$remoteport" ] ; then
           lpvar="$lpvar%$remoteport"
         else
           lpvar="$lpvar"
         fi
 
        {
-        echo "repr$idx:"
+        echo "repr${idx}:"
         echo "        :done_jobs=0"
         echo "        :mc=0"
         echo "        :connect_grace=1"
@@ -373,7 +340,7 @@ then
         echo "        :rw@"
         echo "        :sh"
         echo "        :lp=$lpvar"
-        echo "        :sd=$lpdir/repr$idx"
+        echo "        :sd=$lpdir/repr${idx}"
         echo "        :fx=flp"
         echo "        :filter_options=\$P \$b \$e \$j \$t \$f \$n \$h \$S"
         echo "        :filter=/var/install/bin/lprng-filter"
@@ -382,7 +349,7 @@ then
         echo
        } >> "$generate"
       fi
-      idx=`expr $idx + 1`
+      idx=`expr ${idx} + 1`
     done
   else
     mecho --std "No remote printers active."
@@ -393,8 +360,7 @@ fi
 
 mkdir -p /var/spool/lprng
 chmod 0777 /var/spool/lprng
-if [ ! -f /var/spool/lprng/log.lprng ]
-then
+if [ ! -f /var/spool/lprng/log.lprng ] ; then
   touch /var/spool/lprng/log.lprng
   chown lp:lp /var/spool/lprng/log.lprng
 fi

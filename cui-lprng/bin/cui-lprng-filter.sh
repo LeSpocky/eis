@@ -22,30 +22,25 @@ client=`echo "$8"|tr -d \"|cut -b3-`
 cm=`echo "$9"|tr -d \"|cut -b3-`
 full='no'
 /bin/cat -
-if [ -f ${smbinfofile} ]
-then
-    smbinfo=`echo $PRINTCAP_ENTRY|sed -e "s/.*:smbinfo=//g"|sed -e "s/:.*//g"|tr -d "[:blank:]"`
-    eval `/bin/cat $smbinfofile`
-    rm -f $smbinfofile
-    if [ "$smbinfo" = "yes" ]
-    then
+if [ -f ${smbinfofile} ] ; then
+    smbinfo=`echo ${PRINTCAP_ENTRY}|sed -e "s/.*:smbinfo=//g"|sed -e "s/:.*//g"|tr -d "[:blank:]"`
+    eval `/bin/cat ${smbinfofile}`
+    rm -f ${smbinfofile}
+    if [ "$smbinfo" = "yes" ] ; then
         message="Druckauftrag entgegengenommen am $druckdatum<newline><newline>"
         message="$message<tab>gedruckt auf<tab>: \\\\$printserver\\$queue<newline>"
-        if [ -n "$cm" ]
-        then
+        if [ -n "$cm" ] ; then
             message="$message<tab><tab><tab>  $cm<newline>"
         fi
         message="$message<tab>abgeschickt von<tab>: $user@$client<newline>"
         message="$message<tab>Client-IP<tab><tab>: $ip<newline>"
         message="$message<tab>Client-OS<tab><tab>: $os<newline>"
         message="$message<tab>Jobnummer<tab>: $jobnr<newline>"
-        if [ -n "$jobname" ]
-        then
+        if [ -n "$jobname" ] ; then
             message="$message<tab>Jobname<tab>: $jobname<newline>"
         fi
         message="$message<tab>Druckjobgroesse<tab>: $jobgroesse KByte<newline>"
-        if [ "$full" = yes ]
-        then
+        if [ "$full" = yes ] ; then
             version=`cat /etc/version`
             samba_version=`cat /usr/share/doc/samba/version`
             samba_intversion=`/usr/sbin/smbd -V | cut -d" " -f2`
@@ -70,8 +65,7 @@ then
 fi
 echo "$druckdatum $queue $user@$client $jobgroesse KByte" >> /var/spool/lprng/log.lprng
 ls /etc/lprng-filter.* >/dev/null 2>/dev/null
-if [ $? -eq 0 ]
-then
+if [ $? -eq 0 ] ; then
     for SCRIPT in `ls /etc/lprng-filter.*`
     do
         . ${SCRIPT}

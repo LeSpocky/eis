@@ -21,8 +21,8 @@ smbinfofile="/var/spool/lprng/$2.smbinfo"
  echo "ip=$6"
  echo "os=$7"
  echo "jobname=$8"
-} > $smbinfofile
-chmod 666 $2 $smbinfofile
+} > ${smbinfofile}
+chmod 666 $2 ${smbinfofile}
 /usr/bin/lpr -P$1 $2
 rm -f $2
 exit 0

@@ -24,24 +24,20 @@ targetfile=''
 case $# in
 1)
     mode="$1"
-    if [ "$mode" = "update" -o "$mode" = "generate" -o "$mode" = "sample" ]
-    then
-        if [ "$mode" = "update" ]
-        then
+    if [ "$mode" = "update" -o "$mode" = "generate" -o "$mode" = "sample" ] ; then
+        if [ "$mode" = "update" ] ; then
             targetfile="/etc/config.d/lprng"
-            mecho --info "Updating your configuration file $targetfile ..."
+            mecho --info "Updating your configuration file ${targetfile} ..."
         fi
 
-        if [ "$mode" = "generate" ]
-        then
+        if [ "$mode" = "generate" ] ; then
             targetfile="/etc/config.d/lprng"
-            mecho --info "Generating configuration file $targetfile ..."
+            mecho --info "Generating configuration file ${targetfile} ..."
         fi
 
-        if [ "$mode" = "sample" ]
-        then
+        if [ "$mode" = "sample" ] ; then
             targetfile="/etc/default.d/lprng"
-            mecho --info "Generating sample configuration file $targetfile ..."
+            mecho --info "Generating sample configuration file ${targetfile} ..."
         fi
     else
         echo "usage: /var/install/config.d/lprng-update.sh {update|generate|sample} " >&2
@@ -78,8 +74,7 @@ do_update ()
   echo "#"
   echo "# ------------------------------------------------------------------------------"
   echo
-  if [ "$LPRNG_START" != "" ]
-  then
+  if [ "$LPRNG_START" != "" ] ; then
     START_LPRNG="$LPRNG_START"
   else
     START_LPRNG="$START_LPRNG"
@@ -95,8 +90,7 @@ do_update ()
   echo "# LPRNG_LOCAL_PARPORT_PRINTER_N is '0'"
   echo "# ------------------------------------------------------------------------------"
   echo
-  if [ -n "$LPRNG_LOCAL_PRINTER_N" ]
-  then
+  if [ -n "$LPRNG_LOCAL_PRINTER_N" ] ; then
     LPRNG_LOCAL_PARPORT_PRINTER_N="$LPRNG_LOCAL_PRINTER_N"
     count=$LPRNG_LOCAL_PRINTER_N
   else
@@ -108,48 +102,43 @@ do_update ()
   echo
   count=`expr $count + 10`
   idx='1'
-  while [ "$idx" -le "$count" ]
+  while [ "${idx}" -le "$count" ]
   do
     io=''
     active=''
-    if [ -n "$LPRNG_LOCAL_PRINTER_N" ]
-    then
-      eval io='$LPRNG_LOCAL_PRINTER_'$idx'_IO'
-      eval active='$LPRNG_LOCAL_PRINTER_'$idx'_ACTIVE'
-      eval irq='$LPRNG_LOCAL_PRINTER_'$idx'_IRQ'
-      eval LPRNG_LOCAL_PARPORT_PRINTER_"$idx"_IO="$LPRNG_LOCAL_PRINTER_$idx_IO"
-      eval LPRNG_LOCAL_PARPORT_PRINTER_"$idx"_ACTIVE="$LPRNG_LOCAL_PRINTER_$idx_ACTIVE"
-      eval LPRNG_LOCAL_PARPORT_PRINTER_"$idx"_IRQ="$LPRNG_LOCAL_PRINTER_$idx_IRQ"
+    if [ -n "$LPRNG_LOCAL_PRINTER_N" ] ; then
+      eval io='$LPRNG_LOCAL_PRINTER_'${idx}'_IO'
+      eval active='$LPRNG_LOCAL_PRINTER_'${idx}'_ACTIVE'
+      eval irq='$LPRNG_LOCAL_PRINTER_'${idx}'_IRQ'
+      eval LPRNG_LOCAL_PARPORT_PRINTER_"${idx}"_IO="$LPRNG_LOCAL_PRINTER_${idx}_IO"
+      eval LPRNG_LOCAL_PARPORT_PRINTER_"${idx}"_ACTIVE="$LPRNG_LOCAL_PRINTER_${idx}_ACTIVE"
+      eval LPRNG_LOCAL_PARPORT_PRINTER_"${idx}"_IRQ="$LPRNG_LOCAL_PRINTER_${idx}_IRQ"
     else
-      eval io='$LPRNG_LOCAL_PARPORT_PRINTER_'$idx'_IO'
-      eval active='$LPRNG_LOCAL_PARPORT_PRINTER_'$idx'_ACTIVE'
-      eval irq='$LPRNG_LOCAL_PARPORT_PRINTER_'$idx'_IRQ'
-      eval comment='$LPRNG_LOCAL_PARPORT_PRINTER_'$idx'_COMMENT'
-      eval notify='$LPRNG_LOCAL_PARPORT_PRINTER_'$idx'_NOTIFY'
+      eval io='$LPRNG_LOCAL_PARPORT_PRINTER_'${idx}'_IO'
+      eval active='$LPRNG_LOCAL_PARPORT_PRINTER_'${idx}'_ACTIVE'
+      eval irq='$LPRNG_LOCAL_PARPORT_PRINTER_'${idx}'_IRQ'
+      eval comment='$LPRNG_LOCAL_PARPORT_PRINTER_'${idx}'_COMMENT'
+      eval notify='$LPRNG_LOCAL_PARPORT_PRINTER_'${idx}'_NOTIFY'
     fi
-    if [ -n "$io" ]
-    then
-      if [ -z "$active" ]
-      then
-        eval LPRNG_LOCAL_PARPORT_PRINTER_"$idx"_ACTIVE="no"
+    if [ -n "$io" ] ; then
+      if [ -z "$active" ] ; then
+        eval LPRNG_LOCAL_PARPORT_PRINTER_"${idx}"_ACTIVE="no"
       fi
-      printvar "LPRNG_LOCAL_PARPORT_PRINTER_"$idx"_ACTIVE" "Is this printer active: yes or no"
-      printvar "LPRNG_LOCAL_PARPORT_PRINTER_"$idx"_IO" "This is the io-adress of the"
-      printvar "" "$idx. parallel printer port"
-      if [ -z "$irq" ]
-      then
-        eval LPRNG_LOCAL_PARPORT_PRINTER_"$idx"_IRQ="no"
+      printvar "LPRNG_LOCAL_PARPORT_PRINTER_"${idx}"_ACTIVE" "Is this printer active: yes or no"
+      printvar "LPRNG_LOCAL_PARPORT_PRINTER_"${idx}"_IO" "This is the io-adress of the"
+      printvar "" "${idx}. parallel printer port"
+      if [ -z "$irq" ] ; then
+        eval LPRNG_LOCAL_PARPORT_PRINTER_"${idx}"_IRQ="no"
       fi
-      printvar "LPRNG_LOCAL_PARPORT_PRINTER_"$idx"_IRQ" "Use interrupt: yes or no"
-      printvar "LPRNG_LOCAL_PARPORT_PRINTER_"$idx"_COMMENT" "Comment, Location for NOTIFY"
-      if [ -z "$notify" ]
-      then
-        eval LPRNG_LOCAL_PARPORT_PRINTER_"$idx"_NOTIFY="no"
+      printvar "LPRNG_LOCAL_PARPORT_PRINTER_"${idx}"_IRQ" "Use interrupt: yes or no"
+      printvar "LPRNG_LOCAL_PARPORT_PRINTER_"${idx}"_COMMENT" "Comment, Location for NOTIFY"
+      if [ -z "$notify" ] ; then
+        eval LPRNG_LOCAL_PARPORT_PRINTER_"${idx}"_NOTIFY="no"
       fi
-      printvar "LPRNG_LOCAL_PARPORT_PRINTER_"$idx"_NOTIFY" "Send printer messages: yes or no"
+      printvar "LPRNG_LOCAL_PARPORT_PRINTER_"${idx}"_NOTIFY" "Send printer messages: yes or no"
       echo
     fi
-    idx=`expr $idx + 1`
+    idx=`expr ${idx} + 1`
   done
   echo "# ------------------------------------------------------------------------------"
   echo "# Local USB Printer Configuration"
@@ -160,8 +149,7 @@ do_update ()
   echo "# LPRNG_LOCAL_USBPORT_PRINTER_N is '0'"
   echo "# ------------------------------------------------------------------------------"
   echo
-  if [ -z "$LPRNG_LOCAL_USBPORT_PRINTER_N" ]
-  then
+  if [ -z "$LPRNG_LOCAL_USBPORT_PRINTER_N" ] ; then
     echo "LPRNG_LOCAL_USBPORT_PRINTER_N='3'     # How many local USB printers"
     echo "                                      # do you want to use"
     echo
@@ -192,24 +180,22 @@ do_update ()
     echo
     count=`expr $LPRNG_LOCAL_USBPORT_PRINTER_N + 10`
     idx='1'
-    while [ "$idx" -le "$count" ]
+    while [ "${idx}" -le "$count" ]
     do
       active=''
-      eval active='$LPRNG_LOCAL_USBPORT_PRINTER_'$idx'_ACTIVE'
-      eval comment='$LPRNG_LOCAL_USBPORT_PRINTER_'$idx'_COMMENT'
-      eval notify='$LPRNG_LOCAL_USBPORT_PRINTER_'$idx'_NOTIFY'
-      if [ -n "$active" ]
-      then
-        printvar "LPRNG_LOCAL_USBPORT_PRINTER_"$idx"_ACTIVE" "Is this printer active: yes or no"
-        printvar "LPRNG_LOCAL_USBPORT_PRINTER_"$idx"_COMMENT" "Comment, Location for NOTIFY"
-        if [ -z "$notify" ]
-        then
-          eval LPRNG_LOCAL_USBPORT_PRINTER_"$idx"_NOTIFY="no"
+      eval active='$LPRNG_LOCAL_USBPORT_PRINTER_'${idx}'_ACTIVE'
+      eval comment='$LPRNG_LOCAL_USBPORT_PRINTER_'${idx}'_COMMENT'
+      eval notify='$LPRNG_LOCAL_USBPORT_PRINTER_'${idx}'_NOTIFY'
+      if [ -n "$active" ] ; then
+        printvar "LPRNG_LOCAL_USBPORT_PRINTER_"${idx}"_ACTIVE" "Is this printer active: yes or no"
+        printvar "LPRNG_LOCAL_USBPORT_PRINTER_"${idx}"_COMMENT" "Comment, Location for NOTIFY"
+        if [ -z "$notify" ] ; then
+          eval LPRNG_LOCAL_USBPORT_PRINTER_"${idx}"_NOTIFY="no"
         fi
-        printvar "LPRNG_LOCAL_USBPORT_PRINTER_"$idx"_NOTIFY" "Send printer messages: yes or no"
+        printvar "LPRNG_LOCAL_USBPORT_PRINTER_"${idx}"_NOTIFY" "Send printer messages: yes or no"
         echo
       fi
-      idx=`expr $idx + 1`
+      idx=`expr ${idx} + 1`
     done
   fi
   echo "# ------------------------------------------------------------------------------"
@@ -226,42 +212,39 @@ do_update ()
   echo
   count=`expr $LPRNG_REMOTE_PRINTER_N + 10`
   idx='1'
-  while [ "$idx" -le "$count" ]
+  while [ "${idx}" -le "$count" ]
   do
     active=''
     ip=''
     queuename=''
     port=''
-    eval active='$LPRNG_REMOTE_PRINTER_'$idx'_ACTIVE'
-    eval ip='$LPRNG_REMOTE_PRINTER_'$idx'_IP'
-    eval queuename='$LPRNG_REMOTE_PRINTER_'$idx'_QUEUENAME'
-    eval port='$LPRNG_REMOTE_PRINTER_'$idx'_PORT'
-    eval comment='$LPRNG_REMOTE_PRINTER_'$idx'_COMMENT'
-    eval notify='$LPRNG_REMOTE_PRINTER_'$idx'_NOTIFY'
-    if [ -n "$ip" ]
-    then
-      if [ -z "$active" ]
-      then
-        eval LPRNG_REMOTE_PRINTER_"$idx"_ACTIVE="no"
+    eval active='$LPRNG_REMOTE_PRINTER_'${idx}'_ACTIVE'
+    eval ip='$LPRNG_REMOTE_PRINTER_'${idx}'_IP'
+    eval queuename='$LPRNG_REMOTE_PRINTER_'${idx}'_QUEUENAME'
+    eval port='$LPRNG_REMOTE_PRINTER_'${idx}'_PORT'
+    eval comment='$LPRNG_REMOTE_PRINTER_'${idx}'_COMMENT'
+    eval notify='$LPRNG_REMOTE_PRINTER_'${idx}'_NOTIFY'
+    if [ -n "$ip" ] ; then
+      if [ -z "$active" ] ; then
+        eval LPRNG_REMOTE_PRINTER_"${idx}"_ACTIVE="no"
       fi
-      printvar "LPRNG_REMOTE_PRINTER_"$idx"_ACTIVE" "Is this printer active: yes or no"
-      printvar "LPRNG_REMOTE_PRINTER_"$idx"_IP" "This is the ip of the $idx. remote"
+      printvar "LPRNG_REMOTE_PRINTER_"${idx}"_ACTIVE" "Is this printer active: yes or no"
+      printvar "LPRNG_REMOTE_PRINTER_"${idx}"_IP" "This is the ip of the ${idx}. remote"
       printvar "" "printer"
-      printvar "LPRNG_REMOTE_PRINTER_"$idx"_QUEUENAME" "This is the queuename of the $idx."
+      printvar "LPRNG_REMOTE_PRINTER_"${idx}"_QUEUENAME" "This is the queuename of the ${idx}."
       printvar "" "remote printer - read documentation!"
-      printvar "LPRNG_REMOTE_PRINTER_"$idx"_PORT" "This is the port of the $idx. remote"
+      printvar "LPRNG_REMOTE_PRINTER_"${idx}"_PORT" "This is the port of the ${idx}. remote"
       printvar "" "printer - read documentation!"
-      printvar "LPRNG_REMOTE_PRINTER_"$idx"_COMMENT" "Comment, Location for NOTIFY"
-      if [ -z "$notify" ]
-      then
-        eval LPRNG_REMOTE_PRINTER_"$idx"_NOTIFY="no"
+      printvar "LPRNG_REMOTE_PRINTER_"${idx}"_COMMENT" "Comment, Location for NOTIFY"
+      if [ -z "$notify" ] ; then
+        eval LPRNG_REMOTE_PRINTER_"${idx}"_NOTIFY="no"
       fi
-      printvar "LPRNG_REMOTE_PRINTER_"$idx"_NOTIFY" "Send printer messages: yes or no"
+      printvar "LPRNG_REMOTE_PRINTER_"${idx}"_NOTIFY" "Send printer messages: yes or no"
       echo
     fi
-    idx=`expr $idx + 1`
+    idx=`expr ${idx} + 1`
   done
- } >"$targetfile"
+ } >"${targetfile}"
 }
 
 do_generate ()
@@ -433,84 +416,69 @@ do_generate ()
   echo "                                      # Comment, Location for NOTIFY"
   echo "LPRNG_REMOTE_PRINTER_4_NOTIFY='no'    # Send printer messages: yes or no"
   echo
- } >"$targetfile"
+ } >"${targetfile}"
 }
 
-if [ "$mode" = "update" ]
-then
-  . "$targetfile"
+if [ "$mode" = "update" ] ; then
+  . "${targetfile}"
   # section 'changed parameters'
-  if [ -n "`grep LPRNG_START= $targetfile`" ]
-  then
+  if [ -n "`grep LPRNG_START= ${targetfile}`" ] ; then
     changed='yes'
     mecho --warn "Changed: LPRNG_START to START_LPRNG"
   fi
-  if [ -n "`grep LPRNG_LOCAL_PRINTER_N= $targetfile`" ]
-  then
+  if [ -n "`grep LPRNG_LOCAL_PRINTER_N= ${targetfile}`" ] ; then
     changed='yes'
     mecho --warn "Changed: LPRNG_LOCAL_PRINTER_N to LPRNG_LOCAL_PARPORT_PRINTER_N"
   fi
-  if [ -n "`grep LPRNG_LOCAL_PRINTER_._ACTIVE= $targetfile`" ]
-  then
+  if [ -n "`grep LPRNG_LOCAL_PRINTER_._ACTIVE= ${targetfile}`" ] ; then
     changed='yes'
     mecho --warn "Changed: LPRNG_LOCAL_PRINTER_x_ACTIVE to LPRNG_LOCAL_PARPORT_PRINTER_x_ACTIVE"
   fi
-  if [ -n "`grep LPRNG_LOCAL_PRINTER_._IO= $targetfile`" ]
-  then
+  if [ -n "`grep LPRNG_LOCAL_PRINTER_._IO= ${targetfile}`" ] ; then
     changed='yes'
     mecho --warn "Changed: LPRNG_LOCAL_PRINTER_x_IO to LPRNG_LOCAL_PARPORT_PRINTER_x_IO"
   fi
   # section 'added parameters'
-  if [ -z "`grep LPRNG_REMOTE_PRINTER_._ACTIVE $targetfile`" ]
-  then
+  if [ -z "`grep LPRNG_REMOTE_PRINTER_._ACTIVE ${targetfile}`" ] ; then
     added='yes'
     mecho --warn "Added  : LPRNG_REMOTE_PRINTER_x_ACTIVE"
   fi
-  if [ -z "`grep LPRNG_LOCAL_USBPORT_PRINTER_N $targetfile`" ]
-  then
+  if [ -z "`grep LPRNG_LOCAL_USBPORT_PRINTER_N ${targetfile}`" ] ; then
     added='yes'
     mecho --warn "Added  : LPRNG_LOCAL_USBPORT_PRINTER_N"
     anykey
     mecho --warn "Added  : LPRNG_LOCAL_USBPORT_PRINTER_x_ACTIVE"
   fi
-  if [ -z "`grep LPRNG_LOCAL_PARPORT_PRINTER_._IRQ $targetfile`" ]
-  then
+  if [ -z "`grep LPRNG_LOCAL_PARPORT_PRINTER_._IRQ ${targetfile}`" ] ; then
     added='yes'
     mecho --warn "Added  : LPRNG_LOCAL_PARPORT_PRINTER_x_IRQ"
   fi
-  if [ -z "`grep LPRNG_LOCAL_PARPORT_PRINTER_._COMMENT $targetfile`" ]
-  then
+  if [ -z "`grep LPRNG_LOCAL_PARPORT_PRINTER_._COMMENT ${targetfile}`" ] ; then
     added='yes'
     mecho --warn "Added  : LPRNG_LOCAL_PARPORT_PRINTER_x_COMMENT"
   fi
-  if [ -z "`grep LPRNG_LOCAL_PARPORT_PRINTER_._NOTIFY $targetfile`" ]
-  then
+  if [ -z "`grep LPRNG_LOCAL_PARPORT_PRINTER_._NOTIFY ${targetfile}`" ] ; then
     added='yes'
     mecho --warn "Added  : LPRNG_LOCAL_PARPORT_PRINTER_x_NOTIFY"
   fi
-  if [ -z "`grep LPRNG_LOCAL_USBPORT_PRINTER_._COMMENT $targetfile`" ]
-  then
+  if [ -z "`grep LPRNG_LOCAL_USBPORT_PRINTER_._COMMENT ${targetfile}`" ] ; then
     added='yes'
     mecho --warn "Added  : LPRNG_LOCAL_USBPORT_PRINTER_x_COMMENT"
   fi
-  if [ -z "`grep LPRNG_LOCAL_USBPORT_PRINTER_._NOTIFY $targetfile`" ]
-  then
+  if [ -z "`grep LPRNG_LOCAL_USBPORT_PRINTER_._NOTIFY ${targetfile}`" ] ; then
     added='yes'
     mecho --warn "Added  : LPRNG_LOCAL_USBPORT_PRINTER_x_NOTIFY"
   fi
-  if [ -z "`grep LPRNG_REMOTE_PRINTER_._COMMENT $targetfile`" ]
-  then
+  if [ -z "`grep LPRNG_REMOTE_PRINTER_._COMMENT ${targetfile}`" ] ; then
     added='yes'
     mecho --warn "Added  : LPRNG_REMOTE_PRINTER_x_COMMENT"
   fi
-  if [ -z "`grep LPRNG_REMOTE_PRINTER_._NOTIFY $targetfile`" ]
-  then
+  if [ -z "`grep LPRNG_REMOTE_PRINTER_._NOTIFY ${targetfile}`" ] ; then
     added='yes'
     mecho --warn "Added  : LPRNG_REMOTE_PRINTER_x_NOTIFY"
   fi
   # show info for removed/added/changed parameters
-  if [ "$added" = "yes" -o "$changed" = "yes" -o "$removed" = "yes" ]
-  then
+  if [ "$added" = "yes" -o "$changed" = "yes" -o "$removed" = "yes" ] ; then
     mecho --warn "Read documentation for removed/added/changed parameter(s)!"
     anykey
   fi
@@ -519,5 +487,5 @@ else
   do_generate
 fi
 
-chown root.root "$targetfile"
-chmod 0644 "$targetfile"
+chown root.root "${targetfile}"
+chmod 0644 "${targetfile}"

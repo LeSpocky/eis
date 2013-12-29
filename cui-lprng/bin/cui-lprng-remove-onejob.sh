@@ -24,8 +24,7 @@ in
     interactive='true'
     ;;
   1)
-    if [ "$1" = "noninteractive" ]
-    then
+    if [ "$1" = "noninteractive" ] ; then
         interactive='false'
     fi
     ;;
@@ -36,8 +35,7 @@ in
     ;;
 esac
 
-if [ "$interactive" = "true" ]
-then
+if [ "$interactive" = "true" ] ; then
   clrhome
   mecho --info "Delete LPRng print jobs from queues"
   echo
@@ -53,7 +51,7 @@ then
     echo -n "checking queue	"
     mecho --info -n "$queue	"
     echo "for deletable jobs ..."
-    if `lpq -P$queue | grep -q 'Rank   Owner/ID               Pr/Class Job Files                 Size Time'`
+    if `lpq -P${queue} | grep -q 'Rank   Owner/ID               Pr/Class Job Files                 Size Time'`
     then
       jobs_in_queue='yes'
       any_job_exists='yes'
@@ -63,8 +61,7 @@ then
     export MYARRAY_${TROW}_2
   done
 
-  if [ "$any_job_exists" = "no" ]
-  then
+  if [ "$any_job_exists" = "no" ] ; then
     clrhome
     mecho --info "Delete LPRng print jobs from queues"
     echo
@@ -88,8 +85,7 @@ then
   TROW=0
 
   choose_tmpfile=`/bin/mktemp -t choose.XXXXXXXXXX`
-  if [ $? -ne 0 ]
-  then
+  if [ $? -ne 0 ] ; then
     choose_tmpfile="/tmp/choose.$$"
     >"$choose_tmpfile"
   fi
@@ -97,20 +93,18 @@ then
   rc=$?
   a=`cat "$choose_tmpfile"`
   rm -f "$choose_tmpfile"
-  [ $rc = 255 ] && exit 255
+  [ ${rc} = 255 ] && exit 255
   [ "$a" = "0" ] && exit 127
   [ "$a" = "" ] && exit 0
 
-  eval printern='$MYARRAY_'$a'_1'
-  eval jobs_in_queue='$MYARRAY_'$a'_2'
+  eval printern='$MYARRAY_'${a}'_1'
+  eval jobs_in_queue='$MYARRAY_'${a}'_2'
   export printern
   export jobs_in_queue
 
-  if [ "$jobs_in_queue" = "yes" ]
-  then
+  if [ "$jobs_in_queue" = "yes" ] ; then
     lprng_remove_onejob_choose_tmpfile=`/bin/mktemp -t lprng_remove_onejob_choose.XXXXXXXXXX`
-    if [ $? -ne 0 ]
-    then
+    if [ $? -ne 0 ] ; then
       lprng_remove_onejob_choose_tmpfile="/tmp/lprng_remove_onejob_choose.$$"
       >"$lprng_remove_onejob_choose_tmpfile"
     fi
@@ -148,8 +142,7 @@ then
     done
     rm -f "$lprng_remove_onejob_choose_tmpfile"
 
-    if [ "$TROW" -eq 0 ]
-    then
+    if [ "$TROW" -eq 0 ] ; then
       clrhome
       mecho --info "Delete LPRng print jobs from queues"
       echo
@@ -171,8 +164,7 @@ then
     export MYARRAY_ROWS
 
     choose_tmpfile=`/bin/mktemp -t choose.XXXXXXXXXX`
-    if [ $? -ne 0 ]
-    then
+    if [ $? -ne 0 ] ; then
       choose_tmpfile="/tmp/choose.$$"
       >"$choose_tmpfile"
     fi
@@ -180,14 +172,14 @@ then
     rc=$?
     a=`cat "$choose_tmpfile"`
     rm -f "$choose_tmpfile"
-    [ $rc = 255 ] && exit 255
+    [ ${rc} = 255 ] && exit 255
     [ "$a" = "0" ] && exit 127
     [ "$a" = "" ] && exit 0
 
-    eval jobnr='$MYARRAY_'$a'_1'
-    eval owner='$MYARRAY_'$a'_2'
-    eval pfile='$MYARRAY_'$a'_3'
-    eval ptime='$MYARRAY_'$a'_4'
+    eval jobnr='$MYARRAY_'${a}'_1'
+    eval owner='$MYARRAY_'${a}'_2'
+    eval pfile='$MYARRAY_'${a}'_3'
+    eval ptime='$MYARRAY_'${a}'_4'
 
     clrhome
     mecho --info "Delete LPRng print jobs from queue $printern"
@@ -204,8 +196,7 @@ then
   fi
 fi
 
-if [ "$interactive" = "true" ]
-then
+if [ "$interactive" = "true" ] ; then
   echo
   anykey
 fi

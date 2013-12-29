@@ -18,8 +18,7 @@ in
     interactive='true'
     ;;
   1)
-    if [ "$1" = "noninteractive" ]
-    then
+    if [ "$1" = "noninteractive" ] ; then
         interactive='false'
     fi
     ;;
@@ -29,15 +28,13 @@ in
     exit 1
     ;;
 esac
-if [ "$interactive" = "true" ]
-then
+if [ "$interactive" = "true" ] ; then
     clrhome
     mecho --info "Disable Printing and Spooling for all Queues"
     echo
 fi
 /usr/sbin/lpc down all
-if [ "$interactive" = "true" ]
-then
+if [ "$interactive" = "true" ] ; then
     echo
     anykey
 fi
