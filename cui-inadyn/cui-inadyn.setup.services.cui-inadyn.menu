@@ -1,6 +1,6 @@
 <!-- /var/install/menu/setup.services.inadyn.menu -->
 <!-- Creation: 2011-02-12 starwarsfan -->
-<package>inadyn</package>
+<package>cui-inadyn</package>
 <title>Inadyn administration</title>
 <doc file="inadyn.txt">View package documentation</doc>
 <edit>Edit configuration</edit>

@@ -13,24 +13,11 @@
 # (at your option) any later version.
 # ----------------------------------------------------------------------------
 
-packageName=inadyn
+packageName=cui-inadyn
 
-# ----------------------------------------------------------------------------
-# Remove init script links
-# ----------------------------------------------------------------------------
-levels="/etc/rcS.d /etc/rc0.d /etc/rc1.d /etc/rc2.d /etc/rc6.d"
-for level in $levels
-do
-    if [ -d "$level" ]
-    then
-        rm -f ${level}/S??${packageName}
-        rm -f ${level}/K??${packageName}
-    fi
-done
+/var/install/bin/del-menu setup.services.menu setup.services.cui-inadyn.menu
 
-/var/install/bin/del-menu setup.services.menu setup.services.inadyn.menu
-
-rm -f /etc/check.d/inadyn*
-rm -f /etc/default.d/inadyn*
-rm -f /etc/config.d/inadyn*
-rm -f /etc/backup.d/inadyn*
+rm -f /etc/check.d/cui-inadyn*
+rm -f /etc/default.d/cui-inadyn*
+rm -f /etc/config.d/cui-inadyn*
+rm -f /etc/backup.d/cui-inadyn*

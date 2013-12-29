@@ -21,11 +21,7 @@
 . /var/install/include/eislib
 
 # Include config
-. /etc/config.d/inadyn
-
-# Set package name
-packageName=inadyn
-
+. /etc/config.d/cui-inadyn
 
 # ----------------------------------------------------------------------------
 # Create inadyn configuration file

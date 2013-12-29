@@ -22,7 +22,7 @@
 . /var/install/include/eislib
 
 # Set package name
-packageName=inadyn
+packageName=cui-inadyn
 
 # ----------------------------------------------------------------------------
 # Set the default values for configuration

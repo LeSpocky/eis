@@ -15,9 +15,6 @@
 #exec 2> `pwd`/inadyn-status-mail-trace$$.log
 #set -x
 
-# Set package name
-packageName=inadyn
-
 # Source files
 . /etc/config.d/base
 . /var/install/include/eislib
