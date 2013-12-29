@@ -11,7 +11,6 @@ depends=""
 depends_dev=""
 makedepends="$depends_dev"
 install=""
-subpackages="${pkgname}-doc"
 source="http://inatech.eu/inadyn/inadyn.v${pkgver}.zip
        ${pkgname}.initd"
 
@@ -37,12 +36,6 @@ package() {
 #	install -D -m755 "$srcdir"/$pkgname.initd       ${pkgdir}/etc/init.d/$pkgname || return 1
 	cd "$_builddir"
 	install -D -m755 ${_builddir}/bin/linux/inadyn  ${pkgdir}/usr/bin/${pkgname} || return 1
-}
-
-doc() {
-#    ln -s inadyn/ "$_builddir"
-    mkdir ${pkgdir}/../inadyn-doc
-    cd "$_builddir"
 }
 
 md5sums="702a127f13b96eee38d60c6f30b20efa  inadyn.v1.96.2.zip
