@@ -1,0 +1,657 @@
+<!-- /var/install/help/vmail -->
+<!-- Creation: 2006-04-17 jv -->
+<!-- Last Update: $Id: vmail 31287 2012-07-18 10:50:22Z jv $ -->
+
+<help name="START_VMAIL">
+Use VMail service<br/>
+<br/>
+Default: START_VMAIL='yes'
+</help>
+
+<help name="VMAIL_SQL_HOST">
+MySQL host name. (localhost or IP)<br/>
+<br/>
+Default: VMAIL_SQL_HOST='localhost'<br/>
+</help>
+
+<help name="VMAIL_SQL_USER">
+Name for MySQL connect user. Autocreate if not exists.<br/>
+<br/>
+Default: VMAIL_SQL_USER='vmailprovider'<br/>
+</help>
+
+<help name="VMAIL_SQL_PASS">
+MySQL connet user password.<br/>
+<br/>
+</help>
+
+<help name="VMAIL_SQL_DATABASE">
+MySQL database name. Autocreate if not exists.<br/>
+<br/>
+Default: VMAIL_SQL_DATABASE='vmaildata'<br/>
+</help>
+
+<help name="VMAIL_SQL_PASS_SCHEME">
+E-Mail user password scheme. Don't change after add e-mail users!<br/>
+<br/>
+Default: VMAIL_SQL_PASS_SCHEME='PLAIN-MD5'<br/>
+</help>
+
+<help name="VMAIL_SQL_ENCRYPT_KEY">
+E-Mail user password encryption key. Don't change after add e-mail users!<br/>
+<br/>
+</help>
+
+<help name="VMAIL_LOGIN_WITH_MAILADDR">
+POP3, IMAP login with completed mail address or with username only.<br/>
+<br/>
+Example: 'username@domain.tld' or 'username'<br/>
+</help>
+
+<help name="VMAIL_MAILDIR_ROOT">
+Set default maildir base path.<br/>
+<br/>
+Use only: '/var/spool/postfix/virtual' or '/data/vmail/virtual'<br/>
+</help>
+
+
+<help name="START_POSTFIX">
+Start the Postfix E-Mail SMTP server 'yes' or 'no'<br/>
+<br/>
+Default: START_POSTFIX='yes'
+</help>
+
+<help name="POSTFIX_SMTP_TLS">
+Use TLS or SMTP over SSL for mail transport.<br/>
+Before use create mail cert!<br/>
+</help>
+
+<help name="POSTFIX_HELO_HOSTNAME">
+Change the postfix external public name for HELO and EHLO command.<br/>
+<br/>
+Example: POSTFIX_HELO_HOSTNAME='host.domain.tld'
+</help>
+
+<help name="POSTFIX_DRACD">
+Dynamic Relay Authorization Control Daemon - POP3/IMAP before SMTP service.<br/>
+<br/>
+Default: POSTFIX_DRACD='yes'
+</help>
+
+<help name="POSTFIX_DRACD_RELAYTIME">
+The lifetime of per IP-address open relay in minutes.<br/>
+<br/>
+Default: POSTFIX_DRACD_RELAYTIME='30'
+</help>
+
+<help name="POSTFIX_RELAY_FROM_NET_N">
+Count of internal or trusted networks for mail relaying.<br/>
+</help>
+
+<help name="POSTFIX_RELAY_FROM_NET_%">
+Internal or trusted network<br/>
+<br/>
+Example: '172.16.0.0/16'
+</help>
+
+<help name="POSTFIX_LIMIT_DESTINATIONS">
+Max count of destination recipients addresses. (To, CC, BCC)<br/>
+<br/>
+Default: '100'
+</help>
+
+<help name="POSTFIX_LIMIT_MAILSIZE">
+Max size of e-mail message (default 20MB)<br/>
+<br/>
+Default: '20'
+</help>
+
+
+<help name="POSTFIX_GLD">
+Use greylisting daemon for blocking spam mails<br/>
+<br/>
+Default: POSTFIX_GLD='yes'
+</help>
+
+<help name="POSTFIX_GLD_MINTIME">
+Minimal count of seconds before greylisting give access.<br/>
+<br/>
+Default: POSTFIX_GLD_MINTIME='300'
+</help>
+
+<help name="POSTFIX_GLD_CLR_ONE">
+Clean the database for entries not updated since # days with only one hit.<br/>
+<br/>
+Default: POSTFIX_GLD_CLR_ONE='1'
+</help>
+
+<help name="POSTFIX_GLD_CLR_UNUSED">
+Clean the database for ALL entries not updated since # days.<br/>
+<br/>
+Default: POSTFIX_GLD_CLR_UNUSED='30'
+</help>
+
+<help name="POSTFIX_RBL">
+Use external Realtime Blackhole List server for open relais and
+spam protection.<br/>
+<br/>
+Default: POSTFIX_RBL='yes'
+</help>
+
+<help name="POSTFIX_RBL_N">
+Count of Realtime Blackhole List servers.<br/>
+<br/>
+Default: POSTFIX_RBL_N='2'
+</help>
+
+<help name="POSTFIX_RBL_%_SERVER">
+Hostname of external Realtime Blackhole List server.<br/>
+<br/>
+Example: POSTFIX_RBL_1_SERVER='relays.ordb.org'
+</help>
+
+<help name="POSTFIX_RBL_%_WEIGHT">
+Weight factor of external Realtime Blackhole List server.<br/>
+<br/>
+Example: POSTFIX_RBL_1_WEIGHT='2'  
+</help>
+
+
+<help name="POSTFIX_REJECT_UNKN_CLIENT">
+Reject all email when:<br/>
+- the client IP address->name mapping fails, or<br/>
+- the name->address mapping fails, or<br/>
+- the name->address mapping does not match the client IP address.<br/>
+<br/>
+Default: POSTFIX_REJECT_UNKN_CLIENT='no'
+</help>
+
+<help name="POSTFIX_REJECT_UNKN_SEND_DOM">
+Reject all email when:<br/>
+- the MAIL FROM address is not in fully-qualified domain form, or<br/>
+- the MAIL FROM address has no DNS A or MX record.<br/>
+<br/>
+Default: POSTFIX_REJECT_UNKN_SEND_DOM='yes'
+</help>
+
+<help name="POSTFIX_REJECT_NON_FQDN_HOST">
+Reject all email when:<br/>
+- the HELO or EHLO hostname is not in fully-qualified domain form.<br/>
+<br/>
+Default: POSTFIX_REJECT_NON_FQDN_HOST='no'
+</help>
+
+<help name="POSTFIX_REJECT_DYNADDRESS">
+Reject all sender with pppoe, adsl, dialin etc. DNS names.<br/>
+<br/>
+Default: POSTFIX_REJECT_DYNADDRESS='no'
+</help>
+
+<help name="POSTFIX_REJECT_BOGUS_MX">
+Reject all mails with faked DNS server entries.<br/>
+<br/>
+Default: POSTFIX_REJECT_BOGUS_MX='yes'
+</help>
+
+
+<help name="POSTFIX_MIME_HEADER_CHECK">
+Reject all mails with executable (exe,com,vba,cmd...) attachments.<br/>
+<br/>
+Default: POSTFIX_MIME_HEADER_CHECK='yes'
+</help>
+
+
+<help name="POSTFIX_POSTSCREEN">
+Postscreen - spambot and mail zombie blocker.<br/>
+Use BEFORE-GREETING and RBL check for block spam mails<br/>
+<br/>
+Default: POSTFIX_POSTSCREEN='yes'<br/>
+</help>
+
+
+<help name="POSTFIX_HEADER_N">
+Postfix header inspection.
+</help>
+
+<help name="POSTFIX_HEADER_%_CHECK">
+Perl Compatible Regular Expression search pattern.<br/>
+Examples:<br/>
+&nbsp;&nbsp; ^Subject:.*Millions?\s*(E?-?MAIL\s*)?ADDRESS<br/>
+&nbsp;&nbsp; ^(To|From|Cc|Reply-To):.*friend@(public.com|localhost.net)<br/>
+&nbsp;&nbsp; [[:^print:]]{5,}<br/>
+</help>
+
+<help name="POSTFIX_HEADER_%_HANDL">
+OK<br/>
+&nbsp;&nbsp; Accept the address etc. that matches the pattern.<br/>
+DISCARD [optional text]<br/>
+&nbsp;&nbsp; Claim successful delivery and silently discard the message.<br/>
+&nbsp;&nbsp; Log the optional text if specified.<br/>
+DUNNO<br/>
+&nbsp;&nbsp; Pretend that the input line did not match any pattern, and<br/>
+&nbsp;&nbsp; inspect the next input line.<br/>
+FILTER transport:destination<br/>
+&nbsp;&nbsp; Write a content filter request to the queue<br/>
+&nbsp;&nbsp; Example: 'FILTER dspam-retrain:innocent'<br/>
+HOLD [optional text]<br/>
+&nbsp;&nbsp; Arrange  for  the  message to be placed on the hold queue.<br/>
+IGNORE<br/>
+&nbsp;&nbsp; Delete the current line.<br/>
+PREPEND text<br/>
+&nbsp;&nbsp; Append a text after current line.<br/>
+REDIRECT user@domain<br/>
+&nbsp;&nbsp; Write a message redirection request to the queue.<br/>
+&nbsp;&nbsp; This action overrides the FILTER action!<br/>
+REPLACE text<br/>
+&nbsp;&nbsp; Replace the current line with the specified text.<br/>
+REJECT [optional text]<br/>
+&nbsp;&nbsp; Reject the entire message. Reply with optional text.<br/>
+WARN [optional text]<br/>
+&nbsp;&nbsp; Log a warning with the optional text.<br/>
+450 [optional text]<br/>
+&nbsp;&nbsp; Temporaly reject.<br/>
+550 [optional text]<br/>
+&nbsp;&nbsp; Reject the entire message.<br/>
+</help>
+
+
+
+<help name="POSTFIX_CLIENT_N">
+Block all messages from the e-mail server.<br/>
+</help>
+
+<help name="POSTFIX_CLIENT_%_CHECK">
+Perl Compatible Regular Expression search pattern. Examples:<br/>
+&nbsp;&nbsp; mail\.spamserver\.tld<br/>
+&nbsp;&nbsp; host[0-9]{1,3}\..*\.org<br/>
+&nbsp;&nbsp; (.*[0-9]{1,3}[-.][0-9]{1,3}[-.][0-9]{1,3}.*\..*\..*)<br/>
+</help>
+
+<help name="POSTFIX_CLIENT_%_HANDL">
+OK<br/>
+&nbsp;&nbsp; Accept the address etc. that matches the pattern.<br/>
+DISCARD [optional text]<br/>
+&nbsp;&nbsp; Claim successful delivery and silently discard the message.<br/>
+&nbsp;&nbsp; Log the optional text if specified.<br/>
+DUNNO<br/>
+&nbsp;&nbsp; Pretend that the input line did not match any pattern, and<br/>
+&nbsp;&nbsp; inspect the next input line.<br/>
+FILTER transport:destination<br/>
+&nbsp;&nbsp; Write a content filter request to the queue<br/>
+&nbsp;&nbsp; Example: 'FILTER dspam-retrain:innocent'<br/>
+HOLD [optional text]<br/>
+&nbsp;&nbsp; Arrange  for  the  message to be placed on the hold queue.<br/>
+IGNORE<br/>
+&nbsp;&nbsp; Delete the current line.<br/>
+PREPEND text<br/>
+&nbsp;&nbsp; Append a text after current line.<br/>
+REDIRECT user@domain<br/>
+&nbsp;&nbsp; Write a message redirection request to the queue.<br/>
+&nbsp;&nbsp; This action overrides the FILTER action!<br/>
+REPLACE text<br/>
+&nbsp;&nbsp; Replace the current line with the specified text.<br/>
+REJECT [optional text]<br/>
+&nbsp;&nbsp; Reject the entire message. Reply with optional text.<br/>
+WARN [optional text]<br/>
+&nbsp;&nbsp; Log a warning with the optional text.<br/>
+450 [optional text]<br/>
+&nbsp;&nbsp; Temporaly reject.<br/>
+550 [optional text]<br/>
+&nbsp;&nbsp; Reject the entire message.<br/>
+</help>
+
+
+<help name="POSTFIX_AUTOSIGNATURE">
+Write a signature to all mail bodys if not exists<br/>
+
+</help>
+
+<help name="POSTFIX_ALTERNATE_SMTP_PORT">
+Provides an additional smtp-port. Behind a Firewall that can be useful.<br/>
+<br/>
+Example: POSTFIX_ALTERNATE_SMTP_PORT='5025'
+</help>
+
+<help name="POSTFIX_QUEUE_LIFETIME">
+Change default queue lifetime before e-mail is undeliverable.<br/>
+<br/>
+Default: POSTFIX_QUEUE_LIFETIME='5'
+</help>
+
+
+<help name="POSTFIX_AV_CLAMAV">
+Use ClamAV antivirus scanner to reject all virus mails.<br/>
+ClamAV Package required!<br/>
+</help>
+
+<help name="POSTFIX_AV_FPROTD">
+Use F-Prot daemon antivirus scanner to reject all virus mails.<br/>
+F-Prot 6.0.x required! Commercial product.<br/>
+</help>
+
+<help name="POSTFIX_AV_SCRIPT">
+Run with external shell script for block virus mails.<br/>
+</help>
+
+<help name="POSTFIX_AV_SCRIPTFILE">
+Shellscript filename with path for run with smc-milter.<br/>
+Default script /usr/local/postfix/smc-unzip.sh block all *.zip attachments with<br/>
+windows executable content. 
+</help>
+
+<help name="POSTFIX_AV_SCRIPTNAME">
+Use F-Prot daemon antivirus scanner to reject all virus mails.<br/>
+F-Prot 6.0.x required! Commercial product.<br/>
+</help>
+
+<help name="POSTFIX_AV_VIRUS_INFO">
+Send virus info message to defined recipient.<br/>
+<br/>
+POSTFIX_AV_VIRUS_INFO='root@localhost'
+</help>
+
+<help name="POSTFIX_AV_QUARANTINE">
+Store the original virus to the quarantain directory."<br/>
+<br/>
+Default: POSTFIX_AV_QUARANTINE='no'
+</help>
+
+
+<help name="POSTFIX_SMARTHOST">
+Activate transport over externel email servers.<br/>
+<br/>
+Default: POSTFIX_SMARTHOST='no'
+</help>
+
+<help name="POSTFIX_SMARTHOST_TLS">
+Set is only if this host not your domain mail server!<br/>
+TLS - transport security to external e-mail server.<br/>
+<br/>
+Default: POSTFIX_SMARTHOST_TLS='no'
+</help>
+
+
+
+<help name="START_POP3IMAP">
+Start the Courier POP3/IMAP access to server 'yes' or 'no'<br/>
+<br/>
+Default: START_COURIER='yes'
+</help>
+
+<help name="POP3IMAP_TLS">
+Use TLS or POP3 and IMAP over SSL for mail transport.<br/>
+Before use create mail cert!<br/>
+</help>
+
+
+
+<help name="START_FETCHMAIL">
+Start fetchmail service.<br/>
+</help>
+
+<help name="FETCHMAIL_CRON_SCHEDULE">
+Set start time for check external e-mail servers.<br/>
+Start all 30 minutes.<br/>
+Default: FETCHMAIL_CRON_SCHEDULE='2,32 * * * *'
+</help>
+
+<help name="FETCHMAIL_TIMEOUT">
+Server nonresponse timeout on seconds.<br/>
+<br/>
+Default: FETCHMAIL_TIMEOUT='30'
+</help>
+
+<help name="FETCHMAIL_POSTMASTER">
+It is used as destination of undeliverable mail.<br/>
+<br/>
+Default: FETCHMAIL_POSTMASTER='postmaster'
+</help>
+
+
+
+<help name="POSTFIX_LOGLEVEL">
+Debug and loglevel 0...3<br/>
+<br/>
+Default: POSTFIX_LOGLEVEL='0'
+</help>
+
+<help name="COURIER_AUTH_LOGLEVEL">
+0 - turn off debugging<br/>
+1 - turn on debugging<br/>
+2 - turn on debugging + log passwords too<br/>
+Default: COURIER_AUTH_LOGLEVEL='0'
+</help>
+
+<help name="COURIER_LOG_FACILITY">
+Set the syslog facility for POP3 and IMAP operations to:<br/>
+mail, auth, authpriv, console or local0 ... local7.
+</help>
+
+<help name="FETCHMAIL_LOG">
+Activate fetchmail logfile output.<br/>
+Default is silent.<br/>
+</help>
+
+<!-- #### Menu help entries ############################################### -->
+
+<help name="VMAIL_MENU_USERHANDLING">
+F2 = Change quota limit<br/>
+F3 = Set optional mail restrictions<br/>
+F4 = Disable/Enable entry<br/>
+F5 = Create a new e-mail user<br/>
+F6 = Change password <br/>
+F7 = Search e-mail user with regular expression<br/>
+F8 = Delete current e-mail user<br/>
+F10 = Exit menu<br/>
+On create user dialog, you can use the function key F2 for store user data<br/>
+without close.
+</help>
+
+<help name="VMAIL_MENU_DOMAINHANDLING">
+F2 = Change default Mail transport service:<br/>
+&nbsp;&nbsp;- 'maildrop:' default local E-Mail service<br/>
+&nbsp;&nbsp;- 'smtp:external-ip' forward to external mail server<br/>
+&nbsp;&nbsp;- 'uucp:external-ip' forward to external mail server with uucp<br/>
+&nbsp;&nbsp;- 'fax:localhost' forward to eisfax mail2fax service<br/>
+&nbsp;&nbsp;- 'sms:localhost' forward to yaps mail2sms service<br/>
+F3 = Edit current e-mail domain<br/>
+F4 = Disable/Enable entry<br/>
+F6 = Create a new e-mail domain<br/>
+F7 = Search domain name with regular expression<br/>
+F8 = Delete current e-mail domain<br/>
+F10 = Exit menu<br/>
+</help>
+
+<help name="VMAIL_MENU_FORWARDINGS">
+F2 = Edit current e-mail source<br/>
+F3 = Edit current e-mail destination(s)<br/>
+F4 = Disable/Enable entry<br/>
+F6 = Create a new e-mail forwarding entry<br/>
+F7 = Search source with regular expression<br/>
+F8 = Delete current entry<br/>
+F10 = Exit menu<br/>
+</help>
+
+<help name="VMAIL_MENU_RECIPIENT_ACCESS">
+F2 = Edit e-mail recipient name: user@ or user@domain.tld<br/>
+F3 = Edit response handling. Parameters view on end of help.<br/>
+F4 = Disable/Enable entry<br/>
+F6 = Create a new entry<br/>
+F7 = Search recipient with regular expression<br/>
+F8 = Delete current entry<br/>
+F10 = Exit menu<br/>
+<br/>
+Response:<br/>
+OK<br/>
+&nbsp;&nbsp; Accept the address etc. that matches the pattern.<br/>
+DISCARD [optional text]<br/>
+&nbsp;&nbsp; Claim successful delivery and silently discard the message.<br/>
+&nbsp;&nbsp; Log the optional text if specified.<br/>
+DUNNO<br/>
+&nbsp;&nbsp; Pretend that the input line did not match any pattern, and<br/>
+&nbsp;&nbsp; inspect the next input line.<br/>
+FILTER transport:destination<br/>
+&nbsp;&nbsp; Write a content filter request to the queue<br/>
+&nbsp;&nbsp; Example: 'FILTER dspam-retrain:innocent'<br/>
+HOLD [optional text]<br/>
+&nbsp;&nbsp; Arrange  for  the  message to be placed on the hold queue.<br/>
+IGNORE<br/>
+&nbsp;&nbsp; Delete the current line.<br/>
+PREPEND text<br/>
+&nbsp;&nbsp; Append a text after current line.<br/>
+REDIRECT user@domain<br/>
+&nbsp;&nbsp; Write a message redirection request to the queue.<br/>
+&nbsp;&nbsp; This action overrides the FILTER action!<br/>
+REPLACE text<br/>
+&nbsp;&nbsp; Replace the current line with the specified text.<br/>
+REJECT [optional text]<br/>
+&nbsp;&nbsp; Reject the entire message. Reply with optional text.<br/>
+WARN [optional text]<br/>
+&nbsp;&nbsp; Log a warning with the optional text.<br/>
+450 [optional text]<br/>
+&nbsp;&nbsp; Temporaly reject.<br/>
+550 [optional text]<br/>
+&nbsp;&nbsp; Reject the entire message.<br/>
+</help>
+
+
+<help name="VMAIL_MENU_SENDER_ACCESS">
+F2 = Edit e-mail sender name. Example: hotmail.com<br/>
+F3 = Edit response handling. Parameters view on end of help.<br/>
+F4 = Disable/Enable entry<br/>
+F6 = Create a new entry<br/>
+F7 = Search sender with regular expression<br/>
+F8 = Delete current entry<br/>
+F10 = Exit menu<br/>
+<br/>
+Response:<br/>
+reject_unverified_sender<br/>
+&nbsp;&nbsp; Check if sender e-mail user exists.<br/>
+OK<br/>
+&nbsp;&nbsp; Accept the address etc. that matches the pattern.<br/>
+DISCARD [optional text]<br/>
+&nbsp;&nbsp; Claim successful delivery and silently discard the message.<br/>
+&nbsp;&nbsp; Log the optional text if specified.<br/>
+DUNNO<br/>
+&nbsp;&nbsp; Pretend that the input line did not match any pattern, and<br/>
+&nbsp;&nbsp; inspect the next input line.<br/>
+FILTER transport:destination<br/>
+&nbsp;&nbsp; Write a content filter request to the queue<br/>
+&nbsp;&nbsp; Example: 'FILTER dspam-retrain:innocent'<br/>
+HOLD [optional text]<br/>
+&nbsp;&nbsp; Arrange  for  the  message to be placed on the hold queue.<br/>
+IGNORE<br/>
+&nbsp;&nbsp; Delete the current line.<br/>
+PREPEND text<br/>
+&nbsp;&nbsp; Append a text after current line.<br/>
+REDIRECT user@domain<br/>
+&nbsp;&nbsp; Write a message redirection request to the queue.<br/>
+&nbsp;&nbsp; This action overrides the FILTER action!<br/>
+REPLACE text<br/>
+&nbsp;&nbsp; Replace the current line with the specified text.<br/>
+REJECT [optional text]<br/>
+&nbsp;&nbsp; Reject the entire message. Reply with optional text.<br/>
+WARN [optional text]<br/>
+&nbsp;&nbsp; Log a warning with the optional text.<br/>
+450 [optional text]<br/>
+&nbsp;&nbsp; Temporaly reject.<br/>
+550 [optional text]<br/>
+&nbsp;&nbsp; Reject the entire message.<br/>
+</help>
+
+
+<help name="VMAIL_MENU_CLIENT_ACCESS">
+F2 = Edit e-mail client IP or hostname.<br/>
+F3 = Edit response handling. Parameters view on end of help.<br/>
+F4 = Disable/Enable entry<br/>
+F6 = Create a new entry<br/>
+F7 = Search sender with regular expression<br/>
+F8 = Delete current entry<br/>
+F10 = Exit menu<br/>
+<br/>
+Response:<br/>
+OK<br/>
+&nbsp;&nbsp; Accept the address etc. that matches the pattern.<br/>
+DISCARD [optional text]<br/>
+&nbsp;&nbsp; Claim successful delivery and silently discard the message.<br/>
+&nbsp;&nbsp; Log the optional text if specified.<br/>
+DUNNO<br/>
+&nbsp;&nbsp; Pretend that the input line did not match any pattern, and<br/>
+&nbsp;&nbsp; inspect the next input line.<br/>
+FILTER transport:destination<br/>
+&nbsp;&nbsp; Write a content filter request to the queue<br/>
+&nbsp;&nbsp; Example: 'FILTER dspam-retrain:innocent'<br/>
+HOLD [optional text]<br/>
+&nbsp;&nbsp; Arrange  for  the  message to be placed on the hold queue.<br/>
+IGNORE<br/>
+&nbsp;&nbsp; Delete the current line.<br/>
+PREPEND text<br/>
+&nbsp;&nbsp; Append a text after current line.<br/>
+REDIRECT user@domain<br/>
+&nbsp;&nbsp; Write a message redirection request to the queue.<br/>
+&nbsp;&nbsp; This action overrides the FILTER action!<br/>
+REPLACE text<br/>
+&nbsp;&nbsp; Replace the current line with the specified text.<br/>
+REJECT [optional text]<br/>
+&nbsp;&nbsp; Reject the entire message. Reply with optional text.<br/>
+WARN [optional text]<br/>
+&nbsp;&nbsp; Log a warning with the optional text.<br/>
+450 [optional text]<br/>
+&nbsp;&nbsp; Temporaly reject.<br/>
+550 [optional text]<br/>
+&nbsp;&nbsp; Reject the entire message.<br/>
+</help>
+
+
+
+<help name="VMAIL_MENU_GLDWL_NETWORK">
+Whitelist network for Greylisting service.<br/>
+Example: 192.168.1.% or 192.168.1.5<br/>
+F2 = Change comment field entry<br/>
+F4 = Edit current network<br/>
+F6 = Add a new network<br/>
+F7 = Search network with regular expression<br/>
+F8 = Remove network from whitelist<br/>
+F10 = Exit menu<br/>
+</help>
+
+<help name="VMAIL_MENU_GLDWL_DNS">
+Whitelist domain name for Greylisting service.<br/>
+Example: %.domain.tld or %.tld<br/>
+F2 = Change comment field entry<br/>
+F4 = Edit current domain<br/>
+F6 = Add a new domain<br/>
+F7 = Search domain with regular expression<br/>
+F8 = Remove domain from whitelist<br/>
+F10 = Exit menu<br/>
+</help>
+
+
+<help name="VMAIL_MENU_GLD_TRIPLET">
+Show all greylisting entries.<br/>
+F7 = Search sender with regular expression<br/>
+F8 = Remove current entry from greylisting table<br/>
+F10 = Exit menu<br/>
+</help>
+
+<help name="VMAIL_MENU_FETCHMAILHANDLING">
+F2 = Change local e-mail recipient. Example: user@domain.tld <br/>
+F3 = Activate or deactivate current fetchmail query. 1=active<br/>
+F4 = Edit current fetchmail query.<br/>
+F5 = Create a new fetchmail query.<br/>
+F6 = Change fetchmail options. (ssl, keep, no keep, fetchall, flush ...)<br/>
+F7 = Search e-mail recipient with regular expression.<br/>
+F8 = Remove current fetchmail query.<br/>
+F10 = Exit menu<br/>
+</help>
+
+<help name="VMAIL_MENU_MAILDROPFILTERVIEW">
+F4 = Disable/Enable entry<br/>
+F7 = Search filter owner (e-mail) with regular expression<br/>
+F8 = Delete current filter entry<br/>
+</help>
+
+<help name="VMAIL_MENU_IMPORT">
+Select SQL file for import and overwrite all user and domain data.
+</help>
+

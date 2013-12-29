@@ -1,0 +1,75 @@
+# Variable                   OPT_VARIABLE      VARIABLE_N      VALUE
+START_VMAIL                  -                 -               YESNO
+
+VMAIL_SQL_HOST               -                 -               VMAIL_MYSQLHOST
+VMAIL_SQL_USER               -                 -               NOTEMPTY
+VMAIL_SQL_PASS               -                 -               PASSWD
+VMAIL_SQL_PASS               -                 -               VMAIL_PASSWD
+VMAIL_SQL_DATABASE           -                 -               NOBLANK
+VMAIL_SQL_ENCRYPT_KEY        START_VMAIL       -               PASSWD
+VMAIL_SQL_ENCRYPT_KEY        START_VMAIL       -               VMAIL_PASSWD
+
+VMAIL_LOGIN_WITH_MAILADDR    START_VMAIL       -               YESNO
+
+
+START_POSTFIX                START_VMAIL       -               YESNO
+
+POSTFIX_SMTP_TLS             START_POSTFIX     -               YESNO
+POSTFIX_HELO_HOSTNAME        START_POSTFIX     -               FQDN
+
+POSTFIX_RELAY_FROM_NET_N     START_POSTFIX     -               NUMERIC
+POSTFIX_RELAY_FROM_NET_%     START_POSTFIX POSTFIX_RELAY_FROM_NET_N NETWORK
+
+POSTFIX_LIMIT_DESTINATIONS   START_POSTFIX     -               NUMERIC
+POSTFIX_LIMIT_MAILSIZE       START_POSTFIX     -               NUMERIC
+
+POSTFIX_REJECT_UNKN_CLIENT   START_POSTFIX     -               YESNO
+POSTFIX_REJECT_UNKN_SEND_DOM START_POSTFIX     -               YESNO
+POSTFIX_REJECT_NON_FQDN_HOST START_POSTFIX     -               YESNO
+POSTFIX_REJECT_DYNADDRESS    START_POSTFIX     -               YESNO
+POSTFIX_REJECT_BOGUS_MX      START_POSTFIX     -               YESNO
+POSTFIX_MIME_HEADER_CHECK    START_POSTFIX     -               YESNO
+POSTFIX_POSTSCREEN           START_POSTFIX     -               YESNO
+
+POSTFIX_RBL                  POSTFIX_POSTSCREEN -              YESNO
+POSTFIX_RBL_N                POSTFIX_RBL       -               NUMERIC
+POSTFIX_RBL_%_SERVER         POSTFIX_RBL   POSTFIX_RBL_N       FQDN
+POSTFIX_RBL_%_WEIGHT         POSTFIX_RBL   POSTFIX_RBL_N       VMAIL_THRESHOLD
+
+
+POSTFIX_HEADER_N             START_POSTFIX     -               NUMERIC
+POSTFIX_HEADER_%_CHECK       START_POSTFIX POSTFIX_HEADER_N    NOTEMPTY
+POSTFIX_HEADER_%_HANDL       START_POSTFIX POSTFIX_HEADER_N    VMAIL_ACTION
+
+POSTFIX_CLIENT_N             START_POSTFIX     -               NUMERIC
+POSTFIX_CLIENT_%_CHECK       START_POSTFIX POSTFIX_CLIENT_N    NOTEMPTY
+POSTFIX_CLIENT_%_HANDL       START_POSTFIX POSTFIX_CLIENT_N    VMAIL_ACTION
+
+POSTFIX_AUTOSIGNATURE        START_POSTFIX     -               YESNO
+
+POSTFIX_ALTERNATE_SMTP_PORT  START_POSTFIX     -               PORT
+POSTFIX_QUEUE_LIFETIME       START_POSTFIX     -               VMAIL_QLIFETIME
+POSTFIX_DRACD                START_POSTFIX     -               YESNO
+#POSTFIX_DRACD_RELAYTIME      POSTFIX_DRACD     -               NUMERIC
+POSTFIX_SMARTHOST            START_POSTFIX     -               YESNO
+#POSTFIX_SMARTHOST_TLS        POSTFIX_SMARTHOST -               YESNO
+
+POSTFIX_AV_CLAMAV            START_POSTFIX     -               YESNO
+POSTFIX_AV_FPROTD            START_POSTFIX     -               YESNO
+POSTFIX_AV_SCRIPT            START_POSTFIX     -               YESNO
+POSTFIX_AV_SCRIPTFILE        POSTFIX_AV_SCRIPT -               ABS_PATH
+
+POSTFIX_AV_VIRUS_INFO        START_POSTFIX     -               EMAILADDR
+POSTFIX_AV_QUARANTINE        START_POSTFIX     -               YESNO
+
+START_POP3IMAP               START_VMAIL       -               YESNO
+POP3IMAP_TLS                 START_POP3IMAP    -               YESNO
+
+START_FETCHMAIL              START_VMAIL       -               YESNO
+FETCHMAIL_CRON_SCHEDULE      START_FETCHMAIL   -               CRONTAB
+FETCHMAIL_TIMEOUT            START_FETCHMAIL   -               NUMERIC
+FETCHMAIL_POSTMASTER         START_FETCHMAIL   -               NOBLANK
+
+POSTFIX_LOGLEVEL             START_POSTFIX     -               RE:[0-3]
+FETCHMAIL_LOG                START_FETCHMAIL   -               YESNO
+

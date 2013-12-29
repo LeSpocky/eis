@@ -1,0 +1,41 @@
+#!/sbin/runscript
+
+extra_commands="status"
+extra_started_commands="restart"
+
+depend() {
+	need hostname localmount
+	before net
+	provide logger
+}
+
+start() {
+	[ -x /etc/init.d/greylist ] && sh /etc/init.d/greylist start
+	sh /etc/init.d/smc-milter start
+	[ "$START_POP3IMAP" = 'yes' ] && sh /etc/init.d/dovecot start
+	sh /etc/init.d/postfix start
+}
+
+stop() {
+	sh /etc/init.d/postfix stop
+	sh /etc/init.d/smc-milter stop
+	[ -x /etc/init.d/greylist ] && sh /etc/init.d/greylist stop
+	sh /etc/init.d/dovecot stop
+}
+
+restart() {
+	sh /etc/init.d/postfix stop
+	sh /etc/init.d/smc-milter stop
+	if [ "$START_POSTFIX" = 'no' -o "$START_VMAIL" = 'no' ] ; then
+		[ -x /etc/init.d/greylist ] && sh /etc/init.d/greylist stop
+	fi
+	sh /etc/init.d/dovecot stop
+	[ "$START_VMAIL" = 'yes' ] && $0 start
+}
+
+status() {
+	/etc/init.d/postfix status
+	/etc/init.d/smc-milter status
+	[ -x /etc/init.d/greylist ] && /etc/init.d/greylist status
+	/etc/init.d/dovecot status
+}

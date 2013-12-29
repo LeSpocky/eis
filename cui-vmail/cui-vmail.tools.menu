@@ -1,0 +1,8 @@
+<!-- /var/install/menu/setup.services.cui-vmail.tools.menu -->
+<package>vmail</package>
+<title>Mail tools</title>
+<script file="cui-vmail-modules-mailhandling qlist">View mail queue</script>
+<script file="cui-vmail-modules-mailhandling qflush">Force queue run</script>
+<script file="cui-vmail-modules-mailhandling qhandle">Process mail queue</script>
+<script file="cui-vmail-modules-fetchmail">Fetchmail force get mail run</script>
+<script file="cui-vmail-modules-maildropfilter">Sieve filter force write</script>

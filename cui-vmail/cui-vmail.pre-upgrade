@@ -1,0 +1,7 @@
+#!/bin/sh
+# remove default.d und check.d files
+rm -f /etc/default.d/vmail
+rm -f /etc/check.d/vmail
+rm -f /etc/check.d/vmail.exp
+rm -f /etc/check.d/vmail.ext
+exit 0

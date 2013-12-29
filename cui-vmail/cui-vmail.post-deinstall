@@ -1,0 +1,4 @@
+#!/bin/sh
+/var/install/bin/del-menu setup.services.menu setup.services.cui-vmail.menu
+rm -f /etc/backup.d/vmail.*
+exit 0

@@ -1,0 +1,759 @@
+
+VMail - Mailserver fuer systemunabhaengige (virtuelle) E-Mailkonten
+-------------------------------------------------------------------
+
+- Das Paket wurde entwickelt als Domain-MX oder Backup-MX Server fuer mittlere
+  bis groessere Benutzergruppen.
+- Es lassen sich beliebig viele Domains unabhaengig voneinander und auch
+  unabhaengig von den Linux-Systembenutzern, verwalten.
+  (h.mueller@domain1.tld ist ein anderes Postfach als
+   h.mueller@domain2.tld)
+- Benutzer, Domains, Filter und Fetchmaildaten werden ohne Neustart im 
+  laufenden Betrieb hinzugefuegt, aktiviert oder geloescht. (Benutzerdaten 
+  liegen in MySQL Tabellen)
+- Hinterlegte Passwoerter werden in den MySQL-Tabellen nicht im Klartext 
+  gespeichert.
+- Performance-bremsende Scriptsprachen werden beim E-Mail Transport nicht
+  verwendet. (Viren- und Spamerkennung ueber native C Programme) 
+- Nutzung des schnellen Maildir+ an Stelle des Mbox Formates zur
+  Mailspeicherung.
+- Sieve Filtersprache ermoeglicht Um- und Weiterleitungen von Nachrichten.
+  Diese koennen zeitgesteuert zu und abgeschaltet werden.  
+- Der gleichzeitige Einsatz mehrere Virenscanner ist moeglich. 
+
+Folgende Programme sind im Paket enthalten:
+
+- Postfix: Der eigentliche MTA (Mail Transfer Agent) welcher die E-Mail vom
+  Absender zum Empfaenger transportiert.
+- Dovecot: Mit den Protokollen POP3 und IMAP (inkl. SSL und TLS) ermoeglicht
+  es den Zugriff auf die Postfaecher der virtuellen Benutzer.
+- DRACD Dynamic Relay Authorization Deamon ist eine Moeglichkeit, einem
+  externen Benutzer das Versenden von Mails zu erlauben. Auch bekannt als
+  "POP before SMTP".
+- SMC-Milter ist eine Schnittstelle zum Virenscanner ClamAV und zu weiteren
+  Antivirenprogrammen. Wird ein Virus gefunden, so wird die E-Mail nicht
+  angenommen. Gleichzeitig kann er ausgehende E-Mails mit einer Sigantur
+  versehen.
+- Fetchmail: zum Abholen der E-Mailnachrichten von externen Servern.
+
+Nicht im Paket enthalten, aber empfohlen werden die Pakete:
+
+* MySQL - Der Datenbankserver kann auch auf einem anderen Computer
+  installiert sein.
+* Clamav - der Virenscanner.
+* Greylist - Der optional installiebare Greylisting Daemon soll das 
+  Spamunwesen etwas eindaemmen. Da etliche Spambots aber das periodische 
+  Versenden von Nachrichten beherrschen, wird das Tool aber immer weniger
+  sinnvoll. Das integrierte Postscreen ist hier eine Alternative.
+ 
+
+Installation und Konfiguration
+------------------------------
+1. Ein MySQL Server muss installiert oder auf einem anderen Computer
+   erreichbar sein. Das Kennwort des MySQL User root sollte bekannt sein. 
+2. Der Virenscanner Clamav sollte installiert sein.
+3. Starten der Vmail Konfiguration im Menue.
+4. Eintragen der IP-Adresse des MySQL Servers oder belassen des Wertes
+   auf localhost, wenn der MySQL Server auf dem Vmail Server laeuft.
+5. Setzen weiterer Optionen wie dem Virenscanner.
+6. Speichern der Konfiguration.
+7. Eintragen der E-Mail Domain(s) im Menuepunkt "User & Domain
+   administration" -> "E-Mail Domain administration"
+   Der Parameter Transport sollte bei lokaler E-Mail Zustellung auf
+   "pop3imap:" stehen. Mit "smtp:" werden alle E-Mails an die
+   darunterstehende IP-Adresse weitergeleitet.
+8. Eintragen der E-Mail Benutzer im Menuepunkt "User & Domain 
+   administration" -> "E-Mail user administration" 
+
+
+Alle Benutzerverzeichnisse werden automatisch erstellt, wenn entweder eine
+E-Mail zugestellt wird, oder der Benutzer sich das erste mal per POP3 oder
+IMAP anmeldet.
+Die Benutzerdaten in den MySQL Tabellen werden, ueber den Menuepunkt
+"User & domain administration" in einem speziellen Curses-Programm, einfach
+und schnell verwaltet. Ein Suchdialog erlaubt die Anzahl der angezeigten
+Benutzeintraege zu reduzieren und damit das schnelle Finden und Bearbeiten 
+von Benutzern auch in sehr grossen Datenbestaenden.
+
+
+
+Konfiguration
+-------------
+Die Konfiguration kann ueber den Menuepunkt "Edit Configuration" geaendert
+werden. Nach Beendigung des Editors erfolgt eine automatische Fehlerpruefung.
+Werden Fehler festgestellt, so sollten die entsprechenden Eintraege in jedem
+Fall korrigiert werden.
+
+START_VMAIL
+    Legt fest, ob der E-Mail Server automatisch gestartet wird.
+
+    Gueltige Werte: yes,no
+
+VMAIL_SQL_HOST
+    IP-Adresse oder "localhost" des MySQL Servers. Dieser braucht nicht
+    auf dem E-Mail Server selber installiert zu sein.
+
+VMAIL_SQL_USER
+    Benutzername fuer die E-Mail Datenbank auf dem MySQL Server.
+
+    Beispiel: VMAIL_SQL_USER='vmailprovider'
+
+VMAIL_SQL_PASS
+    Passwort fuer den unter VMAIL_SQL_USER eingetragenen Benutzer.
+    Der Vorgabewert nach der Installation wird aus mehrern Zufallszahlen
+    gebildet.
+
+VMAIL_SQL_DATABASE
+    Name der E-Mail Datenbank.
+
+    Beispiel: VMAIL_SQL_DATABASE='vmaildata'
+
+VMAIL_SQL_ENCRYPT_KEY
+    Passwort zur Kodierung der Benutzerpasswoerter in der E-Mail Datenbank.
+    Dieser Wert darf nach Anlegen des ersten Benutzers nicht mehr
+    Veraendert werden! 
+    Der Vorgabewert nach der Installation wird aus mehrern Zufallszahlen
+    gebildet. 
+
+VMAIL_LOGIN_WITH_MAILADDR
+    Wenn der Wert auf 'yes' steht, muss zum Anmelden an den Server die
+    komplette E-Mailadresse verwendet werden.
+    So koennen Benutzer in unterschiedlichen Domaenen den gleichen Namen
+    tragen. Im Beispiel sind die folgenden Namen somit unterschiedlichen
+    Postfaechern zugeordnet:
+    h.mueller@foo.tld
+    h.mueller@bar.tld
+    Verwendet man nur eine Domain, so kann der Wert auf "no" stehen.
+
+    Gueltige Werte: yes,no
+
+
+START_POSTFIX
+    Legt fest, ob der eigentliche MTA (Mail Transfer Agent), welcher die
+    E-Mail vom Absender zum Empfaenger transportiert, als Dienst gestartet
+    werden soll.
+
+    Gueltige Werte: yes,no
+
+POSTFIX_SMTP_TLS
+    Aktiviert Transportsicherheit fuer das Senden von E-Maildaten.
+
+    Gueltige Werte: yes,no
+
+POSTFIX_HELO_HOSTNAME
+    Legt den Namen fest, mit dem sich Postfix nach aussen praesentiert. (HELO
+    und EHLO Name). Dieser sollte identisch mit dem externen DNS-Namen des
+    Servers sein und muss nicht mit dem internen Hostnamen uebereinstimmen.
+
+POSTFIX_AUTOSIGNATURE
+    An jede ausgehende E-Mail kann eine Signatur anghaengt werden, wenn
+    eine solche noch nicht vorhanden ist. Steht in der Tabelle virtual_users
+    fuer den Benutzer ein Eintrag im Feld signature, dann wird dieser 
+    verwendet.
+
+    Gueltige Werte: yes,no
+
+POSTFIX_ALTERNATE_SMTP_PORT
+    Ermoeglicht das Nutzen eines zusaetzlichen SMTP-Ports auf einer
+    alternativen Adresse. Das kann bei Installationen hinter einer Firewall
+    hilfreich sein. Werte kleiner als 26 deaktivieren diesen Port.
+
+    Beispiel: 5025
+
+POSTFIX_QUEUE_LIFETIME
+    Der Wert (Tage) veraendert die Pufferdauer nicht zustellbarer E-Mails.
+    Bei Verwendung als Backup-MX-Server kann eine Erhoehung des Wertes
+    sinvoll sein. Normalerweise werden Mails 5 Tage gespeichert, bis eine
+    "nicht zustellbar" - Meldung an den Absender erfolgt.
+
+    Beispiel: 5
+
+POSTFIX_DRACD
+    Ermoeglicht einem externen Benutzer das Versenden von E-Mails. Auch
+    bekannt unter dem Namen "POP before SMTP".
+
+    Gueltige Werte: yes,no
+
+POSTFIX_RELAY_FROM_NET_N
+    E-Mailversand aus diesen Netzen wird generell akzeptiert.
+
+    Beispiel: 3
+
+POSTFIX_RELAY_FROM_NET_x
+    Netzwerk aus dem der Versand von E-Mail ohne DRACD u.ae. akzeptiert
+    wird. (Internes Netz)
+
+    Beispiel: 172.16.0.0/16
+
+POSTFIX_SMARTHOST
+    Aktiviert das Versenden von E-Mails ueber externe Mailserver.
+
+    Gueltige Werte: yes,no
+
+POSTFIX_LIMIT_DESTINATIONS
+    Maximale Anzahl der gleichzeitigen E-Mail Empfaenger. Wird u.a. 
+    fuer Serienmails benoetigt.
+
+    Gueltige Werte: > 10
+
+POSTFIX_LIMIT_MAILSIZE
+    Maximale Groesse einer E-Mail Nachricht in MB.
+
+    Gueltige Werte: > 10
+
+
+
+POSTFIX_REJECT_UNKN_CLIENT
+    E-Mails von Mailservern ohne DNS-Eintrag werden verweigert. Das kann zu
+    Problemen fuehren, da einige Mailserver leider durch Firewalls u.ae. ihre
+    E-Mail ohne korrekten DNS-Hostnamen versenden.
+    Diese Option ist auch fuer jeden Benutzer einzeln einstellbar und 
+    entspricht dem Benutzereintrag mailprotect=1.
+
+    Voreinstellung: no
+
+POSTFIX_REJECT_UNKN_SEND_DOM
+    E-Mails von unbekannten Absender-Domains (wenn diese keinen DNS Record
+    vom Typ MX oder A besitzen) werden verweigert.
+
+    Gueltige Werte: yes,no
+
+POSTFIX_REJECT_NON_FQDN_HOST
+    E-Mails von Absendern die keinen vollstaendig gueltigen Hostnamen
+    uebermitteln (host.domain.tld), werden verweigert. 
+    Kann Probleme mit Webmailern machen!
+
+    Gueltige Werte: yes,no
+
+POSTFIX_REJECT_DYNADDRESS
+    Alle einliefernden "Server", dessen DNS-Name ein PPPOE, ADLS, DIAL ect.
+    enthaelt, werden abgewiesen. Ist besonders bei Backup-MX Servern 
+    nuetzlich, da hier keine Benutzer bezogenen Filter (mailprotect)
+    einstellbar sind.
+    Diese Option ist auch fuer jeden Benutzer einzeln einstellbar und 
+    entspricht dem Benutzereintrag mailprotect=2.
+
+    Gueltige Werte: yes,no
+
+POSTFIX_REJECT_BOGUS_MX
+    Absender mit gefaelschten DNS-Eintraegen werden ausgefiltert.
+
+    Gueltige Werte: yes,no
+
+POSTFIX_MIME_HEADER_CHECK
+    Die Zustellung von ausfuehrbaren Programmen (EXE, BAT...) als E-Mail-
+    Anhang, wird mit einem entsprechenden Hinweistext an den Absender
+    unterbunden.
+
+    Gueltige Werte: yes,no
+
+POSTFIX_POSTSCREEN
+    Antispam Service, basiert auf externe RBL und Kommunikationstests.
+    Wenn Vmail keine E-Mail empfaengt, kann dieser Dienst abgeschaltet
+    werden. Er verzoegert die Annahme von Nachrichten um mehrere Sekunden.
+
+    Gueltige Werte: yes,no
+
+
+POSTFIX_RBL
+    Nutzung eines oder mehrerer externer Realtime Blackhole List Server (RBL)
+    zur Spamabwehr. Nur verfuegbar, wenn Postscreen eingeschaltet ist.
+
+    Gueltige Werte: yes,no
+
+POSTFIX_RBL_N
+    Anzahl verwendeter externer RBL-Server. 
+    Zur Zeit sind 7 Server voreingestellt.
+
+    Beispiel: 7
+
+POSTFIX_RBL_x_SERVER
+    Name des externen RBL-Servers.
+
+    Beispiel: relays.ordb.org
+
+POSTFIX_RBL_x_WEIGHT
+    Gewichtung des externen RBL-Servers. 
+    Wenn der Wert auf 1 steht, so reicht die Meldung des jeweiligen 
+    RBL-Servers allein nicht aus, um eine E-Mail abzuweisen.
+
+    Gueltige Werte: 1 - 3
+
+
+POSTFIX_HEADER_N
+    Durch Filtern der E-Mail-Header der Absender koennen unerwueschte Absender
+    ausgefiltert werden.
+    Hier wird die Anzahl der verwendeten Filter eingetragen.
+
+    Beispiel: 1
+
+Hinweis: Globale Filtereintraege sollten nur sehr sparsam verwendet werden,
+         da sie alle Postfaecher betreffen. Und eventuell moechte der eine
+         oder ander E-Mailnutzer gerade die Nachricht haben, die hier
+         ausgefiltert wird.
+
+POSTFIX_HEADER_x_CHECK
+    Filtereintrag.
+
+    Beispiel:  '^Date:.*[+-](1[4-9]|2\d)\d\d$'
+
+POSTFIX_HEADER_x_HANDL
+    Handlung bei Zutreffen des Filtereintrages.
+    Gueltige Operationen sind u.a:
+    DISCARD  Die E-Mail wird ohne Rueckmeldung geloescht
+    DUNNO    Keine Operation ausfuehren
+    FILTER   Ein Filter wird gestartet
+    HOLD     Die Mail wird gehalten
+    IGNORE   Die aktuelle Zeile wird geloescht
+    OK       Die E-Mail wird angenommen
+    PREPEND  Ein zusaetzliche Header wird eingefuegt
+    REDIRECT Die E-Mail wird umgeleitet
+    REPLACE  Die aktuelle Zeile wird ersetzt
+    REJECT   Die E-Mail wird abgelehnt
+    WARN     Eine Warnung wird in das Logfile eingetragen
+    450 [Text] Die E-Mail wird mit einem temporaeren Fehler abgelehnt
+    550 [Text] Die E-Mail wird mit einem permanenten Fehler abgelehnt
+
+    Beispiel: 'REJECT invalid timezone'
+
+Hinweis: Fuer Mailinglisten koennen hier automatisch 'Reply-To:" Header
+         eingefuegt werden.
+         POSTFIX_HEADER_x_CHECK='^To:.*mailinglist1@domain.tld'
+         POSTFIX_HEADER_x_HANDL='PREPEND Reply-To: mailinglist1@domain.tld'
+
+POSTFIX_CLIENT_N
+    Hier koennen unerwuenschte Mailversender an Hand ihrer Netzwerkadresse
+    (IP oder DNS-Name) ausgesperrt werden.
+    Alle Computer, die keine offiziellen, also fuer Antworten erreichbare
+    E-Mailserver sind, sollten auch keine E-Mail direkt zustellen.
+
+    Beispiel: 1
+
+Hinweis: Etliche Filtereintraege zum Ausfiltern von unerwuenschten
+         E-Mailversendern sind bereits in der Datei:
+         /etc/postfix/access_clientblocks.pcre.default vordefiniert.
+
+POSTFIX_CLIENT_x_CHECK
+    Hier steht z.B. die Absenderkennung eines PPP-Dialin Zuganges.
+
+    Beispiel: '^ras[0-9]'
+
+POSTFIX_CLIENT_x_HANDL
+    Natuerlich sollte der Absender auch informiert werden, warum wir seine
+    E-Mail nicht wollen. Es koennte ja aus versehen doch kein Spam sein.
+    Ferner sind alle unter POSTFIX_HEADER_x_HANDL aufgelisteten Operationen
+    verwendbar.
+
+    Beispiel: '550 No RAS client. Use an authorized relay'
+
+POSTFIX_AV_CLAMAV
+    Nutzung von ClamAV als Virenscanner.
+    Weitere Virenscanner koennen parallel und unabhaengig von dieser Option
+    verwendet werden.
+
+    Gueltige Werte: yes,no
+
+POSTFIX_AV_FPROTD
+    Nutzung von F-Prot (Deamon-Version 6.0.x) als Virenscanner.
+    F-Prot ist ein kommerzielles Produkt der Firma FRISK.
+    Der Virenscanner kann zusaetzlich zu ClamAV (empfohlen) oder auch
+    einzeln eingesetzt werden.
+
+    Gueltige Werte: yes,no
+
+POSTFIX_AV_SCRIPT
+    Aktiviert ein Shell-Script zur Ueberpruefung ein- und ausgehender
+    E-Mails. Mit diesem koennen weitere Virenscanner oder Spamblocker
+    eingebunden werden.
+    
+    Gueltige Werte: yes,no
+
+POSTFIX_AV_SCRIPTFILE
+    Name inklusive Verzeichnis des auszufuehrenden Shell-Scripts.
+    Das voreingestellte Script kann als Beispiel dienen. Es blockiert
+    alle E-Mails, in derem Anhang eine Zip-Datei mit ausfuehrbaren
+    Inhalten (*.exe, *.com, *.cmd ...) enthalten ist.
+    
+POSTFIX_AV_VIRUS_INFO
+    Neben dem eigentlichen Adressaten wird auch der hier eingetragene
+    Empfaenger ueber gefundenen Virusmails informiert.
+    Bleibt der Eintrag leer, so erfolgt keine Benachrichtigung.
+
+    Beispiel root@localhost
+
+POSTFIX_AV_QUARANTINE
+    Speichert die Virusmail in einem speziellen Verzeichnis unter
+    /var/spool/postfix/var/clamav/quarantine
+
+    Gueltige Werte: yes,no
+
+
+
+START_POP3IMAP
+    Startet den POP3/IMAP Dienst Deovecot.
+
+    Gueltige Werte: yes,no
+
+POP3IMAP_TLS
+    Aktiviert die Protokolle POP3S and IMAP3 und die Transportsicherheit 
+    fuer das Abholen von E-Maildaten.
+
+    Gueltige Werte: yes,no
+
+
+START_FETCHMAIL
+    Startet den Fetchmail Dienst zur Abholung von E-Mail auf externen
+    Servern. Die Daten zur Abfrage werden bei jedem Start aus der zugehoerigen
+    MySQL-Datenbank entnommen.
+
+    Gueltige Werte: yes,no
+
+FETCHMAIL_CRON_SCHEDULE
+    Startzeit fuer die Abfrage.
+
+    Beispiel: '5,35 * * * *'
+
+FETCHMAIL_TIMEOUT
+    Zeit in Sekunden die gewartet wird, bevor ein Server als nicht erreichbar
+    gilt.
+
+    Beispiel: 60
+
+FETCHMAIL_POSTMASTER
+    Empfaengt alle nicht zustellbaren E-Mail eines Fetchmailabrufes.
+
+    Beispiel: postmaster
+
+
+
+Das VMail Hauptmenue
+-------------------
+Das VMail Hauptmenue ist ueber den Menuepunkt "Service administration" im
+zentralen Setup-Programm zu erreichen. Es ist wie folgt aufgebaut:
+  * View documentation
+    Zeigt die Dokumentation an.
+  * Edit configuration
+    Damit wird die Konfiguration des VMAIL-Packages bearbeitet
+  * Advanced configuration file handling
+    Ermoeglicht eine Versionsverwaltung der VMAIL-Konfigurationsdatei
+  * Start mail services
+    Hier werden alle aktivierten E-Mailprogramme gestartet werden.
+  * Stop mail services
+    Hier werd alle laufenden E-Mailprogramme angehalten.
+  * Show status
+    Zeigt den Status alle E-Mail Daemons
+  * User & domain administration
+    Untermenue fuer den direkten Zugriff auf die in der MySQL Datenbank
+    gespeicherten E-Mail Benutzerdaten, Domainen usw.
+  * Mail Tools
+    Enthaelt einige Zusatzprogramme z.B. zum Auflisten der Warteschlangen.
+  * Mail modules
+    Hier erfolgt der Zugriff auf E-Mail Zusatzprogramme wie z.B. WEBMAIL
+    oder UUCP.
+
+
+Die User & domain administration
+--------------------------------
+  * E-Mail domain administration
+    Hier werden alle Domains eingetragen, welche:
+    - auf diesem E-Mailserver gehosteten werden
+    - weitergeleitet werden
+    - ueber die Smarthost Funktion transportiert werden.
+  * E-Mail user administration
+    Ermoeglicht die Benutzerverwaltung alle E-Mail Beutzer. Zum schnellen
+    Erfassen vieler Benutzer kann im Benutzererfassungsdialog die Funktions-
+    tasten 'F2'=Speichern verwendet werden. Der Dialog muss so nicht fuer
+    jeden Benutzer neu aufgerufen werden
+  * E-Mail smarthost user administration
+    Name und Passwort externer E-Mail-Konten, welche per Smarthost
+    genutzt werden sollen.
+  * E-Mail forwarding administration
+    Hier koennen Um- und Weiterleitungen, Aliaseintraege, Mailinglisten u.a
+    definiert werden.
+  * E-Mail canonical maps administration
+    Wird zwar nicht oft benoetigt, sollte aber nicht fehlen. Hier koennen 
+    augehende E-Mailadressen umgeschrieben werden:
+    user@test.tld -> name@domain.tld
+  * E-Mail recipient access administration
+    Hier koennen E-Mailadressen von der RBL Pruefung ausgenommen (abuse@),
+    oder auch komplett fuer externe Sender gesperrt werden.
+  * E-Mail sender access administration
+    Hier werden u.a. die Absender-Namen-ueberpruefung eingetragen.
+  * E-Mail client access administration
+    Hier werden u.a. die Absender-IP-Adressen zur ueberpruefung eingetragen.
+  * Sieve filter administration
+    Ermoeglicht das Sperren/Aktivieren oder Loeschen aller benutzerdefinierten
+    und in der MySQL Tabelle eingetragenen Sieve Filter.
+  * Fetchmail user administration
+    In diesem Menue kann der Administrator eigene Fetchmailabfragen
+    definieren
+
+Mail tools
+----------
+  * View mail queue
+    Zeigt alle zwischengespeicherten E-Mails, die auf Auslieferung warten.
+  * Force queue run
+    Probiert ein erneutes Zustellen der im Queue liegenden E-Mails.
+  * Process mail queue
+    Erlaubt den direkten Zugriff auf einzelne E-Mails in den Warteschlangen.
+  * Fetchmail force get mail run
+    Externe E-Mailpostfaecher werden mit Fetchmail von Hand abgerufen.
+  * Sieve filter force write
+    Schreibt, aktualisiert oder loescht alle Sieve Filter aus der Datenbank
+    in den jeweiligen Benutzerverzeichnissen.
+
+
+Aufbau der E-Mail Benutzer-Datenbanken
+---------------------------------------
+Benutzer-Datenbank  virtual_users
+---------------------------------------
+
+- loginuser
+  E-Mail Name ohne Domain. Diese ist als Nummer im Feld domain_id 
+  gespeichert. Die Domain muss dazu in der Tabelle virtual_domains 
+  hinterlegt sein.
+- password
+  Das Benutzerpasswort (kodiert) fuer den POP3/IMAP Zugang und die SMTP
+  Authentifizierung
+- username
+  Enthaelt zur Kompatibilitaet den Benutzername. Dieser wird aber weder von
+  Postfix noch von Dovecot ausgewertet.
+- mailprotect
+  Hier koennen zusaetzliche Filterklassen individuell fuer jeden Benutzer
+  aktiviert werden. Folgende Eintraege sind moeglich:
+  0 es werden keine zusaetzlichen Filter genutzt
+  1 Weist alle Mails zurueck, die ungueltige Zeichen im Absenderhostnamen
+    enthalten, keinen vollstaendigen Domainnamen als Absenderhost verwenden
+    oder deren Absenderhost keinem DNS Server bekannt ist.
+  2 Nutzt die access_client Filterliste zum Blocken unerwuenschter IP-Bereiche
+    und Absendernamen. (wird nicht mitgeliefert)
+  3 Nutzt die Moeglichkeiten von 1 und 2 gemeinsam.
+  4 fuegt die Option POSTFIX_REJECT_DYNADDRESS zu den Filtern von Punkt 3
+    hinzu.
+  9 Es werden nur interne E-Mailnachrichten angenommen.
+- quota
+  Hiermit kann die maximale Postfachgroesse auf der Festplatte begrenzt
+  werden. Der Eintrag erfolgt in Byte. Die 0 steht fuer keine Begrenzung.
+
+
+Domain-Datenbank  virtual_domains
+---------------------------------------
+- name
+  Name der auf diesem Server gehosteten oder zur Weiterleitung vorgesehenen
+  Domain.
+- transport
+  Transport Service der Domain. Vorgabewert ist dabei immer 'pop3imap:'.
+  'pop3imap:'         E-Mailempfang fuer die virtuellen Postfaecher
+  'smtp:192.168.1.1'  Weiterleitung an einen anderen Mailserver
+                      (benoetigt Eintrag in der Forwardings Datenbank!)
+  'relay:smtp.web.de' Smarthost Domain zum externen E-Mailversand
+  'relay:[smtp.web.de]' Smarthost Domain ohne DNS MX Abfrage
+  'uucp:192.168.1.1'  Weiterleitung durch UUCP an einen anderen Mailserver
+                      (benoetigt Eintrag in der forwardings Datenbank und
+                      das UUCP Paket!)
+  'fax:localhost'     Weiterleitung zum Faxdienst.
+                      (benoetigt das Eisfax Paket Version > 1.2.0)
+  'sms:localhost'     Weiterleitung zum SMS-Dienst. (benoetigt das YAPS Paket)
+
+
+Forward-Datenbank  virtual_aliases
+---------------------------------------
+- source
+  Enthaelt die urspruengliche Empfaenger-Adresse.
+  Die Domain, hier [domain.tld] wird beim Menuestart abgefragt!
+- destination
+  Enthaelt die neue Empfaenger-Adresse.
+
+source:          destination:    Auswirkung:
+----------------------------------------------------------------------------
+user@[domain.tld] foo@domain.tld Direkte Weiterleitung. Kann auch fuer Alias
+                                 Namen mehrfach verwendet werden.
+                                 (Mailinglisten)
+[domain.tld]     user@domain.tld Leitet alle nicht zustellbaren E-Mails der
+                                 Domain domain.tld an user@domain.tld
+                                 weiter.
+[domain.tld]     @another.tld    Hiermit leiten man ganze Domaenen um.
+                                 Jeder E-Mailname in der domain.tld
+                                 Domaene wird an den selben E-Mailnamen
+                                 in der Domaene another.tld umgeleitet.
+[domain.tld]     @domain.tld     Derartige Eintraege werden bei 
+                                 Weiterleitungen kompletter Domains, ohne auf
+                                 dem Server eingetragene Mailbenutzer, 
+                                 benoetigt.
+
+
+Smarthost Datenbank  virtual_relayhosts
+---------------------------------------
+Das Benutzen von Smarthosts setzt einen Domain-Datenbank Eintrag wie 
+z.B.: 'relay:smtp.domain.tld' oder 'relay:[smtp.domain.tld]' voraus.
+
+E-Mail address:  Login username: Auswirkung/Beschreibung:
+----------------------------------------------------------------------------
+user@domain.tld  user@domain.tld E-Mail- und Username sind identisch. Zum 
+                                 Login auf dem Smarthost-Server wird eine
+                                 komplette E-Mail-Adresse benoetigt.
+user@domain.tld  foo@domain.tld  E-Mail- und Username sind nicht identisch. 
+                                 Zum Login auf dem Smarthost-Server wird eine
+                                 komplette E-Mail-Adresse benoetigt.
+user@domain.tld  foobar          E-Mail- und Username sind nicht identisch. 
+                                 Zum Login auf dem Smarthost-Server wird nur
+                                 ein Username benoetigt.
+[smtp.domain.tld] foobar         Alle E-Mail Nachrichten für die Domain 
+                                 domain.tld werden mit den Zugangsdaten
+                                 des Benutzers foobar an den Smarthost
+                                 smtp.domain.tld gesendet.
+                                 Die Schreibweise (mit oder ohne []) muss
+                                 indentisch mit dem Eintrag in der Domain-
+                                 Datenbank sein.
+
+
+Mail zu Fax Service
+-------------------
+Im VMail Paket ist eine feste Schnittstelle zu einem installierten Eisfax
+Dienst integriert, welcher das Versenden von Faxnachrichten ermoeglicht.
+
+Dazu muss die E-Mail Zieladresse wie folgt aufgebaut sein:
+
+    faxg3/[<Modem>/]<Faxnummer>@localhost
+
+    Beispiel: faxg3/0221556677@localhost  oder
+              faxg3/modem1/0221556677@localhost
+
+Soll an Stelle von "localhost" eine andere Domain verwendet werden, dann ist
+die Domain-Datenbank noch um den entsprechenden Eintrag zu erweitert:
+
+    Domain:          Transport:
+    ------------------------------
+    fax.domain.tld   fax:localhost
+
+Weitere optionale Parameter in der Faxadresse sind der Eisfax Dokumentation zu
+entnehmen.
+
+
+Mail zu SMS Service
+-------------------
+Zur Nutzung muss YAPS installiert sein und ein entsprechender zusaetzlicher
+Eintrag in der Domain-Datenbank stehen. Auch hier koennen nur E-Mail
+Postfachbesitzer diesen Dienst nutzen.
+
+    Domain:          Transport:
+    ------------------------------
+    sms.domain.tld   sms:localhost
+
+    Die uebetragung der SMS-Nummer erfolgt dabei in der E-Mail Adresse:
+
+    <01729999999@sms.domain.tld>
+
+
+E-Mails abrufen mit Fetchmail
+-----------------------------
+Zum Abholen von Nachrichten sind folgende Werte in die Fetchmail-SQL-Tabelle
+einzutragen.
+
+Loginname
+  je nach Provider mitunter auch als komplette E-Mailadresse:
+  testname
+  testname@domain.tld
+
+Servername
+  POP3 Server des Providers:
+  pop.domain.tld
+
+Recipient
+  Empaenger der abgerufenen E-Mails:
+  user@virtual.test
+
+Options
+  Die Optionen koennen miteinander durch Leerzeichentrennung kombiniert werden:
+  ssl      - der E-Mailabruf erfolgt ueber SSL auf Port 995
+  keep     - abgerufene Nachrichten werden nicht geloescht
+  no keep  - abgerufene Nachrichten werden geloescht
+  fetchall - alle E-Mails (nicht nur neue) werden abgerufen
+
+Active
+  Steht hier eine 1 dann wird der Eintrag verwendet.
+  Bei 0 bleibt er zwar in der Datenbank, ruft aber keine E-Mails ab.
+
+
+Shared Folder und ACL
+---------------------
+ACL Eintraege und Shared Folder koennen ueber externe E-Mail Clients (z.B. 
+Thunderbird mit Imap-ACL-Extension) verwaltet werden. Beim Setzen der 
+Freigabe fuer einen Shared Folder ist der komplette E-Mail Name 
+(user@domain.tld) zu verwenden.
+
+
+MySQL-Sieve filter
+--------------------
+Doevecot verfuegt mit Sieve ueber eine umfangreiche scriptbasierte 
+Filtersprache. Sie erlaubt dem Postfacheigentuemer, E-Mails in 
+unterschiedlichen Ordnern abzulegen, Kopien und auch automatische 
+Antworttexte (Autoreply, 'Out of office message') zu versenden.
+Da jedoch bisher alle Postfachdaten in SQL-Tabellen abgelegt wurden, bestand
+eine Herausforderrung darin moegliche Filter auch in dieser Form zu
+speichern. Dabei sollten diese um eine zeitabhaengige Komponente erweitert
+werden, welche die Unterscheidung zwischen 
+-  zeitweise verwendeten Filtereintraegen wie automatischen Antworttexte und
+   Weiterleitungen sowie
+-  permanent genutzten Filtern, welche z.B. nach Absendern filtern,
+ermoeglicht. Deshalb wurde ein Programm geschrieben, welches in regelmaessigen
+Zeitabstaenden die MySQL Tabelle nach zu aktivierenden Filtereintraegen 
+durchsucht. Diese werden dann nach den auch unter Roundcube Mailclient
+gueltigen Regeln erstellt:
+
+FILTERTYPE
+  anymessage
+  startswith
+  endswith
+  contains
+  hasrecipient
+  mimemultipart
+  textplain
+  islargerthan
+
+FLAGS
+  1                  = Negates pretty much every condition 
+  2                  = use body for filter (not header) 
+  4                  = Continue filtering (cc: instead of to:)
+  8                  = Pattern is a plain string, not a regex
+(mehrere gleichzeitig moeglich) 
+
+FIELDNAME
+  Subject            = Name of Header
+
+FIELDVALUE
+  [SPAM]             = filterstring
+
+TOFOLDER
+  INBOX.Trash        = store message to Trash folder
+  INBOX.News         = store message to News folder
+  !user@virtual.test = send message to user@virtual.test
+  +                  = send autoreply message
+  +days=4            = send autoreply message not on the next 4 days
+
+BODY
+  Autoreply or comment message
+
+Weitere Felder sind:
+POSITION
+  Wert von 1-99 zulaessig. Hiermit kann die Reihenfolge der Eintraege
+  veraendert werden.
+
+DATEFROM
+  Datumswert - Beginn der Gueltigkeit des Filterwertes.
+
+DATEEND
+  Datumswert - Ende der Nutzung des Filters. 
+
+
+Virenscanner
+------------
+VMail unterstuetzt mit dem SMC-Milter direkt ClamAV und den F-Prot Daemon. 
+
+
+Logfiles
+----------------------
+Alle E-Mail betreffenden Eintraege koennen ueber den Menuepunkt 
+"System administration" -> "Logfile view" -> "Show mail" abgefragt
+werden.
+

@@ -1,0 +1,14 @@
+<!-- /var/install/menu/setup.services.cui-vmail.menu -->
+<!-- Creation:     2006-04-26  jv -->
+<!-- Last Update:  $Id: setup.services.vmail.menu 24516 2010-06-13 20:39:22Z jv $ -->
+<package>vmail</package>
+<title>Vmail Postfix Dovecot administration</title>
+<doc file="vmail.txt">View documentation</doc>
+<edit>Edit configuration</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
+<init package="vmail" task="start">Start mail services</init>
+<init package="vmail" task="stop">Stop mail services</init>
+<init package="vmail" task="status">Show status</init>
+<menu file="setup.services.cui-vmail.user.menu">User & domain administration</menu>
+<menu file="setup.services.cui-vmail.tools.menu">Mail tools</menu>
+<menu file="setup.services.cui-vmail.modules.menu">Mail modules</menu>

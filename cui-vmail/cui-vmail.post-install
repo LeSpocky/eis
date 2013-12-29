@@ -1,0 +1,4 @@
+#!/bin/sh
+/var/install/bin/add-menu setup.services.menu setup.services.cui-vmail.menu "Vmail Postfix Dovecot"
+[ -e /etc/config.d/vmail ] || cp /etc/default.d/vmail /etc/config.d/
+exit 0

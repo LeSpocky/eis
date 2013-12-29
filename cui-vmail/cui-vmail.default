@@ -1,0 +1,122 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/vmail - configuration file for vmail
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# VMail settings
+#------------------------------------------------------------------------------
+
+START_VMAIL='no'                      # Use VMail service
+VMAIL_SQL_HOST='localhost'            # MySQL host. (localhost or IP)
+VMAIL_SQL_USER='vmailprovider'        # MySQL user name
+VMAIL_SQL_PASS='30456a14036b10770'    # MySQL connet password
+VMAIL_SQL_DATABASE='vmaildata'        # MySQL database name
+VMAIL_SQL_ENCRYPT_KEY='16962c26897d23366'
+                                      # Password encryption key
+VMAIL_LOGIN_WITH_MAILADDR='no'        # login with completed mail address or
+                                      # username only
+
+#------------------------------------------------------------------------------
+# SMTP Postfix general settings
+#------------------------------------------------------------------------------
+
+START_POSTFIX='yes'                   # postfix start 'yes' or 'no'
+POSTFIX_SMTP_TLS='no'                 # use STARTTLS or SMTP over SSL
+POSTFIX_HELO_HOSTNAME='mail.buchenwald.de'
+                                      # use alternate external host name
+POSTFIX_AUTOSIGNATURE='no'            # write automatic signature to all mail
+POSTFIX_ALTERNATE_SMTP_PORT='0'       # use additional SMTP port > 25
+POSTFIX_QUEUE_LIFETIME='5'            # change default queue lifetime
+POSTFIX_DRACD='no'                    # Dynamic Relay Authorization (POP before
+                                      # SMTP)
+POSTFIX_RELAY_FROM_NET_N='2'          # Count of internal networks
+POSTFIX_RELAY_FROM_NET_1='172.17.0.0/16'
+                                      # NETWORK/NETMASK 172.16.0.0/16
+POSTFIX_RELAY_FROM_NET_2='192.168.2.0/24'
+                                      # NETWORK/NETMASK 172.16.0.0/16
+POSTFIX_SMARTHOST='no'                # send all e-mails to external e-mail
+                                      # server
+POSTFIX_LIMIT_DESTINATIONS='100'      # Max count of destination recipients
+POSTFIX_LIMIT_MAILSIZE='20'           # Max size of e-mail message (default
+                                      # 20MB)
+
+#------------------------------------------------------------------------------
+# SMTP Postfix antispam settings
+#------------------------------------------------------------------------------
+
+POSTFIX_REJECT_UNKN_CLIENT='no'       # reject not dns based hostnames
+POSTFIX_REJECT_UNKN_SEND_DOM='yes'    # Reject unknown sender domain
+POSTFIX_REJECT_NON_FQDN_HOST='no'     # Reject non full qualif. hostname
+POSTFIX_REJECT_DYNADDRESS='no'        # Block all sender with pppoe, dialin
+                                      # etc. names
+POSTFIX_REJECT_BOGUS_MX='yes'         # Block faked DNS entries
+POSTFIX_MIME_HEADER_CHECK='yes'       # Block all exe,com,vba... files
+POSTFIX_POSTSCREEN='yes'              # Use Postscreen antispam preegreeting
+POSTFIX_RBL='yes'                     # Use Realtime Blackhole List
+POSTFIX_RBL_N='7'                     # Count of Realtime Blackhole List server
+POSTFIX_RBL_1_SERVER='ix.dnsbl.manitu.net'
+                                      # Realtime Blackhole List server 1 name
+POSTFIX_RBL_1_WEIGHT='3'              # Blackhole server 1 blocking weight
+POSTFIX_RBL_2_SERVER='zen.spamhaus.org'
+                                      # Realtime Blackhole List server 2 name
+POSTFIX_RBL_2_WEIGHT='1'              # Blackhole server 2 blocking weight
+POSTFIX_RBL_3_SERVER='dnsbl.inps.de'  # Realtime Blackhole List server 3 name
+POSTFIX_RBL_3_WEIGHT='1'              # Blackhole server 3 blocking weight
+POSTFIX_RBL_4_SERVER='dnsbl-1.uceprotect.net'
+                                      # Realtime Blackhole List server 4 name
+POSTFIX_RBL_4_WEIGHT='1'              # Blackhole server 4 blocking weight
+POSTFIX_RBL_5_SERVER='dnsbl-2.uceprotect.net'
+                                      # Realtime Blackhole List server 5 name
+POSTFIX_RBL_5_WEIGHT='1'              # Blackhole server 5 blocking weight
+POSTFIX_RBL_6_SERVER='dnsbl-3.uceprotect.net'
+                                      # Realtime Blackhole List server 6 name
+POSTFIX_RBL_6_WEIGHT='1'              # Blackhole server 6 blocking weight
+POSTFIX_RBL_7_SERVER='b.barracudacentral.org'
+                                      # Realtime Blackhole List server 7 name
+POSTFIX_RBL_7_WEIGHT='1'              # Blackhole server 7 blocking weight
+POSTFIX_HEADER_N='0'                  # Count of header checks
+POSTFIX_CLIENT_N='0'                  # Count of checked email clients
+
+#------------------------------------------------------------------------------
+# Antivirus settings
+#------------------------------------------------------------------------------
+
+POSTFIX_AV_CLAMAV='yes'               # Use ClamAV antivirus scanner
+POSTFIX_AV_FPROTD='no'                # Use F-Prot daemon antivirus scanner
+POSTFIX_AV_SCRIPT='no'                # Use scripfile
+POSTFIX_AV_SCRIPTFILE='/usr/local/postfix/smc-unzip.sh'
+                                      # Name of scriptfile
+                                      # (/usr/local/postfix/smc-unzip.sh)
+POSTFIX_AV_VIRUS_INFO='root@localhost'
+                                      # Send virus warn message to e-mail
+                                      # recipient
+POSTFIX_AV_QUARANTINE='yes'           # Store the original virus to the
+                                      # quarantain
+
+#------------------------------------------------------------------------------
+# POP3/IMAP settings
+#------------------------------------------------------------------------------
+
+START_POP3IMAP='yes'                  # Start POP3 and IMAP
+POP3IMAP_TLS='no'                     # Activate POP3S and IMAPS (TLS and SSL)
+
+#------------------------------------------------------------------------------
+# Fetchmail settings
+#------------------------------------------------------------------------------
+
+START_FETCHMAIL='no'                  # Start fetchmail service
+FETCHMAIL_CRON_SCHEDULE='5,35 * * * *'
+                                      # mail check time
+FETCHMAIL_TIMEOUT='60'                # server timeout
+FETCHMAIL_POSTMASTER='postmaster'     # store all error messages to
+
+#------------------------------------------------------------------------------
+# Logfile settings
+#------------------------------------------------------------------------------
+
+POSTFIX_LOGLEVEL='0'                  # Debug and loglevel 0...3
+FETCHMAIL_LOG='no'                    # activate fetchmail log entries
+
+#------------------------------------------------------------------------------
+# End
+#------------------------------------------------------------------------------

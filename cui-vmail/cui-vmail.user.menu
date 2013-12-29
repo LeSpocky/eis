@@ -1,0 +1,13 @@
+<!-- /var/install/menu/setup.services.cui-vmail.user.menu -->
+<package>vmail</package>
+<title>VMail user & domain administration</title>
+<script file="cui-vmail-user-domainhandling.cui.sh">E-Mail domain administration</script>
+<script file="cui-vmail-user-userhandling.cui.sh">E-Mail user administration</script>
+<script file="cui-vmail-user-relaymap.cui.sh">E-Mail smarthost user administration</script>
+<script file="cui-vmail-user-forwardings.cui.sh">E-Mail forwarding administration</script>
+<script file="cui-vmail-user-canonicalmap.cui.sh">E-Mail canonical maps administration</script>
+<script file="cui-vmail-tools-recipient-access.cui.sh">E-Mail recipient access administration</script>
+<script file="cui-vmail-tools-sender-access.cui.sh">E-Mail sender access administration</script>
+<script file="cui-vmail-tools-client-access.cui.sh">E-Mail client access administration</script>
+<script file="cui-vmail-user-maildropfilter.cui.sh">Sieve filter administration</script>
+<script file="cui-vmail-tools-fetchmailhandling.cui.sh">Fetchmail user administration</script>
