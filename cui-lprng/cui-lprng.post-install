@@ -1,0 +1,4 @@
+#!/bin/sh
+
+/var/install/bin/add-menu setup.services.menu setup.services.cui-lprng.menu "lprng"
+/var/install/config.d/cui-lprng-update.sh
