@@ -11,14 +11,16 @@ depends=""
 depends_dev=""
 makedepends="$depends_dev"
 install=""
-subpackages="${pkgname}-doc"
-source="http://downloads.sourceforge.net/project/lprng/lprng/lprng-3.8.C.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flprng%2F&ts=1388256879&use_mirror=garr"
 
-_builddir="$srcdir/${pkgname}-$pkgver"
+# Package version contains a character, so $pkgver cannot be used
+currentVersion=3.8.C
+
+source="http://downloads.sourceforge.net/project/lprng/lprng/lprng-${currentVersion}.tar.gz"
+
+_builddir="$srcdir/${pkgname}-${currentVersion}"
 
 prepare() {
 	local i
-	ln -s inadyn "$_builddir"
 	cd "$_builddir"
 	for i in ${source}; do
 		case ${i} in
@@ -29,18 +31,22 @@ prepare() {
 
 build() {
 	cd "$_builddir"
+	./configure \
+		--prefix=/usr \
+		--bindir=/usr/bin \
+		--libdir=/usr/lib \
+		--with-piddir=/run \
+		--mandir=/usr/share/man \
+		--includedir=/usr/include || return 1
 	make || return 1
 }
 
 package() {
 	cd "$_builddir"
+	make -j1 DESTDIR="$pkgdir" install || return 1
 #	install -D -m755 ${_builddir}/bin/linux/...  ${pkgdir}/usr/bin/${pkgname} || return 1
 }
 
-doc() {
-    mkdir ${pkgdir}/../lprng-doc
-    cd "$_builddir"
-}
-md5sums="5901bed95e61d2bea3ba3056056af432  lprng-3.8.C.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flprng%2F&ts=1388256879&use_mirror=garr"
-sha256sums="694a1747a96385b89e93f43343bf35cee5c8c73353a83814106911c99f09de10  lprng-3.8.C.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flprng%2F&ts=1388256879&use_mirror=garr"
-sha512sums="c3dd5110476ac7198a7276637e75ab2d7594f40088aee4fad6522940359463251b23f5462e571138f89e5129bc9bad635d5585886349dd297221f57bc2d2eb24  lprng-3.8.C.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flprng%2F&ts=1388256879&use_mirror=garr"
+md5sums="5901bed95e61d2bea3ba3056056af432  lprng-3.8.C.tar.gz"
+sha256sums="694a1747a96385b89e93f43343bf35cee5c8c73353a83814106911c99f09de10  lprng-3.8.C.tar.gz"
+sha512sums="c3dd5110476ac7198a7276637e75ab2d7594f40088aee4fad6522940359463251b23f5462e571138f89e5129bc9bad635d5585886349dd297221f57bc2d2eb24  lprng-3.8.C.tar.gz"
