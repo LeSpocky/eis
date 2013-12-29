@@ -223,16 +223,17 @@ do_startlprng () {
     fi
 }
 
-case "$1" in
-'start')
+start() {
     if [ "$START_LPRNG" = "yes" ] ; then
         do_startlprng
     fi
-    ;;
-'forcestart')
+}
+
+forcestart() {
     do_startlprng
-    ;;
-'status')
+}
+
+status() {
     /usr/local/bin/colecho "Checking status of LPRng ..." gn
 
     do_lprngstatus
@@ -269,8 +270,9 @@ case "$1" in
             fi
         done
     fi
-    ;;
-'stop')
+}
+
+stop() {
     boot_mesg " * Stopping LPRng ..."
 
     do_lprngstatus
@@ -314,11 +316,13 @@ case "$1" in
             fi
         fi
     fi
-    ;;
-'restart')
+}
+
+restart() {
     $0 stop && $0 forcestart
-    ;;
-'reload')
+}
+
+reload() {
     boot_mesg " * Reloading LPRng ..."
 
     do_lprngstatus
@@ -333,10 +337,4 @@ case "$1" in
         echo "   LPRng is not running, performing restart ..."
         $0 restart
     fi
-    ;;
-*)
-    echo "usage: /etc/init.d/`basename $0` {start|forcestart|status|stop|restart|reload}" >&2
-    exit 1
-    ;;
-esac
-set +x
+}
