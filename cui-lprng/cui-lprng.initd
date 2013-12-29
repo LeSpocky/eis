@@ -33,7 +33,7 @@ fi
 do_check_par () {
     all_parports_configured='true'
     for port in `cat /etc/parport_found` ; do
-        if ! `echo $io | grep -q "$port"` ; then
+        if ! `echo ${io} | grep -q "$port"` ; then
             all_parports_configured='false'
             boot_mesg "   Cannot find existing parport $port in LPRng configuration."
             echo_failure
@@ -46,7 +46,7 @@ do_check_par () {
     fi
 
     correct_parports_configured='true'
-    for port in `IFS=','; echo $io` ; do
+    for port in `IFS=','; echo ${io}` ; do
         if ! `grep -q "$port" /etc/parport_found` ; then
             correct_parports_configured='false'
             boot_mesg "   Cannot find configured parport $port in existing parports."
@@ -64,11 +64,11 @@ do_check_usb () {
     idx='1'
     usb_any_active='no'
     while [ "$idx" -le "$LPRNG_LOCAL_USBPORT_PRINTER_N" ] ; do
-        eval active='$LPRNG_LOCAL_USBPORT_PRINTER_'$idx'_ACTIVE'
+        eval active='$LPRNG_LOCAL_USBPORT_PRINTER_'${idx}'_ACTIVE'
         if [ "$active" = "yes" ] ; then
             usb_any_active='yes'
         fi
-        idx=`expr $idx + 1`
+        idx=`expr ${idx} + 1`
     done
 
     if [ "$usb_any_active" = "yes" ] ; then
@@ -77,7 +77,7 @@ do_check_usb () {
             . /etc/config.d/usb
             if [ "$START_USB" = "yes" ] ; then
                 if [ "$USB_PRINTER" = "yes" ] ; then
-                    if [ -n "`$lsmodbin | grep '^usblp '`" ] ; then
+                    if [ -n "`${lsmodbin} | grep '^usblp '`" ] ; then
                         usb_exists='true'
                     fi
                 fi
@@ -91,8 +91,8 @@ do_check_usb () {
 
 do_parport () {
     for modul in parport ppdev ; do
-        if [ -z "`$lsmodbin | grep "^$modul "`" ] ; then
-            $modprobebin $modul >/dev/null 2>&1
+        if [ -z "`${lsmodbin} | grep "^$modul "`" ] ; then
+            ${modprobebin} ${modul} >/dev/null 2>&1
             if [ $? -ne 0 ] ; then
                 boot_mesg "   Cannot load $modul."
                 echo_failure
@@ -105,7 +105,7 @@ do_parport_pc () {
     # udev is loading parport_pc on eisfair-2
     #if [ -z "`$lsmodbin | grep '^parport_pc '`" ] ; then
         # load without options, otherwise printing fails
-        $modprobebin parport_pc >/dev/null 2>&1
+        ${modprobebin} parport_pc >/dev/null 2>&1
         if [ $? -ne 0 ] ; then
             boot_mesg "   Cannot load parport_pc without options."
             echo_failure
@@ -114,8 +114,8 @@ do_parport_pc () {
 }
 
 do_lp () {
-    if [ -z "`$lsmodbin | grep '^lp '`" ] ; then
-        $modprobebin lp parport=$parport >/dev/null 2>&1
+    if [ -z "`${lsmodbin} | grep '^lp '`" ] ; then
+        ${modprobebin} lp parport=${parport} >/dev/null 2>&1
         if [ $? -ne 0 ] ; then
             boot_mesg "   Cannot load lp on parport $parport."
             echo_failure
@@ -126,8 +126,8 @@ do_lp () {
 do_modules_load () {
     for modul in parport parport_pc lp
     do
-        if [ -z "`$lsmodbin | grep "^$modul "`" ] ; then
-            $modprobebin $modul >/dev/null 2>&1
+        if [ -z "`${lsmodbin} | grep "^$modul "`" ] ; then
+            ${modprobebin} ${modul} >/dev/null 2>&1
             if [ $? -ne 0 ] ; then
                 boot_mesg "   Cannot preload $modul."
                 echo_failure
@@ -137,14 +137,14 @@ do_modules_load () {
                     if [ -d /proc/sys/dev/parport ] ; then
                         for i in $(ls -1 /proc/sys/dev/parport | grep -v default)
                         do
-                            base=$(cat /proc/sys/dev/parport/$i/base-addr | cut -f1)
+                            base=$(cat /proc/sys/dev/parport/${i}/base-addr | cut -f1)
                             base=`echo "obase=16; $base" | bc`
                         done
 
                         if [ -n "$base" ] ; then
                             for i in $(ls -1 /proc/sys/dev/parport | grep -v default)
                             do
-                                base=$(cat /proc/sys/dev/parport/$i/base-addr | cut -f1)
+                                base=$(cat /proc/sys/dev/parport/${i}/base-addr | cut -f1)
                                 base=`echo "obase=16; $base" | bc`
                                 echo "0x$base" >>/etc/parport_found
                             done
@@ -159,8 +159,8 @@ do_modules_load () {
 do_modules_del () {
     for modul in lp ppdev parport_pc parport
     do
-        if [ -n "`$lsmodbin | grep "^$modul "`" ] ; then
-            $rmmodbin $modul >/dev/null 2>&1
+        if [ -n "`${lsmodbin} | grep "^$modul "`" ] ; then
+            ${rmmodbin} ${modul} >/dev/null 2>&1
             if [ $? -ne 0 ] ; then
                 boot_mesg "   Cannot preunload $modul."
                 echo_failure
@@ -170,14 +170,14 @@ do_modules_del () {
 }
 
 do_lprngstatus () {
-    lprngpid=`cat $lprngpidfile 2>/dev/null`
+    lprngpid=`cat ${lprngpidfile} 2>/dev/null`
     lprngstatus=dead
     if [ -n "$lprngpid" ] ; then
-        /bin/kill -0 $lprngpid
+        /bin/kill -0 ${lprngpid}
         if [ $? -eq 0 ] ; then
             lprngstatus=alive
         else
-            rm -f $lprngpidfile
+            rm -f ${lprngpidfile}
         fi
     fi
 }
@@ -203,7 +203,7 @@ do_startlprng () {
         do_check_usb
         if [ "$usb_any_active" = "yes" -a ! -f /etc/config.d/usb ] ; then
             # only load on eisfair-2
-            $modprobebin usblp >/dev/null 2>&1
+            ${modprobebin} usblp >/dev/null 2>&1
             if [ $? -ne 0 ] ; then
                 boot_mesg "   Cannot load usblp."
                 echo_failure
@@ -218,7 +218,7 @@ do_startlprng () {
         /usr/sbin/checkpc -af
 
         boot_mesg "   - Starting lpd ..."
-        $lpdbin
+        ${lpdbin}
         evaluate_retval
     fi
 }
@@ -244,9 +244,8 @@ status() {
     fi
 
     if [ "$parportconf_exists" = "true" ] ; then
-        for modul in parport ppdev parport_pc lp
-        do
-            if [ -n "`$lsmodbin | grep "^$modul "`" ] ; then
+        for modul in parport ppdev parport_pc lp ; do
+            if [ -n "`${lsmodbin} | grep "^$modul "`" ] ; then
                 echo "$modul is loaded."
             else
                 echo "$modul is not loaded."
@@ -263,9 +262,8 @@ status() {
 
     if [ "$usb_any_active" = "yes" ] ; then
         usb_modules='usbcore ehci-hcd uhci_hcd ohci_hcd ehci_hcd xhci xhci-hcd usblp'
-        for modul in $usb_modules
-        do
-            if [ -n "`$lsmodbin | grep "^$modul "`" ] ; then
+        for modul in ${usb_modules} ; do
+            if [ -n "`${lsmodbin} | grep "^$modul "`" ] ; then
                 echo "$modul is loaded."
             fi
         done
@@ -277,9 +275,8 @@ stop() {
 
     do_lprngstatus
     if [ "$lprngstatus" = "alive" ] ; then
-        for signal in "TERM" "INT" "HUP" "KILL"
-        do
-            /usr/bin/killall -$signal lpd
+        for signal in "TERM" "INT" "HUP" "KILL" ; do
+            /usr/bin/killall -${signal} lpd
             if [ $? -eq 0 ] ; then
                 echo_ok
                 break
@@ -288,16 +285,15 @@ stop() {
             echo_warning
             sleep 1
         done
-        rm -f $lprngpidfile
+        rm -f ${lprngpidfile}
     else
         boot_mesg "   Warning: LPRng is not running."
         echo_warning
     fi
 
-    for modul in lp ppdev parport_pc parport
-    do
-        if [ -n "`$lsmodbin | grep "^$modul "`" ] ; then
-            $rmmodbin $modul >/dev/null 2>&1
+    for modul in lp ppdev parport_pc parport ; do
+        if [ -n "`${lsmodbin} | grep "^$modul "`" ] ; then
+            ${rmmodbin} ${modul} >/dev/null 2>&1
             if [ $? -ne 0 ] ; then
                 boot_mesg "   Cannot unload $modul."
                 echo_failure
@@ -308,8 +304,8 @@ stop() {
     do_check_usb
     if [ "$usb_any_active" = "yes" -a ! -f /etc/config.d/usb ] ; then
         # only unload on eisfair-2
-        if [ -n "`$lsmodbin | grep '^usblp '`" ] ; then
-            $rmmodbin usblp >/dev/null 2>&1
+        if [ -n "`${lsmodbin} | grep '^usblp '`" ] ; then
+            ${rmmodbin} usblp >/dev/null 2>&1
             if [ $? -ne 0 ] ; then
                 boot_mesg "   Cannot unload usblp."
                 echo_failure
@@ -326,11 +322,10 @@ reload() {
     boot_mesg " * Reloading LPRng ..."
 
     do_lprngstatus
-    if [ $lprngstatus = "alive" ] ; then
-        for pid in `ps ax | grep 'lpd ' | grep -v grep | cut -c1-6`
-        do
+    if [ ${lprngstatus} = "alive" ] ; then
+        for pid in `ps ax | grep 'lpd ' | grep -v grep | cut -c1-6` ; do
             boot_mesg "   - Reloading lpd with pid $pid ..."
-            /bin/kill -SIGHUP $pid
+            /bin/kill -SIGHUP ${pid}
             evaluate_retval
         done
     else
