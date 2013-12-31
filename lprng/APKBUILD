@@ -33,7 +33,36 @@ prepare() {
 build() {
 	cd "$_builddir"
 	./configure \
+		--with-libiconv-prefix=no \
+		--without-included-gettext \
+		--without-libintl-prefix \
+		--with-openssl=no \
+		--without-openssl-inc \
+		--without-openssl-lib \
+		--with-ssl_ca_file=no \
+		--with-ssl_ca_key=no \
+		--with-ssl_certs_dir=no \
+		--with-ssl_crl_file=no \
+		--with-ssl_server_cert=no \
+		--with-ssl_server_password_file=no \
+		--disable-setuid \
+		--without-libiconv-prefix \
+		--target=i486-pc-linux-gnu \
 		--prefix=/usr \
+		--sysconfdir=/etc \
+		--libexecdir=/usr/lib \
+		--disable-kerberos \
+		--disable-mit_kerberos4 \
+		--disable-kerberos_checks \
+		--disable-nls \
+		--disable-ssl \
+		--with-lpd_conf_path=/etc/lpd.conf \
+		--with-lpd_perms_path=/etc/lpd.perms \
+		--with-initpath=no \
+		--with-lockfile=/var/run/lpd \
+		--with-userid=lp \
+		--with-groupid=lp \
+		--with-done_jobs=0 \
 		--bindir=/usr/bin \
 		--libdir=/usr/lib \
 		--with-piddir=/run \
