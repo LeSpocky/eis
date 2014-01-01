@@ -57,13 +57,12 @@ package() {
 		install -D -m644 ${currentMenu} ${pkgdir}/var/install/menu/${currentMenu#cui-lprng.*} || return 1
 	done
 	cd -
-	install -D -m644 ${srcdir}/${pkgname}.checkd          ${pkgdir}/etc/check.d/cui-lprng || return 1
-	install -D -m644 ${srcdir}/${pkgname}.checkd.ext      ${pkgdir}/etc/check.d/cui-lprng.ext || return 1
-	install -D -m644 ${srcdir}/${pkgname}.help            ${pkgdir}/var/install/help/cui-lprng || return 1
-	install -D -m644 ${srcdir}/${pkgname}.initd           ${pkgdir}/etc/init.d/lprng || return 1
-	install -D -m644 ${srcdir}/${pkgname}.txt             ${pkgdir}/usr/share/doc/cui-lprng/cui-lprng.txt || return 1
-	install -D -m755 ${srcdir}/${pkgname}.sh              ${pkgdir}/var/install/config.d/cui-lprng.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-update.sh       ${pkgdir}/var/install/config.d/cui-lprng-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.initd               ${pkgdir}/etc/init.d/lprng || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt                 ${pkgdir}/usr/share/doc/cui-lprng/cui-lprng.txt || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh                  ${pkgdir}/var/install/config.d/cui-lprng.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh           ${pkgdir}/var/install/config.d/cui-lprng-update.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-widgets.sh          ${pkgdir}/var/install/config.d/cui-lprng-widgets.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-widgets-update.sh   ${pkgdir}/var/install/config.d/cui-lprng-widgets-update.sh || return 1
 }
 md5sums="4ad825e67966e00434ed17e739354d0a  cui-lcd4linux.initd
 8edb531378a8b5335c607c5a83343530  cui-lcd4linux.sh
