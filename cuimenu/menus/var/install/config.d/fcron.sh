@@ -1,34 +1,36 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # /var/install/config.d/fcron.sh - fcron configuration file
-# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
-#----------------------------------------------------------------------------
+# Copyright (c) 2001-2014 the eisfair team, team(at)eisfair(dot)org
+# ----------------------------------------------------------------------------
 
 # added config file
 . /etc/config.d/fcron
 
-# set fcron.conf group cron, read for all!
+# ----------------------------------------------------------------------------
+# Set fcron.conf group cron, read for all!
 #chown root:cron /etc/fcron.conf
 #chmod 0644 /etc/fcron.conf
 mkdir -p /var/spool/fcron
 chown cron:cron /var/spool/fcron
 chmod 0770 /var/spool/fcron
 
-#----------------------------------------------------------------------------
-# create menu defined entries
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# Create menu defined entries
 cron_path='/etc/cron'
 mkdir -p ${cron_path}/root
-# remove old user cron config files
+
+# ----------------------------------------------------------------------------
+# Remove old user cron config files
 cd ${cron_path}
-for user in *
-do
+for user in * ; do
 	[ -d ${user} ] && rm -f ${cron_path}/${user}/cron.base
 done
-# write cron configuration to file
+
+# ----------------------------------------------------------------------------
+# Write cron configuration to file
 idx=1
-while [ "${idx}" -le "${CRON_N}" ]
-do
+while [ "${idx}" -le "${CRON_N}" ] ; do
 	# check for active
 	eval active='${CRON_'${idx}'_ACTIVE}'
 	if [ "${active}" = "yes" ] ; then
@@ -44,9 +46,8 @@ do
 	: $(( idx++ ))
 done
 
-#----------------------------------------------------------------------------
-# start stop update
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# Start stop update
 if [ "$START_FCRON" = "yes" ] ; then
     rc-update -q add fcron default 2>/dev/null
     rc-service -q fcron update 2>/dev/null
