@@ -28,7 +28,6 @@ modifiedSomething=false
 
 # ----------------------------------------------------------------------------
 # Set the default values for configuration
-# ----------------------------------------------------------------------------
 START_LCD_WIDGET='no'
 
 # Text widgets
@@ -538,32 +537,26 @@ LCD_WIDGET_ICON_13_SPEED='100'
 
 
 
-
 # ----------------------------------------------------------------------------
 # Read configurations and update variables
-# ----------------------------------------------------------------------------
-updateVariables()
-{
+updateVariables() {
     # ---------------------------------------
     # Read values out of widget configuration
-    if [ -f /etc/config.d/$packageName ]
-    then
-        . /etc/config.d/$packageName
+    if [ -f /etc/config.d/${packageName} ] ; then
+        . /etc/config.d/${packageName}
 
         local align=''
         local direction=''
         local name=''
         local active=''
 
-        if [ -n "$LCD_WIDGET_TEXT_N" ]
-        then
+        if [ -n "$LCD_WIDGET_TEXT_N" ] ; then
             # -----------------
             # Convert alignment
             idx=1
-            while [ "$idx" -le "$LCD_WIDGET_TEXT_N" ]
-            do
+            while [ "${idx}" -le "$LCD_WIDGET_TEXT_N" ] ; do
                 eval align='${LCD_WIDGET_TEXT_'${idx}'_ALIGN}'
-                case $align in
+                case ${align} in
                     'L')
                         eval LCD_WIDGET_TEXT_${idx}_ALIGN='Left'
                         modifiedSomething=true
@@ -587,13 +580,11 @@ updateVariables()
                 eval name='${LCD_WIDGET_TEXT_'${idx}'_NAME}'
                 eval active='${LCD_WIDGET_TEXT_'${idx}'_ACTIVE}'
 
-                if [ -z "$name" ]
-                then
-                    eval LCD_WIDGET_TEXT_${idx}_NAME='textwidget'$idx
+                if [ -z "$name" ] ; then
+                    eval LCD_WIDGET_TEXT_${idx}_NAME='textwidget'${idx}
                     modifiedSomething=true
                 fi
-                if [ -z "$active" ]
-                then
+                if [ -z "$active" ] ; then
                     eval LCD_WIDGET_TEXT_${idx}_ACTIVE='no'
                     modifiedSomething=true
                 fi
@@ -602,15 +593,13 @@ updateVariables()
             done
         fi
 
-        if [ -n "$LCD_WIDGET_BAR_N" ]
-        then
+        if [ -n "$LCD_WIDGET_BAR_N" ] ; then
             # -----------------
             # Convert direction
             idx=1
-            while [ "$idx" -le "$LCD_WIDGET_BAR_N" ]
-            do
+            while [ "${idx}" -le "$LCD_WIDGET_BAR_N" ] ; do
                 eval direction='${LCD_WIDGET_BAR_'${idx}'_DIRECTION}'
-                case $direction in
+                case ${direction} in
                     'N')
                         eval LCD_WIDGET_BAR_${idx}_DIRECTION='North'
                         modifiedSomething=true
@@ -634,13 +623,11 @@ updateVariables()
                 eval name='${LCD_WIDGET_BAR_'${idx}'_NAME}'
                 eval active='${LCD_WIDGET_BAR_'${idx}'_ACTIVE}'
 
-                if [ -z "$name" ]
-                then
-                    eval LCD_WIDGET_BAR_${idx}_NAME='barwidget'$idx
+                if [ -z "$name" ] ; then
+                    eval LCD_WIDGET_BAR_${idx}_NAME='barwidget'${idx}
                     modifiedSomething=true
                 fi
-                if [ -z "$active" ]
-                then
+                if [ -z "$active" ] ; then
                     eval LCD_WIDGET_BAR_${idx}_ACTIVE='no'
                     modifiedSomething=true
                 fi
@@ -649,14 +636,12 @@ updateVariables()
             done
         fi
 
-        if [ -n "$LCD_WIDGET_ICON_N" ]
-        then
+        if [ -n "$LCD_WIDGET_ICON_N" ] ; then
             # ----------------------------------------------
             # Add name and activation state for icon widgets
             # and convert config parameter name
             idx=1
-            while [ "$idx" -le "$LCD_WIDGET_ICON_N" ]
-            do
+            while [ "${idx}" -le "$LCD_WIDGET_ICON_N" ] ; do
                 # Fix wrong config value names
                 eval row1='${LCD_WIDGET_ICON_'${idx}'_ROW_1}'
                 eval row2='${LCD_WIDGET_ICON_'${idx}'_ROW_2}'
@@ -679,53 +664,43 @@ updateVariables()
                 row7=${row7/\|/\\|}
                 row8=${row8/\|/\\|}
 
-                if [ -n "$row1" ]
-                then
-                    eval LCD_WIDGET_ICON_${idx}_ROW1="$row1"
+                if [ -n "$row1" ] ; then
+                    eval LCD_WIDGET_ICON_${idx}_ROW1="${row1}"
                     modifiedSomething=true
                 fi
-                if [ -n "$row2" ]
-                then
-                    eval LCD_WIDGET_ICON_${idx}_ROW2="$row2"
+                if [ -n "$row2" ] ; then
+                    eval LCD_WIDGET_ICON_${idx}_ROW2="${row2}"
                     modifiedSomething=true
                 fi
-                if [ -n "$row3" ]
-                then
-                    eval LCD_WIDGET_ICON_${idx}_ROW3="$row3"
+                if [ -n "$row3" ] ; then
+                    eval LCD_WIDGET_ICON_${idx}_ROW3="${row3}"
                     modifiedSomething=true
                 fi
-                if [ -n "$row4" ]
-                then
-                    eval LCD_WIDGET_ICON_${idx}_ROW4="$row4"
+                if [ -n "$row4" ] ; then
+                    eval LCD_WIDGET_ICON_${idx}_ROW4="${row4}"
                     modifiedSomething=true
                 fi
-                if [ -n "$row5" ]
-                then
-                    eval LCD_WIDGET_ICON_${idx}_ROW5="$row5"
+                if [ -n "$row5" ] ; then
+                    eval LCD_WIDGET_ICON_${idx}_ROW5="${row5}"
                     modifiedSomething=true
                 fi
-                if [ -n "$row6" ]
-                then
-                    eval LCD_WIDGET_ICON_${idx}_ROW6="$row6"
+                if [ -n "$row6" ] ; then
+                    eval LCD_WIDGET_ICON_${idx}_ROW6="${row6}"
                     modifiedSomething=true
                 fi
-                if [ -n "$row7" ]
-                then
-                    eval LCD_WIDGET_ICON_${idx}_ROW7="$row7"
+                if [ -n "$row7" ] ; then
+                    eval LCD_WIDGET_ICON_${idx}_ROW7="${row7}"
                     modifiedSomething=true
                 fi
-                if [ -n "$row8" ]
-                then
-                    eval LCD_WIDGET_ICON_${idx}_ROW8="$row8"
+                if [ -n "$row8" ] ; then
+                    eval LCD_WIDGET_ICON_${idx}_ROW8="${row8}"
                     modifiedSomething=true
                 fi
-                if [ -z "$name" ]
-                then
+                if [ -z "$name" ] ; then
                     eval LCD_WIDGET_ICON_${idx}_NAME='iconwidget'${idx}
                     modifiedSomething=true
                 fi
-                if [ -z "$active" ]
-                then
+                if [ -z "$active" ] ; then
                     eval LCD_WIDGET_ICON_${idx}_ACTIVE='no'
                     modifiedSomething=true
                 fi
@@ -740,13 +715,11 @@ updateVariables()
 
 # ----------------------------------------------------------------------------
 # Write config and default files
-# ----------------------------------------------------------------------------
-makeConfigFile()
-{
+makeConfigFile() {
     internal_conf_file=${1}
     {
     # ----------------------------------------------------------------------------
-    printgpl -conf $packageName '2010-10-03' 'Yves Schumann'
+    printgpl -conf ${packageName} '2010-10-03' 'Yves Schumann'
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
@@ -759,67 +732,64 @@ makeConfigFile()
     # ----------------------------------------------------------------------------
     printvar 'LCD_WIDGET_TEXT_N'                     'Number of text elements'
     idx=1
-    while [ $idx -le $LCD_WIDGET_TEXT_N ]
-    do
-        printvar 'LCD_WIDGET_TEXT_'$idx'_NAME'       'Name of this widget'
-        printvar 'LCD_WIDGET_TEXT_'$idx'_ACTIVE'     'Is widget active or not'
-	    printvar 'LCD_WIDGET_TEXT_'$idx'_PREFIX'     'The result of these expressions will be displayd before the actual value'
-        printvar 'LCD_WIDGET_TEXT_'$idx'_EXP'        'This expression will be evaluated and its result will be displayed'
-	    printvar 'LCD_WIDGET_TEXT_'$idx'_POSTFIX'    'The result of these expressions will be displayd after the actual value'
-        printvar 'LCD_WIDGET_TEXT_'$idx'_WIDTH'      'Length of the whole widget (including prefix and postfix!)'
-	    printvar 'LCD_WIDGET_TEXT_'$idx'_PRECISION'  '(maximum) number of decimal places'
-        printvar 'LCD_WIDGET_TEXT_'$idx'_ALIGN'      'Left (default), Center, Right or Marquee'
-        printvar 'LCD_WIDGET_TEXT_'$idx'_SPEED'      'Marquee scroller interval (msec), default 500msec'
-        printvar 'LCD_WIDGET_TEXT_'$idx'_UPDATE'     'Update interval (msec), default 500msec'
+    while [ ${idx} -le ${LCD_WIDGET_TEXT_N} ] ; do
+        printvar 'LCD_WIDGET_TEXT_'${idx}'_NAME'       'Name of this widget'
+        printvar 'LCD_WIDGET_TEXT_'${idx}'_ACTIVE'     'Is widget active or not'
+	    printvar 'LCD_WIDGET_TEXT_'${idx}'_PREFIX'     'The result of these expressions will be displayd before the actual value'
+        printvar 'LCD_WIDGET_TEXT_'${idx}'_EXP'        'This expression will be evaluated and its result will be displayed'
+	    printvar 'LCD_WIDGET_TEXT_'${idx}'_POSTFIX'    'The result of these expressions will be displayd after the actual value'
+        printvar 'LCD_WIDGET_TEXT_'${idx}'_WIDTH'      'Length of the whole widget (including prefix and postfix!)'
+	    printvar 'LCD_WIDGET_TEXT_'${idx}'_PRECISION'  '(maximum) number of decimal places'
+        printvar 'LCD_WIDGET_TEXT_'${idx}'_ALIGN'      'Left (default), Center, Right or Marquee'
+        printvar 'LCD_WIDGET_TEXT_'${idx}'_SPEED'      'Marquee scroller interval (msec), default 500msec'
+        printvar 'LCD_WIDGET_TEXT_'${idx}'_UPDATE'     'Update interval (msec), default 500msec'
         idx=$((idx+1))
     done
   	} > ${internal_conf_file}
-    mecho -info -n '.'
+    mecho --info -n '.'
 	{
     # ----------------------------------------------------------------------------
     printgroup 'Bar Widgets'
     # ----------------------------------------------------------------------------
     printvar 'LCD_WIDGET_BAR_N'                      'Number of bar elements'
     idx=1
-    while [ $idx -le $LCD_WIDGET_BAR_N ]
-    do
-        printvar 'LCD_WIDGET_BAR_'$idx'_NAME'        'Name of this widget'
-        printvar 'LCD_WIDGET_BAR_'$idx'_ACTIVE'      'Is widget active or not'
-        printvar 'LCD_WIDGET_BAR_'$idx'_EXP'         'its result is used for the length of the (upper half) bar'
-	    printvar 'LCD_WIDGET_BAR_'$idx'_EXP2'        'its result is used for the length of the lower half bar'
-        printvar 'LCD_WIDGET_BAR_'$idx'_LENGTH'      'size of the whole bar widget'
-	    printvar 'LCD_WIDGET_BAR_'$idx'_MIN'         'scale: value where the bar starts'
-	    printvar 'LCD_WIDGET_BAR_'$idx'_MAX'         'scale: value where the bar ends'
-        printvar 'LCD_WIDGET_BAR_'$idx'_DIRECTION'   "'East' (left to right, default),"
+    while [ ${idx} -le ${LCD_WIDGET_BAR_N} ] ; do
+        printvar 'LCD_WIDGET_BAR_'${idx}'_NAME'        'Name of this widget'
+        printvar 'LCD_WIDGET_BAR_'${idx}'_ACTIVE'      'Is widget active or not'
+        printvar 'LCD_WIDGET_BAR_'${idx}'_EXP'         'its result is used for the length of the (upper half) bar'
+	    printvar 'LCD_WIDGET_BAR_'${idx}'_EXP2'        'its result is used for the length of the lower half bar'
+        printvar 'LCD_WIDGET_BAR_'${idx}'_LENGTH'      'size of the whole bar widget'
+	    printvar 'LCD_WIDGET_BAR_'${idx}'_MIN'         'scale: value where the bar starts'
+	    printvar 'LCD_WIDGET_BAR_'${idx}'_MAX'         'scale: value where the bar ends'
+        printvar 'LCD_WIDGET_BAR_'${idx}'_DIRECTION'   "'East' (left to right, default),"
         printvar ''                                  "'West' (right to left),"
         printvar ''                                  "'North' (bottom up) or"
         printvar ''                                  "'South' (top down)"
-	    printvar 'LCD_WIDGET_BAR_'$idx'_UPDATE'     'Update interval (msec), default 500msec'
-	    printvar 'LCD_WIDGET_BAR_'$idx'_STYLE'       "'H' (hollow: with a frame) default: none"
+	    printvar 'LCD_WIDGET_BAR_'${idx}'_UPDATE'     'Update interval (msec), default 500msec'
+	    printvar 'LCD_WIDGET_BAR_'${idx}'_STYLE'       "'H' (hollow: with a frame) default: none"
         idx=$((idx+1))
     done
 	} >> ${internal_conf_file}
-    mecho -info -n '.'
+    mecho --info -n '.'
 	{
     # ----------------------------------------------------------------------------
     printgroup 'Icon Widgets'
     # ----------------------------------------------------------------------------
     printvar 'LCD_WIDGET_ICON_N'                    'Number if icons'
     idx=1
-    while [ $idx -le $LCD_WIDGET_ICON_N ]
-    do
-        printvar 'LCD_WIDGET_ICON_'$idx'_NAME'      'Name of this widget'
-        printvar 'LCD_WIDGET_ICON_'$idx'_ACTIVE'    'Is widget active or not'
-        printvar 'LCD_WIDGET_ICON_'$idx'_ROW1'      '1st row'
-        printvar 'LCD_WIDGET_ICON_'$idx'_ROW2'      '2nd row'
-        printvar 'LCD_WIDGET_ICON_'$idx'_ROW3'      '3rd row'
-        printvar 'LCD_WIDGET_ICON_'$idx'_ROW4'      '4th row'
-        printvar 'LCD_WIDGET_ICON_'$idx'_ROW5'      '5th row'
-        printvar 'LCD_WIDGET_ICON_'$idx'_ROW6'      '6th row'
-        printvar 'LCD_WIDGET_ICON_'$idx'_ROW7'      '7th row'
-        printvar 'LCD_WIDGET_ICON_'$idx'_ROW8'      '8th row'
-	    printvar 'LCD_WIDGET_ICON_'$idx'_VISIBLE'   'expression controlling the visibility (for blinking effects)'
-	    printvar 'LCD_WIDGET_ICON_'$idx'_SPEED'     'Update speed'
+    while [ ${idx} -le ${LCD_WIDGET_ICON_N} ] ; do
+        printvar 'LCD_WIDGET_ICON_'${idx}'_NAME'      'Name of this widget'
+        printvar 'LCD_WIDGET_ICON_'${idx}'_ACTIVE'    'Is widget active or not'
+        printvar 'LCD_WIDGET_ICON_'${idx}'_ROW1'      '1st row'
+        printvar 'LCD_WIDGET_ICON_'${idx}'_ROW2'      '2nd row'
+        printvar 'LCD_WIDGET_ICON_'${idx}'_ROW3'      '3rd row'
+        printvar 'LCD_WIDGET_ICON_'${idx}'_ROW4'      '4th row'
+        printvar 'LCD_WIDGET_ICON_'${idx}'_ROW5'      '5th row'
+        printvar 'LCD_WIDGET_ICON_'${idx}'_ROW6'      '6th row'
+        printvar 'LCD_WIDGET_ICON_'${idx}'_ROW7'      '7th row'
+        printvar 'LCD_WIDGET_ICON_'${idx}'_ROW8'      '8th row'
+	    printvar 'LCD_WIDGET_ICON_'${idx}'_VISIBLE'   'expression controlling the visibility (for blinking effects)'
+	    printvar 'LCD_WIDGET_ICON_'${idx}'_SPEED'     'Update speed'
         idx=$((idx+1))
     done
 
@@ -925,8 +895,7 @@ EOFG
 # Main
 # ----------------------------------------------------------------------------
 # Write default config file
-if [ -f /etc/config.d/${packageName} ]
-then
+if [ -f /etc/config.d/${packageName} ] ; then
     mecho --info -n 'Updating widget configuration.'
 else
     mecho --info -n 'Creating widget configuration.'
@@ -949,8 +918,7 @@ makeCheckFile
 mecho ''
 mecho --ok
 
-if $modifiedSomething
-then
+if ${modifiedSomething} ; then
     mecho --warn ' -> Read documentation for modified parameter(s)!'
 fi
 

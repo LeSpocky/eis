@@ -87,14 +87,12 @@ LCD_UPDATE_ICON='1000'
 
 # ----------------------------------------------------------------------------
 # Read old configuration and update old variables
-# ----------------------------------------------------------------------------
-updateVariables()
-{
+updateVariables() {
     # -------------------
     # Read current values
-    if [ -f /etc/config.d/$packageName ]
+    if [ -f /etc/config.d/${packageName} ]
     then
-        . /etc/config.d/$packageName
+        . /etc/config.d/${packageName}
     fi
 }
 
@@ -102,13 +100,11 @@ updateVariables()
 
 # ----------------------------------------------------------------------------
 # Write config and default files
-# ----------------------------------------------------------------------------
-makeConfigFile()
-{
+makeConfigFile() {
     internal_conf_file=${1}
     {
     # ----------------------------------------------------------------------------
-    printgpl -conf $packageName '2002-11-12' 'Nico Wallmeier'
+    printgpl -conf ${packageName} '2002-11-12' 'Nico Wallmeier'
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
@@ -136,20 +132,20 @@ makeConfigFile()
     # ----------------------------------------------------------------------------
     printvar 'LCD_LAYOUT_N'                    'Amount of layouts to configure'
     idx=1
-    while [ $idx -le $LCD_LAYOUT_N ]
+    while [ ${idx} -le $LCD_LAYOUT_N ]
     do
-        printvar 'LCD_LAYOUT_'$idx'_NAME'               'Name of current layout'
-        printvar 'LCD_LAYOUT_'$idx'_ACTIVE'             'Is current layout active or not'
-        printvar 'LCD_LAYOUT_'$idx'_ELEMENT_N'          'Amount of elements (widgets) on this layout'
+        printvar 'LCD_LAYOUT_'${idx}'_NAME'               'Name of current layout'
+        printvar 'LCD_LAYOUT_'${idx}'_ACTIVE'             'Is current layout active or not'
+        printvar 'LCD_LAYOUT_'${idx}'_ELEMENT_N'          'Amount of elements (widgets) on this layout'
 
-        eval layoutElems='$LCD_LAYOUT_'$idx'_ELEMENT_N'
+        eval layoutElems='$LCD_LAYOUT_'${idx}'_ELEMENT_N'
         idx2=1
-        while [ $idx2 -le $layoutElems ]
+        while [ ${idx2} -le $layoutElems ]
         do
-            printvar 'LCD_LAYOUT_'$idx'_ELEMENT_'$idx2'_NAME'     'Type and name of widget to use like Text:Foo'
-            printvar 'LCD_LAYOUT_'$idx'_ELEMENT_'$idx2'_ACTIVE'   'Is current widget active on this layout or not'
-            printvar 'LCD_LAYOUT_'$idx'_ELEMENT_'$idx2'_ROW'      'Row where current widget should be displayed'
-            printvar 'LCD_LAYOUT_'$idx'_ELEMENT_'$idx2'_COL'      'Column where current widget should be displayed'
+            printvar 'LCD_LAYOUT_'$idx'_ELEMENT_'${idx2}'_NAME'     'Type and name of widget to use like Text:Foo'
+            printvar 'LCD_LAYOUT_'$idx'_ELEMENT_'${idx2}'_ACTIVE'   'Is current widget active on this layout or not'
+            printvar 'LCD_LAYOUT_'$idx'_ELEMENT_'${idx2}'_ROW'      'Row where current widget should be displayed'
+            printvar 'LCD_LAYOUT_'$idx'_ELEMENT_'${idx2}'_COL'      'Column where current widget should be displayed'
             idx2=$((idx2+1))
         done
         idx=$((idx+1))
@@ -189,15 +185,15 @@ makeConfigFile()
     # ----------------------------------------------------------------------------
     printvar 'LCD_POP3_N'            'Number of pop3-accounts to poll'
     idx=1
-    while [ $idx -le $LCD_POP3_N ]
+    while [ ${idx} -le ${LCD_POP3_N} ]
     do
-        printvar 'LCD_POP3_'$idx'_SERVER' 'Pop3-Server'
-        printvar 'LCD_POP3_'$idx'_USER'   'Username'
-        printvar 'LCD_POP3_'$idx'_PASS'   'Password'
-        eval port='$LCD_POP3_'$idx'_PORT'
+        printvar 'LCD_POP3_'${idx}'_SERVER' 'Pop3-Server'
+        printvar 'LCD_POP3_'${idx}'_USER'   'Username'
+        printvar 'LCD_POP3_'${idx}'_PASS'   'Password'
+        eval port='$LCD_POP3_'${idx}'_PORT'
         if [ "$port" != "" ]
         then
-            printvar 'LCD_POP3_'$idx'_PORT' 'Pop3-Port'
+            printvar 'LCD_POP3_'${idx}'_PORT' 'Pop3-Port'
         fi
         idx=$((idx+1))
     done
@@ -221,9 +217,7 @@ makeConfigFile()
 
 # ----------------------------------------------------------------------------
 # Create the check.d file
-# ----------------------------------------------------------------------------
-makeCheckFile()
-{
+makeCheckFile() {
     printgpl -check ${packageName} '2010-08-18' 'Y. Schumann' >/etc/check.d/${packageName}
     cat >> /etc/check.d/${packageName} <<EOFG
 # Variable                      OPT_VARIABLE       VARIABLE_N              VALUE
@@ -374,8 +368,7 @@ EOFG
 # Main
 # ----------------------------------------------------------------------------
 # Write default config file
-if [ -f /etc/config.d/${packageName} ]
-then
+if [ -f /etc/config.d/${packageName} ] ; then
     mecho --info -n 'Updating configuration.'
 else
     mecho --info -n 'Creating configuration.'
@@ -398,12 +391,8 @@ makeCheckFile
 mecho ''
 mecho --ok
 
-if $modifiedSomething
-then
+if ${modifiedSomething} ; then
     mecho --warn ' -> Read documentation for modified parameter(s)!'
 fi
 
 exit 0
-# ----------------------------------------------------------------------------
-# End
-# ----------------------------------------------------------------------------

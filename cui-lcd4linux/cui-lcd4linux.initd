@@ -24,7 +24,7 @@ nativeShutdownConfiguration='/etc/lcd4linux.shutdown.conf'
 
 start() {
     if [ "$START_LCD" == 'yes' ] ; then
-        mecho -info "Starting lcd4linux..."
+        mecho --info "Starting lcd4linux..."
         if [ "$LCD_USE_SHUTDOWN_LAYOUT" == 'yes' ] ; then
             # Determine current runlevel. Next step should be done only
             # on runlevel != 0 to activate default configuration
@@ -61,7 +61,7 @@ stop() {
             if [ "$currentRunlevel" == '0' ] ; then
                 ln -sf ${nativeShutdownConfiguration} ${activeConfigurationLink}
                 if [ -e /var/run/lcd4linux.pid ] ; then
-                    mecho -info "Stopping lcd4linux to activate shutdown configuration"
+                    mecho --info "Stopping lcd4linux to activate shutdown configuration"
                     kill `cat /var/run/lcd4linux.pid 2>/dev/null` 2>/dev/null
                     /etc/init.d/lcd start
                 fi
@@ -69,7 +69,7 @@ stop() {
         fi
     fi
     if [ -e /var/run/lcd4linux.pid ] ; then
-        mecho -info "Stopping lcd4linux"
+        mecho --info "Stopping lcd4linux"
         kill `cat /var/run/lcd4linux.pid 2>/dev/null` 2>/dev/null
     fi
 }

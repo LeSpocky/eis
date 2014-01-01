@@ -22,7 +22,8 @@
 crontabPath=/etc/cron/root
 
 packageName=cui-lcd4linux
-widgetPackageName=cui-lcd4${nativeShutdownConfiguration}ationLink='/etc/lcd4linux.conf'
+widgetPackageName=cui-lcd4linux-widgets
+activeConfigurationLink='/etc/lcd4linux.conf'
 nativeMainConfiguration='/etc/lcd4linux.main.conf'
 nativeShutdownConfiguration='/etc/lcd4linux.shutdown.conf'
 crontabFile=${crontabPath}/cui-lcd4linux
@@ -52,8 +53,7 @@ addVariables () {
     fi
 
    	mecho --ok
-    if $added
-    then
+    if ${added} ; then
         mecho --warn ' -> Read documentation for correct parameter usage!'
 #    else
 #        mecho --info ' nothing to do.'
@@ -67,18 +67,17 @@ addVariables () {
 # during creation of native lcd4linux configuration.
 writeWidgetConfigSnippets () {
     idx=1
-    while [ $idx -le $LCD_WIDGET_TEXT_N ]
-    do
-        eval name='$LCD_WIDGET_TEXT_'$idx'_NAME'
-        eval active='$LCD_WIDGET_TEXT_'$idx'_ACTIVE'
-        eval prefix='$LCD_WIDGET_TEXT_'$idx'_PREFIX'
-        eval expression='$LCD_WIDGET_TEXT_'$idx'_EXP'
-        eval postfix='$LCD_WIDGET_TEXT_'$idx'_POSTFIX'
-        eval width='$LCD_WIDGET_TEXT_'$idx'_WIDTH'
-        eval precision='$LCD_WIDGET_TEXT_'$idx'_PRECISION'
-        eval align='$LCD_WIDGET_TEXT_'$idx'_ALIGN'
-        eval speed='$LCD_WIDGET_TEXT_'$idx'_SPEED'
-        eval update='$LCD_WIDGET_TEXT_'$idx'_UPDATE'
+    while [ ${idx} -le ${LCD_WIDGET_TEXT_N} ] ; do
+        eval name='$LCD_WIDGET_TEXT_'${idx}'_NAME'
+        eval active='$LCD_WIDGET_TEXT_'${idx}'_ACTIVE'
+        eval prefix='$LCD_WIDGET_TEXT_'${idx}'_PREFIX'
+        eval expression='$LCD_WIDGET_TEXT_'${idx}'_EXP'
+        eval postfix='$LCD_WIDGET_TEXT_'${idx}'_POSTFIX'
+        eval width='$LCD_WIDGET_TEXT_'${idx}'_WIDTH'
+        eval precision='$LCD_WIDGET_TEXT_'${idx}'_PRECISION'
+        eval align='$LCD_WIDGET_TEXT_'${idx}'_ALIGN'
+        eval speed='$LCD_WIDGET_TEXT_'${idx}'_SPEED'
+        eval update='$LCD_WIDGET_TEXT_'${idx}'_UPDATE'
 
         if [ "$active" == 'yes' ] ; then
             (
@@ -96,7 +95,7 @@ writeWidgetConfigSnippets () {
                 echo "  precision  $precision"
             fi
             if [ -n "$align" ] ; then
-                case $align in
+                case ${align} in
                     'Left')
                         echo "  align      'L'"
                         ;;
@@ -125,18 +124,17 @@ writeWidgetConfigSnippets () {
     done
 
     idx=1
-    while [ $idx -le $LCD_WIDGET_BAR_N ]
-    do
-        eval name='$LCD_WIDGET_BAR_'$idx'_NAME'
-        eval active='$LCD_WIDGET_BAR_'$idx'_ACTIVE'
-        eval exp='$LCD_WIDGET_BAR_'$idx'_EXP'
-        eval exp2='$LCD_WIDGET_BAR_'$idx'_EXP2'
-        eval length='$LCD_WIDGET_BAR_'$idx'_LENGTH'
-        eval min='$LCD_WIDGET_BAR_'$idx'_MIN'
-        eval max='$LCD_WIDGET_BAR_'$idx'_MAX'
-        eval direction='$LCD_WIDGET_BAR_'$idx'_DIRECTION'
-        eval update='$LCD_WIDGET_BAR_'$idx'_UPDATE'
-        eval style='$LCD_WIDGET_BAR_'$idx'_STYLE'
+    while [ ${idx} -le ${LCD_WIDGET_BAR_N} ] ; do
+        eval name='$LCD_WIDGET_BAR_'${idx}'_NAME'
+        eval active='$LCD_WIDGET_BAR_'${idx}'_ACTIVE'
+        eval exp='$LCD_WIDGET_BAR_'${idx}'_EXP'
+        eval exp2='$LCD_WIDGET_BAR_'${idx}'_EXP2'
+        eval length='$LCD_WIDGET_BAR_'${idx}'_LENGTH'
+        eval min='$LCD_WIDGET_BAR_'${idx}'_MIN'
+        eval max='$LCD_WIDGET_BAR_'${idx}'_MAX'
+        eval direction='$LCD_WIDGET_BAR_'${idx}'_DIRECTION'
+        eval update='$LCD_WIDGET_BAR_'${idx}'_UPDATE'
+        eval style='$LCD_WIDGET_BAR_'${idx}'_STYLE'
 
         if [ "$active" == 'yes' ] ; then
             (
@@ -184,20 +182,19 @@ writeWidgetConfigSnippets () {
 
     idx=1
     activeIconWidgets=0
-    while [ $idx -le $LCD_WIDGET_ICON_N ]
-    do
-        eval name='$LCD_WIDGET_ICON_'$idx'_NAME'
-        eval active='$LCD_WIDGET_ICON_'$idx'_ACTIVE'
-        eval row1='$LCD_WIDGET_ICON_'$idx'_ROW1'
-        eval row2='$LCD_WIDGET_ICON_'$idx'_ROW2'
-        eval row3='$LCD_WIDGET_ICON_'$idx'_ROW3'
-        eval row4='$LCD_WIDGET_ICON_'$idx'_ROW4'
-        eval row5='$LCD_WIDGET_ICON_'$idx'_ROW5'
-        eval row6='$LCD_WIDGET_ICON_'$idx'_ROW6'
-        eval row7='$LCD_WIDGET_ICON_'$idx'_ROW7'
-        eval row8='$LCD_WIDGET_ICON_'$idx'_ROW8'
-        eval visible='$LCD_WIDGET_ICON_'$idx'_VISIBLE'
-        eval speed='$LCD_WIDGET_ICON_'$idx'_SPEED'
+    while [ ${idx} -le $LCD_WIDGET_ICON_N ] ; do
+        eval name='$LCD_WIDGET_ICON_'${idx}'_NAME'
+        eval active='$LCD_WIDGET_ICON_'${idx}'_ACTIVE'
+        eval row1='$LCD_WIDGET_ICON_'${idx}'_ROW1'
+        eval row2='$LCD_WIDGET_ICON_'${idx}'_ROW2'
+        eval row3='$LCD_WIDGET_ICON_'${idx}'_ROW3'
+        eval row4='$LCD_WIDGET_ICON_'${idx}'_ROW4'
+        eval row5='$LCD_WIDGET_ICON_'${idx}'_ROW5'
+        eval row6='$LCD_WIDGET_ICON_'${idx}'_ROW6'
+        eval row7='$LCD_WIDGET_ICON_'${idx}'_ROW7'
+        eval row8='$LCD_WIDGET_ICON_'${idx}'_ROW8'
+        eval visible='$LCD_WIDGET_ICON_'${idx}'_VISIBLE'
+        eval speed='$LCD_WIDGET_ICON_'${idx}'_SPEED'
 
         if [ "$active" == 'yes' ] ; then
             (
@@ -232,7 +229,7 @@ writeWidgetConfigSnippets () {
 # finetuning neccessary if different depending on used controller.
 checkIconWidgets () {
     if [ $activeIconWidgets -gt 8 ] ; then
-        mecho -warn "You have too many active icon widgets! Limiting them to 8"
+        mecho --warn "You have too many active icon widgets! Limiting them to 8"
         activeIconWidgets=8
     fi
 }
@@ -360,7 +357,7 @@ writeLCDConfigHeader () {
         echo "  Icons $activeIconWidgets"
         echo "}"
         echo
-    ) > $configfileToGenerate
+    ) > ${configfileToGenerate}
 }
 
 
@@ -368,8 +365,8 @@ writeLCDConfigHeader () {
 # ----------------------------------------------------------------------------
 # Write native lcd configuration
 writeLCDConfig () {
-    LCD_DRIVER=`echo $LCD_TYPE | cut -d ":" -f 1`
-    LCD_MODEL=`echo $LCD_TYPE | cut -d ":" -f 2`
+    LCD_DRIVER=`echo ${LCD_TYPE} | cut -d ":" -f 1`
+    LCD_MODEL=`echo ${LCD_TYPE} | cut -d ":" -f 2`
 
     if [ "$LCD_DRIVER" == "$LCD_MODEL" ] ; then
         mecho "Writing configuration for lcd '$LCD_DRIVER'"
@@ -377,7 +374,7 @@ writeLCDConfig () {
         mecho "Writing configuration for lcd '$LCD_DRIVER', type '$LCD_MODEL'"
     fi
 
-    writeLCDConfigHeader $nativeMainConfiguration
+    writeLCDConfigHeader ${nativeMainConfiguration}
 
     (
         # -------------------------------------------------
@@ -387,11 +384,10 @@ writeLCDConfig () {
         # ------------------------------------
         # Create main part of lcd4linux config
         idx=1
-        while [ $idx -le $LCD_LAYOUT_N ]
-        do
+        while [ ${idx} -le $LCD_LAYOUT_N ] ; do
             # Loop over all configured layouts
-            eval currentLayoutName='$LCD_LAYOUT_'$idx'_NAME'
-            eval active='$LCD_LAYOUT_'$idx'_ACTIVE'
+            eval currentLayoutName='$LCD_LAYOUT_'${idx}'_NAME'
+            eval active='$LCD_LAYOUT_'${idx}'_ACTIVE'
 
             if [ "$active" == 'yes' ] ; then
                 # -------------------------------------------------------
@@ -402,23 +398,21 @@ writeLCDConfig () {
                 # ----------------------------------
                 # Write header lines for row entries
                 rowIdx=1
-                while [ $rowIdx -le $LCD_ROWS ]
-                do
+                while [ $rowIdx -le $LCD_ROWS ] ; do
                     echo "  Row${rowIdx} {" > /tmp/$$-row${rowIdx}.txt
                     rowIdx=$((rowIdx+1))
                 done
 
-                eval elements='$LCD_LAYOUT_'$idx'_ELEMENT_N'
+                eval elements='$LCD_LAYOUT_'${idx}'_ELEMENT_N'
                 idx2=1
-                while [ $idx2 -le $elements ]
-                do
-                    eval fullElemName='$LCD_LAYOUT_'$idx'_ELEMENT_'$idx2'_NAME'
+                while [ ${idx}2 -le $elements ] ; do
+                    eval fullElemName='$LCD_LAYOUT_'${idx}'_ELEMENT_'${idx}2'_NAME'
                     elemType=${fullElemName/:*}
                     elemName=${fullElemName/*:}
-                    eval elemActive='$LCD_LAYOUT_'$idx'_ELEMENT_'$idx2'_ACTIVE'
+                    eval elemActive='$LCD_LAYOUT_'${idx}'_ELEMENT_'${idx}2'_ACTIVE'
                     if [ "$elemActive" == 'yes' ] ; then
-                        eval elemRow='$LCD_LAYOUT_'$idx'_ELEMENT_'$idx2'_ROW'
-                        eval elemCol='$LCD_LAYOUT_'$idx'_ELEMENT_'$idx2'_COL'
+                        eval elemRow='$LCD_LAYOUT_'${idx}'_ELEMENT_'${idx}2'_ROW'
+                        eval elemCol='$LCD_LAYOUT_'${idx}'_ELEMENT_'${idx}2'_COL'
                         case $elemRow in
                             1)
                                 echo "    Col${elemCol}    '$elemName'" >> /tmp/$$-row1.txt
@@ -485,18 +479,17 @@ writeLCDConfig () {
         if [ "$LCD_POP3_N" != "0" ] ; then
             echo "Plugin POP3 {"
             idx=1
-            while [ $idx -le $LCD_POP3_N ]
-            do
-                eval server='$LCD_POP3_'$idx'_SERVER'
-                eval user='$LCD_POP3_'$idx'_USER'
-                eval pass='$LCD_POP3_'$idx'_PASS'
-                eval port='$LCD_POP3_'$idx'_PORT'
+            while [ ${idx} -le $LCD_POP3_N ] ; do
+                eval server='$LCD_POP3_'${idx}'_SERVER'
+                eval user='$LCD_POP3_'${idx}'_USER'
+                eval pass='$LCD_POP3_'${idx}'_PASS'
+                eval port='$LCD_POP3_'${idx}'_PORT'
 
-                echo "  server$idx '$server'"
-                echo "  user$idx '$user'"
-                echo "  password$idx '$pass'"
+                echo "  server${idx} '$server'"
+                echo "  user${idx} '$user'"
+                echo "  password${idx} '$pass'"
                 if [ "$port" != "" ] ; then
-                    echo "  port$idx $port"
+                    echo "  port${idx} $port"
                 fi
                 idx=$((idx+1))
             done
@@ -514,10 +507,10 @@ writeLCDConfig () {
         echo "  tock $LCD_UPDATE_ICON"
         echo "}"
         echo ""
-    ) >> $nativeMainConfiguration
+    ) >> ${nativeMainConfiguration}
 
-    chmod 600 $nativeMainConfiguration
-    chown root.root $nativeMainConfiguration
+    chmod 600 ${nativeMainConfiguration}
+    chown root.root ${nativeMainConfiguration}
 
     mecho --ok
 }
