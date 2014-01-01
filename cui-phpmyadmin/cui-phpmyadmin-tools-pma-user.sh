@@ -66,25 +66,25 @@ doDBOperation ()
 				executeSQLScript=`/var/install/bin/ask "Continue" "y"`
 				if [ "${executeSQLScript}" = "yes" ] ; then
 					${mysql_base_dir}/bin/mysql -h ${host} -u${dbAdmin} -p${dbAdminPass} -e"GRANT SELECT, INSERT, DELETE, UPDATE ON ${pmadb}.* TO ${controluser}@${pmaHost};"
-					mecho -info "Done"
+					mecho --info "Done"
 				else
 					mecho "Creation of pma user canceled"
 				fi
 				/var/install/bin/anykey
 			else	# advanced features not activated
 				mecho
-				mecho -info "Advanced features on server ${givenServernumber} not active"
+				mecho --info "Advanced features on server ${givenServernumber} not active"
 				mecho
 	        fi		# end of advanced features active check
 	    else	# given server number is not active
 			mecho
-			mecho -info "Server ${givenServernumber} is not active"
+			mecho --info "Server ${givenServernumber} is not active"
 			mecho
 	    fi		# end of server active check
 	else	# given server is out of range
 		mecho
-		mecho -info "There are only ${PHPMYADMIN_SERVER_N} servers configured,"
-		mecho -info "but you entered ${givenServernumber}. Choose another one."
+		mecho --info "There are only ${PHPMYADMIN_SERVER_N} servers configured,"
+		mecho --info "but you entered ${givenServernumber}. Choose another one."
 		mecho
 	fi		# end of amount of servers check
 

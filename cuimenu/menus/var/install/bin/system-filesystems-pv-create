@@ -22,7 +22,7 @@ do
             pvcreate $device
             break
         else
-            mecho -error "Please enter a valid device."
+            mecho --error "Please enter a valid device."
             device=`/var/install/bin/ask "Please enter the device on which you want to create a physical volume (e.g. /dev/hdd) [0=Exit]" "" "+"`
         fi
     else

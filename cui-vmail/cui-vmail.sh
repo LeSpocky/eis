@@ -408,7 +408,7 @@ write_milter_config()
     then
         if [ "$POSTFIX_AV_CLAMAV" = 'yes' ]
         then
-            mecho -error "ClamAV not found. Set POSTFIX_AV_CLAMAV='no'"
+            mecho --error "ClamAV not found. Set POSTFIX_AV_CLAMAV='no'"
             POSTFIX_AV_CLAMAV='no'
         fi
     fi
@@ -700,7 +700,7 @@ sql_database_check()
     if [ $npass -eq 0 ]
     then
         echo ""
-        mecho -error "cannot connect MySQL server $VMAIL_SQL_HOST with user $mysql_user" 
+        mecho --error "cannot connect MySQL server $VMAIL_SQL_HOST with user $mysql_user"
     else
         # check if database and user exists
         /usr/local/postfix/mysqlclient -h $VMAIL_SQL_HOST -u $mysql_user -p${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select id from view_users limit 1;' >/dev/null 2>&1
@@ -852,7 +852,7 @@ case "$1" in
             if [ "$POSTFIX_SMTP_TLS" = 'yes' ]
             then
                 echo ""
-                mecho -error "Mail certificate not found! Start without TLS services."
+                mecho --error "Mail certificate not found! Start without TLS services."
                 mecho "Please create email cert with package Certs Service"
                 echo ""
                 POSTFIX_SMTP_TLS='no'

@@ -22,8 +22,8 @@ check_system ()
     clrhome
 
     # display systems to select on tty
-    mecho -info "Can't detect the system type,"
-    mecho -info "please select one first."
+    mecho --info "Can't detect the system type,"
+    mecho --info "please select one first."
 
     echo
     echo

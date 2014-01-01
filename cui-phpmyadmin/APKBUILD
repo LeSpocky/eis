@@ -2,7 +2,7 @@
 # Maintainer: starwarsfan <yves@eisfair.org>
 pkgname=cui-phpmyadmin
 pkgver=1.0.0
-pkgrel=3
+pkgrel=4
 pkgdesc="CUI Setup for phpMyAdmin"
 url="http://www.eisfair.org"
 arch="noarch"

@@ -658,7 +658,7 @@ checkCredentials ()
             # Auth via configuration is requested. Extract the username.
             user=`echo ${authMethod} | cut -d ":" -f 2`
             if [ "${user}" = 'root' ] || [ "${user}" = 'eis' ] ; then
-                mecho -error "Username '${user}' is not allowed, please change this!"
+                mecho --error "Username '${user}' is not allowed, please change this!"
                 rtc=1
             fi
         fi
@@ -695,18 +695,18 @@ checkSocketSetup ()
     if ${socketShouldBeUsed} ; then
         # Check the values out of the php configuration
         if [ "${PHP5_EXT_MYSQL}" != 'yes' ] ; then
-            mecho -error " If you set PHPMYADMIN_SERVER_%_CONNECT_TYPE='socket', PHP5_EXT_MYSQL "
-            mecho -error " must be activated on the php5 configuration together with a valid    "
-            mecho -error " socket on PHP5_EXT_MYSQL_SOCKET!                                     "
+            mecho --error " If you set PHPMYADMIN_SERVER_%_CONNECT_TYPE='socket', PHP5_EXT_MYSQL "
+            mecho --error " must be activated on the php5 configuration together with a valid    "
+            mecho --error " socket on PHP5_EXT_MYSQL_SOCKET!                                     "
             exit 1
         fi
         if [ -z "${PHP5_EXT_MYSQL_SOCKET}" ] ; then
-            mecho -error " No socket configured on php5 configuration under PHP5_EXT_MYSQL_SOCKET! "
+            mecho --error " No socket configured on php5 configuration under PHP5_EXT_MYSQL_SOCKET! "
             exit 1
         fi
         if [ ! -S "${PHP5_EXT_MYSQL_SOCKET}" ] ; then
-            mecho -error " The configured socket on PHP5_EXT_MYSQL_SOCKET on the php5 configuration "
-            mecho -error " does not exist!                                                          "
+            mecho --error " The configured socket on PHP5_EXT_MYSQL_SOCKET on the php5 configuration "
+            mecho --error " does not exist!                                                          "
             exit 1
         fi
     fi
