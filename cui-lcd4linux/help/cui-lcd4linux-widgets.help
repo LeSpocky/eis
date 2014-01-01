@@ -1,0 +1,312 @@
+<!--
+# ----------------------------------------------------------------------------
+# /var/install/help/lcd - helptexts for package lcd
+#
+# Creation   : 2010-10-03 Y. Schumann
+# Last Update: $Id: lcd-widgets 26287 2010-10-09 17:12:11Z starwarsfan $
+#
+# Copyright (c) 2001-2010 The eisfair Team, <team(at)eisfair(dot)org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# ----------------------------------------------------------------------------
+-->
+
+<help name="START_LCD">
+Fuer die Aktivierung der Widgetkonfiguration muss diese Variable lediglich auf
+den Wert 'yes' gestellt werden.<br/>
+<br/>
+Gueltige Werte: yes, no
+</help>
+
+<help name="LCD_TEXT_WIDGET_N">
+Definiert die Anzahl der zu konfigurierenden Textwidgets.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_TEXT_WIDGET_%_NAME">
+Ein eindeutiger Name fuer dieses Widget. Er darf keine Leerzeichen enthalten.<br/>
+<br/>
+Gueltige Werte: String ohne Leerzeichen
+</help>
+
+<help name="LCD_TEXT_WIDGET_%_ACTIVE">
+De-/Aktivieren dieses Widgets.<br/>
+<br/>
+Gueltige Werte: yes/no
+</help>
+
+<help name="LCD_TEXT_WIDGET_%_EXP">
+Was soll dargestellt werden? Dieser Ausdruck wird ausgewertet und das Ergebnis
+wird angezeigt. Siehe dazu http://ssl.bulix.org/projects/lcd4linux/
+</help>
+
+<help name="LCD_TEXT_WIDGET_%_PREFIX">
+Der hier angegebene String wird als Prefix vor den aktuellen Wert geschrieben.
+Diese Variable ist optional.
+</help>
+
+<help name="LCD_TEXT_WIDGET_%_POSTFIX">
+Der hier angegebene String wird nach dem aktuellen Wert geschrieben.
+Diese Variable ist optional.
+</help>
+
+<help name="LCD_TEXT_WIDGET_%_WIDTH">
+Laenge des gesamten Textelements (inklusive Prefix und Postfix!)
+<br/><br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_TEXT_WIDGET_%_PRECISION">
+(Maximum) Anzahl der Kommastellen
+<br/><br/>
+Wenn der 'precision'-Parameter weggelassen wird, behandelt LCD4Linux das
+Ergebnis des Ausdrucks als Zeichenkette und zeigt sie auch so an.
+
+Wenn eine Praezision angegeben wird, wird der Wert in eine Gleitkommazahl
+umgewandelt und mit der angegebenen Anzahl von Kommastellen ausgegeben. Wenn die
+Zahl nicht in den verfuegbaren Platz passt (welcher mit 'width' - length(prefix)
+- length(postfix) angegeben wird), werden Kommastellen von rechts abgeschnitten,
+bis genug Platz vorhanden ist. Wenn die letzte Kommastelle abgetrennt wurde,
+wird auch der Dezimalpunkt weggelassen. Wenn der Wert nun immer noch nicht
+passt, wird er durch '*' (Asterisk) ersetzt.
+
+Es besteht also ein grosser Unterschied zwischen 'precision 0' und ueberhaupt
+keiner Praezision!
+<br/><br/>
+Gueltige Werte: Zahl oder leer
+</help>
+
+<help name="LCD_TEXT_WIDGET_%_ALIGN">
+Wenn der 'Align'-Parameter angegeben wird, wird nur der aktuelle Wert
+ausgerichtet. Das Prefix ist immer linksbuendig und das Postfix immer
+rechtsbuendig! Verwendet man eine Laufschrift ('Marquee'), so werden Prefix, der
+aktuelle Wert und das Postfix einfach verkettet, und die resultierende
+Zeichenkette wird zirkular angezeigt. Das heisst, alle entsprechend dem Wert
+aus LCD_TEXT_WIDGET_x_SPEED msec ein Zeichen vorrueckend.<br/>
+<br/>
+Gueltige Werte: 'Left' (Default), 'Center', 'Right' oder 'Marquee'.
+</help>
+
+<help name="LCD_TEXT_WIDGET_%_SPEED">
+Laufschrift-Scroll-Intervall (msec), Standard ist 500msec
+<br/><br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_TEXT_WIDGET_%_UPDATE">
+Update-Intervall (msec), Standard ist 500msec.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_BAR_WIDGET_N">
+Definiert die Anzahl der zu konfigurierenden Balkenwidgets.<br/>
+<br/>
+LCD4Linux versucht, Balken so gut wie moeglich zu behandeln. Es unterstuetzt
+vertikale, horizontale und gesplittete Balken (zwei unabhaengige Balken in einer
+Zeile), alle Balkentypen koennen gleichzeitig verwendet werden.
+<br/><br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_BAR_WIDGET_%_NAME">
+Ein eindeutiger Name fuer dieses Widget. Er darf keine Leerzeichen enthalten.<br/>
+<br/>
+Gueltige Werte: String ohne Leerzeichen
+</help>
+
+<help name="LCD_BAR_WIDGET_%_ACTIVE">
+De-/Aktivieren dieses Widgets.<br/>
+<br/>
+Gueltige Werte: yes/no
+</help>
+
+<help name="LCD_BAR_WIDGET_%_EXP">
+Was soll dargestellt werden? Dieser Ausdruck wird ausgewertet und das Ergebnis
+wird angezeigt. Siehe dazu http://ssl.bulix.org/projects/lcd4linux/
+</help>
+
+<help name="LCD_BAR_WIDGET_%_EXP2">
+Falls ein Doppelbalken dargestellt werden soll, wird mit dieser Variablen der
+zweite Balken bestimmt. Siehe LCD_BAR_WIDGET_%_EXP.
+</help>
+
+<help name="LCD_BAR_WIDGET_%_LENGTH">
+Laenge des gesamten Balkenelements<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_BAR_WIDGET_%_MIN">
+scale: Wert mit dem der Balken startet<br/>
+<br/>
+Gewoehnlich skalieren Balken automatisch. Das heisst sie starten bei
+einem Wert von 0 (Null), merken sich den Maximalwert und skalieren
+automatisch bis zum Maximum. Manchmal ist aber ein anderes Verhalten
+erwuenscht (z.B. bei Temperaturen). In diesem Fall muss nur der Minimal-
+und der Maximalwert mit den Parametern 'min' bzw. 'max' angegeben
+werden.<br/>
+<br/>
+Gueltige Werte: Zahl oder leer
+</help>
+
+<help name="LCD_BAR_WIDGET_%_MAX">
+scale: Wert mit dem der Balken endet<br/>
+<br/>
+Gewoehnlich skalieren Balken automatisch. Das heisst sie starten bei
+einem Wert von 0 (Null), merken sich den Maximalwert und skalieren
+automatisch bis zum Maximum. Manchmal ist aber ein anderes Verhalten
+erwuenscht (z.B. bei Temperaturen). In diesem Fall muss nur der Minimal-
+und der Maximalwert mit den Parametern 'min' bzw. 'max' angegeben
+werden.<br/>
+<br/>
+Gueltige Werte: Zahl oder leer
+</help>
+
+<help name="LCD_BAR_WIDGET_%_DIRECTION">
+Moegliche Werte:<br/>
+    - 'North' (von unten nach oben)<br/>
+    - 'East' (von links nach rechts, das ist der Standard)<br/>
+    - 'South' (south: von oben nach unten)<br/>
+    - 'West' (von rechts nach links)<br/>
+</help>
+
+<help name="LCD_BAR_WIDGET_%_STYLE">
+Default Darstellung oder 'Hollow' (with a frame).<br/>
+<br/>
+Gueltige Werte: leer oder 'Hollow'
+</help>
+
+<help name="LCD_BAR_WIDGET_%_UPDATE">
+Update-Intervall (msec), Standard ist 500msec.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_ICON_WIDGET_N">
+Definiert die Anzahl der zu konfigurierenden Iconwidgets.<br/>
+<br/>
+Das Icon-Widget wird verwendet, um benutzerdefinierte Zeichen ('Icons')
+anzuzeigen. Icons koennen nur verwendet werden, wenn das Display
+benutzerdefinierte Zeichen unterstuetzt (was die meisten Displays tun), oder das
+Display ein grafisches Display ist (z.B. T6963).<br/>
+<br/>
+Wenn aus irgendeinem Grund das Icon nicht angezeigt werden kann, wird an dessen
+Stelle ein Asterisk ('*') angezeigt.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_ICON_WIDGET_%_NAME">
+Ein eindeutiger Name fuer dieses Widget. Er darf keine Leerzeichen enthalten.<br/>
+<br/>
+Gueltige Werte: String ohne Leerzeichen
+</help>
+
+<help name="LCD_ICON_WIDGET_%_ACTIVE">
+De-/Aktivieren dieses Widgets.<br/>
+<br/>
+Gueltige Werte: yes/no
+</help>
+
+<help name="LCD_ICON_WIDGET_%_ROW1">
+Ein Icon hat die Groesse wie ein Zeichen - also 5 Spalten und 8 Zeilen. Das Icon
+wird durch zwei Zeichen definiert:<br/>
+<br/>
+- '.' (Punkt) fuer Pixel nicht gesetzt<br/>
+- '*' (Stern) fuer Pixel gesetzt<br/>
+<br/>
+Um animierte Icons zu erzeugen, werden die weiteren Bilder einfach mittels dem
+Pipe-Zeichen '|' aneinandergefuegt.
+</help>
+
+<help name="LCD_ICON_WIDGET_%_ROW2">
+Ein Icon hat die Groesse wie ein Zeichen - also 5 Spalten und 8 Zeilen. Das Icon
+wird durch zwei Zeichen definiert:<br/>
+<br/>
+- '.' (Punkt) fuer Pixel nicht gesetzt<br/>
+- '*' (Stern) fuer Pixel gesetzt<br/>
+<br/>
+Um animierte Icons zu erzeugen, werden die weiteren Bilder einfach mittels dem
+Pipe-Zeichen '|' aneinandergefuegt.
+</help>
+
+<help name="LCD_ICON_WIDGET_%_ROW3">
+Ein Icon hat die Groesse wie ein Zeichen - also 5 Spalten und 8 Zeilen. Das Icon
+wird durch zwei Zeichen definiert:<br/>
+<br/>
+- '.' (Punkt) fuer Pixel nicht gesetzt<br/>
+- '*' (Stern) fuer Pixel gesetzt<br/>
+<br/>
+Um animierte Icons zu erzeugen, werden die weiteren Bilder einfach mittels dem
+Pipe-Zeichen '|' aneinandergefuegt.
+</help>
+
+<help name="LCD_ICON_WIDGET_%_ROW4">
+Ein Icon hat die Groesse wie ein Zeichen - also 5 Spalten und 8 Zeilen. Das Icon
+wird durch zwei Zeichen definiert:<br/>
+<br/>
+- '.' (Punkt) fuer Pixel nicht gesetzt<br/>
+- '*' (Stern) fuer Pixel gesetzt<br/>
+<br/>
+Um animierte Icons zu erzeugen, werden die weiteren Bilder einfach mittels dem
+Pipe-Zeichen '|' aneinandergefuegt.
+</help>
+
+<help name="LCD_ICON_WIDGET_%_ROW5">
+Ein Icon hat die Groesse wie ein Zeichen - also 5 Spalten und 8 Zeilen. Das Icon
+wird durch zwei Zeichen definiert:<br/>
+<br/>
+- '.' (Punkt) fuer Pixel nicht gesetzt<br/>
+- '*' (Stern) fuer Pixel gesetzt<br/>
+<br/>
+Um animierte Icons zu erzeugen, werden die weiteren Bilder einfach mittels dem
+Pipe-Zeichen '|' aneinandergefuegt.
+</help>
+
+<help name="LCD_ICON_WIDGET_%_ROW6">
+Ein Icon hat die Groesse wie ein Zeichen - also 5 Spalten und 8 Zeilen. Das Icon
+wird durch zwei Zeichen definiert:<br/>
+<br/>
+- '.' (Punkt) fuer Pixel nicht gesetzt<br/>
+- '*' (Stern) fuer Pixel gesetzt<br/>
+<br/>
+Um animierte Icons zu erzeugen, werden die weiteren Bilder einfach mittels dem
+Pipe-Zeichen '|' aneinandergefuegt.
+</help>
+
+<help name="LCD_ICON_WIDGET_%_ROW7">
+Ein Icon hat die Groesse wie ein Zeichen - also 5 Spalten und 8 Zeilen. Das Icon
+wird durch zwei Zeichen definiert:<br/>
+<br/>
+- '.' (Punkt) fuer Pixel nicht gesetzt<br/>
+- '*' (Stern) fuer Pixel gesetzt<br/>
+<br/>
+Um animierte Icons zu erzeugen, werden die weiteren Bilder einfach mittels dem
+Pipe-Zeichen '|' aneinandergefuegt.
+</help>
+
+<help name="LCD_ICON_WIDGET_%_ROW8">
+Ein Icon hat die Groesse wie ein Zeichen - also 5 Spalten und 8 Zeilen. Das Icon
+wird durch zwei Zeichen definiert:<br/>
+<br/>
+- '.' (Punkt) fuer Pixel nicht gesetzt<br/>
+- '*' (Stern) fuer Pixel gesetzt<br/>
+<br/>
+Um animierte Icons zu erzeugen, werden die weiteren Bilder einfach mittels dem
+Pipe-Zeichen '|' aneinandergefuegt.
+</help>
+
+<help name="LCD_ICON_WIDGET_%_VISIBLE">
+Ausdruck, welcher die Sichtbarkeit ueberwacht (fuer Blink-Effekte)
+</help>
+
+<help name="LCD_ICON_WIDGET_%_SPEED">
+Update-Intervall (msec) bei animierten Icons, Standard ist 500msec.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>

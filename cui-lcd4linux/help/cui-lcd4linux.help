@@ -1,0 +1,267 @@
+<!--
+# ----------------------------------------------------------------------------
+# /var/install/help/lcd - helptexts for package lcd
+#
+# Creation   : 2006-03-08 nico
+# Last Update: $Id: lcd 26292 2010-10-09 22:12:31Z starwarsfan $
+#
+# Copyright (c) 2001-2010 The eisfair Team, <team(at)eisfair(dot)org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# ----------------------------------------------------------------------------
+-->
+
+<help name="START_LCD">
+Fuer die Aktivierung der lcd-Ansteuerung muss diese Variable lediglich auf
+den Wert 'yes' gestellt werden. Die Einstellung 'no' deaktiviert die
+Ansteuerung.<br/>
+<br/>
+Gueltige Werte: yes, no
+</help>
+
+<help name="LCD_TYPE">
+Hier wird der Typ sowie das Modell des angeschlossenen LCDs eingestellt. Dabei
+wird Typ und Modell durch ':' getrennt, bspw. 'HD44780:Soekris'. Die moeglichen
+Werte dieser Variable sind dabei wie folgt:<br/>
+    - Crystalfontz: 626, 631, 632, 633, 634 oder 636<br/>
+    - Curses (keine weiteren Parameter)<br/>
+    - HD44780: generic, Noritake, Soekris, HD66712 oder LCM-162<br/>
+    - MatrixOrbitel: LCD0821, LCD2021, LCD1641, LCD2041, LCD4021, LCD4041,
+      LK202-25, LK204-25, LK404-55, VFD2021, VFD2041, VFD4021, VK202-25,
+      VK204-25, GLC12232, GLC24064, GLK24064-25, GLK12232-25, LK404-AT,
+      VFD1621, LK402-12, LK162-12, LK204-25PC, LK202-24-USB oder LK204-24-USB<br/>
+    - MilfordInstruments: MI216, MI220, MI240 oder MI420<br/>
+    - M50530 (keine weiteren Parameter)<br/>
+    - Cwlinux: CW1602 oder CW12232<br/>
+    - T6963 (keine weiteren Parameter)<br/>
+    - WincorNixdorf: BA63 oder BA66<br/>
+    - LCD2USB (keine weiteren Parameter)<br/>
+</help>
+
+<help name="LCD_PORT">
+Das parallele oder serielle Device, an welches das Display angeschlossen wurde.
+Beim Curses-Treiber wird die Konsole angegeben, auf der die Ausgabe erscheinen
+soll. Mit /dev/tty3 wird beispielsweise die dritte Konsole angesprochen. Zu
+dieser kann mit Alt-F3 umgeschaltet werden.<br/>
+<br/>
+Gueltige Werte: '/dev/ttySx', '/dev/parportx', '/dev/ttyx'
+</help>
+
+<help name="LCD_WIRING">
+Legt die Verdrahtung bei HD44780-kompatiblen Displays fest. Fuer genauere
+Informationen siehe Abschnitt Anschlussbelegung HD44780-kompatibler
+Displays.<br/>
+<br/>
+Gueltige Werte: 'fli4l', 'winamp'
+</help>
+
+<help name="LCD_SPEED">
+Bestimmt die Geschwindigkeit der seriellen Schnittstelle bei Cwlinux,
+MatrixOrbital, CrystalFontz-Displays und MilfordInstruments.<br/>
+<br/>
+Gueltige Werte:<br/>
+    - Cwlinux 1200, 2400, 9600 oder 19200<br/>
+    - Crystalfontz: 1200, 2400, 4800, 9600, 19200, 38400 oder 115200<br/>
+    - MatrixOrbital: 1200, 2400, 9600 and 19200<br/>
+    - MilfordInstruments: 1200, 2400, 4800, 9600, 19200, 38400 and 115200
+</help>
+
+<help name="LCD_CONTRAST">
+Legt den Display-Kontrast bei Matrix Orbital und CrystalFontz-Displays fest.
+Bei MatrixOrbital sind Werte zwischen 0 (hell) und 256 (dunkel) moeglich,
+LCD2USB wird mit 0 (dunkel) bis 255 (hell) konfiguriert. Der Default-Wert ist
+160. Bei CrystalFontz hingegen sind Werte zwischen 0 (hell) und 100 (dunkel)
+moeglich.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_BACKLIGHT">
+Legt die Staerke der Hintergrundbeleuchtung von seriellen CrystalFontz und
+Cwlinux Displays fest. Fuer Crystalfontz Displays sind Werte zwischen 0
+(aus) und 100 (voll ein) moeglich, fuer Cwlinux zwischen 0 (aus) und 8 (voll ein)
+und fuer LCD2USB zwischen 0 (aus) und 255 (voll ein). Der Default-Wert ist 80.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_COLS">
+Anzahl der Zeichen pro Zeile. Typische Werte sind 16, 20, 24, 32 und 40.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_ROWS">
+Anzahl der physikalischen Zeilen des Displays. Typische Werte sind 1, 2 und 4.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_LAYOUT_N">
+Die Anzahl der zu konfigurierenden Layouts. In der momentanen Version von
+lcd4linux wird nur ein aktives Layout unterstuetzt.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_LAYOUT_%_NAME">
+Der Name das aktuellen Layouts. Unter diesem Namen wird das Layout in der
+nativen lcd4linux Konfiguration eingebunden.<br/>
+<br/>
+Gueltige Werte: Eindeutiger Name
+</help>
+
+<help name="LCD_LAYOUT_%_ACTIVE">
+Soll das aktuelle Layout aktiv sein oder nicht. In der momentanen Version von
+lcd4linux wird nur ein aktives Layout unterstuetzt. Wird mehr als ein Layout
+aktiviert, so wird das letzte aktive Layout eingebunden.<br/>
+<br/>
+Gueltige Werte: yes/no
+</help>
+
+<help name="LCD_LAYOUT_%_ELEMENT_N">
+Anzahl der in diesem Layout enthaltenen Elemente resp. Widgets.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_LAYOUT_%_ELEMENT_%_NAME">
+Name des einzubindenden Widgets. Dieser Name muss einem der konfigurierten
+Widgets entsprechen und als Prefix durch : abgetrennt den Typ des Widgets
+enthalten.<br/>
+<br/>
+Gueltige Werte: [Text|Bar|Icon]:&lt;String&gt;
+</help>
+
+<help name="LCD_LAYOUT_%_ELEMENT_%_ACTIVE">
+Soll das aktuelle Element resp. Widget eingebunden werden oder nicht.<br/>
+<br/>
+Gueltige Werte: yes/no
+</help>
+
+<help name="LCD_LAYOUT_%_ELEMENT_%_ROW">
+Angabe der Zeile, auf welcher das Widget dargestellt werden soll.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_LAYOUT_%_ELEMENT_%_COL">
+Angabe der Spalte, in welcher das Widget dargestellt werden soll.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_LAYOUT_CYCLE">
+Soll durch die aktiven Layouts automatisch hindurchgescrollt werden.<br/>
+<br/>
+Gueltige Werte: yes/no
+</help>
+
+<help name="LCD_LAYOUT_CYCLE_TIME">
+Zeitangabe in Minuten, wie lang ein Layout eingeblendet werden soll, bevor
+zum naechsten Layout umgeschaltet wird. Da lcd4linux direkt nur ein aktives
+Layout unterstuetzt, werden die Layouts durch ein via Cron-Job getriggertes
+Script aktiviert.<br/>
+<br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_USE_SHUTDOWN_LAYOUT">
+Hier wird ein spezielles Layout aktiviert, welches beim Shutdown des Servers
+zur Anwendung gebracht wird. Dieses Layout enthaelt keine Ausgaben sowie die
+geringst moeglichen Werte fuer Kontrast sowie Hintergrundbeleuchtung.<br/>
+<br/>
+Gueltige Werte: yes/no
+</help>
+
+<help name="LCD_DEFAULT_SHUTDOWN_LAYOUT">
+Das Default Shutdown Layout enthaelt keinerlei Ausgaben und Helligkeit sowie
+Kontrast des Displays werden auf den geringst moeglichen Wert gesetzt.<br/>
+<br/>
+Gueltige Werte: yes/no
+</help>
+
+<help name="LCD_UPDATE_TEXT">
+Zeit in Millisekunden zwischen Textaktualisierungen. Text braucht nicht so oft
+aktualisiert werden wie die Balken.
+<br/><br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_UPDATE_BAR">
+Zeit in Millisekunden zwischen Balken-Aktualisierungen.
+<br/><br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_UPDATE_ICON">
+Animationsintervall in Millisekunden.
+<br/><br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_IMOND_HOST">
+Der Host auf dem imond laeuft. Somit ist es auch moeglich, beispielsweise Daten
+eines fli4l-Routers auf dem Display darzustellen. Wenn das Routing-Paket fuer
+eisfair auf dem Rechner laeuft, lautet der Eintrag 'localhost'.
+<br/><br/>
+Gueltige Werte: DNS-Name, IP-Adresse oder localhost
+</help>
+
+<help name="LCD_IMOND_PORT">
+Der TCP-Port auf dem imond horcht - im Normalfall ist dies der Port 5000.
+<br/><br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_IMOND_PASS">
+Wird ein entfernter Rechner ueberwacht und ist dort IMOND_PASS gesetzt,	muss
+dieses hier angegeben werden.
+</help>
+
+<help name="LCD_TELMOND_HOST">
+Der Host auf dem telmond laeuft. Somit ist es auch moeglich, den letzten Anrufer
+auf dem Display anzeigen zu lassen.
+<br/><br/>
+Gueltige Werte: DNS-Name, IP-Adresse oder localhost
+</help>
+
+<help name="LCD_TELMOND_PORT">
+Der TCP-Port auf dem telmond horcht - im Normalfall ist dies der Port 5001.
+<br/><br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_TELMOND_PHONEBOOK">
+Hier kann eine Datei angegeben werden, die als Telefonbuch fungiert. Wird in
+dieser Datei die gesuchte Telefonnummer oder MSN gefunden, wird statt der Nummer
+der gefundene Namen angezeigt. Der Aufbau der Datei ist der selbe, der bei fli4l
+verwendet wird. Pro Zeile kann eine Telefonnummer aufgeloest werden:
+[Nummer]=[Name]
+</help>
+
+<help name="LCD_POP3_N">
+Anzahl der POP3-EMail-Postfaecher, die ueberwacht und angezeigt werden sollen.
+<br/><br/>
+Gueltige Werte: Zahl
+</help>
+
+<help name="LCD_POP3_%_SERVER">
+Der Name des POP3-Servers.
+</help>
+
+<help name="LCD_POP3_%_USER">
+Der POP3-Benutzername.
+</help>
+
+<help name="LCD_POP3_%_PASS">
+Das POP3-Kennwort.
+</help>
+
+<help name="LCD_POP3_%_PORT">
+Der Port auf dem der POP3-Server lauscht - normalerweise Port 110.
+</help>
+

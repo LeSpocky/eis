@@ -1,0 +1,5 @@
+#!/bin/bash
+
+/var/install/bin/add-menu setup.services.menu setup.services.cui-lcd4linux.menu "LCD4Linux"
+/var/install/config.d/cui-lcd4linux-widgets-update.sh
+/var/install/config.d/cui-lcd4linux-update.sh

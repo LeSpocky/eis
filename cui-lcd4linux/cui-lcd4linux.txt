@@ -1,0 +1,532 @@
+
+                            Das cui-lcd4linux-Package
+
+                                   Einleitung
+
+   Dieses Package ermoeglicht es, ein an den Server angeschlossenes
+   LC-Display anzusteuern. Dieses hat den Vorteil, dass Informationen
+   angezeigt werden koennen, auch wenn kein Monitor am Server
+   angeschlossen ist.
+
+   Zum Einsatz kommt die Software lcd4linux.
+
+                                  Installation
+
+   Das lcd-Package wird ueber das Setup-Menue installiert. Nach dem
+   Installieren der Programmdateien wird direkt der Konfigurations-Editor
+   gestartet um die Konfiguration anzupassen. Nach Beendigung diese
+   Schrittes werden die Konfigurationsdateien generiert und alle
+   benoetigten Programme gestartet.
+
+                          Das Menue im Setup-Programm
+
+   Das Menue im Setup-Programm ist wie folgt aufgebaut:
+
+     * View documentation: Anzeigen der Dokumentation
+     * Edit configuration: Bearbeiten der Konfiguration
+     * Advanced configuration file handling: Vergleichen/Rekonstruieren
+       von Konfigurationen
+     * Start lcd4linux: Den lcd-Daemon starten
+     * Stop lcd4linux: Den lcd-Daemon anhalten
+     * Status: Den Status des lcd-Daemons anzeigen
+
+   Die Menuepunkte duerften selbsterklaerend sein, da sie keinerlei
+   weitere Eingabe erwarten. Deshalb wird auf deren Funktion nicht weiter
+   eingegangen.
+
+                          Aenderung der Konfiguration
+
+   Die Konfiguration kann ueber den Menuepunkt `Edit configuration'
+   geaendert werden. Standardmaessig wird der Editor `joe' aufgerufen.
+   Nachdem der Editor beendet wurde wird abgefragt, ob die Konfiguration
+   aktiviert werden soll. Wird dies bestaetigt, werden ueber ein Skript
+   die modifizierten Aenderungen umgehend wirksam gemacht.
+
+                            Die Konfigurationsdatei
+
+   In der Konfigurationsdatei, die ueber das Menue zugaenglich ist, sind
+   folgende Parameter vorhanden; wer sie von Hand editieren will findet
+   sie unter /etc/config.d/lcd.
+
+                                 Die Parameter
+
+   START_LCD
+          Fuer die Aktivierung des lcd-Ansteuerung muss diese Variable
+          lediglich auf den Wert `yes' gestellt werden. Die Einstellung
+          `no' deaktiviert die Ansteuerung.
+
+          Gueltige Werte: yes, no
+
+   LCD_CONTROLLER
+          Moegliche Werte sind:
+
+          + HD44780 komptable Displays:
+               o HD44780: fuer HD44780 und kompatible Kontroller
+               o HD66712: fuer HD66712 und kompatible Kontroller
+          + M50530 kompatible Displays:
+               o M50530
+          + Matrix Orbital Displays:
+               o LCD0821: 2 lines by 8 characters
+               o LCD1621: 2 lines by 16 characters
+               o LCD2021: 2 lines by 20 characters
+               o LCD2041: 4 lines by 20 characters
+               o LCD4021: 2 lines by 40 characters
+               o LK202-25: 2 lines by 20 characters
+               o LK204-25: 4 lines by 20 characters
+          + CrystalFontz Displays:
+               o 626
+               o 632
+               o 634
+               o 636
+          + Milford Instruments:
+               o MI216: 2 lines by 16 characters
+               o MI220: 2 lines by 20 characters
+               o MI240: 2 lines by 40 characters
+               o MI420: 4 lines by 20 characters
+          + Cwlinux:
+               o CW12232
+               o CW1602
+          + Monitor:
+               o Text
+
+   LCD_PORT
+          Die IO-Adresse des LPT-Ports oder das serielle Device, an
+          welches das Display angeschlossen wurde.
+
+          Gueltige Werte: '0x378', '0x278', '0x3bc', '/dev/ttySx',
+          '/dev/parportx'
+
+   LCD_WIRING
+          Legt die Verdrahtung bei HD44780-kompatiblen Displays fest. Fuer
+          genauere Informationen siehe Abschnitt [1]Anschlussbelegung
+          HD44780-kompatibler Displays.
+
+          Gueltige Werte: 'fli4l', 'winamp'
+
+   LCD_SPEED
+          Bestimmt die Geschwindigkeit der seriellen Schnittstelle bei
+          MatrixOrbital, CrystalFontz-Displays und Milford Instruments
+          (bei diesen sind nur die Werte 2400 und 9600 moeglich).
+
+          Gueltige Werte: 1200, 2400, 9600, 19200
+
+   LCD_CONTRAST
+          Legt den Display-Kontrast bei Matrix Orbital und
+          CrystalFontz-Displays fest. Bei MatrixOrbital sind Werte
+          zwischen 0 (hell) und 256 (dunkel) moeglich und der Default-Wert
+          ist 160. Bei CrystalFontz hingegen sind Werte zwischen 0 (hell)
+          und 100 (dunkel) moeglich.
+
+          Gueltige Werte: Zahl
+
+   LCD_BACKLIGHT
+          Legt die Staerke der Hintergrundbeleuchtung von seriellen
+          CrystalFontz und Cwlinux Displays fest. Fuer Crystalfontz
+          Displays sind Werte sind zwischen 0 (aus) und 100 (voll ein)
+          moeglich und fuer Cwlinux zwischen 0 (aus) und 8 (voll ein).
+
+          Gueltige Werte: Zahl
+
+   LCD_OUTPUT
+          Legt fest, wo bei der Wahl der Text-Ausgabe die Ausgabe
+          erscheien soll. Sinnvollerweise sollte ein neue Konsole dafuer
+          benutzt werden. Mit /dev/tty3 wird beispielsweise die dritte
+          Konsole angesprochen. Zu dieser kann mit Alt-F3 umgeschaltet
+          werden.
+
+   LCD_COLS
+          Anzahl der Zeichen pro Zeile. Typische Werte sind 16, 20, 24, 32
+          und 40.
+
+          Gueltige Werte: Zahl
+
+   LCD_ROWS
+          Anzahl der physikalischen Zeilen des Displays. Typische Werte
+          sind 1, 2 und 4.
+
+          Gueltige Werte: Zahl
+
+   LCD_ROWS_N
+          Anzahl der darzustellenden Zeilen. Dieser Wert muss groesser
+          oder gleich LCD_ROWS sein. Ist dieser Wert groesser als LCD_ROWS
+          werden die Zeilen durchgescrollt - mit LCD_SCROLL und LCD_TURN
+          kann das Verhalten dazu beeinflusst werden.
+
+          Gueltige Werte: Zahl
+
+   LCD_ROWS_x
+          Diese Variable bestimmt, was in der x-ten Zeile des Displays
+          dargestellt werden soll. Dafuer bietet das lcd4linux-Programm
+          einige vordefinierte Werte, als auch die Moeglichkeit eigene
+          Informationen anzeigen zu lassen.
+
+          Der anzuzeigende Text kann die folgenden Direktiven beinhalten,
+          die durch die entsprechenden Werte ersetzt werden oder Balken
+          erzeugen:
+
+          + ' \nnn' erzeugt das ASCII-Zeichen nnn (oktal)
+          + '<token>' wird durch den Wert des <token> ersetzt
+          + '%%' wird durch '%' ersetzt
+          + '%$' wird durch '$' ersetzt
+          + '$<direction><length><token>[+<token>]' erzeugt einen Balken
+            der angegebenen Richtung und Laenge (in Zeichen) mit dem Wert
+            von <token>. Mit '+<token>' kann ein zweiter Wert festgelegt
+            werden, somit koennen zwei unabhaengige Balken in einer
+            einzelnen Zeile dargestellt werden. Fuer <direction> gibt es
+            die Moeglichkeiten:
+               o 'l' links
+               o 'r' rechts
+               o 'u' hoch
+               o 'd' runter
+            Wenn <direction> in Grossbuchstaben angegeben wurde, wird eine
+            logarithmische Skalierung benutzt.
+          + '&<num>' zeichnet das Icon mit der Nummer num an die aktuelle
+            Stelle.
+
+          Als Tokens sind definiert:
+
+          + 'o' operating system name ('Linux')
+          + 'v' operating system release ('2.0.38')
+          + 'p' processor ('i686')
+          + 'r' total amount of memory installed (MB)
+          + 'mt' total memory from /proc/meminfo (kB)
+          + 'mu' used memory (kB)
+          + 'mf' free memory (kB)
+          + 'ms' shared memory (kB)
+          + 'mb' buffers (kB)
+          + 'mc' page cache (kB)
+          + 'ma' application memory (kB) = used - buffer - cache
+          + 'l1' load average for the past 1 minute
+          + 'l2' load average for the past 5 minutes
+          + 'l3' load average for the past 15 minutes
+          + 'cu' percentage of CPU in user mode
+          + 'cn' percentage of CPU in niced tasks
+          + 'cs' percentage of CPU in system mode
+          + 'cb' percentage of CPU busy (=100-idle)
+          + 'ci' percentage of CPU idle
+          + 'dr' disk blocks read
+          + 'dw' disk blocks written
+          + 'dt' disk blocks total (read+write)
+          + 'dm' disk blocks max (read, write)
+          + 'nr' network bytes received
+          + 'nw' network bytes transmitted
+          + 'nt' network bytes total (receive+transmit)
+          + 'nm' network bytes max (receive, transmit)
+          + 'ii' ISDN bytes received
+          + 'io' ISDN bytes sent
+          + 'it' ISDN bytes total (received+send)
+          + 'im' ISDN bytes max (received, send)
+          + 'ic' ISDN connected (0=offline, 1=online)
+          + 'ti' PPP bytes received
+          + 'to' PPP bytes sent
+          + 'tt' PPP bytes total (received+send)
+          + 'tm' PPP bytes max (received, send)
+          + 'bp' battery percentage (APM by now)
+          + 'bs' battery status ('=' = online, '+' = charging, '-'
+            discharging)
+          + 'bd' battery duration in seconds, mins, hours or days
+          + 'e*' mails in mailbox 1-9, total mail
+          + 'u*' mails in mailbox 1-9, unseen mail
+          + 'x*' output of command 1-9
+
+          Fuer die folgenden Tokens werden Daten vom Imond abgefragt:
+
+          + 'jc' CPU-Auslastung
+          + 'jd' Datum
+          + 'jm' Uhrzeit
+          + 'jv' imond-Version
+          + 'js*' Status von Kanal 1-9 (Offline, Dialing, Online)
+          + 'jn*' Circuit-Name des Kanals 1-9
+          + 'jk*' Aufgelaufene Kosten des Kanals 1-9
+          + 'jp*' IP-Adresse des Kanals 1-9
+          + 'jt*' Online-Zeit der aktuellen Verbindung des Kanals 1-9
+          + 'ji*' uebertragungsrate eingehend der aktuellen Verbindung des
+            Kanals 1-9
+          + 'jo*' uebertragungsrate ausgehend der aktuellen Verbindung des
+            Kanals 1-9
+
+          Fuer die folgenden Tokens werden Daten vom Telmond abgefragt:
+
+          + 'kn' Nummer des Anrufers
+          + 'km' angerufene MSN
+          + 'kt' Uhrzeit des Anrufes
+          + 'kd' Datum des Anrufes
+
+   LCD_SCROLL
+          Wenn LCD_ROWS_N einen groesseren Wert als LCD_ROWS hat, werden
+          die Zeilen durchgescrollt. LCD_SCROLL gibt dabei an, wieviele
+          Zeilen auf einmal gescrollt werden sollen. Wird ein Vielfaches
+          von LCD_ROWS angegeben, wird das komplette Display gewechselt.
+
+          Gueltige Werte: Zahl
+
+   LCD_TURN
+          Gibt an, wieviele Millisekunden zwischen den Scroll-Ereignissen
+          liegen sollen.
+
+          Gueltige Werte: Zahl
+
+   LCD_TEXTUPDATE
+          Zeit in Millisekunden zwischen Textaktualisierungen. Text
+          braucht nicht so oft aktualisiert werden wie die Balken.
+
+          Gueltige Werte: Zahl
+
+   LCD_BARUPDATE
+          Zeit in Millisekunden zwischen Balken-Aktualisierungen.
+
+          Gueltige Werte: Zahl
+
+   LCD_ICONUPDATE
+          Zeit in Millisekunden zwischen Iconaktualisierungen.
+
+          Gueltige Werte: Zahl
+
+   LCD_CMDS_N
+          Anzahl der Befehle dessen Ergebnis auf dem LC-Display angezeigt
+          werden sollen.
+
+          Gueltige Werte: Zahl < 10
+
+   LCD_CMDS_x_CMD
+          Befehl der ausgefuehrt werden soll. Dieser muss sich in einem
+          der folgenden Pfade /usr/local/bin, /usr/bin oder /bin befinden.
+          Mittels $X1 ...$X9 koennen auf die Ergebnisse der Befehle 1 ...9
+          im Environment zugegriffen werden.
+
+   LCD_CMDS_x_DELAY
+          Zeit in Sekunden zwischen Aktualisierungen.
+
+          Gueltige Werte: Zahl
+
+   LCD_CMDS_x_MIN
+          Minimaler Wert fuer eine Balkendarstellung.
+
+          Gueltige Werte: Zahl
+
+   LCD_CMDS_x_MAX
+          Maximaler Wert fuer eine Balkendarstellung.
+
+          Gueltige Werte: Zahl
+
+   LCD_MAILBOX_N
+          Anzahl der Mailboxen bzw. Newsgroups die abgefragt werden
+          sollen.
+
+          Gueltige Werte: Zahl < 10
+
+   LCD_MAILBOX_x_CMD
+          Moegliche Werte sind:
+
+          + 'pop3:[user[:pass]@]machine[:port]'
+          + 'imap4:[user[:pass]@]machine[:port][/dir]'
+          + 'nntp:[user[:pass]@]machine[:port][/dir]'
+
+   LCD_MAILBOX_x_DELAY
+          Zeit in Sekunden zwischen Aktualisierungen.
+
+          Gueltige Werte: Zahl
+
+          Die folgenden Variablen werden nur ausgewertet, wenn ein Token
+          benutzt wird, der Daten vom imond auswertet.
+
+   LCD_ICON_N
+          Anzahl der benutzerdefinierten (animierten) Icons. Zu
+          Beruecksichtigen ist, dass jedes Icon, welches hier definiert
+          wird, nicht mehr die Balken zur Verfuegung steht. Die meisten
+          Display koennen nur 8 userdefinierbare Zeichen darstellen und
+          ein Doppelbalken benoetigt bis zu 5 dieser Zeichen. Deshalb
+          sollten nicht mehr als 3 Icons parallel mit Balken benutzt
+          werden.
+
+          Gueltige Werte: Zahl < 10
+
+   LCD_ICON_X_ROW_Y
+          Ein Icon hat die Groesse wie ein Zeichen - also 5 Spalten und 8
+          Zeilen. Das Icon wird durch zwei Zeichen definiert:
+
+          + '.' (Punkt) fuer Pixel nicht gesetzt
+          + '*' (Stern) fuer Pixel gesetzt
+
+          Um animierte Icons zu erzeugen, werden die weiteren Bilder
+          einfach mittels dem Zeichen '|' (senkrechter Strich)
+          aneinandergefuegt.
+
+   LCD_IMOND_HOST
+          Der Host auf dem imond laeuft. Somit ist es auch moeglich,
+          beispielsweise Daten eines fli4l-Routers auf dem Display
+          darzustellen. Wenn das Routing-Paket fuer eisfair auf dem
+          Rechner laeuft, lautet der Eintrag 'localhost'.
+
+          Gueltige Werte: DNS-Name, IP-Adresse oder localhost
+
+   LCD_IMOND_PORT
+          Der TCP-Port auf dem imond horcht - im Normalfall ist dies der
+          Port 5000.
+
+          Gueltige Werte: Zahl
+
+   LCD_IMOND_PASS
+          Wird ein entfernter Rechner ueberwacht und ist dort IMOND_PASS
+          gesetzt, muss dieses hier angegeben werden.
+
+   LCD_CHANNELS_N
+          Anzahl der Imond-Channels, die ueberwacht werden sollen.
+
+          Gueltige Werte: Zahl < 10
+
+   LCD_CHANNELS_x_DEV
+          Hier muss der zu ueberwachende Imond-Channel angegeben werden -
+          siehe dazu Kapitel 8.1 der fli4l-Dokumentation. Moegliche Werte
+          sind:
+
+          + 'pppoe' fuer einen DSL-Channel (egal ob pppoe oder pptp)
+          + Zahl fuer einen ISDN-Kanal, 1 steht fuer den ersten, ...
+
+   LCD_CHANNELS_x_MAXIN
+          Mit wieviel kBits koennen Daten von dem Kanal empfangen werden.
+
+          Gueltige Werte: Zahl
+
+   LCD_CHANNELS_x_MAXOUT
+          Mit wieviel kBits koennen Daten ueber den Kanal gesendet werden.
+
+          Gueltige Werte: Zahl
+
+   LCD_TELMOND_HOST
+          Der Host auf dem telmond laeuft. Somit ist es auch moeglich, den
+          letzten Anrufer auf dem Display anzeigen zu lassen.
+
+          Gueltige Werte: DNS-Name, IP-Adresse oder localhost
+
+   LCD_TELMOND_PORT
+          Der TCP-Port auf dem telmond horcht - im Normalfall ist dies der
+          Port 5001.
+
+          Gueltige Werte: Zahl
+
+   LCD_TELMOND_PHONEBOOK
+          Hier kann eine Datei angegeben werden, die als Telefonbuch
+          fungiert. Wird in dieser Datei die gesuchte Telefonnummer oder
+          MSN gefunden, wird statt der Nummer der gefundene Namen
+          angezeigt. Der Aufbau der Datei ist der selbe, der bei fli4l
+          verwendet wird. Pro Zeile kann eine Telefonnummer aufgeloest
+          werden: [Nummer]=[Name]
+
+               Anschlussbelegung eines LCD-Moduls am Paralellport
+
+HD44780 kompatible Displays
+
+    fli4l/eisfair Verdrahtung
+
+   Wenn [2]LCD_WIRING='fli4l' gesetzt wurde, muss das Display wie folgt
+   angeschlossen werden.
+
+   13 ____________________________ 1 Draufsicht auf den
+      \ o o o o o o o o o o o o o/   Paralellport, R"uck-
+       \ o o o o o o o o o o o o/    seite PC
+     25 ------------------------ 14
+
+   Der Anschluss eines LCD-Moduls an den Router wird folgendermassen
+   aufgetrennt:
+
+ Paralellport-Pin   Beschreibung   LCD-Modul    LCD-Pin
+         18-25      GND                             --|
+                    GND                          1  --|- Br"ucke
+                    R/W                          5  --|
+                    +5V                          2
+             1      STROBE         EN(1)         6
+             2      D0             D0            7
+             3      D1             D1            8
+             4      D2             D2            9
+             5      D3             D3           10
+             6      D4             D4           11
+             7      D5             D5           12
+             8      D6             D6           13
+             9      D7             D7           14
+            14      Autofeed       RS            4
+
+  Bei Display mit Hintergrundbeleuchtung:
+                                   HG+          15 (mit Vorwiderstand ca. 20Ohm)
+                                   GND          16
+
+   Handelt es sich um ein 4x40er Display, muss EN(2) des Displays mit
+   SELECT IN (Pin 17) des Parallel-Ports verbunden werden.
+
+   An Pin 3 kann der Abgriff eines >= 20kOhm Potis zwischen +5V und GND
+   geschaltet werden. Damit kann der Kontrast des Displays reguliert
+   werden. Bei meinem Display (Conrad) liegt Pin 3 direkt an Masse und man
+   kann alles einwandfrei erkennen.
+
+  +5V ---+
+         /
+         \ <--+
+         /    |
+         \    |
+  GND ---+    +--- VL (Pin 3 - driver input)
+
+    winamp Verdrahtung
+
+   Ist hingegen [3]LCD_WIRING='winamp' gesetzt worden, ergeben sich die
+   folgenden Aenderungen zur anderen Verdrahtung:
+     * RS des LCD-Moduls wird mit INIT des Parallel-Port (Pin 16)
+       verbunden
+     * R/W wird mit Autofeed (Pin 14) verbunden
+
+M50530 kompatible Displays
+
+   LCD-Pin LCD-Modul Paralellport-Pin Beschreibung Sonstiges
+   1       Shield                                  GND
+   2       DB0       2                DB0
+   3       DB1       3                DB1
+   4       DB2       4                DB2
+   5       DB3       5                DB3
+   6       DB4       6                DB4
+   7       DB5       7                DB5
+   8       DB6       8                DB6
+   9       DB7       9                DB7
+   10      ex        1                STROBE
+   11      RW                                      GND
+   12      IOC2      14               AUTOFEED
+   13      IOC1      17               SELECT
+   14      VFF                                      10V (Display Kontrast)
+   15      5V                                      5V
+   16      GND       18-25            GND          GND
+
+                             Nuetzliche Hilfscripte
+
+   In diesem Abschnitt werden mitgelieferte Skripte vorgestellt, um die
+   Anzeigemoeglichkeiten von lcd4linux zu erweitern. Diese Skripte koennen
+   ueber [4]LCD_CMDS_x_CMD eingebunden werden und das Ergebnis mit dem
+   Token 'x*' (wobei der Stern durch 1 bis 9 ersetzt werden muss)
+   angezeigt werden.
+
+hd.sh
+
+   Im Verzeichnis /usr/local/bin befindet sich ein Skript hd.sh, welches
+   die Ausgabe von df geeignet auswertet und aufbereitet. Das Skript
+   erwartet zwei Parameter:
+    1. Die Partition - z.B. hda1
+    2. Die Info, die ausgegeben werden soll. Moegliche Werte sind:
+          + f: freier Speicher
+          + u: belegter Speicher
+          + s: Partitiongroesse
+          + m: Mountpoint
+          + p: Prozentangabe des belegten Speichers
+
+mpd2lcd
+
+   Stammt von Alexander Dahl.
+
+   Beim Aufruf verlangt das Skript drei Parameter: als erstes, welche Info
+   erwuenscht ist ('t' fuer title oder 'a' fuer artist), dann die Laenge
+   der moeglichen Zeile und als drittes 'l' fuer linksbuendig oder 'z'
+   fuer zentriert Bei mehr, weniger oder falschen Parametern wird
+   Fehlermeldung zurueckgegeben. Sonst kommt eben Title oder Artist auf
+   die Laenge formatiert zurueck.
+
+   Beispiel fuer zentrierte Ausgabe des Titels auf eine Laenge von 24
+   Zeichen:
+   mpd2lcd t 24 z
+     __________________________________________________________________
+

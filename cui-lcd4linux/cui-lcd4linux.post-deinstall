@@ -1,0 +1,7 @@
+#!/bin/bash
+/var/install/bin/del-menu setup.services.menu setup.services.cui-lcd4linux.menu
+
+rm -f /etc/check.d/cui-lcd4linux*
+rm -f /etc/default.d/cui-lcd4linux*
+rm -f /etc/config.d/cui-lcd4linux*
+rm -f /etc/backup.d/cui-lcd4linux*

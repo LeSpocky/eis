@@ -1,0 +1,9 @@
+<package>cui-lcd4linux</package>
+<title>LCD4Linux administration</title>
+<doc file="lcd.txt">View documentation</doc>
+<edit stopstart>Edit main configuration</edit>
+<edit package="lcd-widgets">Edit widgets</edit>
+<init task="status">Status</init>
+<init task="start">Start lcd4linux</init>
+<init task="stop">Stop lcd4linux</init>
+<menu file="setup.services.lcd.acfh.menu">Advanced configuration file handling</menu>

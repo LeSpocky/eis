@@ -1,0 +1,4 @@
+<package>cui-lcd4linux</package>
+<title>Advanced configuration file handling</title>
+<menu file="setup.services.advancedconfig.menu">ACFH for main configuration</menu>
+<menu package="cui-lcd4linux-widgets" file="setup.services.advancedconfig.menu">ACFH for widgets</menu>

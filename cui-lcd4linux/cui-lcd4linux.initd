@@ -1,0 +1,88 @@
+#!/sbin/runscript
+# ----------------------------------------------------------------------------
+# /etc/init.d/cui-lcd4linux - start script of lcd4linux
+#
+# Creation:    2014-01-01 starwarsfan
+#
+# Copyright (c) 2001-2014 The eisfair Team, <team(at)eisfair(dot)org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# ----------------------------------------------------------------------------
+
+activeConfigurationLink='/etc/lcd4linux.conf'
+nativeMainConfiguration='/etc/lcd4linux.main.conf'
+nativeShutdownConfiguration='/etc/lcd4linux.shutdown.conf'
+
+# Include eislib and load config
+. /var/install/include/eislib
+. /etc/config.d/lcd
+
+
+
+start() {
+    if [ "$START_LCD" == 'yes' ] ; then
+        mecho -info "Starting lcd4linux..."
+        if [ "$LCD_USE_SHUTDOWN_LAYOUT" == 'yes' ] ; then
+            # Determine current runlevel. Next step should be done only
+            # on runlevel != 0 to activate default configuration
+            currentRunlevel=`runlevel | cut -d " " -f 2`
+            if [ "$currentRunlevel" != '0' ] ; then
+                ln -sf ${nativeMainConfiguration} ${activeConfigurationLink}
+            fi
+        fi
+
+        LCD_DRIVER=`echo ${LCD_TYPE} | cut -d ":" -f 1`
+        LCD_MODEL=`echo ${LCD_TYPE} | cut -d ":" -f 2`
+
+        if [ "$LCD_DRIVER" == 'Curses' ] ; then
+            /usr/local/bin/lcd4linux -F >${LCD_PORT} &
+        else
+            case ${LCD_PORT} in
+                /dev/parport0|/dev/parport1|/dev/parport2|/dev/parport3|/dev/parport4|/dev/parport5|/dev/parport6|/dev/parport7|/dev/parport8|/dev/parport9)
+                    do_insmod_once parport
+                    do_insmod_once parport_pc
+                    do_insmod_once ppdev;;
+            esac
+             /usr/local/bin/lcd4linux
+        fi
+        sleep 1
+    fi
+}
+
+stop() {
+    if [ "$START_LCD" == 'yes' ] ; then
+        if [ "$LCD_USE_SHUTDOWN_LAYOUT" == 'yes' ] ; then
+            # Determine current runlevel. Next step should be done only
+            # on runlevel 0 to activate shutdown configuration
+            currentRunlevel=`runlevel | cut -d " " -f 2`
+            if [ "$currentRunlevel" == '0' ] ; then
+                ln -sf ${nativeShutdownConfiguration} ${activeConfigurationLink}
+                if [ -e /var/run/lcd4linux.pid ] ; then
+                    mecho -info "Stopping lcd4linux to activate shutdown configuration"
+                    kill `cat /var/run/lcd4linux.pid 2>/dev/null` 2>/dev/null
+                    /etc/init.d/lcd start
+                fi
+            fi
+        fi
+    fi
+    if [ -e /var/run/lcd4linux.pid ] ; then
+        mecho -info "Stopping lcd4linux"
+        kill `cat /var/run/lcd4linux.pid 2>/dev/null` 2>/dev/null
+    fi
+}
+
+restart() {
+    $0 stop
+    $0 start
+}
+
+status() {
+    if [ -e /var/run/lcd4linux.pid ] ; then
+        mecho "lcd4linux is running"
+    else
+        mecho "lcd4linux is not running"
+    fi
+}
