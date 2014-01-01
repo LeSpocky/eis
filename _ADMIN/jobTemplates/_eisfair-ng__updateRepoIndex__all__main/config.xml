@@ -8,7 +8,7 @@ Nach einem Release-Build eines Paketes wird das für das jeweilige Repository au
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>29433</diskUsageWithoutBuilds>
+      <diskUsageWithoutBuilds>11783</diskUsageWithoutBuilds>
       <slaveWorkspacesUsage class="concurrent-hash-map">
         <entry>
           <string>alpine edge x86 (eb2)</string>
