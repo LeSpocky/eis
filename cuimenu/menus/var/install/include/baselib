@@ -88,8 +88,7 @@ check_screensize()
 # autodetect output: tty / html / file
 #============================================================================
 
-if /usr/bin/tty -s <&1
-then
+if /usr/bin/tty > /dev/null 2>&1 ; then
     _EISLIB_PRINTMODE='tty'
 else
     _EISLIB_PRINTMODE='file'
