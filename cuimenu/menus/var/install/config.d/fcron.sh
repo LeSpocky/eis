@@ -30,9 +30,9 @@ done
 # ----------------------------------------------------------------------------
 # Write cron configuration to file
 idx=1
-while [ "${idx}" -le "${CRON_N}" ] ; do
+while [ "${idx}" -le "${FCRON_N}" ] ; do
 	# check for active
-	eval active='${CRON_'${idx}'_ACTIVE}'
+	eval active='${FCRON_'${idx}'_ACTIVE}'
 	if [ "${active}" = "yes" ] ; then
 		eval time='$FCRON_'${idx}'_TIMES'
 		eval user='$FCRON_'${idx}'_USER'
