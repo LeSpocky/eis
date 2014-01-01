@@ -9,16 +9,17 @@ url="http://ssl.bulix.org/projects/lcd4linux/"
 arch="all"
 license="GPL"
 depends=""
-depends_dev="libusb-compat-dev"
+depends_dev="libusb-compat-dev subversion"
 makedepends="$depends_dev"
 install=""
-source="http://ssl.bulix.org/projects/lcd4linux/raw-attachment/wiki/Download/lcd4linux-${pkgver}${pkgRC}.tar.bz2
-"
+source=""
+repoURL="https://ssl.bulix.org/svn/lcd4linux/trunk"
 
 _builddir="$srcdir/${pkgname}-$pkgver${pkgRC}"
 
 prepare() {
 	local i
+	svn co $repoURL $_builddir
 	cd "$_builddir"
 	for i in $source; do
 		case $i in
@@ -39,6 +40,3 @@ package() {
 	cd "$_builddir"
 	install -D -m755 $pkgname       ${pkgdir}/usr/bin/$pkgname || return 1
 }
-md5sums="afbbaf37b2d27dfd41f7ba6cef0cc992  lcd4linux-0.11.0-SVN.tar.bz2"
-sha256sums="96386bc45ab7b2a6ab4ac0aaef8634a1e524399d6252e2081581af073ef3b2f8  lcd4linux-0.11.0-SVN.tar.bz2"
-sha512sums="7254c929120bc3c9ff60b8963f8b4254d4aa90ff19b568c6d6b5c7357046e7bb4e95b46a1e3cf8fea4ed04c5f48a0433c4d9f73762c8352d600956fe0abc9174  lcd4linux-0.11.0-SVN.tar.bz2"
