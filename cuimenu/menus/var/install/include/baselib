@@ -54,7 +54,7 @@ refresh_screensize()
     esac
 
     case "${_refresh_printmode}" in
-        tty)  eval `/usr/bin/resize 2>/dev/null`
+        tty)  eval `/usr/bin/resize`
               _EISLIB_SCREENSIZE_X="${COLUMNS:=$_EISLIB_SCREENSIZE_X_MIN}"
               _EISLIB_SCREENSIZE_Y="${LINES:=$_EISLIB_SCREENSIZE_Y_MIN}"
               ;;
@@ -105,8 +105,7 @@ refresh_screensize
 echo_retval()
 {
     local error_value="${?}"
-    if [ ${error_value} -eq 0 ]
-    then
+    if [ ${error_value} -eq 0 ] ; then
         mecho --ok
     else
         mecho --fail
