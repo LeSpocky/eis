@@ -35,7 +35,7 @@ start() {
         if [ "$LCD_USE_SHUTDOWN_LAYOUT" == 'yes' ] ; then
             # Determine current runlevel. Next step should be done only
             # on runlevel != 'shutdown' to activate default configuration
-            if [`rc-status -r` != 'shutdown' ] ; then
+            if [ `rc-status -r` != 'shutdown' ] ; then
                 ln -sf ${nativeMainConfiguration} ${activeConfigurationLink}
             fi
         fi
