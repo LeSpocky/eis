@@ -64,20 +64,20 @@ package() {
 	install -D -m755 ${srcdir}/${pkgname}-widgets.sh          ${pkgdir}/var/install/config.d/${pkgname}-widgets.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-widgets-update.sh   ${pkgdir}/var/install/config.d/${pkgname}-widgets-update.sh || return 1
 }
-md5sums="b44f5f1b6c4325245d2b3188a30dd103  cui-lcd4linux.initd
-72d8043d809a3478cd6cd6da6786dcdd  cui-lcd4linux.sh
+md5sums="199f529cacc2e6dffa0fc04c2c6fdb7e  cui-lcd4linux.initd
+4c2151e71b050c8768f475953caba8bb  cui-lcd4linux.sh
 e33794a47a5522e6e375b1d2e4752f70  cui-lcd4linux.txt
 cb502dd99e02f71163257bf229f51ee7  cui-lcd4linux-update.sh
 8a163bef031a9803adf6845fc2ec9a99  cui-lcd4linux-widgets.sh
 81b729438385b64b24f5435a8a5c016d  cui-lcd4linux-widgets-update.sh"
-sha256sums="82bbdedfd49fa3d0e849cb6686dc9764a65b557d939ca0929e6f1820b7fa03ac  cui-lcd4linux.initd
-afa30cf441ce25d9662e8e06b859d684df72f4e373b7ad74ca788257ca70406e  cui-lcd4linux.sh
+sha256sums="8a604c4001b7734b7764fdb8d6cf65fa617a8d92f5fdb60185cd48000fd73a2d  cui-lcd4linux.initd
+ece7a0b2f85102352fc3fede23318e714fd422ce82ccdafd5813d517acd71c33  cui-lcd4linux.sh
 589cc47f43a63c21524bb91183afef648616985f1a1d04de90bbedbef0ccf2dc  cui-lcd4linux.txt
 a63e1c761ffacf0e557a7315bd5dbece9520623f7c059fd3c942d5877734c996  cui-lcd4linux-update.sh
 658f466d65a2d60cf9258a698ca036eb05cf51c7cc80114b04a7608dc1e8e09a  cui-lcd4linux-widgets.sh
 6e11f843f5c3e36c6c0b1e7dbf92fe300500efa670bf8d28ef65adb07bc1271c  cui-lcd4linux-widgets-update.sh"
-sha512sums="c73ac5fdc15c1df4300534fa9e6e69125cd005e0bb7b8682667f5a75d6369f1bfb2d21fb2b999a8a3c18e9026df955d9273039f6513f77f9ab32800754977b46  cui-lcd4linux.initd
-930ffaf911997a79d90680878e8083599af67e313a3a1634c1981ac75d7a074c5c003e70c0f341b80c21d5c8a0fdbc9ff187aa3b5f369747f7ff109be2fa2da3  cui-lcd4linux.sh
+sha512sums="ca21d1094a13809b3640364729f5496cba3cfb2fcb986261ae15ceefb8218ca012c1d3d292ea4472676e5ca3c1a2bec4d021257f15611b70ae58ff618514cd80  cui-lcd4linux.initd
+88748e6f0cf1867c2c6e73766dd0ed6135cfe535893903d5c4a4ae22e48b3df3b27ec08e0672648d2cae316b6143159770ff35e14b85a62f55769978a50eb7cc  cui-lcd4linux.sh
 dbcb82a2d208cf1faf9dd5674285f24606a3da2c1128b4fdba4410666354c849982c1356affcbcec5cf89093727a197ad0ebda33627c8c460c0293d15dc1fb18  cui-lcd4linux.txt
 ca6ec9cf4b09b875b0914cce6de4b1a4ee68811286b560ed43e788f74eb19f626149a1c4642ed23effc784514c26da5c2cec88ea4602ee0fc8c07d627c744326  cui-lcd4linux-update.sh
 8aeed972da5fb379154c92bc2e64c17b0010bb7be013f3b07a6945c31c5f7caed9db3f6a614ac2b582ac88814410629d71210140916815791bc1024e900db44b  cui-lcd4linux-widgets.sh
