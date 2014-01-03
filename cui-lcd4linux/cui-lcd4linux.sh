@@ -118,7 +118,7 @@ writeWidgetConfigSnippets () {
             fi
             echo "  update     $update"
             echo "}"
-            ) > /tmp/$$-widget-$name.txt
+            ) > /tmp/$$-cui-lcd4linux-widget-$name.txt
         fi
         idx=$((idx+1))
     done
@@ -175,7 +175,7 @@ writeWidgetConfigSnippets () {
             fi
             echo "  update      $update"
             echo "}"
-            ) > /tmp/$$-widget-$name.txt
+            ) > /tmp/$$-cui-lcd4linux-widget-$name.txt
         fi
         idx=$((idx+1))
     done
@@ -215,7 +215,7 @@ writeWidgetConfigSnippets () {
             echo "      row8 '$row8'"
             echo "    }"
             echo "}"
-            ) > /tmp/$$-widget-$name.txt
+            ) > /tmp/$$-cui-lcd4linux-widget-$name.txt
             activeIconWidgets=$((activeIconWidgets+1))
         fi
         idx=$((idx+1))
@@ -378,8 +378,8 @@ writeLCDConfig () {
 
     (
         # -------------------------------------------------
-    # Put all widget definitions into the configuration
-        cat /tmp/$$-widget-*.txt
+        # Put all widget definitions into the configuration
+        cat /tmp/$$-cui-lcd4linux-widget-*.txt
 
         # ------------------------------------
         # Create main part of lcd4linux config
@@ -399,7 +399,7 @@ writeLCDConfig () {
                 # Write header lines for row entries
                 rowIdx=1
                 while [ $rowIdx -le $LCD_ROWS ] ; do
-                    echo "  Row${rowIdx} {" > /tmp/$$-row${rowIdx}.txt
+                    echo "  Row${rowIdx} {" > /tmp/$$-cui-lcd4linux-row${rowIdx}.txt
                     rowIdx=$((rowIdx+1))
                 done
 
@@ -415,16 +415,16 @@ writeLCDConfig () {
                         eval elemCol='$LCD_LAYOUT_'${idx}'_ELEMENT_'${idx}2'_COL'
                         case $elemRow in
                             1)
-                                echo "    Col${elemCol}    '$elemName'" >> /tmp/$$-row1.txt
+                                echo "    Col${elemCol}    '$elemName'" >> /tmp/$$-cui-lcd4linux-row1.txt
                                 ;;
                             2)
-                                echo "    Col${elemCol}    '$elemName'" >> /tmp/$$-row2.txt
+                                echo "    Col${elemCol}    '$elemName'" >> /tmp/$$-cui-lcd4linux-row2.txt
                                 ;;
                             3)
-                                echo "    Col${elemCol}    '$elemName'" >> /tmp/$$-row3.txt
+                                echo "    Col${elemCol}    '$elemName'" >> /tmp/$$-cui-lcd4linux-row3.txt
                                 ;;
                             4)
-                                echo "    Col${elemCol}    '$elemName'" >> /tmp/$$-row4.txt
+                                echo "    Col${elemCol}    '$elemName'" >> /tmp/$$-cui-lcd4linux-row4.txt
                                 ;;
                             *)
                                 ;;
@@ -435,12 +435,11 @@ writeLCDConfig () {
 
                 # ------------------------------------------------------
                 # Close row entries and put them into the layout section
-                for currentRowFile in `ls /tmp/$$-row*.txt`
-                do
+                for currentRowFile in `ls /tmp/$$-cui-lcd4linux-row*.txt` ; do
                     echo "  }" >> $currentRowFile
                 done
                 echo "Layout $layoutName {"
-                cat /tmp/$$-row*.txt
+                cat /tmp/$$-cui-lcd4linux-row*.txt
                 echo "}"
             fi
 
@@ -562,11 +561,10 @@ addCronjob () {
 	if [ "$LCD_LAYOUT_CYCLE" == 'yes' ] ; then
 	    mecho "Adding cron job..."
 
-	    if [ ! -d ${crontab_path} ] ; then
-	        mkdir -p ${crontab_path}
+	    if [ ! -d ${crontabPath} ] ; then
+	        mkdir -p ${crontabPath}
 	    fi
 
-	    # Write cron file
 	    (
 	        echo "# =============================================================="
 	        echo "# LCD layout cycle cron job"
@@ -581,8 +579,6 @@ addCronjob () {
 	    mecho "Removing cron job if existing..."
 		rm -rf ${crontabFile}
 	fi
-    # Update crontab
-    /var/install/config.d/cron >/dev/null 2>&1
 
     mecho --ok
 }
@@ -592,7 +588,7 @@ addCronjob () {
 # ----------------------------------------------------------------------------
 # Remove temporary files etc. pp.
 cleanup () {
-    rm -rf /tmp/$$-*.txt
+    rm -rf /tmp/$$-cui-lcd4linux-*.txt
 }
 
 
@@ -603,7 +599,6 @@ cleanup () {
 rm -f ${activeConfigurationLink}
 rm -f ${nativeMainConfiguration}
 rm -f ${nativeShutdownConfiguration}
-rm -f ${initScriptLink}
 
 if [ "${START_LCD}" == 'yes' -a "${START_LCD_WIDGET}" == 'yes' ] ; then
     writeWidgetConfigSnippets
@@ -611,11 +606,12 @@ if [ "${START_LCD}" == 'yes' -a "${START_LCD_WIDGET}" == 'yes' ] ; then
     writeLCDConfig
     writeShutdownConfig
     ln -s ${nativeMainConfiguration} ${activeConfigurationLink}
-    ln -s /etc/init.d/${packageName} ${initScriptLink}
     addCronjob
     cleanup
+    rc-update --quiet add cui-lcd4linux
+    rc-service --quiet fcron reload
 else
+    rc-update --quiet del cui-lcd4linux
 	rm -rf ${crontabFile}
-    # Update crontab
-    /var/install/config.d/cron >/dev/null 2>&1
+    rc-service --quiet fcron reload
 fi
