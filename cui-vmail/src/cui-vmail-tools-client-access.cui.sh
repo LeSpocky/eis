@@ -1,1 +1,0 @@
-/home/jens/eis/cui-vmail/cui-vmail-tools-client-access.cui.sh

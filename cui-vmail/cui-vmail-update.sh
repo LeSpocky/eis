@@ -1,14 +1,7 @@
 #!/bin/sh
 #------------------------------------------------------------------------------
-# /var/install/config.d/postfix-update.sh - postfix parameter update script
-#
-# Creation:     2005-04-14 Jens Vehlhaber <jens(at)eisfair(dot)org>
-# Last Update:  $Id: vmail-update.sh 31284 2012-07-18 09:42:24Z jv $
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# eisfair configuration update script
+# Copyright 2007 - 2014 the eisfair team, team(at)eisfair(dot)org
 #------------------------------------------------------------------------------
 
 # include configlib
