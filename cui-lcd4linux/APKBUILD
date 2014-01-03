@@ -49,7 +49,7 @@ package() {
 	cd -
 	cd ${startdir}/help
 	for currentHelpFile in `ls` ; do
-		install -D -m644 ${currentHelpFile} ${pkgdir}/var/install/help/${currentHelpFile} || return 1
+		install -D -m644 ${currentHelpFile} ${pkgdir}/var/install/help/${currentHelpFile%.help} || return 1
 	done
 	cd -
 	cd ${startdir}/menu
