@@ -895,10 +895,11 @@ EOFG
 # Main
 # ----------------------------------------------------------------------------
 # Write default config file
+mecho
 if [ -f /etc/config.d/${packageName} ] ; then
-    mecho --info -n 'Updating widget configuration.'
+    mecho --info -n 'Updating widget configuration (This may take a while): .'
 else
-    mecho --info -n 'Creating widget configuration.'
+    mecho --info -n 'Creating widget configuration (This may take a while): .'
 fi
 
 makeConfigFile /etc/default.d/${packageName}

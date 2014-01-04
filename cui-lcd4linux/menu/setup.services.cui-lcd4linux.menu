@@ -6,4 +6,4 @@
 <init task="status">Status</init>
 <init task="start">Start lcd4linux</init>
 <init task="stop">Stop lcd4linux</init>
-<menu file="setup.services.lcd.acfh.menu">Advanced configuration file handling</menu>
+<menu file="setup.services.cui-lcd4linux.acfh.menu">Advanced configuration file handling</menu>

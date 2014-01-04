@@ -369,9 +369,9 @@ EOFG
 # ----------------------------------------------------------------------------
 # Write default config file
 if [ -f /etc/config.d/${packageName} ] ; then
-    mecho --info -n 'Updating configuration.'
+    mecho --info -n 'Updating configuration (This may take a while): .'
 else
-    mecho --info -n 'Creating configuration.'
+    mecho --info -n 'Creating configuration (This may take a while): .'
 fi
 
 makeConfigFile /etc/default.d/${packageName}
