@@ -572,7 +572,7 @@ addCronjob () {
 	        echo "# eisfair configuration tools"
 	        echo "# Creation: ${EISDATE}  ${EISTIME}"
 	        echo "# =============================================================="
-	        echo "*/$LCD_LAYOUT_CYCLE_TIME * * * * /var/install/bin/lcd-cycle-layouts.sh"
+	        echo "*/$LCD_LAYOUT_CYCLE_TIME * * * * /var/install/bin/cui-lcd4linux-cycle-layouts.sh"
 	        echo ""
 	    ) > ${crontabFile}
 	else

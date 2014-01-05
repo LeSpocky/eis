@@ -7,3 +7,4 @@
 <init task="start">Start lcd4linux</init>
 <init task="stop">Stop lcd4linux</init>
 <menu file="setup.services.cui-lcd4linux.acfh.menu">Advanced configuration file handling</menu>
+<script file="cui-lcd4linux-show-drivers.sh">Show supported displays and their drivers</script>

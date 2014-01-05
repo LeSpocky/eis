@@ -1,6 +1,6 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# /var/install/bin/lcd-cycle-layouts.sh - Cycle through all configured layouts
+# /var/install/bin/cui-lcd4linux-cycle-layouts.sh - Cycle through all configured layouts
 #
 # Creation:     2010-01-09 Y. Schumann
 #
@@ -12,7 +12,7 @@
 # (at your option) any later version.
 # ----------------------------------------------------------------------------
 
-exec 2> /tmp/lcd-cycle-layouts-trace$$.log
+exec 2> /tmp/cui-lcd4linux-cycle-layouts-trace$$.log
 set -x
 
 # include libs

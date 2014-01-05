@@ -501,12 +501,12 @@ M50530 kompatible Displays
    Token 'x*' (wobei der Stern durch 1 bis 9 ersetzt werden muss)
    angezeigt werden.
 
-hd.sh
+cui-lcd4linux-hd.sh
 
-   Im Verzeichnis /usr/local/bin befindet sich ein Skript hd.sh, welches
-   die Ausgabe von df geeignet auswertet und aufbereitet. Das Skript
+   Im Verzeichnis /usr/local/bin befindet sich ein Skript cui-lcd4linux-hd.sh,
+   welches die Ausgabe von df geeignet auswertet und aufbereitet. Das Skript
    erwartet zwei Parameter:
-    1. Die Partition - z.B. hda1
+    1. Die Partition - z. B. hda1
     2. Die Info, die ausgegeben werden soll. Moegliche Werte sind:
           + f: freier Speicher
           + u: belegter Speicher

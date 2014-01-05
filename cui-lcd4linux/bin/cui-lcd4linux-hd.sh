@@ -1,7 +1,7 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# /usr/local/bin/hd.sh - Helper script to show some information for
-#                        requested partition.
+# /usr/local/bin/cui-lcd4linux-hd.sh - Helper script to show some information
+#                                      for requested partition.
 #
 # Creation:    2005-01-28 nico
 #
