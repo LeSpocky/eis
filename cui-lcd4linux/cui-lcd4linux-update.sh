@@ -279,35 +279,8 @@ EOFG
     printgpl -check_exp ${packageName} '2010-08-18' 'Y. Schumann' >/etc/check.d/${packageName}.exp
     cat >> /etc/check.d/${packageName}.exp <<EOFG
 
-LCDDRIVER                  = 'Crystalfontz|Curses|HD44780|MatrixOrbital|MilfordInstruments|M50530|Cwlinux|T6963|WincorNixdorf|LCD2USB|serdisplib'
-                           : 'not a valid lcd driver'
-
-LCDMODELCRYSTALFONTZ       = '626|631|632|633|634|636'
-                           : 'not a valid Crystalfontz display'
-
-LCDMODELHD44780            = 'generic|Noritake|Soekris|HD66712|LCM-162'
-                           : 'not a valid HD44780 model'
-
-LCDMODELMATRIXORBITAL      = 'LCD0821|LCD2021|LCD1641|LCD2041|LCD4021|LCD4041|LK202-25|LK204-25|LK404-55|VFD2021|VFD2041|VFD4021|VK202-25|VK204-25|GLC12232|GLC24064|GLK24064-25|GLK12232-25|LK404-AT|VFD1621|LK402-12|LK162-12|LK204-25PC|LK202-24-USB|LK204-24-USB'
-                           : 'not a valid MatrixOrbital model'
-
-LCDMODELMILFORDINSTRUMENTS = 'MI216|MI220|MI240|MI420'
-                           : 'not a valid MilfordInstruments model'
-
-LCDMODELCWLINUX            = 'CW1602|CW12232'
-                           : 'not a valid Cwlinux model'
-
-LCDMODELWINCORNIXDORF      = 'BA63|BA66'
-                           : 'not a valid WincorNixdorf model'
-
-LCDMODELSERDISPLIB         = 'OPTREX323|PCD8544|LPH7366|LPH7690|NOKIA7110|ERICSSONT2X|LSU7S1011A|T6963|TLX1391|SED133X|NEC21A|LPH7508|HP12542R|N3510I|ERICSSONR520|KS0108|CTINCLUD'
-                           : 'not a valid serdisplib model'
-
-LCDMODEL          = '(RE:LCDMODELCRYSTALFONTZ)|(RE:LCDMODELHD44780)|(RE:LCDMODELMATRIXORBITAL)|(RE:LCDMODELMILFORDINSTRUMENTS)|(RE:LCDMODELCWLINUX)|(RE:LCDMODELWINCORNIXDORF)|(RE:LCDMODELSERDISPLIB)'
-                  : 'Not a valid lcd model'
-
-LCD_DRIVER_CUI    = 'Crystalfontz:(RE:LCDMODELCRYSTALFONTZ)|Curses|HD44780:(RE:LCDMODELHD44780)|MatrixOrbital:(RE:LCDMODELMATRIXORBITAL)|MilfordInstruments:(RE:LCDMODELMILFORDINSTRUMENTS)|M50530|Cwlinux:(RE:LCDMODELCWLINUX)|T6963|WincorNixdorf:(RE:LCDMODELWINCORNIXDORF)|LCD2USB|serdisplib:(RE:LCDMODELSERDISPLIB)'
-                  : 'Not a valid lcd model and type selection'
+LCD_DRIVER_CUI    = '(RE:NOTEMPTY)'
+                  : 'You must choose one of the lcd drivers (and separate the display model by : if available)'
 
 LCD_CONTRAST_CUI  = '(RE:NUMERIC)'
                   : 'Not a numeric value'

@@ -20,19 +20,101 @@
 # ----------------------------------------------------------------------------
 # All known selections and subselections
 # ----------------------------------------------------------------------------
-drivers='Crystalfontz Curses HD44780 MatrixOrbital MilfordInstruments M50530 Cwlinux T6963 WincorNixdorf LCD2USB serdisplib'
+amountOfEntries=46
 
-driversCrystalfontz='626 631 632 633 634 636'
-driversCurses=''
-driversHD44780='generic Noritake Soekris HD66712 LCM-162'
-driversMatrixOrbitel='LCD0821 LCD2021 LCD1641 LCD2041 LCD4021 LCD4041 LK202-25 LK204-25 LK404-55 VFD2021 VFD2041 VFD4021 VK202-25 VK204-25 GLC12232 GLC24064 GLK24064-25 GLK12232-25 LK404-AT VFD1621 LK402-12 LK162-12 LK204-25PC LK202-24-USB LK204-24-USB'
-driversMilfordInstruments='MI216 MI220 MI240 MI420'
-driversM50530=''
-driversCwlinux='CW1602 CW12232'
-driversT6963=''
-driversWincorNixdorf='BA63 BA66'
-driversLCD2USB=''
-driversserdisplib='OPTREX323 PCD8544 LPH7366 LPH7690 NOKIA7110 ERICSSONT2X LSU7S1011A T6963 TLX1391 SED133X NEC21A LPH7508 HP12542R N3510I ERICSSONR520 KS0108 CTINCLUD'
+driverName[0]='ASTUSB'
+driverName[1]='Beckmann+Egle'
+driverName[2]='BWCT'
+driverName[3]='Crystalfontz'
+driverName[4]='Curses'
+driverName[5]='Cwlinux'
+driverName[6]='D4D'
+driverName[7]='DPF'
+driverName[8]='EA232graphic'
+driverName[9]='EFN'
+driverName[10]='FutabaVFD'
+driverName[11]='FW8888'
+driverName[12]='G-15'
+driverName[13]='GLCD2USB'
+driverName[14]='HD44780'
+driverName[15]='Image'
+driverName[16]='IRLCD'
+driverName[17]='LCD2USB'
+driverName[18]='LCDTerm'
+driverName[19]='LEDMatrix'
+driverName[20]='LPH7508'
+driverName[21]='LW_ABP'
+driverName[22]='M50530'
+driverName[23]='MatrixOrbital'
+driverName[24]='MatrixOrbitalGX'
+driverName[25]='MDM166A'
+driverName[26]='MilfordInstruments'
+driverName[27]='Newhaven'
+driverName[28]='Noritake'
+driverName[29]='NULL'
+driverName[30]='Pertelian'
+driverName[31]='PHAnderson'
+driverName[32]='PICGraphic'
+driverName[33]='picoLCD'
+driverName[34]='picoLCDGraphic'
+driverName[35]='RouterBoard'
+driverName[36]='Sample'
+driverName[37]='SamsungSPF'
+driverName[38]='ShuttleVFD'
+driverName[39]='SimpleLCD'
+driverName[40]='T6963'
+driverName[41]='TeakLCM'
+driverName[42]='TREFON'
+driverName[43]='USBHUB'
+driverName[44]='USBLCD'
+driverName[45]='WincorNixdorf'
+
+drivers[0]=''
+drivers[1]='MT16x1 MT16x2 MT16x4 MT20x1 MT20x2 MT20x4 MT24x1 MT24x2 MT32x1 MT32x2 MT40x1 MT40x2 MT40x4 CT20x4'
+drivers[2]=''
+drivers[3]='626 631 632 633 634 635 636'
+drivers[4]=''
+drivers[5]='CW1602 CW12232 CW12832'
+drivers[6]=''
+drivers[7]=''
+drivers[8]='GE120-5NV24 GE128-6N3V24 GE128-6N9V24 KIT160-6 KIT160-7 KIT240-6 KIT240-7 KIT320-8 GE128-7KV24 GE240-6KV24 GE240-6KCV24 GE240-7KV24 GE240-7KLWV24 GE240-6KLWV24 KIT120-5 KIT129-6'
+drivers[9]=''
+drivers[10]=''
+drivers[11]=''
+drivers[12]=''
+drivers[13]=''
+drivers[14]=''
+drivers[15]='PPM PNG'
+drivers[16]=''
+drivers[17]=''
+drivers[18]=''
+drivers[19]=''
+drivers[20]=''
+drivers[21]=''
+drivers[22]=''
+drivers[23]='LCD0821 LCD2021 LCD1641 LCD2041 LCD4021 LCD4041 LK202-25 LK204-25 LK404-55 VFD2021 VFD2041 VFD4021 VK202-25 VK204-25 GLC12232 GLC24064 GLK24064-25 GLK12232-25 LK404-AT VFD1621 LK402-12 LK162-12 LK204-25PC LK202-24-USB LK204-24-USB VK204-24-USB DE-LD011 DE-LD021 DE-LD023'
+drivers[24]=''
+drivers[25]=''
+drivers[26]='MI216 MI220 MI240 MI420'
+drivers[27]=''
+drivers[28]='GU311 GU311_Graphic'
+drivers[29]=''
+drivers[30]=''
+drivers[31]=''
+drivers[32]=''
+drivers[33]=''
+drivers[34]=''
+drivers[35]='HD44780 HD66712'
+drivers[36]=''
+drivers[37]=''
+drivers[38]=''
+drivers[39]=''
+drivers[40]=''
+drivers[41]=''
+drivers[42]=''
+drivers[43]=''
+drivers[44]=''
+drivers[45]='BA63 BA66'
 
 
 
@@ -53,95 +135,27 @@ IDC_BUTCANCEL='100'
 #         $p2 --> dialog window handle
 #         $p3 --> control's window handle
 # ----------------------------------------------------------------------------
-function ok_button_clicked()
-{
+function ok_button_clicked() {
     local dlg="$p2"
     local ctrl="$p3"
     local index="3"
     local closeDialog=true
 
-    cui_window_getctrl $dlg $IDC_LISTBOX__DISPLAYTYPE
-    cui_listbox_getsel $p2
+    cui_window_getctrl ${dlg} ${IDC_LISTBOX__DISPLAYTYPE}
+    cui_listbox_getsel ${p2}
     index="$p2"
 
-
-    case "$index" in
-    0)
-        # Crystalfontz
-        value="Crystalfontz"
-        getChoosenModel "$driversCrystalfontz"
-        cui_window_close "$dlg" "$IDOK"
-        ;;
-    1)
-        # Curses
-        value="Curses"
-        getChoosenModel "$driversCurses"
-        cui_window_close "$dlg" "$IDOK"
-        ;;
-    2)
-        # HD44780
-        value="HD44780"
-        getChoosenModel "$driversHD44780"
-        cui_window_close "$dlg" "$IDOK"
-        ;;
-    3)
-        # MatrixOrbital
-        value="MatrixOrbital"
-        getChoosenModel "$driversMatrixOrbitel"
-        cui_window_close "$dlg" "$IDOK"
-        ;;
-    4)
-        # MilfordInstruments
-        value="MilfordInstruments"
-        getChoosenModel "$driversMilfordInstruments"
-        cui_window_close "$dlg" "$IDOK"
-        ;;
-    5)
-        # M50530
-        value="M50530"
-        getChoosenModel "$driversM50530"
-        cui_window_close "$dlg" "$IDOK"
-        ;;
-    6)
-        # Cwlinux
-        value="Cwlinux"
-        getChoosenModel "$driversCwlinux"
-        cui_window_close "$dlg" "$IDOK"
-        ;;
-    7)
-        # T6963
-        value="T6963"
-        getChoosenModel "$driversT6963"
-        cui_window_close "$dlg" "$IDOK"
-        ;;
-    8)
-        # WincorNixdorf
-        value="WincorNixdorf"
-        getChoosenModel "$driversWincorNixdorf"
-        cui_window_close "$dlg" "$IDOK"
-        ;;
-    9)
-        # LCD2USB
-        value="LCD2USB"
-        getChoosenModel "$driversLCD2USB"
-        cui_window_close "$dlg" "$IDOK"
-        ;;
-    10)
-        # serdisplib
-        value="serdisplib"
-        getChoosenModel "$driversserdisplib"
-        cui_window_close "$dlg" "$IDOK"
-        ;;
-    *)
+    if [ ${index} -lt 0 -a ${index} -gt ${amountOfEntries} ] ; then
         closeDialog=false
-        ;;
-    esac
+    else
+        value="${driverName[index]}"
+        getChoosenModel "${drivers[index]}"
+        cui_window_close "$dlg" "$IDOK"
+    fi
 
+    echo ${value} >> /tmp/outcui.log
 
-    echo $value >> /tmp/outcui.log
-
-    if [ closeDialog == true ]
-    then
+    if [ closeDialog == true ] ; then
         cui_window_close "$dlg" "$IDOK"
     fi
     cui_return 1
@@ -153,17 +167,14 @@ function ok_button_clicked()
 # Update the return value $value with the coosen entry out of the list of
 # selectable models given with $1.
 # ----------------------------------------------------------------------------
-function getChoosenModel ()
-{
-    cui_window_getctrl $dlg $IDC_LISTBOX__DISPLAYMODEL
-    cui_listbox_getsel $p2
+function getChoosenModel () {
+    cui_window_getctrl ${dlg} ${IDC_LISTBOX__DISPLAYMODEL}
+    cui_listbox_getsel ${p2}
     index="$p2"
 
     counter=0
-    for currentModel in $1
-    do
-        if [ $index -eq $counter ]
-        then
+    for currentModel in $1 ; do
+        if [ ${index} -eq ${counter} ] ; then
             value="${value}:${currentModel}"
             return
         fi
@@ -178,8 +189,7 @@ function getChoosenModel ()
 #         $p2 --> dialog window handle
 #         $p3 --> control's window handle
 # ----------------------------------------------------------------------------
-function cancel_button_clicked()
-{
+function cancel_button_clicked() {
     # -----------------------------
     # Just for sure: use the backup
     value=${valueBackup}
@@ -196,8 +206,7 @@ function cancel_button_clicked()
 #         $p2 --> dialog window handle
 #         $p3 --> control's window handle
 # ----------------------------------------------------------------------------
-function listbox_changed()
-{
+function listbox_changed() {
     local dlg="$p2"
     local list="$p3"
     local index="0"
@@ -205,41 +214,7 @@ function listbox_changed()
     cui_listbox_getsel "$list"
     index="$p2"
 
-    case "$index" in
-    0)
-        updateListboxContent $dlg $IDC_LISTBOX__DISPLAYMODEL "$driversCrystalfontz"
-        ;;
-    1)
-        updateListboxContent $dlg $IDC_LISTBOX__DISPLAYMODEL "$driversCurses"
-        ;;
-    2)
-        updateListboxContent $dlg $IDC_LISTBOX__DISPLAYMODEL "$driversHD44780"
-        ;;
-    3)
-        updateListboxContent $dlg $IDC_LISTBOX__DISPLAYMODEL "$driversMatrixOrbitel"
-        ;;
-    4)
-        updateListboxContent $dlg $IDC_LISTBOX__DISPLAYMODEL "$driversMilfordInstruments"
-        ;;
-    5)
-        updateListboxContent $dlg $IDC_LISTBOX__DISPLAYMODEL "$driversM50530"
-        ;;
-    6)
-        updateListboxContent $dlg $IDC_LISTBOX__DISPLAYMODEL "$driversCwlinux"
-        ;;
-    7)
-        updateListboxContent $dlg $IDC_LISTBOX__DISPLAYMODEL "$driversT6963"
-        ;;
-    8)
-        updateListboxContent $dlg $IDC_LISTBOX__DISPLAYMODEL "$driversWincorNixdorf"
-        ;;
-    9)
-        updateListboxContent $dlg $IDC_LISTBOX__DISPLAYMODEL "$driversLCD2USB"
-        ;;
-    10)
-        updateListboxContent $dlg $IDC_LISTBOX__DISPLAYMODEL "$driversserdisplib"
-        ;;
-    esac
+    updateListboxContent ${dlg} ${IDC_LISTBOX__DISPLAYMODEL} "${drivers[index]}"
 
     cui_return 1
 }
@@ -250,18 +225,16 @@ function listbox_changed()
 # Clear the listbox given with param $2 on control element $1 and fill it with
 # elements given on the list $3.
 # ----------------------------------------------------------------------------
-function updateListboxContent ()
-{
+function updateListboxContent () {
     local dialogElement=$1
     local controlElement=$2
     local listboxContentToSet=$3
 
-      cui_window_getctrl $dlg $controlElement
-      ctrl="$p2"
-      cui_listbox_clear "$ctrl"
+    cui_window_getctrl ${dlg} ${controlElement}
+    ctrl="$p2"
+    cui_listbox_clear "$ctrl"
 
-    for currentListboxElement in $listboxContentToSet
-    do
+    for currentListboxElement in ${listboxContentToSet} ; do
         cui_listbox_add   "$ctrl" "$currentListboxElement"
     done
 }
@@ -272,14 +245,12 @@ function updateListboxContent ()
 # dlg_setup_hook
 #         $p2 --> dialog window handle
 # ----------------------------------------------------------------------------
-function dlg_setup_hook()
-{
+function dlg_setup_hook() {
     valueBackup=${value}
     local dlg="$p2"
     local ctrl
 
-    if [ -z "${value}" ]
-    then
+    if [ -z "${value}" ] ; then
         local displayType=''
         local displayModel=''
     else
@@ -287,50 +258,44 @@ function dlg_setup_hook()
         local displayModel=`echo ${value} | cut -d ":" -f 2`
     fi
 
-    if cui_label_new "$dlg" "Type:"   1 1 13 1 $IDC_LABEL__DISPLAYTYPE $CWS_NONE $CWS_NONE
-    then
+    if cui_label_new "$dlg" "Type:"   1 1 13 1 ${IDC_LABEL__DISPLAYTYPE} ${CWS_NONE} ${CWS_NONE} ; then
         cui_window_create     "$p2"
     fi
 
-    if cui_listbox_new "$dlg" "" 1 3 21 5 $IDC_LISTBOX__DISPLAYTYPE $CWS_NONE $CWS_BORDER
-    then
+    if cui_listbox_new "$dlg" "" 1 3 21 5 ${IDC_LISTBOX__DISPLAYTYPE} ${CWS_NONE} ${CWS_BORDER} ; then
         ctrl="$p2"
         cui_listbox_callback  "$ctrl" "$LISTBOX_CHANGED" "$dlg" listbox_changed
         cui_window_setcolors  "$ctrl" "MENU"
         cui_window_create     "$ctrl"
-        for currentDisplayType in $drivers
-        do
-            cui_listbox_add   "$ctrl" "$currentDisplayType"
+        idx=0
+        while [ ${idx} -lt ${amountOfEntries} ] ; do
+            cui_listbox_add   "$ctrl" "${driverName[idx]}"
+            idx=$((idx+1))
         done
         cui_listbox_select    "$ctrl" "$displayType"
     fi
 
-    if cui_label_new "$dlg" "Model:"   24 1 13 1 $IDC_LABEL__DISPLAYMODEL $CWS_NONE $CWS_NONE
-    then
+    if cui_label_new "$dlg" "Model:"   24 1 13 1 ${IDC_LABEL__DISPLAYMODEL} ${CWS_NONE} ${CWS_NONE} ; then
         cui_window_create     "$p2"
     fi
 
-    if cui_listbox_new "$dlg" "" 24 3 21 5 $IDC_LISTBOX__DISPLAYMODEL $CWS_NONE $CWS_BORDER
-    then
+    if cui_listbox_new "$dlg" "" 24 3 21 5 ${IDC_LISTBOX__DISPLAYMODEL} ${CWS_NONE} ${CWS_BORDER} ; then
         ctrl="$p2"
         cui_window_setcolors  "$ctrl" "MENU"
         cui_window_create     "$ctrl"
-        for currentDisplayModel in $driversCrystalfontz
-        do
+        for currentDisplayModel in ${driversCrystalfontz} ; do
             cui_listbox_add   "$ctrl" "$currentDisplayModel"
         done
         cui_listbox_select    "$ctrl" "$displayModel"
     fi
 
-    if cui_button_new "$dlg" "&OK" 24 9 10 1 $IDC_BUTOK $CWS_DEFOK $CWS_NONE
-    then
+    if cui_button_new "$dlg" "&OK" 24 9 10 1 ${IDC_BUTOK} ${CWS_DEFOK} ${CWS_NONE} ; then
         ctrl="$p2"
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" ok_button_clicked
         cui_window_create     "$ctrl"
     fi
 
-    if cui_button_new "$dlg" "&Cancel" 35 9 10 1 $IDC_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE
-    then
+    if cui_button_new "$dlg" "&Cancel" 35 9 10 1 ${IDC_BUTCANCEL} ${CWS_DEFCANCEL} ${CWS_NONE} ; then
         ctrl="$p2"
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" cancel_button_clicked
         cui_window_create     "$ctrl"
@@ -347,14 +312,11 @@ function dlg_setup_hook()
 #         $p2 --> main window handle
 #         $p3 --> name of config variable
 # ----------------------------------------------------------------------------
-
-function exec_dialog()
-{
+function exec_dialog() {
     local win="$p2"
     local res="$IDCANCEL"
 
-    if cui_window_new "$p2" 0 0 48 13 $[$CWS_POPUP + $CWS_CENTERED + $CWS_BORDER]
-    then
+    if cui_window_new "$p2" 0 0 48 13 $[$CWS_POPUP + $CWS_CENTERED + $CWS_BORDER] ; then
         local dlgwin="$p2"
         cui_window_setcolors      "$dlgwin" "DIALOG"
         cui_window_settext        "$dlgwin" "Driver and display type"
@@ -374,9 +336,8 @@ function exec_dialog()
 # ----------------------------------------------------------------------------
 # init() routine (makes it executable under shellrun.cui too)
 # ----------------------------------------------------------------------------
-function init()
-{
-    exec_dialog $p2
+function init() {
+    exec_dialog ${p2}
 }
 
 
