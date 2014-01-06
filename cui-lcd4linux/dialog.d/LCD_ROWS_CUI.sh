@@ -26,7 +26,7 @@ exec_dialog()
 {
     win="$p2"
 
-    sellist="1,2,4"
+    sellist="1,2,4,5,6,7,8"
 
     ece_select_list_dlg "$win" "Amount of lines" "$sellist"
 }

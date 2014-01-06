@@ -36,8 +36,8 @@ exec_dialog()
 . /etc/config.d/lcd
 
 # Setup list of possible serial speed
-LCD_DRIVER=`echo $LCD_TYPE | cut -d ":" -f 1`
-case $LCD_DRIVER in
+LCD_DRIVER=`echo ${LCD_TYPE} | cut -d ":" -f 1`
+case ${LCD_DRIVER} in
 	# Cwlinux:            1200, 2400, 9600, 19200
     # MatrixOrbital:      1200, 2400, 9600, 19200
 	'Cwlinux'|'MatrixOrbital' )

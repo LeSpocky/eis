@@ -1,6 +1,6 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# /var/install/bin/lcd-helpers.sh
+# /var/install/bin/cui-lcd4linux-helpers.sh
 #
 # Creation:     2009-09-19 starwarsfan
 #
@@ -12,7 +12,7 @@
 # (at your option) any later version.
 # ----------------------------------------------------------------------------
 
-#exec 2> /tmp/lcd-helpers-trace$$.log
+#exec 2> /tmp/cui-lcd4linux-helpers-trace$$.log
 #set -x
 
 COLOR_RED='\033[1;31m'

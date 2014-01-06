@@ -37,14 +37,14 @@ exec_dialog()
 
 # Setup list of possible backlight value settings
 LCD_DRIVER=`echo $LCD_TYPE | cut -d ":" -f 1`
-case $LCD_DRIVER in
+case ${LCD_DRIVER} in
 	'Cwlinux' )
 	    sellist=`seq -s , 8 -1 0`
 		;;
     'Crystalfontz' )
 	    sellist=`seq -s , 100 -1 0`
     	;;
-    'LCD2USB' )
+    'LCD2USB'|'GLCD2USB' )
     	sellist=`seq -s , 255 -1 0`
     	;;
     * )

@@ -36,15 +36,15 @@ exec_dialog()
 . /etc/config.d/lcd
 
 # Setup list of possible contrast value settings
-LCD_DRIVER=`echo $LCD_TYPE | cut -d ":" -f 1`
-case $LCD_DRIVER in
+LCD_DRIVER=`echo ${LCD_TYPE} | cut -d ":" -f 1`
+case ${LCD_DRIVER} in
 	'MatrixOrbital' )
 	    sellist=`seq -s , 0 255`
 		;;
     'Crystalfontz' )
 	    sellist=`seq -s , 100 -1 0`
     	;;
-    'LCD2USB' )
+    'LCD2USB'|'GLCD2USB' )
     	sellist=`seq -s , 255 -1 0`
     	;;
     * )
