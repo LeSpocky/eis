@@ -63,18 +63,6 @@ fi
 #============================================================================
 
 #----------------------------------------------------------------------------
-# check if handle is valid
-#----------------------------------------------------------------------------
-function p_valid_handle()
-{
-    if [ -n "$1" -a "$1" != "0" ]
-    then
-        return 0
-    fi
-    return 1
-}
-
-#----------------------------------------------------------------------------
 # check if is a valid list index
 #----------------------------------------------------------------------------
 function p_valid_index()
@@ -118,7 +106,7 @@ function load_data()
 
     # execute query and return result
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_listview_clear  "$ctrl"
 
@@ -137,7 +125,7 @@ function load_data()
                  ORDER BY email" && myres="$p2"
         fi
 
-        if p_valid_handle "$myres"
+        if cui_valid_handle "$myres"
         then
             my_result_status "$myres"
             if [ "$p2" == "$SQL_DATA_READY" ]
@@ -170,26 +158,26 @@ function resize_windows()
     if [ "$show_help" == "yes" ]
     then    
         cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
-        if p_valid_handle $ctrl
+        if cui_valid_handle $ctrl
         then
             cui_window_move  "$ctrl" "0" "0" "$w" "$p"
         fi
 
         cui_window_getctrl "$win" "$IDC_HELPTEXT" && ctrl="$p2"
-        if p_valid_handle $ctrl
+        if cui_valid_handle $ctrl
         then
             cui_window_move  "$ctrl" "0" "$p" "$w" "$[$h -$p]"
             cui_window_hide  "$ctrl" "0"
         fi
     else
         cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
-        if p_valid_handle $ctrl
+        if cui_valid_handle $ctrl
         then
             cui_window_move "$ctrl" "0" "0" "$w" "$h"
         fi
 
         cui_window_getctrl "$win" "$IDC_HELPTEXT" && ctrl="$p2"
-        if p_valid_handle $ctrl
+        if cui_valid_handle $ctrl
         then
             cui_window_move "$ctrl" "0" "$h" "$w" "2"
             cui_window_hide "$ctrl" "1"
@@ -198,7 +186,7 @@ function resize_windows()
             if [ "$p2" == "$ctrl" ]
             then
                 cui_window_getctrl "$win" "$IDC_LISTVIEW"
-                if p_valid_handle $p2
+                if cui_valid_handle $p2
                 then
                     cui_window_setfocus "$p2"
                 fi
@@ -298,13 +286,13 @@ function select_domain()
     local domain_ids
 
     cui_menu_new "$win" "Select smarthost domain" 0 0 50 11 1 "$[$CWS_CENTERED + $CWS_POPUP]" "$CWS_NONE" && menu="$p2"
-    if p_valid_handle $menu
+    if cui_valid_handle $menu
     then
         # execute query and return result
         my_query_sql "$myconn" \
             "SELECT name, id FROM view_domains_relay;" && myres="$p2"
 
-        if p_valid_handle "$myres"
+        if cui_valid_handle "$myres"
         then
             my_result_status "$myres"
             if [ "$p2" == "$SQL_DATA_READY" ]
@@ -366,7 +354,7 @@ function inputdlg_ok_clicked()
     local idx
 
     cui_window_getctrl "$win" "$IDC_INPUTDLG_EDVALUE" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         inputdlg_value="$p2"
@@ -406,21 +394,21 @@ function inputdlg_create_hook()
     fi
 
     cui_edit_new "$dlg" "" 17 1 25 8 255 "$IDC_INPUTDLG_EDVALUE" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl"
         cui_edit_settext      "$ctrl" "$inputdlg_value"
     fi
 
     cui_button_new "$dlg" "&OK" 11 3 10 1 $IDC_INPUTDLG_BUTOK $CWS_DEFOK $CWS_NONE  && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" inputdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
 
     cui_button_new "$dlg" "&Cancel" 22 3 10 1 $IDC_INPUTDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE  && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" inputdlg_cancel_clicked
         cui_window_create     "$ctrl"
@@ -446,42 +434,42 @@ function userdlg_ok_clicked()
     local idx
 
     cui_window_getctrl "$win" "$IDC_USERDLG_EDMAILAD" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         userdlg_email="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_USERDLG_EDLOGIN" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         userdlg_loginname="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_USERDLG_EDPASSWD1" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         userdlg_passwd1="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_USERDLG_EDPASSWD2" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         userdlg_passwd2="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_USERDLG_EDNOTE" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         userdlg_note="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_USERDLG_CHKACTIVE" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_checkbox_getcheck "$ctrl"  && userdlg_active="$p2"
     fi
@@ -572,56 +560,56 @@ function userdlg_create_hook()
     fi
 
     cui_edit_new "$dlg" "" 19 1 27 1 255 "$IDC_USERDLG_EDMAILAD" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl"
         cui_edit_settext      "$ctrl" "$userdlg_email"
     fi
 
     cui_edit_new "$dlg" "" 19 3 27 1 255 "$IDC_USERDLG_EDLOGIN" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl"
         cui_edit_settext      "$ctrl" "$userdlg_loginname"
     fi
 
     cui_edit_new "$dlg" "" 19 5 25 1 255 "$IDC_USERDLG_EDPASSWD1" "$EF_PASSWORD" "$CWS_NONE" && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl"
         cui_edit_settext      "$ctrl" "$userdlg_passwd1"
     fi
 
     cui_edit_new "$dlg" "" 19 7 25 1 255 "$IDC_USERDLG_EDPASSWD2" "$EF_PASSWORD" "$CWS_NONE" && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl"
         cui_edit_settext      "$ctrl" "$userdlg_passwd2"
     fi
 
     cui_edit_new "$dlg" "" 19 9 27 1 255 "$IDC_USERDLG_EDNOTE" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl"
         cui_edit_settext      "$ctrl" "$userdlg_note"
     fi
 
     cui_checkbox_new "$dlg" "Account is &active" 15 11 22 1 "$IDC_USERDLG_CHKACTIVE" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl"
         cui_checkbox_setcheck "$ctrl" "$userdlg_active"
     fi
 
     cui_button_new "$dlg" "&OK" 13 13 10 1 $IDC_USERDLG_BUTOK $CWS_DEFOK $CWS_NONE  && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" userdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
 
     cui_button_new "$dlg" "&Cancel" 24 13 10 1 $IDC_USERDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE  && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" userdlg_cancel_clicked
         cui_window_create     "$ctrl"
@@ -653,7 +641,7 @@ function users_createuser_dialog()
     userdlg_active="1"
 
     cui_window_new "$win" 0 0 50 17 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
-    if p_valid_handle $dlg
+    if cui_valid_handle $dlg
     then
         cui_window_setcolors "$dlg" "DIALOG"
         cui_window_settext   "$dlg" "Create entry"
@@ -704,7 +692,7 @@ function users_edituser_dialog()
     local entryname
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_listview_getsel "$ctrl" && idx="$p2"
 
@@ -725,7 +713,7 @@ function users_edituser_dialog()
             userdlg_passwd2="xxxxxxxxxxxxxxxx"
 
             cui_window_new "$win" 0 0 50 17 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
-            if p_valid_handle $dlg
+            if cui_valid_handle $dlg
             then
                 cui_window_setcolors "$dlg" "DIALOG"
                 cui_window_settext   "$dlg" "Edit User"
@@ -791,7 +779,7 @@ function users_deleteuser_dialog()
     local entryname
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_listview_getsel "$ctrl" && idx="$p2"
         if p_valid_index $idx
@@ -844,7 +832,7 @@ function listview_clicked_hook()
     local dlg
 
     cui_menu_new "$win" "Options" 0 0 25 14 1 "$[$CWS_CENTERED + $CWS_POPUP]" "$CWS_NONE" && menu="$p2"
-    if p_valid_handle $menu
+    if cui_valid_handle $menu
     then
         cui_menu_additem      "$menu" "Edit entry"        1
         cui_menu_additem      "$menu" "Delete entry"      2
@@ -893,7 +881,7 @@ function listview_clicked_hook()
             4)
                 cui_window_destroy  "$menu"
                 cui_window_new "$win" 0 0 46 7 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
-                if p_valid_handle $dlg
+                if cui_valid_handle $dlg
                 then
                     cui_window_setcolors "$dlg" "DIALOG"
                     cui_window_settext   "$dlg" "Search Filter"
@@ -972,7 +960,7 @@ function mainwin_create_hook()
     local ctrl
 
     cui_listview_new "$win" "" 0 0 10 10 5 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_listview_callback   "$ctrl" "$LISTBOX_CLICKED" "$win" "listview_clicked_hook"
         cui_listview_callback   "$ctrl" "$LISTBOX_POSTKEY" "$win" "listview_postkey_hook"
@@ -984,7 +972,7 @@ function mainwin_create_hook()
         cui_window_create       "$ctrl"
     fi
     cui_textview_new "$win" "Help" 0 0 10 10 "$IDC_HELPTEXT" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_window_setcolors  "$ctrl" "HELP"
         cui_window_create     "$ctrl"
@@ -1002,7 +990,7 @@ function mainwin_init_hook()
     local ctrl
 
     cui_window_getctrl "$win" "$IDC_HELPTEXT" && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_textview_add "$ctrl" "Use function keys to edit (F4), create (F7) or delete (F8) relay users." "0"
         cui_textview_add "$ctrl" " E-Mail: user@domain.tld  or  mail.domain.tld for all sender" "0"
@@ -1015,7 +1003,7 @@ function mainwin_init_hook()
         "$vmail_sql_pass" \
         "$vmail_sql_db_name" && myconn="$p2"
 
-    if p_valid_handle $myconn
+    if cui_valid_handle $myconn
     then
         my_server_isconnected "$myconn"
         if p_sql_success "$p2"
@@ -1077,7 +1065,7 @@ function mainwin_key_hook()
         ;;
     "$KEY_F3")
         cui_window_new "$win" 0 0 46 7 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
-        if p_valid_handle $dlg
+        if cui_valid_handle $dlg
         then
             cui_window_setcolors "$dlg" "DIALOG"
             cui_window_settext   "$dlg" "Search Filter"
@@ -1168,7 +1156,7 @@ function init()
 
     # setup main window
     cui_window_new "$win" 0 0 0 0 $[$CWS_POPUP + $CWS_CAPTION + $CWS_STATUSBAR + $CWS_MAXIMIZED] && mainwin="$p2"
-    if p_valid_handle $mainwin
+    if cui_valid_handle $mainwin
     then
         cui_window_setcolors      "$mainwin" "DESKTOP"
         cui_window_settext        "$mainwin" "Smarthost user administration:"

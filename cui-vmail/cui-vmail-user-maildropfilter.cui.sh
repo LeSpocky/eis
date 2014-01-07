@@ -71,18 +71,6 @@ fi
 #============================================================================
 
 #----------------------------------------------------------------------------
-# check if handle is valid
-#----------------------------------------------------------------------------
-function p_valid_handle()
-{
-    if [ -n "$1" -a "$1" != "0" ]
-    then
-        return 0
-    fi
-    return 1
-}
-
-#----------------------------------------------------------------------------
 # check if is a valid list index
 #----------------------------------------------------------------------------
 function p_valid_index()
@@ -117,7 +105,7 @@ function load_data()
 
     # execute query and return result
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_listview_clear  "$ctrl"
 
@@ -140,7 +128,7 @@ function load_data()
                  ORDER BY b.ownerid, b.position, b.id" && myres="$p2"
         fi
 
-        if p_valid_handle "$myres"
+        if cui_valid_handle "$myres"
         then
             my_result_status "$myres"
             if [ "$p2" == "$SQL_DATA_READY" ]
@@ -175,26 +163,26 @@ function resize_windows()
     if [ "$show_help" == "yes" ]
     then
         cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
-        if p_valid_handle $ctrl
+        if cui_valid_handle $ctrl
         then
             cui_window_move  "$ctrl" "0" "0" "$w" "$p"
         fi
 
         cui_window_getctrl "$win" "$IDC_HELPTEXT" && ctrl="$p2"
-        if p_valid_handle $ctrl
+        if cui_valid_handle $ctrl
         then
             cui_window_move  "$ctrl" "0" "$p" "$w" "$[$h -$p]"
             cui_window_hide  "$ctrl" "0"
         fi
     else
         cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
-        if p_valid_handle $ctrl
+        if cui_valid_handle $ctrl
         then
             cui_window_move "$ctrl" "0" "0" "$w" "$h"
         fi
 
         cui_window_getctrl "$win" "$IDC_HELPTEXT" && ctrl="$p2"
-        if p_valid_handle $ctrl
+        if cui_valid_handle $ctrl
         then
             cui_window_move "$ctrl" "0" "$h" "$w" "2"
             cui_window_hide "$ctrl" "1"
@@ -203,7 +191,7 @@ function resize_windows()
             if [ "$p2" == "$ctrl" ]
             then
                 cui_window_getctrl "$win" "$IDC_LISTVIEW"
-                if p_valid_handle $p2
+                if cui_valid_handle $p2
                 then
                     cui_window_setfocus "$p2"
                 fi
@@ -230,7 +218,7 @@ function inputdlg_ok_clicked()
     local idx
 
     cui_window_getctrl "$win" "$IDC_INPUTDLG_EDVALUE" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         inputdlg_value="$p2"
@@ -270,21 +258,21 @@ function inputdlg_create_hook()
     fi
 
     cui_edit_new "$dlg" "" 17 1 25 8 255 "$IDC_INPUTDLG_EDVALUE" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$inputdlg_value"
     fi
 
     cui_button_new "$dlg" "&OK" 11 3 10 1 $IDC_INPUTDLG_BUTOK $CWS_DEFOK $CWS_NONE  && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" inputdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
 
     cui_button_new "$dlg" "&Cancel" 22 3 10 1 $IDC_INPUTDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE  && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" inputdlg_cancel_clicked
         cui_window_create     "$ctrl"
@@ -311,91 +299,91 @@ function maildropdlg_ok_clicked()
     local myres
 
     cui_window_getctrl "$win" "$IDC_MAILDROPDLG_EDOWNER" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         maildropdlg_owner="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_MAILDROPDLG_CBFILTER" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_combobox_getsel "$ctrl"        && idx="$p2"
         cui_combobox_get    "$ctrl" "$idx" && maildropdlg_filter="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_MAILDROPDLG_EDHEADER" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         maildropdlg_header="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_MAILDROPDLG_EDVALUE" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         maildropdlg_value="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_MAILDROPDLG_EDFOLDER" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         maildropdlg_folder="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_MAILDROPDLG_CHKFLAG1" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_checkbox_getcheck "$ctrl" && maildropdlg_flag1="$p2" 
         [ "$maildropdlg_flag1" -gt 0 ] && maildropdlg_flags=`expr $maildropdlg_flags + 1`
     fi
 
     cui_window_getctrl "$win" "$IDC_MAILDROPDLG_CHKFLAG2" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_checkbox_getcheck "$ctrl" && maildropdlg_flag2="$p2" 
         [ "$maildropdlg_flag2" -gt 0 ] && maildropdlg_flags=`expr $maildropdlg_flags + 2`
     fi
 
     cui_window_getctrl "$win" "$IDC_MAILDROPDLG_CHKFLAG4" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_checkbox_getcheck "$ctrl" && maildropdlg_flag4="$p2" 
         [ "$maildropdlg_flag4" -gt 0 ] && maildropdlg_flags=`expr $maildropdlg_flags + 4`
     fi
 
     cui_window_getctrl "$win" "$IDC_MAILDROPDLG_CHKFLAG8" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
          cui_checkbox_getcheck "$ctrl" && maildropdlg_flag8="$p2" 
         [ "$maildropdlg_flag8" -gt 0 ] && maildropdlg_flags=`expr $maildropdlg_flags + 8`
     fi
 
     cui_window_getctrl "$win" "$IDC_MAILDROPDLG_EDPOSITION" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         maildropdlg_position="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_MAILDROPDLG_EDSTART" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         maildropdlg_datestart="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_MAILDROPDLG_EDEND" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         maildropdlg_dateend="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_MAILDROPDLG_CHKACTIVE" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_checkbox_getcheck "$ctrl"      && maildropdlg_active="$p2"
     fi
@@ -428,7 +416,7 @@ function maildropdlg_ok_clicked()
     my_query_sql "$myconn" \
        "SELECT id FROM view_users \
         WHERE email='${maildropdlg_owner}'" && myres="$p2"
-    if p_valid_handle "$myres"
+    if cui_valid_handle "$myres"
     then
         my_result_status "$myres"
         if [ "$p2" == "$SQL_DATA_READY" ]
@@ -534,14 +522,14 @@ function maildropdlg_create_hook()
     fi
 
     cui_edit_new "$dlg" "" 12 1 25 1 255 $IDC_MAILDROPDLG_EDOWNER $CWS_NONE $CWS_NONE && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$maildropdlg_owner"
     fi
 
     cui_combobox_new "$dlg" 12 3 25 8 "$IDC_MAILDROPDLG_CBFILTER" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_combobox_add      "$ctrl" "anymessage"
@@ -558,88 +546,88 @@ function maildropdlg_create_hook()
     fi
 
     cui_edit_new "$dlg" "" 12 4 25 1 255 $IDC_MAILDROPDLG_EDHEADER $CWS_NONE $CWS_NONE && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$maildropdlg_header"
     fi
 
     cui_edit_new "$dlg" "" 12 5 25 1 255 $IDC_MAILDROPDLG_EDVALUE $CWS_NONE $CWS_NONE && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$maildropdlg_value"
     fi
 
     cui_edit_new "$dlg" "" 12 6 25 1 255 $IDC_MAILDROPDLG_EDFOLDER $CWS_NONE $CWS_NONE && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$maildropdlg_folder"
     fi
 
     cui_checkbox_new "$dlg" "Invert filter" 12 7 30 1 $IDC_MAILDROPDLG_CHKFLAG1 $CWS_NONE $CWS_NONE && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_checkbox_setcheck "$ctrl" "$maildropdlg_flag1"
     fi
     cui_checkbox_new "$dlg" "Applied to body" 12 8 30 1 $IDC_MAILDROPDLG_CHKFLAG2 $CWS_NONE $CWS_NONE && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_checkbox_setcheck "$ctrl" "$maildropdlg_flag2"
     fi
     cui_checkbox_new "$dlg" "Continue filtering" 12 9 30 1 $IDC_MAILDROPDLG_CHKFLAG4 $CWS_NONE $CWS_NONE && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_checkbox_setcheck "$ctrl" "$maildropdlg_flag4"
     fi
     cui_checkbox_new "$dlg" "Plain string (not regex)" 12 10 30 1 $IDC_MAILDROPDLG_CHKFLAG8 $CWS_NONE $CWS_NONE && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_checkbox_setcheck "$ctrl" "$maildropdlg_flag8"
     fi
 
     cui_edit_new "$dlg" "" 12 11 2 1 255 $IDC_MAILDROPDLG_EDPOSITION $CWS_NONE $CWS_NONE && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$maildropdlg_position"
     fi
 
     cui_edit_new "$dlg" "" 12 13 10 1 255 $IDC_MAILDROPDLG_EDSTART $CWS_NONE $CWS_NONE && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$maildropdlg_datestart"
     fi
 
     cui_edit_new "$dlg" "" 27 13 10 1 255 $IDC_MAILDROPDLG_EDEND $CWS_NONE $CWS_NONE && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$maildropdlg_dateend"
     fi
 
     cui_checkbox_new "$dlg" "Entry is &active" 12 15 20 1 $IDC_MAILDROPDLG_CHKACTIVE $CWS_NONE $CWS_NONE && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_checkbox_setcheck "$ctrl" "$maildropdlg_active"
     fi
 
     cui_button_new "$dlg" "&OK" 9 17 10 1 $IDC_MAILDROPDLG_BUTOK $CWS_DEFOK $CWS_NONE  && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" maildropdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
 
     cui_button_new "$dlg" "&Cancel" 20 17 10 1 $IDC_MAILDROPDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE  && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" maildropdlg_cancel_clicked
         cui_window_create     "$ctrl"
@@ -679,7 +667,7 @@ function maildrops_createmaildrop_dialog()
     maildropdlg_active="1"
 
     cui_window_new "$win" 0 0 46 20 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
-    if p_valid_handle $dlg
+    if cui_valid_handle $dlg
     then
         cui_window_setcolors "$dlg" "DIALOG"
         cui_window_settext   "$dlg" "Create Filter"
@@ -713,7 +701,7 @@ function maildrops_createmaildrop_dialog()
                         AND fieldname='${maildropdlg_header}' \
                         AND fieldvalue='${maildropdlg_value}' \
                         AND tofolder='${maildropdlg_folder}';" && myres="$p2"
-                if p_valid_handle "$myres"
+                if cui_valid_handle "$myres"
                 then
                     my_result_status "$myres"
                     if [ "$p2" == "$SQL_DATA_READY" ]
@@ -764,7 +752,7 @@ function maildrops_editmaildrop_dialog()
     maildropdlg_flag8="0"
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_listview_getsel "$ctrl" && idx="$p2"
         if p_valid_index $idx
@@ -819,7 +807,7 @@ function maildrops_editmaildrop_dialog()
             maildropdlg_flags="0"
 
             cui_window_new "$win" 0 0 46 20 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
-            if p_valid_handle $dlg
+            if cui_valid_handle $dlg
             then
                 cui_window_setcolors "$dlg" "DIALOG"
                 cui_window_settext   "$dlg" "Edit Filter"
@@ -876,7 +864,7 @@ function maildrops_deletemaildrop_dialog()
     local idx
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_listview_getsel "$ctrl" && idx="$p2"
         if p_valid_index $idx
@@ -976,7 +964,7 @@ function listview_clicked_hook()
     local item
 
     cui_menu_new "$win" "Options" 0 0 25 13 1 "$[$CWS_CENTERED + $CWS_POPUP]" "$CWS_NONE" && menu="$p2"
-    if p_valid_handle $menu
+    if cui_valid_handle $menu
     then
         cui_menu_additem      "$menu" "Edit entry"        1
         cui_menu_additem      "$menu" "Delete entry"      2
@@ -1023,7 +1011,7 @@ function listview_clicked_hook()
             4)
                 cui_window_destroy  "$menu"
                 cui_window_new "$win" 0 0 46 7 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
-                if p_valid_handle $dlg
+                if cui_valid_handle $dlg
                 then
                     cui_window_setcolors "$dlg" "DIALOG"
                     cui_window_settext   "$dlg" "Search Filter"
@@ -1092,7 +1080,7 @@ function mainwin_create_hook()
     local ctrl
 
     cui_listview_new "$win" "" 0 0 10 10 11 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_listview_callback   "$ctrl" "$LISTBOX_CLICKED" "$win" "listview_clicked_hook"
         cui_listview_callback   "$ctrl" "$LISTBOX_POSTKEY" "$win" "listview_postkey_hook"
@@ -1111,7 +1099,7 @@ function mainwin_create_hook()
     fi
 
     cui_textview_new "$win" "Help" 0 0 10 10 "$IDC_HELPTEXT" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
-    if p_valid_handle $ctrl
+    if cui_valid_handle $ctrl
     then
         cui_window_setcolors  "$ctrl" "HELP"
         cui_window_create     "$ctrl"
@@ -1129,7 +1117,7 @@ function mainwin_init_hook()
     local ctrl
 
     cui_window_getctrl "$win" "$IDC_HELPTEXT" && ctrl="$p2"
-    if p_valid_handle "$ctrl"
+    if cui_valid_handle "$ctrl"
     then
         cui_textview_add "$ctrl" "Use function keys to edit (F4), create (F7) or delete (F8) e-mail filter." "0"
         cui_textview_add "$ctrl" "Folder" "0"
@@ -1151,7 +1139,7 @@ function mainwin_init_hook()
         "$vmail_sql_pass" \
         "$vmail_sql_db_name" && myconn="$p2"
 
-    if p_valid_handle $myconn
+    if cui_valid_handle $myconn
     then
         my_server_isconnected "$myconn"
         if p_sql_success "$p2"
@@ -1192,7 +1180,7 @@ function mainwin_key_hook()
         ;;
     "$KEY_F3")
         cui_window_new "$win" 0 0 46 7 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
-        if p_valid_handle $dlg
+        if cui_valid_handle $dlg
         then
             cui_window_setcolors "$dlg" "DIALOG"
             cui_window_settext   "$dlg" "Search Filter"
@@ -1278,7 +1266,7 @@ function init()
 
     # setup main window
     cui_window_new "$win" 0 0 0 0 $[$CWS_POPUP + $CWS_CAPTION + $CWS_STATUSBAR + $CWS_MAXIMIZED] && mainwin="$p2"
-    if p_valid_handle $mainwin
+    if cui_valid_handle $mainwin
     then
         cui_window_setcolors      "$mainwin" "DESKTOP"
         cui_window_settext        "$mainwin" "Sieve filter (from MySQL table):"

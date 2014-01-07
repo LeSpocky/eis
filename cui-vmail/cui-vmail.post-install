@@ -7,9 +7,9 @@ else
   sqlekey="${RANDOM}c${RANDOM}d${RANDOM}"
   . /etc/config.d/base
   pfhelon="${HOSTNAME}.${DOMAIN_NAME}"
-  sed -i -e "s|^VMAIL_SQL_PASS=.*|VMAIL_SQL_PASS='${sqlpass}'  #MySQL connet password|" /etc/default.d/vmail  
+  sed -i -e "s|^VMAIL_SQL_PASS=.*|VMAIL_SQL_PASS='${sqlpass}'  #MySQL connet password|" /etc/default.d/vmail
   sed -i -e "s|^VMAIL_SQL_ENCRYPT_KEY=.*|VMAIL_SQL_ENCRYPT_KEY='${sqlekey}'   #Password encryption key|" /etc/default.d/vmail
-  sed -i -e "s|^POSTFIX_HELO_HOSTNAME=.*|POSTFIX_HELO_HOSTNAME='${pfhelon}'   #alternate external host name"|" /etc/default.d/vmail    
+  sed -i -e "s|^POSTFIX_HELO_HOSTNAME=.*|POSTFIX_HELO_HOSTNAME='${pfhelon}'|" /etc/default.d/vmail
   cp /etc/default.d/vmail /etc/config.d/
 fi
 exit 0

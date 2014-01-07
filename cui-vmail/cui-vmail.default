@@ -21,7 +21,7 @@ VMAIL_LOGIN_WITH_MAILADDR='no'        # login with completed mail address or
 
 POSTFIX_SMTP_TLS='no'                 # use STARTTLS or SMTP over SSL
 POSTFIX_HELO_HOSTNAME='mail.eisfair.home'
-                                      # use alternate external host name
+                                      # alternate external host name
 POSTFIX_AUTOSIGNATURE='no'            # write automatic signature to all mail
 POSTFIX_QUEUE_LIFETIME='5'            # change default queue lifetime
 
