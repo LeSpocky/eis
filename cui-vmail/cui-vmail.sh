@@ -1,15 +1,8 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
-# /etc/config.d/vmail.sh - configuration generator script
-#
-# Creation:     2006-04-14 Jens Vehlhaber <jens(at)eisfair(dot)org>
-# Last Update:  $Id: vmail.sh 32893 2013-02-01 11:34:00Z jv $
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# eisfair configuration update script
+# Copyright 2007 - 2014 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
 
 #set -x
 
@@ -67,7 +60,6 @@ fi
 write_postfix_config()
 {
     local postfix_int_netw=""
-    local postfix_whoson=""
     local postfix_cl_access_bl=""
     local postfix_dyn_client_bl=""
     local postfix_un_cl_hostname=""
@@ -83,6 +75,7 @@ write_postfix_config()
     local postfix_pscr_dnsbl_action="ignore"
     local postfix_pscreen="#"
     local postfix_psmtpd=""
+    local postfix_tls="#"
     local postfix_prxmynet=""
 
     [ -z "$POSTFIX_HELO_HOSTNAME" ] && POSTFIX_HELO_HOSTNAME="${HOSTNAME}.${DOMAIN_NAME}"
@@ -127,6 +120,7 @@ write_postfix_config()
             count=`expr ${count} + 1`
         done
     fi
+    [ "$POSTFIX_SMTP_TLS" = 'yes' ] && postfix_tls=""
     [ "$POSTFIX_MIME_HEADER_CHECK" = 'yes' ] && postfix_mime_header_ch="pcre:/etc/postfix/mime_header_checks.pcre"
     [ "$POSTFIX_HEADER_N" -gt 0 ] && postfix_header_ch="pcre:/etc/postfix/header_checks.pcre"
     [ "$START_POP3IMAP" = 'yes' ] && postfix_sasl="permit_sasl_authenticated,"
@@ -158,7 +152,7 @@ write_postfix_config()
     postconf -e "default_destination_recipient_limit = $POSTFIX_LIMIT_DESTINATIONS"
 
     postconf -e "proxy_read_maps = ${postfix_prxmynet}\$local_recipient_maps,\$mydestination,\$virtual_alias_maps,\$virtual_alias_domains,\$virtual_mailbox_maps,\$virtual_mailbox_domains,\$virtual_mailbox_limit_maps,\$relay_recipient_maps,\$relay_domains,\$canonical_maps,\$sender_canonical_maps,\$recipient_canonical_maps,\$relocated_maps,\$transport_maps,\$mynetworks,\$mail_restrict_map,\$smtpd_recipient_restrictions,\$sender_dependent_relayhost_maps,\$smtp_sasl_password_maps,\$postscreen_access_list"
-    postconf -e "transport_maps = proxy:mysql:/etc/postfix/mysql-transport.cf"    
+    postconf -e "transport_maps = proxy:mysql:/etc/postfix/mysql-transport.cf"
     postconf -e "mail_restrict_map = proxy:mysql:/etc/postfix/mysql-virtual_restrictions.cf"
     postconf -e "virtual_alias_maps = proxy:mysql:/etc/postfix/mysql-virtual_aliases.cf,proxy:mysql:/etc/postfix/mysql-virtual_email2email.cf"
     postconf -e "virtual_uid_maps = static:910"
@@ -173,7 +167,7 @@ write_postfix_config()
 
     postconf -e "message_size_limit = ${POSTFIX_LIMIT_MAILSIZE}000000"
     postconf -e "mailbox_size_limit = 0"
-    
+
     postconf -e "masquerade_exceptions = root"
     postconf -e "masquerade_classes = envelope_sender, header_sender, header_recipient"
     postconf -e "masquerade_domains = \$mydomain"
@@ -196,8 +190,8 @@ write_postfix_config()
     postconf -e "smtpd_helo_restrictions ="
     postconf -e "smtpd_sender_restrictions ="
     postconf -e "smtpd_client_restrictions ="
-    postconf -e "smtpd_recipient_restrictions = permit_mynetworks,${postfix_sasl} permit_tls_clientcerts,${postfix_whoson}\
- reject_unlisted_recipient, reject_unauth_destination,\
+    postconf -e "smtpd_relay_restrictions = permit_mynetworks, ${postfix_sasl} permit_tls_clientcerts, defer_unauth_destination"
+    postconf -e "smtpd_recipient_restrictions = reject_unlisted_recipient, \
  check_client_access proxy:mysql:/etc/postfix/mysql-client_access.cf,\
  check_recipient_access proxy:mysql:/etc/postfix/mysql-recipient_access.cf,\
  check_sender_access proxy:mysql:/etc/postfix/mysql-sender_access.cf,\
@@ -303,7 +297,6 @@ write_postfix_config()
     postconf -e "postscreen_dnsbl_threshold = 3"
     postconf -e "postscreen_access_list = permit_mynetworks, proxy:mysql:/etc/postfix/mysql-client_access_postscreen.cf"
 
-echo -n "."
 cat > /etc/postfix/master.cf <<EOF
 # --------------------------------------------------------------------------
 # Postfix master process configuration file.
@@ -317,33 +310,31 @@ ${postfix_pscreen}smtp      inet  n       -       y       -       1       postsc
 ${postfix_pscreen}smtpd     pass  -       -       y       -       -       smtpd
 ${postfix_pscreen}dnsblog   unix  -       -       y       -       0       dnsblog
 ${postfix_pscreen}tlsproxy  unix  -       -       y       -       0       tlsproxy
-#submission inet n       -       n       -       -       smtpd
-#  -o smtpd_tls_security_level=encrypt
-#  -o smtpd_sasl_auth_enable=yes
-#  -o smtpd_client_restrictions=permit_sasl_authenticated,reject
-#  -o milter_macro_daemon_name=ORIGINATING
-EOF
-if [ "$POSTFIX_ALTERNATE_SMTP_PORT" -gt 25 ] 
-then 
-    echo "${postfix_psmtpd}smtp-alt  inet  n       -       y       -       -       smtpd"  >> /etc/postfix/master.cf
-    echo "${postfix_pscreen}smtp-alt  inet  n       -       y       -       -       postscreen"  >> /etc/postfix/master.cf
-fi
-if [ "$POSTFIX_SMTP_TLS" = 'yes' ]
-then
-cat >> /etc/postfix/master.cf <<EOF
-smtps     inet  n       -       y       -       -       smtpd 
-  -o smtpd_tls_wrappermode=yes
+submission inet n       -       y       -       -       smtpd
+  -o syslog_name=postfix/submission
+  -o smtpd_tls_security_level=may
   -o smtpd_sasl_auth_enable=yes
-  -o smtpd_client_restrictions=permit_sasl_authenticated,reject
+  -o smtpd_reject_unlisted_recipient=no
+  -o smtpd_client_restrictions=\$mua_client_restrictions
+  -o smtpd_helo_restrictions=\$mua_helo_restrictions
+  -o smtpd_sender_restrictions=\$mua_sender_restrictions
+  -o smtpd_recipient_restrictions=permit_sasl_authenticated,reject
   -o milter_macro_daemon_name=ORIGINATING
-EOF
-fi
-cat >> /etc/postfix/master.cf <<EOF
-#628      inet  n       -       n       -       -       qmqpd
-pickup    fifo  n       -       y       60      1       pickup
+${postfix_tls}smtps     inet  n       -       y       -       -       smtpd
+${postfix_tls}  -o syslog_name=postfix/smtps
+${postfix_tls}  -o smtpd_tls_wrappermode=yes
+${postfix_tls}  -o smtpd_sasl_auth_enable=yes
+${postfix_tls}  -o smtpd_reject_unlisted_recipient=no
+${postfix_tls}  -o smtpd_client_restrictions=\$mua_client_restrictions
+${postfix_tls}  -o smtpd_helo_restrictions=\$mua_helo_restrictions
+${postfix_tls}  -o smtpd_sender_restrictions=\$mua_sender_restrictions
+${postfix_tls}  -o smtpd_recipient_restrictions=permit_sasl_authenticated,reject
+${postfix_tls}  -o milter_macro_daemon_name=ORIGINATING
+#628       inet  n       -       n       -       -       qmqpd
+pickup    unix  n       -       y       60      1       pickup
 cleanup   unix  n       -       y       -       0       cleanup
-qmgr      fifo  n       -       y       300     1       qmgr
-#qmgr     fifo  n       -       n       300     1       oqmgr
+qmgr      unix  n       -       y       300     1       qmgr
+#qmgr     unix  n       -       n       300     1       oqmgr
 tlsmgr    unix  -       -       y       1000?   1       tlsmgr
 rewrite   unix  -       -       y       -       -       trivial-rewrite
 bounce    unix  -       -       y       -       0       bounce
@@ -354,9 +345,7 @@ flush     unix  n       -       y       1000?   0       flush
 proxymap  unix  -       -       n       -       -       proxymap
 proxywrite unix -       -       n       -       1       proxymap
 smtp      unix  -       -       y       -       -       smtp
-# When relaying mail as backup MX, disable fallback_relay to avoid MX loops
 relay     unix  -       -       y       -       -       smtp
-	-o smtp_fallback_relay=
 #       -o smtp_helo_timeout=5 -o smtp_connect_timeout=5
 showq     unix  n       -       y       -       -       showq
 error     unix  -       -       y       -       -       error
@@ -371,17 +360,11 @@ scache    unix  -       -       y       -       1       scache
 # Interfaces to non-Postfix software
 # ==========================================================================
 pop3imap  unix  -       n       n       -       -       pipe
-    flags=DRhu user=vmail:vmail argv=/usr/local/dovecot/deliver -d ${dovecot_deliver}
-fax       unix  -       n       n       -       1       pipe
-    flags= user=fax argv=/usr/local/bin/mail2fax \${sender} \${recipient}
-#    flags= user=fax argv=/usr/bin/faxmail -d -n \${user} \${sender}
+    flags=DRhu user=vmail:vmail argv=/usr/libexec/dovecot/dovecot-lda -d ${dovecot_deliver}
 uucp      unix  -       n       n       -       -       pipe
     flags=Fqhu user=uucp argv=uux -r -n -z -a\$sender - \$nexthop!rmail (\$recipient)
-sms     unix    -       n       n       -       1       pipe
-    flags= user=nobody argv=/usr/local/postfix/mail2sms \${user} \${sender}
 
 EOF
-
     # force permissions
     chown    root:root   /var/spool/postfix/etc
     chown -R root:root   /var/spool/postfix/lib
@@ -391,8 +374,7 @@ EOF
     chmod 0777           /var/spool/postfix/var/lib
 #    chown postfix:root /var/spool/postfix
 #    chown postfix:root /var/spool/postfix/pid
-    /usr/sbin/postfix set-permissions
-    echo -n "."
+    /usr/sbin/postfix set-permissions >/dev/null 2>&1
 }
 
 
@@ -497,12 +479,6 @@ update_sql_files()
     fi
     sed -i -e "s|^ssl =.*|ssl = ${POP3IMAP_TLS}|" /etc/dovecot/dovecot.conf 
     sed -i -e "s|.*auth_username_format.*|${dovecot_authf} |" /etc/dovecot/dovecot.conf 
-    if [ "$POSTFIX_DRACD" = "yes" ] 
-    then
-        sed -i -e "s|^  mail_plugins = autocreate|  mail_plugins = drac autocreate|" /etc/dovecot/dovecot.conf  
-    else
-        sed -i -e "s|^  mail_plugins = drac |  mail_plugins = |" /etc/dovecot/dovecot.conf
-    fi
     if [ $POSTFIX_LOGLEVEL -gt 2 ]
     then
         sed -i -e "s|^#mail_debug.*|mail_debug = yes|" /etc/dovecot/dovecot.conf
@@ -590,7 +566,6 @@ update_remote_port ()
 {
     {
     [ "$POSTFIX_SMTP_TLS" = 'yes' ]           &&                 echo "smtps            465/tcp  # smtp over SSL"
-    [ "$POSTFIX_ALTERNATE_SMTP_PORT" -gt 25 ] &&                 echo "smtp-alt         ${POSTFIX_ALTERNATE_SMTP_PORT}/tcp  # smtp with other port"
     [ "$POP3IMAP_TLS" = 'yes' -o "$START_FETCHMAIL" = 'yes' ] && echo "pop3s            995/tcp  # pop3 over SSL"
     [ "$POP3IMAP_TLS" = 'yes' ]       &&                         echo "imaps            993/tcp  # imap over SSL"
     } > /etc/services.vmail

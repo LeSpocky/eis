@@ -26,7 +26,7 @@ stop() {
 restart() {
 	sh /etc/init.d/postfix stop
 	sh /etc/init.d/smc-milter stop
-	if [ "$START_POSTFIX" = 'no' -o "$START_VMAIL" = 'no' ] ; then
+	if [ "$START_VMAIL" = 'no' ] ; then
 		[ -x /etc/init.d/greylist ] && sh /etc/init.d/greylist stop
 	fi
 	sh /etc/init.d/dovecot stop

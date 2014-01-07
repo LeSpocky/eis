@@ -128,13 +128,6 @@ VMAIL_LOGIN_WITH_MAILADDR
     Gueltige Werte: yes,no
 
 
-START_POSTFIX
-    Legt fest, ob der eigentliche MTA (Mail Transfer Agent), welcher die
-    E-Mail vom Absender zum Empfaenger transportiert, als Dienst gestartet
-    werden soll.
-
-    Gueltige Werte: yes,no
-
 POSTFIX_SMTP_TLS
     Aktiviert Transportsicherheit fuer das Senden von E-Maildaten.
 
@@ -153,13 +146,6 @@ POSTFIX_AUTOSIGNATURE
 
     Gueltige Werte: yes,no
 
-POSTFIX_ALTERNATE_SMTP_PORT
-    Ermoeglicht das Nutzen eines zusaetzlichen SMTP-Ports auf einer
-    alternativen Adresse. Das kann bei Installationen hinter einer Firewall
-    hilfreich sein. Werte kleiner als 26 deaktivieren diesen Port.
-
-    Beispiel: 5025
-
 POSTFIX_QUEUE_LIFETIME
     Der Wert (Tage) veraendert die Pufferdauer nicht zustellbarer E-Mails.
     Bei Verwendung als Backup-MX-Server kann eine Erhoehung des Wertes
@@ -167,12 +153,6 @@ POSTFIX_QUEUE_LIFETIME
     "nicht zustellbar" - Meldung an den Absender erfolgt.
 
     Beispiel: 5
-
-POSTFIX_DRACD
-    Ermoeglicht einem externen Benutzer das Versenden von E-Mails. Auch
-    bekannt unter dem Namen "POP before SMTP".
-
-    Gueltige Werte: yes,no
 
 POSTFIX_RELAY_FROM_NET_N
     E-Mailversand aus diesen Netzen wird generell akzeptiert.

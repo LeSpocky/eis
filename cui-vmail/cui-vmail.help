@@ -54,13 +54,6 @@ Set default maildir base path.<br/>
 Use only: '/var/spool/postfix/virtual' or '/data/vmail/virtual'<br/>
 </help>
 
-
-<help name="START_POSTFIX">
-Start the Postfix E-Mail SMTP server 'yes' or 'no'<br/>
-<br/>
-Default: START_POSTFIX='yes'
-</help>
-
 <help name="POSTFIX_SMTP_TLS">
 Use TLS or SMTP over SSL for mail transport.<br/>
 Before use create mail cert!<br/>
@@ -70,18 +63,6 @@ Before use create mail cert!<br/>
 Change the postfix external public name for HELO and EHLO command.<br/>
 <br/>
 Example: POSTFIX_HELO_HOSTNAME='host.domain.tld'
-</help>
-
-<help name="POSTFIX_DRACD">
-Dynamic Relay Authorization Control Daemon - POP3/IMAP before SMTP service.<br/>
-<br/>
-Default: POSTFIX_DRACD='yes'
-</help>
-
-<help name="POSTFIX_DRACD_RELAYTIME">
-The lifetime of per IP-address open relay in minutes.<br/>
-<br/>
-Default: POSTFIX_DRACD_RELAYTIME='30'
 </help>
 
 <help name="POSTFIX_RELAY_FROM_NET_N">
@@ -306,11 +287,6 @@ Write a signature to all mail bodys if not exists<br/>
 
 </help>
 
-<help name="POSTFIX_ALTERNATE_SMTP_PORT">
-Provides an additional smtp-port. Behind a Firewall that can be useful.<br/>
-<br/>
-Example: POSTFIX_ALTERNATE_SMTP_PORT='5025'
-</help>
 
 <help name="POSTFIX_QUEUE_LIFETIME">
 Change default queue lifetime before e-mail is undeliverable.<br/>

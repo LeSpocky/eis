@@ -9,10 +9,9 @@
 START_VMAIL='no'                      # Use VMail service
 VMAIL_SQL_HOST='localhost'            # MySQL host. (localhost or IP)
 VMAIL_SQL_USER='vmailprovider'        # MySQL user name
-VMAIL_SQL_PASS='30456a14036b10770'    # MySQL connet password
+VMAIL_SQL_PASS='******'               # MySQL connet password
 VMAIL_SQL_DATABASE='vmaildata'        # MySQL database name
-VMAIL_SQL_ENCRYPT_KEY='16962c26897d23366'
-                                      # Password encryption key
+VMAIL_SQL_ENCRYPT_KEY='******'        # Password encryption key
 VMAIL_LOGIN_WITH_MAILADDR='no'        # login with completed mail address or
                                       # username only
 
@@ -20,15 +19,12 @@ VMAIL_LOGIN_WITH_MAILADDR='no'        # login with completed mail address or
 # SMTP Postfix general settings
 #------------------------------------------------------------------------------
 
-START_POSTFIX='yes'                   # postfix start 'yes' or 'no'
 POSTFIX_SMTP_TLS='no'                 # use STARTTLS or SMTP over SSL
-POSTFIX_HELO_HOSTNAME='mail.buchenwald.de'
+POSTFIX_HELO_HOSTNAME='mail.eisfair.home'
                                       # use alternate external host name
 POSTFIX_AUTOSIGNATURE='no'            # write automatic signature to all mail
-POSTFIX_ALTERNATE_SMTP_PORT='0'       # use additional SMTP port > 25
 POSTFIX_QUEUE_LIFETIME='5'            # change default queue lifetime
-POSTFIX_DRACD='no'                    # Dynamic Relay Authorization (POP before
-                                      # SMTP)
+
 POSTFIX_RELAY_FROM_NET_N='2'          # Count of internal networks
 POSTFIX_RELAY_FROM_NET_1='172.17.0.0/16'
                                       # NETWORK/NETMASK 172.16.0.0/16
@@ -75,18 +71,24 @@ POSTFIX_RBL_7_SERVER='b.barracudacentral.org'
                                       # Realtime Blackhole List server 7 name
 POSTFIX_RBL_7_WEIGHT='1'              # Blackhole server 7 blocking weight
 POSTFIX_HEADER_N='0'                  # Count of header checks
+POSTFIX_HEADER_1_CHECK='^Date:.*[+-](1[4-9]|2\d)\d\d$'
+POSTFIX_HEADER_1_HANDL='REJECT invalid timezone'
+POSTFIX_HEADER_2_CHECK='^(To|From):\s*$'
+POSTFIX_HEADER_2_HANDL='REJECT empty To or From header'
 POSTFIX_CLIENT_N='0'                  # Count of checked email clients
+POSTFIX_CLIENT_1_CHECK='host[0-9]{1,3}\..*\.org'
+POSTFIX_CLIENT_1_HANDL='550 No HOST. Use an authorized relay'
 
 #------------------------------------------------------------------------------
 # Antivirus settings
 #------------------------------------------------------------------------------
 
-POSTFIX_AV_CLAMAV='yes'               # Use ClamAV antivirus scanner
+POSTFIX_AV_CLAMAV='no'                # Use ClamAV antivirus scanner
 POSTFIX_AV_FPROTD='no'                # Use F-Prot daemon antivirus scanner
 POSTFIX_AV_SCRIPT='no'                # Use scripfile
-POSTFIX_AV_SCRIPTFILE='/usr/local/postfix/smc-unzip.sh'
+POSTFIX_AV_SCRIPTFILE='/usr/bin/smc-milter-new-unzip.sh'
                                       # Name of scriptfile
-                                      # (/usr/local/postfix/smc-unzip.sh)
+                                      # (/usr/bin/smc-milter-new-unzip.sh)
 POSTFIX_AV_VIRUS_INFO='root@localhost'
                                       # Send virus warn message to e-mail
                                       # recipient
