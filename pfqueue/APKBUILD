@@ -1,0 +1,49 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
+pkgname=pfqueue
+pkgver=0.5.6
+pkgrel=0
+pkgdesc="pfqueue MTA queues control tool"
+url="http://pfqueue.sourceforge.ne"
+arch="all"
+license="GNU"
+depends=""
+depends_dev="ncurses-dev"
+makedepends="$depends_dev"
+install=""
+subpackages="$pkgname-libs $pkgname-doc"
+source="http://downloads.sourceforge.net/project/pfqueue/pfqueue/0.5.6/pfqueue-0.5.6.tar.gz
+	"
+
+_builddir="$srcdir/${pkgname}-$pkgver"
+
+prepare() {
+	local i
+	cd ${_builddir}
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i ${srcdir}/$i || return 1;;
+		esac
+	done
+	sleep 1
+}
+
+build() {
+	cd ${_builddir}
+	./configure --prefix=/usr || return 1
+	sleep 1
+	make -j1 || return 1
+}
+
+package() {
+	cd ${_builddir}
+	make -j1 DESTDIR="$pkgdir" install || return 1
+	rm -f ${pkgdir}/usr/lib/*.la
+	rm -f ${pkgdir}/usr/lib/*.a
+	rm -f ${pkgdir}/usr/lib/*.so
+}
+
+
+md5sums="ff3fbcc39b39112f123b93df579998b8  pfqueue-0.5.6.tar.gz"
+sha256sums="efedc8ea73ea09cf3edfbdbb6bf3fb0678017818fd0c1816abd9360120c59a41  pfqueue-0.5.6.tar.gz"
+sha512sums="1bb622bba6d72ff98ee862d794854debcebabeff24cb6f06cecb06513f453cbb09f0cb8e5fa4c26bfde03aadbc5e803692279427021ccda10749a6c5a326bfb9  pfqueue-0.5.6.tar.gz"
