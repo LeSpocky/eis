@@ -14,10 +14,10 @@ dbport                  0
 dbname                  vmaildata
 dbtable                 view_signature
 dbuser                  vmailprovider
-dbpass                  30840a11655b17977
+dbpass                  ******
 dbquery                 "SELECT signature FROM view_signature WHERE email ="
 optremove               text/x-vcard
-avmail                  mailadmin@domain.org
+avmail                  mailadmin@eisfair.home
 quarantinedir           /var/spool/postfix/quarantine
 debuglevel              0
 #debuglevel             0...4  (4 = not remove /var/tmp/* files)

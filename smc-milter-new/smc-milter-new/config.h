@@ -5,7 +5,7 @@
 #define CLAMD_SOCKET_FILE "/run/clamav/clamd.sock"
 
 /* SMC milter configuration file. */
-#define CONFIG_FILE "/etc/conf.d/smc-milter-new"
+#define CONFIG_FILE "/etc/smc-milter-new/smc-milter-new.conf"
 
 /* Define to 1 if you have the `milter' library (-lmilter). */
 #define HAVE_LIBMILTER 1
@@ -14,7 +14,7 @@
 #define HAVE_LIBPTHREAD 1
 
 /* SMC milter hosts file. */
-#define HOSTS_FILE "/etc/conf.d/smc-milter-new.hosts"
+#define HOSTS_FILE "/etc/smc-milter-new/smc-milter-new.hosts"
 
 /* altermime program file. */
 #define ALTERMIME_FILE "/usr/bin/altermime"

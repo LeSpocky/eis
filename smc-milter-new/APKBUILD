@@ -2,7 +2,7 @@
 # Maintainer:
 pkgname=smc-milter-new
 pkgver=1.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Virus scanner milter"
 url="http://www.eisfair.org"
 arch="all"
@@ -36,13 +36,13 @@ package() {
 		"$pkgdir"/usr/bin/${pkgname}-unzip.sh || return 1
 	install -m755 -D "$srcdir"/$pkgname.initd \
 		"$pkgdir"/etc/init.d/$pkgname || return 1
-	install -m644 -D "$srcdir"/$pkgname.confd \
-		"$pkgdir"/etc/conf.d/$pkgname || return 1
+	install -m640 -D "$srcdir"/$pkgname.confd \
+		"$pkgdir"/etc/smc-milter-new/$pkgname.conf || return 1
 }
 
 md5sums="4573c2ef51737a80c7b5ae8223b611c1  smc-milter-new.initd
-06af95655f2658de987e6237cf372e3b  smc-milter-new.confd"
+34059bd135337e508e11df8ca2171bf7  smc-milter-new.confd"
 sha256sums="8e74101d9d7a4cbb0332897954d386c3d8b00ec3123db293fd3e9ae91de6a465  smc-milter-new.initd
-5868d7996bc22e66ae192cc03880bb17c05b70e1fcc110a112b9104fad6e7983  smc-milter-new.confd"
+c1b0d2798f31c35031530ab2075c9bd7ee0f30e83a8cccbef9a120226b3b4b07  smc-milter-new.confd"
 sha512sums="f4efd9e842f4ba22533d2272eb42b7640a0784692faa85a706d41e2fc1b51200010011e769a392fa67782f71221cb4b433e3c61cf6594dee3b4e748e11b6d960  smc-milter-new.initd
-73b5a9b2899815a994f59673ab708fb3cc73e8dd08cbfa483cef1616aa7641f275ba27e9ed4f7563718e488166b566b97cc85236f076e83190d1655d595ff7de  smc-milter-new.confd"
+95a8412529ab428ac7f049185ec5125c3583841c4b03a28efcce4e9ee7b7a4df6d2ec93abcd8265d2fb5e89266885d5ce092fa3ba80b977661147502d12e2a4e  smc-milter-new.confd"
