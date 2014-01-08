@@ -507,7 +507,7 @@ doDBOperation ()
 					# pmadb exists, ask for next steps
 					mecho ""
 					mecho -n "Database '"
-					mecho -n -info "${pmadb}"
+					mecho -n --info "${pmadb}"
 					mecho "' exists!"
 					mecho "Please choose:"
 					mecho " - Remove database and create 'N'ew,"
@@ -518,7 +518,7 @@ doDBOperation ()
 						# drop db and create new
 						mecho ""
 						mecho -n "Creating SQL script for server '"
-						mecho -n -info "${host}"
+						mecho -n --info "${host}"
 						mecho -n "'... "
 						createSQLScriptHeader ${host} ${pmadb} ${controluser}
 						createSQLScriptDropDB ${host} ${pmadb} ${controluser}
@@ -526,7 +526,7 @@ doDBOperation ()
 						createSQLScriptCreateTables ${host} ${pmadb} ${controluser}
 						mecho "Done"
 						mecho -n "Executing SQL script for server '"
-						mecho -n -info "${host}"
+						mecho -n --info "${host}"
 						mecho -n "'... "
 						${mysql_base_dir}/bin/mysql -h ${host} -u${dbAdmin} -p${dbAdminPass} < ${tmpSQLScript}
 						mecho "Done"
@@ -537,12 +537,12 @@ doDBOperation ()
 						# alter existing pma database
 						mecho ""
 						mecho -n "Creating SQL script for server '"
-						mecho -n -info "${host}"
+						mecho -n --info "${host}"
 						mecho -n "' to alter pma database... "
 						createSQLScriptAlterDB ${host} ${pmadb} ${controluser}
 						mecho "Done"
 						mecho -n "Executing SQL script for server '"
-						mecho -n -info "${host}"
+						mecho -n --info "${host}"
 						mecho -n "'... "
 						${mysql_base_dir}/bin/mysql -h ${host} -u${dbAdmin} -p${dbAdminPass} < ${tmpSQLScript}
 						mecho "Done"
@@ -553,9 +553,9 @@ doDBOperation ()
 						# drop pma database
 						mecho ""
 						mecho -n "Removing pma database '"
-						mecho -n -info "${pmadb}"
+						mecho -n --info "${pmadb}"
 						mecho -n "' on server '"
-						mecho -n -info "${host}"
+						mecho -n --info "${host}"
 						mecho -n "'... "
 						${mysql_base_dir}/bin/mysql -h ${host} -u${dbAdmin} -p${dbAdminPass} -e"DROP DATABASE ${pmadb};"
 						mecho "Done"
@@ -564,7 +564,7 @@ doDBOperation ()
 					# pmadb not found, create new
 					mecho ""
 					mecho -n "Creating SQL script for server '"
-					mecho -n -info "${host}"
+					mecho -n --info "${host}"
 					mecho -n "'... "
 					createSQLScriptHeader ${host} ${pmadb} ${controluser}
 					createSQLScriptCreateDB ${host} ${pmadb} ${controluser}
@@ -572,7 +572,7 @@ doDBOperation ()
 					createSQLScriptCreateTables ${host} ${pmadb} ${controluser}
 					mecho "Done"
 					mecho -n "Executing SQL script for server '"
-					mecho -n -info "${host}"
+					mecho -n --info "${host}"
 					mecho -n "'... "
 					${mysql_base_dir}/bin/mysql -h ${host} -u${dbAdmin} -p${dbAdminPass} < ${tmpSQLScript}
 					mecho "Done"

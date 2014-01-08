@@ -58,9 +58,9 @@ doDBOperation ()
 
 				mecho ""
 				mecho -n "Setting rights for pma user '"
-				mecho -n -info "${controluser}@${pmaHost}"
+				mecho -n --info "${controluser}@${pmaHost}"
 				mecho -n "' on server '"
-				mecho -n -info "${host}"
+				mecho -n --info "${host}"
 				mecho "'."
 				mecho "If the pma user is not existing, it will be created."
 				executeSQLScript=`/var/install/bin/ask "Continue" "y"`
