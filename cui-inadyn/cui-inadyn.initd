@@ -64,12 +64,14 @@ forcestart() {
 
 stop() {
     mecho --info "Shutting down inadyn..."
-#    killproc -t2 /usr/bin/inadyn
-    kill `cat /var/run/inadyn.pid 2>/dev/null` 2>/dev/null
-    sleep 2
+    determinedPids=`pidof inadyn`
+    if [ -n "$determinedPids" ] ; then
+        kill -9 ${determinedPids} 2>/dev/null
+        sleep 2
+    fi
 
     # Log service shutdown
-    if [ `pidof /usr/bin/inadyn | wc -w` -le 0 ] ; then
+    if [ `pidof inadyn | wc -w` -le 0 ] ; then
          /usr/bin/logger -t INADYN    \
                          -p user.info \
                          "INADYN: Stopped all 'INADYN' - processes."
@@ -97,7 +99,7 @@ restart() {
 }
 
 status() {
-    if [ `pidof /usr/bin/inadyn | wc -w` -gt 0 ] ; then
+    if [ `pidof inadyn | wc -w` -gt 0 ] ; then
         mecho --info "Inadyn is running"
         exit 0
     else
