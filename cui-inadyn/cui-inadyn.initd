@@ -5,7 +5,7 @@
 . /var/install/include/eislib
 
 # Include configuration
-. /etc/config.d/inadyn
+. /etc/config.d/cui-inadyn
 
 depend() {
 	need net
@@ -64,7 +64,8 @@ forcestart() {
 
 stop() {
     mecho --info "Shutting down inadyn..."
-    killproc -t2 /usr/bin/inadyn
+#    killproc -t2 /usr/bin/inadyn
+    kill `cat /var/run/inadyn.pid 2>/dev/null` 2>/dev/null
     sleep 2
 
     # Log service shutdown
