@@ -44,10 +44,10 @@ package() {
 	done
 	cd -
 	install -D -m755 ${srcdir}/${pkgname}.initd                          ${pkgdir}/etc/init.d/inadyn || return 1
-	install -D -m644 ${srcdir}/${pkgname}.txt                            ${pkgdir}/usr/share/doc/inadyn/inadyn.txt || return 1
-	install -D -m755 ${srcdir}/${pkgname}.sh                             ${pkgdir}/var/install/config.d/inadyn.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-update.sh                      ${pkgdir}/var/install/config.d/inadyn-update.sh || return 1
-	install -D -m644 ${srcdir}/${pkgname}.help                           ${pkgdir}/var/install/help/inadyn || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt                            ${pkgdir}/usr/share/doc/${pkgname}/${pkgname}.txt || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh                             ${pkgdir}/var/install/config.d/${pkgname}.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh                      ${pkgdir}/var/install/config.d/${pkgname}-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help                           ${pkgdir}/var/install/help/${pkgname} || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.cui-inadyn.menu ${pkgdir}/var/install/menu/setup.services.cui-inadyn.menu || return 1
 }
 md5sums="03ba5ca1d2eba509c2356fa163e557a0  cui-inadyn.help
