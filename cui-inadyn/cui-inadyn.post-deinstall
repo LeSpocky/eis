@@ -21,3 +21,4 @@ rm -f /etc/check.d/cui-inadyn*
 rm -f /etc/default.d/cui-inadyn*
 rm -f /etc/config.d/cui-inadyn*
 rm -f /etc/backup.d/cui-inadyn*
+rm -f /etc/init.d/cui-inadyn*
