@@ -24,10 +24,9 @@ in
         anykey
         ;;
     qhandle)
-        /usr/local/postfix/pfqueue -b postfix2 -q 1
+        /usr/bin/pfqueue -b postfix2 -q 1
         ;;
 esac
-
 
 ### -------------------------------------------------------------------------
 exit 0
