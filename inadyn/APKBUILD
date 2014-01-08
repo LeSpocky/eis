@@ -36,9 +36,6 @@ package() {
 	install -D -m755 ${_builddir}/bin/linux/inadyn  ${pkgdir}/usr/bin/${pkgname} || return 1
 }
 
-md5sums="702a127f13b96eee38d60c6f30b20efa  inadyn.v1.96.2.zip
-868b547956b2337bc72aa1106380f1ab  inadyn.initd"
-sha256sums="981f29d12415637c8e3ad747c204a599ddb900360d04a9b4c351d54db3d2321c  inadyn.v1.96.2.zip
-e67aa96449e4818db786028faa1fe0ef67c81ac189e3e10ad7042704f1d9f991  inadyn.initd"
-sha512sums="4315785a6bdb325ae2dc2b787ff9c9f72006ffb41eaad18fd30f971cff4694aae7721893bc85501f9ab0cf274ea93dcaa3df870e1410ee306b32e1c6aec0e08e  inadyn.v1.96.2.zip
-8ece7b5d598e23a01f6c906c9140b82600a57dc58eb8a245e5a2051bbd8d7e467f5661c5a39ee414c7892527e3b381ae70befe11285cf4681380d970c7a5d292  inadyn.initd"
+md5sums="702a127f13b96eee38d60c6f30b20efa  inadyn.v1.96.2.zip"
+sha256sums="981f29d12415637c8e3ad747c204a599ddb900360d04a9b4c351d54db3d2321c  inadyn.v1.96.2.zip"
+sha512sums="4315785a6bdb325ae2dc2b787ff9c9f72006ffb41eaad18fd30f971cff4694aae7721893bc85501f9ab0cf274ea93dcaa3df870e1410ee306b32e1c6aec0e08e  inadyn.v1.96.2.zip"
