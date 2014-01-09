@@ -405,14 +405,14 @@ writeLCDConfig () {
 
                 eval elements='$LCD_LAYOUT_'${idx}'_ELEMENT_N'
                 idx2=1
-                while [ ${idx}2 -le $elements ] ; do
-                    eval fullElemName='$LCD_LAYOUT_'${idx}'_ELEMENT_'${idx}2'_NAME'
+                while [ ${idx2} -le $elements ] ; do
+                    eval fullElemName='$LCD_LAYOUT_'${idx}'_ELEMENT_'${idx2}'_NAME'
                     elemType=${fullElemName/:*}
                     elemName=${fullElemName/*:}
-                    eval elemActive='$LCD_LAYOUT_'${idx}'_ELEMENT_'${idx}2'_ACTIVE'
+                    eval elemActive='$LCD_LAYOUT_'${idx}'_ELEMENT_'${idx2}'_ACTIVE'
                     if [ "$elemActive" == 'yes' ] ; then
-                        eval elemRow='$LCD_LAYOUT_'${idx}'_ELEMENT_'${idx}2'_ROW'
-                        eval elemCol='$LCD_LAYOUT_'${idx}'_ELEMENT_'${idx}2'_COL'
+                        eval elemRow='$LCD_LAYOUT_'${idx}'_ELEMENT_'${idx2}'_ROW'
+                        eval elemCol='$LCD_LAYOUT_'${idx}'_ELEMENT_'${idx2}'_COL'
                         case $elemRow in
                             1)
                                 echo "    Col${elemCol}    '$elemName'" >> /tmp/$$-cui-lcd4linux-row1.txt
