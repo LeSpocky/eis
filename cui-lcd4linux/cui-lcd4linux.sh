@@ -24,8 +24,8 @@ crontabPath=/etc/cron/root
 packageName=cui-lcd4linux
 widgetPackageName=cui-lcd4linux-widgets
 activeConfigurationLink='/etc/lcd4linux.conf'
-nativeMainConfiguration='/etc/lcd4linux.main.conf'
-nativeShutdownConfiguration='/etc/lcd4linux.shutdown.conf'
+nativeMainConfiguration='/etc/lcd4linux/lcd4linux.main.conf'
+nativeShutdownConfiguration='/etc/lcd4linux/lcd4linux.shutdown.conf'
 crontabFile=${crontabPath}/cui-lcd4linux
 
 # Load configurations

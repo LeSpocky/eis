@@ -1,4 +1,5 @@
 #!/bin/sh
 
-rm -f /etc/lcd4linux.*
+rm -f /etc/lcd4linux.conf
+rm -rf /etc/lcd4linux
 exit 0
