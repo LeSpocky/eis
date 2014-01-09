@@ -39,5 +39,5 @@ build() {
 package() {
 	cd "$_builddir"
 	install -D -m755 ${pkgname} ${pkgdir}/usr/bin/${pkgname} || return 1
-	mkdir -m 755 ${pkgdir}/etc/${pkgname}
+	mkdir -p -m 755 ${pkgdir}/etc/${pkgname}
 }
