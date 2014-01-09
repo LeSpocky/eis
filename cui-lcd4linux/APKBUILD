@@ -2,7 +2,7 @@
 # Maintainer: starwarsfan <yves@eisfair.org>
 pkgname=cui-lcd4linux
 pkgver=1.0.0
-pkgrel=0
+pkgrel=1
 pkgdesc="CUI Setup for lcd4linux"
 url="http://www.eisfair.org"
 arch="noarch"

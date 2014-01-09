@@ -3,7 +3,7 @@
 pkgname=lcd4linux
 pkgver=0.11.0
 pkgRC=-SVN
-pkgrel=0
+pkgrel=1
 pkgdesc="LCD4Linux"
 url="http://ssl.bulix.org/projects/lcd4linux/"
 arch="all"
