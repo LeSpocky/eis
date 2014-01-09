@@ -1,8 +1,8 @@
 <package>cui-lcd4linux</package>
 <title>LCD4Linux administration</title>
 <doc file="cui-lcd4linux.txt">View documentation</doc>
-<edit stopstart>Edit main configuration</edit>
 <edit package="cui-lcd4linux-widgets">Edit widgets</edit>
+<edit stopstart>Edit main configuration</edit>
 <init task="status">Status</init>
 <init task="start">Start lcd4linux</init>
 <init task="stop">Stop lcd4linux</init>
