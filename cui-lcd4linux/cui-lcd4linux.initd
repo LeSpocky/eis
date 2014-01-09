@@ -13,8 +13,8 @@
 # ----------------------------------------------------------------------------
 
 activeConfigurationLink='/etc/lcd4linux.conf'
-nativeMainConfiguration='/etc/lcd4linux.main.conf'
-nativeShutdownConfiguration='/etc/lcd4linux.shutdown.conf'
+nativeMainConfiguration='/etc/lcd4linux/lcd4linux.main.conf'
+nativeShutdownConfiguration='/etc/lcd4linux/lcd4linux.shutdown.conf'
 
 # Include eislib and load config
 . /var/install/include/eislib
@@ -79,11 +79,6 @@ stop() {
         mecho --info "Stopping lcd4linux"
         kill `cat /var/run/lcd4linux.pid 2>/dev/null` 2>/dev/null
     fi
-}
-
-restart() {
-    $0 stop
-    $0 start
 }
 
 status() {
