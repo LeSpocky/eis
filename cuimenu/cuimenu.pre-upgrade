@@ -17,4 +17,5 @@ rm -f /etc/default.d/fcron
 rm -f /etc/default.d/menu
 rm -f /etc/default.d/sshd
 cp -f /var/install/menu/setup.services.menu  /var/install/menu/setup.services.menu.old
+cp -f /var/install/menu/setup.system.logfileview.menu  /var/install/menu/setup.system.logfileview.menu.old
 exit 0

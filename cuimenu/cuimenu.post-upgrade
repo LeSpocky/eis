@@ -1,3 +1,4 @@
 #!/bin/sh
 mv -f /var/install/menu/setup.services.menu.old /var/install/menu/setup.services.menu
+mv -f /var/install/menu/setup.system.logfileview.menu.old  /var/install/menu/setup.system.logfileview.menu
 exit 0
