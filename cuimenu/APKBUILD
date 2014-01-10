@@ -32,5 +32,5 @@ package() {
 	chmod 0755 ${pkgdir}/var/install/bin/*
 	chmod 0755 ${pkgdir}/var/install/config.d/*
 	chmod 0644 ${pkgdir}/var/install/include/*
-	chown -R root:root ${pkgdir}/var
+	chown -R root:root ${pkgdir}/*
 }
