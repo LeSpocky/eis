@@ -1103,7 +1103,6 @@ ConfviewShowLine(CUIWINDOW* win, const wchar_t* name, const wchar_t* value, int 
                int level, int line, int drag, int readonly, int do_print)
 {
 	CUIRECT rc;
-	int     len1, len2;
 	int     tabpos;                             /* position of vertical separator */
 	int     rwidth;                             /* width of right area */
 	int     lwidth;                             /* width of left area */
@@ -1120,8 +1119,8 @@ ConfviewShowLine(CUIWINDOW* win, const wchar_t* name, const wchar_t* value, int 
 
 	if (rwidth <= 0) return 1;
 
-	len1 = wcslen(name);
-	len2 = wcslen(value);
+//	wcslen(name);
+//	wcslen(value);
 
 	/* show value name */
 

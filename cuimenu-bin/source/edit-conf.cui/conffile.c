@@ -43,7 +43,7 @@ static int        ConfFileIsNodeName       (const wchar_t* nodename, const wchar
 static unsigned char ConfFileGetHash       (short* index, int numindex);
 static CONFITEM*  ConfFileFindItemByName   (CONFITEM* item, const wchar_t* name);
 static CONFITEM*  ConfFileFindItemByIndex  (CONFITEM* item, int level, int* line, int lineindex, short* index);
-static CONFITEM*  ConfFileFindItemByOptNode(CONFITEM* item, CONFITEM* optnode);
+//static CONFITEM*  ConfFileFindItemByOptNode(CONFITEM* item, CONFITEM* optnode);
 static int        ConfFileFindIndexByIndex (CONFITEM* item, int level, int* line, int lineindex, short* index);
 static int        ConfFileFindLineIndex    (CONFITEM* item, CONFITEM* cmpitem, int level,
                                             int* line, short* cmpindex, short* index);
@@ -2680,7 +2680,7 @@ ConfFileFindValueByName(CONFITEM* item, int level, const wchar_t* name, short* i
  * ConfFileFindItemByOptNode
  * Searches the tree to find the first item using 'optnode' as OptNode
  * ---------------------------------------------------------------------
- */
+ 
 static CONFITEM*
 ConfFileFindItemByOptNode(CONFITEM* item, CONFITEM* optnode)
 {
@@ -2706,7 +2706,7 @@ ConfFileFindItemByOptNode(CONFITEM* item, CONFITEM* optnode)
 	}
 	return NULL;
 }
-
+*/
 /* ---------------------------------------------------------------------
  * ConfFileFindIndexByIndex
  * Searches the tree to fill the index array specified by line 'lineindex'

@@ -17,4 +17,5 @@ rc-update -q del syslog boot 2>/dev/null
 rc-update -q del klogd boot 2>/dev/null
 rc-update -q add syslog-ng boot 2>/dev/null
 
+[ -f /var/install/menu/setup.services.menu ] || mv /var/install/menu/setup.services.menu.apk-new /var/install/menu/setup.services.menu
 exit 0

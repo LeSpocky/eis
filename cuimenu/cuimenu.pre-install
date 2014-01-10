@@ -16,3 +16,4 @@ rm -f /etc/default.d/environment
 rm -f /etc/default.d/fcron
 rm -f /etc/default.d/menu
 rm -f /etc/default.d/sshd
+exit 0
