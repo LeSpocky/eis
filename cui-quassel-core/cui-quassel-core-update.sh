@@ -198,16 +198,6 @@ makeCheckFile
 
 mecho --info ' Finished.'
 
-# Write configuration, either after editing config or automatically when
-# this is an update or config variables changed
-if ${askForEdit} && /var/install/bin/ask "Edit ${packageName} configuration now?" ; then
-    # triggers restart of daemon if user configures it
-    # no need for an extra restart
-    /var/install/bin/edit -apply ${packageName} "Edit ${packageName} configuration ..."
-else
-    /var/install/config.d/${packageName}.sh --quiet
-fi
-
 exit 0
 # ----------------------------------------------------------------------------
 # End
