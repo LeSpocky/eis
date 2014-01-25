@@ -50,8 +50,8 @@ QUASSEL_CORE_DAEMON_OPTS=''
 renameOldVariables()
 {
     # read old values
-    if [ -f /etc/conf.d/${packageName} ] ; then
-        . /etc/conf.d/${packageName}
+    if [ -f /etc/configd/${packageName} ] ; then
+        . /etc/config.d/${packageName}
     fi
 }
 
@@ -171,7 +171,7 @@ EOFG
 # Main
 # ----------------------------------------------------------------------------
 # Write default config file
-if [ -f /etc/conf.d/${packageName} ] ; then
+if [ -f /etc/config.d/${packageName} ] ; then
     mecho --info -n 'Updating configuration ...'
 else
     mecho --info -n 'Creating configuration ...'
@@ -186,7 +186,7 @@ renameOldVariables
 
 # Write new config file
 mecho --info -n '.'
-makeConfigFile /etc/conf.d/${packageName}
+makeConfigFile /etc/config.d/${packageName}
 
 # Write check.d file
 mecho --info -n '.'

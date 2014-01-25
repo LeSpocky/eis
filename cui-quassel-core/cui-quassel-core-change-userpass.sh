@@ -15,7 +15,7 @@
 
 # Load eislib and quasselcore configuration
 . /var/install/include/eislib
-. /etc/conf.d/cui-quassel-core
+. /etc/config.d/cui-quassel-core
 
 # ask for username and call change-pass function with it
 USER_INPUT=`/var/install/bin/ask "Name of User to change Password" "" "+"`

@@ -26,7 +26,7 @@ packageNameBinary=quasselcore
 . /var/install/include/eislib
 
 # include config
-. /etc/conf.d/${packageName}
+. /etc/config.d/${packageName}
 
 
 # ----------------------------------------------------------------------
