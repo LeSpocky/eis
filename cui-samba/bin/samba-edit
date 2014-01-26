@@ -1,7 +1,7 @@
-#! /bin/sh
+#!/bin/bash
 #----------------------------------------------------------------------------
 # /var/install/bin/samba-edit - edit /etc/config.d/cui-samba and create new
-#                               /etc/smb.conf by /var/install/config.d/samba.sh
+#                               /etc/smb.conf by /var/install/config.d/cui-samba.sh
 #
 # Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
 #
@@ -20,17 +20,15 @@ clrhome
 mecho --info "Edit Samba configuration"
 echo
 
-if /var/install/bin/edit $configfile
-then
-    if /var/install/bin/ask "Activate Samba configuration now" "y"
-    then
+if /var/install/bin/edit ${configfile} ; then
+    if /var/install/bin/ask "Activate Samba configuration now" "y" ; then
         # removed - because vfs modules are ignoring sighup of smbd's
         # sh /etc/init.d/samba reload
-        sh /etc/init.d/smbfs stop
-        sh /etc/init.d/samba stop
-        sh /var/install/config.d/samba.sh
-        sh /etc/init.d/samba start
-        sh /etc/init.d/smbfs start
+#        sh /etc/init.d/smbfs stop
+        rc-service samba stop
+        sh /var/install/config.d/cui-samba.sh
+        rc-service samba start
+#        sh /etc/init.d/smbfs start
     fi
 fi
 
