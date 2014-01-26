@@ -1,15 +1,13 @@
-#! /bin/sh
+#!/bin/bash
 # ----------------------------------------------------------------------------
-# /var/install/config.d/samba-update.sh - creating or updating 
+# /var/install/config.d/cui-samba-update.sh - creating or updating
 #                                         /etc/config.d/samba
 #
 # Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
 #
-# usage: /var/install/config.d/samba-update.sh {update|generate|sample}
+# usage: /var/install/config.d/cui-samba-update.sh {update|generate|sample}
 #
 # Creation: 2002-12-03 tb
-#
-# Version: 2.4.1
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,12 +42,12 @@ case $# in
             mecho --info "Generating sample configuration file $targetfile ..."
         fi
     else
-        echo "usage: /var/install/config.d/samba-update.sh {update|generate|sample} " >&2
+        echo "usage: /var/install/config.d/cui-samba-update.sh {update|generate|sample} " >&2
         exit 1
     fi
     ;;
   *)
-    echo "usage: /var/install/config.d/samba-update.sh {update|generate|sample} " >&2
+    echo "usage: /var/install/config.d/cui-samba-update.sh {update|generate|sample} " >&2
     exit 1
     ;;
 esac
