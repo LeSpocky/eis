@@ -15,10 +15,6 @@ fi
 /var/install/config.d/cui-samba-update.sh sample
 
 if ${isUpdate} ; then
-    /var/install/config.d/cui-samba-update.sh generate
-    mecho --warn "Don't forget to configure samba in samba services menu!"
-    mecho --warn "Don't forget to configure samba users in samba services menu!"
-else
     /var/install/config.d/cui-samba-update.sh update
     if grep -q "SAMBA_PDF_TARGET='mail'" "$conffile" ; then
         base64=false
@@ -35,6 +31,10 @@ else
             mecho --warn "for perl package 1.0.0 or part of the perl package 1.2.0."
         fi
     fi
+else
+    /var/install/config.d/cui-samba-update.sh generate
+    mecho --warn "Don't forget to configure samba in samba services menu!"
+    mecho --warn "Don't forget to configure samba users in samba services menu!"
 fi
 
 
