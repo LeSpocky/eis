@@ -16,7 +16,7 @@
 #set -x
 . /var/install/include/eislib
 . /etc/config.d/base
-. /etc/config.d/samba
+. /etc/config.d/cui-samba
 
 if [ -f /etc/config.d/lprng ] ; then
     . /etc/config.d/lprng
@@ -70,16 +70,10 @@ wins_proxy='no'
 password_server=''
 mountbin='/bin/mount'
 umountbin='/bin/umount'
-eisfair_system=`cat /etc/eisfair-system`
 pdfmessages='yes'
 
-if [ "$eisfair_system" = "eisfair-1" ] ; then
-    crontab_file='/var/cron/etc/root/samba'
-    crontab_update='/var/install/config.d/cron.sh'
-else
-    crontab_file='/etc/cron/root/samba'
-    crontab_update='/var/install/bin/update-cron'
-fi
+crontab_file='/etc/cron/root/samba'
+crontab_update='/var/install/bin/update-cron'
 
 if [ "$SAMBA_PDF_TARGET" = "public" ] ; then
     pdflinuxdir='/public'
@@ -242,11 +236,7 @@ do_add_recycle_cron ()
       echo "  while read samba_recycle_bin_subdir"
       echo "  do"
 
-      if [ "$eisfair_system" = "eisfair-1" ] ; then
-          echo "    samba_recycle_bin_rmdir=\`echo \"\$samba_recycle_bin_subdir\" | /usr/bin/sed \"s#^\$samba_recycle_bin_dir/##\"\`"
-      else
-          echo "    samba_recycle_bin_rmdir=\`echo \"\$samba_recycle_bin_subdir\" | /bin/sed \"s#^\$samba_recycle_bin_dir/##\"\`"
-      fi
+      echo "    samba_recycle_bin_rmdir=\`echo \"\$samba_recycle_bin_subdir\" | /bin/sed \"s#^\$samba_recycle_bin_dir/##\"\`"
 
       echo "    if [ \"\$samba_recycle_bin_dir\" != \"\$samba_recycle_bin_rmdir\" ]"
       echo "    then"
@@ -282,153 +272,11 @@ do_mkdir_recycle ()
   fi
 }
 
-#do_remove_all_recyclers ()
-#{
-#  if [ "$SAMBA_RECYCLE_BIN" = "no" ] ; then
-#      find / -name samba_recycle_bin -type d -exec rm -rf {} \; 2>/dev/null &
-#  fi
-#}
-
 do_smbinfo ()
 {
   if [ "$smbinfo" = "yes" ] ; then
       x='T=%T|d=%d|v=%v|h=%h|L=%L|N=%N|p=%p|R=%R|S=%S|P=%P|U=%U|G=%G|u=%u|g=%g|H=%H|I=%I|M=%M|m=%m|a=%a'
       echo " root preexec = /var/install/bin/samba-smbinfo \"$x\" &"
-  fi
-}
-
-#do_rm_msdfslinks ()
-#{
-#  mecho --info "Removing msdfs links in $path ..."
-#  /usr/bin/find "$path" -path '/proc' -prune -o -type l -print |
-#  while read symlink
-#  do
-#      symlinkpath=`stat "$symlink" -c '%n'`
-#      if `ls -l "$symlinkpath" | grep -q ' -> msdfs:'`
-#      then
-#          echo " Removing $symlinkpath ..."
-#          rm -f "$symlinkpath"
-#      fi
-#  done
-#}
-
-do_charset ()
-{
-  if [ "$eisfair_system" = "eisfair-1" ] ; then
-      case $SAMBA_LOCALIZATION in
-      US)
-         {
-          echo " dos charset = CP437"
-          echo " unix charset = ISO8859-1"
-          echo " display charset = ISO8859-1"
-         }
-          ;;
-      ISO8859-1)
-         {
-          echo " dos charset = CP850"
-          echo " unix charset = ISO8859-1"
-          echo " display charset = ISO8859-1"
-         }
-          ;;
-      ISO8859-2)
-         {
-          echo " dos charset = CP852"
-          echo " unix charset = ISO8859-2"
-          echo " display charset = ISO8859-2"
-         }
-          ;;
-      ISO8859-3)
-         {
-          echo " dos charset = CP850"
-          echo " unix charset = ISO8859-3"
-          echo " display charset = ISO8859-3"
-         }
-          ;;
-      ISO8859-4)
-         {
-          echo " dos charset = CP850"
-          echo " unix charset = ISO8859-4"
-          echo " display charset = ISO8859-4"
-         }
-          ;;
-      ISO8859-5)
-         {
-          echo " dos charset = CP866"
-          echo " unix charset = ISO8859-5"
-          echo " display charset = ISO8859-5"
-         }
-          ;;
-      ISO8859-6)
-         {
-          echo " dos charset = CP866"
-          echo " unix charset = ISO8859-6"
-          echo " display charset = ISO8859-6"
-         }
-          ;;
-      ISO8859-7)
-         {
-          echo " dos charset = CP737"
-          echo " unix charset = ISO8859-7"
-          echo " display charset = ISO8859-7"
-         }
-          ;;
-      ISO8859-8)
-         {
-          echo " dos charset = CP850"
-          echo " unix charset = ISO8859-8"
-          echo " display charset = ISO8859-8"
-         }
-          ;;
-      ISO8859-9)
-         {
-          echo " dos charset = CP850"
-          echo " unix charset = ISO8859-9"
-          echo " display charset = ISO8859-9"
-         }
-          ;;
-      ISO8859-14)
-         {
-          echo " dos charset = CP850"
-          echo " unix charset = ISO8859-14"
-          echo " display charset = ISO8859-14"
-         }
-          ;;
-      ISO8859-15)
-         {
-          echo " dos charset = CP850"
-          echo " unix charset = ISO8859-15"
-          echo " display charset = ISO8859-15"
-         }
-          ;;
-      KOI8-R)
-         {
-          echo " dos charset = CP866"
-          echo " unix charset = ISO8859-15"
-          echo " display charset = ISO8859-15"
-         }
-          ;;
-      KOI8-RU)
-         {
-          echo " dos charset = CP866"
-          echo " unix charset = ISO8859-15"
-          echo " display charset = ISO8859-15"
-         }
-          ;;
-      UTF-8)
-         {
-          echo " dos charset = CP850"
-          echo " unix charset = UTF-8"
-          echo " display charset = LOCALE"
-         }
-          ;;
-      *)
-         {
-          echo " dos charset = CP850"
-          echo " unix charset = ISO8859-15"
-          echo " display charset = ISO8859-15"
-         }
-          ;;
-    esac
   fi
 }
 
@@ -815,7 +663,7 @@ fi
 
 {
 echo "#----------------------------------------------------------------------------"
-echo "# Samba configuration file generated by /var/install/config.d/samba.sh"
+echo "# Samba configuration file generated by /var/install/config.d/cui-samba.sh"
 echo "#"
 echo "# Version of Samba for eisfair is $version."
 echo "# SAMBA_MANUAL_CONFIGURATION is $manual."
@@ -826,7 +674,6 @@ echo "#"
 echo "# Creation date: ${EISDATE} ${EISTIME}"
 echo "#----------------------------------------------------------------------------"
 echo "[global]"
-do_charset
 echo " workgroup = $SAMBA_WORKGROUP"
 echo " serverstring = $serverstring"
 echo " interfaces = 127.0.0.1/8 $interface"
@@ -1979,13 +1826,8 @@ if [ "$SAMBA_SMBWEBCLIENT" = "yes" ] ; then
         chmod 0755 $smbwebclientnewpath
         chmod 0755 $smbwebclientpath
 
-        if [ "$eisfair_system" = "eisfair-1" ] ; then
-            chown wwwrun.nogroup $smbwebclientnewpath
-            chown wwwrun.nogroup $smbwebclientpath
-        else
-            chown www-data.www-data $smbwebclientnewpath
-            chown www-data.www-data $smbwebclientpath
-        fi
+        chown www-data.www-data $smbwebclientnewpath
+        chown www-data.www-data $smbwebclientpath
     else
         mecho --error "SAMBA_SMBWEBCLIENT_PATH $SAMBA_SMBWEBCLIENT_PATH doesn't exist,"
         mecho --error "smbwebclient is not properly installed!"
@@ -2014,14 +1856,6 @@ chmod 0644 $generate
 
 if ! grep -q "^tty:" /etc/group ; then
     /var/install/bin/add-group tty 5
-fi
-
-if [ "$eisfair_system" = "eisfair-1" ] ; then
-    # do not do this on eisfair-2
-    chmod 666 /dev/pty*
-    chown root.tty /dev/pty*
-    chmod 666 /dev/ttyp*
-    chown root.root /dev/ttyp*
 fi
 
 if [ -f /usr/share/doc/samba/tools/justpop.exe ] ; then

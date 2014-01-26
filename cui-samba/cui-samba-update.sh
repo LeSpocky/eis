@@ -30,17 +30,17 @@ case $# in
     mode="$1"
     if [ "$mode" = "update" -o "$mode" = "generate" -o "$mode" = "sample" ] ; then
         if [ "$mode" = "update" ] ; then
-            targetfile='/etc/config.d/samba'
+            targetfile='/etc/config.d/cui-samba'
             mecho --info "Updating your configuration file $targetfile ..."
         fi
 
         if [ "$mode" = "generate" ] ; then
-            targetfile='/etc/config.d/samba'
+            targetfile='/etc/config.d/cui-samba'
             mecho --info "Generating configuration file $targetfile ..."
         fi
 
         if [ "$mode" = "sample" ] ; then
-            targetfile='/etc/default.d/samba'
+            targetfile='/etc/default.d/cui-samba'
             mecho --info "Generating sample configuration file $targetfile ..."
         fi
     else

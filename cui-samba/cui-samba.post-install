@@ -2,7 +2,7 @@
 
 . /var/install/include/eislib
 
-conffile='/etc/config.d/samba'
+conffile='/etc/config.d/cui-samba'
 smbconffile='/etc/smb.conf'
 isUpdate=false
 
