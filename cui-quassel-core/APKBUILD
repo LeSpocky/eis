@@ -12,7 +12,8 @@ depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.post-install $pkgname.post-deinstall"
 subpackages=""
-source="${pkgname}.help
+source="check-service.sh
+        ${pkgname}.help
         ${pkgname}.setup.services.menu
         ${pkgname}.setup.services.user.menu
         ${pkgname}.sh
@@ -45,6 +46,7 @@ package() {
 	done
 	cd -
 	install -D -m644 ${srcdir}/${pkgname}.txt                        ${pkgdir}/usr/share/doc/${pkgname}/${pkgname}.txt || return 1
+	install -D -m755 ${srcdir}/check-service.sh                      ${pkgdir}/var/install/bin/check-service.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-add-user.sh                ${pkgdir}/var/install/bin/${pkgname}-add-user.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-change-userpass.sh         ${pkgdir}/var/install/bin/${pkgname}-change-userpass.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}.sh                         ${pkgdir}/var/install/config.d/${pkgname}.sh || return 1

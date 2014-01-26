@@ -73,10 +73,11 @@ _edit_logrotate_file
 
 # restart if START_QUASSEL_CORE='yes'
 if [ "${START_QUASSEL_CORE}" = 'yes' ] ; then
-    /etc/init.d/${packageNameBinary} restart
+    rc-update --quiet add ${packageNameBinary}
+    rc-service ${packageNameBinary} start
+else
+    rc-service ${packageNameBinary} stop
+    rc-update --quiet del ${packageNameBinary}
 fi
 
 exit 0
-# ----------------------------------------------------------------------------
-# End
-# ----------------------------------------------------------------------------
