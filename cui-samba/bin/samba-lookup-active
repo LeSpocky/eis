@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 #----------------------------------------------------------------------------
 # /var/install/bin/samba-lookup-active - lookup active eisfair samba clients
 #

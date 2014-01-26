@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 #----------------------------------------------------------------------------
 # /var/install/bin/samba-show-variables - show all smb.conf variables
 #

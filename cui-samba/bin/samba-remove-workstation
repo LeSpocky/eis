@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 #----------------------------------------------------------------------------
 # /var/install/bin/samba-remove-workstation - remove a samba workstation
 #

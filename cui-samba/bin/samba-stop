@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 #----------------------------------------------------------------------------
 # /var/install/bin/samba-stop - call /etc/init.d/samba to stop samba services
 #

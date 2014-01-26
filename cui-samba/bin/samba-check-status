@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 #----------------------------------------------------------------------------
 # /var/install/bin/samba-check-status - check status of smbd and nmbd
 #

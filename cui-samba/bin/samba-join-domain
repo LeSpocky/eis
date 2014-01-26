@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 #----------------------------------------------------------------------------
 # /var/install/bin/samba-join-domain - Add eisfair Samba Server into an Windows NT Domain
 #

@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 #----------------------------------------------------------------------------
 # /var/install/bin/samba-restore-sid - restore Samba SID from /root/MACHINE.SID
 #
