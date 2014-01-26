@@ -55,27 +55,27 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.menu        ${pkgdir}/var/install/menu/setup.services.${pkgname}.menu || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.user.menu   ${pkgdir}/var/install/menu/setup.services.${pkgname}.user.menu || return 1
 }
-md5sums="4a0cd3f52753b8f5859d3506241962c5  check-service.sh
+md5sums="3b8ea8e3075e394fce4c87596bc90d59  check-service.sh
 4b65b9d04448537f2ef298bf280b9bb6  cui-quassel-core.help
-0d414b8fffadaa8528d8d2664d0a9065  cui-quassel-core.setup.services.menu
+45441c6762c12654fb006ee81b2da3a4  cui-quassel-core.setup.services.menu
 43e9a3692e3067c14da9cc5433f63ce9  cui-quassel-core.setup.services.user.menu
 63a2dfc01c5ec6cdb1e98f29e3a62080  cui-quassel-core.sh
 2634e7ab2b1447d4a0c96c4dc90f3a86  cui-quassel-core.txt
 0038ac3cf17f93fb211390640a49f996  cui-quassel-core-add-user.sh
 143ab233e37e7df41440256ca662eb9d  cui-quassel-core-change-userpass.sh
 bf58c7bf69b735be0802e46f6e9ab538  cui-quassel-core-update.sh"
-sha256sums="a3082b394b374b94fd1fd3cf5401b01cb7eeb4a3f6079a098d565c4a4dfaaae1  check-service.sh
+sha256sums="dfe4fdd13777d09b5d921caf2bcb0b63bfeb45df71cea12e68d0ed7cc482a2f5  check-service.sh
 1f486aed78ffb58e4c42b5bbea9b63100c0e2e60fc23fdd9a6e26047f5f6f40f  cui-quassel-core.help
-320ac4b4184b49d425a472ee9ebeecdefe798da7da5ed9b53004f03b59a6684d  cui-quassel-core.setup.services.menu
+80bb811ae7a7f9612b5af2e08295faff14f83995661fb23c3fab9f3c6f150d93  cui-quassel-core.setup.services.menu
 656f2ec0e5c22dda7692a8aaca30e8b03ce66e7c8812173f415b7511c08f0a49  cui-quassel-core.setup.services.user.menu
 91ddd8b0a6690c47120c24a49a269f57f7586e881645f94b6e07686f1cfe6b6b  cui-quassel-core.sh
 6313113f634df116143c2db6c34a9c4e2060bdfe01ea828eb81de19ad9600da9  cui-quassel-core.txt
 6ce6c342d0e03d7a14a406d09a370ed579ada3ece2481c2017855d061682ff44  cui-quassel-core-add-user.sh
 e4de7ccd2d4d89b1dbbcba8e4148e04c9382d71bad6804dc31a8a890f3c03ac8  cui-quassel-core-change-userpass.sh
 23493fed2a02e302471f51884994d8d213b7ba07515614604d33f1ce0cf6edf9  cui-quassel-core-update.sh"
-sha512sums="e01e2aa5c2a76bf94f34acdbcf05c1dc24ebc1b112c374f63268f4f09868978d89c6f002115b6c72643633c78f45ed4202ef9b51b9f5943c1b04be7755f4bf94  check-service.sh
+sha512sums="5644d2ebc78f92c0d12cdc844aea00183bdcf58f49f46a1577291c25b1e3bc699ab101be59849a0b6fa24432d0b3426bd5e6319341e7ad6ca3d38eee35e15ad2  check-service.sh
 1e89423494d7efed5be0205a4bb47018c962456da798cbf20f4f097cfbafea297c5d8d2db45b926e2a5dc113e25f64933eb169327463c5494d3b612b2859cd65  cui-quassel-core.help
-19b5668bf83295c89480a0b166c1ea9442a1c601d5e1935859c13a77ce87dc62cf979682672a9996bc78266a0541b6ef7f81940dd6609f07bcac09a86e906f7e  cui-quassel-core.setup.services.menu
+12f3d106502d3d0d60c317217d66c6185cf3f6eada2c0d07d860083b1bf9389c58e7c076eaac5bd19e3d534d83d510d3507ecb05cac75ac68abba454343bc974  cui-quassel-core.setup.services.menu
 dae3c203638555552f07ed89bd4068f36ce0aff9fadd2272e46b0fff249061c3e4e716c8ecc98d602683b05608b54fe12cbaa84be5a538e485a4189bd910b10d  cui-quassel-core.setup.services.user.menu
 14bdb5eeadb333ff9e81fae527e25a1988de6d806db50a3b14ce9b6ed3f14e6904a68623b2f0b64f281c5c4f8a1182eb491cbcc4564499678410e2e674c67679  cui-quassel-core.sh
 fdb396b98220518086d429daf1bc72d859be68bb5be84e65e7e20a558c2302c2135a79b0c70d35e21fd35744400500361d13f0a267b03455f7aa79bd79ee2350  cui-quassel-core.txt
