@@ -1,12 +1,11 @@
 #! /bin/sh
 #----------------------------------------------------------------------------
-# /var/install/bin/samba-edit - edit /etc/config.d/samba and create new
+# /var/install/bin/samba-edit - edit /etc/config.d/cui-samba and create new
 #                               /etc/smb.conf by /var/install/config.d/samba.sh
 #
 # Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
 #
 # Creation   : 2001-11-04 fm
-# Last Update: 2013-08-20 tb
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +14,7 @@
 #----------------------------------------------------------------------------
 . /var/install/include/eislib
 
-configfile='/etc/config.d/samba'
+configfile='/etc/config.d/cui-samba'
 
 clrhome
 mecho --info "Edit Samba configuration"

@@ -8,7 +8,6 @@
 #    or: /var/install/bin/samba-save-sid noninteractive
 #
 # Creation   : 2003-05-02 tb
-# Last Update: 2013-08-20 tb
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -54,7 +53,7 @@ fi
 echo
 if [ "$doit" = "true" ]
 then
-    . /etc/config.d/samba
+    . /etc/config.d/cui-samba
     sid=`$netbin getlocalsid $SAMBA_WORKGROUP 2>/dev/null | cut -d' ' -f6`
 
     if [ -n "$sid" ]

@@ -3,7 +3,6 @@
 # /var/install/bin/userman.cui.samba10.module.sh - samba user manager
 #
 # Creation:     2010-11-07 dv
-# Last update:  $Id: userman.cui.samba10.module.sh 34201 2013-08-01 19:19:48Z knuffel $
 #
 # Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
 #

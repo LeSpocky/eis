@@ -58,14 +58,11 @@ do_update ()
 {
  {
   echo "# ----------------------------------------------------------------------------"
-  echo "# /etc/config.d/samba - configuration for Samba on eisfair"
+  echo "# /etc/config.d/cui-samba - configuration for Samba on eisfair-ng"
   echo "#"
   echo "# Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net"
   echo "#"
   echo "# Creation   : 2002-02-04 tb"
-  echo "# Last Update: 2013-12-09 tb"
-  echo "#"
-  echo "# Version    : 2.4.1"
   echo "#"
   echo "# This program is free software; you can redistribute it and/or modify"
   echo "# it under the terms of the GNU General Public License as published by"

@@ -5,7 +5,6 @@
 # Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
 #
 # Creation   : 2006-01-01 tb/jv
-# Last Update: 2013-05-08 tb
 #
 # With idees from Stephen Rothwell <sfr@linuxcare.com> and
 # Rod Smith <rodsmith@rodsbooks.com>
@@ -183,7 +182,7 @@ mv "$cache_file" "$cache_file".old 2>/dev/null
 mv "$cache_file".$$ "$cache_file"
 
 # Read samba configuration
-. /etc/config.d/samba
+. /etc/config.d/cui-samba
 if [ "$SAMBA_WINSHOOK_MESSAGE_SEND" = "yes" ]
 then
     if [ "$op" = "add" -a -n "$name" -a "$name" != "$hostname" -a "$type" = "20" ]
