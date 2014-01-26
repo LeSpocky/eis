@@ -3,7 +3,7 @@
 <!-- Creation: 2005-06-16 tb -->
 <package>cui-samba</package>
 <title>Samba Administration</title>
-<doc file="samba.txt">Read Samba Documentation</doc>
+<doc file="cui-samba.txt">Read Samba Documentation</doc>
 <menu file="setup.configuration.samba.menu">Samba Configuration Handling</menu>
 <menu file="setup.user.samba.menu">Samba User Handling</menu>
 <menu file="setup.handle.samba.menu">Samba Server Handling</menu>
