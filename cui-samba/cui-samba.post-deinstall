@@ -2,4 +2,7 @@
 
 /var/install/bin/del-menu setup.services.menu setup.services.samba.menu
 
+rm -rf /etc/config.d/cui-samba
+rm -rf /etc/default.d/cui-samba
+
 exit 0
