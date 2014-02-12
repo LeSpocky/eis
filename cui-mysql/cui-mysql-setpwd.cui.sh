@@ -95,7 +95,7 @@ function inputdlg_ok_clicked()
 # Cancel button clicked hook
 # expects: $1 : window handle of dialog window
 #          $2 : button control id
-# returns: 1  : event handled     
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
 function inputdlg_cancel_clicked()
 {
@@ -107,7 +107,7 @@ function inputdlg_cancel_clicked()
 # inputdlg_create_hook
 # Dialog create hook - create dialog controls
 # expects: $1 : window handle of dialog window
-# returns: 1  : event handled      
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
 function inputdlg_create_hook()
 {
@@ -273,7 +273,7 @@ function init()
 #       return
 #   fi
 
-    # setup main window    
+    # setup main window
     cui_window_new "$win" 0 0 0 0 $[$CWS_POPUP + $CWS_CAPTION + $CWS_STATUSBAR + $CWS_MAXIMIZED] && mainwin="$p2"
     if cui_valid_handle $mainwin
     then

@@ -2,6 +2,7 @@
 <title>MySQL server administration tools (dummy)</title>
 <package>mysql</package>
 <script file="/var/install/bin/cui-mysql-setpwd.cui.sh">Set MySQL-root password</script>
+<script file="/usr/bin/cui-mysql-backup.sh">Backup all databases</script>
+<script file="/usr/bin/cui-mysql-backup.sh --select">Backup database</script>
+<script file="/usr/bin/cui-mysql-restore.sh --select">Restore database</script>
 <!-- script file="" Edit, remove MySQL user /script -->
-<!-- script file="" Backup database /script -->
-<!-- script file="" Restore database /script -->

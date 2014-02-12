@@ -1,41 +1,63 @@
 #!/bin/sh
- # mysqlbackup.sh
+# create backup for mysql tables
  
 MyUSER="root"
-MyPASS="-p"
 
 # DO NOT BACKUP these databases
-IGGY="information_schema performance_schema test"
+EXCLUDE="information_schema performance_schema test"
  
-BACKUP_DIR=${1:-/var/lib/mysql_backup}
+DATA_DIR="/var/lib/mysql"
+BACKUP_DIR="/var/lib/mysql_backup"
 EXPIRETIME=14
-DATE=`date "+%Y%m%d-%H"`
+DATENOW=`date "+%Y%m%d-%H"`
  
-# Sicherstellen, dass $BACKUP_DIR existiert
-mkdir -p $BACKUP_DIR
-chmod 0700 $BACKUP_DIR
+# force create $BACKUP_DIR
+mkdir -p -m 0700 $BACKUP_DIR
 
+#-------------------------------------------------------------------------------
+# write dump
+backup_mysql_database()
+{
+    local lastupdate=""
+    local dbname="$1"
+    echo "database: $dbname" | logger -t 'mysql-backup' -p 'local5.info'
+    lastupdate=$(mysql -u $MyUSER -Bse "SELECT DATE_FORMAT(UPDATE_TIME,'%Y%m%d-%H' ) FROM information_schema.tables WHERE table_schema='$dbname' GROUP BY TABLE_SCHEMA ORDER BY UPDATE_TIME DESC")
+    [ -z "$lastupdate" -o "$lastupdate" = "NULL" ] && lastupdate="$DATENOW"
+    mysqldump -u $MyUSER --hex-blob --events $dbname | gzip -9 > ${BACKUP_DIR}/${dbname}-${lastupdate}.sql.gz
+    [ "$?" = "1" ] && sleep 5
+}
 
-# get all database names
-DBS="$(mysql -u $MyUSER $MyPASS -Bse 'show databases')" 
-
-# Backups erstellen
-for db in $DBS
-do
-    skipdb=0
-    if [ -n "$IGGY" ] ; then
-        for i in $IGGY
-        do
-            [ "$db" = "$i" ] && skipdb=1 || :
-        done
+#-------------------------------------------------------------------------------
+# select database or backup all
+if [ -n "$1" ] ; then
+    if [ "$1" = "--select" ] ; then
+        /var/install/bin/list-files.cui -t "Select database for backup"\
+                                -c "Database:"\
+                                -p ${DATA_DIR} \
+                                -o 2 -d -w \
+                                -s "/usr/bin/cui-mysql-backup.sh" \
+                                --helpfile=/var/install/help/mysql \
+                                --helpname=MYSQL_MENU_BACKUP
+    else
+        backup_mysql_database "$1"
     fi
-    if [ "$skipdb" = "0" ] ; then
-        LASTUPDATE=$(mysql -u $MyUSER $MyPASS -Bse "SELECT DATE_FORMAT(UPDATE_TIME,'%Y%m%d-%H' ) FROM information_schema.tables WHERE table_schema='$db' GROUP BY TABLE_SCHEMA ORDER BY UPDATE_TIME DESC")
-        [ -z "$LASTUPDATE" -o "$LASTUPDATE" = "NULL" ] && LASTUPDATE="$DATE"
-        mysqldump -u $MyUSER $MyPASS --hex-blob $db | gzip -9 > ${BACKUP_DIR}/${db}-${LASTUPDATE}.sql.gz
-    fi
-done
- 
- 
-#Alte Backups loeschen
-#find $BACKUP_DIR -mtime +${EXPIRETIME} -exec rm {} \;
+else
+    # get all database names
+    DBS="$(mysql -u $MyUSER -Bse 'show databases')"
+    [ "$?" = "1" ] && exit 1
+    for db in $DBS
+    do
+        skipdb=0
+        if [ -n "$EXCLUDE" ] ; then
+            for i in $EXCLUDE
+            do
+                [ "$db" = "$i" ] && skipdb=1
+            done
+        fi
+        [ "$skipdb" = "0" ] && backup_mysql_database "$db"
+    done
+    #remove old backups
+    #find $BACKUP_DIR -mtime +${EXPIRETIME} -exec rm {} \;
+fi
+
+exit 0

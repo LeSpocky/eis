@@ -37,3 +37,14 @@ Number of log files to save.<br/>
 This is the number of log file archives that are kept
 on the system by logrotate, before they are outdated and removed.
 </help>
+
+
+
+<help name="MYSQL_MENU_BACKUP">
+Select database for write SQL backup file to /var/lib/mysql_backup.<br/>
+</help>
+
+<help name="MYSQL_MENU_RESTORE">
+Select compressed SQL file for create/recreate database.<br/>
+One exists database with the same name is overwritten.
+</help>
