@@ -11,9 +11,13 @@ restore_mysql_database()
 {
     local backupname="$1"
     local database_only_name=`echo $backupname | sed "s/\(-........-..\....\...\)//"`
-    echo "database: $dbname" | logger -t 'mysql-restore' -p 'local5.info'
+    mkdir -p -m 0770 /var/lib/mysql/$database_only_name
+    chown mysql:root /var/lib/mysql/$database_only_name
     gunzip < ${BACKUP_DIR}/${dbname} | mysql -u $MyUSER "$database_only_name"
-    [ "$?" -eq 0 ] && echo "Database restored: $database_only_name        [ Ok ]"
+    if [ "$?" -eq 0 ] ; then
+        echo "database restored: $dbname" | logger -t 'mysql-restore' -p 'local5.info'
+        echo "Database restored: $database_only_name    [ Ok ]"
+    fi
     sleep 3
 }
 
