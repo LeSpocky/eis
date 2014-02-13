@@ -6,19 +6,30 @@ DATA_DIR="/var/lib/mysql"
 BACKUP_DIR="/var/lib/mysql_backup"
 
 #-------------------------------------------------------------------------------
+# check if password set
+mysqladmin -u root status >/dev/null 2>&1
+if [ "$?" -eq 1 ] ; then
+    echo "Passwort fail for login with MySQL user root@localhost!" | logger -t 'mysql-restore' -p 'local5.error'
+    echo ""
+    echo "MySQL user root@localhost password not set or false!"
+    sleep 2
+    exit 1
+fi
+
+#-------------------------------------------------------------------------------
 # extract dump
 restore_mysql_database()
 {
     local backupname="$1"
     local database_only_name=`echo $backupname | sed "s/\(-........-..\....\...\)//"`
     mkdir -p -m 0770 /var/lib/mysql/$database_only_name
-    chown mysql:root /var/lib/mysql/$database_only_name
+    chown mysql:mysql /var/lib/mysql/$database_only_name
     gunzip ${BACKUP_DIR}/${backupname} -c | mysql -u $MyUSER ${database_only_name}
     if [ "$?" -eq 0 ] ; then
         echo "database restored: $backupname" | logger -t 'mysql-restore' -p 'local5.info'
         echo "Database restored: $database_only_name    [ Ok ]"
     fi
-    sleep 3
+    sleep 2
 }
 
 #-------------------------------------------------------------------------------

@@ -15,3 +15,5 @@ MYSQL_RAM="2GB"                       # Use 1 ... 64 GB RAM
 
 MYSQL_LOG_INTERVAL="weekly"
 MYSQL_LOG_MAXCOUNT="4"
+
+MYSQL_BACKUP_CRON_SCHEDULE='15 1 * * *'

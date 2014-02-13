@@ -6,3 +6,4 @@ MYSQL_CONNECT_PORT                     MYSQL_NETWORK                 -          
 MYSQL_RAM                              START_MYSQL                   -                            MYSQL_RAM
 MYSQL_LOG_INTERVAL                     START_MYSQL                   -                            LOG_INTERVAL
 MYSQL_LOG_MAXCOUNT                     START_MYSQL                   -                            NUMERIC
+MYSQL_BACKUP_CRON_SCHEDULE             START_MYSQL                   -                            CRONTAB

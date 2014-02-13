@@ -38,6 +38,12 @@ This is the number of log file archives that are kept
 on the system by logrotate, before they are outdated and removed.
 </help>
 
+<help name="MYSQL_BACKUP_CRON_SCHEDULE">
+Start time for run all backups<br/>
+<br/>
+Default: MYSQL_BACKUP_CRON_SCHEDULE='15 1 * * *'
+</help>
+
 
 
 <help name="MYSQL_MENU_BACKUP">

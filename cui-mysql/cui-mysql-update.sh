@@ -43,6 +43,8 @@ packages_name=mysql
 
     printvar "MYSQL_LOG_MAXCOUNT"   "max count of logfiles"
 
+    printvar "MYSQL_BACKUP_CRON_SCHEDULE" "start time for database backup"
+
 ) > /etc/config.d/${packages_name}
 # Set rights
 chmod 0644  /etc/config.d/${packages_name}

@@ -388,4 +388,15 @@ cat > /etc/logrotate.d/mysql <<EOF
 }
 EOF
 
+#-------------------------------------------------------------------------------
+# add error logfile view
+#-------------------------------------------------------------------------------
+/var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/lib/mysql/mysql-error.log" "MySQL errors"
+
+#-------------------------------------------------------------------------------
+# setup cron for database backup
+#-------------------------------------------------------------------------------
+echo "$MYSQL_BACKUP_CRON_SCHEDULE /usr/bin/cui-mysql-backup.sh" > /etc/cron/root/mysql
+/sbin/rc-service --quiet fcron reload
+
 exit 0

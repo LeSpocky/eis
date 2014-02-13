@@ -31,3 +31,10 @@
 
    MYSQL_LOG_MAXCOUNT
           Maximale Anzahl der gespeicherten Log-Dateien.
+
+   MYSQL_BACKUP_CRON_SCHEDULE
+          Der Eintrag gibt den Startzeitpunkt und die Anzahl der
+          Ausfuerungen des Auto-Backup System an. Die 5 Werte stehe fuer:
+          Minute, Stunde, Tag, Monat, Wochentag.
+
+          Beispiel taeglich 01:15 Uhr: 15 1 * * *

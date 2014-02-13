@@ -9,6 +9,8 @@
 # (at your option) any later version.
 #----------------------------------------------------------------------------
 
+ADD_BACKUPUSER="CREATE USER 'backup'@'localhost'; GRANT ALL PRIVILEGES ON *.* TO 'backup'@'localhost' WITH GRANT OPTION;"
+
 . /var/install/include/cuilib
 #. /var/install/include/mysqllib-2
 

@@ -15,6 +15,17 @@ DATENOW=`date "+%Y%m%d-%H"`
 mkdir -p -m 0700 $BACKUP_DIR
 
 #-------------------------------------------------------------------------------
+# check if password set
+mysqladmin -u root status >/dev/null 2>&1
+if [ "$?" -eq 1 ] ; then
+    echo "Passwort fail for login with MySQL user root@localhost!" | logger -t 'mysql-backup' -p 'local5.error'
+    echo ""
+    echo "MySQL user root@localhost password not set or false!"
+    sleep 2
+    exit 1
+fi
+
+#-------------------------------------------------------------------------------
 # write dump
 backup_mysql_database()
 {
@@ -24,7 +35,7 @@ backup_mysql_database()
     lastupdate=$(mysql -u $MyUSER -Bse "SELECT DATE_FORMAT(UPDATE_TIME,'%Y%m%d-%H' ) FROM information_schema.tables WHERE table_schema='$dbname' GROUP BY TABLE_SCHEMA ORDER BY UPDATE_TIME DESC")
     [ -z "$lastupdate" -o "$lastupdate" = "NULL" ] && lastupdate="$DATENOW"
     mysqldump -u $MyUSER --hex-blob --events $dbname | gzip -9 > ${BACKUP_DIR}/${dbname}-${lastupdate}.sql.gz
-    [ "$?" = "1" ] && sleep 5
+    [ "$?" = "1" ] && sleep 2
 }
 
 #-------------------------------------------------------------------------------
