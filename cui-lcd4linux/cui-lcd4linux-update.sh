@@ -3,26 +3,19 @@
 # /var/install/config.d/cui-lcd4linux-update.sh - paramater update script
 #
 # Creation   : 2010-08-18 Y. Schumann
-#
 # Copyright (c) 2001-2014 The eisfair Team, <team(at)eisfair(dot)org>
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
 # ----------------------------------------------------------------------------
 
 #exec 2> `pwd`/cui-lcd4linux-update-trace$$.log
 #set -x
 
 # Include libs, helpers a.s.o.
-. /var/install/include/eislib
 . /var/install/include/configlib
 
 # set packages name
 packageName=cui-lcd4linux
 modifiedSomething=false
-
 
 
 # ----------------------------------------------------------------------------
@@ -90,12 +83,8 @@ LCD_UPDATE_ICON='1000'
 updateVariables() {
     # -------------------
     # Read current values
-    if [ -f /etc/config.d/${packageName} ]
-    then
-        . /etc/config.d/${packageName}
-    fi
+    [ -f /etc/config.d/${packageName} ] && . /etc/config.d/${packageName}
 }
-
 
 
 # ----------------------------------------------------------------------------
@@ -218,7 +207,7 @@ makeConfigFile() {
 # ----------------------------------------------------------------------------
 # Create the check.d file
 makeCheckFile() {
-    printgpl -check ${packageName} '2010-08-18' 'Y. Schumann' >/etc/check.d/${packageName}
+    printgpl --check ${packageName} >/etc/check.d/${packageName}
     cat >> /etc/check.d/${packageName} <<EOFG
 # Variable                      OPT_VARIABLE       VARIABLE_N              VALUE
 START_LCD                       -                  -                       YESNO
@@ -276,7 +265,7 @@ EOFG
     chmod 0600 /etc/check.d/${packageName}
     chown root /etc/check.d/${packageName}
 
-    printgpl -check_exp ${packageName} '2010-08-18' 'Y. Schumann' >/etc/check.d/${packageName}.exp
+    printgpl --check_exp ${packageName} >/etc/check.d/${packageName}.exp
     cat >> /etc/check.d/${packageName}.exp <<EOFG
 
 LCD_DRIVER_CUI    = '(RE:NOTEMPTY)'
@@ -324,7 +313,7 @@ EOFG
     chmod 0600 /etc/check.d/${packageName}.exp
     chown root /etc/check.d/${packageName}.exp
 
-#    printgpl -check_ext ${packageName} '2010-08-18' 'Y. Schumann' >/etc/check.d/${packageName}.ext
+#    printgpl --check_ext ${packageName} >/etc/check.d/${packageName}.ext
 #    cat >> /etc/check.d/${packageName}.ext <<EOFG
 
 
@@ -336,36 +325,18 @@ EOFG
 }
 
 
-
 # ----------------------------------------------------------------------------
 # Main
-# ----------------------------------------------------------------------------
 # Write default config file
-if [ -f /etc/config.d/${packageName} ] ; then
-    mecho --info -n 'Updating configuration (This may take a while): .'
-else
-    mecho --info -n 'Creating configuration (This may take a while): .'
-fi
-
 makeConfigFile /etc/default.d/${packageName}
 
 # Update values from old version
-mecho --info -n '.'
 updateVariables
 
 # Write new config file
-mecho --info -n '.'
 makeConfigFile /etc/config.d/${packageName}
 
 # Write check.d file
-mecho --info -n '.'
 makeCheckFile
-
-mecho ''
-mecho --ok
-
-if ${modifiedSomething} ; then
-    mecho --warn ' -> Read documentation for modified parameter(s)!'
-fi
 
 exit 0
