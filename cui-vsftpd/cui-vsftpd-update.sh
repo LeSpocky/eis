@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #----------------------------------------------------------------------------
 # Eisfair configuration parameter update script
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
@@ -29,7 +29,7 @@ packages_name=vsftpd
 
     printgroup "General settings"
 
-    printvar "START_FTP"          "Start ftp service 'yes' or 'no'"
+    printvar "START_FTP"          "Start ftp service yes or no"
 
     printvar "FTP_PORT"           "Listen for an incoming connection. Default 21."
 

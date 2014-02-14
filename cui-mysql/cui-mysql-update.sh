@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #----------------------------------------------------------------------------
 # Eisfair configuration parameter update script
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
@@ -29,7 +29,7 @@ packages_name=mysql
 
     printgroup "General settings"
 
-    printvar "START_MYSQL"          "Start mysql service 'yes' or 'no'"
+    printvar "START_MYSQL"          "Start mysql service yes or no"
 
     printvar "MYSQL_NETWORK"        "enable the TCP/IP external connection"
 
@@ -49,6 +49,5 @@ packages_name=mysql
 # Set rights
 chmod 0644  /etc/config.d/${packages_name}
 chown root  /etc/config.d/${packages_name}
-
 
 exit 0

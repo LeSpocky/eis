@@ -48,7 +48,7 @@ packages_name=apache2
     printvar "APACHE2_HOSTNAME_LOOKUPS"       "Resolve IPs in logfile?"
     printvar "APACHE2_VIEW_DIRECTORY_CONTENT" "If there's no index.html view files in dir"
     printvar "APACHE2_ACCESS_CONTROL"         "Who get access e.g. 192.168.0.0/24"
-    printvar "APACHE2_ENABLE_SSI"             "Enable SSI 'yes' or 'no'"
+    printvar "APACHE2_ENABLE_SSI"             "Enable SSI yes or no"
     printvar "APACHE2_ENABLE_USERDIR"         "Show content of /home/USER/public_html"
 
     #------------------------------------------------------------------------------

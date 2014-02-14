@@ -13,7 +13,7 @@ make_config_file()
 {
     internal_conf_file=$1
     {
-    printgpl --conf cui "2007-11-03" "dv"
+    printgpl --conf cui
 
     printgroup "global options"
     printvar "CUI_USE_COLORS" "Enable colors"

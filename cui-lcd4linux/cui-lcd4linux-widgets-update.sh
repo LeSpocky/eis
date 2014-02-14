@@ -1,29 +1,22 @@
-#! /bin/bash
+#!/bin/bash
 # ----------------------------------------------------------------------------
 # /var/install/config.d/cui-lcd4linux-update.sh - paramater update script
 #
 # Creation:    2010-10-03 Y. Schumann
-#
 # Copyright (c) 2001-2014 The eisfair Team, <team(at)eisfair(dot)org>
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
 # ----------------------------------------------------------------------------
 
 #exec 2> `pwd`/cui-lcd4linux-widgets-update-trace$$.log
 #set -x
 
 # Include libs, helpers a.s.o.
-. /var/install/include/eislib
 . /var/install/include/configlib
 
 # Set variables
 packageName=cui-lcd4linux-widgets
 mainPackageName=cui-lcd4linux
 modifiedSomething=false
-
 
 
 # ----------------------------------------------------------------------------
@@ -719,7 +712,7 @@ makeConfigFile() {
     internal_conf_file=${1}
     {
     # ----------------------------------------------------------------------------
-    printgpl -conf ${packageName} '2010-10-03' 'Yves Schumann'
+    printgpl --conf ${packageName}
     # ----------------------------------------------------------------------------
 
     # ----------------------------------------------------------------------------
@@ -735,19 +728,19 @@ makeConfigFile() {
     while [ ${idx} -le ${LCD_WIDGET_TEXT_N} ] ; do
         printvar 'LCD_WIDGET_TEXT_'${idx}'_NAME'       'Name of this widget'
         printvar 'LCD_WIDGET_TEXT_'${idx}'_ACTIVE'     'Is widget active or not'
-	    printvar 'LCD_WIDGET_TEXT_'${idx}'_PREFIX'     'The result of these expressions will be displayd before the actual value'
+        printvar 'LCD_WIDGET_TEXT_'${idx}'_PREFIX'     'The result of these expressions will be displayd before the actual value'
         printvar 'LCD_WIDGET_TEXT_'${idx}'_EXP'        'This expression will be evaluated and its result will be displayed'
-	    printvar 'LCD_WIDGET_TEXT_'${idx}'_POSTFIX'    'The result of these expressions will be displayd after the actual value'
+        printvar 'LCD_WIDGET_TEXT_'${idx}'_POSTFIX'    'The result of these expressions will be displayd after the actual value'
         printvar 'LCD_WIDGET_TEXT_'${idx}'_WIDTH'      'Length of the whole widget (including prefix and postfix!)'
-	    printvar 'LCD_WIDGET_TEXT_'${idx}'_PRECISION'  '(maximum) number of decimal places'
+        printvar 'LCD_WIDGET_TEXT_'${idx}'_PRECISION'  '(maximum) number of decimal places'
         printvar 'LCD_WIDGET_TEXT_'${idx}'_ALIGN'      'Left (default), Center, Right or Marquee'
         printvar 'LCD_WIDGET_TEXT_'${idx}'_SPEED'      'Marquee scroller interval (msec), default 500msec'
         printvar 'LCD_WIDGET_TEXT_'${idx}'_UPDATE'     'Update interval (msec), default 500msec'
         idx=$((idx+1))
     done
-  	} > ${internal_conf_file}
-    mecho --info -n '.'
-	{
+    } > ${internal_conf_file}
+
+    {
     # ----------------------------------------------------------------------------
     printgroup 'Bar Widgets'
     # ----------------------------------------------------------------------------
@@ -757,21 +750,21 @@ makeConfigFile() {
         printvar 'LCD_WIDGET_BAR_'${idx}'_NAME'        'Name of this widget'
         printvar 'LCD_WIDGET_BAR_'${idx}'_ACTIVE'      'Is widget active or not'
         printvar 'LCD_WIDGET_BAR_'${idx}'_EXP'         'its result is used for the length of the (upper half) bar'
-	    printvar 'LCD_WIDGET_BAR_'${idx}'_EXP2'        'its result is used for the length of the lower half bar'
+        printvar 'LCD_WIDGET_BAR_'${idx}'_EXP2'        'its result is used for the length of the lower half bar'
         printvar 'LCD_WIDGET_BAR_'${idx}'_LENGTH'      'size of the whole bar widget'
-	    printvar 'LCD_WIDGET_BAR_'${idx}'_MIN'         'scale: value where the bar starts'
-	    printvar 'LCD_WIDGET_BAR_'${idx}'_MAX'         'scale: value where the bar ends'
+        printvar 'LCD_WIDGET_BAR_'${idx}'_MIN'         'scale: value where the bar starts'
+        printvar 'LCD_WIDGET_BAR_'${idx}'_MAX'         'scale: value where the bar ends'
         printvar 'LCD_WIDGET_BAR_'${idx}'_DIRECTION'   "'East' (left to right, default),"
         printvar ''                                  "'West' (right to left),"
         printvar ''                                  "'North' (bottom up) or"
         printvar ''                                  "'South' (top down)"
-	    printvar 'LCD_WIDGET_BAR_'${idx}'_UPDATE'     'Update interval (msec), default 500msec'
-	    printvar 'LCD_WIDGET_BAR_'${idx}'_STYLE'       "'H' (hollow: with a frame) default: none"
+        printvar 'LCD_WIDGET_BAR_'${idx}'_UPDATE'     'Update interval (msec), default 500msec'
+        printvar 'LCD_WIDGET_BAR_'${idx}'_STYLE'       "'H' (hollow: with a frame) default: none"
         idx=$((idx+1))
     done
-	} >> ${internal_conf_file}
-    mecho --info -n '.'
-	{
+    } >> ${internal_conf_file}
+
+    {
     # ----------------------------------------------------------------------------
     printgroup 'Icon Widgets'
     # ----------------------------------------------------------------------------
@@ -788,8 +781,8 @@ makeConfigFile() {
         printvar 'LCD_WIDGET_ICON_'${idx}'_ROW6'      '6th row'
         printvar 'LCD_WIDGET_ICON_'${idx}'_ROW7'      '7th row'
         printvar 'LCD_WIDGET_ICON_'${idx}'_ROW8'      '8th row'
-	    printvar 'LCD_WIDGET_ICON_'${idx}'_VISIBLE'   'expression controlling the visibility (for blinking effects)'
-	    printvar 'LCD_WIDGET_ICON_'${idx}'_SPEED'     'Update speed'
+        printvar 'LCD_WIDGET_ICON_'${idx}'_VISIBLE'   'expression controlling the visibility (for blinking effects)'
+        printvar 'LCD_WIDGET_ICON_'${idx}'_SPEED'     'Update speed'
         idx=$((idx+1))
     done
 
@@ -808,7 +801,7 @@ makeConfigFile() {
 # ----------------------------------------------------------------------------
 makeCheckFile()
 {
-    printgpl -check ${packageName} '2010-10-03' 'Yves Schumann' >/etc/check.d/${packageName}
+    printgpl --check ${packageName} >/etc/check.d/${packageName}
     cat >> /etc/check.d/${packageName} <<EOFG
 # Variable                      OPT_VARIABLE               VARIABLE_N              VALUE
 START_LCD_WIDGET                -                          -                       YESNO
@@ -857,7 +850,7 @@ EOFG
     chmod 0600 /etc/check.d/${packageName}
     chown root /etc/check.d/${packageName}
 
-    printgpl -check_exp ${packageName} '2010-10-03' 'Yves Schumann' >/etc/check.d/${packageName}.exp
+    printgpl --check_exp ${packageName} >/etc/check.d/${packageName}.exp
     cat >> /etc/check.d/${packageName}.exp <<EOFG
 
 LCD_ALIGN_CUI     = 'Left|Center|Right|Marquee'
@@ -878,7 +871,7 @@ EOFG
     chmod 0600 /etc/check.d/${packageName}.exp
     chown root /etc/check.d/${packageName}.exp
 
-#    printgpl -check_ext ${packageName} '2010-10-03' 'Yves Schumann' >/etc/check.d/${packageName}.ext
+#    printgpl --check_ext ${packageName} '2010-10-03' 'Yves Schumann' >/etc/check.d/${packageName}.ext
 #    cat >> /etc/check.d/${packageName}.ext <<EOFG
 
 
@@ -895,35 +888,15 @@ EOFG
 # Main
 # ----------------------------------------------------------------------------
 # Write default config file
-mecho
-if [ -f /etc/config.d/${packageName} ] ; then
-    mecho --info -n 'Updating widget configuration (This may take a while): .'
-else
-    mecho --info -n 'Creating widget configuration (This may take a while): .'
-fi
-
 makeConfigFile /etc/default.d/${packageName}
 
 # Update values from old version
-mecho --info -n '.'
 updateVariables
 
 # Write new config file
-mecho --info -n '.'
 makeConfigFile /etc/config.d/${packageName}
 
 # Write check.d file
-mecho --info -n '.'
 makeCheckFile
 
-mecho ''
-mecho --ok
-
-if ${modifiedSomething} ; then
-    mecho --warn ' -> Read documentation for modified parameter(s)!'
-fi
-
 exit 0
-# ----------------------------------------------------------------------------
-# End
-# ----------------------------------------------------------------------------

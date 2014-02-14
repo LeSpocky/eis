@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 # ----------------------------------------------------------------------------
 # /var/install/config.d/cui-lcd4linux-update.sh - paramater update script
 #

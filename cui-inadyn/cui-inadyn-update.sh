@@ -3,13 +3,8 @@
 # /var/install/config.d/inadyn-update.sh - paramater update script
 #
 # Creation   : 2011-02-12 starwarsfan
-#
 # Copyright (c) 2011-2013 the eisfair team, <team(at)eisfair(dot)org>
 #
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
 # ----------------------------------------------------------------------------
 
 #exec 2> `pwd`/inadyn-update-trace$$.log
@@ -49,9 +44,7 @@ INADYN_ACCOUNT_1_LOG_LEVEL='0'
 renameOldVariables()
 {
     # read old values
-    if [ -f /etc/config.d/${packageName} ] ; then
-        . /etc/config.d/${packageName}
-    fi
+    [ -f /etc/config.d/${packageName} ] && . /etc/config.d/${packageName}
 }
 
 # ----------------------------------------------------------------------------
@@ -61,7 +54,7 @@ makeConfigFile()
     internal_conf_file=${1}
     {
     # ------------------------------------------------------------------------
-    printgpl -conf ${packageName} '2011-02-12' 'starwarsfan'
+    printgpl --conf ${packageName}
     # ------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------
@@ -113,7 +106,7 @@ makeConfigFile()
 # Create the check.d file
 makeCheckFile()
 {
-    printgpl -check ${packageName} '2011-02-12' 'starwarsfan' >/etc/check.d/${packageName}
+    printgpl --check ${packageName} >/etc/check.d/${packageName}
     cat >> /etc/check.d/${packageName} <<EOFG
 # Variable                         OPT_VARIABLE                      VARIABLE_N                 VALUE
 START_INADYN                       -                                 -                          YESNO
@@ -139,7 +132,7 @@ EOFG
     chmod 0600 /etc/check.d/${packageName}
     chown root /etc/check.d/${packageName}
 
-    printgpl -check_exp ${packageName} '2011-02-12' 'starwarsfan' >/etc/check.d/${packageName}.exp
+    printgpl --check_exp ${packageName} >/etc/check.d/${packageName}.exp
     cat >> /etc/check.d/${packageName}.exp <<EOFG
 
 INADYN_SYSTEM_CUI     = 'dynamic|static|custom|zoneedit|no-ip|changeip'
@@ -160,7 +153,7 @@ EOFG
     chmod 0600 /etc/check.d/${packageName}.exp
     chown root /etc/check.d/${packageName}.exp
 
-    printgpl -check_ext ${packageName} '2011-07-13' 'starwarsfan' >/etc/check.d/${packageName}.ext
+    printgpl --check_ext ${packageName} >/etc/check.d/${packageName}.ext
     cat >> /etc/check.d/${packageName}.ext <<EOFG
 
 set mail_used = "no"
@@ -204,28 +197,15 @@ EOFG
 
 # ----------------------------------------------------------------------------
 # Main
-mecho ''
-if [ -f /etc/config.d/${packageName} ] ; then
-    mecho --info -n 'Updating configuration.'
-else
-    mecho --info -n 'Creating configuration.'
-fi
-
 makeConfigFile /etc/default.d/${packageName}
 
 # Update from old version
-mecho --info -n '.'
 renameOldVariables
 
 # Write new config file
-mecho --info -n '.'
 makeConfigFile /etc/config.d/${packageName}
 
 # Write check.d file
-mecho --info -n '.'
 makeCheckFile
-
-mecho ''
-mecho --ok
 
 exit 0
