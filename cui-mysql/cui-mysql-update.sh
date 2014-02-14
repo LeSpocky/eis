@@ -25,7 +25,7 @@ packages_name=mysql
 ### -------------------------------------------------------------------------
 (
     #------------------------------------------------------------------------
-    printgpl "$packages_name" "2006-07-31" "team" "2008-2013 team <team@eisfair.org>"
+    printgpl --conf "$packages_name"
 
     printgroup "General settings"
 

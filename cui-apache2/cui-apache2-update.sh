@@ -19,7 +19,7 @@ packages_name=apache2
 ### -------------------------------------------------------------------------
 (
     #------------------------------------------------------------------------
-    printgpl "$packages_name" "2006-07-31" "schlotze" "2008-2013 Sebastian Scholze <sebastian@eisfair.org>"
+    printgpl --conf "$packages_name"
 
     #------------------------------------------------------------------------
     printgroup  "Start Apache2 Webserver during startup"

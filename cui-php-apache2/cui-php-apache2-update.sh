@@ -17,7 +17,7 @@ package_name=php-apache2
 ### ----------------------------------------------------------------------------
 ### Write the new config
 (
-    printgpl "$package_name" "2006-07-31" "schlotze" "2008-2013 Sebastian Scholze <sebastian@eisfair.org>"
+    printgpl --conf "$package_name"
 
     # ------------------------------------------------------------------------
     printgroup  "General settings"

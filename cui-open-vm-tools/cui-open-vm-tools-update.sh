@@ -19,7 +19,7 @@ packages_name=open-vm-tools
 ### -------------------------------------------------------------------------
 (
     #------------------------------------------------------------------------
-    printgpl "$packages_name" "2013-11-21" "jv" "2008-2013 jv <jens@eisfair.org>"
+    printgpl --conf "$packages_name"
     #------------------------------------------------------------------------
 
     printvar "START_VMTOOLS"            "Start the open-vm-tools on boot time"

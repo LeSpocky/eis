@@ -29,11 +29,11 @@ fi
 ### update config file
 ### ---------------------------------------------------------------------------
 {
-    printgpl -conf "$packages_name" "2004-08-20" "jv" "Jens Vehlhaber"
+    printgpl --conf "$packages_name"
 
     printgroup "General settings"
 
-    printvar "START_BIND" "Namserver start 'yes' or 'no'"
+    printvar "START_BIND" "Namserver start yes or no"
 
     printvar "BIND_FORWARDER_N" "Number of forwarders"
     printvar "BIND_FORWARDER_1_IP" "IP-Address of forwarder"

@@ -20,7 +20,7 @@ packages_name='vmail'
 ### Write config and default files
 ### ---------------------------------------------------------------------------
 {
-    printgpl -conf "$packages_name" "2005-04-14" "jv" "Jens Vehlhaber"
+    printgpl --conf "$packages_name"
     #-----------------------------------------------------------------------
     printgroup "Vmail settings"
     #-----------------------------------------------------------------------
