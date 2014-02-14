@@ -35,10 +35,12 @@ ncpu=$(grep -c processor /proc/cpuinfo)
 [ -z "$ncpu" ] && ncpu=1
 ncpu=$(( $ncpu * 2 ))
 
+# ---- set to 32/64Bit ---------------------------------------------------------
+xarch=$(cat /etc/apk/arch)
+[ "$xarch" = "x86_64" ] && thread_stack="256K" || thread_stack="192K"
+
 # ---- set options for xx GB RAM -----------------------------------------------
 if [ "$MYSQL_RAM" = "1GB" ]; then
-    ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
-    thread_stack="256K"
     sort_buffer_size="256K"
     read_buffer_size="256K"
     read_rnd_buffer_size="256K"
@@ -60,8 +62,6 @@ if [ "$MYSQL_RAM" = "1GB" ]; then
     innodb_log_buffer_size="16M"
 
 elif [ "$MYSQL_RAM" = "2GB" ]; then
-    ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
-    thread_stack="256K"
     sort_buffer_size="256K"
     read_buffer_size="256K"
     read_rnd_buffer_size="256K"
@@ -69,9 +69,9 @@ elif [ "$MYSQL_RAM" = "2GB" ]; then
     binlog_cache_size="64K"
     ## total per-thread buffer memory usage: 672000K = 656.25MB
     ## Query Cache - global buffer
-    query_cache_size="32M"
+    query_cache_size="64M"
     ## Connections - multiplier for memory usage via per-thread buffers
-    max_connections="500"
+    max_connections="400"
     ## Table and TMP settings
     max_heap_table_size="128M"
     bulk_insert_buffer_size="128M"
@@ -83,8 +83,6 @@ elif [ "$MYSQL_RAM" = "2GB" ]; then
     innodb_log_buffer_size="32M"
 
 elif [ "$MYSQL_RAM" = "4GB" ]; then
-    ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
-    thread_stack="256K"
     sort_buffer_size="512K"
     read_buffer_size="512K"
     read_rnd_buffer_size="512K"
@@ -92,9 +90,9 @@ elif [ "$MYSQL_RAM" = "4GB" ]; then
     binlog_cache_size="64K"
     ## total per-thread buffer memory usage: 2368000K = 2.312G
     ## Query Cache - global buffer
-    query_cache_size="32M"
+    query_cache_size="128M"
     ## Connections - multiplier for memory usage via per-thread buffers
-    max_connections="800"
+    max_connections="600"
     ## Table and TMP settings
     max_heap_table_size="512M"
     bulk_insert_buffer_size="512M"
@@ -106,8 +104,6 @@ elif [ "$MYSQL_RAM" = "4GB" ]; then
     innodb_log_buffer_size="64M"
 
 elif [ "$MYSQL_RAM" = "8GB" ]; then
-    ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
-    thread_stack="256K"
     sort_buffer_size="512K"
     read_buffer_size="512K"
     read_rnd_buffer_size="512K"
@@ -115,9 +111,9 @@ elif [ "$MYSQL_RAM" = "8GB" ]; then
     binlog_cache_size="64K"
     ## total per-thread buffer memory usage: 4736000K = 4.625GB
     ## Query Cache - global buffer
-    query_cache_size="32M"
+    query_cache_size="256M"
     ## Connections - multiplier for memory usage via per-thread buffers
-    max_connections="2000"
+    max_connections="1000"
     ## Table and TMP settings
     max_heap_table_size="1G"
     bulk_insert_buffer_size="1G"
@@ -129,8 +125,6 @@ elif [ "$MYSQL_RAM" = "8GB" ]; then
     innodb_log_buffer_size="128M"
 
 elif [ "$MYSQL_RAM" = "16GB" ]; then
-    ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
-    thread_stack="256K"
     sort_buffer_size="1M"
     read_buffer_size="1M"
     read_rnd_buffer_size="1M"
@@ -138,7 +132,7 @@ elif [ "$MYSQL_RAM" = "16GB" ]; then
     binlog_cache_size="64K"
     ## total per-thread buffer memory usage: 8832000K = 8.625GB
     ## Query Cache - global buffer
-    query_cache_size="32M"
+    query_cache_size="256M"
     ## Connections - multiplier for memory usage via per-thread buffers
     max_connections="2000"
     ## Table and TMP settings
@@ -152,8 +146,6 @@ elif [ "$MYSQL_RAM" = "16GB" ]; then
     innodb_log_buffer_size="128M"
 
 elif [ "$MYSQL_RAM" = "32GB" ]; then
-    ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
-    thread_stack="256K"
     sort_buffer_size="1M"
     read_buffer_size="1M"
     read_rnd_buffer_size="1M"
@@ -161,7 +153,7 @@ elif [ "$MYSQL_RAM" = "32GB" ]; then
     binlog_cache_size="64K"
     ## total per-thread buffer memory usage: 8832000K = 8.625GB
     ## Query Cache - global buffer
-    query_cache_size="32M"
+    query_cache_size="256M"
     ## Connections - multiplier for memory usage via per-thread buffers
     max_connections="2000"
     ## Table and TMP settings
@@ -184,7 +176,7 @@ elif [ "$MYSQL_RAM" = "64GB" ]; then
     binlog_cache_size="128K"
     ## total per-thread buffer memory usage: 17664000K = 17.250GB
     ## Query Cache - global buffer
-    query_cache_size="64M"
+    query_cache_size="256M"
     ## Connections - multiplier for memory usage via per-thread buffers
     max_connections="2000"
     ## Table and TMP settings
@@ -241,7 +233,7 @@ max_binlog_size             = 256M  #max size for binlog before rolling
 expire_logs_days            = 4     #binlog files older than this will be purged
 
 ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
-thread_stack                = $thread_stack
+thread_stack                = $thread_stack  #default: 32bit: 192K, 64bit: 256K
 sort_buffer_size            = $sort_buffer_size
 read_buffer_size            = $read_buffer_size
 read_rnd_buffer_size        = $read_rnd_buffer_size
@@ -254,7 +246,7 @@ query_cache_limit           = 2M     #512K #max query result size to put in cach
 
 ## Connections
 max_connections             = $max_connections
-max_connect_errors          = 100	
+max_connect_errors          = 100
 concurrent_insert           = 2     #default: 1, 2: enable insert for all instances
 connect_timeout             = 30    #default -5.1.22: 5, +5.1.22: 10
 max_allowed_packet          = 32M   #max size of incoming data to allow
