@@ -2,8 +2,6 @@
 # ----------------------------------------------------------------------------
 # /var/install/config.d/cui-inadyn.sh - INADYN configuration
 #
-# Creation:    2008-03-03 rh
-#
 # Copyright (c) 2008-2010 Rene Hanke, hanker(at)rpg-domain(dot)de
 # Copyright (c) 2011-2013 the eisfair team, <team(at)eisfair(dot)org>
 #
@@ -192,7 +190,7 @@ EOF
 # Check if a mail package exists
 checkMailPackage()
 {
-    if [ -f /var/install/packages/mail -o -f /var/install/packages/vmail -o -f /var/install/packages/ssmtp ] ; then
+    if [ -f /etc/check.d/ssmtp -o -f /etc/check.d/vmail ] ; then
         return 0
     fi
     return 1

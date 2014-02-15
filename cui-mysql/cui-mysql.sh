@@ -56,7 +56,7 @@ if [ "$MYSQL_RAM" = "1GB" ]; then
     bulk_insert_buffer_size="64M"
     tmp_table_size="64M"
     ## MyISAM Engine - global buffer
-    key_buffer="512K"
+    key_buffer_size="16M"
     ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="128M"
     innodb_log_buffer_size="16M"
@@ -77,7 +77,7 @@ elif [ "$MYSQL_RAM" = "2GB" ]; then
     bulk_insert_buffer_size="128M"
     tmp_table_size="128M"
     ## MyISAM Engine - global buffer
-    key_buffer="512K"
+    key_buffer_size="16M"
     ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="768M"
     innodb_log_buffer_size="32M"
@@ -98,7 +98,7 @@ elif [ "$MYSQL_RAM" = "4GB" ]; then
     bulk_insert_buffer_size="512M"
     tmp_table_size="512M"
     ## MyISAM Engine - global buffer
-    key_buffer="512K"
+    key_buffer_size="32M"
     ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="1G"
     innodb_log_buffer_size="64M"
@@ -119,7 +119,7 @@ elif [ "$MYSQL_RAM" = "8GB" ]; then
     bulk_insert_buffer_size="1G"
     tmp_table_size="1G"
     ## MyISAM Engine - global buffer
-    key_buffer="512K"
+    key_buffer_size="64M"
     ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="4G"
     innodb_log_buffer_size="128M"
@@ -140,7 +140,7 @@ elif [ "$MYSQL_RAM" = "16GB" ]; then
     bulk_insert_buffer_size="1G"
     tmp_table_size="1G"
     ## MyISAM Engine - global buffer
-    key_buffer="1M"
+    key_buffer_size="128M"
     ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="10G"
     innodb_log_buffer_size="128M"
@@ -161,7 +161,7 @@ elif [ "$MYSQL_RAM" = "32GB" ]; then
     bulk_insert_buffer_size="1G"
     tmp_table_size="1G"
     ## MyISAM Engine - global buffer
-    key_buffer="1M"
+    key_buffer_size="256M"
     ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="18G"
     innodb_log_buffer_size="128M"
@@ -184,7 +184,7 @@ elif [ "$MYSQL_RAM" = "64GB" ]; then
     bulk_insert_buffer_size="1G"
     tmp_table_size="1G"
     ## MyISAM Engine - global buffer
-    key_buffer="1M"
+    key_buffer_size="256M"
     ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="38G"
     innodb_log_buffer_size="128M"
@@ -301,7 +301,7 @@ thread_cache_size           = 100 #recommend 5% of max_connections
 #binlog_format              = MIXED
 
 ## MyISAM Engine
-key_buffer                  = $key_buffer
+key_buffer_size             = $key_buffer_size
 myisam_sort_buffer_size     = 128M   #index buffer size for creating/altering indexes
 myisam_max_sort_file_size   = 256M   #max file size for tmp table when creating/alering indexes
 myisam_repair_threads       = 4      #thread quantity when running repairs

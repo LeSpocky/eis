@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #----------------------------------------------------------------------------
 # eisfair-ng configuration parameter update script
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
@@ -22,9 +22,9 @@ packages_name=apache2
     printgpl --conf "$packages_name"
 
     #------------------------------------------------------------------------
-    printgroup  "Start Apache2 Webserver during startup"
+    printgroup  "Start Apache2 webserver during startup"
     #------------------------------------------------------------------------
-    printvar "START_APACHE2"            "Start the Apache Webserver"
+    printvar "START_APACHE2"            "Start the Apache webserver"
 
     #------------------------------------------------------------------------
     printgroup  "General settings"
@@ -120,7 +120,7 @@ packages_name=apache2
 
 
     #------------------------------------------------------------------------------
-    printgroup "Virtual Hosts" 
+    printgroup "Virtual Hosts"
     #------------------------------------------------------------------------------
     printvar "APACHE2_VHOST_N"           "no. of virtual hosts"
 

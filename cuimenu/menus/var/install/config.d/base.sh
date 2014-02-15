@@ -18,12 +18,17 @@ iface lo inet loopback
 EOF
 
 #----------------------------------------------------------------------------
+# add interface template (openvz venet...)
+#----------------------------------------------------------------------------
+[ -f /etc/network/interfaces.iface ] && cat /etc/network/interfaces.iface >> /etc/network/interfaces
+
+#----------------------------------------------------------------------------
 # add network interface list
 #----------------------------------------------------------------------------
 for idx in $(seq "0$IP_NET_N")
 do
 	interface_nr=$(/usr/bin/expr $idx - 1)
-    
+
 	eval name='$IP_NET_'$idx'_NAME'
 	[ -z "$name" ] && name="eth$interface_nr"
 
@@ -32,22 +37,19 @@ do
 	eval active6='$IP_NET_'$idx'_IPV6_ACTIVE'
 	eval static6='$IP_NET_'$idx'_IPV6_STATIC_IP'
 
-	if [ "$active4" = "yes" -o "$active6" = "yes" ]
-	then
+	if [ "$active4" = "yes" -o "$active6" = "yes" ] ; then
 		echo "auto $name" >>/etc/network/interfaces
 	fi
 
 	# IPv4 ------------------------------------------------------------------
 	# use dhcp or static address
-	if [ "$active4" = "yes" -a "$static4" = "no" ]
-	then
+	if [ "$active4" = "yes" -a "$static4" = "no" ] ; then
 		cat <<-EOF >>/etc/network/interfaces
 		iface $name inet dhcp
 
 		EOF
 
-	elif [ "$active4" = "yes" ]
-	then
+	elif [ "$active4" = "yes" ] ; then
 		static_ip_use=true
 		eval ipaddr='$IP_NET_'$idx'_IPV4_IPADDR'
 		eval netmask='$IP_NET_'$idx'_IPV4_NETMASK'
@@ -57,40 +59,35 @@ do
 		then
 			echo "localnet $network" >> /etc/networks
 			cat <<-EOF >>/etc/network/interfaces
-		iface $name inet static
-		  address $ipaddr
-		  netmask $netmask
-		EOF
-		{
-            if [ -n "$gateway" ]
-            then
-                echo "  gateway $gateway"
-                [ "$point2p" = "yes" ] && echo "  pointopoint $gateway"
-            fi
-            echo "  hostname $HOSTNAME"
-            echo "" 
+			iface $name inet static
+			  address $ipaddr
+			  netmask $netmask
+			EOF
+			{
+			if [ -n "$gateway" ] ; then
+				echo "  gateway $gateway"
+				[ "$point2p" = "yes" ] && echo "  pointopoint $gateway"
+			fi
+			echo "  hostname $HOSTNAME"
+			echo ""
 			} >>/etc/network/interfaces
 		fi
 	fi
 
-
 	# IPv6 ------------------------------------------------------------------
 	# use dhcp or static address
-	if [ "$active6" = "yes" -a "$static6" = "no" ]
-	then
-        cat <<-EOF >>/etc/network/interfaces
+	if [ "$active6" = "yes" -a "$static6" = "no" ] ; then
+		cat <<-EOF >>/etc/network/interfaces
 		iface $name inet6 dhcp
 
 		EOF
-	elif [ "$active6" = "yes" ]
-	then
+	elif [ "$active6" = "yes" ] ; then
 		static_ip_use=true
 		eval ipaddr='$IP_NET_'$idx'_IPV6_IPADDR'
 		eval netmask='$IP_NET_'$idx'_IPV6_NETMASKBITS'
 		eval gateway='$IP_NET_'$idx'_IPV6_GATEWAY'
 		eval point2p='$IP_NET_'$idx'_IPV6_POINTOPOINT'
-		if [ -n "$ipaddr" -a "$ipaddr" != :: ]
-		then
+		if [ -n "$ipaddr" -a "$ipaddr" != :: ] ; then
 			echo "localnet $network" >> /etc/networks
 			cat <<-EOF >>/etc/network/interfaces
 		iface $name inet6 static
@@ -98,18 +95,16 @@ do
 		  netmask $netmask
 			EOF
 			{
-            if [ -n "$gateway" ]
-            then
-                echo "  gateway $gateway"
-                [ "$point2p" = "yes" ] && echo "  pointopoint $gateway"
-            fi
-            echo "  hostname $HOSTNAME"
-            echo "" 
+			if [ -n "$gateway" ] ; then
+				echo "  gateway $gateway"
+				[ "$point2p" = "yes" ] && echo "  pointopoint $gateway"
+			fi
+			echo "  hostname $HOSTNAME"
+			echo ""
 			} >>/etc/network/interfaces
 		fi
 	fi
 done
-
 
 #----------------------------------------------------------------------------
 # write resolv.config
@@ -152,8 +147,8 @@ EOF
 # Set time zone
 #----------------------------------------------------------------------------
 case "$TIME_ZONE" in
-    met|cet|CET) TIME_ZONE="CET" ;;
-      gmt*|GMT*) TIME_ZONE="CET-1CEST,M3.5.0,M10.5.0/3" ;;
+	met|cet|CET) TIME_ZONE="CET" ;;
+	gmt*|GMT*) TIME_ZONE="CET-1CEST,M3.5.0,M10.5.0/3" ;;
 esac
 echo "$TIME_ZONE" > /etc/TZ
 
