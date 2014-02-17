@@ -209,8 +209,7 @@ collation-server            = utf8_general_ci
 
 ## Files
 back_log                    = 300
-open-files-limit            = 8192
-open-files                  = 1024
+open_files_limit            = 8192
 $bindaddr
 port                        = $MYSQL_CONNECT_PORT
 socket                      = /var/run/mysqld/mysqld.sock
@@ -261,12 +260,12 @@ tmp_table_size              = $tmp_table_size
 #tmpdir                     = /data/mysql-tmp0:/data/mysql-tmp1 #Recommend using RAMDISK for tmpdir
 
 ## Table cache settings
-table_cache                 = 512	#5.0.x <default: 64>
-table_open_cache            = 512	#5.5.x <default: 64>
+table_open_cache            = 1024	#5.5.x <default: 64>
+table_definition_cache      = 1024
 
 ## Thread settings
 thread_concurrency          = $ncpu  #recommend 2x CPU cores
-thread_cache_size           = 100 #recommend 5% of max_connections
+thread_cache_size           = 100   #recommend 5% of max_connections
 
 ## Replication
 #read_only
@@ -305,7 +304,7 @@ key_buffer_size             = $key_buffer_size
 myisam_sort_buffer_size     = 128M   #index buffer size for creating/altering indexes
 myisam_max_sort_file_size   = 256M   #max file size for tmp table when creating/alering indexes
 myisam_repair_threads       = 4      #thread quantity when running repairs
-myisam_recover              = BACKUP #repair mode, recommend BACKUP 
+myisam-recover-options      = BACKUP #repair mode, recommend BACKUP
 
 ## InnoDB Plugin Dependent Settings
 #ignore-builtin-innodb

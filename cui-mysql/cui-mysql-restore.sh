@@ -28,8 +28,10 @@ restore_mysql_database()
     if [ "$?" -eq 0 ] ; then
         echo "database restored: $backupname" | logger -t 'mysql-restore' -p 'local5.info'
         echo "Database restored: $database_only_name    [ Ok ]"
+        echo ""
+    else
+        sleep 1
     fi
-    sleep 1
 }
 
 #-------------------------------------------------------------------------------
