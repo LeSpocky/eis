@@ -151,7 +151,7 @@ packages_name=apache2
             printvar "APACHE2_VHOST_"$idx"_SSL_CERT_NAME"           "Name of the cert."
             dirIdx='1'
             eval tmpDir='$APACHE2_VHOST_'$idx'_DIR_N'
-            [ -z "$tmpAuth" ] && tmpAuth="0"
+            [ -z "$tmpDir" ] && tmpDir="0"
             countDir=`expr $tmpDir + 1`
 
             while [ $dirIdx -le $countDir ]
@@ -165,6 +165,7 @@ packages_name=apache2
                 printvar "APACHE2_VHOST_"$idx"_DIR_"$dirIdx"_AUTH_N"           "No. of usernames"
                 authIdx='1'
                 eval tmpAuth='$APACHE2_VHOST_'$idx'_DIR_'$dirIdx'_AUTH_N'
+                [ -z "$tmpAuth" ] && tmpAuth="0"
                 countAuth=`expr $tmpAuth + 1`
 
                 while [ $authIdx -le $countAuth ]
