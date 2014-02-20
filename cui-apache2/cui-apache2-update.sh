@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #----------------------------------------------------------------------------
 # eisfair-ng configuration parameter update script
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
@@ -151,6 +151,7 @@ packages_name=apache2
             printvar "APACHE2_VHOST_"$idx"_SSL_CERT_NAME"           "Name of the cert."
             dirIdx='1'
             eval tmpDir='$APACHE2_VHOST_'$idx'_DIR_N'
+            [ -z "$tmpAuth" ] && tmpAuth="0"
             countDir=`expr $tmpDir + 1`
 
             while [ $dirIdx -le $countDir ]
