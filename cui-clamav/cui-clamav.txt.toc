@@ -1,0 +1,6 @@
+<!-- clamav.tex - table of content -->
+<index title="Das Clamav-Paket">
+    <entry line="5" level="1">Allgemeines</entry>
+    <entry line="41" level="1">ClamAV Menue</entry>
+    <entry line="76" level="1">Allgemeine Einstellungen</entry>
+</index>

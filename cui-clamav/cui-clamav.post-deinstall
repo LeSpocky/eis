@@ -1,0 +1,9 @@
+#!/bin/sh
+
+/var/install/bin/del-menu setup.services.menu setup.services.clamd.menu
+rm -f /etc/backup.d/clamd.*
+rm -f /etc/default.d/clamd
+rm -f /etc/check.d/clamd
+rm -f /etc/check.d/clamd.exp
+
+exit 0

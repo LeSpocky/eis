@@ -1,0 +1,11 @@
+<package>clamd</package>
+<title>ClamAV administration</title>
+<doc>View documentation</doc>
+<edit>Edit configuration</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
+<init task="start">Start ClamAV</init>
+<init task="stop">Stop ClamAV</init>
+<init task="status">Show status</init>
+<script file="clamav-refresh">Get new virus definitions</script>
+<doc tail="yes" file="/var/log/clamav/clamd.log">View logfile</doc>
+<doc tail="yes" file="/var/log/clamav/freshclam.log">View Update-Log</doc>

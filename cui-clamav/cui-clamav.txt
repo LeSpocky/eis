@@ -1,0 +1,344 @@
+                                Das ClamAV Paket
+
+   (c) Sebastian Scholze <sebastian(at)eisfair(dot)org>
+
+                                  Allgemeines
+
+   Clam AntiVirus ist ein Antivirus Toolkit fuer Unix das unter der GPL
+   Lizenz steht. Es wurde speziell fuer das scannen von EMails auf
+   Mailgateways designt. Das Paket stellt eine Reihe von Hilfsmitteln zur
+   Verfuegung: einen flexiblen und skalierbaren Multi-Threaded Daemon,
+   einen Kommandozeilen Scanner und ein komplexes Programm zur
+   automatischen Aktualisierung ueber das Internet.
+   Das Herzstueck des Paketes ist eine Antivirus-Einheit in Form einer
+   gemeinsam genutzten Bibliothek.
+
+   Hier ist eine Liste mit den wichtigsten Funktionen:
+     * Kommandozeilen Scanner
+     * performanter Multi-Threaded Daemon mit der Unterstuetzung von
+       on-access scannen
+     * Milter-Schnittstellen fuer Sendmail
+     * Komplexes Update-Programm fuer die Datenbank mit Unterstuetzung
+       fuer scripted Updates und digitale Signaturen
+     * Virus Scanner Bibliothek in C
+     * On-Access Scanning (Linux and FreeBSD)
+     * Mehrmals taegliche Updates der Virusdatenbank (siehe Homepage fuer
+       die gesamte Anzahl von Signaturen)
+     * Eingebaute Unterstuetzung fuer verschieden Archiv-Formate wie Zip,
+       RAR, Tar, Gzip, Bzip2, OLE2, Cabinet, CHM, BinHex, SIS und andere
+     * Eingebaute Unterstuetzung fuer nahezu alle Formate von Mail-Dateien
+     * Eingebaute Unterstuetzung fuer ELF executables und portable
+       executable Dateien komprimiert mit UPX, FSG, Petite, NsPack,
+       wwpack32, MEW, Upack und verschleiert mit Sue, Y0da Cryptor und
+       anderen
+     * Eingebaute Unterstuetzung fuer populaere Dokumentenformate wie MS
+       Office und MacOffice Dateien, HTML, RTF und PDF
+
+   Weitere Informationen zu ClamAV finden sich auf der offiziellen
+   Webseite des Projekts ''http://www.clamav.net''.
+
+
+                                  ClamAV Menue
+
+   Das Menue des clamav Paketes im Setup-Programm ist wie folgt aufgebaut:
+
+     * View documentation
+       Mit diesem Menuepunkt wird die hier vorliegende Dokumentation
+       angezeigt. Zum Verlassen der drueckt man die Taste 'F10'.
+     * Edit configuration
+       Konfiguration von ClamAV ueber die eisfair-Konfigurationsebene
+       bearbeiten.
+     * Advanced configuration file handling
+       Versionsverwaltung der ClamAV Konfiguration.
+     * Start ClamAV
+       Mit Hilfe dieses Menuepunktes kann ClamAV von Hand gestartet
+       werden.
+     * Stop ClamAV
+       Mit Hilfe dieses Menuepunktes kann ClamAV von Hand beendet werden.
+     * Show status
+       Mit Hilfe dieses Menuepunktes kann der aktuelle Status des ClamAV
+       Dienstes angezeigt werden.
+     * Get new virus definitions
+       Mit Hilfe dieses Menuepunktes koennen die
+       Virendefinitionsdatenbanken von Hand aktualisiert werden.
+     * View Logfile
+       Mit Hilfe dieses Menuepunktes kann das Logfile von ClamAV angezeigt
+       werden.
+     * View Update-Log
+       Mit Hilfe dieses Menuepunktes kann das Logfile der
+       Virendefinitions-Updates angezeigt werden.
+
+Allgemeine Einstellungen
+
+   START_CLAMAV
+          Wird dieser Wert auf ''yes'' gestellt, dann wird der ClamAV
+          Dienst automatisch beim Start des Rechners mitgestartet.
+          Anderenfalls ist das Starten und Beenden des Dienstes ueber das
+          Paketmenue jederzeit moeglich.
+
+          Gueltige Werte: ''yes'', ''no''
+
+          Standardeinstellung: START_CLAMAV='yes'
+
+Automatische Updates
+
+   Die Einstellungen dieses Abschnittes beziehen sich auf das automatische
+   Aktualisieren der Virusdefinitionen.
+
+   CLAMAV_UPDATE_REGION
+          Ueber diesen Wert wird festgelegt, welche Region fuer die
+          Updates verwendet werden soll.
+
+          Gueltige Werte: ''ac'', ''ad'', ''"a'', ''af'', ''ag'', ''ai'',
+          ''al'', ''am'', ''an'', ''ao'', ''aq'', ''ar'', ''as'', ''at'',
+          ''au'', ''aw'', ''ax'', ''az'', ''ba'', ''bb'', ''bd'', ''be'',
+          ''bf'', ''bg'', ''bh'', ''bi'', ''bj'', ''bm'', ''bn'', ''bo'',
+          ''br'', ''bs'', ''bt'', ''bv'', ''bw'', ''by'', ''bz'', ''ca'',
+          ''cc'', ''cd'', ''cf'', ''cg'', ''ch'', ''ci'', ''ck'', ''cl'',
+          ''cm'', ''cn'', ''co'', ''cr'', ''cs'', ''cu'', ''cv'', ''cx'',
+          ''cy'', ''cz'', ''de'', ''dj'', ''dk'', ''dm'', ''do'', ''dz'',
+          ''ec'', ''ee'', ''eg'', ''eh'', ''er'', ''es'', ''et'', ''fi'',
+          ''fj'', ''fk'', ''fm'', ''fo'', ''fr'', ''ga'', ''gb'', ''gd'',
+          ''ge'', ''gf'', ''gg'', ''gh'', ''gi'', ''gl'', ''gm'', ''gn'',
+          ''gp'', ''gq'', ''gr'', ''gs'', ''gt'', ''gu'', ''gw'', ''gy'',
+          ''hk'', ''hm'', ''hn'', ''hr'', ''ht'', ''hu'', ''id'', ''ie'',
+          ''il'', ''im'', ''in'', ''io'', ''iq'', ''ir'', ''is'', ''it'',
+          ''je'', ''jm'', ''jo'', ''jp'', ''ke'', ''kg'', ''kh'', ''ki'',
+          ''km'', ''kn'', ''kp'', ''kr'', ''kw'', ''ky'', ''kz'', ''la'',
+          ''lb'', ''lc'', ''li'', ''lk'', ''lr'', ''ls'', ''lt'', ''lu'',
+          ''lv'', ''ly'', ''ma'', ''mc'', ''md'', ''mg'', ''mh'', ''mk'',
+          ''ml'', ''mm'', ''mn'', ''mo'', ''mp'', ''mq'', ''mr'', ''ms'',
+          ''mt'', ''mu'', ''mv'', ''mw'', ''mx'', ''my'', ''mz'', ''na'',
+          ''nc'', ''ne'', ''nf'', ''ng'', ''ni'', ''nl'', ''no'', ''np'',
+          ''nr'', ''nu'', ''nz'', ''om'', ''pa'', ''pe'', ''pf'', ''pg'',
+          ''ph'', ''pk'', ''pl'', ''pm'', ''pn'', ''pr'', ''ps'', ''pt'',
+          ''pw'', ''py'', ''qa'', ''re'', ''ro'', ''ru'', ''rw'', ''sa'',
+          ''sb'', ''sc'', ''sd'', ''se'', ''sg'', ''sh'', ''si'', ''sj'',
+          ''sk'', ''sl'', ''sm'', ''sn'', ''so'', ''sr'', ''st'', ''sv'',
+          ''sy'', ''sz'', ''tc'', ''td'', ''tf'', ''tg'', ''th'', ''tj'',
+          ''tk'', ''tl'', ''tm'', ''tn'', ''to'', ''tp'', ''tr'', ''tt'',
+          ''tv'', ''tw'', ''tz'', ''ua'', ''ug'', ''uk'', ''um'', ''us'',
+          ''uy'', ''uz'', ''va'', ''vc'', ''ve'', ''vg'', ''vi'', ''vn'',
+          ''vu'', ''wf'', ''ws'', ''ye'', ''yt'', ''yu'', ''za'', ''zm'',
+          ''zw''
+
+          Standardeinstellung: CLAMAV_UPDATE_REGION='de'
+
+   CLAMAV_UPDATE_CRON_USE
+          Um die Virussignaturen von ClamAV automatisch zu aktualisieren,
+          muss hier der Wert auf yes gesetzt werden.
+
+          Gueltige Werte: ''yes'', ''no''
+
+          Standardeinstellung: CLAMAV_UPDATE_CRON_USE='no'
+
+   CLAMAV_UPDATE_CRON_TIMES
+          Mit dieser Variablen wird festgelegt zu welchem Zeitpunkt bzw.
+          in welchem Intervall die Aktualisierung der Virussignaturen
+          durchgefuehrt werden soll, die Wildcard-TLDs darstellen. Diese
+          Funktion ist nur verfuegbar, wenn der Parameter
+          CLAMAV_UPDATE_CRON_USE='yes' gesetzt wurde. Die fuenf
+          Teilparameter haben dabei folgende Bedeutung:
+
+          + 1 - Minuten,
+          + 2 - Stunden,
+          + 3 - Tag des Monats,
+          + 4 - Monat,
+          + 5 - Wochentag.
+
+          D. h. bei Verwendung der Standardeinstellung wird jeden Tag um
+          00:25h die Liste aktualisiert. Wer naeheres ueber die verwendete
+          Befehlsyntax erfahren moechte, sollte ueber Google nach 'man'
+          und 'crontab' suchen.
+
+          Gueltige Werte: Crontab-spezifischer Parametereintrag
+
+          Standardeinstellung: CLAMAV_UPDATE_CRON_TIMES='25 0 * * *'
+
+Prioritaet von ClamAV
+
+   CLAMAV_PRIORITY_LEVEL
+          Mit dieser Variablen koennen Sie den Nice-Wert anpassen, mit dem
+          ClamAV ausgefuehrt wird. Der Wert der Variablen wird zum
+          aktuellen Nice-Wert hinzugefuegt.
+          Ueber den Nice-Wert kann die Scheduler Prioritaet eines
+          auszufuehrenden Programmes gesteuert werden.
+
+          Gueltige Werte: Nummerischer Wert
+
+          Standardeinstellung: CLAMAV_PRIORITY_LEVEL=4
+
+Proxyeinstellungen
+
+   CLAMAV_USE_HTTP_PROXY_SERVER
+          Ueber diese Variable kann gesteuert werden, ob ein Proxy fuer
+          das Aktualisieren der Virusdefinitionsdatenbanken benutzt werden
+          soll.
+
+          Gueltige Werte: ''yes'', ''no''
+
+          Standardeinstellung: CLAMAV_USE_HTTP_PROXY_SERVER='no'
+
+   CLAMAV_HTTP_PROXY_SERVER
+          In diese Variable ist der Name (oder die IP-Adresse) des
+          Proxy-Servers einzutragen, der benutzt werden soll.
+
+          Gueltige Werte: Domain
+
+          Standardeinstellung: CLAMAV_HTTP_PROXY_SERVER='myproxy.com'
+
+   CLAMAV_HTTP_PROXY_PORT
+          In diese Variable ist die Portnummer des Proxy-Servers
+          einzutragen, ueber die der Proxy ansprechbar ist.
+
+          Gueltige Werte: Port
+
+          Standardeinstellung: CLAMAV_HTTP_PROXY_PORT='1234'
+
+   CLAMAV_HTTP_PROXY_USERNAME
+          In diese Variable ist, falls notwendig, ein Benutzername fuer
+          die Authentifizierung an dem zu nutzenden Proxy-Server
+          einzutragen.
+
+          Gueltige Werte: keine Einschraenkung
+
+          Standardeinstellung: CLAMAV_HTTP_PROXY_USERNAME='myuser'
+
+   CLAMAV_HTTP_PROXY_PASSWORD
+          In diese Variable ist, falls notwendig, ein Kennwort fuer die
+          Authentifizierung an dem zu nutzenden Proxy-Server einzutragen.
+
+          Gueltige Werte: keine Einschraenkung
+
+          Standardeinstellung: CLAMAV_HTTP_PROXY_PASSWORD='mypassword'
+
+PUA Possible Unwanted Applications
+
+   Die Einstellungen dieses Abschnittes dienen dem Auffinden von
+   ungewuenschten Applikationen (z.B. malware, exploits in Grphic Dateien,
+   ...).
+
+   CLAMAV_DETECT_PUA
+          Ueber diese Variable kann eingestellt werden, ob ClamAV nach
+          ungewuenschten Anwendungen suchen soll (PUA = Possible Unwanted
+          Applications).
+
+          Gueltige Werte: ''yes'', ''no''
+
+          Standardeinstellung: CLAMAV_DETECT_PUA='yes'
+
+   CLAMAV_ALGORITHMIC_DETECTION
+          Ueber diese Variable kann eingestellt werden, ob ClamAV
+          spezielle Algorithmen fuer die Erkennung von unerwuenschten
+          Anwendungen verwenden soll.
+
+          Gueltige Werte: ''yes'', ''no''
+
+          Standardeinstellung: CLAMAV_ALGORITHMIC_DETECTION='yes'
+
+Ausfuehrbare Dateien
+
+   CLAMAV_SCAN_PE
+          PE steht fuer Portable Executable. Es handelt sich hierbei um
+          ein Dateiformat, das in allen 32 und 64Bit Versionen von Windows
+          verwendet wird. Ueber diese Variable kann eingestellt werden,
+          dass ClamAV Analysen von ausfuehrbaren Dateien durchfuehrt.
+          Diese Option wird beispielsweise benoetigt, um ausfuehrbare
+          Packgrogramme wie z.B. UPX, FSG oder Petite ueberpruefen zu
+          koennen.
+
+          Gueltige Werte: ''yes'', ''no''
+
+          Standardeinstellung: CLAMAV_SCAN_PE='yes'
+
+   CLAMAV_SCAN_ELF
+          ELF steht fuer Executable and Linking Format und ist das
+          Standardformat fuer ausfuehrbare UN*X Programme. Ueber diese
+          Variable kann eingestellt werden, ob ClamAV ELF Dateien scannen
+          soll.
+
+          Gueltige Werte: ''yes'', ''no''
+
+          Standardeinstellung: CLAMAV_SCAN_ELF='yes'
+
+   CLAMAV_DETECT_BROKEN_EXECUTABLES
+          Ueber diese Variable kann eingestellt werden, ob ClamAV
+          versuchen soll, kaputte ausfuehrbare Dateien zu identifizieren
+          und zu markieren.
+
+          Gueltige Werte: ''yes'', ''no''
+
+          Standardeinstellung: CLAMAV_DETECT_BROKEN_EXECUTABLES='no'
+
+Ausfuehrbare Dokumente
+
+   CLAMAV_SCAN_OLE2
+          Ueber diese Variable kann eingestellt werden, ob ClamAV Macros
+          in Microsoft Office Dokumenten scannen soll.
+
+          Gueltige Werte: ''yes'', ''no''
+
+          Standardeinstellung: CLAMAV_SCAN_OLE2='yes'
+
+   CLAMAV_SCAN_PDF
+          Ueber diese Variable kann eingestellt werden, ob ClamAV PDF
+          Dateien scannen soll.
+
+          Gueltige Werte: ''yes'', ''no''
+
+          Standardeinstellung: CLAMAV_SCAN_PDF='no'
+
+Archiv Support
+
+   CLAMAV_SCAN_ARCHIVE
+          Ueber diese Variable kann eingestellt werden, ob ClamAV in
+          Archiven scannen soll.
+
+          Gueltige Werte: ''yes'', ''no''
+
+          Standardeinstellung: CLAMAV_SCAN_ARCHIVE='yes'
+
+   CLAMAV_MAX_FILE_SIZE
+          Hier kann die maximale Groesse von Archiven angegeben werden, in
+          denen ClamAV scannen soll.
+          Groessere Archive werden ignoriert.
+
+          Gueltige Werte: Numerischer Wert
+
+          Standardeinstellung: CLAMAV_ARCHIVE_MAX_FILE_SIZE='10'
+
+   CLAMAV_MAX_RECURSIONS
+          Hier kann die maximale Rekursionstiefe von Archiven (in
+          Archiven) angegeben werden, in denen ClamAV scannen soll.
+          Groessere Rekursionstiefen werden ignoriert.
+
+          Gueltige Werte: Numerischer Wert
+
+          Standardeinstellung: CLAMAV_ARCHIVE_MAX_FILE_SIZE='10'
+
+   CLAMAV_MAX_FILES
+          Hier kann die maximale Anzahl von Dateien in Archiven angegeben
+          werden, die ClamAV scannen soll.
+          Groessere Rekursionstiefen werden ignoriert.
+
+          Gueltige Werte: Numerischer Wert
+
+          Standardeinstellung: CLAMAV_ARCHIVE_MAX_FILES='1000'
+
+   CLAMAV_ARCHIVE_LIMIT_MEMORY_USAGE
+          Use slower but memory efficient decompression algorithm. only
+          affects the bzip2 decompressor.
+
+          Gueltige Werte: ''yes'', ''no''
+
+          Standardeinstellung: CLAMAV_ARCHIVE_LIMIT_MEMORY_USAGE='no'
+
+   CLAMAV_ARCHIVE_BLOCK_ENCRYPTED
+          Ueber diese variable kann definiert werden, ob verschluesselte
+          Archive als Virus markiert werden sollen (Encrypted.Zip,
+          Encrypted.RAR).
+
+          Gueltige Werte: ''yes'', ''no''
+
+          Standardeinstellung: CLAMAV_ARCHIVE_BLOCK_ENCRYPTED='no'
+

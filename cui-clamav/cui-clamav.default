@@ -1,0 +1,89 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/clamd - configuration file for clamav
+# Copyright (c) 2007 - 2014 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# ClamAV settings
+#------------------------------------------------------------------------------
+
+START_CLAMD='no'                 # activate ClamAV: yes or no
+
+#------------------------------------------------------------------------------
+# Settings for automatic update
+#------------------------------------------------------------------------------
+
+CLAMD_UPDATE_REGION='de'         # the region for database mirrors (de, fr,
+                                 # us...)
+CLAMD_UPDATE_CRON_USE='no'       # run scheduled updates (yes/no)
+CLAMD_UPDATE_CRON_TIMES='25 */3 * * *'
+                                 # schedule (in cron syntax)
+
+#------------------------------------------------------------------------------
+# SelfChecking Options
+#------------------------------------------------------------------------------
+
+CLAMD_SELFCHECK='yes'            # SelfChecking Options
+
+#------------------------------------------------------------------------------
+# Priority Settings
+#------------------------------------------------------------------------------
+
+CLAMD_PRIORITY_LEVEL='4'         # scheduling priority
+
+#------------------------------------------------------------------------------
+# Proxy Settings
+#------------------------------------------------------------------------------
+
+CLAMD_USE_HTTP_PROXY_SERVER='no' # Use proxy
+CLAMD_HTTP_PROXY_SERVER='proxy.eisfair.home'
+                                 # Servername
+CLAMD_HTTP_PROXY_PORT='1234'     # port of proxy
+CLAMD_HTTP_PROXY_USERNAME='user' # Username
+CLAMD_HTTP_PROXY_PASSWORD='pass' # Password
+
+#------------------------------------------------------------------------------
+# PUA support
+#------------------------------------------------------------------------------
+
+CLAMD_DETECT_PUA='no'            # yes or no
+CLAMD_ALGORITHMIC_DETECTION='yes'
+                                 # yes or no
+
+#------------------------------------------------------------------------------
+# Executable file support
+#------------------------------------------------------------------------------
+
+CLAMD_SCAN_PE='yes'              # yes or no
+CLAMD_SCAN_ELF='yes'             # yes or no
+CLAMD_DETECT_BROKEN_EXECUTABLES='no'
+                                 # yes or no
+
+#------------------------------------------------------------------------------
+# Document support
+#------------------------------------------------------------------------------
+
+CLAMD_SCAN_OLE2='yes'            # enables scanning of MS-Office doc macros
+CLAMD_SCAN_PDF='yes'             # yes or no
+
+#------------------------------------------------------------------------------
+# Scann archive support
+#------------------------------------------------------------------------------
+
+CLAMD_SCAN_ARCHIVE='yes'         # yes or no
+CLAMD_MAX_FILE_SIZE='25'         # limit (Megabyte) won't be scanned.
+CLAMD_MAX_RECURSIONS='16'        # Mac count archives are scanned recursively.
+CLAMD_MAX_FILES='10000'          # Number of files to be scanned within archive
+CLAMD_ARCHIVE_BLOCK_ENCRYPTED='no'
+                                 # Mark encrypted archives as viruses
+
+#------------------------------------------------------------------------------
+# Virus info mail
+#------------------------------------------------------------------------------
+
+CLAMD_VIRUSEVENT_MAIL='no'       #Send info mail if found virus
+CLAMD_VIRUSEVENT_TO='mailadmin@eisfair.home'
+
+#------------------------------------------------------------------------------
+# End
+#------------------------------------------------------------------------------

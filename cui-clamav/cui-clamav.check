@@ -1,0 +1,32 @@
+# Variable                   OPT_VARIABLE  VARIABLE_N   VALUE
+START_CLAMD                        -           -        YESNO
+
+CLAMD_UPDATE_REGION                -           -        CLAMD_REGIONS
+CLAMD_UPDATE_CRON_USE              -           -        YESNO
+CLAMD_UPDATE_CRON_TIMES    CLAMD_UPDATE_CRON_USE  -     CRONTAB
+
+CLAMD_SELFCHECK                    -           -        YESNO
+
+CLAMD_PRIORITY_LEVEL               -           -        CLAMD_PRIORITY_LEVEL
+
+CLAMD_USE_HTTP_PROXY_SERVER        -           -        YESNO
+CLAMD_HTTP_PROXY_SERVER   CLAMD_USE_HTTP_PROXY_SERVER - DOMAIN
+CLAMD_HTTP_PROXY_PORT     CLAMD_USE_HTTP_PROXY_SERVER - PORT
+CLAMD_HTTP_PROXY_USERNAME CLAMD_USE_HTTP_PROXY_SERVER - NONE
+CLAMD_HTTP_PROXY_PASSWORD CLAMD_USE_HTTP_PROXY_SERVER - NONE
+
+CLAMD_DETECT_PUA                   -           -        YESNO
+CLAMD_ALGORITHMIC_DETECTION        -           -        YESNO
+CLAMD_SCAN_PE                      -           -        YESNO
+CLAMD_SCAN_ELF                     -           -        YESNO
+CLAMD_DETECT_BROKEN_EXECUTABLES    -           -        YESNO
+CLAMD_SCAN_PDF                     -           -        YESNO
+CLAMD_SCAN_ARCHIVE                 -           -        YESNO
+CLAMD_SCAN_OLE2                    -           -        YESNO
+CLAMD_MAX_FILE_SIZE                -           -        NUMERIC
+CLAMD_MAX_RECURSIONS               -           -        NUMERIC
+CLAMD_MAX_FILES                    -           -        NUMERIC
+CLAMD_ARCHIVE_BLOCK_ENCRYPTED      -           -        YESNO
+
+CLAMD_VIRUSEVENT_MAIL              -           -        YESNO
+CLAMD_VIRUSEVENT_TO                -           -        NONE

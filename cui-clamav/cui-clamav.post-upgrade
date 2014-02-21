@@ -1,0 +1,3 @@
+#!/bin/sh
+[ -f /etc/config.d/clamd ] && /var/install/config.d/clamd-update.sh
+exit 0
