@@ -56,32 +56,32 @@ fi
     # ----------------------------------------------------------------------
     printgroup "PUA support"
     # ----------------------------------------------------------------------
-	printvar "CLAMD_DETECT_PUA"				 "yes or no"
-	printvar "CLAMD_ALGORITHMIC_DETECTION"   "yes or no"
+    printvar "CLAMD_DETECT_PUA"             "yes or no"
+    printvar "CLAMD_ALGORITHMIC_DETECTION"  "yes or no"
     # ----------------------------------------------------------------------
     printgroup "Executable file support"
     # ----------------------------------------------------------------------
-	printvar "CLAMD_SCAN_PE"				 "yes or no"
-	printvar "CLAMD_SCAN_ELF"				 "yes or no"
-	printvar "CLAMD_DETECT_BROKEN_EXECUTABLES" "yes or no"
+    printvar "CLAMD_SCAN_PE"                "yes or no"
+    printvar "CLAMD_SCAN_ELF"               "yes or no"
+    printvar "CLAMD_DETECT_BROKEN_EXECUTABLES" "yes or no"
     # ----------------------------------------------------------------------
     printgroup "Document support"
     # ----------------------------------------------------------------------
-    printvar "CLAMD_SCAN_OLE2"               "enables scanning of MS-Office document macros"
-	printvar "CLAMD_SCAN_PDF"				 "yes or no"
+    printvar "CLAMD_SCAN_OLE2"              "enables scanning of MS-Office document macros"
+    printvar "CLAMD_SCAN_PDF"               "yes or no"
     # ----------------------------------------------------------------------
     printgroup "Scann archive support"
     # ----------------------------------------------------------------------
-    printvar "CLAMD_SCAN_ARCHIVE"            "yes or no"
-    printvar "CLAMD_MAX_FILE_SIZE"           "limit (Megabyte) won't be scanned. 0=no limit"
-    printvar "CLAMD_MAX_RECURSIONS"          "Mac count archives are scanned recursively. 0=no limit"
-    printvar "CLAMD_MAX_FILES"               "Number of files to be scanned within archive. 0=no limit"
+    printvar "CLAMD_SCAN_ARCHIVE"           "yes or no"
+    printvar "CLAMD_MAX_FILE_SIZE"          "limit (Megabyte) won't be scanned. 0=no limit"
+    printvar "CLAMD_MAX_RECURSIONS"         "Mac count archives are scanned recursively. 0=no limit"
+    printvar "CLAMD_MAX_FILES"              "Number of files to be scanned within archive. 0=no limit"
     printvar "CLAMD_ARCHIVE_BLOCK_ENCRYPTED" "Mark encrypted archives as viruses"
     # ----------------------------------------------------------------------
     printgroup "Virus info mail"
     # ----------------------------------------------------------------------
-    printvar "CLAMD_VIRUSEVENT_MAIL"         "Send info mail if found virus"
-    printvar "CLAMD_VIRUSEVENT_TO"           "Address for info mail"
+    printvar "CLAMD_VIRUSEVENT_MAIL"        "Send info mail if found virus"
+    printvar "CLAMD_VIRUSEVENT_TO"          "Address for info mail"
     # ----------------------------------------------------------------------
     printend
     # ----------------------------------------------------------------------
