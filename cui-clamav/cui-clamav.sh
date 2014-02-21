@@ -27,7 +27,7 @@ chown clamav /run/clamav
 #-------------------------------------------------------------------------------
 # set level
 #-------------------------------------------------------------------------------
-sed -i -e "s|^CLAMD_NICELEVEL=.*|CLAMD_NICELEVEL=$CLAMD_PRIORITY_LEVEL|" /etc/conf.d/clamd
+sed -i -e "s|^CLAMD_NICELEVEL=.*|CLAMD_NICELEVEL=$CLAMD_PRIORITY_LEVEL |" /etc/conf.d/clamd
 
 #-------------------------------------------------------------------------------
 # create clamav config
@@ -40,66 +40,66 @@ fi
 
 sed -i -e "s|.*PidFile .*|PidFile /run/clamav/clamd.pid|" /etc/clamav/clamd.conf.tmp
 sed -i -e "s|.*LocalSocket .*|LocalSocket /run/clamav/clamd.sock|" /etc/clamav/clamd.conf.tmp
-sed -i -e "s|.*TCPSocket .*|TCPSocket 3310|" /etc/clamav/clamd.conf.tmp
-sed -i -e "s|.*TCPAddr .*|TCPAddr 127.0.0.1|" /etc/clamav/clamd.conf.tmp
+sed -i -e "s|.*TCPSocket .*|TCPSocket 3310 |" /etc/clamav/clamd.conf.tmp
+sed -i -e "s|.*TCPAddr .*|TCPAddr 127.0.0.1 |" /etc/clamav/clamd.conf.tmp
 if [ "$CLAMD_SELFCHECK" = "no" ]; then
-    sed -i -e "s|.*SelfCheck .*|SelfCheck 0|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*SelfCheck .*|SelfCheck 0 |" /etc/clamav/clamd.conf.tmp
 else
-    sed -i -e "s|.*SelfCheck .*|SelfCheck 1800|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*SelfCheck .*|SelfCheck 1800 |" /etc/clamav/clamd.conf.tmp
 fi
 if [ "$CLAMD_SCAN_ARCHIVE" = "yes" ]; then
-    sed -i -e "s|.*ScanArchive .*|ScanArchive yes|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*ScanArchive .*|ScanArchive yes |" /etc/clamav/clamd.conf.tmp
 else
-    sed -i -e "s|.*ScanArchive .*|ScanArchive no|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*ScanArchive .*|ScanArchive no |" /etc/clamav/clamd.conf.tmp
 fi
 if [ "$CLAMD_SCAN_OLE2" = "yes" ]; then
-    sed -i -e "s|.*ScanOLE2 .*|ScanOLE2 yes|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*ScanOLE2 .*|ScanOLE2 yes |" /etc/clamav/clamd.conf.tmp
 else
-    sed -i -e "s|.*ScanOLE2 .*|ScanOLE2 no|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*ScanOLE2 .*|ScanOLE2 no |" /etc/clamav/clamd.conf.tmp
 fi
 if [ "$CLAMD_DETECT_PUA" = "yes" ];then
-    sed -i -e  "s|.*DetectPUA .*|DetectPUA yes|" /etc/clamav/clamd.conf.tmp
+    sed -i -e  "s|.*DetectPUA .*|DetectPUA yes |" /etc/clamav/clamd.conf.tmp
 else
-    sed -i -e "s|.*DetectPUA .*|DetectPUA no|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*DetectPUA .*|DetectPUA no |" /etc/clamav/clamd.conf.tmp
 fi
 if [ "$CLAMD_ALGORITHMIC_DETECTION" = "yes" ]; then
-    sed -i -e "s|.*AlgorithmicDetection .*|AlgorithmicDetection yes|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*AlgorithmicDetection .*|AlgorithmicDetection yes |" /etc/clamav/clamd.conf.tmp
 else
-    sed -i -e "s|.*AlgorithmicDetection .*|AlgorithmicDetection no|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*AlgorithmicDetection .*|AlgorithmicDetection no |" /etc/clamav/clamd.conf.tmp
 fi
 if [ "$CLAMD_SCAN_PE" = "yes" ]; then
-    sed -i -e "s|.*ScanPE *|ScanPE yes|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*ScanPE .*|ScanPE yes |" /etc/clamav/clamd.conf.tmp
 else
-    sed -i -e  "s|.*ScanPE .*|ScanPE no|" /etc/clamav/clamd.conf.tmp
+    sed -i -e  "s|.*ScanPE .*|ScanPE no |" /etc/clamav/clamd.conf.tmp
 fi
 if [ "$CLAMD_SCAN_ELF" = "yes" ]; then
-    sed -i -e "s|.*ScanELF .*|ScanELF yes|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*ScanELF .*|ScanELF yes |" /etc/clamav/clamd.conf.tmp
 else
-    sed -i -e "s|.*ScanELF .*|ScanELF no|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*ScanELF .*|ScanELF no |" /etc/clamav/clamd.conf.tmp
 fi
 if [ "$CLAMD_DETECT_BROKEN_EXECUTABLES" = "yes" ]; then
-    sed -i -e "s|.*DetectBrokenExecutables .*|DetectBrokenExecutables yes|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*DetectBrokenExecutables .*|DetectBrokenExecutables yes |" /etc/clamav/clamd.conf.tmp
 else
-    sed -i -e "s|.*DetectBrokenExecutables .*|DetectBrokenExecutables no|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*DetectBrokenExecutables .*|DetectBrokenExecutables no |" /etc/clamav/clamd.conf.tmp
 fi
  if [ "$CLAMD_SCAN_PDF" = "yes" ]; then
-    sed -i -e "s|.*ScanPDF .*|ScanPDF yes|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*ScanPDF .*|ScanPDF yes |" /etc/clamav/clamd.conf.tmp
 else
-    sed -i -e "s|.*ScanPDF .*|ScanPDF no|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*ScanPDF .*|ScanPDF no |" /etc/clamav/clamd.conf.tmp
 fi
 if [ "$CLAMD_ARCHIVE_BLOCK_ENCRYPTED" = "yes" ]; then
-    sed -i -e "s|.*ArchiveBlockEncrypted .*|ArchiveBlockEncrypted yes|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*ArchiveBlockEncrypted .*|ArchiveBlockEncrypted yes |" /etc/clamav/clamd.conf.tmp
 else
-    sed -i -e "s|.*ArchiveBlockEncrypted .*|ArchiveBlockEncrypted no|" /etc/clamav/clamd.conf.tmp
+    sed -i -e "s|.*ArchiveBlockEncrypted .*|ArchiveBlockEncrypted no |" /etc/clamav/clamd.conf.tmp
 fi
 if [ "$CLAMD_VIRUSEVENT_MAIL" = "yes" ]; then
     sed -i -e "s|.*VirusEvent .*|VirusEvent /usr/bin/cui-clamav-alertmail |" /etc/clamav/clamd.conf.tmp
 else
     sed -i -e "s|.*VirusEvent .*|#VirusEvent /usr/bin/cui-clamav-alertmail |" /etc/clamav/clamd.conf.tmp
 fi
-sed -i -e "s|.*MaxFileSize .*|MaxFileSize ${CLAMD_MAX_FILE_SIZE}M|" /etc/clamav/clamd.conf.tmp
-sed -i -e "s|.*MaxRecursion .*|MaxRecursion $CLAMD_MAX_RECURSIONS|" /etc/clamav/clamd.conf.tmp
-sed -i -e "s|.*MaxFiles .*|MaxFiles $CLAMD_MAX_FILES|" /etc/clamav/clamd.conf.tmp
+sed -i -e "s|.*MaxFileSize .*|MaxFileSize ${CLAMD_MAX_FILE_SIZE}M |" /etc/clamav/clamd.conf.tmp
+sed -i -e "s|.*MaxRecursion .*|MaxRecursion $CLAMD_MAX_RECURSIONS |" /etc/clamav/clamd.conf.tmp
+sed -i -e "s|.*MaxFiles .*|MaxFiles $CLAMD_MAX_FILES |" /etc/clamav/clamd.conf.tmp
 
 mv -f /etc/clamav/clamd.conf.tmp /etc/clamav/clamd.conf
 
@@ -113,22 +113,29 @@ else
     cp -f /etc/clamav/freshclam.conf /etc/clamav/freshclam.conf.tmp
 fi
 
-sed -i -e "s|.*PidFile .*|PidFile /run/clamav/freshclam.pid|" /etc/clamav/freshclam.conf.tmp
-sed -i -e "s|.*DatabaseMirror db.*|DatabaseMirror db.${CLAMD_UPDATE_REGION}.clamav.net|" /etc/clamav/freshclam.conf.tmp
+sed -i -e "s|.*PidFile .*|PidFile /run/clamav/freshclam.pid |" /etc/clamav/freshclam.conf.tmp
+sed -i -e "s|.*DatabaseMirror db.*|DatabaseMirror db.${CLAMD_UPDATE_REGION}.clamav.net |" /etc/clamav/freshclam.conf.tmp
 if [ "$CLAMD_USE_HTTP_PROXY_SERVER" = "yes" ]; then
-    sed -i -e "s|.*HTTPProxyServer .*|HTTPProxyServer $CLAMD_HTTP_PROXY_SERVER|" /etc/clamav/freshclam.conf.tmp
-    sed -i -e "s|.*HTTPProxyPort .*|HTTPProxyPort $CLAMD_HTTP_PROXY_PORT|" /etc/clamav/freshclam.conf.tmp
+    sed -i -e "s|.*HTTPProxyServer .*|HTTPProxyServer $CLAMD_HTTP_PROXY_SERVER |" /etc/clamav/freshclam.conf.tmp
+    sed -i -e "s|.*HTTPProxyPort .*|HTTPProxyPort $CLAMD_HTTP_PROXY_PORT |" /etc/clamav/freshclam.conf.tmp
 else
-    sed -i -e "s|.*HTTPProxyServer .*|#HTTPProxyServer $CLAMD_HTTP_PROXY_SERVER|" /etc/clamav/freshclam.conf.tmp
-    sed -i -e "s|.*HTTPProxyPort .*|#HTTPProxyPort $CLAMD_HTTP_PROXY_PORT|" /etc/clamav/freshclam.conf.tmp
+    sed -i -e "s|.*HTTPProxyServer .*|#HTTPProxyServer $CLAMD_HTTP_PROXY_SERVER |" /etc/clamav/freshclam.conf.tmp
+    sed -i -e "s|.*HTTPProxyPort .*|#HTTPProxyPort $CLAMD_HTTP_PROXY_PORT |" /etc/clamav/freshclam.conf.tmp
 fi
-if [ -n "$CLAMD_HTTP_PROXY_USERNAME" ]; then
-    sed -i -e "s|.*HTTPProxyUsername .*|HTTPProxyUsername $CLAMD_HTTP_PROXY_USERNAME|" /etc/clamav/freshclam.conf.tmp
-    sed -i -e "s|.*HTTPProxyPassword .*|HTTPProxyPassword $CLAMD_HTTP_PROXY_PASSWORD|" /etc/clamav/freshclam.conf.tmp
+if [  "$CLAMD_USE_HTTP_PROXY_SERVER" = "yes" -a -n "$CLAMD_HTTP_PROXY_USERNAME" ]; then
+    sed -i -e "s|.*HTTPProxyUsername .*|HTTPProxyUsername $CLAMD_HTTP_PROXY_USERNAME |" /etc/clamav/freshclam.conf.tmp
+    sed -i -e "s|.*HTTPProxyPassword .*|HTTPProxyPassword $CLAMD_HTTP_PROXY_PASSWORD |" /etc/clamav/freshclam.conf.tmp
 else
-    sed -i -e "s|.*HTTPProxyUsername .*|#HTTPProxyUsername $CLAMD_HTTP_PROXY_USERNAME|" /etc/clamav/freshclam.conf.tmp
-    sed -i -e "s|.*HTTPProxyPassword .*|#HTTPProxyPassword $CLAMD_HTTP_PROXY_PASSWORD|" /etc/clamav/freshclam.conf.tmp
+    sed -i -e "s|.*HTTPProxyUsername .*|#HTTPProxyUsername $CLAMD_HTTP_PROXY_USERNAME |" /etc/clamav/freshclam.conf.tmp
+    sed -i -e "s|.*HTTPProxyPassword .*|#HTTPProxyPassword $CLAMD_HTTP_PROXY_PASSWORD |" /etc/clamav/freshclam.conf.tmp
 fi
 
+mv -f /etc/clamav/freshclam.conf.tmp /etc/clamav/freshclam.conf
+chmod 0600 /etc/clamav/freshclam.conf
+chown clamav /etc/clamav/freshclam.conf
+
+# add system logfile entries
+/var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/clamav/clamd.log" "ClamAV"
+/var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/clamav/freshclam.log" "ClamAV Updates"
 
 exit 0

@@ -1,6 +1,6 @@
 #!/bin/bash
 #------------------------------------------------------------------------------
-# /var/install/dialog.d/CLAMAV_REGIONS.sh
+# /var/install/dialog.d/CLAMD_REGIONS.sh
 # Creation:    2010-08-05 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 . /var/install/include/cuilib

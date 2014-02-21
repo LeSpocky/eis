@@ -7,13 +7,13 @@
 # include configlib
 . /var/install/include/configlib
 
-packages_name='clamav'
+packages_name='clamd'
 
 # include default values
 . /etc/default.d/${packages_name}
 
 # convert old eisfair-1/eisfair-2 config files
-if [ -f /etc/config.d/bind9 ] ; then
+if [ -f /etc/config.d/clamav ] ; then
     sed -i -e "s|CLAMAV_|CLAMD_|g" /etc/config.d/clamav
     rm -f /etc/config.d/${packages_name}
     cp -f /etc/config.d/clamav /etc/config.d/${packages_name}

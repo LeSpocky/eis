@@ -325,14 +325,6 @@ Archiv Support
 
           Standardeinstellung: CLAMAV_ARCHIVE_MAX_FILES='1000'
 
-   CLAMAV_ARCHIVE_LIMIT_MEMORY_USAGE
-          Use slower but memory efficient decompression algorithm. only
-          affects the bzip2 decompressor.
-
-          Gueltige Werte: ''yes'', ''no''
-
-          Standardeinstellung: CLAMAV_ARCHIVE_LIMIT_MEMORY_USAGE='no'
-
    CLAMAV_ARCHIVE_BLOCK_ENCRYPTED
           Ueber diese variable kann definiert werden, ob verschluesselte
           Archive als Virus markiert werden sollen (Encrypted.Zip,

@@ -1,38 +1,38 @@
 <!-- /var/install/help/clamav -->
 <!-- Creation: 2007-02-15 scholze -->
 
-<help name="START_CLAMAV">
+<help name="START_CLAMD">
 If you say 'yes' here, ClamAV will be started at Boot-Time.<br/>
 <br/>
-Default: START_CLAMAV='yes'
+Default: START_CLAMD='yes'
 </help>
 
-<help name="CLAMAV_UPDATE_USE_REGION">
+<help name="CLAMD_UPDATE_USE_REGION">
 If you say 'yes' here, ClamAV will update the virus definitions from a <br/>
 regional databse (e.g.: 'de').<br/>
 <br/>
-Default: CLAMAV_UPDATE_USE_REGION='yes'
+Default: CLAMD_UPDATE_USE_REGION='yes'
 </help>
 
-<help name="CLAMAV_UPDATE_REGION">
+<help name="CLAMD_UPDATE_REGION">
 You can choose the region (by root-zones: e.g. 'de', 'fr', 'us') here.<br/>
 <br/>
-Default: CLAMAV_UPDATE_REGION='de'
+Default: CLAMD_UPDATE_REGION='de'
 </help>
 
-<help name="CLAMAV_UPDATE_CRON_USE">
+<help name="CLAMD_UPDATE_CRON_USE">
 If you say 'yes' here, ClamAV will update the virus definitions automatically.<br/>
 <br/>
-Default: CLAMAV_UPDATE_CRON_USE='yes'
+Default: CLAMD_UPDATE_CRON_USE='yes'
 </help>
 
-<help name="CLAMAV_UPDATE_CRON_TIMES">
+<help name="CLAMD_UPDATE_CRON_TIMES">
 This defines the time when ClamAV ist updating the virus definitions<br/>
 <br/>
-Default: CLAMAV_UPDATE_CRON_TIMES='25 */3 * * *'
+Default: CLAMD_UPDATE_CRON_TIMES='25 */3 * * *'
 </help>
 
-<help name="CLAMAV_UPDATE_CRON_MAIL_LEVEL">
+<help name="CLAMD_UPDATE_CRON_MAIL_LEVEL">
 Defines when the package shall send e-mails<br/>
 &nbsp;&nbsp;&nbsp;0 = no mail<br/>
 &nbsp;&nbsp;&nbsp;1 = updated only<br/>
@@ -40,67 +40,67 @@ Defines when the package shall send e-mails<br/>
 &nbsp;&nbsp;&nbsp;3 = always<br/>
 &nbsp;&nbsp;&nbsp;4 = warning<br/>
 <br/>
-Default: CLAMAV_UPDATE_CRON_MAIL_LEVEL='0'
+Default: CLAMD_UPDATE_CRON_MAIL_LEVEL='0'
 </help>
 
-<help name="CLAMAV_SELFCHECK">
+<help name="CLAMD_SELFCHECK">
 Enables/Disables the selfchecking of clamav<br/>
 <br/>
-Default: CLAMAV_SELFCHECK='no'
+Default: CLAMD_SELFCHECK='no'
 </help>
 
-<help name="CLAMAV_PRIORITY_LEVEL">
+<help name="CLAMD_PRIORITY_LEVEL">
 Set scheduling priority<br/>
 <br/>
-Default: CLAMAV_PRIORITY_LEVEL='7'
+Default: CLAMD_PRIORITY_LEVEL='7'
 </help>
 
-<help name="CLAMAV_USE_HTTP_PROXY_SERVER">
+<help name="CLAMD_USE_HTTP_PROXY_SERVER">
 If you say 'yes' here, freshclam will use a proxy to download the virus
 database<br/>
 <br/>
-Default: CLAMAV_USE_HTTP_PROXY_SERVER='no'
+Default: CLAMD_USE_HTTP_PROXY_SERVER='no'
 </help>
 
-<help name="CLAMAV_HTTP_PROXY_SERVER">
+<help name="CLAMD_HTTP_PROXY_SERVER">
 Enter the proxy server to use here<br/>
 <br/>
-Default: CLAMAV_HTTP_PROXY_SERVER='myproxy.com'
+Default: CLAMD_HTTP_PROXY_SERVER='myproxy.com'
 </help>
 
-<help name="CLAMAV_HTTP_PROXY_PORT">
+<help name="CLAMD_HTTP_PROXY_PORT">
 Enter the proxy port to use here<br/>
 <br/>
-Default: CLAMAV_HTTP_PROXY_PORT='1234'
+Default: CLAMD_HTTP_PROXY_PORT='1234'
 </help>
 
-<help name="CLAMAV_HTTP_PROXY_USERNAME">
+<help name="CLAMD_HTTP_PROXY_USERNAME">
 Enter the proxy user to use here<br/>
 <br/>
-Default: CLAMAV_HTTP_PROXY_USERNAME='myuser'
+Default: CLAMD_HTTP_PROXY_USERNAME='myuser'
 </help>
 
-<help name="CLAMAV_HTTP_PROXY_PASSWORD">
+<help name="CLAMD_HTTP_PROXY_PASSWORD">
 Enter the proxy password to use here<br/>
 <br/>
-Default: CLAMAV_HTTP_PROXY_PASSWORD='mypassword'
+Default: CLAMD_HTTP_PROXY_PASSWORD='mypassword'
 </help>
 
-<help name="CLAMAV_DATABASE_MIRROR">
+<help name="CLAMD_DATABASE_MIRROR">
 Enter the database mirror to use here<br/>
 <br/>
-Default: CLAMAV_DATABASE_MIRROR='database.clamav.net'
+Default: CLAMD_DATABASE_MIRROR='database.clamav.net'
 </help>
 
-<help name="CLAMAV_SCAN_ARCHIVE">
+<help name="CLAMD_SCAN_ARCHIVE">
 If you say 'no' here, this will disable scanning of the archives
 </help>
 
-<help name="CLAMAV_SCAN_OLE2">
+<help name="CLAMD_SCAN_OLE2">
 This option enables scanning of Microsoft Office document macros.
 </help>
 
-<help name="CLAMAV_MAX_FILE_SIZE">
+<help name="CLAMD_MAX_FILE_SIZE">
 Files in archives larger than this limit won't be scanned.
 Value of 0 disables the limit.<br/>
 WARNING: Due to the unrarlib implementation, whole files (one by one) in RAR<br/>
@@ -108,37 +108,37 @@ WARNING: Due to the unrarlib implementation, whole files (one by one) in RAR<br/
 &nbsp;&nbsp; this limit (but you may increase it of course!)<br/>
 </help>
 
-<help name="CLAMAV_MAX_RECURSIONS">
+<help name="CLAMD_MAX_RECURSIONS">
 Archives are scanned recursively - e.g. if Zip archive contains RAR file,<br/>
 the RAR file will be decompressed, too (but only if recursion limit is set<br/>
 at least to 1). With this option you may set the recursion level.<br/>
 Value of 0 disables the limit.
 </help>
 
-<help name="CLAMAV_MAX_FILES">
+<help name="CLAMD_MAX_FILES">
 Number of files to be scanned within archive.<br/>
 Value of 0 disables the limit.
 </help>
 
-<help name="CLAMAV_ARCHIVE_BLOCK_ENCRYPTED">
+<help name="CLAMD_ARCHIVE_BLOCK_ENCRYPTED">
 Mark encrypted archives as viruses (Encrypted.Zip, Encrypted.RAR).<br/>
 </help>
 
-<help name="CLAMAV_LOG_COUNT">
+<help name="CLAMD_LOG_COUNT">
 This variable contains the max amount of logfiles to store.<br/>
 <br/>
 Hier wird die maximale Anzahl von Logfiles angegeben, die aufbewahrt werden<br/>
 sollen.<br/>
 </help>
 
-<help name="CLAMAV_LOG_INTERVAL">
+<help name="CLAMD_LOG_INTERVAL">
 This is the interval to start logrotate on the clamav logfiles.<br/>
 <br/>
 Intervall, nach dem die Logfiles von logrotate behandelt werden sollen.<br/>
 Gltige Werte: daily, weekly, monthly<br/>
 </help>
 
-<help name="CLAMAV_INFOMAIL">
+<help name="CLAMD_INFOMAIL">
 (only with "mail" package) <br/>
 If you want to have a mail with the state of the virus mailbox, you can<br/>
 activate this option.<br/>
@@ -148,7 +148,7 @@ Gibt an, ob eine Mail, die den Status der Virenmailbox enthält, verschickt <br/>
 werden soll.<br/>
 </help>
 
-<help name="CLAMAV_INFOMAIL_FROM">
+<help name="CLAMD_INFOMAIL_FROM">
 Defines the From-Adress for the infomail<br/>
 only the name of the sender is needed, no @domain.tld part<br/>
 <br/>
@@ -156,7 +156,7 @@ Legt die Absendemailadresse für die INFO-Mails fest<br/>
 Es ist nur der Postfachname ohne @domain.tld anzugeben<br />
 </help>
 
-<help name="CLAMAV_INFOMAIL_SNAME">
+<help name="CLAMD_INFOMAIL_SNAME">
 Defines the realname of the from address<br/>
 displayed in the most email-clients<br/>
 <br/>
@@ -164,42 +164,42 @@ Legt den Klartextnamen des Absenders fest<br/>
 Dieser wird in den meisten E-Mailprogrammen angezeigt<br/>
 </help>
 
-<help name="CLAMAV_INFOMAIL_SUBJECT">
+<help name="CLAMD_INFOMAIL_SUBJECT">
 (only with "mail" package) <br/>
 With this variable you can define a own mail subject for the virus mail. <br/>
 You can use %HN for the hostname and the parameters supported by the date <br/>
 command, e. g. [%Y-%m-%d] for [2004-05-14].<br/>
 <br/>
 (nur mit dem Packet "mail") <br/>
-Über den Parameter CLAMAV_INFOMAIL_SUBJECT kann eine eigene Betreffzeile für<br/>
+_ber den Parameter CLAMD_INFOMAIL_SUBJECT kann eine eigene Betreffzeile für<br/>
 die Virus-Nachricht angegeben werden. Optional können der Hostname (%HN) <br/>
 und/oder ein Datumsstempel eingefügt werden. Hier werden die vom date-Befehl<br/>
 bekannten Parameter unterstützt, wie z. B. [%d.%m.%Y] für [14.05.2004].<br/>
 <br/>
-Beispiel: CLAMAV_INFOMAIL_SUBJECT='[%HN - %d.%m.%Y] Virus Mailbox Status'<br/>
+Beispiel: CLAMD_INFOMAIL_SUBJECT='[%HN - %d.%m.%Y] Virus Mailbox Status'<br/>
 </help>
 
-<help name="CLAMAV_INFOMAIL_CRON_SCHEDULE">
+<help name="CLAMD_INFOMAIL_CRON_SCHEDULE">
 (only with "mail" package) <br/>
 This defines the time when ClamAV will send the info mail.<br/>
 </help>
 
-<help name="CLAMAV_MAILBOX_FILE">
+<help name="CLAMD_MAILBOX_FILE">
 (only with "mail" package) <br/>
 The mailbox which contains the found viruses.<br/>
 </help>
 
-<help name="CLAMAV_DETECT_PUA">
+<help name="CLAMD_DETECT_PUA">
 Detect Possibly Unwanted Applications.<br/>
 </help>
 
-<help name="CLAMAV_ALGORITHMIC_DETECTION">
+<help name="CLAMD_ALGORITHMIC_DETECTION">
 In some cases (eg. complex malware, exploits in graphic files, and others),
 ClamAV uses special algorithms to provide accurate detection. This option
 controls the algorithmic detection.<br/>
 </help>
 
-<help name="CLAMAV_SCAN_PE">
+<help name="CLAMD_SCAN_PE">
 PE stands for Portable Executable - it's an executable file format used
 in all 32 and 64-bit versions of Windows operating systems. This option allows
 ClamAV to perform a deeper analysis of executable files and it's also
@@ -207,16 +207,16 @@ required for decompression of popular executable packers such as UPX, FSG,
 and Petite.<br/>
 </help>
 
-<help name="CLAMAV_SCAN_ELF">
+<help name="CLAMD_SCAN_ELF">
 Executable and Linking Format is a standard format for UN*X executables.
 This option allows you to control the scanning of ELF files.<br/>
 </help>
 
-<help name="CLAMAV_DETECT_BROKEN_EXECUTABLES">
+<help name="CLAMD_DETECT_BROKEN_EXECUTABLES">
 With this option clamav will try to detect broken executables (both PE and 
 ELF) and mark them as Broken.Executable.<br/>
 </help>
 
-<help name="CLAMAV_SCAN_PDF">
+<help name="CLAMD_SCAN_PDF">
 This option enables scanning within PDF files.<br/>
 </help>

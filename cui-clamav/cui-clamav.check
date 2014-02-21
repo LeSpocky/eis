@@ -29,4 +29,4 @@ CLAMD_MAX_FILES                    -           -        NUMERIC
 CLAMD_ARCHIVE_BLOCK_ENCRYPTED      -           -        YESNO
 
 CLAMD_VIRUSEVENT_MAIL              -           -        YESNO
-CLAMD_VIRUSEVENT_TO                -           -        NONE
+CLAMD_VIRUSEVENT_TO        CLAMD_VIRUSEVENT_MAIL  -     NONE

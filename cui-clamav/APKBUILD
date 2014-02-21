@@ -43,38 +43,38 @@ package() {
 	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/${_pname}.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/${_pname}-update.sh || return 1
 	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.${_pname}.menu || return 1
-	install -D -m755 ${srcdir}/${pkgname}.dregions.sh   ${pkgdir}/var/install/dialog.d/CLAMAV_REGIONS.sh || return 1
-	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/clamav/${_pname}.txt || return 1
-	install -D -m644 ${srcdir}/${pkgname}.txt.toc       ${pkgdir}/usr/share/doc/clamav/${_pname}.toc || return 1
+	install -D -m755 ${srcdir}/${pkgname}.dregions.sh   ${pkgdir}/var/install/dialog.d/CLAMD_REGIONS.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/${_pname}/${_pname}.txt || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt.toc       ${pkgdir}/usr/share/doc/${_pname}/${_pname}.toc || return 1
 }
 
 md5sums="3003d48b2bfe168da2ba1bf2bf81396f  cui-clamav.default
-789ca9ca3c81b1669fd1814aebcddebe  cui-clamav.check
-64488615dc061eb97bbefd9687d24838  cui-clamav.check.exp
-e1046d75ef355117f7eeecabc869f25c  cui-clamav.dregions.sh
-91b973aacb6c926e15619f9a453eafb2  cui-clamav.help
-9981f6091535540fea47f32f48b3f818  cui-clamav.sh
-0b02f97799bf5593a20c00e0bad9f271  cui-clamav-update.sh
-8cf48df1abcc8a711df392ff09cbe7c3  cui-clamav.menu
-a404faa9c729b9c87aa7e80a7a788f02  cui-clamav.txt
+40741dfb324ebefa4e18482b6ce75714  cui-clamav.check
+504e704fe07c4581f6723d968ac805db  cui-clamav.check.exp
+14b423f7bced0b08182dbfab8a76c313  cui-clamav.dregions.sh
+a5c3d85d24305f6c74ae8f7252857383  cui-clamav.help
+d596eca2f4f9e135e10919ffbfe46a57  cui-clamav.sh
+dba3decd53c8f637e560cc4612e73c24  cui-clamav-update.sh
+003c0b4d0efcac8cff355aa61ceba26a  cui-clamav.menu
+eee0a14f33c9d131e5fd441e5ef40016  cui-clamav.txt
 92f20f3ef8fbf2f09af39eb288c190a5  cui-clamav.txt.toc"
 sha256sums="150fefc31ebdb986a796bbfc11263b3a903086e517d4200f7b590d53d49fd217  cui-clamav.default
-0b813118e8b5735ff0585b2166385c19c091ea5a372462bf89bb46d0ecbb2bc4  cui-clamav.check
-6e83ff0abe106586cf1240f41244c0de9e78d5a0b32c4d6d85544d3f490088a2  cui-clamav.check.exp
-25ba3b13a083fdf6b20f7ccbeb9c42ca9272cbc8dd6ccc9a93cd8102b88ee2a8  cui-clamav.dregions.sh
-329a54b1433ba0522664e53221df060b1facb2c2013c162a2714fa94dd2b85cb  cui-clamav.help
-b8a1f83085de36632faf6e07b535dcd7bec576044ffe9ba803c30460250373eb  cui-clamav.sh
-7ffdcb4e2f21c26cf0d3623f47831df00d2303b44c0dafa448b034fd35e798b6  cui-clamav-update.sh
-2db7207127e28b155dde6af32c67119394880c2d4d51bb272339fd5de2323b01  cui-clamav.menu
-bf0fe7924089fcf174ba8051e6cb60321b929c43f439154c5ed64b9926e3462d  cui-clamav.txt
+ca15f3603e29056785ab3cb01ab4cf8991a987826abb442c1037bf96e1e7b7d5  cui-clamav.check
+0ced7f717f36c8661fd10dff10ba6afe9a095a4099d9df5b5fdec66451a7192b  cui-clamav.check.exp
+2a76cfb7b8b2027e88070328d32c550d8e8a213ca945d8e7da3c2f54fe597fbb  cui-clamav.dregions.sh
+9553f4da0b74242069bd76a045f9ace3c8fcaf21e22f2acfc4224d6245183a04  cui-clamav.help
+dd97e4b84ff62c94974d10131bfaac776ead670a6b57633eed9508148c5f89bb  cui-clamav.sh
+839252253ca45e3ef73d1173357698ced2b0b9d33de8400f62519d7053b5fb25  cui-clamav-update.sh
+852cac7a3fa5ffd6e39d4a9d4b5e253175f23d3ff617d66831a84b29d1b989b6  cui-clamav.menu
+3fd3e69b98b0124f1fffdcaa6b840af0e6ddd8078ce0c4264ad1d60f899879f5  cui-clamav.txt
 fca134c310e9eeb77d09b660f9f2a37292b0b5931d90c13de4699e8d94aed849  cui-clamav.txt.toc"
 sha512sums="63614fd6c0732305c389fc0bf8eb248d5a51c321dc834aceb0b4e27827c26ad4f4328e632bc0b2ad23ce8c5d558b7f2d9d2a3af8f80345b97886984c3d4cdcdc  cui-clamav.default
-d4f13701c9a95061aa4298175f26f9b31a64320efff06ee3ce0df0afc15e95c20cff7182745f5ed9eb46b3797a5a936037c47fe41ea0e3cd0e5a3e98e02023d1  cui-clamav.check
-f8e01631c69b9d7014abdd3c370ef50bdcb8cd9bc415939bf009693f7176af8a76a6c3efac8c53936df6765b3d2cd922025ccb211efa25e8ca298cce9085b77b  cui-clamav.check.exp
-1b9b9bbbfa89adc89fcecce47cf5e8ff562b599518664b8c09fe9f89655fb9ab2ff4d39f369a2354ad8314833a5bc996ac6bf16c340cf025da182bed6f0877ff  cui-clamav.dregions.sh
-257f349390b5302c4398c732d0bb4e4fd2015b152175e8cb3ddbe4005233f2d88c9e548c27189dbe5606f933aed0f2a4551fcd7a0fbeba86ab292e279488f3bc  cui-clamav.help
-272fe59c0f1bc90f156175bd48eb656a97c5df65188948ee225ecbb92dae5c712e1595e70fbb74c6241c62ae5017c6fd2914f03b7f9555a5548eba9864595f72  cui-clamav.sh
-e8f15d44020c6b8d52d70797cb7114b656d6c8c9a3309ad4a1328e6ec059b99ecc19dc463179c1b916635341a7795157cdc3e1b05c032873fd2b26494c395b03  cui-clamav-update.sh
-22c300ec88baee412c22e165d8f5b59a00625c93a2a809c6710b93eab7452d3605329e859c656e883c015cc96f23908596fdf7b3cc5e771a78c54a39a3134812  cui-clamav.menu
-f2ea64c5b8a1653456c82fea1871bfe375e833bb28a9d73a91bc32e58c37c9a440c41dbce716fd4ec3d90cf6e04ecae97e3f00e68942948caa4465add6ee9970  cui-clamav.txt
+0f2916adabe33d97a2a979c2fcab001265abf3cf99483933c44b67a4f6b8495073d55c2e6d0b33dc7929a41db354c003bdacadaeeb9d0691f5feb729f578df50  cui-clamav.check
+e75e9ec111f9858ba367126271abe860a4f2cb0f15d6d6311f574e21a76c4101c80969b401d8e02664a656299e5acf2e14ea8bdf68c1d1171f2d7988624b95e2  cui-clamav.check.exp
+fb12f9fe38bc556bf43ba6fb5c5a84a7194793d337aa19971c211e16912803682f1e53584e4619d255933848aa50a2f83dd0e2dcf2aa9ec2fda8c578e5de0b38  cui-clamav.dregions.sh
+7067803030842c6ac326b25d87ca821de74c3794bf95a509620c0012654861598f752ee7a05a01ed1e71b8591e563b340c14096f05425fb78e881d4b992bd2f6  cui-clamav.help
+5f743ca7f4bc23ab5788e77974efc851f15361cc5124ca954693c21ef566ad07478f234783e656a896a2ba50ae894d1886f37b64f228495c8033fd35562509c0  cui-clamav.sh
+3c7efb286e90beed525efa94c12f067f5c145fdb3b30b64ca3577d74cde7a9ab76fdc1020e2b2e8785f1d022ceb5ab3fc69b0c761b1082e515117f26c0d9dc2c  cui-clamav-update.sh
+cfc050ef7072564f3fa7454b5f0e65bdd8ed7107fec45357bac5f261cd2c10ec2c10e151a67b1732009c4e0060467dde266849ef2593038e3e77a7dcadb88226  cui-clamav.menu
+e4bae6c9dd89a5d8bcaa202e889917f5b0ada50b3db5ebf63d06d3dfcf6b83fe55564128ddf5ce374f33466db875e45193ca8ac6875565b91a8c808fe5910144  cui-clamav.txt
 ebfbd142871a8d7a1b0d96a68c7194339c3516d2a6d52e0d1316ef31036159c6fa852c1c072bc81fb13d4b167d151c28a1c8395b5a4974519d275d0bb5ad970d  cui-clamav.txt.toc"

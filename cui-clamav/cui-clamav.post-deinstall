@@ -1,6 +1,8 @@
 #!/bin/sh
 
 /var/install/bin/del-menu setup.services.menu setup.services.clamd.menu
+/var/install/bin/del-menu setup.system.logfileview.menu "/var/log/clamav/clamd.log"
+/var/install/bin/del-menu setup.system.logfileview.menu "/var/log/clamav/freshclam.log"
 rm -f /etc/backup.d/clamd.*
 rm -f /etc/default.d/clamd
 rm -f /etc/check.d/clamd
