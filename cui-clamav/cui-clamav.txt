@@ -124,36 +124,17 @@ Automatische Updates
 
           Standardeinstellung: CLAMAV_UPDATE_REGION='de'
 
-   CLAMAV_UPDATE_CRON_USE
-          Um die Virussignaturen von ClamAV automatisch zu aktualisieren,
-          muss hier der Wert auf yes gesetzt werden.
 
-          Gueltige Werte: ''yes'', ''no''
-
-          Standardeinstellung: CLAMAV_UPDATE_CRON_USE='no'
-
-   CLAMAV_UPDATE_CRON_TIMES
-          Mit dieser Variablen wird festgelegt zu welchem Zeitpunkt bzw.
-          in welchem Intervall die Aktualisierung der Virussignaturen
-          durchgefuehrt werden soll, die Wildcard-TLDs darstellen. Diese
-          Funktion ist nur verfuegbar, wenn der Parameter
-          CLAMAV_UPDATE_CRON_USE='yes' gesetzt wurde. Die fuenf
-          Teilparameter haben dabei folgende Bedeutung:
-
-          + 1 - Minuten,
-          + 2 - Stunden,
-          + 3 - Tag des Monats,
-          + 4 - Monat,
-          + 5 - Wochentag.
-
-          D. h. bei Verwendung der Standardeinstellung wird jeden Tag um
-          00:25h die Liste aktualisiert. Wer naeheres ueber die verwendete
-          Befehlsyntax erfahren moechte, sollte ueber Google nach 'man'
-          und 'crontab' suchen.
+   CLAMAV_UPDATE_INTERVAL
+          Mit dieser Variablen wird festgelegt in welchem Intervall (in
+          Stunden) die Aktualisierung der Virussignaturen durchgefuehrt
+          werden soll.
+          D. h. bei Verwendung der Standardeinstellung wird jeden Tag alle
+          4 Stunden die Liste aktualisiert.
 
           Gueltige Werte: Crontab-spezifischer Parametereintrag
 
-          Standardeinstellung: CLAMAV_UPDATE_CRON_TIMES='25 0 * * *'
+          Standardeinstellung: CLAMAV_UPDATE_INTERVAL='4'
 
 Prioritaet von ClamAV
 

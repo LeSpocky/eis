@@ -1,6 +1,8 @@
 #!/bin/sh
 
 /var/install/bin/add-menu setup.services.menu setup.services.clamd.menu "ClamAV"
-
+# import from eisfair1/2
+[ -f /etc/config.d/clamav ] && /var/install/config.d/clamd-update.sh
+# copy default config if missing
 [ -e /etc/config.d/clamd ] || cp /etc/default.d/clamd /etc/config.d/
 exit 0

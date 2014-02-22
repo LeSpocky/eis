@@ -35,8 +35,7 @@ fi
     printgroup "Settings for automatic update"
     # ----------------------------------------------------------------------
     printvar "CLAMD_UPDATE_REGION"          "the region for database mirrors (de, fr, us...)"
-    printvar "CLAMD_UPDATE_CRON_USE"        "run scheduled updates (yes/no)"
-    printvar "CLAMD_UPDATE_CRON_TIMES"      "schedule (in cron syntax)"
+    printvar "CLAMD_UPDATE_INTERVAL"        "run scheduled updates on hours"
     # ----------------------------------------------------------------------
     printgroup "SelfChecking Options"
     # ----------------------------------------------------------------------

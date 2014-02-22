@@ -7,29 +7,16 @@ If you say 'yes' here, ClamAV will be started at Boot-Time.<br/>
 Default: START_CLAMD='yes'
 </help>
 
-<help name="CLAMD_UPDATE_USE_REGION">
-If you say 'yes' here, ClamAV will update the virus definitions from a <br/>
-regional databse (e.g.: 'de').<br/>
-<br/>
-Default: CLAMD_UPDATE_USE_REGION='yes'
-</help>
-
 <help name="CLAMD_UPDATE_REGION">
 You can choose the region (by root-zones: e.g. 'de', 'fr', 'us') here.<br/>
 <br/>
 Default: CLAMD_UPDATE_REGION='de'
 </help>
 
-<help name="CLAMD_UPDATE_CRON_USE">
-If you say 'yes' here, ClamAV will update the virus definitions automatically.<br/>
+<help name="CLAMD_UPDATE_INTERVAL">
+This defines the hours when ClamAV ist updating the virus definitions<br/>
 <br/>
-Default: CLAMD_UPDATE_CRON_USE='yes'
-</help>
-
-<help name="CLAMD_UPDATE_CRON_TIMES">
-This defines the time when ClamAV ist updating the virus definitions<br/>
-<br/>
-Default: CLAMD_UPDATE_CRON_TIMES='25 */3 * * *'
+Default: CLAMD_UPDATE_INTERVAL='4'
 </help>
 
 <help name="CLAMD_UPDATE_CRON_MAIL_LEVEL">
@@ -46,7 +33,7 @@ Default: CLAMD_UPDATE_CRON_MAIL_LEVEL='0'
 <help name="CLAMD_SELFCHECK">
 Enables/Disables the selfchecking of clamav<br/>
 <br/>
-Default: CLAMD_SELFCHECK='no'
+Default: CLAMD_SELFCHECK='yes'
 </help>
 
 <help name="CLAMD_PRIORITY_LEVEL">

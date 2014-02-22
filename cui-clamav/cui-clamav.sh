@@ -27,7 +27,9 @@ chown clamav /run/clamav
 #-------------------------------------------------------------------------------
 # set level
 #-------------------------------------------------------------------------------
-sed -i -e "s|^CLAMD_NICELEVEL=.*|CLAMD_NICELEVEL=$CLAMD_PRIORITY_LEVEL |" /etc/conf.d/clamd
+sed -i -e "s|^CLAMD_NICELEVEL=.*|CLAMD_NICELEVEL=$CLAMD_PRIORITY_LEVEL|" /etc/conf.d/clamd
+sed -i -e "s|^FRESHCLAM_NICELEVEL=.*|FRESHCLAM_NICELEVEL=$CLAMD_PRIORITY_LEVEL|" /etc/conf.d/freshclam
+
 
 #-------------------------------------------------------------------------------
 # create clamav config
@@ -113,8 +115,24 @@ else
     cp -f /etc/clamav/freshclam.conf /etc/clamav/freshclam.conf.tmp
 fi
 
+
 sed -i -e "s|.*PidFile .*|PidFile /run/clamav/freshclam.pid |" /etc/clamav/freshclam.conf.tmp
 sed -i -e "s|.*DatabaseMirror db.*|DatabaseMirror db.${CLAMD_UPDATE_REGION}.clamav.net |" /etc/clamav/freshclam.conf.tmp
+
+# remove second PrivateMirror
+sed -i -e "s|.*PrivateMirror mirror2\..*||" /etc/clamav/freshclam.conf.tmp
+# update first mirror only
+if [ "$CLAMD_USE_PRIVAT_MIRROR" = "yes" -a -n "$CLAMD_USE_PRIVAT_MIRROR" ]; then
+    sed -i -e "s|.*PrivateMirror .*|PrivateMirror $CLAMD_USE_PRIVAT_MIRROR |" /etc/clamav/freshclam.conf.tmp
+else
+    sed -i -e "s|.*PrivateMirror .*|#PrivateMirror clamav.eisfair.home |" /etc/clamav/freshclam.conf.tmp
+fi
+
+[ -z "$CLAMD_UPDATE_INTERVAL" ] && CLAMD_UPDATE_INTERVAL="4"
+# expr create error with  2 * 6:
+CLAMD_UPDATE_INTERVAL=`expr $CLAMD_UPDATE_INTERVAL + $CLAMD_UPDATE_INTERVAL + $CLAMD_UPDATE_INTERVAL + $CLAMD_UPDATE_INTERVAL + $CLAMD_UPDATE_INTERVAL + $CLAMD_UPDATE_INTERVAL`
+sed -i -e "s|.*Checks .*|Checks $CLAMD_UPDATE_INTERVAL |" /etc/clamav/freshclam.conf.tmp
+
 if [ "$CLAMD_USE_HTTP_PROXY_SERVER" = "yes" ]; then
     sed -i -e "s|.*HTTPProxyServer .*|HTTPProxyServer $CLAMD_HTTP_PROXY_SERVER |" /etc/clamav/freshclam.conf.tmp
     sed -i -e "s|.*HTTPProxyPort .*|HTTPProxyPort $CLAMD_HTTP_PROXY_PORT |" /etc/clamav/freshclam.conf.tmp
@@ -130,12 +148,17 @@ else
     sed -i -e "s|.*HTTPProxyPassword .*|#HTTPProxyPassword $CLAMD_HTTP_PROXY_PASSWORD |" /etc/clamav/freshclam.conf.tmp
 fi
 
+# error if not set 0600 with HTTPProxyPassword
 mv -f /etc/clamav/freshclam.conf.tmp /etc/clamav/freshclam.conf
 chmod 0600 /etc/clamav/freshclam.conf
 chown clamav /etc/clamav/freshclam.conf
 
+
 # add system logfile entries
 /var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/clamav/clamd.log" "ClamAV"
 /var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/clamav/freshclam.log" "ClamAV Updates"
+
+# force stop freshclom (autostart with clamd)
+/sbin/rc-service --quiet freshclam stop
 
 exit 0

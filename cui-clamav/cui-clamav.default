@@ -7,7 +7,7 @@
 # ClamAV settings
 #------------------------------------------------------------------------------
 
-START_CLAMD='no'                 # activate ClamAV: yes or no
+START_CLAMD='yes'                # activate ClamAV: yes or no
 
 #------------------------------------------------------------------------------
 # Settings for automatic update
@@ -15,9 +15,7 @@ START_CLAMD='no'                 # activate ClamAV: yes or no
 
 CLAMD_UPDATE_REGION='de'         # the region for database mirrors (de, fr,
                                  # us...)
-CLAMD_UPDATE_CRON_USE='no'       # run scheduled updates (yes/no)
-CLAMD_UPDATE_CRON_TIMES='25 */3 * * *'
-                                 # schedule (in cron syntax)
+CLAMD_UPDATE_INTERVAL='4'        # schedule update hours
 
 #------------------------------------------------------------------------------
 # SelfChecking Options

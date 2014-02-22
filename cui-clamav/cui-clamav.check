@@ -2,8 +2,7 @@
 START_CLAMD                        -           -        YESNO
 
 CLAMD_UPDATE_REGION                -           -        CLAMD_REGIONS
-CLAMD_UPDATE_CRON_USE              -           -        YESNO
-CLAMD_UPDATE_CRON_TIMES    CLAMD_UPDATE_CRON_USE  -     CRONTAB
+CLAMD_UPDATE_INTERVAL              -           -        CLAMD_UPDATES
 
 CLAMD_SELFCHECK                    -           -        YESNO
 
