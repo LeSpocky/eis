@@ -35,6 +35,8 @@ fi
     printgroup "Settings for automatic update"
     # ----------------------------------------------------------------------
     printvar "CLAMD_UPDATE_REGION"          "the region for database mirrors (de, fr, us...)"
+    printvar "CLAMD_USE_PRIVAT_MIRROR"      "use the privat clamav siganture mirror"
+    printvar "CLAMD_PRIVAT_MIRROR"          "name of mirror clamav mirror"
     printvar "CLAMD_UPDATE_INTERVAL"        "run scheduled updates on hours"
     # ----------------------------------------------------------------------
     printgroup "SelfChecking Options"

@@ -1,7 +1,3 @@
-# ------------------------------------------------------------------------------
-# /etc/config.d/-check_ext - configuration file for -check_ext
-# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
-# ------------------------------------------------------------------------------
 if (start_ssmtp)
 then
     if (ssmtp_use_tls == "tls")

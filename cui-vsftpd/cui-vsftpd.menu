@@ -5,6 +5,6 @@
 <edit>Edit Configuration</edit>
 <menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
 <script file="vsftpd-user.cui.sh">Virtual users</script>
+<init task="status">Status</init>
 <init task="start">Start</init>
 <init task="stop">Stop</init>
-<init task="status">Show status</init>

@@ -2,6 +2,8 @@
 START_CLAMD                        -           -        YESNO
 
 CLAMD_UPDATE_REGION                -           -        CLAMD_REGIONS
+CLAMD_USE_PRIVAT_MIRROR            -           -        YESNO
+CLAMD_PRIVAT_MIRROR       CLAMD_USE_PRIVAT_MIRROR -     DOMAIN
 CLAMD_UPDATE_INTERVAL              -           -        CLAMD_UPDATES
 
 CLAMD_SELFCHECK                    -           -        YESNO
@@ -28,4 +30,4 @@ CLAMD_MAX_FILES                    -           -        NUMERIC
 CLAMD_ARCHIVE_BLOCK_ENCRYPTED      -           -        YESNO
 
 CLAMD_VIRUSEVENT_MAIL              -           -        YESNO
-CLAMD_VIRUSEVENT_TO        CLAMD_VIRUSEVENT_MAIL  -     NONE
+CLAMD_VIRUSEVENT_TO       CLAMD_VIRUSEVENT_MAIL -       NONE

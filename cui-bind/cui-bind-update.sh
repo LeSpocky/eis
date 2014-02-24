@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #------------------------------------------------------------------------------
 # /var/install/config.d/bind-update.sh - BIND config parameter update script
 # Creation:     2004-08-20 jv <jens@eisfair.org>

@@ -7,7 +7,7 @@
 # General settings
 #------------------------------------------------------------------------------
 
-START_SSMTP="no"                      # activate configuration: yes or no
+START_SSMTP="yes"                     # activate configuration: yes or no
 
 SSMTP_FORWARD_TO='root@eisfair.local' # receiver of all mails send via ssmtp
 SSMTP_MAILHUB='mail.local.lan'        # host to send mail to

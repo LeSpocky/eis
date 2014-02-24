@@ -1,7 +1,7 @@
 <help name="START_FTP">
 start FTP server 'yes' or 'no'<br/>
 <br/>
-Default: START_FTP='no'
+Default: START_FTP='yes'
 </help>
 
 <help name="FTP_PORT">

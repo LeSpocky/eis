@@ -122,8 +122,8 @@ sed -i -e "s|.*DatabaseMirror db.*|DatabaseMirror db.${CLAMD_UPDATE_REGION}.clam
 # remove second PrivateMirror
 sed -i -e "s|.*PrivateMirror mirror2\..*||" /etc/clamav/freshclam.conf.tmp
 # update first mirror only
-if [ "$CLAMD_USE_PRIVAT_MIRROR" = "yes" -a -n "$CLAMD_USE_PRIVAT_MIRROR" ]; then
-    sed -i -e "s|.*PrivateMirror .*|PrivateMirror $CLAMD_USE_PRIVAT_MIRROR |" /etc/clamav/freshclam.conf.tmp
+if [ "$CLAMD_USE_PRIVAT_MIRROR" = "yes" -a -n "$CLAMD_PRIVAT_MIRROR" ]; then
+    sed -i -e "s|.*PrivateMirror .*|PrivateMirror $CLAMD_PRIVAT_MIRROR |" /etc/clamav/freshclam.conf.tmp
 else
     sed -i -e "s|.*PrivateMirror .*|#PrivateMirror clamav.eisfair.home |" /etc/clamav/freshclam.conf.tmp
 fi

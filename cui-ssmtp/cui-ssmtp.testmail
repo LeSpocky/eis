@@ -33,8 +33,7 @@ sleep 0.3
 
 message=`cat ${ssmtp_error} | sed 's#send-mail:\(.\+\)#\1#'`
 
-if [ -n "$message" ]
-then
+if [ -n "$message" ]; then
     echo ""
     echo ${message}
 else

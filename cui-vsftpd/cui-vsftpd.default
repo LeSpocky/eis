@@ -7,11 +7,10 @@
 # General settings
 #------------------------------------------------------------------------------
 
-START_FTP='no'                        # Start vsftpd 'yes' or 'no'
+START_FTP='yes'                       # Start vsftpd 'yes' or 'no'
 FTP_PORT='21'                         # Listen for an incoming connection.
                                       # Default 21.
 FTP_BIND=''                           # If set, then bind the FTP port only to
                                       # ip-address.
 FTP_LOG_INTERVAL="weekly"             # logrotate interval
 FTP_LOG_MAXCOUNT="4"                  # max count of logfiles
- 

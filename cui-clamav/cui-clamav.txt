@@ -125,6 +125,19 @@ Automatische Updates
           Standardeinstellung: CLAMAV_UPDATE_REGION='de'
 
 
+   CLAMD_USE_PRIVAT_MIRROR
+          Wird dieser Wert auf ''yes'' gestellt, dann wird der ClamAV
+          Update Dienst den unter CLAMD_PRIVAT_MIRROR eingetragenen
+          Server nach aktuellen Virus-Siganturen befragen.
+          Diese Funktion wird nur in gro·en Netzten benoetigt, wenn
+          aus Performance/Traffic-Gruenden ein lokaler Mirror fÅr
+          ClamAV Virus-Signaturen eingerichtet ist.
+
+
+   CLAMD_PRIVAT_MIRROR
+          Name des privaten ClamAV Sigantur Servers.
+
+
    CLAMAV_UPDATE_INTERVAL
           Mit dieser Variablen wird festgelegt in welchem Intervall (in
           Stunden) die Aktualisierung der Virussignaturen durchgefuehrt
