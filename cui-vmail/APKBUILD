@@ -24,6 +24,19 @@ source="${pkgname}.default
 		${pkgname}.tools.menu
 		${pkgname}.user.menu
 		${pkgname}-modules-fetchmail
+		${pkgname}-mysql-canonical_maps.cf
+    ${pkgname}-mysql-client_access.cf
+    ${pkgname}-mysql-client_access_postscreen.cf 
+    ${pkgname}-mysql-recipient_access.cf
+    ${pkgname}-mysql-sender_access.cf 
+    ${pkgname}-mysql-transport.cf
+    ${pkgname}-mysql-virtual_aliases.cf 
+    ${pkgname}-mysql-virtual_domains.cf
+    ${pkgname}-mysql-virtual_email2email.cf 
+    ${pkgname}-mysql-virtual_mailbox_maps.cf
+    ${pkgname}-mysql-virtual_relayhosts_auth.cf
+    ${pkgname}-mysql-virtual_relayhosts.cf
+    ${pkgname}-mysql-virtual_restrictions.cf
 		${pkgname}-tools-recipient-access.cui.sh
 		${pkgname}-user-maildropfilter.cui.sh
 		${pkgname}-modules-maildropfilter
@@ -55,9 +68,25 @@ build() {
 
 package() {
 	cd "$_builddir"
+	# add config and check files
 	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/${_pname} || return 1
 	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/${_pname}.exp || return 1
 	install -D -m640 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/${_pname} || return 1
+	# add mysql config files for postfix
+	install -D -m640 ${srcdir}/${pkgname}-mysql-canonical_maps.cf           ${pkgdir}/etc/postfix/mysql-canonical_maps.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-client_access.cf            ${pkgdir}/etc/postfix/mysql-client_access.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-client_access_postscreen.cf ${pkgdir}/etc/postfix/mysql-client_access_postscreen.cf 
+	install -D -m640 ${srcdir}/${pkgname}-mysql-recipient_access.cf         ${pkgdir}/etc/postfix/mysql-recipient_access.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-sender_access.cf            ${pkgdir}/etc/postfix/mysql-sender_access.cf 
+	install -D -m640 ${srcdir}/${pkgname}-mysql-transport.cf                ${pkgdir}/etc/postfix/mysql-transport.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_aliases.cf          ${pkgdir}/etc/postfix/mysql-virtual_aliases.cf 
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_domains.cf          ${pkgdir}/etc/postfix/mysql-virtual_domains.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_email2email.cf      ${pkgdir}/etc/postfix/mysql-virtual_email2email.cf 
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_mailbox_maps.cf     ${pkgdir}/etc/postfix/mysql-virtual_mailbox_maps.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_relayhosts_auth.cf  ${pkgdir}/etc/postfix/mysql-virtual_relayhosts_auth.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_relayhosts.cf       ${pkgdir}/etc/postfix/mysql-virtual_relayhosts.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_restrictions.cf     ${pkgdir}/etc/postfix/mysql-virtual_restrictions.cf
+  # eisfair menu files	
 	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/${_pname} || return 1
 	install -D -m755 ${srcdir}/${pkgname}.initd         ${pkgdir}/etc/init.d/${_pname} || return 1
 	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/${_pname}.sh || return 1
@@ -86,17 +115,30 @@ md5sums="ec47b9619575f2d426c2018e5e902480  cui-vmail.default
 675fb8c012eed5cd339448134b2f21f5  cui-vmail.check
 45fd728e1d619a972a98ab1fc6ec1917  cui-vmail.check.exp
 86735bcdcc8dc896ca39e188178a6d69  cui-vmail.help
-b2a4d3e7b9f197cfa27c30ee9ac60a3d  cui-vmail.initd
-1d5461fbdec63b9404890cdce3e038a5  cui-vmail.sh
+ef9237437bf14fb0ee1a055f3d4cf382  cui-vmail.initd
+8023da0c992eec6026ae5a572c878c4b  cui-vmail.sh
 6bd584931290f4ed2a9f9500f67e4b6f  cui-vmail-update.sh
 0205c16ebd7fc14b121c92a621c456ca  cui-vmail.menu
 5a3e69a8435af69f9c6fc4485a192cd6  cui-vmail.modules.menu
 5d84f98192b9b90127e72d1c3555181a  cui-vmail.tools.menu
 1507062eb8e4c147f45fa855a90c547f  cui-vmail.user.menu
-cbc02e11b6cf874c58ae17ae0b3dd8eb  cui-vmail-modules-fetchmail
+23f9fbb8bb10056508d03a88b1986cea  cui-vmail-modules-fetchmail
+a5ade624f66a5e3f68e8966dd5dea96d  cui-vmail-mysql-canonical_maps.cf
+1899194f1a12ef1f83b490757a360eab  cui-vmail-mysql-client_access.cf
+7d1f2ed9eda5e68da0da539bef2697cf  cui-vmail-mysql-client_access_postscreen.cf
+81b73bcb18589fc114219c094ef9ac86  cui-vmail-mysql-recipient_access.cf
+8066f0948fbea2acb0397248777b1ccc  cui-vmail-mysql-sender_access.cf
+dd9835304d921f2095eb6774b8b29c3b  cui-vmail-mysql-transport.cf
+a587d69cab8e8ae51c014741aeda349c  cui-vmail-mysql-virtual_aliases.cf
+d4918d04cc13069a3bed4ede26e822cd  cui-vmail-mysql-virtual_domains.cf
+bd24db059c1980fccea8d88984a33153  cui-vmail-mysql-virtual_email2email.cf
+e8e76b78933c80b587bea322017d5a81  cui-vmail-mysql-virtual_mailbox_maps.cf
+615ab337db3325b23284f895e2557fc2  cui-vmail-mysql-virtual_relayhosts_auth.cf
+f23956779447f6e73ab3556915d71101  cui-vmail-mysql-virtual_relayhosts.cf
+7d9362d1525dac194e098a9c5c958162  cui-vmail-mysql-virtual_restrictions.cf
 ec676e31d5272d6adbde2dad40f94541  cui-vmail-tools-recipient-access.cui.sh
 9f21ffeece2204a686da43b0209525ff  cui-vmail-user-maildropfilter.cui.sh
-ba28123b5711a325b44ab275ffc687c6  cui-vmail-modules-maildropfilter
+f7e018400226644e8802a585df8dfbe6  cui-vmail-modules-maildropfilter
 944f23bddd5634b3942095aee08e3e80  cui-vmail-tools-sender-access.cui.sh
 48ca3e3e72c90bf4a3be480c02d87d28  cui-vmail-user-relaymap.cui.sh
 945e6a6c4510bfd4ccdf596a9d380ed7  cui-vmail-modules-mailhandling
@@ -115,17 +157,30 @@ sha256sums="ddd4d416500c49cb0247504aebc23b8160acee307bd12935a2d2a9141574959c  cu
 2f039fd2547bfb20cfd70d7532106d97687d971e69127fdbdbf52179ef0599be  cui-vmail.check
 48ce211795336e8dc615cf9e4ae18ea4c49eb4fa1c504c3a70c005f39361d17b  cui-vmail.check.exp
 03c1fc4e5ec3147b51a2774f4f850d597f56a7973c0d37d628c7178240d36631  cui-vmail.help
-540bbee7fe847ca902e962d4d2bd3112f1a3fc6ac1030c85b84e67a26fc87d73  cui-vmail.initd
-d5ecac71b6d87186eeed6d95ea6b50c04f5b903f762fd55f65c5a34b1ec688d8  cui-vmail.sh
+7e2d8cc0d85763f5aaf58c3cd31211256b093c262ee16ad8928a390395b898c5  cui-vmail.initd
+ab8c78e0956ad7024fe61a9b542617b11ae55002d672fb0e60eac6e4a46dd291  cui-vmail.sh
 786a6c05033f86342e01156d2c160aa7e5f9d7c043dca60e22965eb512943afe  cui-vmail-update.sh
 c3c50c454e014bcf2147e8868ae3b7a7dc5cc6087f1bdfe3c1fb7fb87f2c151e  cui-vmail.menu
 79808136b4b692bcae3091cf487e4e79089f50bb3eb35a633cd51ee7e01d26b5  cui-vmail.modules.menu
 bea349555162b7535fbc1cf7509a2d0acf8ecf235848245ce1586b171607b91b  cui-vmail.tools.menu
 2692ae194d95604f13885db2017b0456e83cc4cb3ad817a627dd539a5ac95bca  cui-vmail.user.menu
-c832d544b8b41e63dd3f9626320e081455c30bffb8518fbacfaf3501b425a313  cui-vmail-modules-fetchmail
+562044ce801f7c23cb9a24c23a7851b69d6762b1bfc550dd472f93f397dac914  cui-vmail-modules-fetchmail
+cfc808491d3d8fce5a7d75b4a46085008a7d4b6fc29de29a6192056fbece327a  cui-vmail-mysql-canonical_maps.cf
+e038d9976e809c1b775f57fdba1004f2cdfeafcc330dff5ce4061850a8dac8b3  cui-vmail-mysql-client_access.cf
+30a1c82e174e91169a95d47bc3fb3ab9ffdc39d5e901912cccd9beda086e0517  cui-vmail-mysql-client_access_postscreen.cf
+cbc4bcf13ff899c5e87bf605e4551b8bd94174ad9bd637f443ec353844de555d  cui-vmail-mysql-recipient_access.cf
+999e852f6f4b67d0372d4fa9abf3675734e3a31d1abc200f1600429293763613  cui-vmail-mysql-sender_access.cf
+b5a9e08e797aceaf7934159614f6715bbfc4168b4bc1db7bdd3f3b6f422b2b0e  cui-vmail-mysql-transport.cf
+100e43ba22d26d478a9016a1219ff6972d8dbaa332b48575c4506a79698f9ed6  cui-vmail-mysql-virtual_aliases.cf
+5af4bb41868f6fdd199551d81810d4cb5b47dc272d328b4e583c2e3a295217b5  cui-vmail-mysql-virtual_domains.cf
+5d4e6fdb35bdb242562d1f69c6a2abe7ff9aaed70ec9d3db1a3c0884eb290a4c  cui-vmail-mysql-virtual_email2email.cf
+37ecf2e2a42c246b1d41d88eec1b75630b9dac554943c6bf36f8163657a4daae  cui-vmail-mysql-virtual_mailbox_maps.cf
+2f363e2706f5c3ddce626e3a1ddc68cf45246565293534a83b3b4a629979ac29  cui-vmail-mysql-virtual_relayhosts_auth.cf
+55e7d68d8f35ccb7a4a1ac9d48efe8f5ea72cde9476ebe3096a6fa47b9c8277b  cui-vmail-mysql-virtual_relayhosts.cf
+3798640ab185ce2d1de35c873ce1a630cda1f0c93c9ed71bb25d9efbb9b4a8e1  cui-vmail-mysql-virtual_restrictions.cf
 d1d939c39aed4d7adb000f54c78ec1127029004be65f0527290ba91ec27689fc  cui-vmail-tools-recipient-access.cui.sh
 ca31ce5d965f0ae8fa2d97a68d3e080757dc1212fefdddfdad2c19510ab9bcba  cui-vmail-user-maildropfilter.cui.sh
-5ab56f33c528dd29ef1d33b1d9da18159d64eb4c4d5de49ef335472a53e56bc2  cui-vmail-modules-maildropfilter
+33fff6bb219f54327204b682db8df3f70625976209e02a2ad8366a331e680cc2  cui-vmail-modules-maildropfilter
 14f9896bcb086fcceb49ceb7040bc5bc08dc23e75bcd11a76b699a4fa26f412a  cui-vmail-tools-sender-access.cui.sh
 76e3a4f7504d250af8cd7509a55b2a6cdaedfe41d65d34a0027d1bfe45f881fd  cui-vmail-user-relaymap.cui.sh
 01ac505d2d3ae7de581b42f27b08bb5949db11c537f109345f9844b76517962b  cui-vmail-modules-mailhandling
@@ -144,17 +199,30 @@ sha512sums="63ab4b441c0e53990d990064dbd2c3c3135e262a9317cef10677bd0446d7894c56e3
 a54ddbeaecbf439604f69e668a172cdaa73d31f3bf7cc55241746e0d241b16702f467dc7587fe7369ca2a36297c27e7781f8494a6db9c32939483490f71b7238  cui-vmail.check
 5503fe9c36f152a4bc45ed119e4b68a06b44d05243dfe41ea3461143d82be66a956f07ce02320684c23875b4db471aa68ef96a6c6e82099166925f3b227af533  cui-vmail.check.exp
 545f27f7f63416cec7bbd9a443908eb0dea882ba4debbd1a51dd94839381bf99b55dc87d63eeac9b5b2c0ee14d7e091a79b03750e2f6bdbbf0217fb5ac6561f3  cui-vmail.help
-c833c7f71963034b53737576d004ffcd57abae586f7538aba0230730983e9ff6e90eb917f45ffcd2fec1f65d9759d5b36cc9ab55af503128a51c86852245f687  cui-vmail.initd
-5796f35d5ae6039f150c678de7108464e2908c4eb87e3af9a11aae72537b342eb5172971f58b134d5bcf789115bd749d1199cd68ca6dfd17beb2c26ad31202cd  cui-vmail.sh
+a944284dcd40d230f15f1f3d504058fadfa8dc2413f13704558e14ccad685fe6a0cfe1712c191034db2bcb804da4ada50c79ac1e1b26b02cd2a6e63abe18a083  cui-vmail.initd
+73fab342b1b7c0bb42f329b30b4ca620e23866da4ba4eb390460ad49deb8695e253d12d07f9b817a1866866de05c944dffef9ae3489f587e2bbaf58d64d4b08d  cui-vmail.sh
 845a03e8ced769de8b6d42438cf5259ecf0a8f45e248de043c5852ea1cbd800ca5db617bea9ea670f6bc09ed236dcfd5c43e5877efaee6915330e93675532662  cui-vmail-update.sh
 31a1cb8c9cda05589e306364f4e5956ed9c360b13f71f95302ea712100e326715fd5081e5a8a5ae855ac4b04feeb89100c9fddbe1198ec19e70cb89da95c47b9  cui-vmail.menu
 1d1a7d1c6711a15b19edede0395c0018d3a83c50ccbae410307429b2f11f8f64ceeb7ad7879cf912c2d66b002910073b538b0834c95c550c8725f3c8e84ab8d3  cui-vmail.modules.menu
 40ebd6be2100e1ac40b5c1b37be1cebe49ac9ff5b24ff081e094dad314849f5d9dff16750c6b27b374229c8934e2f4d1291c60117f20b0cc9733c426e0af3b4a  cui-vmail.tools.menu
 ae016eb20b1ab587b7c8fa7443e3b6c57dc4408ad2b15960af846b63ca274ff6f61b2a63f22a308386022ae411e40b1cb27709cdae4f2f04ca48a9c0416696f0  cui-vmail.user.menu
-286247d08168e61c02dd6b7afa9b3196366c89f60cccb4b341b4e67bb075ee42a977b550990f16373b2be8606ff8a9147d651eca1a7638039d7ba7e11750d806  cui-vmail-modules-fetchmail
+98a714981ab63e34dae0abece059c11489424240c2fbce05e6adcccaac9082c806c80886b481a4db6484383f12bf26a1c6cda6aa9d1785c20b8af844e27dec97  cui-vmail-modules-fetchmail
+b107185474f1b6f4b58ff3630c89f82cf1b459c62449427c3333b92fb3ea55962fa68003f9c9295ecf0a01dc867054e630fc49c7ce9ed365b34c3c05236c72b8  cui-vmail-mysql-canonical_maps.cf
+c521d5d85061e51fc3385371ce45d8289101a8a0ecd901a5ad454dad770fe2db9ddcca4209a6f615418243b78b1d526d31c72bda27cb4525b73dddfc223e5e27  cui-vmail-mysql-client_access.cf
+5db9a394c9d44f301f01208f34f5dbe42123325fbe2f24dff3f6be7df327b6323ae330d68a59b1b40346203139373b8c2207faaf676f0e61470c53e0808b213f  cui-vmail-mysql-client_access_postscreen.cf
+0566a85ace7b789319445361631b65bd383f0495123157f6fab1ba17956cad2f2faa2efd866e9be159f1e78d53815d2409ee7aa5785eff0cc0c20fd9517ec31c  cui-vmail-mysql-recipient_access.cf
+eb3dd5f3662fb6d2cc06018b11cc0e49710d4fd471609fe86b1ddd107eace6b0956123be0b55c778c2c943edadc291ee135b888164aa4c0dbf347d910d808192  cui-vmail-mysql-sender_access.cf
+afa1b3dcccf74e53207dbba25f1baaf131764077671de99ef78faefa278b2c79bac14e356b4fd561327ac97d02ead9891ec177d0bbb21eb268ca0dbf003d1c4e  cui-vmail-mysql-transport.cf
+2d8ca09b3eb1c493261466086f251b4ee43985d8b43dcf55681191ca840f266b5935eec8a1f2d6c15c4cedab61852ca1036332aa05fb4622aa13526d3a126b72  cui-vmail-mysql-virtual_aliases.cf
+009f92631101e4941bb5a4f3c1d3a3bf87f0a2918fcf2975428f680252b314cb3b73fc65675cc69937f96685e3bb9b35a505de6a0e2a385c528f72f542456862  cui-vmail-mysql-virtual_domains.cf
+d3f672b60b44d436b42f157d76b0d35c30bb91784731e7b5579440302e665de11eb2c5c7b76c6ebd4bd57e137dae19a54a0e1fe38e9e7a9367a6db3fe1c24b79  cui-vmail-mysql-virtual_email2email.cf
+ca0508fcb4f3d720e607f9266954c43440a5eccbca16640d3ff7e431a33af0ba8a38a0a75e41efc914cec0de759ef3726e65118f9257c6800c4343ba4c8166ec  cui-vmail-mysql-virtual_mailbox_maps.cf
+99a2d20bb9705878615db87d0ca2f4d9be1ce8a5ca671e7aafcec89276def2fa19a132d2d62eec6781046af1518d7c45e597aef1ac4e7f5d74026643e289f87d  cui-vmail-mysql-virtual_relayhosts_auth.cf
+2e0f2c62dd467b018113ed13b6d934d42cff54c350f42a05d4f0c9ff247e45d157d17724af6297adea417c089102b6beecfdabf46ff1ac35dc59f18351de3674  cui-vmail-mysql-virtual_relayhosts.cf
+e9899e7fa425758d7eee875cb9fdc47c141a1a09861f08ceb14d391477635399b734ea75ad11bff3221c2c44198c9d867ae500afa7e649a44293b35ad0f2cddf  cui-vmail-mysql-virtual_restrictions.cf
 e56a2e369266ff3ddd8e2a4964a787ce6042877f6a9e6288ee2dcc7dfcaef628fe03a1828d620757c9a5dcdd0b3c1bd79d4140f368907d9a470c7b399a6c9a68  cui-vmail-tools-recipient-access.cui.sh
 8f5423aae1fdf4bdd569b80ddf6437a106bac08eb0e048458d366a18ae551affb012b93b6ce6371041c453f58cff464f463f64756e2b81deb2e7a9ecff289c36  cui-vmail-user-maildropfilter.cui.sh
-bfb49516f53f9b8f5e4f747d3d16301b9ce0b622e8f3887bdbd92ae83872265d13bd012e4e724c08f999970a81c90838863103727299931c9328c67508aec250  cui-vmail-modules-maildropfilter
+8df9a82cef83b7499dfb6a10e9ce4c5f7070d1532dc441590a120602c8816819faf73fbb261411ab711684efa95eaa33e443e2a2b2800faf1d597897b37c8d3c  cui-vmail-modules-maildropfilter
 f561f8c8baa5a6aaadbea458a31d0ea0a89f1e61125f0e5583b1b265a837c3e51d34e2f7e534ccc812fd221dc55b6c905b93c24f91496b29a483dad8d36ae6e3  cui-vmail-tools-sender-access.cui.sh
 0d2221a7c6f00f2beb9d4881315206fd16b55fe72c75116e812a971b55cc82379146d3c8e09c2b082d21d70fd6c918d4bb378f4eb57350953e779435586d7934  cui-vmail-user-relaymap.cui.sh
 d00aa1f738847cd5b0264800b2f9cc368d8bf8f29c54a1e39ee1f8aa5b647468031dad12484895722e703db5c47814608e38e7d3aab91223217bde6f6a843ef0  cui-vmail-modules-mailhandling

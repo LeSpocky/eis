@@ -1,0 +1,6 @@
+user = vmailprovider
+password = vmail
+dbname = vmaildata
+query = SELECT response FROM view_sender_access WHERE source='%s'
+hosts = unix:/run/mysqld/mysqld.sock
+

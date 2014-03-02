@@ -1,0 +1,6 @@
+user = vmailprovider
+password = vmail
+dbname = vmaildata
+query = SELECT 'permit' FROM view_client_access WHERE source='%s' AND response = 'OK'
+hosts = unix:/run/mysqld/mysqld.sock
+

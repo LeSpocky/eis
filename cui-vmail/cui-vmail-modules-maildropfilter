@@ -7,9 +7,8 @@
 clrhome
 . /var/install/include/eislib
 . /etc/config.d/vmail
-if [ "$VMAIL_SQL_HOST" = 'localhost' ]
-then
-    vmail_sql_connect="unix:/var/run/mysql/mysql.sock"
+if [ "$VMAIL_SQL_HOST" = 'localhost' ]; then
+    vmail_sql_connect="unix:/run/mysqld/mysqld.sock"
 else
     vmail_sql_connect="inet:$VMAIL_SQL_HOST"
 fi

@@ -10,32 +10,32 @@ depend() {
 }
 
 start() {
-	[ -x /etc/init.d/greylist ] && sh /etc/init.d/greylist start
-	sh /etc/init.d/smc-milter start
-	[ "$START_POP3IMAP" = 'yes' ] && sh /etc/init.d/dovecot start
-	sh /etc/init.d/postfix start
+	[ -x /etc/init.d/greylist ] && /sbin/rc-service greylist start
+	/sbin/rc-service smc-milter start
+	[ "$START_POP3IMAP" = 'yes' ] && /sbin/rc-service dovecot start
+	/sbin/rc-service postfix start
 }
 
 stop() {
-	sh /etc/init.d/postfix stop
-	sh /etc/init.d/smc-milter stop
-	[ -x /etc/init.d/greylist ] && sh /etc/init.d/greylist stop
-	sh /etc/init.d/dovecot stop
+	/sbin/rc-service postfix stop
+	/sbin/rc-service smc-milter stop
+	[ -x /etc/init.d/greylist ] && /sbin/rc-service greylist stop
+	/sbin/rc-service dovecot stop
 }
 
 restart() {
-	sh /etc/init.d/postfix stop
-	sh /etc/init.d/smc-milter stop
+	/sbin/rc-service postfix stop
+	/sbin/rc-service smc-milter stop
 	if [ "$START_VMAIL" = 'no' ] ; then
-		[ -x /etc/init.d/greylist ] && sh /etc/init.d/greylist stop
+		[ -x /etc/init.d/greylist ] && /sbin/rc-service greylist stop
 	fi
-	sh /etc/init.d/dovecot stop
+	/sbin/rc-service dovecot stop
 	[ "$START_VMAIL" = 'yes' ] && $0 start
 }
 
 status() {
-	/etc/init.d/postfix status
-	/etc/init.d/smc-milter status
-	[ -x /etc/init.d/greylist ] && /etc/init.d/greylist status
-	/etc/init.d/dovecot status
+	/sbin/rc-service postfix status
+	/sbin/rc-service smc-milter status
+	[ -x /etc/init.d/greylist ] && /sbin/rc-service greylist status
+	/sbin/rc-service dovecot status
 }

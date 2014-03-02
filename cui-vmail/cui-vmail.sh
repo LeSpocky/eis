@@ -32,17 +32,15 @@ POSTFIX_SMARTHOST_TLS='no'
 . /etc/config.d/vmail
 
 
-if [ "$VMAIL_SQL_HOST" = 'localhost' ]
-then
-    vmail_sql_connect="unix:/var/run/mysql/mysql.sock"
+if [ "$VMAIL_SQL_HOST" = 'localhost' ]; then
+    vmail_sql_connect="unix:/run/mysqld/mysqld.sock"
 else
     vmail_sql_connect="$VMAIL_SQL_HOST"
 fi
 
 
 # login with completed mail address or username only
-if [ "$VMAIL_LOGIN_WITH_MAILADDR" = "yes" ]
-then
+if [ "$VMAIL_LOGIN_WITH_MAILADDR" = "yes" ]; then
     dovecot_query="email"
     dovecot_authf="auth_username_format = %Lu"
     dovecot_deliver="\${recipient}"
@@ -87,7 +85,7 @@ write_postfix_config()
         count=`expr ${count} + 1`
     done
 
-    [ $POSTFIX_LIMIT_MAILSIZE -gt 10 ] || POSTFIX_LIMIT_MAILSIZE="10" 
+    [ $POSTFIX_LIMIT_MAILSIZE -gt 10 ] || POSTFIX_LIMIT_MAILSIZE="10"
     [ $POSTFIX_LIMIT_DESTINATIONS -gt 10 ] || POSTFIX_LIMIT_DESTINATIONS="10"
     [ "$POSTFIX_DRACD" = "yes" ] && postfix_int_netw="${postfix_int_netw}, proxy:btree:/etc/postfix/dracd"
     [ "$POSTFIX_DRACD" = "yes" ] && postfix_prxmynet="\$mynetworks,"
@@ -98,25 +96,20 @@ write_postfix_config()
     [ "$POSTFIX_REJECT_DYNADDRESS" = "yes" ] && postfix_dyn_client_bl="check_client_access pcre:/etc/postfix/client_access_dynblocks.pcre,"
     [ "$POSTFIX_REJECT_BOGUS_MX" = "yes" ] && postfix_send_mx="check_sender_mx_access proxy:cidr:/etc/postfix/bogus_mx.cidr,"
     [ "$POSTFIX_REJECT_NON_FQDN_HOST" = "yes" ] && postfix_fqdn_helo="reject_non_fqdn_helo_hostname," # kann Probleme mit Webmailern machen!
-    if [ "$POSTFIX_POSTSCREEN" = "yes" ]
-    then
+    if [ "$POSTFIX_POSTSCREEN" = "yes" ]; then
         postfix_pscreen=""
         postfix_psmtpd="#"
     fi
-    if [ "$POSTFIX_RBL" = "yes" ]
-    then
+    if [ "$POSTFIX_RBL" = "yes" ]; then
         count=1
         while [ ${count} -le ${POSTFIX_RBL_N} ]
         do
             eval temp1='$POSTFIX_RBL_'${count}'_SERVER'
             eval temp2='$POSTFIX_RBL_'${count}'_WEIGHT'
             postfix_pscr_dnsbl_action="enforce"
-            [ -n "$temp2" ] && temp2="*${temp2}" 
+            [ -n "$temp2" ] && temp2="*${temp2}"
             postfix_rbl_list="$postfix_rbl_list ${temp1}${temp2}"
-            if [ ${POSTFIX_RBL_N} -gt ${count} ]
-            then
-                postfix_rbl_list="$postfix_rbl_list,"
-            fi
+            [ ${POSTFIX_RBL_N} -gt ${count} ] && postfix_rbl_list="$postfix_rbl_list,"
             count=`expr ${count} + 1`
         done
     fi
@@ -128,8 +121,8 @@ write_postfix_config()
     [ "$POSTFIX_SMARTHOST" = "yes" ] && postfix_relayhosts_auth="proxy:mysql:/etc/postfix/mysql-virtual_relayhosts_auth.cf"
 
     postconf -e "queue_directory = /var/spool/postfix"
-    postconf -e "command_directory = /usr/sbin"
-    postconf -e "daemon_directory = /usr/local/postfix"
+#    postconf -e "command_directory = /usr/sbin"
+#    postconf -e "daemon_directory = /usr/local/postfix"
     postconf -e "data_directory = /var/lib/postfix"
     postconf -e "mail_spool_directory = /var/spool/postfix"
     postconf -e "mail_owner = mail"
@@ -205,11 +198,10 @@ write_postfix_config()
     postconf -e "tls_random_source = dev:/dev/urandom"
     postconf -e "tls_random_prng_update_period = 3600s"
 # SASL setup
-    if [ "$START_POP3IMAP" = "yes" ]
-    then
+    if [ "$START_POP3IMAP" = "yes" ]; then
         postconf -e "smtpd_sasl_auth_enable = yes"
         postconf -e "smtpd_sasl_path = private/auth"
-        postconf -e "broken_sasl_auth_clients = yes" 
+        postconf -e "broken_sasl_auth_clients = yes"
     else
         postconf -e "smtpd_sasl_auth_enable = no"
         postconf -e "smtpd_sasl_path = smtpd"
@@ -229,12 +221,9 @@ write_postfix_config()
     postconf -e "sender_canonical_maps = proxy:mysql:/etc/postfix/mysql-canonical_maps.cf"
     postconf -e "sender_dependent_relayhost_maps = $postfix_relayhosts"
 
-
     postconf -e "smtpd_tls_auth_only = no"
-    if [ "$POSTFIX_SMTP_TLS" = 'yes' ]
-    then
-        if [ -e ${VMAIL_TLS_CAPATH}/cacert.pem ]
-        then 
+    if [ "$POSTFIX_SMTP_TLS" = 'yes' ]; then
+        if [ -e ${VMAIL_TLS_CAPATH}/cacert.pem ]; then
             postconf -e "smtpd_tls_CAfile = ${VMAIL_TLS_CAPATH}/cacert.pem"
         else
             postconf -e "smtpd_tls_CAfile ="
@@ -251,17 +240,16 @@ write_postfix_config()
         postconf -e "smtpd_tls_key_file ="
         postconf -e "smtpd_tls_received_header = no"
         postconf -e "smtpd_tls_security_level ="
-    fi    
+    fi
     postconf -e "smtpd_tls_session_cache_database = btree:/var/lib/postfix/smtpd_tls_session_cache"
     postconf -e "smtpd_tls_session_cache_timeout  = 9600s"
     postconf -e "smtpd_tls_req_ccert              = no"
     postconf -e "smtpd_tls_dh1024_param_file      = /etc/postfix/ssl/dh_1024.pem"
     postconf -e "smtpd_tls_dh512_param_file       = /etc/postfix/ssl/dh_512.pem"
-    if [ $POSTFIX_LOGLEVEL -gt 1 ]
-    then
-        postconf -e "smtpd_tls_loglevel = $POSTFIX_LOGLEVEL"  
+    if [ $POSTFIX_LOGLEVEL -gt 1 ]; then
+        postconf -e "smtpd_tls_loglevel = $POSTFIX_LOGLEVEL"
     else
-        postconf -e "smtpd_tls_loglevel = 1" 
+        postconf -e "smtpd_tls_loglevel = 1"
     fi
 
     rm -f /etc/postfix/header_checks.pcre
@@ -288,7 +276,7 @@ write_postfix_config()
     postconf -e "milter_default_action = accept"
     postconf -e "milter_connect_macros = j"
     postconf -e "milter_protocol = 3"
-   
+
     # postscreen antispam setup
     postconf -e "postscreen_greet_action = enforce"
 #    postconf -e "postscreen_hangup_action = drop"
@@ -369,7 +357,7 @@ EOF
     chown    root:root   /var/spool/postfix/etc
     chown -R root:root   /var/spool/postfix/lib
     chown -R root:root   /var/spool/postfix/usr
-    chown    root:root   /var/spool/postfix/var   
+    chown    root:root   /var/spool/postfix/var
     chown    vmail:vmail /var/spool/postfix/virtual
     chmod 0777           /var/spool/postfix/var/lib
 #    chown postfix:root /var/spool/postfix
@@ -386,17 +374,15 @@ write_milter_config()
     local connectport=0
 
     # check if installed clamav
-    if [ ! -f /var/install/packages/clamav ]
-    then
-        if [ "$POSTFIX_AV_CLAMAV" = 'yes' ]
-        then
+    if [ ! -f /usr/sbin/clamd ]; then
+        if [ "$POSTFIX_AV_CLAMAV" = 'yes' ]; then
             mecho --error "ClamAV not found. Set POSTFIX_AV_CLAMAV='no'"
             POSTFIX_AV_CLAMAV='no'
         fi
     fi
- 
+
     [ "${VMAIL_SQL_HOST}" = "localhost" ] || connectport=3306
-   
+
     sed -i -e "s|^clamcheck.*|clamcheck		${POSTFIX_AV_CLAMAV}|" /etc/postfix/smc-milter.conf
     sed -i -e "s|^fprotcheck.*|fprotcheck		${POSTFIX_AV_FPROTD}|" /etc/postfix/smc-milter.conf
     sed -i -e "s|^quarantinedir.*|quarantinedir		${POSTFIX_AV_QUARANTINE_DIR}|" /etc/postfix/smc-milter.conf
@@ -407,8 +393,7 @@ write_milter_config()
     sed -i -e "s|^dbname.*|dbname			${VMAIL_SQL_DATABASE}|" /etc/postfix/smc-milter.conf
     sed -i -e "s|^dbuser.*|dbuser			${VMAIL_SQL_USER}|" /etc/postfix/smc-milter.conf
     sed -i -e "s|^dbpass.*|dbpass			${VMAIL_SQL_PASS}|" /etc/postfix/smc-milter.conf
-    if [ "$POSTFIX_AV_SCRIPT" = "yes" ]
-    then
+    if [ "$POSTFIX_AV_SCRIPT" = "yes" ]; then
         sed -i -e "s|.*scriptfile.*|scriptfile		${POSTFIX_AV_SCRIPTFILE}|" /etc/postfix/smc-milter.conf
     else
         sed -i -e "s|^scriptfile.*|#scriptfile|" /etc/postfix/smc-milter.conf
@@ -418,28 +403,6 @@ write_milter_config()
     mkdir -p   ${POSTFIX_AV_QUARANTINE_DIR}
     chmod 0777 ${POSTFIX_AV_QUARANTINE_DIR}
     echo -n "."
-}
-
-
-### -------------------------------------------------------------------------
-### Generate DRACD conf
-### -------------------------------------------------------------------------
-make_dracd_conf()
-{
-    if [ "$POSTFIX_DRACD" = "yes" ] 
-    then
-        echo "255.255.255.255 127.0.0.1" > /etc/postfix/dracd.internal 
-        count=1
-        while [ ${count} -le ${POSTFIX_RELAY_FROM_NET_N} ]
-        do
-            eval temp1='$POSTFIX_RELAY_FROM_NET_'${count}
-            echo "`netcalc netmask ${temp1}` `netcalc network ${temp1}`" >> /etc/postfix/dracd.internal
-            count=`expr ${count} + 1`
-        done
-        chmod 0644 /etc/postfix/dracd.internal
-    else
-        rm -f /etc/postfix/dracd.internal
-    fi
 }
 
 
@@ -470,22 +433,19 @@ update_sql_files()
     sed -i -e "s|^connect =.*|connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}|" /etc/dovecot/dovecot-sql.conf.ext 
     sed -i -e "s|^connect =.*|connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}|" /etc/dovecot/dovecot-dict-sql.conf.ext 
     sed -i -e "s|^password_query =.*|password_query = SELECT email as user, AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}') as password FROM view_users WHERE $dovecot_query = '%u'|" /etc/dovecot/dovecot-sql.conf.ext
-    sed -i -e "s|^  username_field =.*|  username_field = ${dovecot_query}|" /etc/dovecot/dovecot-dict-sql.conf.ext 
-    if [ "$POP3IMAP_TLS" = "yes" ]
-    then
-        sed -i -e "s|^protocols =.*|protocols = imap pop3 imaps pop3s managesieve|" /etc/dovecot/dovecot.conf 
+    sed -i -e "s|^  username_field =.*|  username_field = ${dovecot_query}|" /etc/dovecot/dovecot-dict-sql.conf.ext
+    if [ "$POP3IMAP_TLS" = "yes" ]; then
+        sed -i -e "s|^protocols =.*|protocols = imap pop3 imaps pop3s managesieve|" /etc/dovecot/dovecot.conf
     else
-        sed -i -e "s|^protocols =.*|protocols = imap pop3 managesieve|" /etc/dovecot/dovecot.conf 
+        sed -i -e "s|^protocols =.*|protocols = imap pop3 managesieve|" /etc/dovecot/dovecot.conf
     fi
-    sed -i -e "s|^ssl =.*|ssl = ${POP3IMAP_TLS}|" /etc/dovecot/dovecot.conf 
-    sed -i -e "s|.*auth_username_format.*|${dovecot_authf} |" /etc/dovecot/dovecot.conf 
-    if [ $POSTFIX_LOGLEVEL -gt 2 ]
-    then
+    sed -i -e "s|^ssl =.*|ssl = ${POP3IMAP_TLS}|" /etc/dovecot/dovecot.conf
+    sed -i -e "s|.*auth_username_format.*|${dovecot_authf} |" /etc/dovecot/dovecot.conf
+    if [ $POSTFIX_LOGLEVEL -gt 2 ]; then
         sed -i -e "s|^#mail_debug.*|mail_debug = yes|" /etc/dovecot/dovecot.conf
     else
         sed -i -e "s|^mail_debug.*|#mail_debug = yes|" /etc/dovecot/dovecot.conf
     fi
-
 
     # secure doevecot sql password include files!
     rm -f /etc/dovecot/dovecot.*.bak
@@ -521,57 +481,12 @@ cd /etc/postfix/ssl
 #   openssl req -new -nodes -keyout server-key.pem -out server-req.pem -days 365
 #   openssl ca -out server-crt.pem -infiles server-req.pem
 # Diffie-Hellman only for postfix use!
-openssl gendh -out /etc/postfix/ssl/dh_512.pem -2 512    
+openssl gendh -out /etc/postfix/ssl/dh_512.pem -2 512
 openssl gendh -out /etc/postfix/ssl/dh_1024.pem -2 1024
 #  chmod 644 /etc/postfix/ssl/server-crt.pem /etc/postfix/ssl/demoCA/cacert.pem
 #  chmod 400 /etc/postfix/ssl/server-key.pem
 #c_rehash.sh /etc/postfix/ssl
 }
-
-### -------------------------------------------------------------------------
-### create aliases file
-### -------------------------------------------------------------------------
-append_to_stdfile()
-{
-    filelist=`ls ${fname_std}.* 2>/dev/null | egrep -v ".backup|.std|.db|~"`
-    for FN in $filelist
-    do
-        # read files line by line
-        while read line
-        do
-            # ignore blank or empty lines and comments
-            echo "$line" | grep -q '^[[:space:]]*$' && continue
-            echo $line | grep "^#" > /dev/null
-            if [ $? -ne 0 ]
-            then
-                usrname=`echo $line | cut -d":" -f1 | sed 's/ //g'`
-                if [ ! -z "$usrname" ]
-                then
-                    entry=`cat ${fname_std} | grep "^${usrname}:"`
-                    if [ -z "$entry" ]
-                    then
-                        cat $FN | grep "^${usrname}:" >> ${fname_std}
-                    fi
-                fi
-            fi
-        done < $FN
-    done
-}
-
-
-### -------------------------------------------------------------------------
-### Generate Service
-### -------------------------------------------------------------------------
-update_remote_port ()
-{
-    {
-    [ "$POSTFIX_SMTP_TLS" = 'yes' ]           &&                 echo "smtps            465/tcp  # smtp over SSL"
-    [ "$POP3IMAP_TLS" = 'yes' -o "$START_FETCHMAIL" = 'yes' ] && echo "pop3s            995/tcp  # pop3 over SSL"
-    [ "$POP3IMAP_TLS" = 'yes' ]       &&                         echo "imaps            993/tcp  # imap over SSL"
-    } > /etc/services.vmail
-    /var/install/bin/update-services vmail
-}
-
 
 
 ### --------------------------------------------------------------------------
@@ -580,35 +495,12 @@ update_remote_port ()
 add_cron_job()
 {
     mkdir -p /etc/cron/root
-cat > /etc/cron/root/postfix <<EOF
-# ==============================================================
-# Postfix logfile update
-# Creation: $EISDATE $EISTIME by vmail setup
-# ==============================================================
-#59 23 * * * /usr/local/postfix/rejectlogfilter.sh
-EOF
-
-    if [ "$START_POP3IMAP" = 'yes' ]
-    then
-        echo "00,30 * * * * /usr/local/dovecot/mysqlsievefilter.sh " >> /etc/cron/root/postfix
-    fi 
-
-    if [ "$START_FETCHMAIL" = "yes" ]
-    then
-        cat > /etc/cron/root/fetchmail <<EOF
-# ==============================================================
-# Fetchmail start
-# Creation: $EISDATE $EISTIME
-# ==============================================================
-$FETCHMAIL_CRON_SCHEDULE /usr/local/postfix/fetchmailstart.sh
-EOF
-    else
-        rm -f /etc/cron/root/fetchmail
-    fi
+    echo "#59 23 * * * /usr/local/postfix/rejectlogfilter.sh" > /etc/cron/root/postfix
+    [ "$START_POP3IMAP" = 'yes' ] && echo "# 00,30 * * * * /usr/local/dovecot/mysqlsievefilter.sh" >> /etc/cron/root/postfix
+    [ "$START_FETCHMAIL" = "yes" ] && echo "# $FETCHMAIL_CRON_SCHEDULE /usr/local/postfix/fetchmailstart.sh" >> /etc/cron/root/postfix
     # update crontab file
-    /var/install/config.d/cron 
+    /sbin/rc-service --quiet fcron reload
 }
-
 
 
 ### -------------------------------------------------------------------------
@@ -617,10 +509,7 @@ EOF
 create_fetchmail_file()
 {
     logging="-s"
-    if [ "$FETCHMAIL_LOG" = "yes" ]
-    then
-        logging="--syslog"
-    fi
+    [ "$FETCHMAIL_LOG" = "yes" ] && logging="--syslog"
     cat > /usr/local/postfix/fetchmailstart.sh <<EOF
 #!/bin/sh
 #------------------------------------------------------------------------------
@@ -643,93 +532,76 @@ sql_database_check()
 {
     local count=1
     local npass=0
-    local mysql_pass="x"
-    local mysql_user='root' 
+    local mysql_pass="-p"
+    local mysql_user='root'
 
-    # get password for MySQL admin user 'backup' if exists
-    if  [ -f /var/lib/mysql/backup.pwd ] 
-    then
-        mysql_pass=`grep passwd= /var/lib/mysql/backup.pwd | sed "s/passwd=//g"`
-        mysql_user='backup'
+    # check if set password for MySQL admin user 'root' if exists
+    if  [ -f /root/.my.cnf ]; then
+#        mysql_pass=`grep password= /root/.my.cnf | sed "s/password=//g"`
+        mysql_pass=""
+        mysql_user='root'
     fi
-    
+
     # test login with user backup or root
-    while [ ${count} -le 3 ]     
+    while [ ${count} -le 3 ]
     do
-        /usr/local/postfix/mysqlclient -h $VMAIL_SQL_HOST -u $mysql_user -p${mysql_pass} -D mysql -e '' >/dev/null 2>&1
-        if [ $? -eq 0 ]
-        then
+        /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D mysql -e '' >/dev/null 2>&1
+        if [ $? -eq 0 ]; then
             npass=1
             break
         else
-            mysql_user='root' 
+            mysql_user='root'
+            mysql_pass=""
             echo -n "MySQL user root password required:"
             stty -echo
             read mysql_pass
             stty echo
             echo ""
+            mysql_pass="-p$mysql_pass"
         fi
         count=`expr ${count} + 1`
     done
 
-    if [ $npass -eq 0 ]
-    then
+    if [ $npass -eq 0 ]; then
         echo ""
         mecho --error "cannot connect MySQL server $VMAIL_SQL_HOST with user $mysql_user"
     else
         # check if database and user exists
-        /usr/local/postfix/mysqlclient -h $VMAIL_SQL_HOST -u $mysql_user -p${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select id from view_users limit 1;' >/dev/null 2>&1
-        if [ $? -ne 0 ]
-        then
-            /usr/local/postfix/mysqlclient -h $VMAIL_SQL_HOST -u $mysql_user -p${mysql_pass} -e "CREATE DATABASE $VMAIL_SQL_DATABASE DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
+        /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select id from view_users limit 1;' >/dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -e "CREATE DATABASE $VMAIL_SQL_DATABASE DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
             npass=9
         fi
-        count=`/usr/local/postfix/mysqlclient -N --silent -h $VMAIL_SQL_HOST -u $mysql_user -p${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select id from vmail_version limit 1;' 2>/dev/null`
+        count=`/usr/bin/mysql -N --silent -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select id from vmail_version limit 1;' 2>/dev/null`
         [ -z "$count" ] && count=0
-        if [ $? -ne 0 -o $count -ne 8 ]
-        then
+        if [ $? -ne 0 -o $count -ne 8 ]; then
             # create all tables, if not exists
-            /usr/local/postfix/mysqlclient -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user -p${mysql_pass} < /usr/local/postfix/postfix-install-table.sql       
-            
+            /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /usr/local/postfix/postfix-install-table.sql
+
             # create all trigger, if MySQL support this (5.x) and not exists
-            /usr/local/postfix/mysqlclient -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user -p${mysql_pass} < /usr/local/postfix/postfix-install-trigger.sql 2>/dev/null      
+            /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /usr/local/postfix/postfix-install-trigger.sql 2>/dev/null      
 
             # make all updates (alter table...)
             while read sqlcmd
             do
                 echo "$sqlcmd" | grep -q '^#' && continue
-                /usr/local/postfix/mysqlclient -h $VMAIL_SQL_HOST -u $mysql_user -p${mysql_pass} -D $VMAIL_SQL_DATABASE -e "$sqlcmd" 2>/dev/null
+                /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e "$sqlcmd" 2>/dev/null
             done < /usr/local/postfix/postfix-install-update.sql
             # create all views
-            /usr/local/postfix/mysqlclient -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user -p${mysql_pass} < /usr/local/postfix/postfix-install-view.sql
+            /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /usr/local/postfix/postfix-install-view.sql
             # add default data for new database
-            [ $npass -eq 9 ] && /usr/local/postfix/mysqlclient -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user -p${mysql_pass} < /usr/local/postfix/postfix-install-data.sql
+            [ $npass -eq 9 ] && /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user -p${mysql_pass} < /usr/local/postfix/postfix-install-data.sql
         fi
-    
+
         # force VMAIL_SQL_USER access
-        if [ "$VMAIL_SQL_HOST" = "localhost" -o "$VMAIL_SQL_HOST" = "127.0.0.1" ]
-        then
-            /usr/local/postfix/mysqlclient -h $VMAIL_SQL_HOST -D mysql -u $mysql_user -p${mysql_pass} -e \
+        if [ "$VMAIL_SQL_HOST" = "localhost" -o "$VMAIL_SQL_HOST" = "127.0.0.1" ]; then
+            /usr/bin/mysql -h $VMAIL_SQL_HOST -D mysql -u $mysql_user ${mysql_pass} -e \
                 "GRANT SELECT, INSERT, UPDATE, DELETE ON ${VMAIL_SQL_DATABASE}.* TO '${VMAIL_SQL_USER}'@'localhost' identified by '${VMAIL_SQL_PASS}'; flush privileges;"
-        fi  
-        if [ "$VMAIL_SQL_HOST" != "localhost"  ]
-        then
-            /usr/local/postfix/mysqlclient -h $VMAIL_SQL_HOST -D mysql -u $mysql_user -p${mysql_pass} -e \
+        fi
+        if [ "$VMAIL_SQL_HOST" != "localhost"  ]; then
+            /usr/bin/mysql -h $VMAIL_SQL_HOST -D mysql -u $mysql_user ${mysql_pass} -e \
                 "GRANT SELECT, INSERT, UPDATE, DELETE ON ${VMAIL_SQL_DATABASE}.* TO '${VMAIL_SQL_USER}'@'%' identified by '${VMAIL_SQL_PASS}'; flush privileges;"
         fi
-    fi
-}
-
-### -------------------------------------------------------------------------
-### set start symlink
-### -------------------------------------------------------------------------
-set_init_link()
-{
-    if [ "$START_VMAIL" = 'yes' ]
-    then
-        ln -sf /etc/init.d/vmail /etc/rc2.d/S66vmail
-    else
-        rm -f /etc/rc2.d/S??vmail
     fi
 }
 
@@ -754,8 +626,7 @@ update_modules_menu()
     /var/install/bin/create-menu $mail_module_menu_file "$mail_module_menu_title"
 
     ls /var/install/menu/setup.services.mail.modules.*.menu > /dev/null 2> /dev/null
-    if [ $? -eq 0 ]
-    then
+    if [ $? -eq 0 ]; then
         for FNAME in /var/install/menu/setup.services.mail.modules.*.menu
         do
             if is_new_menutype `basename $FNAME`
@@ -782,7 +653,7 @@ update_modules_menu()
 get_domain_name()
 {
     # read the password include special chars for admin user
-    domain_name=`/usr/local/postfix/mysqlclient -h $VMAIL_SQL_HOST -u $VMAIL_SQL_USER -p${VMAIL_SQL_PASS} -D $VMAIL_SQL_DATABASE -s -e \
+    domain_name=`/usr/bin/mysql -h $VMAIL_SQL_HOST -u $VMAIL_SQL_USER -p${VMAIL_SQL_PASS} -D $VMAIL_SQL_DATABASE -s -e \
             "SELECT name FROM virtual_domains WHERE active='1' AND (transport LIKE 'pop3imap:%%') LIMIT 1;"`
     echo "$domain_name"
 }
@@ -796,17 +667,15 @@ case "$1" in
         write_postfix_config
         write_milter_config
         update_sql_files
-        if [ -e /var/lib/mysql/backup.pwd ] 
-        then 
+        if [ -e /root/.my.cnf ]; then
             sql_database_check
         else
-            echo "" 
+            echo ""
             echo " ----------------------------------------------------------"
             echo " Please start Vmail configuration for update MySQL tables! "
             echo " ----------------------------------------------------------"
             sleep 3
         fi
-        set_init_link
         ;;
     updatemodulesmenu)
         update_modules_menu
@@ -821,11 +690,9 @@ case "$1" in
         ;;
     *)
         # check if exists mail cert
-        if [ ! -f ${VMAIL_TLS_CERT} ]
-        then
+        if [ ! -f ${VMAIL_TLS_CERT} ]; then
             logger -t 'postfix' "missing mail cert file ${VMAIL_TLS_CERT}"
-            if [ "$POSTFIX_SMTP_TLS" = 'yes' ]
-            then
+            if [ "$POSTFIX_SMTP_TLS" = 'yes' ]; then
                 echo ""
                 mecho --error "Mail certificate not found! Start without TLS services."
                 mecho "Please create email cert with package Certs Service"
@@ -835,10 +702,7 @@ case "$1" in
                 POP3IMAP_TLS='no'
             fi
         else
-            if [ ! -f /etc/postfix/ssl/dh_512.pem ]
-            then
-                create_ssl_files
-            fi
+            [ ! -f /etc/postfix/ssl/dh_512.pem ] && create_ssl_files
         fi
         sql_database_check
         echo -n "Update postfix "
@@ -847,15 +711,11 @@ case "$1" in
         update_sql_files
         echo "."
        # write_dovecot_config
-        make_dracd_conf
-        update_remote_port
         # fix permissions:
         create_fetchmail_file
         add_cron_job
-        set_init_link
         ;;
 esac
-
 
 ### -------------------------------------------------------------------------
 exit 0

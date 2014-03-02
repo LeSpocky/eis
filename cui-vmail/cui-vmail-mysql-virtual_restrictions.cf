@@ -1,0 +1,6 @@
+user = vmailprovider
+password = vmail
+dbname = vmaildata
+query = SELECT restriction FROM view_mailprotect WHERE email='%s'
+hosts = unix:/run/mysqld/mysqld.sock
+

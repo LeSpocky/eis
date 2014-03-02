@@ -7,7 +7,7 @@
 #include eislib
 . /var/install/include/eislib
 
-VMAIL_TLS_CAPATH='/usr/local/ssl/certs'
+VMAIL_TLS_CAPATH='/etc/ssl/certs'
 
 #include configuration
 . /etc/config.d/vmail
