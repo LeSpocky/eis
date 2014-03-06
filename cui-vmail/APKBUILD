@@ -25,18 +25,18 @@ source="${pkgname}.default
 		${pkgname}.user.menu
 		${pkgname}-modules-fetchmail
 		${pkgname}-mysql-canonical_maps.cf
-    ${pkgname}-mysql-client_access.cf
-    ${pkgname}-mysql-client_access_postscreen.cf 
-    ${pkgname}-mysql-recipient_access.cf
-    ${pkgname}-mysql-sender_access.cf 
-    ${pkgname}-mysql-transport.cf
-    ${pkgname}-mysql-virtual_aliases.cf 
-    ${pkgname}-mysql-virtual_domains.cf
-    ${pkgname}-mysql-virtual_email2email.cf 
-    ${pkgname}-mysql-virtual_mailbox_maps.cf
-    ${pkgname}-mysql-virtual_relayhosts_auth.cf
-    ${pkgname}-mysql-virtual_relayhosts.cf
-    ${pkgname}-mysql-virtual_restrictions.cf
+		${pkgname}-mysql-client_access.cf
+		${pkgname}-mysql-client_access_postscreen.cf
+		${pkgname}-mysql-recipient_access.cf
+		${pkgname}-mysql-sender_access.cf
+		${pkgname}-mysql-transport.cf
+		${pkgname}-mysql-virtual_aliases.cf
+		${pkgname}-mysql-virtual_domains.cf
+		${pkgname}-mysql-virtual_email2email.cf
+		${pkgname}-mysql-virtual_mailbox_maps.cf
+		${pkgname}-mysql-virtual_relayhosts_auth.cf
+		${pkgname}-mysql-virtual_relayhosts.cf
+		${pkgname}-mysql-virtual_restrictions.cf
 		${pkgname}-tools-recipient-access.cui.sh
 		${pkgname}-user-maildropfilter.cui.sh
 		${pkgname}-modules-maildropfilter
@@ -73,19 +73,23 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/${_pname}.exp || return 1
 	install -D -m640 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/${_pname} || return 1
 	# add mysql config files for postfix
-	install -D -m640 ${srcdir}/${pkgname}-mysql-canonical_maps.cf           ${pkgdir}/etc/postfix/mysql-canonical_maps.cf
-	install -D -m640 ${srcdir}/${pkgname}-mysql-client_access.cf            ${pkgdir}/etc/postfix/mysql-client_access.cf
-	install -D -m640 ${srcdir}/${pkgname}-mysql-client_access_postscreen.cf ${pkgdir}/etc/postfix/mysql-client_access_postscreen.cf 
-	install -D -m640 ${srcdir}/${pkgname}-mysql-recipient_access.cf         ${pkgdir}/etc/postfix/mysql-recipient_access.cf
-	install -D -m640 ${srcdir}/${pkgname}-mysql-sender_access.cf            ${pkgdir}/etc/postfix/mysql-sender_access.cf 
-	install -D -m640 ${srcdir}/${pkgname}-mysql-transport.cf                ${pkgdir}/etc/postfix/mysql-transport.cf
-	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_aliases.cf          ${pkgdir}/etc/postfix/mysql-virtual_aliases.cf 
-	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_domains.cf          ${pkgdir}/etc/postfix/mysql-virtual_domains.cf
-	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_email2email.cf      ${pkgdir}/etc/postfix/mysql-virtual_email2email.cf 
-	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_mailbox_maps.cf     ${pkgdir}/etc/postfix/mysql-virtual_mailbox_maps.cf
-	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_relayhosts_auth.cf  ${pkgdir}/etc/postfix/mysql-virtual_relayhosts_auth.cf
-	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_relayhosts.cf       ${pkgdir}/etc/postfix/mysql-virtual_relayhosts.cf
-	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_restrictions.cf     ${pkgdir}/etc/postfix/mysql-virtual_restrictions.cf
+	install -D -m644 ${srcdir}/${pkgname}.sqldata.sql                       ${pkgdir}/etc/postfix/default/install-sqldata.sql
+	install -D -m644 ${srcdir}/${pkgname}.sqltable.sql                      ${pkgdir}/etc/postfix/default/install-sqltable.sql
+	install -D -m644 ${srcdir}/${pkgname}.sqltrigger.sql                    ${pkgdir}/etc/postfix/default/install-sqltrigger.sql
+	install -D -m644 ${srcdir}/${pkgname}.sqlview.sql                       ${pkgdir}/etc/postfix/default/install-sqlview.sql
+	install -D -m640 ${srcdir}/${pkgname}-mysql-canonical_maps.cf           ${pkgdir}/etc/postfix/sql/mysql-canonical_maps.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-client_access.cf            ${pkgdir}/etc/postfix/sql/mysql-client_access.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-client_access_postscreen.cf ${pkgdir}/etc/postfix/sql/mysql-client_access_postscreen.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-recipient_access.cf         ${pkgdir}/etc/postfix/sql/mysql-recipient_access.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-sender_access.cf            ${pkgdir}/etc/postfix/sql/mysql-sender_access.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-transport.cf                ${pkgdir}/etc/postfix/sql/mysql-transport.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_aliases.cf          ${pkgdir}/etc/postfix/sql/mysql-virtual_aliases.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_domains.cf          ${pkgdir}/etc/postfix/sql/mysql-virtual_domains.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_email2email.cf      ${pkgdir}/etc/postfix/sql/mysql-virtual_email2email.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_mailbox_maps.cf     ${pkgdir}/etc/postfix/sql/mysql-virtual_mailbox_maps.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_relayhosts_auth.cf  ${pkgdir}/etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_relayhosts.cf       ${pkgdir}/etc/postfix/sql/mysql-virtual_relayhosts.cf
+	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_restrictions.cf     ${pkgdir}/etc/postfix/sql/mysql-virtual_restrictions.cf
   # eisfair menu files	
 	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/${_pname} || return 1
 	install -D -m755 ${srcdir}/${pkgname}.initd         ${pkgdir}/etc/init.d/${_pname} || return 1
@@ -116,7 +120,7 @@ md5sums="ec47b9619575f2d426c2018e5e902480  cui-vmail.default
 45fd728e1d619a972a98ab1fc6ec1917  cui-vmail.check.exp
 86735bcdcc8dc896ca39e188178a6d69  cui-vmail.help
 ef9237437bf14fb0ee1a055f3d4cf382  cui-vmail.initd
-8023da0c992eec6026ae5a572c878c4b  cui-vmail.sh
+e61d7ed1659ed2d4e267a38abafc181e  cui-vmail.sh
 6bd584931290f4ed2a9f9500f67e4b6f  cui-vmail-update.sh
 0205c16ebd7fc14b121c92a621c456ca  cui-vmail.menu
 5a3e69a8435af69f9c6fc4485a192cd6  cui-vmail.modules.menu
@@ -158,7 +162,7 @@ sha256sums="ddd4d416500c49cb0247504aebc23b8160acee307bd12935a2d2a9141574959c  cu
 48ce211795336e8dc615cf9e4ae18ea4c49eb4fa1c504c3a70c005f39361d17b  cui-vmail.check.exp
 03c1fc4e5ec3147b51a2774f4f850d597f56a7973c0d37d628c7178240d36631  cui-vmail.help
 7e2d8cc0d85763f5aaf58c3cd31211256b093c262ee16ad8928a390395b898c5  cui-vmail.initd
-ab8c78e0956ad7024fe61a9b542617b11ae55002d672fb0e60eac6e4a46dd291  cui-vmail.sh
+89518065d4a28fea611c69af408e01313a7950816df476ac06cce6dd82ad1908  cui-vmail.sh
 786a6c05033f86342e01156d2c160aa7e5f9d7c043dca60e22965eb512943afe  cui-vmail-update.sh
 c3c50c454e014bcf2147e8868ae3b7a7dc5cc6087f1bdfe3c1fb7fb87f2c151e  cui-vmail.menu
 79808136b4b692bcae3091cf487e4e79089f50bb3eb35a633cd51ee7e01d26b5  cui-vmail.modules.menu
@@ -200,7 +204,7 @@ a54ddbeaecbf439604f69e668a172cdaa73d31f3bf7cc55241746e0d241b16702f467dc7587fe736
 5503fe9c36f152a4bc45ed119e4b68a06b44d05243dfe41ea3461143d82be66a956f07ce02320684c23875b4db471aa68ef96a6c6e82099166925f3b227af533  cui-vmail.check.exp
 545f27f7f63416cec7bbd9a443908eb0dea882ba4debbd1a51dd94839381bf99b55dc87d63eeac9b5b2c0ee14d7e091a79b03750e2f6bdbbf0217fb5ac6561f3  cui-vmail.help
 a944284dcd40d230f15f1f3d504058fadfa8dc2413f13704558e14ccad685fe6a0cfe1712c191034db2bcb804da4ada50c79ac1e1b26b02cd2a6e63abe18a083  cui-vmail.initd
-73fab342b1b7c0bb42f329b30b4ca620e23866da4ba4eb390460ad49deb8695e253d12d07f9b817a1866866de05c944dffef9ae3489f587e2bbaf58d64d4b08d  cui-vmail.sh
+fc27eebbe309c8ec3543c042dc00faa67a9b277c95117fd3e7fccae195352ec5e16630274b3ba642b06b2ead7d51970db180353c8c26524249a30db88c4b763f  cui-vmail.sh
 845a03e8ced769de8b6d42438cf5259ecf0a8f45e248de043c5852ea1cbd800ca5db617bea9ea670f6bc09ed236dcfd5c43e5877efaee6915330e93675532662  cui-vmail-update.sh
 31a1cb8c9cda05589e306364f4e5956ed9c360b13f71f95302ea712100e326715fd5081e5a8a5ae855ac4b04feeb89100c9fddbe1198ec19e70cb89da95c47b9  cui-vmail.menu
 1d1a7d1c6711a15b19edede0395c0018d3a83c50ccbae410307429b2f11f8f64ceeb7ad7879cf912c2d66b002910073b538b0834c95c550c8725f3c8e84ab8d3  cui-vmail.modules.menu

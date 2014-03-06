@@ -1,0 +1,5 @@
+log { 
+  source(src); 
+  filter(sshlogs); 
+  destination(sshguardproc); 
+};

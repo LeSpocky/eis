@@ -15,10 +15,9 @@
 ### -------------------------------------------------------------------------
 ### internal parameter - not editable with ECE:
 ### -------------------------------------------------------------------------
-VMAIL_TLS_CERT='/usr/local/ssl/certs/imapd.pem' # path to ssl cert
-VMAIL_TLS_KEY='/usr/local/ssl/private/imapd.key'
-VMAIL_TLS_CAPATH='/usr/local/ssl/certs'
-POSTFIX_AV_QUARANTINE_DIR="/var/spool/postfix/quarantine"
+VMAIL_TLS_CERT='/etc/ssl/certs/imapd.pem' # path to ssl cert
+VMAIL_TLS_KEY='/etc/ssl/private/imapd.key'
+VMAIL_TLS_CAPATH='/etc/ssl/certs'
 # default values
 POSTFIX_SMARTHOST='no'
 POSTFIX_SMARTHOST_TLS='no'
@@ -38,18 +37,16 @@ else
     vmail_sql_connect="$VMAIL_SQL_HOST"
 fi
 
-
 # login with completed mail address or username only
 if [ "$VMAIL_LOGIN_WITH_MAILADDR" = "yes" ]; then
     dovecot_query="email"
-    dovecot_authf="auth_username_format = %Lu"
+    dovecot_authf="%Lu"
     dovecot_deliver="\${recipient}"
 else
     dovecot_query="loginuser"
-    dovecot_authf="auth_username_format = %Ln "
+    dovecot_authf="%Ln"
     dovecot_deliver="\${user}"
 fi
-
 
 
 ### ----------------------------------------------------------------------------
@@ -122,8 +119,8 @@ write_postfix_config()
 
     postconf -e "queue_directory = /var/spool/postfix"
 #    postconf -e "command_directory = /usr/sbin"
-#    postconf -e "daemon_directory = /usr/local/postfix"
-    postconf -e "data_directory = /var/lib/postfix"
+#    postconf -e "daemon_directory = /usr/sbin"
+#    postconf -e "data_directory = /var/lib/postfix"
     postconf -e "mail_spool_directory = /var/spool/postfix"
     postconf -e "mail_owner = mail"
     postconf -e "setgid_group = maildrop"
@@ -145,13 +142,15 @@ write_postfix_config()
     postconf -e "default_destination_recipient_limit = $POSTFIX_LIMIT_DESTINATIONS"
 
     postconf -e "proxy_read_maps = ${postfix_prxmynet}\$local_recipient_maps,\$mydestination,\$virtual_alias_maps,\$virtual_alias_domains,\$virtual_mailbox_maps,\$virtual_mailbox_domains,\$virtual_mailbox_limit_maps,\$relay_recipient_maps,\$relay_domains,\$canonical_maps,\$sender_canonical_maps,\$recipient_canonical_maps,\$relocated_maps,\$transport_maps,\$mynetworks,\$mail_restrict_map,\$smtpd_recipient_restrictions,\$sender_dependent_relayhost_maps,\$smtp_sasl_password_maps,\$postscreen_access_list"
-    postconf -e "transport_maps = proxy:mysql:/etc/postfix/mysql-transport.cf"
-    postconf -e "mail_restrict_map = proxy:mysql:/etc/postfix/mysql-virtual_restrictions.cf"
-    postconf -e "virtual_alias_maps = proxy:mysql:/etc/postfix/mysql-virtual_aliases.cf,proxy:mysql:/etc/postfix/mysql-virtual_email2email.cf"
-    postconf -e "virtual_uid_maps = static:910"
-    postconf -e "virtual_gid_maps = static:910"
-    postconf -e "virtual_mailbox_domains = proxy:mysql:/etc/postfix/mysql-virtual_domains.cf"
-    postconf -e "virtual_mailbox_maps = proxy:mysql:/etc/postfix/mysql-virtual_mailbox_maps.cf"
+    postconf -e "transport_maps = proxy:mysql:/etc/postfix/sql/mysql-transport.cf"
+    postconf -e "mail_restrict_map = proxy:mysql:/etc/postfix/sql/mysql-virtual_restrictions.cf"
+    postconf -e "virtual_alias_maps = proxy:mysql:/etc/postfix/sql/mysql-virtual_aliases.cf,proxy:mysql:/etc/postfix/sql/mysql-virtual_email2email.cf"
+    stmp=$(id -u vmail)
+    postconf -e "virtual_uid_maps = static:$stmp"
+    stmp=$(id -g vmail)
+    postconf -e "virtual_gid_maps = static:$stmp"
+    postconf -e "virtual_mailbox_domains = proxy:mysql:/etc/postfix/sql/mysql-virtual_domains.cf"
+    postconf -e "virtual_mailbox_maps = proxy:mysql:/etc/postfix/sql/mysql-virtual_mailbox_maps.cf"
     postconf -e "virtual_mailbox_base = /var/spool/postfix/virtual"
     postconf -e "virtual_transport = pop3imap"
     echo -n "."
@@ -185,11 +184,11 @@ write_postfix_config()
     postconf -e "smtpd_client_restrictions ="
     postconf -e "smtpd_relay_restrictions = permit_mynetworks, ${postfix_sasl} permit_tls_clientcerts, defer_unauth_destination"
     postconf -e "smtpd_recipient_restrictions = reject_unlisted_recipient, \
- check_client_access proxy:mysql:/etc/postfix/mysql-client_access.cf,\
- check_recipient_access proxy:mysql:/etc/postfix/mysql-recipient_access.cf,\
- check_sender_access proxy:mysql:/etc/postfix/mysql-sender_access.cf,\
+ check_client_access proxy:mysql:/etc/postfix/sql/mysql-client_access.cf,\
+ check_recipient_access proxy:mysql:/etc/postfix/sql/mysql-recipient_access.cf,\
+ check_sender_access proxy:mysql:/etc/postfix/sql/mysql-sender_access.cf,\
  reject_invalid_helo_hostname,${postfix_cl_access_bl}${postfix_dyn_client_bl}\
- proxy:mysql:/etc/postfix/mysql-virtual_restrictions.cf,\
+ proxy:mysql:/etc/postfix/sql/mysql-virtual_restrictions.cf,\
  ${postfix_un_cl_hostname}${postfix_un_send_dom}${postfix_send_mx}${postfix_fqdn_helo} permit"
 
     postconf -e "mime_header_checks = $postfix_mime_header_ch"
@@ -218,7 +217,7 @@ write_postfix_config()
     postconf -e "smtp_use_tls = $POSTFIX_SMARTHOST_TLS"
     postconf -e "smtp_sasl_password_maps = $postfix_relayhosts_auth"
     postconf -e "smtp_sasl_security_options = noanonymous"
-    postconf -e "sender_canonical_maps = proxy:mysql:/etc/postfix/mysql-canonical_maps.cf"
+    postconf -e "sender_canonical_maps = proxy:mysql:/etc/postfix/sql/mysql-canonical_maps.cf"
     postconf -e "sender_dependent_relayhost_maps = $postfix_relayhosts"
 
     postconf -e "smtpd_tls_auth_only = no"
@@ -283,12 +282,11 @@ write_postfix_config()
     postconf -e "postscreen_dnsbl_action = $postfix_pscr_dnsbl_action"
     postconf -e "postscreen_dnsbl_sites = $postfix_rbl_list"
     postconf -e "postscreen_dnsbl_threshold = 3"
-    postconf -e "postscreen_access_list = permit_mynetworks, proxy:mysql:/etc/postfix/mysql-client_access_postscreen.cf"
+    postconf -e "postscreen_access_list = permit_mynetworks, proxy:mysql:/etc/postfix/sql/mysql-client_access_postscreen.cf"
 
 cat > /etc/postfix/master.cf <<EOF
 # --------------------------------------------------------------------------
-# Postfix master process configuration file.
-# Creation: $EISDATE $EISTIME by vmail setup
+# Postfix master process configuration file by eisfair-ng config
 # ==========================================================================
 # service type  private unpriv  chroot  wakeup  maxproc command + args
 #               (yes)   (yes)   (yes)   (never) (100)
@@ -298,7 +296,7 @@ ${postfix_pscreen}smtp      inet  n       -       y       -       1       postsc
 ${postfix_pscreen}smtpd     pass  -       -       y       -       -       smtpd
 ${postfix_pscreen}dnsblog   unix  -       -       y       -       0       dnsblog
 ${postfix_pscreen}tlsproxy  unix  -       -       y       -       0       tlsproxy
-submission inet n       -       y       -       -       smtpd
+submission inet n       -       n       -       -       smtpd
   -o syslog_name=postfix/submission
   -o smtpd_tls_security_level=may
   -o smtpd_sasl_auth_enable=yes
@@ -319,31 +317,31 @@ ${postfix_tls}  -o smtpd_sender_restrictions=\$mua_sender_restrictions
 ${postfix_tls}  -o smtpd_recipient_restrictions=permit_sasl_authenticated,reject
 ${postfix_tls}  -o milter_macro_daemon_name=ORIGINATING
 #628       inet  n       -       n       -       -       qmqpd
-pickup    unix  n       -       y       60      1       pickup
-cleanup   unix  n       -       y       -       0       cleanup
-qmgr      unix  n       -       y       300     1       qmgr
+pickup    unix  n       -       n       60      1       pickup
+cleanup   unix  n       -       n       -       0       cleanup
+qmgr      unix  n       -       n       300     1       qmgr
 #qmgr     unix  n       -       n       300     1       oqmgr
-tlsmgr    unix  -       -       y       1000?   1       tlsmgr
-rewrite   unix  -       -       y       -       -       trivial-rewrite
-bounce    unix  -       -       y       -       0       bounce
-defer     unix  -       -       y       -       0       bounce
-trace     unix  -       -       y       -       0       bounce
-verify    unix  -       -       y       -       1       verify
-flush     unix  n       -       y       1000?   0       flush
+tlsmgr    unix  -       -       n       1000?   1       tlsmgr
+rewrite   unix  -       -       n       -       -       trivial-rewrite
+bounce    unix  -       -       n       -       0       bounce
+defer     unix  -       -       n       -       0       bounce
+trace     unix  -       -       n       -       0       bounce
+verify    unix  -       -       n       -       1       verify
+flush     unix  n       -       n       1000?   0       flush
 proxymap  unix  -       -       n       -       -       proxymap
 proxywrite unix -       -       n       -       1       proxymap
-smtp      unix  -       -       y       -       -       smtp
-relay     unix  -       -       y       -       -       smtp
+smtp      unix  -       -       n       -       -       smtp
+relay     unix  -       -       n       -       -       smtp
 #       -o smtp_helo_timeout=5 -o smtp_connect_timeout=5
-showq     unix  n       -       y       -       -       showq
-error     unix  -       -       y       -       -       error
+showq     unix  n       -       n       -       -       showq
+error     unix  -       -       n       -       -       error
 retry     unix  -       -       n       -       -       error
-discard   unix  -       -       y       -       -       discard
+discard   unix  -       -       n       -       -       discard
 local     unix  -       n       n       -       -       local
 virtual   unix  -       n       n       -       -       virtual
-lmtp      unix  -       -       y       -       -       lmtp
-anvil     unix  -       -       y       -       1       anvil
-scache    unix  -       -       y       -       1       scache
+lmtp      unix  -       -       n       -       -       lmtp
+anvil     unix  -       -       n       -       1       anvil
+scache    unix  -       -       n       -       1       scache
 # ==========================================================================
 # Interfaces to non-Postfix software
 # ==========================================================================
@@ -353,13 +351,14 @@ uucp      unix  -       n       n       -       -       pipe
     flags=Fqhu user=uucp argv=uux -r -n -z -a\$sender - \$nexthop!rmail (\$recipient)
 
 EOF
-    # force permissions
-    chown    root:root   /var/spool/postfix/etc
-    chown -R root:root   /var/spool/postfix/lib
-    chown -R root:root   /var/spool/postfix/usr
-    chown    root:root   /var/spool/postfix/var
+    # force permissions for chroot
+#    chown    root:root   /var/spool/postfix/etc
+#    chown -R root:root   /var/spool/postfix/lib
+#    chown -R root:root   /var/spool/postfix/usr
+#    chown    root:root   /var/spool/postfix/var
+    mkdir -p /var/spool/postfix/virtual 
     chown    vmail:vmail /var/spool/postfix/virtual
-    chmod 0777           /var/spool/postfix/var/lib
+#    chmod 0777           /var/spool/postfix/var/lib
 #    chown postfix:root /var/spool/postfix
 #    chown postfix:root /var/spool/postfix/pid
     /usr/sbin/postfix set-permissions >/dev/null 2>&1
@@ -372,7 +371,6 @@ EOF
 write_milter_config()
 {
     local connectport=0
-
     # check if installed clamav
     if [ ! -f /usr/sbin/clamd ]; then
         if [ "$POSTFIX_AV_CLAMAV" = 'yes' ]; then
@@ -380,29 +378,24 @@ write_milter_config()
             POSTFIX_AV_CLAMAV='no'
         fi
     fi
-
     [ "${VMAIL_SQL_HOST}" = "localhost" ] || connectport=3306
-
-    sed -i -e "s|^clamcheck.*|clamcheck		${POSTFIX_AV_CLAMAV}|" /etc/postfix/smc-milter.conf
-    sed -i -e "s|^fprotcheck.*|fprotcheck		${POSTFIX_AV_FPROTD}|" /etc/postfix/smc-milter.conf
-    sed -i -e "s|^quarantinedir.*|quarantinedir		${POSTFIX_AV_QUARANTINE_DIR}|" /etc/postfix/smc-milter.conf
-    sed -i -e "s|^avmail.*|avmail			${POSTFIX_AV_VIRUS_INFO}|" /etc/postfix/smc-milter.conf
-    sed -i -e "s|^signatureadd.*|signatureadd		${POSTFIX_AUTOSIGNATURE}|" /etc/postfix/smc-milter.conf
-    sed -i -e "s|^dbhost.*|dbhost			${VMAIL_SQL_HOST}|" /etc/postfix/smc-milter.conf
-    sed -i -e "s|^dbport.*|dbport			${connectport}|" /etc/postfix/smc-milter.conf
-    sed -i -e "s|^dbname.*|dbname			${VMAIL_SQL_DATABASE}|" /etc/postfix/smc-milter.conf
-    sed -i -e "s|^dbuser.*|dbuser			${VMAIL_SQL_USER}|" /etc/postfix/smc-milter.conf
-    sed -i -e "s|^dbpass.*|dbpass			${VMAIL_SQL_PASS}|" /etc/postfix/smc-milter.conf
+    sed -i -e "s|^clamcheck.*|clamcheck		${POSTFIX_AV_CLAMAV}|"                 /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^fprotcheck.*|fprotcheck		${POSTFIX_AV_FPROTD}|"               /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^avmail.*|avmail			${POSTFIX_AV_VIRUS_INFO}|"                 /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^signatureadd.*|signatureadd		${POSTFIX_AUTOSIGNATURE}|"       /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbhost.*|dbhost			${VMAIL_SQL_HOST}|"                        /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbport.*|dbport			${connectport}|"                           /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbname.*|dbname			${VMAIL_SQL_DATABASE}|"                    /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbuser.*|dbuser			${VMAIL_SQL_USER}|"                        /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbpass.*|dbpass			${VMAIL_SQL_PASS}|"                        /etc/smc-milter-new/smc-milter-new.conf
     if [ "$POSTFIX_AV_SCRIPT" = "yes" ]; then
-        sed -i -e "s|.*scriptfile.*|scriptfile		${POSTFIX_AV_SCRIPTFILE}|" /etc/postfix/smc-milter.conf
+        sed -i -e "s|.*scriptfile.*|scriptfile		${POSTFIX_AV_SCRIPTFILE}|"     /etc/smc-milter-new/smc-milter-new.conf
     else
-        sed -i -e "s|^scriptfile.*|#scriptfile|" /etc/postfix/smc-milter.conf
+        sed -i -e "s|^scriptfile.*|#scriptfile|"                                 /etc/smc-milter-new/smc-milter-new.conf
     fi
-    [ -e /etc/postfix/smc-milter.hosts ] || touch /etc/postfix/smc-milter.hosts
-
-    mkdir -p   ${POSTFIX_AV_QUARANTINE_DIR}
-    chmod 0777 ${POSTFIX_AV_QUARANTINE_DIR}
-    echo -n "."
+    [ -e /etc/smc-milter-new/smc-milter-new.hosts ] || touch /etc/smc-milter-new/smc-milter-new.hosts
+    mkdir -p   /var/spool/postfix/quarantine
+    chmod 0777 /var/spool/postfix/quarantine
 }
 
 
@@ -420,19 +413,23 @@ update_sql_files()
                    mysql-virtual_relayhosts_auth.cf mysql-virtual_relayhosts.cf \
                    mysql-virtual_restrictions.cf
     do
-        sed -i -e "s|^user.*|user = ${VMAIL_SQL_USER}|"         /etc/postfix/$sqlfile
-        sed -i -e "s|^password.*|password = ${VMAIL_SQL_PASS}|" /etc/postfix/$sqlfile
-        sed -i -e "s|^dbname.*|dbname = ${VMAIL_SQL_DATABASE}|" /etc/postfix/$sqlfile
-        sed -i -e "s|^hosts.*|hosts = ${vmail_sql_connect}|"    /etc/postfix/$sqlfile 
-        chmod 0640 /etc/postfix/$sqlfile
-        chgrp mail /etc/postfix/$sqlfile
+        sed -i -e "s|^user.*|user = ${VMAIL_SQL_USER}|"         /etc/postfix/sql/$sqlfile
+        sed -i -e "s|^password.*|password = ${VMAIL_SQL_PASS}|" /etc/postfix/sql/$sqlfile
+        sed -i -e "s|^dbname.*|dbname = ${VMAIL_SQL_DATABASE}|" /etc/postfix/sql/$sqlfile
+        sed -i -e "s|^hosts.*|hosts = ${vmail_sql_connect}|"    /etc/postfix/sql/$sqlfile
+        chmod 0640 /etc/postfix/sql/$sqlfile
+        chgrp mail /etc/postfix/sql/$sqlfile
     done
-    sed -i -e "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}')) FROM view_relaylogin WHERE email like '%s'|" /etc/postfix/mysql-virtual_relayhosts_auth.cf
+    sed -i -e "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}')) FROM view_relaylogin WHERE email like '%s'|" /etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
 
     # dovecot:
-    sed -i -e "s|^connect =.*|connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}|" /etc/dovecot/dovecot-sql.conf.ext 
-    sed -i -e "s|^connect =.*|connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}|" /etc/dovecot/dovecot-dict-sql.conf.ext 
-    sed -i -e "s|^password_query =.*|password_query = SELECT email as user, AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}') as password FROM view_users WHERE $dovecot_query = '%u'|" /etc/dovecot/dovecot-sql.conf.ext
+
+
+
+    # connect setup
+
+
+
     sed -i -e "s|^  username_field =.*|  username_field = ${dovecot_query}|" /etc/dovecot/dovecot-dict-sql.conf.ext
     if [ "$POP3IMAP_TLS" = "yes" ]; then
         sed -i -e "s|^protocols =.*|protocols = imap pop3 imaps pop3s managesieve|" /etc/dovecot/dovecot.conf
@@ -451,13 +448,127 @@ update_sql_files()
     rm -f /etc/dovecot/dovecot.*.bak
     chown dovecot:vmail /etc/dovecot
     chmod 0770 /etc/dovecot
-    chown dovecot:root /etc/dovecot/dovecot-dict-sql.conf.ext
-    chmod 0640 /etc/dovecot/dovecot-dict-sql.conf.ext
-    chown dovecot:root /etc/dovecot/dovecot-sql.conf.ext
-    chmod 0640 /etc/dovecot/dovecot-sql.conf.ext
     chown dovecot:vmail /etc/dovecot/dovecot.conf
     chmod 0640 /etc/dovecot/dovecot.conf
 }
+
+
+### -------------------------------------------------------------------------
+### update dovecot
+### -------------------------------------------------------------------------
+#10-auth
+sed -i -r "s|^[#]?auth_username_format =.*|auth_username_format = ${dovecot_authf}|" /etc/dovecot/conf.d/10-auth.conf
+sed -i -r "s|^[#]?auth_failure_delay =.*|auth_failure_delay = 2 secs|" /etc/dovecot/conf.d/10-auth.conf
+sed -i -e "s|^auth_mechanisms =.*|auth_mechanisms = plain login digest-md5 cram-md5|" /etc/dovecot/conf.d/10-auth.conf
+sed -i -e "s|^!include auth-system.conf.ext.*|#!include auth-system.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i -e "s|^#!include auth-sql.conf.ext.*|!include auth-sql.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i -e "s|^!include auth-ldap.conf.ext.*|#!include auth-ldap.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i -e "s|^!include auth-passwdfile.conf.ext.*|#!include auth-passwdfile.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i -e "s|^!include auth-checkpassword.conf.ext.*|#!include auth-checkpassword.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i -e "s|^!include auth-vpopmail.conf.ext.*|#!include auth-vpopmail.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i -e "s|^!include auth-static.conf.ext.*|#!include auth-static.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+
+#10-mail
+sed -i -r "s|^[#]mail_plugins =.*|mail_plugins = quota|" /etc/dovecot/conf.d/10-mail.conf
+
+# update SQL paramter
+sed -i -r "s|^[#]?driver =.*|driver = mysql|" /etc/dovecot/dovecot-sql.conf.ext
+sed -i -r "s|^[#]?connect =.*|connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}|" /etc/dovecot/dovecot-sql.conf.ext
+sed -i -r "s|^[#]?password_query =.*|password_query = SELECT email as user, AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}') as password FROM view_users WHERE $dovecot_query = '%u'|" /etc/dovecot/dovecot-sql.conf.ext
+sed -i -r "s|^[#]?default_pass_scheme =.*|default_pass_scheme = CRYPT|" /etc/dovecot/dovecot-sql.conf.ext
+
+# hide for other
+chown dovecot:root /etc/dovecot/dovecot-dict-sql.conf.ext
+chmod 0640 /etc/dovecot/dovecot-dict-sql.conf.ext
+chown dovecot:root /etc/dovecot/dovecot-sql.conf.ext
+chmod 0640 /etc/dovecot/dovecot-sql.conf.ext
+
+
+cat > /etc/dovecot/dovecot-dict2-sql.conf.ext <<EOF
+connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}
+# quota:
+map {
+  pattern = priv/quota/storage
+  table = view_quota
+  username_field = loginuser
+  value_field = quota
+}
+# expires:
+map {
+  pattern = shared/expire/\$user/\$mailbox
+  table = view_expire
+  value_field = expirestamp
+
+  fields {
+    username = \$user
+    mailbox = \$mailbox
+  }
+}
+# shared folder:
+map {
+  pattern = shared/shared-boxes/user/\$to/\$from
+  table = virtual_users_shares
+  value_field = state
+
+  fields {
+    from_user = \$from
+    to_user = \$to
+  }
+}
+map {
+  pattern = shared/shared-boxes/anyone/\$from
+  table = virtual_users_shares
+  value_field = state
+
+  fields {
+    from_user = \$from
+  }
+}
+EOF
+
+# hide for other
+chown dovecot:root /etc/dovecot/dovecot-dict-sql2.conf.ext
+chmod 0640 /etc/dovecot/dovecot-dict-sql2.conf.ext
+
+
+cat > /etc/dovecot/local.conf <<EOF
+# eisfair-ng config
+protocols = imap pop3 sieve
+
+mail_privileged_group = postdrop
+mail_uid = vmail
+mail_gid = postdrop
+mail_location = maildir:/var/spool/postfix/virtual/%d/%n/Maildir
+
+service auth {
+  unix_listener /var/spool/postfix/private/auth {
+    group = mail
+    mode = 0660
+    user = mail
+  }
+  unix_listener auth-master {
+    mode = 0600
+    user = vmail
+  }
+  user = root
+}
+
+plugin {
+  acl_shared_dict = proxy::acl
+  autocreate = Trash
+  autocreate2 = Sent
+  autocreate3 = Drafts
+  autosubscribe = Trash
+  autosubscribe2 = Sent
+  autosubscribe3 = Drafts
+}
+
+dict {
+  quota = mysql:/etc/dovecot/dovecot-dict2-sql.conf.ext
+  expire = mysql:/etc/dovecot/dovecot-dict2-sql.conf.ext
+  acl = mysql:/etc/dovecot/dovecot-dict2-sql.conf.ext
+}
+EOF
 
 
 ### -------------------------------------------------------------------------
@@ -465,6 +576,17 @@ update_sql_files()
 ### -------------------------------------------------------------------------
 create_ssl_files()
 {
+    # dovecot
+    mkdir -p /etc/ssl/dovecot
+    if [ ! -f /etc/ssl/dovecot/server.pem ]; then
+        cd /etc/ssl/dovecot
+        openssl genrsa 512/1024 > server.pem
+        openssl req -new -key server.pem -days 3650 -out request.pem  # You will get prompted for various information that is added the the file
+        openssl genrsa 2048 > server.key
+        openssl req -new -x509 -nodes -sha1 -days 3650 -key server.key > server.pem
+    fi
+
+
 # cd /etc/ssl/dovecot
 # openssl genrsa -aes256 -out server.key.passwd 2048
 # openssl rsa -in server.key.passwd -out server.key
@@ -495,9 +617,9 @@ openssl gendh -out /etc/postfix/ssl/dh_1024.pem -2 1024
 add_cron_job()
 {
     mkdir -p /etc/cron/root
-    echo "#59 23 * * * /usr/local/postfix/rejectlogfilter.sh" > /etc/cron/root/postfix
-    [ "$START_POP3IMAP" = 'yes' ] && echo "# 00,30 * * * * /usr/local/dovecot/mysqlsievefilter.sh" >> /etc/cron/root/postfix
-    [ "$START_FETCHMAIL" = "yes" ] && echo "# $FETCHMAIL_CRON_SCHEDULE /usr/local/postfix/fetchmailstart.sh" >> /etc/cron/root/postfix
+    echo "#59 23 * * * /var/install/bin/vmail-rejectlogfilter.sh" > /etc/cron/root/postfix
+    [ "$START_POP3IMAP" = 'yes' ] && echo "# 00,30 * * * * /var/install/bin/vmail-mysqlsievefilter.sh" >> /etc/cron/root/postfix
+    [ "$START_FETCHMAIL" = "yes" ] && echo "$FETCHMAIL_CRON_SCHEDULE /var/install/bin/vmail-fetchmailstart.sh" >> /etc/cron/root/postfix
     # update crontab file
     /sbin/rc-service --quiet fcron reload
 }
@@ -510,18 +632,18 @@ create_fetchmail_file()
 {
     logging="-s"
     [ "$FETCHMAIL_LOG" = "yes" ] && logging="--syslog"
-    cat > /usr/local/postfix/fetchmailstart.sh <<EOF
+    cat > /var/install/bin/vmail-fetchmailstart.sh <<EOF
 #!/bin/sh
 #------------------------------------------------------------------------------
 . /etc/config.d/vmail
 fetchfile=".fetchmailrc.\$$"
-su vmail -c "/usr/local/postfix/fetchmysql -t /var/spool/postfix/virtual/\${fetchfile} \
+su vmail -c "/usr/bin/fetchmysql -t /var/spool/postfix/virtual/\${fetchfile} \
             -u \$VMAIL_SQL_USER -s \$VMAIL_SQL_HOST -d \$VMAIL_SQL_DATABASE -p \$VMAIL_SQL_PASS -e \$VMAIL_SQL_ENCRYPT_KEY; \\
             /usr/bin/fetchmail -t ${FETCHMAIL_TIMEOUT} -f /var/spool/postfix/virtual/\$fetchfile $logging --nobounce --sslcertpath $VMAIL_TLS_CAPATH --postmaster $FETCHMAIL_POSTMASTER 2>/dev/null ; \\
             rm -f /var/spool/postfix/virtual/\$fetchfile"
 exit 0
 EOF
-    chmod 0700 /usr/local/postfix/fetchmailstart.sh
+    chmod 0700 /var/install/bin/vmail-fetchmailstart.sh
 }
 
 
@@ -576,21 +698,21 @@ sql_database_check()
         [ -z "$count" ] && count=0
         if [ $? -ne 0 -o $count -ne 8 ]; then
             # create all tables, if not exists
-            /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /usr/local/postfix/postfix-install-table.sql
+            /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqltable.sql
 
             # create all trigger, if MySQL support this (5.x) and not exists
-            /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /usr/local/postfix/postfix-install-trigger.sql 2>/dev/null      
+            /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqltrigger.sql 2>/dev/null      
 
             # make all updates (alter table...)
-            while read sqlcmd
-            do
-                echo "$sqlcmd" | grep -q '^#' && continue
-                /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e "$sqlcmd" 2>/dev/null
-            done < /usr/local/postfix/postfix-install-update.sql
+            #while read sqlcmd
+            #do
+            #    echo "$sqlcmd" | grep -q '^#' && continue
+            #    /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e "$sqlcmd" 2>/dev/null
+            #done < /etc/postfix/default/install-sqlupdate.sql
             # create all views
-            /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /usr/local/postfix/postfix-install-view.sql
+            /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqlview.sql
             # add default data for new database
-            [ $npass -eq 9 ] && /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user -p${mysql_pass} < /usr/local/postfix/postfix-install-data.sql
+            [ $npass -eq 9 ] && /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqldata.sql
         fi
 
         # force VMAIL_SQL_USER access
