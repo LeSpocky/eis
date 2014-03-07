@@ -40,9 +40,9 @@ package() {
 		"$pkgdir"/etc/smc-milter-new/$pkgname.conf || return 1
 }
 
-md5sums="4fbde2fb53bc7b35041bf2e8758460e7  smc-milter-new.initd
+md5sums="670a99da3ecbbde394dd5bdcdaac81e1  smc-milter-new.initd
 0083839a27201b98c8d5fed69b16f0c3  smc-milter-new.confd"
-sha256sums="3cba285119cc1e8705c9cc8e2daf6c333ad669e7b0fc8afddbb3019de10575f5  smc-milter-new.initd
+sha256sums="910d1e39b4a4b399fa68d82929a60c1cd09eeef7c32210ee09c07f3a7662433f  smc-milter-new.initd
 05fd21791562b31e31346a4df9d1c4d1e66080eb36be2481d9a3dcb55512df3e  smc-milter-new.confd"
-sha512sums="74edae80c4fb298e4a24bcbe2d32dfe27f4fecc37fa0769f898bc3e4486d891a7fecb4417048e35e6cd583d1c456e26e6f7897470fe38ec18c03236bb13f9480  smc-milter-new.initd
+sha512sums="9572a83319e6a33ad6c12086f49513b06a228d358bf85d7e727ca8f1c2201b714de6ab176eb536ca1353081fe2ee5c374bf58c5f91e414e1351a25e2b772ee1f  smc-milter-new.initd
 bad1c9a5660d3086320a4bd0fdecb2e096d9088f4d19e61154f75e768abefac7173eb4deba9de0962b3367204da6f4267d6b9d5de24e5096afeefc976c44cc38  smc-milter-new.confd"
