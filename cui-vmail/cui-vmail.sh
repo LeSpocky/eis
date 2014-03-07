@@ -8,9 +8,6 @@
 
 #include eislib
 . /var/install/include/eislib
-#include eisdate-time
-. /var/install/include/eistime
-
 
 ### -------------------------------------------------------------------------
 ### internal parameter - not editable with ECE:
@@ -47,6 +44,11 @@ else
     dovecot_authf="%Ln"
     dovecot_deliver="\${user}"
 fi
+
+
+# get uid/gid for user vmail
+uidvmail=$(id -u vmail)
+gidvmail=$(id -g vmail)
 
 
 ### ----------------------------------------------------------------------------
@@ -123,7 +125,7 @@ write_postfix_config()
 #    postconf -e "data_directory = /var/lib/postfix"
     postconf -e "mail_spool_directory = /var/spool/postfix"
     postconf -e "mail_owner = mail"
-    postconf -e "setgid_group = maildrop"
+    postconf -e "setgid_group = postdrop"
     postconf -e "myhostname = ${POSTFIX_HELO_HOSTNAME}"
     postconf -e "myorigin = \$mydomain"
     postconf -e "inet_interfaces = all"
@@ -145,10 +147,8 @@ write_postfix_config()
     postconf -e "transport_maps = proxy:mysql:/etc/postfix/sql/mysql-transport.cf"
     postconf -e "mail_restrict_map = proxy:mysql:/etc/postfix/sql/mysql-virtual_restrictions.cf"
     postconf -e "virtual_alias_maps = proxy:mysql:/etc/postfix/sql/mysql-virtual_aliases.cf,proxy:mysql:/etc/postfix/sql/mysql-virtual_email2email.cf"
-    stmp=$(id -u vmail)
-    postconf -e "virtual_uid_maps = static:$stmp"
-    stmp=$(id -g vmail)
-    postconf -e "virtual_gid_maps = static:$stmp"
+    postconf -e "virtual_uid_maps = static:$uidvmail"
+    postconf -e "virtual_gid_maps = static:$gidvmail"
     postconf -e "virtual_mailbox_domains = proxy:mysql:/etc/postfix/sql/mysql-virtual_domains.cf"
     postconf -e "virtual_mailbox_maps = proxy:mysql:/etc/postfix/sql/mysql-virtual_mailbox_maps.cf"
     postconf -e "virtual_mailbox_base = /var/spool/postfix/virtual"
@@ -357,7 +357,7 @@ EOF
 #    chown -R root:root   /var/spool/postfix/usr
 #    chown    root:root   /var/spool/postfix/var
     mkdir -p /var/spool/postfix/virtual 
-    chown    vmail:vmail /var/spool/postfix/virtual
+    chown -R ${uidvmail}:${gidvmail} /var/spool/postfix/virtual
 #    chmod 0777           /var/spool/postfix/var/lib
 #    chown postfix:root /var/spool/postfix
 #    chown postfix:root /var/spool/postfix/pid
@@ -379,17 +379,17 @@ write_milter_config()
         fi
     fi
     [ "${VMAIL_SQL_HOST}" = "localhost" ] || connectport=3306
-    sed -i -e "s|^clamcheck.*|clamcheck		${POSTFIX_AV_CLAMAV}|"                 /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^fprotcheck.*|fprotcheck		${POSTFIX_AV_FPROTD}|"               /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^avmail.*|avmail			${POSTFIX_AV_VIRUS_INFO}|"                 /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^signatureadd.*|signatureadd		${POSTFIX_AUTOSIGNATURE}|"       /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbhost.*|dbhost			${VMAIL_SQL_HOST}|"                        /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbport.*|dbport			${connectport}|"                           /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbname.*|dbname			${VMAIL_SQL_DATABASE}|"                    /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbuser.*|dbuser			${VMAIL_SQL_USER}|"                        /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbpass.*|dbpass			${VMAIL_SQL_PASS}|"                        /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^clamcheck.*|clamcheck		${POSTFIX_AV_CLAMAV}|"               /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^fprotcheck.*|fprotcheck		${POSTFIX_AV_FPROTD}|"           /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^avmail.*|avmail			${POSTFIX_AV_VIRUS_INFO}|"           /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^signatureadd.*|signatureadd		${POSTFIX_AUTOSIGNATURE}|"   /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbhost.*|dbhost			${VMAIL_SQL_HOST}|"                  /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbport.*|dbport			${connectport}|"                     /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbname.*|dbname			${VMAIL_SQL_DATABASE}|"              /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbuser.*|dbuser			${VMAIL_SQL_USER}|"                  /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbpass.*|dbpass			${VMAIL_SQL_PASS}|"                  /etc/smc-milter-new/smc-milter-new.conf
     if [ "$POSTFIX_AV_SCRIPT" = "yes" ]; then
-        sed -i -e "s|.*scriptfile.*|scriptfile		${POSTFIX_AV_SCRIPTFILE}|"     /etc/smc-milter-new/smc-milter-new.conf
+        sed -i -e "s|.*scriptfile.*|scriptfile		${POSTFIX_AV_SCRIPTFILE}|"   /etc/smc-milter-new/smc-milter-new.conf
     else
         sed -i -e "s|^scriptfile.*|#scriptfile|"                                 /etc/smc-milter-new/smc-milter-new.conf
     fi
@@ -421,35 +421,6 @@ update_sql_files()
         chgrp mail /etc/postfix/sql/$sqlfile
     done
     sed -i -e "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}')) FROM view_relaylogin WHERE email like '%s'|" /etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
-
-    # dovecot:
-
-
-
-    # connect setup
-
-
-
-    sed -i -e "s|^  username_field =.*|  username_field = ${dovecot_query}|" /etc/dovecot/dovecot-dict-sql.conf.ext
-    if [ "$POP3IMAP_TLS" = "yes" ]; then
-        sed -i -e "s|^protocols =.*|protocols = imap pop3 imaps pop3s managesieve|" /etc/dovecot/dovecot.conf
-    else
-        sed -i -e "s|^protocols =.*|protocols = imap pop3 managesieve|" /etc/dovecot/dovecot.conf
-    fi
-    sed -i -e "s|^ssl =.*|ssl = ${POP3IMAP_TLS}|" /etc/dovecot/dovecot.conf
-    sed -i -e "s|.*auth_username_format.*|${dovecot_authf} |" /etc/dovecot/dovecot.conf
-    if [ $POSTFIX_LOGLEVEL -gt 2 ]; then
-        sed -i -e "s|^#mail_debug.*|mail_debug = yes|" /etc/dovecot/dovecot.conf
-    else
-        sed -i -e "s|^mail_debug.*|#mail_debug = yes|" /etc/dovecot/dovecot.conf
-    fi
-
-    # secure doevecot sql password include files!
-    rm -f /etc/dovecot/dovecot.*.bak
-    chown dovecot:vmail /etc/dovecot
-    chmod 0770 /etc/dovecot
-    chown dovecot:vmail /etc/dovecot/dovecot.conf
-    chmod 0640 /etc/dovecot/dovecot.conf
 }
 
 
@@ -468,23 +439,51 @@ sed -i -e "s|^!include auth-checkpassword.conf.ext.*|#!include auth-checkpasswor
 sed -i -e "s|^!include auth-vpopmail.conf.ext.*|#!include auth-vpopmail.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -e "s|^!include auth-static.conf.ext.*|#!include auth-static.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
 
+### -------------------------------------------------------------------------
+#10-logging
+if [ $POSTFIX_LOGLEVEL -gt 2 ]; then
+    sed -i -r "s|^[#]mail_debug =.*|mail_debug = yes|" /etc/dovecot/conf.d/10-logging.conf
+else
+    sed -i -r "s|^[#]mail_debug =.*|#mail_debug = no|" /etc/dovecot/conf.d/10-logging.conf
+fi
+sed -i -r 's|^[#]log_timestamp =.*|log_timestamp = "%Y-%m-%d %H:%M:%S "|' /etc/dovecot/conf.d/10-logging.conf
+
+### -------------------------------------------------------------------------
 #10-mail
 sed -i -r "s|^[#]mail_plugins =.*|mail_plugins = quota|" /etc/dovecot/conf.d/10-mail.conf
 
-# update SQL paramter
-sed -i -r "s|^[#]?driver =.*|driver = mysql|" /etc/dovecot/dovecot-sql.conf.ext
-sed -i -r "s|^[#]?connect =.*|connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}|" /etc/dovecot/dovecot-sql.conf.ext
-sed -i -r "s|^[#]?password_query =.*|password_query = SELECT email as user, AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}') as password FROM view_users WHERE $dovecot_query = '%u'|" /etc/dovecot/dovecot-sql.conf.ext
-sed -i -r "s|^[#]?default_pass_scheme =.*|default_pass_scheme = CRYPT|" /etc/dovecot/dovecot-sql.conf.ext
+### -------------------------------------------------------------------------
+#15-lda
+sed -i -r "s|^[#]quota_full_tempfail =.*|quota_full_tempfail = yes|" /etc/dovecot/conf.d/15-lda.conf
+sed -i -r "s|^[#]rejection_reason =.*|rejection_reason = Your message to <%t> was automatically rejected:%n%r|" /etc/dovecot/conf.d/15-lda.conf
+sed -i -r "s|^[#]lda_mailbox_autocreate =.*|lda_mailbox_autocreate = yes|" /etc/dovecot/conf.d/15-lda.conf
+sed -i -r "s|^[#]lda_mailbox_autosubscribe =.*|lda_mailbox_autosubscribe = yes|" /etc/dovecot/conf.d/15-lda.conf
+sed -i -e "s|.*mail_plugins =.*|  mail_plugins = $mail_plugins sieve acl|" /etc/dovecot/conf.d/15-lda.conf
 
-# hide for other
-chown dovecot:root /etc/dovecot/dovecot-dict-sql.conf.ext
-chmod 0640 /etc/dovecot/dovecot-dict-sql.conf.ext
+### -------------------------------------------------------------------------
+#20-imap
+sed -i -r "s|^[#]imap_client_workarounds =.*|imap_client_workarounds = tb-extra-mailbox-sep|" /etc/dovecot/conf.d/20-imap.conf
+sed -i -e "s|.*mail_plugins =.*|  mail_plugins = $mail_plugins autocreate acl imap_acl|" /etc/dovecot/conf.d/20-imap.conf
+
+### -------------------------------------------------------------------------
+#20-pop3
+sed -i -e "s|.*mail_plugins =.*|  mail_plugins = $mail_plugins autocreate acl|" /etc/dovecot/conf.d/20-pop3.conf
+
+### -------------------------------------------------------------------------
+# create SQL configuration
+cat > /etc/dovecot/dovecot-sql.conf.ext <<EOF
+driver = mysql
+connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}
+password_query = SELECT email as user, AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}') as password FROM view_users WHERE $dovecot_query = '%u'
+default_pass_scheme = PLAIN
+EOF
+
 chown dovecot:root /etc/dovecot/dovecot-sql.conf.ext
 chmod 0640 /etc/dovecot/dovecot-sql.conf.ext
 
-
-cat > /etc/dovecot/dovecot-dict2-sql.conf.ext <<EOF
+### -------------------------------------------------------------------------
+# create dict configuration
+cat > /etc/dovecot/dovecot-dict-sql.conf.ext <<EOF
 connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}
 # quota:
 map {
@@ -527,10 +526,11 @@ map {
 EOF
 
 # hide for other
-chown dovecot:root /etc/dovecot/dovecot-dict-sql2.conf.ext
-chmod 0640 /etc/dovecot/dovecot-dict-sql2.conf.ext
+chown dovecot:root /etc/dovecot/dovecot-dict-sql.conf.ext
+chmod 0640 /etc/dovecot/dovecot-dict-sql.conf.ext
 
-
+### -------------------------------------------------------------------------
+# write local configuration
 cat > /etc/dovecot/local.conf <<EOF
 # eisfair-ng config
 protocols = imap pop3 sieve
@@ -539,6 +539,11 @@ mail_privileged_group = postdrop
 mail_uid = vmail
 mail_gid = postdrop
 mail_location = maildir:/var/spool/postfix/virtual/%d/%n/Maildir
+
+userdb {
+  args = uid=$uidvmail gid=$gidvmail home=/var/spool/postfix/virtual/%d/%n mail=maildir:/var/spool/postfix/virtual/%d/%n/Maildir
+  driver = static
+}
 
 service auth {
   unix_listener /var/spool/postfix/private/auth {
@@ -564,11 +569,21 @@ plugin {
 }
 
 dict {
-  quota = mysql:/etc/dovecot/dovecot-dict2-sql.conf.ext
-  expire = mysql:/etc/dovecot/dovecot-dict2-sql.conf.ext
-  acl = mysql:/etc/dovecot/dovecot-dict2-sql.conf.ext
+  quota = mysql:/etc/dovecot/dovecot-dict-sql.conf.ext
+  expire = mysql:/etc/dovecot/dovecot-dict-sql.conf.ext
+  acl = mysql:/etc/dovecot/dovecot-dict-sql.conf.ext
 }
 EOF
+
+#    sed -i -e "s|^ssl =.*|ssl = ${POP3IMAP_TLS}|" /etc/dovecot/dovecot.conf
+#    sed -i -e "s|.*auth_username_format.*|${dovecot_authf} |" /etc/dovecot/dovecot.conf
+
+    # secure doevecot sql password include files!
+#    chown dovecot:vmail /etc/dovecot
+#    chmod 0770 /etc/dovecot
+#    chown dovecot:vmail /etc/dovecot/dovecot.conf
+#    chmod 0640 /etc/dovecot/dovecot.conf
+
 
 
 ### -------------------------------------------------------------------------
@@ -577,14 +592,14 @@ EOF
 create_ssl_files()
 {
     # dovecot
-    mkdir -p /etc/ssl/dovecot
-    if [ ! -f /etc/ssl/dovecot/server.pem ]; then
-        cd /etc/ssl/dovecot
-        openssl genrsa 512/1024 > server.pem
-        openssl req -new -key server.pem -days 3650 -out request.pem  # You will get prompted for various information that is added the the file
-        openssl genrsa 2048 > server.key
-        openssl req -new -x509 -nodes -sha1 -days 3650 -key server.key > server.pem
-    fi
+#    mkdir -p /etc/ssl/dovecot
+#    if [ ! -f /etc/ssl/dovecot/server.pem ]; then
+#        cd /etc/ssl/dovecot
+#        openssl genrsa 512/1024 > server.pem
+#        openssl req -new -key server.pem -days 3650 -out request.pem  # You will get prompted for various information that is added the the file
+#        openssl genrsa 2048 > server.key
+#        openssl req -new -x509 -nodes -sha1 -days 3650 -key server.key > server.pem
+#    fi
 
 
 # cd /etc/ssl/dovecot
@@ -728,58 +743,6 @@ sql_database_check()
 }
 
 
-### -------------------------------------------------------------------------
-### update vmail modules menu for webmail
-### -------------------------------------------------------------------------
-# check if type ofthe menu is new
-is_new_menutype()
-{
-    menu_name="$1"
-    grep -E -q "^ *<package|<title|<\!--" /var/install/menu/$menu_name
-}
-#update
-update_modules_menu()
-{
-    mail_module_menu_title="VMail Module administration"
-    mail_module_menu_file='setup.services.vmail.modules.menu'
-
-    # create new modules menu in >= base-1.1.0 format
-    rm -f /var/install/menu/$mail_module_menu_file
-    /var/install/bin/create-menu $mail_module_menu_file "$mail_module_menu_title"
-
-    ls /var/install/menu/setup.services.mail.modules.*.menu > /dev/null 2> /dev/null
-    if [ $? -eq 0 ]; then
-        for FNAME in /var/install/menu/setup.services.mail.modules.*.menu
-        do
-            if is_new_menutype `basename $FNAME`
-            then
-                # new format - extract module name
-                module_name=`basename $FNAME|cut -d. -f5`
-                menu_title=`grep "<title>" $FNAME|sed -e 's/^<title> *//' -e 's/ *<\/title> *$//'`
-            else
-                # old format - extract module name
-                module_name=`basename $FNAME|cut -d. -f4`
-                # grep first line from module submenu
-                menu_title=`sed -n '1p' $FNAME`
-            fi
-            echo "- adding menu entry \"$module_name - $menu_title\" ..."
-            /var/install/bin/add-menu -menu "$mail_module_menu_file" "`basename $FNAME`" "$menu_title"
-        done
-    fi
-}
-
-
-### -------------------------------------------------------------------------
-### get domain name
-### -------------------------------------------------------------------------
-get_domain_name()
-{
-    # read the password include special chars for admin user
-    domain_name=`/usr/bin/mysql -h $VMAIL_SQL_HOST -u $VMAIL_SQL_USER -p${VMAIL_SQL_PASS} -D $VMAIL_SQL_DATABASE -s -e \
-            "SELECT name FROM virtual_domains WHERE active='1' AND (transport LIKE 'pop3imap:%%') LIMIT 1;"`
-    echo "$domain_name"
-}
-
 
 ### -------------------------------------------------------------------------
 ### Main
@@ -798,12 +761,6 @@ case "$1" in
             echo " ----------------------------------------------------------"
             sleep 3
         fi
-        ;;
-    updatemodulesmenu)
-        update_modules_menu
-        ;;
-    getdomain)
-        get_domain_name
         ;;
     alias)
         create_alias_file
