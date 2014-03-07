@@ -27,7 +27,17 @@ POSTFIX_SMARTHOST_TLS='no'
 . /etc/config.d/base
 . /etc/config.d/vmail
 
+### -------------------------------------------------------------------------
+### write init.d config for start/stop postfix/dovecot
+### -------------------------------------------------------------------------
+cat >> /etc/conf.d/vmail < EOF
+START_VMAIL="$START_VMAIL"
+START_POP3IMAP="$START_POP3IMAP"
+EOF
 
+### -------------------------------------------------------------------------
+### set local values
+### -------------------------------------------------------------------------
 if [ "$VMAIL_SQL_HOST" = 'localhost' ]; then
     vmail_sql_connect="unix:/run/mysqld/mysqld.sock"
 else

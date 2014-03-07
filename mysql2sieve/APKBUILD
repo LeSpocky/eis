@@ -1,0 +1,33 @@
+# Contributor: Jens Vehlhaber jv <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
+pkgname=mysql2sieve
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Write sive script from MySQL record"
+url="http://www.eisfair.org"
+arch="all"
+license="GPLv2"
+depends=""
+depends_dev="mysql-dev libiconv-dev"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+source=""
+
+_builddir="$srcdir/$pkgname"
+
+prepare() {
+	cp -r  ${startdir}/mysql2sieve "$srcdir/"
+}
+
+build() {
+	cd "$_builddir"
+	make -j1 -s || return 1
+}
+
+package() {
+	cd "$_builddir"
+	install -m755 -D "$_builddir"/$pkgname \
+		"$pkgdir"/usr/bin/$pkgname || return 1
+}
+

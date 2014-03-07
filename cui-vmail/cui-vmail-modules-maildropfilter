@@ -1,10 +1,9 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
-# Creation:     2010-05-28 Jens Vehlhaber <jens(at)eisfair(dot)org>
+# Creation:     2010-05-28 Jens Vehlhaber  jv <jens(at)eisfair(dot)org>
 # Last Update:  $Id: vmail-modules-maildropfilter 24675 2010-06-25 14:33:58Z jv $
 #-----------------------------------------------------------------------------
-
-clrhome
+clear
 . /var/install/include/eislib
 . /etc/config.d/vmail
 if [ "$VMAIL_SQL_HOST" = 'localhost' ]; then
@@ -12,7 +11,7 @@ if [ "$VMAIL_SQL_HOST" = 'localhost' ]; then
 else
     vmail_sql_connect="inet:$VMAIL_SQL_HOST"
 fi
-su vmail -c "/usr/local/dovecot/mysqlsievefilter -v -s $vmail_sql_connect -d $VMAIL_SQL_DATABASE -u $VMAIL_SQL_USER -p $VMAIL_SQL_PASS"
+su vmail -c "/usr/bin/mysql2sieve -v -s $vmail_sql_connect -d $VMAIL_SQL_DATABASE -u $VMAIL_SQL_USER -p $VMAIL_SQL_PASS"
 anykey
 
 exit 0
