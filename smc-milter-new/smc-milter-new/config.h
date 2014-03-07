@@ -38,7 +38,7 @@
 #define PACKAGE_VERSION "2.1"
 
 /* SMC milter pid file. */
-#define PID_FILE "/run/smc-milter-new.pid"
+#define PID_FILE "/run/milter/smc-milter-new.pid"
 
 /* Define as the return type of signal handlers (`int' or `void'). */
 #define RETSIGTYPE void
