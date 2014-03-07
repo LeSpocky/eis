@@ -292,8 +292,7 @@ maildir_filter_ruleupdate(struct maildirfilter *r,
     for (c=name; *c; c++)
         if ((unsigned char)*c < ' ' || *c == '\'' || *c == '"' || *c == '`') {
             return (-1);
-        }    
-            
+        }
 
     /* rule name: may not already exist */
     *errcode=MF_ERR_EXISTS;
@@ -495,7 +494,7 @@ maildir_filter_ruleupdate(struct maildirfilter *r,
         maildir_filter_autoresp_info_free(&ai);
     }
     else if (strcmp(c, "exit") == 0) {    /* Purge */
-    
+
     }
     else
     {
@@ -527,9 +526,9 @@ maildir_filter_ruleupdate(struct maildirfilter *r,
     if (p->memotext)     free(p->memotext);
     if ((p->memotext=strdup(memotext ? memotext:"")) == NULL) return (-1);
     p->flags=flags;
-    
+
     *errcode=0;
-    
+
     return (0);
 }
 
@@ -553,7 +552,7 @@ maildir_filter_ruledel(struct maildirfilter *r, struct maildirfilterrule *p)
     if (p->fieldvalue)  free(p->fieldvalue);
     if (p->tofolder)    free(p->tofolder);
     if (p->fromhdr)     free(p->fromhdr);
-    if (p->memotext)    free(p->memotext);    
+    if (p->memotext)    free(p->memotext);
     free(p);
 }
 
@@ -606,13 +605,13 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
 {
     FILE    *f=fopen(filename, "w");
     FILE    *fu=fopen("userfilter.sieve", "r");
-    
+
     struct maildirfilterrule *p;
 
     if (!f)
         return (-1);
-     
-    if (!fu) 
+
+    if (!fu)
         fprintf(f, "require [\"fileinto\",\"envelope\",\"reject\",\"vacation\",\"subaddress\",\"regex\",\"copy\",\"body\"];\n");
     else
     {
@@ -651,10 +650,10 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
         if (p->flags & MFR_CONTINUE)
             fprintf(f, "##Continue\n");
 */ 
-        // start rule entry           
+        // start rule entry
         if ( p->rulename == '\0' )
             fprintf(f, "# rule:[noname %d]\n", rand() );
-        else    
+        else
             fprintf(f, "# rule:[%s]\n", p->rulename);
 
         fprintf(f, "if ");
@@ -726,8 +725,8 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
                 else
                     fprintf(f, "    AUTOREPLYFROM=$FROM\n" );
                 */
-                fprintf(f, "vacation ");                
-                if (ai.days > 0)      
+                fprintf(f, "vacation ");
+                if (ai.days > 0)
                     fprintf(f, ":days %d ", ai.days );
 //                fprintf(f, ":subject \"Abwesenheitsnachricht\" text:\n" );
                 fprintf(f, "text:\n" );  
@@ -810,9 +809,9 @@ ShowProgramHelp(const char* progname)
         "\t-h   show this help\n"
         "\t-v   Verbose output\n"
         "\t-s   MySQL server socket 'unix:pathname' or port 'inet:host:port'\n"
-        "\t                           - default: unix:/var/lib/mysql/mysql.sock\n"
+        "\t                           - default: unix:/run/mysqld/mysqld.sock\n"
         "\t-d   MySQL database name   - default: vmaildata\n"
-        "\t-u   MySQL user name       - default: extern\n"
+        "\t-u   MySQL user name       - default: vmailprovider\n"
         "\t-p   MySQL user password   - default: \n"
         "\t-m   Maildir root          - default: /var/spool/postfix/virtual\n"
         "\t-g   Generate no domain and user folder\n"
@@ -1005,7 +1004,7 @@ row12= maildropfilter.dateupdate
                         printf("Text:\n%s\n", row[9]);
                     } else {
                         printf("\n");
-                    }           
+                    }
                     printf("___________________________________________________________________________\n");  
                 }
                 snprintf( rulename, 40, "vmailentry%d %s", atoi(row[0]), row[12]);
@@ -1032,7 +1031,7 @@ row12= maildropfilter.dateupdate
             snprintf(rulename, 511, "%s/.dovecot.sieve", smaildir );
             unlink( SIEVEFILE );
             rename(".vmailfilter.tmp", SIEVEFILE );
-            unlink( rulename );            
+            unlink( rulename );
             symlink( "sieve/vmailfilter.sieve", rulename );
         }
     }

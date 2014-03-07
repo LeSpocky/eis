@@ -30,7 +30,7 @@ POSTFIX_SMARTHOST_TLS='no'
 ### -------------------------------------------------------------------------
 ### write init.d config for start/stop postfix/dovecot
 ### -------------------------------------------------------------------------
-cat >> /etc/conf.d/vmail < EOF
+cat > /etc/conf.d/vmail << EOF
 START_VMAIL="$START_VMAIL"
 START_POP3IMAP="$START_POP3IMAP"
 EOF
@@ -662,7 +662,7 @@ create_fetchmail_file()
 #------------------------------------------------------------------------------
 . /etc/config.d/vmail
 fetchfile=".fetchmailrc.\$$"
-su vmail -c "/usr/bin/fetchmysql -t /var/spool/postfix/virtual/\${fetchfile} \
+su vmail -c "/usr/bin/mysql2fetchmail -t /var/spool/postfix/virtual/\${fetchfile} \
             -u \$VMAIL_SQL_USER -s \$VMAIL_SQL_HOST -d \$VMAIL_SQL_DATABASE -p \$VMAIL_SQL_PASS -e \$VMAIL_SQL_ENCRYPT_KEY; \\
             /usr/bin/fetchmail -t ${FETCHMAIL_TIMEOUT} -f /var/spool/postfix/virtual/\$fetchfile $logging --nobounce --sslcertpath $VMAIL_TLS_CAPATH --postmaster $FETCHMAIL_POSTMASTER 2>/dev/null ; \\
             rm -f /var/spool/postfix/virtual/\$fetchfile"
