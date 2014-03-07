@@ -48,7 +48,8 @@ int    cnt_filter;             // count of filter per user
 int    cnt_record;             // database records all per user (incl. disabled)
 int    uidlist[512];           // filter id's per user
 int    verbose       = 0;
-
+int    nuid          = 8;       // uid  8 = mail
+int    ngid          = 12;      // gid 12 = mail
 
 /* --------------------------------------------------------------------
 *  ExitProg
@@ -608,7 +609,7 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
 
     struct maildirfilterrule *p;
 
-    if (!f)
+    if ((!f) || (fchown(fileno(f), nuid, ngid)))
         return (-1);
 
     if (!fu)
@@ -815,7 +816,9 @@ ShowProgramHelp(const char* progname)
         "\t-p   MySQL user password   - default: \n"
         "\t-m   Maildir root          - default: /var/spool/postfix/virtual\n"
         "\t-g   Generate no domain and user folder\n"
-        "\t-f   SQL listing query string\n\n",
+        "\t-f   SQL listing query string\n"
+        "\t-b   UID for sieve script  - default:  8\n"
+        "\t-c   GID for sieve script  - default: 12\n\n",
         progname);
 }
 
@@ -863,10 +866,16 @@ main(int argc, char* argv[])
 
 
     while (1) {
-        c = getopt(argc, argv, "d:f:ghm:p:s:u:v");
+        c = getopt(argc, argv, "b:c:d:f:ghm:p:s:u:v");
         if (c == -1)
             break;
         switch (c) {
+            case 'b':
+                nuid = atoi(optarg);
+                break;
+            case 'c':
+                ngid = atoi(optarg);
+                break;
             case 'd':
                 mysqldatabase = strdup(optarg);
                 break;
@@ -975,7 +984,8 @@ row12= maildropfilter.dateupdate
            syslog( LOG_ERR, "Cannot change to mail directory %s", smaildir);
            continue;
         }
-        mkdir(sievedir, 0700); 
+        mkdir(sievedir, 0700);
+        chown(sievedir, nuid, ngid);
         if (chdir( sievedir ) == -1) {
            syslog( LOG_ERR, "Cannot change to sieve directory %s", sievedir);
            continue;
