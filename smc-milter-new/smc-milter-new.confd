@@ -3,7 +3,7 @@
 user                    mail
 action                  2
 socket                  /run/milter/smc-milter-new.sock
-pidfile                 /run/smc-milter-new.pid
+pidfile                 /run/milter/smc-milter-new.pid
 clamcheck               yes
 clamsocket              /run/clamav/clamd.sock
 fprotcheck              no
