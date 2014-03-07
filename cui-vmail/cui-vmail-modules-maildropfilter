@@ -11,7 +11,11 @@ if [ "$VMAIL_SQL_HOST" = 'localhost' ]; then
 else
     vmail_sql_connect="inet:$VMAIL_SQL_HOST"
 fi
-su vmail -c "/usr/bin/mysql2sieve -v -s $vmail_sql_connect -d $VMAIL_SQL_DATABASE -u $VMAIL_SQL_USER -p $VMAIL_SQL_PASS"
+# get uid/gid for user vmail
+uidvmail=$(id -u vmail)
+gidvmail=$(id -g vmail)
+# run
+/usr/bin/mysql2sieve -v -s $vmail_sql_connect -d $VMAIL_SQL_DATABASE -u $VMAIL_SQL_USER -p $VMAIL_SQL_PASS -b $uidvmail -c $gidvmail
 anykey
 
 exit 0
