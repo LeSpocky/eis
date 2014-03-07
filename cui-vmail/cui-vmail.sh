@@ -461,6 +461,8 @@ sed -i -r 's|^[#]log_timestamp =.*|log_timestamp = "%Y-%m-%d %H:%M:%S "|' /etc/d
 ### -------------------------------------------------------------------------
 #10-mail
 sed -i -r "s|^[#]mail_plugins =.*|mail_plugins = quota|" /etc/dovecot/conf.d/10-mail.conf
+sed -i -r "s|^[#]first_valid_uid =.*|first_valid_uid = 100|" /etc/dovecot/conf.d/10-mail.conf
+sed -i -r "s|^[#]first_valid_gid =.*|first_valid_gid = 100|" /etc/dovecot/conf.d/10-mail.conf
 
 ### -------------------------------------------------------------------------
 #15-lda

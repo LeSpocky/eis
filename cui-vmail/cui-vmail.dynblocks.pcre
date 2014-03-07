@@ -1,0 +1,285 @@
+# basically if the connecting host has a DNS FQDN which contains the words
+# below (e.g. "dial" "ppp" "cable" "adsl" etc) then they are automagically
+# rejected. you wouldn't believe the amount of spam this stops!
+# temp reject
+/^unknown$/                             450 cannot find your hostname
+# OK for static and mail/smtp hostname
+/static[-.]/                            DUNNO
+/mail/                                  DUNNO
+/smtp/                                  DUNNO
+/dedicated/                             DUNNO
+# block:
+/access\./                              550 ACCESS. We do not accept mail from dynamic IP. Use an authorized relay
+/^ad[0-9]-[a-z][0-9]{1,3}\.net\.t-com.*/ 550 ADn. We do not accept mail from dynamic IP. Use an authorized relay
+/adsl/                                  550 ADSL. We do not accept mail from dynamic IP. Use an authorized relay
+/^alias[0-9].*\.co\.nz/                 550 ALIAS. We do not accept mail from dynamic IP. Use an authorized relay
+/arpa/                                  550 ARPA. We do not accept mail from dynamic IP. Use an authorized relay
+/\w\d+-atm\.krak\.tke\.pl/              550 ATM. We do not accept mail from dynamic IP. Use an authorized relay
+/\.bredband\./                          550 BREDBAND. We do not accept mail from dynamic IP. Use an authorized relay
+/\.broadband\./                         550 BROADBAND. We do not accept mail from dynamic IP. Use an authorized relay
+/\.broadband[0-9]/                      550 BROADBANDn. We do not accept mail from dynamic IP. Use an authorized relay
+/bri-/                                  550 BRI-. We do not accept mail from dynamic IP. Use an authorized relay
+/bzq(-\d+){3}.*\.bezeqint\.net/         550 BZQ. We do not accept mail from dynamic IP. Use an authorized relay
+/catv/                                  550 CATV. We do not accept mail from dynamic IP. Use an authorized relay
+/^chello[0-9]{3,13}[-.][0-9]{1,3}.*\..*\..*/ 550 CHELLO-IP. We do not accept mail from dynamic IP. Use an authorized relay
+/^client\./                             550 CLIENT. We do not accept mail from dynamic IP. Use an authorized relay
+/c(-\d+){4}\..+\..+\.comcast.net/       550 COMCAST. We do not accept mail from dynamic IP. Use an authorized relay
+/^c.*\..*\..*\.home\.nl/                550 C.HOME.NL. We do not accept mail from dynamic IP. Use an authorized relay
+/(-\d+){4}\.d4\.club-internet\.fr/      550 CLUB-INTERNET. We do not accept mail from dynamic IP. Use an authorized relay
+/\w+\.\w+\.clubnet\.pl/                 550 CLUBNET. We do not accept mail from dynamic IP. Use an authorized relay
+/^cm[0-9]{2,6}.*/                       550 CM. We do not accept mail from dynamic IP. Use an authorized relay
+/\w+-\d+\.codetel\.net\.do/             550 CODETEL. We do not accept mail from dynamic IP. Use an authorized relay
+/^cust-[0-9]{1,3}-[0-9]{1,3}\..*/       550 CUST-n. We do not accept mail from dynamic IP. Use an authorized relay
+/\.customer\./                          550 CUSTOMER. We do not accept mail from dynamic IP. Use an authorized relay
+/[0-9].*\.ddkom\.net/                   550 DDKOM. We do not accept mail from dynamic IP. Use an authorized relay
+/dhcp/                                  550 DHCP. We do not accept mail from dynamic IP. Use an authorized relay
+/[-.]dial[-.]/                          550 DIAL-. We do not accept mail from dynamic IP. Use an authorized relay
+/dial[-inu.]/                           550 DIAL-I. We do not accept mail from dynamic IP. Use an authorized relay
+/^dial/                                 550 DIAL. We do not accept mail from dynamic IP. Use an authorized relay
+/\.dip[0-9]/                            550 DIP. We do not accept mail from dynamic IP. Use an authorized relay
+/dpc[0-9]/                              550 DPC. We do not accept mail from dynamic IP. Use an authorized relay
+/\.dsl\./                               550 DSL. We do not accept mail from dynamic IP. Use an authorized relay
+/^dsl-/                                 550 DSL-. We do not accept mail from dynamic IP. Use an authorized relay
+/^dsl[0-9]{1,5}-.*\..*\..*/             550 DSLn. We do not accept mail from dynamic IP. Use an authorized relay
+/[-.]dsl[-.]/                           550 DSL. We do not accept mail from dynamic IP. Use an authorized relay
+/[-.]dsl[0-9]/                          550 DSLn. We do not accept mail from dynamic IP. Use an authorized relay
+/^dslcustomer[0-9]/                     550 DSLCUSTOMERn. We do not accept mail from dynamic IP. Use an authorized relay
+/dslnet/                                550 DSLNET. We do not accept mail from dynamic IP. Use an authorized relay
+/dyn[-.]/                               550 DYN-. We do not accept mail from dynamic IP. Use an authorized relay
+/dyn[0-9]{1,3}\./                       550 DYNn. We do not accept mail from dynamic IP. Use an authorized relay
+/dynamic\./                             550 DYNAMIC. We do not accept mail from dynamic IP. Use an authorized relay
+/\w\w\w\w-\w+\.pool\.einsundeins\.de/   550 EINSUNDEIS. We do not accept mail from dynamic IP. Use an authorized relay
+/[0-9]{1,3}\.fibernet\..*\./            550 FIBERNET. We do not accept mail from dynamic IP. Use an authorized relay
+/\w+\d+-\d+\.fibertel\.com\.ar/         550 FIBERTEL. Not accept mail from dynamic IP. Use an authorized relay
+/\.flatrate\./                          550 FLATRATE. We do not accept mail from dynamic IP. Use an authorized relay
+/gprs-pool/                             550 GPRS-POOL. Use an authorized relay
+# /host\./ (Suedeutsche-Zeitung)
+/host[0-9]{1,3}\..*\.com/               550 HOST.COM. We do not accept mail from dynamic IP. Use an authorized relay
+/host[0-9]{1,3}\..*\.net/               550 HOST.NET. We do not accept mail from dynamic IP. Use an authorized relay
+/host[0-9]{1,3}-[0-9]{1,3}-/            550 HOSTn. We do not accept mail from dynamic IP. Use an authorized relay
+/ipd[0-9]{1,3}\./                       550 IPD. We do not accept mail from dynamic IP. Use an authorized relay
+/ip[0-9]{1,3}[-.][0-9]{1,3}.*\..*\..*/  550 IP. We do not accept mail from dynamic IP. Use an authorized relay
+/in\-addr/                              550 IN-ADDR. We do not accept mail from dynamic IP. Use an authorized relay
+/ipt/                                   550 IPT. We do not accept mail from dynamic IP. Use an authorized relay
+/\.ip\./                                550 IP. We do not accept mail from dynamic IP. Use an authorized relay
+/^ip.*\.speed\..*/                      550 IP.SPEED. We do not accept mail from dynamic IP. Use an authorized relay
+/\d+-\d+\.jesenice\.net/                550 JESENICE. We do not accept mail from dynamic IP. Use an authorized relay
+/^leased-line-[0-9].*/                  550 LEASED-LINE. We do not accept mail from dynamic IP. Use an authorized relay
+/\w+\.luminet\.cz/                      550 LUMINET. We do not accept mail from dynamic IP. Use an authorized relay
+/modem/                                 550 MODEM. We do not accept mail from dynamic IP. Use an authorized relay
+/netdsl\./                              550 NETDSL. We do not accept mail from dynamic IP. Use an authorized relay
+/nombres/                               550 NOMBRES. We do not accept mail from dynamic IP. Use an authorized relay
+/.\d+\.\w+\d+-\d+-\d+\.noos\.fr/        550 NOOS. We do not accept mail from dynamic IP. Use an authorized relay
+/\w+\d+\.ostnet\.pl/                    550 OSTNET. We do not accept mail from dynamic IP. Use an authorized relay
+/[0-9]{2,5}\.otenet\./                  550 OTENET. We do not accept mail from dynamic IP. Use an authorized relay
+/^p[0-9]{1,5}-.*/                       550 P. We do not accept mail from dynamic IP. Use an authorized relay
+/pc\d+\.zz\.ha\.cn/                     550 PC. We do not accept mail from dynamic IP. Use an authorized relay
+/pcp.*\..*\..*\.comcast.net/            550 PCP.COMCAST. We do not accept mail from dynamic IP. Use an authorized relay
+/pppoe/                                 550 PPPOE. We do not accept mail from dynamic IP. Use an authorized relay
+/pppool[.-]/                            550 PPPOOL. We do not accept mail from dynamic IP. Use an authorized relay
+/\.pool\.mediaways\.net/                550 POOL-MW. We do not accept mail from dynamic IP. Use an authorized relay
+/ppp[-inu.]/                            550 PPP-. We do not accept mail from dynamic IP. Use an authorized relay
+/^ppp/                                  550 PPP. We do not accept mail from dynamic IP. Use an authorized relay
+/(\d+-){3}\d+\..+\.qwest\.net/          550 QWEST. We do not accept mail from dynamic IP. Use an authorized relay
+/\.ras\./                               550 RAS. We do not accept mail from dynamic IP. Use an authorized relay
+/\-RAS\-/                               550 RAS-. We do not accept mail from dynamic IP. Use an authorized relay
+/^r[0-9].*\.net/                        550 RAS.net. We do not accept mail from dynamic IP. Use an authorized relay
+/^ras[0-9]/                             550 RASn. We do not accept mail from dynamic IP. Use an authorized relay
+/\d+\.red(-\d+){3}\.user\.auna\.net/    550 RED.AUNA Not accept mail from dynamic IP. Use an authorized relay
+/\w+\d+\.red\.mundo-r\.com/             550 RED.MUNDO Not accept mail from dynamic IP. Use an authorized relay
+/^remote[0-9]/                          550 REMOTE. We do not accept mail from dynamic IP. Use an authorized relay
+/.+\.rev\.stofanet\.dk/                 550 REV. Not accept mail from dynamic IP. Use an authorized relay
+# strato mailserver mo-p00-ob.rzone.de - mo-p07-ob.rzone.de
+#/[a-z]{2,2}-[a-z]{1,2}[0-9]{1,3}-[a-z]{1,3}\.rzone\.de/ 550 RZONE. Not accept mail from dynamic IP. Use an authorized relay
+/\d+sdl\d+m\d+\.codetel\.net\.do/       550 SDL. Not accept mail from dynamic IP. Use an authorized relay
+/^softbank[0-9]{3,13}\.bbtec\.net/      550 SOFTBANK. Not accept mail from dynamic IP. Use an authorized relay
+/\w+\.speed\.planet\.nl/                550 SPEED. Not accept mail from dynamic IP. Use an authorized relay
+/\w+\d+-\d+\.tccd\.edu/                 550 TCCD. Not accept mail from dynamic IP. Use an authorized relay
+/\d+\.\w+\.unitel\.net\.ua/             550 UNITEL. Not accept mail from dynamic IP. Use an authorized relay
+/unlabelled/                            550 UNLABELLED. We do not accept mail from dynamic IP. Use an authorized relay
+/^udp[0-9]{3,8}/                        550 UDP. We do not accept mail from dynamic IP. Use an authorized relay
+/upc\-[a-z]/                            550 UPC-. We do not accept mail from dynamic IP. Use an authorized relay
+/\.user/                                550 USER We do not accept mail from dynamic IP. Use an authorized relay
+/^user[-.]/                             550 USER. We do not accept mail from dynamic IP. Use an authorized relay
+/^user[0-9]/                            550 USERn. We do not accept mail from dynamic IP. Use an authorized relay
+/\d+-user\d+\.scnet\.cz/                550 USER.CZNET. We do not accept mail from dynamic IP. Use an authorized relay
+/.*[0-9]{1,3}\.[0-9]{1,3}\.vie\.surfer\.at/ 550 SURFER. We do not accept mail from dynamic IP. Use an authorized relay
+/^vsmtp[0-9]{1,3}.*\.tin\.it/           550 VSMTP. We do not accept mail from dynamic IP. Use an authorized relay
+/\.virtua\./                            550 VIRTUA. We do not accept mail from dynamic IP. Use an authorized relay
+/i([0-9|A-F]){8}\.versanet\.de/         550 VERSATEL. We do not accept mail from dynamic IP. Use an authorized relay
+/xdsl/                                  550 XDSL. We do not accept mail from dynamic IP. Use an authorized relay
+/^Ya.*\.bbtec\.net/                     550 Ybbtec.net. We do not accept mail from dynamic IP. Use an authorized relay
+/\d+\w+\d+\.net\.zeork\.com\.pl/        550 ZEORK. We do not accept mail from dynamic IP. Use an authorized relay
+# /.*\.bay[0-9]{1,3}\.hotmail\.com/     550 bayXX. We do not accept mail from dynamic IP. Use an authorized relay
+/[0-9]{1,3}-[0-9]{1,3}\..*\..*\..*/                  550 No numeric host. We do not accept mail from dynamic IP. Use an authorized relay
+/[0-9]{1,3}[-.][0-9]{1,3}[-.][0-9]{1,3}.*\..*\..*/   550 No numeric host IP. We do not accept mail from dynamic IP. Use an authorized relay
+############################################
+## Brasilien
+/\d+\.ip\d+long\.net$/                  550 BR1 We do not accept mail from dynamic IP. Use an authorized relay.
+/\w+.(?<!^mail.)minas\.psi\.br$/        550 BR2 We do not accept mail from dynamic IP. Use an authorized relay.
+/server\d+\.plugnet\.psi\.br$/          550 BR3 We do not accept mail from dynamic IP. Use an authorized relay.
+## pt
+/\d+.\d+\.acesso\.oni\.pt$/             550 We do not accept mail from dynamic IP. Use an authorized relay. pt
+## Frankreich
+/\w+-\d+-\d+-\d+\.(mts|bdx)\.modulonet\.fr$/    550 We do not accept mail from dynamic IP. Use an authorized relay. fr
+/\w+-\d+-\d+-\d+\.\w\d+-\d+\.abo\.wanadoo\.fr/  550 We do not accept mail from dynamic IP. Use an authorized relay. fr
+## Niederlande
+/\w+-\w\.\w+\.\w+\.home\.nl$/           550 We do not accept mail from dynamic IP. Use an authorized relay. nl
+## Russland
+/^line\d+-\d+\.adsl\.kchepetsk\.ru$/    550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+/\.dial\.rol\.ru$/                      550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+/\w+-\d+\.netbynet\.ru$/                550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+/\w+-\w\.line\d+\.ru$/                  550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+/^proxy\.\w+-\w+\.ru$/                  550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+/\d+\.kompozit\.ur\.ru$/                550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+/radio-tyumen\.t\d+\.ru$/               550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+/\w+.(?<!^mail.)nln.ru$/                550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+/\w\w\w\d+-\d+\.ertelecom\.ru$/         550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+/\w+\.ll-kem\.zsttk\.ru$/               550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+/kargonet\.nln\.ru$/                    550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+/\w+.\d+\.sinor\.ru$/                   550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+/\w+\.telecom-net\.ru$/                 550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+/\w\d+\w-\w+-\w+\.ilca\.ru$/            550 We do not accept mail from dynamic IP. Use an authorized relay. ru
+## dynip USA
+/\w+-\d+-\d+\.netconx\.net$/            550 We do not accept mail from dynamic IP. Use an authorized relay. USA
+/\w\d+.\d+.\d+\w+\.static\.theplanet\.com$/ 550 We do not accept mail from dynamic IP. Use an authorized relay. USA
+/\w+(?<!^(mail3|mail4|mail5|mail6))\.cinbell\.com$/ 550 We do not accept mail from dynamic IP. Use an authorized relay. USA
+/\w+\.giga-dns\.com$/                   550 We do not accept mail from dynamic IP. Use an authorized relay. USA
+/itsh\d+\.itsnpt\.com$/                 550 We do not accept mail from dynamic IP. Use an authorized relay. USA
+/\w+-\d+\.\w+\.birch\.net$/             550 We do not accept mail from dynamic IP. Use an authorized relay. USA
+## Niederl. Antillen
+/cust\d+\.\w+\.cable\.ntl\.com$/        550 We do not accept mail from dynamic IP. Use an authorized relay. ntl
+/cust\d+\.\w+\.broadband\.ntl\.com$/    550 We do not accept mail from dynamic IP. Use an authorized relay. ntl
+/cable-\d+-\d+\.zeelandnet\.nl$/        550 We do not accept mail from dynamic IP. Use an authorized relay. ntl
+## Polen .pl
+/[0-9]{12}\.sdl\.vectranet\.pl/         550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\d+\.\w\w\w\.vectranet\.pl$/           550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/chello\d+\.chello\.pl$/                550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\w+-\d+-\d+\.uznam\.net\.pl$/          550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/^inter\d+\.tepsalan.pl/                550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/^host\d+\w\.i24\.pl/                   550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\d+.\d+\.bakcyl\.dew\.pl/              550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\w+-\d+\.bialnet\.com\.pl$/            550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/staticline\d+\.toya\.net\.pl$/         550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\d+net\.\w+\.digi\.pl/                 550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/host-\w\w\d+-\d+\.crowley\.pl$/        550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\w\d+\.net\.pulawy\.pl$/               550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/nat-\w+\.aster\.pl$/                   550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/debica-nat\.mtnet\.com\.pl$/           550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\d+-\d+\.echostar\.pl$/                550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\.customer\.mirotel\.net$/             550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\w+\.spray\.net\.pl$/                  550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\w\w\d+\.piastlan\.kolornet\.pl$/      550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/host-n\d+-\d+-\d+\.telpol\.net\.pl$/   550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/ip\d+\.pyskowice\.jota\.digi\.pl$/     550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/nat-all-amicus\.ar\.szczecin\.pl$/     550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/nat\d+-amicus\.ar\.szczecin\.pl$/      550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\d+-\d+\.unused\.derbynet\.waw\.pl$/   550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\w\w\d+\.\w\w\w\d+\.koping\.net$/      550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\w+-\d+\.CNet\.Gawex\.PL$/             550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\d+-\d+\.compnet\.com\.pl$/            550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/nat\.streamnet\.pl$/                   550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/\w\w\d+\.godula\.net$/                 550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/wsb-nlu\.edu\.pl/                      550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+/c\d+-\d+\.icpnet\.pl/                  550 We do not accept mail from dynamic IP. Use an authorized relay. pl
+## Arabische Emirate
+/\w+-\w\w\d+\.alshamil\.net\.ae$/       550 We do not accept mail from dynamic IP. Use an authorized relay. AE
+/ndh\d+\.emirates\.net\.ae$/            550 We do not accept mail from dynamic IP. Use an authorized relay. AE
+## Australien
+/\w+\.osmo\.com\.au$/                   550 We do not accept mail from dynamic IP. Use an authorized relay. AU
+/\w+-\d+\.gw\.connect\.com\.au$/        550 We do not accept mail from dynamic IP. Use an authorized relay. AU
+## Skandinavien .sk
+/nat\d+\.kryha\.sk$/                    550 We do not accept mail from dynamic IP. Use an authorized relay. sk
+/chello\d+\.chello\.sk$/                550 We do not accept mail from dynamic IP. Use an authorized relay. sk
+/\w+\.ttx-net\.sk$/                     550 We do not accept mail from dynamic IP. Use an authorized relay. sk
+## Norwegen
+/\w\d+-\d+\.informatikk\.no$/           550 We do not accept mail from dynamic IP. Use an authorized relay. no
+/[0-9]{1,8}.*-[0-9]{1,8}\.bb\.online\.no$/ 550 We do not accept mail from dynamic IP. Use an authorized relay. no
+## Dk
+/\.customer\.tele\.dk$/                 550 We do not accept mail from dynamic IP. Use an authorized relay. dk
+/\w+.\w+\.broadband\.tele\.dk$/         550 We do not accept mail from dynamic IP. Use an authorized relay. dk
+## DE
+/^ip\d+\.\d+\.\d+\w-\w+-\d+.ish\.de/    550 We do not accept mail from dynamic IP. Use an authorized relay. de
+/\w+\.customer\.hansenet\.de$/          550 We do not accept mail from dynamic IP. Use an authorized relay. de
+## ee
+/top\.starline\.ee$/                    550 reject We do not accept Spammer ee
+## gr Griechenland
+/\w+\.static\.otenet\.gr$/              550 reject We do not accept Spammer gr
+/athedsl-[0-9]{6}\.home\.otenet\.gr/    550 We do not accept mail from dynamic IP. Use an authorized relay. gr
+/\w+.\d+\.tellas\.gr$/                  550 We do not accept mail from dynamic IP. Use an authorized relay. gr
+## Ungarn
+/pc\w+\.rijeka\.kbf\.hr$/               550 We do not accept mail from dynamic IP. Use an authorized relay. hr
+/\w+\.static\.enternet\.hu$/            550 We do not accept mail from dynamic IP. Use an authorized relay. hr
+/\w+\.pool\.t-online\.hu$/              550 We do not accept mail from dynamic IP. Use an authorized relay. hu
+/\w+-\d+\.xnet\.hr$/                    550 We do not accept mail from dynamic IP. Use an authorized relay. hr
+/\w+-\d+-\d+\.\w+\.bacs-net\.hu$/       550 We do not accept mail from dynamic IP. Use an authorized relay. hu
+/pool-\w+\.externet\.hu/                550 We do not accept mail from dynamic IP. Use an authorized relay. hu
+## Indien
+/\w+-\w+-\d+.\d+.\d+.\d+\.bol\.net\.in$/ 550 We do not accept mail from dynamic IP. Use an authorized relay. in
+## ID
+/\d+\.subnet\d+\.astinet\.telkom\.net\.id$/ 550 We do not accept mail from dynamic IP. Use an authorized relay. id
+## Italien
+/\w+-\w+-\d+\.diciv\.unisa\.it$/        550 We do not accept mail from dynamic IP. Use an authorized relay. it
+/\w+\.unipv\.it$/                       550 We do not accept mail from dynamic IP. Use an authorized relay. it
+## kr
+/dor\w+\.kaist\.ac\.kr$/                550 We do not accept mail from dynamic IP. Use an authorized relay. kr
+/citoprim\.\w+.\w+.\d+-\d+\.\d+\.bih\.net\.ba$/ 550 We do not accept mail from dynamic IP. Use an authorized relay. kr
+## Honkong
+/aworklan\w+\.netvigator\.com$/         550 We do not accept mail from dynamic IP. Use an authorized relay. honkong
+/host\d+\.burgasnet\.com$/              550 We do not accept mail from dynamic IP. Use an authorized relay. honkong
+/\w\d+\.netvigator\.com$/               550 We do not accept mail from dynamic IP. Use an authorized relay. honkong
+## ca
+/\w+-\d+-\d+-\d+\.eastlink\.ca$/        550 We do not accept mail from dynamic IP. Use an authorized relay. ca
+## ch
+/pub[0-9]{3,15}\.dh-hfc\.datazug\.ch/   550 We do not accept mail from dynamic IP. Use an authorized relay. ch
+## cz
+/\d+\.scnet\.cz$/                       550 We do not accept mail from dynamic IP. Use an authorized relay. cz
+/\d+\.ip2long\.net$/                    550 We do not accept mail from dynamic IP. Use an authorized relay. cz
+/\w\d+-\d+-\d+\.commercial\.cgocable\.net$/ 550 We do not accept mail from dynamic IP. Use an authorized relay. cz
+## cl
+/\w+\.utalca\.cl$/                      550 We do not accept mail from dynamic IP. Use an authorized relay. cl
+## MALAYSIA
+/\w+-\d+-\d+\.tm\.net\.my$/             550 We do not accept mail from dynamic IP. Use an authorized relay. my
+## Colombia
+/corporativo-.*\.etb\.net\.co$/         550 We do not accept mail from dynamic IP. Use an authorized relay. co
+## cy
+/\d+-\d+\.netrun\.cytanet\.com\.cy$/    550 We do not accept mail from dynamic IP. Use an authorized relay. cy
+## Japan
+/\w\d+-\w+\.yamaguchi\.ocn\.ne\.jp$/    550 We do not accept mail from dynamic IP. Use an authorized relay. jp
+/\w\d+-\w+\.kyoto\.ocn\.ne\.jp$/        550 We do not accept mail from dynamic IP. Use an authorized relay. jp
+/dhcp\d+-\d+\.tamatele\.ne\.jp$/        550 We do not accept mail from dynamic IP. Use an authorized relay. jp
+/\w\d+-\ipad\d+kobeminato\.hyogo\.ocn\.ne\.jp$/ 550 We do not accept mail from dynamic IP. Use an authorized relay. jp
+/\.fukuoka\.ocn\.ne\.jp$/               550 We do not accept mail from dynamic IP. Use an authorized relay. jp
+/\.yoyogi\.mopera\.ne\.jp$/             550 We do not accept mail from dynamic IP. Use an authorized relay. jp
+/\w\d+-\d+\.user\.cosmostv\.jp$/        550 We do not accept mail from dynamic IP. Use an authorized relay. jp
+/\w+\.oct-net\.ne\.jp$/                 550 We do not accept mail from dynamic IP. Use an authorized relay. jp
+/\w\w\d+\.jaist\.ac\.jp$/               550 We do not accept mail from dynamic IP. Use an authorized relay. jp
+/\w+\.catv\d+\.ne\.jp$/                 550 We do not accept mail from dynamic IP. Use an authorized relay. jp
+/[0-9]{1,3}\.net[0-9]{1,12}\.t-com\.ne\.jp$/ 550 We do not accept mail from dynamic IP. Use an authorized relay. jp
+## ro
+/home-\d+\.\w+\.astral\.ro$/            550 We do not accept mail from dynamic IP. Use an authorized relay. ro
+/\w\d+\.baiamare\.ipn\.ro$/             550 We do not accept mail from dynamic IP. Use an authorized relay. ro
+/dnt-gw-scoala-ast\.dnttm\.ro$/         550 We do not accept mail from dynamic IP. Use an authorized relay. ro
+/pc[0-9]{1,3}\..*\.rdsnet.ro$/          550 We do not accept mail from dynamic IP. Use an authorized relay. ro
+## Taiwan
+/\.sinica\.edu\.tw$/                    550 We do not accept mail from dynamic IP. Use an authorized relay. tw
+/\.ntu\.edu\.tw$/                       550 We do not accept mail from dynamic IP. Use an authorized relay. tw
+## USA
+/olhausen-egw\.access\.nethere\.net$/   550 We do not accept mail from dynamic IP. Use an authorized relay. USA
+/nat\.\w+.\w+.\w+\.wi-power\.com$/      550 We do not accept mail from dynamic IP. Use an authorized relay. USA
+/\w+-\d+\.oxnardsd\.org$/               550 We do not accept mail from dynamic IP. Use an authorized relay. USA
+/\d+\w\w\d+\.cable\.soderhamn-net\.com$/ 550 We do not accept mail from dynamic IP. Use an authorized relay. USA
+/\w+-\w+\.rgc3\.net$/                   550 We do not accept mail from dynamic IP. Use an authorized relay. USA
+/\w+\.direcpc\.com$/                    550 We do not accept mail from dynamic IP. Use an authorized relay. USA
+## ua
+/\w+\.s-net\.net\.ua$/                  550 We do not accept mail from dynamic IP. Use an authorized relay. )ua
+/relay\.teko\.te\.ua$/                  550 We do not accept mail from dynamic IP. Use an authorized relay. ua
+## Newzealand
+/\w+-\w+-\w+-\d+-\w\d+\.telkom-ipnet\.co\.za$/ 550 We do not accept mail from dynamic IP. Use an authorized relay. za
+## uy
+/Fisica[0-9]{1,5}.*\.edu\.uy$/          550 We do not accept mail from dynamic IP. Use an authorized relay. uy
+## com
+/[0-9a-z]{8}\.bb\.sky\.com/             550 We do not accept mail from dynamic IP. Use an authorized relay. com
+## net
+/S[0-9a-z]{16}\.[a-z]{2}\.shawcable\.net/ 550 We do not accept mail from dynamic IP. Use an authorized relay. net
+
