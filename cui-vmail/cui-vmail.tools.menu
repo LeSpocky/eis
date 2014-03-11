@@ -5,4 +5,4 @@
 <script file="cui-vmail-modules-mailhandling qflush">Force queue run</script>
 <script file="cui-vmail-modules-mailhandling qhandle">Process mail queue</script>
 <script file="cui-vmail-modules-fetchmail">Fetchmail force get mail run</script>
-<script file="cui-vmail-modules-maildropfilter">Sieve filter force write</script>
+<script file="/usr/bin/cui-vmail-maildropfilter.sh -v">Sieve filter rewrite</script>

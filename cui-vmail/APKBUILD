@@ -38,9 +38,9 @@ source="${pkgname}.default
 		${pkgname}-mysql-virtual_relayhosts_auth.cf
 		${pkgname}-mysql-virtual_relayhosts.cf
 		${pkgname}-mysql-virtual_restrictions.cf
+		${pkgname}-maildropfilter.sh
 		${pkgname}-tools-recipient-access.cui.sh
 		${pkgname}-user-maildropfilter.cui.sh
-		${pkgname}-modules-maildropfilter
 		${pkgname}-tools-sender-access.cui.sh
 		${pkgname}-user-relaymap.cui.sh
 		${pkgname}-modules-mailhandling
@@ -92,7 +92,9 @@ package() {
 	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_relayhosts_auth.cf  ${pkgdir}/etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
 	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_relayhosts.cf       ${pkgdir}/etc/postfix/sql/mysql-virtual_relayhosts.cf
 	install -D -m640 ${srcdir}/${pkgname}-mysql-virtual_restrictions.cf     ${pkgdir}/etc/postfix/sql/mysql-virtual_restrictions.cf
-  # eisfair menu files	
+	# cron scripts
+	install -D -m755 ${srcdir}/${pkgname}-maildropfilter.sh                 ${pkgdir}/usr/bin/${pkgname}-maildropfilter.sh
+	# eisfair menu files
 	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/${_pname} || return 1
 	install -D -m755 ${srcdir}/${pkgname}.initd         ${pkgdir}/etc/init.d/${_pname} || return 1
 	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/${_pname}.sh || return 1
@@ -104,7 +106,6 @@ package() {
 	install -D -m755 ${srcdir}/${pkgname}-modules-fetchmail              ${pkgdir}/var/install/bin/${pkgname}-modules-fetchmail
 	install -D -m755 ${srcdir}/${pkgname}-tools-recipient-access.cui.sh  ${pkgdir}/var/install/bin/${pkgname}-tools-recipient-access.cui.sh
 	install -D -m755 ${srcdir}/${pkgname}-user-maildropfilter.cui.sh     ${pkgdir}/var/install/bin/${pkgname}-user-maildropfilter.cui.sh
-	install -D -m755 ${srcdir}/${pkgname}-modules-maildropfilter         ${pkgdir}/var/install/bin/${pkgname}-modules-maildropfilter
 	install -D -m755 ${srcdir}/${pkgname}-tools-sender-access.cui.sh     ${pkgdir}/var/install/bin/${pkgname}-tools-sender-access.cui.sh
 	install -D -m755 ${srcdir}/${pkgname}-user-relaymap.cui.sh           ${pkgdir}/var/install/bin/${pkgname}-user-relaymap.cui.sh
 	install -D -m755 ${srcdir}/${pkgname}-modules-mailhandling           ${pkgdir}/var/install/bin/${pkgname}-modules-mailhandling
@@ -122,11 +123,11 @@ md5sums="ec47b9619575f2d426c2018e5e902480  cui-vmail.default
 45fd728e1d619a972a98ab1fc6ec1917  cui-vmail.check.exp
 86735bcdcc8dc896ca39e188178a6d69  cui-vmail.help
 71d450055811bc7796e779ce3d85bf60  cui-vmail.initd
-701a3f321f6d58915b23380922a4e67c  cui-vmail.sh
+bb828dd6654cf3122e81f07f9061c046  cui-vmail.sh
 6bd584931290f4ed2a9f9500f67e4b6f  cui-vmail-update.sh
 0205c16ebd7fc14b121c92a621c456ca  cui-vmail.menu
 5a3e69a8435af69f9c6fc4485a192cd6  cui-vmail.modules.menu
-5d84f98192b9b90127e72d1c3555181a  cui-vmail.tools.menu
+2ee7337ba4ec5a8ae55c43deee03092a  cui-vmail.tools.menu
 1507062eb8e4c147f45fa855a90c547f  cui-vmail.user.menu
 23f9fbb8bb10056508d03a88b1986cea  cui-vmail-modules-fetchmail
 9b07326ae72c71840140988e6f44cd19  cui-vmail.dynblocks.pcre
@@ -143,9 +144,9 @@ e8e76b78933c80b587bea322017d5a81  cui-vmail-mysql-virtual_mailbox_maps.cf
 615ab337db3325b23284f895e2557fc2  cui-vmail-mysql-virtual_relayhosts_auth.cf
 f23956779447f6e73ab3556915d71101  cui-vmail-mysql-virtual_relayhosts.cf
 7d9362d1525dac194e098a9c5c958162  cui-vmail-mysql-virtual_restrictions.cf
+0f5f5c1285deaf5e02ee4ac0aaef4f66  cui-vmail-maildropfilter.sh
 ec676e31d5272d6adbde2dad40f94541  cui-vmail-tools-recipient-access.cui.sh
 9f21ffeece2204a686da43b0209525ff  cui-vmail-user-maildropfilter.cui.sh
-81b10f1e230e9d3bd80772558fbe892c  cui-vmail-modules-maildropfilter
 944f23bddd5634b3942095aee08e3e80  cui-vmail-tools-sender-access.cui.sh
 48ca3e3e72c90bf4a3be480c02d87d28  cui-vmail-user-relaymap.cui.sh
 945e6a6c4510bfd4ccdf596a9d380ed7  cui-vmail-modules-mailhandling
@@ -165,11 +166,11 @@ sha256sums="ddd4d416500c49cb0247504aebc23b8160acee307bd12935a2d2a9141574959c  cu
 48ce211795336e8dc615cf9e4ae18ea4c49eb4fa1c504c3a70c005f39361d17b  cui-vmail.check.exp
 03c1fc4e5ec3147b51a2774f4f850d597f56a7973c0d37d628c7178240d36631  cui-vmail.help
 704f0a19fd6fc6d5f89609f2641deb7684ade24aab59b250283be9ce23c691e9  cui-vmail.initd
-1ac2dda3867c026827438e83b2ace51dd75d7b06a37dccfd3643de5e1e5305ff  cui-vmail.sh
+67fa380cfa7523d18f69acaa1fda2284166f6c4b4b359f1d14c93e527921a332  cui-vmail.sh
 786a6c05033f86342e01156d2c160aa7e5f9d7c043dca60e22965eb512943afe  cui-vmail-update.sh
 c3c50c454e014bcf2147e8868ae3b7a7dc5cc6087f1bdfe3c1fb7fb87f2c151e  cui-vmail.menu
 79808136b4b692bcae3091cf487e4e79089f50bb3eb35a633cd51ee7e01d26b5  cui-vmail.modules.menu
-bea349555162b7535fbc1cf7509a2d0acf8ecf235848245ce1586b171607b91b  cui-vmail.tools.menu
+065e7ff13efec6b0bbf60927113696655f781e6fd89c8a6628a3959ddc4809c3  cui-vmail.tools.menu
 2692ae194d95604f13885db2017b0456e83cc4cb3ad817a627dd539a5ac95bca  cui-vmail.user.menu
 562044ce801f7c23cb9a24c23a7851b69d6762b1bfc550dd472f93f397dac914  cui-vmail-modules-fetchmail
 0315645b0741d6c883bc1f6dd6e6703ac98542288710dab81d1f2ecea0e79e0f  cui-vmail.dynblocks.pcre
@@ -186,9 +187,9 @@ b5a9e08e797aceaf7934159614f6715bbfc4168b4bc1db7bdd3f3b6f422b2b0e  cui-vmail-mysq
 2f363e2706f5c3ddce626e3a1ddc68cf45246565293534a83b3b4a629979ac29  cui-vmail-mysql-virtual_relayhosts_auth.cf
 55e7d68d8f35ccb7a4a1ac9d48efe8f5ea72cde9476ebe3096a6fa47b9c8277b  cui-vmail-mysql-virtual_relayhosts.cf
 3798640ab185ce2d1de35c873ce1a630cda1f0c93c9ed71bb25d9efbb9b4a8e1  cui-vmail-mysql-virtual_restrictions.cf
+d4daead133a3a6eb0cdddf9f2268c98e8dfe629b88ca1ed0ab27984e81d40169  cui-vmail-maildropfilter.sh
 d1d939c39aed4d7adb000f54c78ec1127029004be65f0527290ba91ec27689fc  cui-vmail-tools-recipient-access.cui.sh
 ca31ce5d965f0ae8fa2d97a68d3e080757dc1212fefdddfdad2c19510ab9bcba  cui-vmail-user-maildropfilter.cui.sh
-750d5a9b0c10fcf782d4d99949d25bda47fa57e754f8488dd0e6fbcd627d81a9  cui-vmail-modules-maildropfilter
 14f9896bcb086fcceb49ceb7040bc5bc08dc23e75bcd11a76b699a4fa26f412a  cui-vmail-tools-sender-access.cui.sh
 76e3a4f7504d250af8cd7509a55b2a6cdaedfe41d65d34a0027d1bfe45f881fd  cui-vmail-user-relaymap.cui.sh
 01ac505d2d3ae7de581b42f27b08bb5949db11c537f109345f9844b76517962b  cui-vmail-modules-mailhandling
@@ -208,11 +209,11 @@ a54ddbeaecbf439604f69e668a172cdaa73d31f3bf7cc55241746e0d241b16702f467dc7587fe736
 5503fe9c36f152a4bc45ed119e4b68a06b44d05243dfe41ea3461143d82be66a956f07ce02320684c23875b4db471aa68ef96a6c6e82099166925f3b227af533  cui-vmail.check.exp
 545f27f7f63416cec7bbd9a443908eb0dea882ba4debbd1a51dd94839381bf99b55dc87d63eeac9b5b2c0ee14d7e091a79b03750e2f6bdbbf0217fb5ac6561f3  cui-vmail.help
 f59a28f0bea65c6b11eb174ef8da1dfcd7f8a52ef13d0fa18b47ac7234971ec76bfd044b04003532a14bbb8c0999a67bf7e0292b0dfc52a62d98c1c948038dd3  cui-vmail.initd
-4ddc789efb1e14893db7f5da564db070f02da2497f9d533e34326f20ed4da0e1f065073a1feefceb3a8f427634dda39e7ed66d11e497c2cd61a7a75bd7ccb51f  cui-vmail.sh
+dea577b27ef1e625adc11d7b0712008a4b6fcf36e02fa3c432c8178a497d58d303c4cc25321a37fe205c3bd032ea84c7c610db49bfab0e10f570f1f7dae7bfa4  cui-vmail.sh
 845a03e8ced769de8b6d42438cf5259ecf0a8f45e248de043c5852ea1cbd800ca5db617bea9ea670f6bc09ed236dcfd5c43e5877efaee6915330e93675532662  cui-vmail-update.sh
 31a1cb8c9cda05589e306364f4e5956ed9c360b13f71f95302ea712100e326715fd5081e5a8a5ae855ac4b04feeb89100c9fddbe1198ec19e70cb89da95c47b9  cui-vmail.menu
 1d1a7d1c6711a15b19edede0395c0018d3a83c50ccbae410307429b2f11f8f64ceeb7ad7879cf912c2d66b002910073b538b0834c95c550c8725f3c8e84ab8d3  cui-vmail.modules.menu
-40ebd6be2100e1ac40b5c1b37be1cebe49ac9ff5b24ff081e094dad314849f5d9dff16750c6b27b374229c8934e2f4d1291c60117f20b0cc9733c426e0af3b4a  cui-vmail.tools.menu
+c02047f0b5a45a9ed8c596ae678e4caf19430cb1a1b380c675b70bd25818832c184f7b05d03196e0999faea8b4116d6b00cb31982426b7f8dbe6277fd47624de  cui-vmail.tools.menu
 ae016eb20b1ab587b7c8fa7443e3b6c57dc4408ad2b15960af846b63ca274ff6f61b2a63f22a308386022ae411e40b1cb27709cdae4f2f04ca48a9c0416696f0  cui-vmail.user.menu
 98a714981ab63e34dae0abece059c11489424240c2fbce05e6adcccaac9082c806c80886b481a4db6484383f12bf26a1c6cda6aa9d1785c20b8af844e27dec97  cui-vmail-modules-fetchmail
 cc697b50060cbaed3cb37a50ad501a25f26ac5e16c26b09f89e820f7350c1c1e673fad74ad12b85a2def4707e328f80f381deefe511b2cf1ea6a8de768ac7956  cui-vmail.dynblocks.pcre
@@ -229,9 +230,9 @@ ca0508fcb4f3d720e607f9266954c43440a5eccbca16640d3ff7e431a33af0ba8a38a0a75e41efc9
 99a2d20bb9705878615db87d0ca2f4d9be1ce8a5ca671e7aafcec89276def2fa19a132d2d62eec6781046af1518d7c45e597aef1ac4e7f5d74026643e289f87d  cui-vmail-mysql-virtual_relayhosts_auth.cf
 2e0f2c62dd467b018113ed13b6d934d42cff54c350f42a05d4f0c9ff247e45d157d17724af6297adea417c089102b6beecfdabf46ff1ac35dc59f18351de3674  cui-vmail-mysql-virtual_relayhosts.cf
 e9899e7fa425758d7eee875cb9fdc47c141a1a09861f08ceb14d391477635399b734ea75ad11bff3221c2c44198c9d867ae500afa7e649a44293b35ad0f2cddf  cui-vmail-mysql-virtual_restrictions.cf
+76c5272291735a873c90dfd079e11365eb6bb09476f69f58fff8115f5af819b36d2247aa29f47d510d4917b0a2d292b88f73ef715f8574e9c14fdb22e50d5fda  cui-vmail-maildropfilter.sh
 e56a2e369266ff3ddd8e2a4964a787ce6042877f6a9e6288ee2dcc7dfcaef628fe03a1828d620757c9a5dcdd0b3c1bd79d4140f368907d9a470c7b399a6c9a68  cui-vmail-tools-recipient-access.cui.sh
 8f5423aae1fdf4bdd569b80ddf6437a106bac08eb0e048458d366a18ae551affb012b93b6ce6371041c453f58cff464f463f64756e2b81deb2e7a9ecff289c36  cui-vmail-user-maildropfilter.cui.sh
-c6464511f7140b19a20937ec8749178e8f74a40319b35cb9651a0b7d05b3aabfcc0c34bd52107a94e9746abc36b2713cddccaf047ee24057ecb322d921fa491f  cui-vmail-modules-maildropfilter
 f561f8c8baa5a6aaadbea458a31d0ea0a89f1e61125f0e5583b1b265a837c3e51d34e2f7e534ccc812fd221dc55b6c905b93c24f91496b29a483dad8d36ae6e3  cui-vmail-tools-sender-access.cui.sh
 0d2221a7c6f00f2beb9d4881315206fd16b55fe72c75116e812a971b55cc82379146d3c8e09c2b082d21d70fd6c918d4bb378f4eb57350953e779435586d7934  cui-vmail-user-relaymap.cui.sh
 d00aa1f738847cd5b0264800b2f9cc368d8bf8f29c54a1e39ee1f8aa5b647468031dad12484895722e703db5c47814608e38e7d3aab91223217bde6f6a843ef0  cui-vmail-modules-mailhandling

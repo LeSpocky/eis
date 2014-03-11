@@ -149,11 +149,10 @@ write_postfix_config()
     postconf -e "alias_maps = "
     postconf -e "alias_database ="
     postconf -e "local_destination_concurrency_limit = 1"
-    postconf -e "fax_destination_recipient_limit = 1"
     postconf -e "pop3imap_destination_recipient_limit = 1"
     postconf -e "default_destination_recipient_limit = $POSTFIX_LIMIT_DESTINATIONS"
 
-    postconf -e "proxy_read_maps = ${postfix_prxmynet}\$local_recipient_maps,\$mydestination,\$virtual_alias_maps,\$virtual_alias_domains,\$virtual_mailbox_maps,\$virtual_mailbox_domains,\$virtual_mailbox_limit_maps,\$relay_recipient_maps,\$relay_domains,\$canonical_maps,\$sender_canonical_maps,\$recipient_canonical_maps,\$relocated_maps,\$transport_maps,\$mynetworks,\$mail_restrict_map,\$smtpd_recipient_restrictions,\$sender_dependent_relayhost_maps,\$smtp_sasl_password_maps,\$postscreen_access_list"
+    postconf -e "proxy_read_maps = ${postfix_prxmynet}\$local_recipient_maps,\$mydestination,\$virtual_alias_maps,\$virtual_alias_domains,\$virtual_mailbox_maps,\$virtual_mailbox_domains,\$relay_recipient_maps,\$relay_domains,\$canonical_maps,\$sender_canonical_maps,\$recipient_canonical_maps,\$relocated_maps,\$transport_maps,\$mynetworks,\$mail_restrict_map,\$smtpd_recipient_restrictions,\$sender_dependent_relayhost_maps,\$smtp_sasl_password_maps,\$postscreen_access_list"
     postconf -e "transport_maps = proxy:mysql:/etc/postfix/sql/mysql-transport.cf"
     postconf -e "mail_restrict_map = proxy:mysql:/etc/postfix/sql/mysql-virtual_restrictions.cf"
     postconf -e "virtual_alias_maps = proxy:mysql:/etc/postfix/sql/mysql-virtual_aliases.cf,proxy:mysql:/etc/postfix/sql/mysql-virtual_email2email.cf"
@@ -203,6 +202,10 @@ write_postfix_config()
 
     postconf -e "mime_header_checks = $postfix_mime_header_ch"
     postconf -e "header_checks = $postfix_header_ch"
+
+    postconf -e "mua_client_restrictions = permit_sasl_authenticated, permit"
+    postconf -e "mua_helo_restrictions = permit"
+    postconf -e "mua_sender_restrictions = permit"
 
     postconf -e "tls_random_source = dev:/dev/urandom"
     postconf -e "tls_random_prng_update_period = 3600s"
@@ -487,7 +490,8 @@ cat > /etc/dovecot/dovecot-sql.conf.ext <<EOF
 driver = mysql
 connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}
 password_query = SELECT email as user, AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}') as password FROM view_users WHERE $dovecot_query = '%u'
-default_pass_scheme = PLAIN
+default_pass_scheme = CRYPT
+# PLAIN
 EOF
 
 chown dovecot:root /etc/dovecot/dovecot-sql.conf.ext
@@ -559,9 +563,9 @@ userdb {
 
 service auth {
   unix_listener /var/spool/postfix/private/auth {
-    group = mail
+    group = postdrop
     mode = 0660
-    user = mail
+    user = postfix
   }
   unix_listener auth-master {
     mode = 0600
@@ -645,7 +649,7 @@ add_cron_job()
 {
     mkdir -p /etc/cron/root
     echo "#59 23 * * * /var/install/bin/vmail-rejectlogfilter.sh" > /etc/cron/root/postfix
-    [ "$START_POP3IMAP" = 'yes' ] && echo "# 00,30 * * * * /var/install/bin/vmail-mysqlsievefilter.sh" >> /etc/cron/root/postfix
+    [ "$START_POP3IMAP" = 'yes' ] && echo "00,30 * * * * /usr/bin/cui-vmail-maildropfilter.sh" >> /etc/cron/root/postfix
     [ "$START_FETCHMAIL" = "yes" ] && echo "$FETCHMAIL_CRON_SCHEDULE /var/install/bin/vmail-fetchmailstart.sh" >> /etc/cron/root/postfix
     # update crontab file
     /sbin/rc-service --quiet fcron reload

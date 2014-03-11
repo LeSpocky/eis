@@ -9,6 +9,7 @@ function cleanUp () {
 
 # unzip zip files and find executable
 unpack() {
+    local file=""
     for file in "$@"
     do
         if [ "${file%.[zZ][iI][pP]}" != "${file}" ]
@@ -19,6 +20,10 @@ unpack() {
         then
             unrar e "$file" >/dev/null
             rm "$file"
+        elif [ -f "${file}" ]
+        then
+            unpack ${file}/*
+            rm -rf ${file}
         elif [ "${file%.[eE][xX][eE]}" != "${file}" ]
         then
             exit 10
