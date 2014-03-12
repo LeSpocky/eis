@@ -89,12 +89,12 @@ struct mlfiPriv {
 	char report[MAXLINE];
 	char temp_mail[TMP_FILE_SIZE];        /* mail file complete, for virus scann! */
 	char temp_signtxt[TMP_FILE_SIZE];     /* temp signature text file */
-	char temp_signhtm[TMP_FILE_SIZE];     /* temp signature html file */    	
+	char temp_signhtm[TMP_FILE_SIZE];     /* temp signature html file */
 	char subject[MAXLINE];                /* Original subject */
 	char **to;                            /* Who is the message going to */
 	int  utf8;                            /* if found "charset=UTF-8" set to 1 */
 	int child1pid;                        // pid from virus scanner script
-	int child2pid;                        // pid from body script	
+	int child2pid;                        // pid from body script
 };
 
 #define MLFIPRIV ((struct mlfiPriv *) smfi_getpriv(ctx))
@@ -184,14 +184,14 @@ static void
 setnewsubject(SMFICTX *ctx, const char *virusname) {
     struct mlfiPriv *priv = MLFIPRIV;
     char buffer[MAXLINE];
-    
+
     memset(buffer, '\0', MAXLINE );
     if(priv->subject)
         smfi_addheader(ctx, "X-Original-Subject", priv->subject);
     snprintf(buffer, MAXLINE - 1, "[Virus] %s", virusname);
-    if ( !priv->subject || *priv->subject == '\0')     
+    if ( !priv->subject || *priv->subject == '\0')
         smfi_addheader(ctx, "Subject", buffer);
-    else    
+    else
         smfi_chgheader(ctx, "Subject", 1, buffer);
 }
 
@@ -204,27 +204,27 @@ change_body(SMFICTX *ctx) {
     int errval, rc1, rc2 = 0;
     int fd = -1;
     ssize_t nread;
-    unsigned char buffer[MAXLINE];     
-	struct mlfiPriv *priv = MLFIPRIV;
+    unsigned char buffer[MAXLINE];
+    struct mlfiPriv *priv = MLFIPRIV;
 
- 	if ((fd = open(priv->temp_mail, O_RDONLY)) < 0) {
- 	    syslog(LOG_ERR, "can't open %s : %s", priv->temp_mail, strerror(errno));
+    if ((fd = open(priv->temp_mail, O_RDONLY)) < 0) {
+        syslog(LOG_ERR, "can't open %s : %s", priv->temp_mail, strerror(errno));
         return -1;
     }
-	/* go to the body begin */
-	if( lseek( fd, priv->body_offset, SEEK_SET ) < 0 ) {
+    /* go to the body begin */
+    if( lseek( fd, priv->body_offset, SEEK_SET ) < 0 ) {
         syslog(LOG_ERR, "cannot seek to offset=%ld for file %s",priv->body_offset, priv->temp_mail );
         (void) close(fd); 
-        return -1;            
+        return -1;
     }
     while( (rc1 = file_read( fd, buffer, sizeof(buffer), FILEIOTIMEOUT, &nread, &errval )) == 0 && nread > 0 ) {
         /* replace the message body */
         if( (rc2 = smfi_replacebody( ctx, (unsigned char*)buffer, nread )) != MI_SUCCESS ) break;
     }
     (void) close(fd);
-	if (rc1 != 0) 
+    if (rc1 != 0) 
         syslog(LOG_ERR, "change_body: Error when reading message body, %s", strerror(errval));
-	if (rc2 != 0) 
+    if (rc2 != 0) 
         syslog(LOG_ERR, "change_body: Error when replacing the original message body");
     syslog(LOG_INFO, "Body modified: %s", priv->temp_mail);
     return 0;
@@ -236,22 +236,22 @@ change_body(SMFICTX *ctx) {
  * ----------------------------------------------------------------------------*/
 bool
 add_external_signature(SMFICTX *ctx ) {
-	struct mlfiPriv *priv = MLFIPRIV;
+    struct mlfiPriv *priv = MLFIPRIV;
     char buffer[MAXLINE]; 
     MYSQL_RES *result;
     MYSQL_ROW row;
     MYSQL *g_mysql;
-	unsigned long *lengths;
+    unsigned long *lengths;
     int row_count;
     int count = 0;
-	int fd;
-	FILE *fp;
-    
+    int fd;
+    FILE *fp;
+
     if ( file_signature_content( priv->temp_mail ) == 1 ){
         syslog(LOG_INFO, "Signatur found %s", priv->temp_mail );
         return FALSE;
     }
-	snprintf(buffer, 1023, "SELECT signature FROM %s WHERE email = '%s' ORDER BY email LIMIT 1", dbtable, priv->from_addr );
+    snprintf(buffer, 1023, "SELECT signature FROM %s WHERE email = '%s' ORDER BY email LIMIT 1", dbtable, priv->from_addr );
 
     g_mysql= mysql_init( NULL );
     if ( priv->utf8 == 1) {
@@ -267,10 +267,10 @@ add_external_signature(SMFICTX *ctx ) {
     }
     else
         if (debuglevel > 0)
-             syslog(LOG_INFO, "mysql: new connect" );      
+             syslog(LOG_INFO, "mysql: new connect" );
 
 
-	while ( count < 4)	
+	while ( count < 4)
 	{
         /* check the mysql connect */
         if (debuglevel > 0)
@@ -319,7 +319,7 @@ add_external_signature(SMFICTX *ctx ) {
                 fclose(fp);
                 if (externalbody( ctx, 3 ) != -1) {
                     syslog(LOG_INFO, "Signatur added %s", priv->temp_mail );
-                }    
+                }
             } else {
 			    count = 4;
 			}
@@ -785,7 +785,7 @@ mlfi_eom (SMFICTX *ctx) {
 	    switch (ret) {
 	    case 0:
 		     smfi_addheader(ctx, CLAMD_HEADER, "Scriptfile   " MILTER);
-             syslog(LOG_INFO, "Script: clean  %s", priv->temp_mail  );		     
+             syslog(LOG_INFO, "Script: clean  %s", priv->temp_mail  );
 		     break;
 	    case 10: // virus found!
              snprintf(priv->report, MAXLINE - 1, "content reject");
@@ -973,7 +973,7 @@ read_config (void) {
 	} else if (strncasecmp("user", buffer, 4) == 0) {
 	    sscanf(buffer, "%*s %s", value);
 	    if (!smfiuser) smfiuser = strdup(value);
-    } else if (strncasecmp("socket", buffer, 6) == 0) {
+	} else if (strncasecmp("socket", buffer, 6) == 0) {
 	    sscanf(buffer, "%*s %s", value);
 	    if (!smfisock) smfisock = strdup(value);
 	} else if (strncasecmp("clamcheck", buffer, 9) == 0) {
@@ -993,7 +993,7 @@ read_config (void) {
 	    if (!avmail) avmail = strdup(value);
 	} else if (strncasecmp("signatureadd", buffer, 12) == 0) {
 	    sscanf(buffer, "%*s %s", value);
-	    signatureadd = strcasecmp(value, "yes")? 0 : 1;	    
+	    signatureadd = strcasecmp(value, "yes")? 0 : 1;
 	} else if (strncasecmp("dbhost", buffer, 6) == 0) {
 	    sscanf(buffer, "%*s %s", value);
 	    if (!dbhost) dbhost = strdup(value);

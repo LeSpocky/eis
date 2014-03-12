@@ -1,6 +1,6 @@
 # smc-milter-new conf.d file for alpine linux
 #
-user                    mail
+user                    postfix
 action                  2
 socket                  /run/milter/smc-milter-new.sock
 pidfile                 /run/milter/smc-milter-new.pid

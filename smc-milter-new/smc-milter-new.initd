@@ -10,8 +10,8 @@ depend() {
 }
 
 start() {
-    mkdir -p -m0770 /run/milter
-    chown -f mail /run/milter
+	mkdir -p -m0770 /run/milter
+	chown -f postfix /run/milter
 	ebegin "Starting ${name}"
 		start-stop-daemon --start --quiet \
 			--pidfile /run/milter/${name}.pid \

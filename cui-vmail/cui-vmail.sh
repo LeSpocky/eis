@@ -57,8 +57,8 @@ fi
 
 
 # get uid/gid for user vmail
-uidvmail=$(id -u vmail)
-gidvmail=$(id -g vmail)
+uidvmail=$(id -u mail)
+gidvmail=$(id -g mail)
 
 
 ### ----------------------------------------------------------------------------
@@ -134,7 +134,7 @@ write_postfix_config()
 #    postconf -e "daemon_directory = /usr/sbin"
 #    postconf -e "data_directory = /var/lib/postfix"
     postconf -e "mail_spool_directory = /var/spool/postfix"
-    postconf -e "mail_owner = mail"
+    postconf -e "mail_owner = postfix"
     postconf -e "setgid_group = postdrop"
     postconf -e "myhostname = ${POSTFIX_HELO_HOSTNAME}"
     postconf -e "myorigin = \$mydomain"
@@ -210,6 +210,7 @@ write_postfix_config()
     postconf -e "tls_random_source = dev:/dev/urandom"
     postconf -e "tls_random_prng_update_period = 3600s"
 # SASL setup
+    postconf -e "smtpd_sasl_type = dovecot"
     if [ "$START_POP3IMAP" = "yes" ]; then
         postconf -e "smtpd_sasl_auth_enable = yes"
         postconf -e "smtpd_sasl_path = private/auth"
@@ -359,7 +360,7 @@ scache    unix  -       -       n       -       1       scache
 # Interfaces to non-Postfix software
 # ==========================================================================
 pop3imap  unix  -       n       n       -       -       pipe
-    flags=DRhu user=vmail:vmail argv=/usr/libexec/dovecot/dovecot-lda -d ${dovecot_deliver}
+    flags=DRhu user=mail:mail argv=/usr/libexec/dovecot/dovecot-lda -d ${dovecot_deliver}
 uucp      unix  -       n       n       -       -       pipe
     flags=Fqhu user=uucp argv=uux -r -n -z -a\$sender - \$nexthop!rmail (\$recipient)
 
@@ -431,7 +432,7 @@ update_sql_files()
         sed -i -e "s|^dbname.*|dbname = ${VMAIL_SQL_DATABASE}|" /etc/postfix/sql/$sqlfile
         sed -i -e "s|^hosts.*|hosts = ${vmail_sql_connect}|"    /etc/postfix/sql/$sqlfile
         chmod 0640 /etc/postfix/sql/$sqlfile
-        chgrp mail /etc/postfix/sql/$sqlfile
+        chgrp postfix /etc/postfix/sql/$sqlfile
     done
     sed -i -e "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}')) FROM view_relaylogin WHERE email like '%s'|" /etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
 }
@@ -441,6 +442,7 @@ update_sql_files()
 ### update dovecot
 ### -------------------------------------------------------------------------
 #10-auth
+sed -i -r "s|^[#]?disable_plaintext_auth =.*|disable_plaintext_auth = no|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -r "s|^[#]?auth_username_format =.*|auth_username_format = ${dovecot_authf}|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -r "s|^[#]?auth_failure_delay =.*|auth_failure_delay = 2 secs|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -e "s|^auth_mechanisms =.*|auth_mechanisms = plain login digest-md5 cram-md5|" /etc/dovecot/conf.d/10-auth.conf
@@ -464,8 +466,8 @@ sed -i -r 's|^[#]log_timestamp =.*|log_timestamp = "%Y-%m-%d %H:%M:%S "|' /etc/d
 ### -------------------------------------------------------------------------
 #10-mail
 sed -i -r "s|^[#]mail_plugins =.*|mail_plugins = quota|" /etc/dovecot/conf.d/10-mail.conf
-sed -i -r "s|^[#]first_valid_uid =.*|first_valid_uid = 100|" /etc/dovecot/conf.d/10-mail.conf
-sed -i -r "s|^[#]first_valid_gid =.*|first_valid_gid = 100|" /etc/dovecot/conf.d/10-mail.conf
+sed -i -r "s|^[#]first_valid_uid =.*|first_valid_uid = 8|" /etc/dovecot/conf.d/10-mail.conf
+sed -i -r "s|^[#]first_valid_gid =.*|first_valid_gid = 12|" /etc/dovecot/conf.d/10-mail.conf
 
 ### -------------------------------------------------------------------------
 #15-lda
@@ -488,10 +490,12 @@ sed -i -e "s|.*mail_plugins =.*|  mail_plugins = $mail_plugins autocreate acl|" 
 # create SQL configuration
 cat > /etc/dovecot/dovecot-sql.conf.ext <<EOF
 driver = mysql
+default_pass_scheme = PLAIN
+# CRYPT or PLAIN
 connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}
 password_query = SELECT email as user, AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}') as password FROM view_users WHERE $dovecot_query = '%u'
-default_pass_scheme = CRYPT
-# PLAIN
+user_query = SELECT '/var/spool/postfix/virtual/%d/%n' AS home, $uidvmail as uid, $gidvmail as gid, concat('*:bytes=', quota, 'M') AS quota_rule FROM view_quota WHERE email = '%u'
+iterate_query = SELECT email AS user FROM view_quota
 EOF
 
 chown dovecot:root /etc/dovecot/dovecot-sql.conf.ext
@@ -552,8 +556,8 @@ cat > /etc/dovecot/local.conf <<EOF
 protocols = imap pop3 sieve
 
 mail_privileged_group = postdrop
-mail_uid = vmail
-mail_gid = postdrop
+mail_uid = mail
+mail_gid = mail
 mail_location = maildir:/var/spool/postfix/virtual/%d/%n/Maildir
 
 userdb {
@@ -563,7 +567,7 @@ userdb {
 
 service auth {
   unix_listener /var/spool/postfix/private/auth {
-    group = postdrop
+    group = postfix
     mode = 0660
     user = postfix
   }
@@ -668,7 +672,7 @@ create_fetchmail_file()
 #------------------------------------------------------------------------------
 . /etc/config.d/vmail
 fetchfile=".fetchmailrc.\$$"
-su vmail -c "/usr/bin/mysql2fetchmail -t /var/spool/postfix/virtual/\${fetchfile} \
+su mail -c "/usr/bin/mysql2fetchmail -t /var/spool/postfix/virtual/\${fetchfile} \
             -u \$VMAIL_SQL_USER -s \$VMAIL_SQL_HOST -d \$VMAIL_SQL_DATABASE -p \$VMAIL_SQL_PASS -e \$VMAIL_SQL_ENCRYPT_KEY; \\
             /usr/bin/fetchmail -t ${FETCHMAIL_TIMEOUT} -f /var/spool/postfix/virtual/\$fetchfile $logging --nobounce --sslcertpath $VMAIL_TLS_CAPATH --postmaster $FETCHMAIL_POSTMASTER 2>/dev/null ; \\
             rm -f /var/spool/postfix/virtual/\$fetchfile"
