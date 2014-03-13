@@ -1,0 +1,58 @@
+#!/bin/sh
+
+# include config
+. /etc/config.d/vmail
+
+# check port
+get_program_portnr()
+{
+    if [ -n "`netstat -tnl | grep -v grep | grep ":$1 " 2>/dev/null`" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# start/stop
+case "$1" in
+    start)
+        [ "$START_POP3IMAP" = 'yes' ] && /sbin/rc-service dovecot start
+        /sbin/rc-service smc-milter-new start
+        [ -x /etc/init.d/greylist ] && /sbin/rc-service greylist stop
+        /sbin/rc-service postfix start
+    ;;
+    stop)
+        /sbin/rc-service postfix stop
+        /sbin/rc-service dovecot stop
+        [ -x /etc/init.d/greylist ] && /sbin/rc-service greylist stop
+        /sbin/rc-service smc-milter-new stop
+    ;;
+    restart)
+        $0 stop
+        [ "$START_VMAIL" = 'yes' ] && $0 start
+    ;;
+    status)
+        /lib/rc/bin/ebegin "Postfix SMTP service           "
+        get_program_portnr 25
+        /lib/rc/bin/eend $?
+        /lib/rc/bin/ebegin "Postfix SMTP submission service"
+        get_program_portnr 587
+        /lib/rc/bin/eend $?
+        if [ "$START_POP3IMAP" = 'yes' ]; then
+            /lib/rc/bin/ebegin "IMAP service                   "
+            get_program_portnr 143
+            /lib/rc/bin/eend $?
+            /lib/rc/bin/ebegin "IMAP-SSL service               "
+            get_program_portnr 993
+            /lib/rc/bin/eend $?
+            /lib/rc/bin/ebegin "POP3 service                   "
+            get_program_portnr 110
+            /lib/rc/bin/eend $?
+            /lib/rc/bin/ebegin "POP3-SSL service               "
+            get_program_portnr 995
+            /lib/rc/bin/eend $?
+        fi
+    ;;
+esac
+
+exit 0

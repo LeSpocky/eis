@@ -1,0 +1,3 @@
+#!/bin/sh
+/etc/init.d/vmail stop
+exit 0

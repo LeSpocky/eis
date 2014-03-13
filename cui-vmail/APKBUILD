@@ -10,13 +10,13 @@ license="GPL"
 depends="cuimenu postfix postfix-mysql postfix-pcre pfqueue smc-milter-new dovecot dovecot-mysql dovecot-sample-config dovecot-pigeonhole mysql2sieve"
 depends_dev=""
 makedepends="$depends_dev"
-install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.post-deinstall"
+install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall"
 subpackages=""
 source="${pkgname}.default
 		${pkgname}.check
 		${pkgname}.check.exp
 		${pkgname}.help
-		${pkgname}.initd
+		${pkgname}.init
 		${pkgname}.sh
 		${pkgname}-update.sh
 		${pkgname}.menu
@@ -96,7 +96,7 @@ package() {
 	install -D -m755 ${srcdir}/${pkgname}-maildropfilter.sh                 ${pkgdir}/usr/bin/${pkgname}-maildropfilter.sh
 	# eisfair menu files
 	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/${_pname} || return 1
-	install -D -m755 ${srcdir}/${pkgname}.initd         ${pkgdir}/etc/init.d/${_pname} || return 1
+	install -D -m755 ${srcdir}/${pkgname}.init         ${pkgdir}/etc/init.d/${_pname} || return 1
 	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/${_pname}.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/${_pname}-update.sh || return 1
 	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.${pkgname}.menu || return 
@@ -122,8 +122,8 @@ md5sums="ec47b9619575f2d426c2018e5e902480  cui-vmail.default
 675fb8c012eed5cd339448134b2f21f5  cui-vmail.check
 45fd728e1d619a972a98ab1fc6ec1917  cui-vmail.check.exp
 86735bcdcc8dc896ca39e188178a6d69  cui-vmail.help
-71d450055811bc7796e779ce3d85bf60  cui-vmail.initd
-2b0c8c929501ddd2a24931d997f89f9e  cui-vmail.sh
+3047eb8d0176b5803114a596ca7daa8e  cui-vmail.init
+1ed699ddae290a13c667cb1b1c6535cf  cui-vmail.sh
 6bd584931290f4ed2a9f9500f67e4b6f  cui-vmail-update.sh
 0205c16ebd7fc14b121c92a621c456ca  cui-vmail.menu
 5a3e69a8435af69f9c6fc4485a192cd6  cui-vmail.modules.menu
@@ -165,8 +165,8 @@ sha256sums="ddd4d416500c49cb0247504aebc23b8160acee307bd12935a2d2a9141574959c  cu
 2f039fd2547bfb20cfd70d7532106d97687d971e69127fdbdbf52179ef0599be  cui-vmail.check
 48ce211795336e8dc615cf9e4ae18ea4c49eb4fa1c504c3a70c005f39361d17b  cui-vmail.check.exp
 03c1fc4e5ec3147b51a2774f4f850d597f56a7973c0d37d628c7178240d36631  cui-vmail.help
-704f0a19fd6fc6d5f89609f2641deb7684ade24aab59b250283be9ce23c691e9  cui-vmail.initd
-411ce5d285611eff5f210bf03381cfebf37709a0633f568d9ea58181a2baf825  cui-vmail.sh
+5f5de47fb7eefa838da49c2928b920242113cb3a09ba77426bee266df5f3239c  cui-vmail.init
+09104c03d116c85c463c1d77e8ec3ebffc19fff9a26894bea2602371827449cd  cui-vmail.sh
 786a6c05033f86342e01156d2c160aa7e5f9d7c043dca60e22965eb512943afe  cui-vmail-update.sh
 c3c50c454e014bcf2147e8868ae3b7a7dc5cc6087f1bdfe3c1fb7fb87f2c151e  cui-vmail.menu
 79808136b4b692bcae3091cf487e4e79089f50bb3eb35a633cd51ee7e01d26b5  cui-vmail.modules.menu
@@ -208,8 +208,8 @@ sha512sums="63ab4b441c0e53990d990064dbd2c3c3135e262a9317cef10677bd0446d7894c56e3
 a54ddbeaecbf439604f69e668a172cdaa73d31f3bf7cc55241746e0d241b16702f467dc7587fe7369ca2a36297c27e7781f8494a6db9c32939483490f71b7238  cui-vmail.check
 5503fe9c36f152a4bc45ed119e4b68a06b44d05243dfe41ea3461143d82be66a956f07ce02320684c23875b4db471aa68ef96a6c6e82099166925f3b227af533  cui-vmail.check.exp
 545f27f7f63416cec7bbd9a443908eb0dea882ba4debbd1a51dd94839381bf99b55dc87d63eeac9b5b2c0ee14d7e091a79b03750e2f6bdbbf0217fb5ac6561f3  cui-vmail.help
-f59a28f0bea65c6b11eb174ef8da1dfcd7f8a52ef13d0fa18b47ac7234971ec76bfd044b04003532a14bbb8c0999a67bf7e0292b0dfc52a62d98c1c948038dd3  cui-vmail.initd
-d37a0841fb2d04995a96885438703da6ca26d5d63968f2bbbb637cd0fef26778e1b1b2bed54d5bcac209d3e17bd33ce72682c69e32ed88f2f042b06bd45ad58d  cui-vmail.sh
+1843834a2d27e2b86b461a673d922dd5b4648c30df363efc8d0acfe623c2b1fcc14ec94a9417ff25fc6d72a6d747bd2471bf9c8b830c3a771e29a4c55b24f9ab  cui-vmail.init
+dc931dd48c5d184e2898895a75e15272e9f9914a79858c0b2e20ae82c1fbea2b4498ed941a7a506fd46d7053322bac1e62bd87ba1bc6e0c18064d4b2c5d08a91  cui-vmail.sh
 845a03e8ced769de8b6d42438cf5259ecf0a8f45e248de043c5852ea1cbd800ca5db617bea9ea670f6bc09ed236dcfd5c43e5877efaee6915330e93675532662  cui-vmail-update.sh
 31a1cb8c9cda05589e306364f4e5956ed9c360b13f71f95302ea712100e326715fd5081e5a8a5ae855ac4b04feeb89100c9fddbe1198ec19e70cb89da95c47b9  cui-vmail.menu
 1d1a7d1c6711a15b19edede0395c0018d3a83c50ccbae410307429b2f11f8f64ceeb7ad7879cf912c2d66b002910073b538b0834c95c550c8725f3c8e84ab8d3  cui-vmail.modules.menu

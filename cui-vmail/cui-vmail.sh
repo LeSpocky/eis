@@ -28,14 +28,6 @@ POSTFIX_SMARTHOST_TLS='no'
 . /etc/config.d/vmail
 
 ### -------------------------------------------------------------------------
-### write init.d config for start/stop postfix/dovecot
-### -------------------------------------------------------------------------
-cat > /etc/conf.d/vmail << EOF
-START_VMAIL="$START_VMAIL"
-START_POP3IMAP="$START_POP3IMAP"
-EOF
-
-### -------------------------------------------------------------------------
 ### set local values
 ### -------------------------------------------------------------------------
 if [ "$VMAIL_SQL_HOST" = 'localhost' ]; then
@@ -55,11 +47,9 @@ else
     dovecot_deliver="\${user}"
 fi
 
-
 # get uid/gid for user vmail
 uidvmail=$(id -u mail)
 gidvmail=$(id -g mail)
-
 
 ### ----------------------------------------------------------------------------
 ### write new postfix config
@@ -175,9 +165,9 @@ write_postfix_config()
 
     postconf -e "smtpd_restriction_classes = restrictions_0,restrictions_1,restrictions_2,restrictions_3,restrictions_4,restrictions_5,restrictions_6,restrictions_7,restrictions_8,restrictions_9"
     postconf -e "restrictions_0 = permit_mynetworks"
-# sender (user@domain.tld)/hostname (host.domain.tld) not fqdn; mailservers without reverse DNS entry
+    # sender (user@domain.tld)/hostname (host.domain.tld) not fqdn; mailservers without reverse DNS entry
     postconf -e "restrictions_1 = reject_unknown_client_hostname,reject_non_fqdn_sender,reject_non_fqdn_hostname"
-# use access list
+    # use access list
     postconf -e "restrictions_2 = check_client_access pcre:/etc/postfix/client_access_dynblocks.pcre"
     postconf -e "restrictions_3 = reject_non_fqdn_sender,reject_non_fqdn_hostname,reject_unknown_client_hostname,check_client_access pcre:/etc/postfix/client_access_dynblocks.pcre"
     postconf -e "restrictions_4 = permit_mynetworks"
@@ -209,7 +199,7 @@ write_postfix_config()
 
     postconf -e "tls_random_source = dev:/dev/urandom"
     postconf -e "tls_random_prng_update_period = 3600s"
-# SASL setup
+    # SASL setup
     postconf -e "smtpd_sasl_type = dovecot"
     if [ "$START_POP3IMAP" = "yes" ]; then
         postconf -e "smtpd_sasl_auth_enable = yes"
@@ -393,19 +383,19 @@ write_milter_config()
         fi
     fi
     [ "${VMAIL_SQL_HOST}" = "localhost" ] || connectport=3306
-    sed -i -e "s|^clamcheck.*|clamcheck		${POSTFIX_AV_CLAMAV}|"               /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^fprotcheck.*|fprotcheck		${POSTFIX_AV_FPROTD}|"           /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^avmail.*|avmail			${POSTFIX_AV_VIRUS_INFO}|"           /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^clamcheck.*|clamcheck			${POSTFIX_AV_CLAMAV}|"       /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^fprotcheck.*|fprotcheck		${POSTFIX_AV_FPROTD}|"       /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^avmail.*|avmail			${POSTFIX_AV_VIRUS_INFO}|"   /etc/smc-milter-new/smc-milter-new.conf
     sed -i -e "s|^signatureadd.*|signatureadd		${POSTFIX_AUTOSIGNATURE}|"   /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbhost.*|dbhost			${VMAIL_SQL_HOST}|"                  /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbport.*|dbport			${connectport}|"                     /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbname.*|dbname			${VMAIL_SQL_DATABASE}|"              /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbuser.*|dbuser			${VMAIL_SQL_USER}|"                  /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbpass.*|dbpass			${VMAIL_SQL_PASS}|"                  /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbhost.*|dbhost			${VMAIL_SQL_HOST}|"          /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbport.*|dbport			${connectport}|"             /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbname.*|dbname			${VMAIL_SQL_DATABASE}|"      /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbuser.*|dbuser			${VMAIL_SQL_USER}|"          /etc/smc-milter-new/smc-milter-new.conf
+    sed -i -e "s|^dbpass.*|dbpass			${VMAIL_SQL_PASS}|"          /etc/smc-milter-new/smc-milter-new.conf
     if [ "$POSTFIX_AV_SCRIPT" = "yes" ]; then
         sed -i -e "s|.*scriptfile.*|scriptfile		${POSTFIX_AV_SCRIPTFILE}|"   /etc/smc-milter-new/smc-milter-new.conf
     else
-        sed -i -e "s|^scriptfile.*|#scriptfile|"                                 /etc/smc-milter-new/smc-milter-new.conf
+        sed -i -e "s|^scriptfile.*|#scriptfile|"                                     /etc/smc-milter-new/smc-milter-new.conf
     fi
     [ -e /etc/smc-milter-new/smc-milter-new.hosts ] || touch /etc/smc-milter-new/smc-milter-new.hosts
     mkdir -p   /var/spool/postfix/quarantine
@@ -434,6 +424,8 @@ update_sql_files()
         chmod 0640 /etc/postfix/sql/$sqlfile
         chgrp postfix /etc/postfix/sql/$sqlfile
     done
+    chmod 0750 /etc/postfix/sql
+    chgrp postfix /etc/postfix/sql
     sed -i -e "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}')) FROM view_relaylogin WHERE email like '%s'|" /etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
 }
 
@@ -456,6 +448,7 @@ sed -i -e "s|^!include auth-static.conf.ext.*|#!include auth-static.conf.ext|" /
 
 ### -------------------------------------------------------------------------
 #10-logging
+sed -i -r "s|^[#]syslog_facility =.*|syslog_facility = auth|" /etc/dovecot/conf.d/10-logging.conf
 if [ $POSTFIX_LOGLEVEL -gt 2 ]; then
     sed -i -r "s|^[#]mail_debug =.*|mail_debug = yes|" /etc/dovecot/conf.d/10-logging.conf
 else
@@ -478,9 +471,36 @@ sed -i -r "s|^[#]lda_mailbox_autosubscribe =.*|lda_mailbox_autosubscribe = yes|"
 sed -i -e "s|.*mail_plugins =.*|  mail_plugins = $mail_plugins sieve acl|" /etc/dovecot/conf.d/15-lda.conf
 
 ### -------------------------------------------------------------------------
+#15-mailboxes
+cat > /etc/dovecot/conf.d/15-mailboxes.conf <<EOF
+## Mailbox definitions
+namespace inbox {
+  # These mailboxes are widely used and could perhaps be created automatically:
+  mailbox Drafts {
+    auto = create
+    special_use = \Drafts
+  }
+  mailbox Trash {
+    auto = create
+    special_use = \Trash
+  }
+  mailbox Sent {
+    auto = subscribe
+    special_use = \Sent
+  }
+  mailbox "Sent Messages" {
+    special_use = \Sent
+  }
+  mailbox Archives {
+    auto = subscribe
+  }
+}
+EOF
+
+### -------------------------------------------------------------------------
 #20-imap
 sed -i -r "s|^[#]imap_client_workarounds =.*|imap_client_workarounds = tb-extra-mailbox-sep|" /etc/dovecot/conf.d/20-imap.conf
-sed -i -e "s|.*mail_plugins =.*|  mail_plugins = $mail_plugins autocreate acl imap_acl|" /etc/dovecot/conf.d/20-imap.conf
+sed -i -e "s|.*mail_plugins =.*|  mail_plugins = $mail_plugins acl imap_acl|" /etc/dovecot/conf.d/20-imap.conf
 
 ### -------------------------------------------------------------------------
 #20-pop3
@@ -517,7 +537,6 @@ map {
   pattern = shared/expire/\$user/\$mailbox
   table = view_expire
   value_field = expirestamp
-
   fields {
     username = \$user
     mailbox = \$mailbox
@@ -528,7 +547,6 @@ map {
   pattern = shared/shared-boxes/user/\$to/\$from
   table = virtual_users_shares
   value_field = state
-
   fields {
     from_user = \$from
     to_user = \$to
@@ -538,7 +556,6 @@ map {
   pattern = shared/shared-boxes/anyone/\$from
   table = virtual_users_shares
   value_field = state
-
   fields {
     from_user = \$from
   }
@@ -553,6 +570,8 @@ chmod 0640 /etc/dovecot/dovecot-dict-sql.conf.ext
 # write local configuration
 cat > /etc/dovecot/local.conf <<EOF
 # eisfair-ng config
+base_dir = /run/dovecot
+
 protocols = imap pop3 sieve
 
 mail_privileged_group = postdrop
@@ -578,14 +597,18 @@ service auth {
   user = root
 }
 
+service dict {
+  # For example: mode=0660, group=vmail and global mail_access_groups=vmail
+  unix_listener dict {
+    mode = 0660
+    #user =
+    #group =
+  }
+}
+
 plugin {
+  acl = vfile
   acl_shared_dict = proxy::acl
-  autocreate = Trash
-  autocreate2 = Sent
-  autocreate3 = Drafts
-  autosubscribe = Trash
-  autosubscribe2 = Sent
-  autosubscribe3 = Drafts
 }
 
 dict {
