@@ -14,8 +14,8 @@ else
     vmail_sql_connect="inet:$VMAIL_SQL_HOST"
 fi
 # get uid/gid for user vmail:
-uidvmail=$(id -u vmail)
-gidvmail=$(id -g vmail)
+uidvmail=$(id -u mail)
+gidvmail=$(id -g mail)
 # run program:
 /usr/bin/mysql2sieve $sverb -s $vmail_sql_connect -d $VMAIL_SQL_DATABASE -u $VMAIL_SQL_USER -p $VMAIL_SQL_PASS -b $uidvmail -c $gidvmail
 [ "$1" = "-v" ] && anykey

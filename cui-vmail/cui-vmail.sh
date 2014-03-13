@@ -592,7 +592,7 @@ service auth {
   }
   unix_listener auth-master {
     mode = 0600
-    user = vmail
+    user = dovecot
   }
   user = root
 }
@@ -601,7 +601,7 @@ service dict {
   # For example: mode=0660, group=vmail and global mail_access_groups=vmail
   unix_listener dict {
     mode = 0660
-    #user =
+    user = mail
     #group =
   }
 }
@@ -785,6 +785,21 @@ sql_database_check()
     fi
 }
 
+
+### -------------------------------------------------------------------------
+### setup runlevel - not with init.d/vmail!
+### -------------------------------------------------------------------------
+if [ "$START_VMAIL" = "yes" ]; then
+    [ "$START_POP3IMAP" = 'yes' ] && /sbin/rc-update add dovecot || /sbin/rc-update del dovecot
+    /sbin/rc-update add smc-milter-new
+    [ -x /etc/init.d/greylist ] && /sbin/rc-update add greylist
+    /sbin/rc-update add postfix
+else
+    /sbin/rc-update del dovecot
+    /sbin/rc-update del smc-milter-new
+    [ -x /etc/init.d/greylist ] && /sbin/rc-update del greylist
+    /sbin/rc-update del postfix
+fi
 
 
 ### -------------------------------------------------------------------------
