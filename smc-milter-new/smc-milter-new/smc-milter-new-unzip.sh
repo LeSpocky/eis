@@ -14,7 +14,7 @@ cleanUp() {
 # unzip zip files and find executable
 unpack() {
     local file=""
-    for file in "$@"
+    for file in $@
     do
         if [ "${file%.[zZ][iI][pP]}" != "${file}" ]
         then
