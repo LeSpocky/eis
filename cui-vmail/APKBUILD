@@ -7,7 +7,7 @@ pkgdesc="CUI setup for postfix/dovecot with virtual mail user"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
-depends="cuimenu postfix postfix-mysql postfix-pcre pfqueue smc-milter-new dovecot dovecot-mysql dovecot-sample-config dovecot-pigeonhole mysql2sieve"
+depends="cuimenu postfix postfix-mysql postfix-pcre pfqueue smc-milter-new dovecot dovecot-mysql dovecot-sample-config dovecot-pigeonhole mysql2sieve fetchmail"
 depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall"
@@ -24,7 +24,9 @@ source="${pkgname}.default
 		${pkgname}.tools.menu
 		${pkgname}.user.menu
 		${pkgname}-modules-fetchmail
+		${pkgname}.bogusmx.cidr
 		${pkgname}.dynblocks.pcre
+		${pkgname}.mimeblocks.pcre
 		${pkgname}-mysql-canonical_maps.cf
 		${pkgname}-mysql-client_access.cf
 		${pkgname}-mysql-client_access_postscreen.cf
@@ -75,6 +77,8 @@ package() {
 	install -D -m640 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/${_pname} || return 1
 	# add mysql config files for postfix
 	install -D -m644 ${srcdir}/${pkgname}.dynblocks.pcre                    ${pkgdir}/etc/postfix/client_access_dynblocks.pcre
+	install -D -m644 ${srcdir}/${pkgname}.mimeblocks.pcre                   ${pkgdir}/etc/postfix/header_check_mime.pcre
+	install -D -m644 ${srcdir}/${pkgname}.bogusmx.cidr                      ${pkgdir}/etc/postfix/bogus_mx.cidr
 	install -D -m644 ${srcdir}/${pkgname}.sqldata.sql                       ${pkgdir}/etc/postfix/default/install-sqldata.sql
 	install -D -m644 ${srcdir}/${pkgname}.sqltable.sql                      ${pkgdir}/etc/postfix/default/install-sqltable.sql
 	install -D -m644 ${srcdir}/${pkgname}.sqltrigger.sql                    ${pkgdir}/etc/postfix/default/install-sqltrigger.sql
@@ -123,14 +127,16 @@ md5sums="ec47b9619575f2d426c2018e5e902480  cui-vmail.default
 45fd728e1d619a972a98ab1fc6ec1917  cui-vmail.check.exp
 86735bcdcc8dc896ca39e188178a6d69  cui-vmail.help
 3047eb8d0176b5803114a596ca7daa8e  cui-vmail.init
-3861bbd9cceb4a1532344bd28db3caea  cui-vmail.sh
+902630ef0e14ac7c90858b183d2fcbd6  cui-vmail.sh
 6bd584931290f4ed2a9f9500f67e4b6f  cui-vmail-update.sh
 0205c16ebd7fc14b121c92a621c456ca  cui-vmail.menu
 5a3e69a8435af69f9c6fc4485a192cd6  cui-vmail.modules.menu
 2ee7337ba4ec5a8ae55c43deee03092a  cui-vmail.tools.menu
 1507062eb8e4c147f45fa855a90c547f  cui-vmail.user.menu
 23f9fbb8bb10056508d03a88b1986cea  cui-vmail-modules-fetchmail
+49db3c3878d044ddd9336f08b0e82b3f  cui-vmail.bogusmx.cidr
 9b07326ae72c71840140988e6f44cd19  cui-vmail.dynblocks.pcre
+544d6961fe08ab1b9761fd83368c3e3f  cui-vmail.mimeblocks.pcre
 a5ade624f66a5e3f68e8966dd5dea96d  cui-vmail-mysql-canonical_maps.cf
 1899194f1a12ef1f83b490757a360eab  cui-vmail-mysql-client_access.cf
 7d1f2ed9eda5e68da0da539bef2697cf  cui-vmail-mysql-client_access_postscreen.cf
@@ -149,7 +155,7 @@ ec676e31d5272d6adbde2dad40f94541  cui-vmail-tools-recipient-access.cui.sh
 9f21ffeece2204a686da43b0209525ff  cui-vmail-user-maildropfilter.cui.sh
 944f23bddd5634b3942095aee08e3e80  cui-vmail-tools-sender-access.cui.sh
 48ca3e3e72c90bf4a3be480c02d87d28  cui-vmail-user-relaymap.cui.sh
-945e6a6c4510bfd4ccdf596a9d380ed7  cui-vmail-modules-mailhandling
+5a0f1ee7e6909ece62afc330052510bb  cui-vmail-modules-mailhandling
 78f614d6240b57f0628b40151f6a6825  cui-vmail-user-canonicalmap.cui.sh
 65dfbcef1a33312282e85bb3af790878  cui-vmail-user-userhandling.cui.sh
 e42e3395b935070ec8bc40ae8d36bc50  cui-vmail-tools-client-access.cui.sh
@@ -166,14 +172,16 @@ sha256sums="ddd4d416500c49cb0247504aebc23b8160acee307bd12935a2d2a9141574959c  cu
 48ce211795336e8dc615cf9e4ae18ea4c49eb4fa1c504c3a70c005f39361d17b  cui-vmail.check.exp
 03c1fc4e5ec3147b51a2774f4f850d597f56a7973c0d37d628c7178240d36631  cui-vmail.help
 5f5de47fb7eefa838da49c2928b920242113cb3a09ba77426bee266df5f3239c  cui-vmail.init
-4b502512eb2b0c5b2179e717ea6ccc7d52567fcaee97446a34ac8c33a44a720b  cui-vmail.sh
+2ea0b38e149f3e417ebfba0ca73fe591877832ba608024f042a37fd8fec6e721  cui-vmail.sh
 786a6c05033f86342e01156d2c160aa7e5f9d7c043dca60e22965eb512943afe  cui-vmail-update.sh
 c3c50c454e014bcf2147e8868ae3b7a7dc5cc6087f1bdfe3c1fb7fb87f2c151e  cui-vmail.menu
 79808136b4b692bcae3091cf487e4e79089f50bb3eb35a633cd51ee7e01d26b5  cui-vmail.modules.menu
 065e7ff13efec6b0bbf60927113696655f781e6fd89c8a6628a3959ddc4809c3  cui-vmail.tools.menu
 2692ae194d95604f13885db2017b0456e83cc4cb3ad817a627dd539a5ac95bca  cui-vmail.user.menu
 562044ce801f7c23cb9a24c23a7851b69d6762b1bfc550dd472f93f397dac914  cui-vmail-modules-fetchmail
+7ad7299bdbab3afdc2596d150f3e48dc61088b4c3419a3e2be211fe835b3eb71  cui-vmail.bogusmx.cidr
 0315645b0741d6c883bc1f6dd6e6703ac98542288710dab81d1f2ecea0e79e0f  cui-vmail.dynblocks.pcre
+746082e8147c900938b1ba4071bbe19e3688bdfc424a8f12a38e18b3e68ea173  cui-vmail.mimeblocks.pcre
 cfc808491d3d8fce5a7d75b4a46085008a7d4b6fc29de29a6192056fbece327a  cui-vmail-mysql-canonical_maps.cf
 e038d9976e809c1b775f57fdba1004f2cdfeafcc330dff5ce4061850a8dac8b3  cui-vmail-mysql-client_access.cf
 30a1c82e174e91169a95d47bc3fb3ab9ffdc39d5e901912cccd9beda086e0517  cui-vmail-mysql-client_access_postscreen.cf
@@ -192,7 +200,7 @@ d1d939c39aed4d7adb000f54c78ec1127029004be65f0527290ba91ec27689fc  cui-vmail-tool
 ca31ce5d965f0ae8fa2d97a68d3e080757dc1212fefdddfdad2c19510ab9bcba  cui-vmail-user-maildropfilter.cui.sh
 14f9896bcb086fcceb49ceb7040bc5bc08dc23e75bcd11a76b699a4fa26f412a  cui-vmail-tools-sender-access.cui.sh
 76e3a4f7504d250af8cd7509a55b2a6cdaedfe41d65d34a0027d1bfe45f881fd  cui-vmail-user-relaymap.cui.sh
-01ac505d2d3ae7de581b42f27b08bb5949db11c537f109345f9844b76517962b  cui-vmail-modules-mailhandling
+b777cc0c7ad8f93d96070fcffc834cecfc05be7d52348526a7ca0ac5ce4fbb43  cui-vmail-modules-mailhandling
 25b8d43a918edc4474a5e2156a51292b9c52d9eb0adcf6cfb04b33f8c8bdff3e  cui-vmail-user-canonicalmap.cui.sh
 ed2dd2065f5640078900709209f767e59236a8cfd6a1c2eaf1bae455c04baad5  cui-vmail-user-userhandling.cui.sh
 0d7d635e768e466610b269bda0befd726a47a5f980f9f08e875f64adc2e4e152  cui-vmail-tools-client-access.cui.sh
@@ -209,14 +217,16 @@ a54ddbeaecbf439604f69e668a172cdaa73d31f3bf7cc55241746e0d241b16702f467dc7587fe736
 5503fe9c36f152a4bc45ed119e4b68a06b44d05243dfe41ea3461143d82be66a956f07ce02320684c23875b4db471aa68ef96a6c6e82099166925f3b227af533  cui-vmail.check.exp
 545f27f7f63416cec7bbd9a443908eb0dea882ba4debbd1a51dd94839381bf99b55dc87d63eeac9b5b2c0ee14d7e091a79b03750e2f6bdbbf0217fb5ac6561f3  cui-vmail.help
 1843834a2d27e2b86b461a673d922dd5b4648c30df363efc8d0acfe623c2b1fcc14ec94a9417ff25fc6d72a6d747bd2471bf9c8b830c3a771e29a4c55b24f9ab  cui-vmail.init
-6446833b6866c2a575bd66087c1266fca9a01e83475355609d21ed835b687f41a833818e7d52957229d91f988f26cf629866b91603f680b57abc9495cb987fe2  cui-vmail.sh
+6f3d975fb412ec52f2793d53442dc2f0a9b9bac81727705fe6b3e9f0b9850cebdd407ca7c799bd28caedf1f8bde1170ace2a5c0502dbc01ea9cb195d3c952a37  cui-vmail.sh
 845a03e8ced769de8b6d42438cf5259ecf0a8f45e248de043c5852ea1cbd800ca5db617bea9ea670f6bc09ed236dcfd5c43e5877efaee6915330e93675532662  cui-vmail-update.sh
 31a1cb8c9cda05589e306364f4e5956ed9c360b13f71f95302ea712100e326715fd5081e5a8a5ae855ac4b04feeb89100c9fddbe1198ec19e70cb89da95c47b9  cui-vmail.menu
 1d1a7d1c6711a15b19edede0395c0018d3a83c50ccbae410307429b2f11f8f64ceeb7ad7879cf912c2d66b002910073b538b0834c95c550c8725f3c8e84ab8d3  cui-vmail.modules.menu
 c02047f0b5a45a9ed8c596ae678e4caf19430cb1a1b380c675b70bd25818832c184f7b05d03196e0999faea8b4116d6b00cb31982426b7f8dbe6277fd47624de  cui-vmail.tools.menu
 ae016eb20b1ab587b7c8fa7443e3b6c57dc4408ad2b15960af846b63ca274ff6f61b2a63f22a308386022ae411e40b1cb27709cdae4f2f04ca48a9c0416696f0  cui-vmail.user.menu
 98a714981ab63e34dae0abece059c11489424240c2fbce05e6adcccaac9082c806c80886b481a4db6484383f12bf26a1c6cda6aa9d1785c20b8af844e27dec97  cui-vmail-modules-fetchmail
+1151b0e3fde4900c311e3edcfe49efbed7ee77fbe502a285371c9adbf02c5c41f4ca0cc3aa427d247121cb2a9d272f9af559e330fd14fae285bb61bbc13043e5  cui-vmail.bogusmx.cidr
 cc697b50060cbaed3cb37a50ad501a25f26ac5e16c26b09f89e820f7350c1c1e673fad74ad12b85a2def4707e328f80f381deefe511b2cf1ea6a8de768ac7956  cui-vmail.dynblocks.pcre
+d3789e3c7b14eb06c8285d0ea04ba565ab459abee42bc84ff3aebfb97ed573a3ea1f2604db03a19c5859ebe7cee63a6dbd5ede8a03b4349500049ea2d3a7a0f2  cui-vmail.mimeblocks.pcre
 b107185474f1b6f4b58ff3630c89f82cf1b459c62449427c3333b92fb3ea55962fa68003f9c9295ecf0a01dc867054e630fc49c7ce9ed365b34c3c05236c72b8  cui-vmail-mysql-canonical_maps.cf
 c521d5d85061e51fc3385371ce45d8289101a8a0ecd901a5ad454dad770fe2db9ddcca4209a6f615418243b78b1d526d31c72bda27cb4525b73dddfc223e5e27  cui-vmail-mysql-client_access.cf
 5db9a394c9d44f301f01208f34f5dbe42123325fbe2f24dff3f6be7df327b6323ae330d68a59b1b40346203139373b8c2207faaf676f0e61470c53e0808b213f  cui-vmail-mysql-client_access_postscreen.cf
@@ -235,7 +245,7 @@ e56a2e369266ff3ddd8e2a4964a787ce6042877f6a9e6288ee2dcc7dfcaef628fe03a1828d620757
 8f5423aae1fdf4bdd569b80ddf6437a106bac08eb0e048458d366a18ae551affb012b93b6ce6371041c453f58cff464f463f64756e2b81deb2e7a9ecff289c36  cui-vmail-user-maildropfilter.cui.sh
 f561f8c8baa5a6aaadbea458a31d0ea0a89f1e61125f0e5583b1b265a837c3e51d34e2f7e534ccc812fd221dc55b6c905b93c24f91496b29a483dad8d36ae6e3  cui-vmail-tools-sender-access.cui.sh
 0d2221a7c6f00f2beb9d4881315206fd16b55fe72c75116e812a971b55cc82379146d3c8e09c2b082d21d70fd6c918d4bb378f4eb57350953e779435586d7934  cui-vmail-user-relaymap.cui.sh
-d00aa1f738847cd5b0264800b2f9cc368d8bf8f29c54a1e39ee1f8aa5b647468031dad12484895722e703db5c47814608e38e7d3aab91223217bde6f6a843ef0  cui-vmail-modules-mailhandling
+c516b6c1265fa1aeed27054856d3865bb36418f5c79e89092dd87989be59105add1bff55140bffa1a27a595ebb830cc6c46ec2ae014854a3a08f664d77ee1862  cui-vmail-modules-mailhandling
 e2d850b827acb7c5a4cb2da94e05943b843f64a78ed9edae20db620f4c470809d5624fccabc333676ebc4cb7e17af3552d58ae7c3fefb0813e36774f6cd42ce0  cui-vmail-user-canonicalmap.cui.sh
 06bd8ed6b04458f90876aedcfbb4881f6b431b2ddbe95c4376cb26c1dda0f28c5328736818f269790680338cd1ab9a988c78241d77bbad267bade7157218080a  cui-vmail-user-userhandling.cui.sh
 74b20c6f4dc1f0517f7b1b6a47484ef8bb79d9009bbaca97f2d59fec44211d4123438dc125369c0a6b7a11f3e1ed1926765210058c2d2a418b8a706a2be944ab  cui-vmail-tools-client-access.cui.sh

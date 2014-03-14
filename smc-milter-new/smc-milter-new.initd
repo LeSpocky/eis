@@ -6,7 +6,7 @@ daemon=/usr/sbin/$name
 
 depend() {
 	need net
-	after firewall
+	before postfix
 }
 
 start() {

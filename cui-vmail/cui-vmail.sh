@@ -54,135 +54,133 @@ gidvmail=$(id -g mail)
 ### ----------------------------------------------------------------------------
 ### write new postfix config
 ### ----------------------------------------------------------------------------
-write_postfix_config()
-{
-    local postfix_int_netw=""
-    local postfix_cl_access_bl=""
-    local postfix_dyn_client_bl=""
-    local postfix_un_cl_hostname=""
-    local postfix_un_send_dom=""
-    local postfix_send_mx=""
-    local postfix_fqdn_helo=""
-    local postfix_rbl_list=""
-    local postfix_mime_header_ch=""
-    local postfix_header_ch=""
-    local postfix_sasl=""
-    local postfix_relayhosts=""
-    local postfix_relayhosts_auth=""
-    local postfix_pscr_dnsbl_action="ignore"
-    local postfix_pscreen="#"
-    local postfix_psmtpd=""
-    local postfix_tls="#"
-    local postfix_prxmynet=""
+postfix_int_netw=""
+postfix_cl_access_bl=""
+postfix_dyn_client_bl=""
+postfix_un_cl_hostname=""
+postfix_un_send_dom=""
+postfix_send_mx=""
+postfix_fqdn_helo=""
+postfix_rbl_list=""
+postfix_mime_header_ch=""
+postfix_header_ch=""
+postfix_sasl=""
+postfix_relayhosts=""
+postfix_relayhosts_auth=""
+postfix_pscr_dnsbl_action="ignore"
+postfix_pscreen="#"
+postfix_psmtpd=""
+postfix_tls="#"
+postfix_prxmynet=""
 
-    [ -z "$POSTFIX_HELO_HOSTNAME" ] && POSTFIX_HELO_HOSTNAME="${HOSTNAME}.${DOMAIN_NAME}"
+[ -z "$POSTFIX_HELO_HOSTNAME" ] && POSTFIX_HELO_HOSTNAME="${HOSTNAME}.${DOMAIN_NAME}"
+count=1
+while [ ${count} -le ${POSTFIX_RELAY_FROM_NET_N} ]
+do
+    eval temp1='$POSTFIX_RELAY_FROM_NET_'${count}
+    postfix_int_netw="${postfix_int_netw}, ${temp1}"
+    count=`expr ${count} + 1`
+done
+
+[ $POSTFIX_LIMIT_MAILSIZE -gt 10 ] || POSTFIX_LIMIT_MAILSIZE="10"
+[ $POSTFIX_LIMIT_DESTINATIONS -gt 10 ] || POSTFIX_LIMIT_DESTINATIONS="10"
+[ "$POSTFIX_DRACD" = "yes" ] && postfix_int_netw="${postfix_int_netw}, proxy:btree:/etc/postfix/dracd"
+[ "$POSTFIX_DRACD" = "yes" ] && postfix_prxmynet="\$mynetworks,"
+
+[ "$POSTFIX_CLIENT_N" -gt 0 ] && postfix_cl_access_bl="check_client_access pcre:/etc/postfix/client_access_blocks.pcre," 
+[ "$POSTFIX_REJECT_UNKN_CLIENT" = "yes" ] && postfix_un_cl_hostname="reject_unknown_client_hostname,"
+[ "$POSTFIX_REJECT_UNKN_SEND_DOM" = "yes" ] && postfix_un_send_dom="reject_non_fqdn_sender, reject_unknown_sender_domain,"
+[ "$POSTFIX_REJECT_DYNADDRESS" = "yes" ] && postfix_dyn_client_bl="check_client_access pcre:/etc/postfix/client_access_dynblocks.pcre,"
+[ "$POSTFIX_REJECT_BOGUS_MX" = "yes" ] && postfix_send_mx="check_sender_mx_access proxy:cidr:/etc/postfix/bogus_mx.cidr,"
+[ "$POSTFIX_REJECT_NON_FQDN_HOST" = "yes" ] && postfix_fqdn_helo="reject_non_fqdn_helo_hostname," # kann Probleme mit Webmailern machen!
+if [ "$POSTFIX_POSTSCREEN" = "yes" ]; then
+    postfix_pscreen=""
+    postfix_psmtpd="#"
+fi
+if [ "$POSTFIX_RBL" = "yes" ]; then
     count=1
-    while [ ${count} -le ${POSTFIX_RELAY_FROM_NET_N} ]
+    while [ ${count} -le ${POSTFIX_RBL_N} ]
     do
-        eval temp1='$POSTFIX_RELAY_FROM_NET_'${count}
-        postfix_int_netw="${postfix_int_netw}, ${temp1}"
+        eval temp1='$POSTFIX_RBL_'${count}'_SERVER'
+        eval temp2='$POSTFIX_RBL_'${count}'_WEIGHT'
+        postfix_pscr_dnsbl_action="enforce"
+        [ -n "$temp2" ] && temp2="*${temp2}"
+        postfix_rbl_list="$postfix_rbl_list ${temp1}${temp2}"
+        [ ${POSTFIX_RBL_N} -gt ${count} ] && postfix_rbl_list="$postfix_rbl_list,"
         count=`expr ${count} + 1`
     done
+fi
+[ "$POSTFIX_SMTP_TLS" = 'yes' ] && postfix_tls=""
+[ "$POSTFIX_MIME_HEADER_CHECK" = 'yes' ] && postfix_mime_header_ch="pcre:/etc/postfix/header_check_mime.pcre"
+[ "$POSTFIX_HEADER_N" -gt 0 ] && postfix_header_ch="pcre:/etc/postfix/header_checks.pcre"
+[ "$START_POP3IMAP" = 'yes' ] && postfix_sasl="permit_sasl_authenticated,"
+[ "$POSTFIX_SMARTHOST" = "yes" ] && postfix_relayhosts="proxy:mysql:/etc/postfix/mysql-virtual_relayhosts.cf"
+[ "$POSTFIX_SMARTHOST" = "yes" ] && postfix_relayhosts_auth="proxy:mysql:/etc/postfix/mysql-virtual_relayhosts_auth.cf"
 
-    [ $POSTFIX_LIMIT_MAILSIZE -gt 10 ] || POSTFIX_LIMIT_MAILSIZE="10"
-    [ $POSTFIX_LIMIT_DESTINATIONS -gt 10 ] || POSTFIX_LIMIT_DESTINATIONS="10"
-    [ "$POSTFIX_DRACD" = "yes" ] && postfix_int_netw="${postfix_int_netw}, proxy:btree:/etc/postfix/dracd"
-    [ "$POSTFIX_DRACD" = "yes" ] && postfix_prxmynet="\$mynetworks,"
+postconf -e "queue_directory = /var/spool/postfix"
+#postconf -e "command_directory = /usr/sbin"
+#postconf -e "daemon_directory = /usr/sbin"
+#postconf -e "data_directory = /var/lib/postfix"
+postconf -e "mail_spool_directory = /var/spool/postfix"
+postconf -e "mail_owner = postfix"
+postconf -e "setgid_group = postdrop"
+postconf -e "myhostname = ${POSTFIX_HELO_HOSTNAME}"
+postconf -e "myorigin = \$mydomain"
+postconf -e "inet_interfaces = all"
+postconf -e "mydestination = \$myhostname, localhost.\$mydomain, localhost"
+postconf -e "unknown_local_recipient_reject_code = 550"
+postconf -e "unknown_address_reject_code = 554"
+postconf -e "unknown_hostname_reject_code = 554"
+postconf -e "unknown_client_reject_code = 450"
+postconf -e "mynetworks = 127.0.0.0/8${postfix_int_netw}"
+postconf -e "always_add_missing_headers = yes"
+postconf -e "alias_maps = "
+postconf -e "alias_database ="
+postconf -e "local_destination_concurrency_limit = 1"
+postconf -e "pop3imap_destination_recipient_limit = 1"
+postconf -e "default_destination_recipient_limit = $POSTFIX_LIMIT_DESTINATIONS"
 
-    [ "$POSTFIX_CLIENT_N" -gt 0 ] && postfix_cl_access_bl="check_client_access pcre:/etc/postfix/client_access_blocks.pcre," 
-    [ "$POSTFIX_REJECT_UNKN_CLIENT" = "yes" ] && postfix_un_cl_hostname="reject_unknown_client_hostname,"
-    [ "$POSTFIX_REJECT_UNKN_SEND_DOM" = "yes" ] && postfix_un_send_dom="reject_non_fqdn_sender, reject_unknown_sender_domain,"
-    [ "$POSTFIX_REJECT_DYNADDRESS" = "yes" ] && postfix_dyn_client_bl="check_client_access pcre:/etc/postfix/client_access_dynblocks.pcre,"
-    [ "$POSTFIX_REJECT_BOGUS_MX" = "yes" ] && postfix_send_mx="check_sender_mx_access proxy:cidr:/etc/postfix/bogus_mx.cidr,"
-    [ "$POSTFIX_REJECT_NON_FQDN_HOST" = "yes" ] && postfix_fqdn_helo="reject_non_fqdn_helo_hostname," # kann Probleme mit Webmailern machen!
-    if [ "$POSTFIX_POSTSCREEN" = "yes" ]; then
-        postfix_pscreen=""
-        postfix_psmtpd="#"
-    fi
-    if [ "$POSTFIX_RBL" = "yes" ]; then
-        count=1
-        while [ ${count} -le ${POSTFIX_RBL_N} ]
-        do
-            eval temp1='$POSTFIX_RBL_'${count}'_SERVER'
-            eval temp2='$POSTFIX_RBL_'${count}'_WEIGHT'
-            postfix_pscr_dnsbl_action="enforce"
-            [ -n "$temp2" ] && temp2="*${temp2}"
-            postfix_rbl_list="$postfix_rbl_list ${temp1}${temp2}"
-            [ ${POSTFIX_RBL_N} -gt ${count} ] && postfix_rbl_list="$postfix_rbl_list,"
-            count=`expr ${count} + 1`
-        done
-    fi
-    [ "$POSTFIX_SMTP_TLS" = 'yes' ] && postfix_tls=""
-    [ "$POSTFIX_MIME_HEADER_CHECK" = 'yes' ] && postfix_mime_header_ch="pcre:/etc/postfix/mime_header_checks.pcre"
-    [ "$POSTFIX_HEADER_N" -gt 0 ] && postfix_header_ch="pcre:/etc/postfix/header_checks.pcre"
-    [ "$START_POP3IMAP" = 'yes' ] && postfix_sasl="permit_sasl_authenticated,"
-    [ "$POSTFIX_SMARTHOST" = "yes" ] && postfix_relayhosts="proxy:mysql:/etc/postfix/mysql-virtual_relayhosts.cf"
-    [ "$POSTFIX_SMARTHOST" = "yes" ] && postfix_relayhosts_auth="proxy:mysql:/etc/postfix/mysql-virtual_relayhosts_auth.cf"
+postconf -e "proxy_read_maps = ${postfix_prxmynet}\$local_recipient_maps,\$mydestination,\$virtual_alias_maps,\$virtual_alias_domains,\$virtual_mailbox_maps,\$virtual_mailbox_domains,\$relay_recipient_maps,\$relay_domains,\$canonical_maps,\$sender_canonical_maps,\$recipient_canonical_maps,\$relocated_maps,\$transport_maps,\$mynetworks,\$mail_restrict_map,\$smtpd_recipient_restrictions,\$sender_dependent_relayhost_maps,\$smtp_sasl_password_maps,\$postscreen_access_list"
+postconf -e "transport_maps = proxy:mysql:/etc/postfix/sql/mysql-transport.cf"
+postconf -e "mail_restrict_map = proxy:mysql:/etc/postfix/sql/mysql-virtual_restrictions.cf"
+postconf -e "virtual_alias_maps = proxy:mysql:/etc/postfix/sql/mysql-virtual_aliases.cf,proxy:mysql:/etc/postfix/sql/mysql-virtual_email2email.cf"
+postconf -e "virtual_uid_maps = static:$uidvmail"
+postconf -e "virtual_gid_maps = static:$gidvmail"
+postconf -e "virtual_mailbox_domains = proxy:mysql:/etc/postfix/sql/mysql-virtual_domains.cf"
+postconf -e "virtual_mailbox_maps = proxy:mysql:/etc/postfix/sql/mysql-virtual_mailbox_maps.cf"
+postconf -e "virtual_mailbox_base = /var/spool/postfix/virtual"
+postconf -e "virtual_transport = pop3imap"
+echo -n "."
+postconf -e "bounce_queue_lifetime = ${POSTFIX_QUEUE_LIFETIME}d"
+postconf -e "maximal_queue_lifetime = ${POSTFIX_QUEUE_LIFETIME}d"
 
-    postconf -e "queue_directory = /var/spool/postfix"
-#    postconf -e "command_directory = /usr/sbin"
-#    postconf -e "daemon_directory = /usr/sbin"
-#    postconf -e "data_directory = /var/lib/postfix"
-    postconf -e "mail_spool_directory = /var/spool/postfix"
-    postconf -e "mail_owner = postfix"
-    postconf -e "setgid_group = postdrop"
-    postconf -e "myhostname = ${POSTFIX_HELO_HOSTNAME}"
-    postconf -e "myorigin = \$mydomain"
-    postconf -e "inet_interfaces = all"
-    postconf -e "mydestination = \$myhostname, localhost.\$mydomain, localhost"
-    postconf -e "unknown_local_recipient_reject_code = 550"
-    postconf -e "unknown_address_reject_code = 554"
-    postconf -e "unknown_hostname_reject_code = 554"
-    postconf -e "unknown_client_reject_code = 450"
-    postconf -e "mynetworks = 127.0.0.0/8${postfix_int_netw}"
-    postconf -e "always_add_missing_headers = yes"
-    postconf -e "alias_maps = "
-    postconf -e "alias_database ="
-    postconf -e "local_destination_concurrency_limit = 1"
-    postconf -e "pop3imap_destination_recipient_limit = 1"
-    postconf -e "default_destination_recipient_limit = $POSTFIX_LIMIT_DESTINATIONS"
+postconf -e "message_size_limit = ${POSTFIX_LIMIT_MAILSIZE}000000"
+postconf -e "mailbox_size_limit = 0"
 
-    postconf -e "proxy_read_maps = ${postfix_prxmynet}\$local_recipient_maps,\$mydestination,\$virtual_alias_maps,\$virtual_alias_domains,\$virtual_mailbox_maps,\$virtual_mailbox_domains,\$relay_recipient_maps,\$relay_domains,\$canonical_maps,\$sender_canonical_maps,\$recipient_canonical_maps,\$relocated_maps,\$transport_maps,\$mynetworks,\$mail_restrict_map,\$smtpd_recipient_restrictions,\$sender_dependent_relayhost_maps,\$smtp_sasl_password_maps,\$postscreen_access_list"
-    postconf -e "transport_maps = proxy:mysql:/etc/postfix/sql/mysql-transport.cf"
-    postconf -e "mail_restrict_map = proxy:mysql:/etc/postfix/sql/mysql-virtual_restrictions.cf"
-    postconf -e "virtual_alias_maps = proxy:mysql:/etc/postfix/sql/mysql-virtual_aliases.cf,proxy:mysql:/etc/postfix/sql/mysql-virtual_email2email.cf"
-    postconf -e "virtual_uid_maps = static:$uidvmail"
-    postconf -e "virtual_gid_maps = static:$gidvmail"
-    postconf -e "virtual_mailbox_domains = proxy:mysql:/etc/postfix/sql/mysql-virtual_domains.cf"
-    postconf -e "virtual_mailbox_maps = proxy:mysql:/etc/postfix/sql/mysql-virtual_mailbox_maps.cf"
-    postconf -e "virtual_mailbox_base = /var/spool/postfix/virtual"
-    postconf -e "virtual_transport = pop3imap"
-    echo -n "."
-    postconf -e "bounce_queue_lifetime = ${POSTFIX_QUEUE_LIFETIME}d"
-    postconf -e "maximal_queue_lifetime = ${POSTFIX_QUEUE_LIFETIME}d"
+postconf -e "masquerade_exceptions = root"
+postconf -e "masquerade_classes = envelope_sender, header_sender, header_recipient"
+postconf -e "masquerade_domains = \$mydomain"
 
-    postconf -e "message_size_limit = ${POSTFIX_LIMIT_MAILSIZE}000000"
-    postconf -e "mailbox_size_limit = 0"
-
-    postconf -e "masquerade_exceptions = root"
-    postconf -e "masquerade_classes = envelope_sender, header_sender, header_recipient"
-    postconf -e "masquerade_domains = \$mydomain"
-
-    postconf -e "smtpd_restriction_classes = restrictions_0,restrictions_1,restrictions_2,restrictions_3,restrictions_4,restrictions_5,restrictions_6,restrictions_7,restrictions_8,restrictions_9"
-    postconf -e "restrictions_0 = permit_mynetworks"
+postconf -e "smtpd_restriction_classes = restrictions_0,restrictions_1,restrictions_2,restrictions_3,restrictions_4,restrictions_5,restrictions_6,restrictions_7,restrictions_8,restrictions_9"
+postconf -e "restrictions_0 = permit_mynetworks"
     # sender (user@domain.tld)/hostname (host.domain.tld) not fqdn; mailservers without reverse DNS entry
-    postconf -e "restrictions_1 = reject_unknown_client_hostname,reject_non_fqdn_sender,reject_non_fqdn_hostname"
+postconf -e "restrictions_1 = reject_unknown_client_hostname,reject_non_fqdn_sender,reject_non_fqdn_hostname"
     # use access list
-    postconf -e "restrictions_2 = check_client_access pcre:/etc/postfix/client_access_dynblocks.pcre"
-    postconf -e "restrictions_3 = reject_non_fqdn_sender,reject_non_fqdn_hostname,reject_unknown_client_hostname,check_client_access pcre:/etc/postfix/client_access_dynblocks.pcre"
-    postconf -e "restrictions_4 = permit_mynetworks"
-    postconf -e "restrictions_5 = permit_mynetworks"
-    postconf -e "restrictions_6 = permit_mynetworks"
-    postconf -e "restrictions_7 = permit_mynetworks"
-    postconf -e "restrictions_8 = permit_mynetworks"
-    postconf -e "restrictions_9 = REJECT"
+postconf -e "restrictions_2 = check_client_access pcre:/etc/postfix/client_access_dynblocks.pcre"
+postconf -e "restrictions_3 = reject_non_fqdn_sender,reject_non_fqdn_hostname,reject_unknown_client_hostname,check_client_access pcre:/etc/postfix/client_access_dynblocks.pcre"
+postconf -e "restrictions_4 = permit_mynetworks"
+postconf -e "restrictions_5 = permit_mynetworks"
+postconf -e "restrictions_6 = permit_mynetworks"
+postconf -e "restrictions_7 = permit_mynetworks"
+postconf -e "restrictions_8 = permit_mynetworks"
+postconf -e "restrictions_9 = REJECT"
 
-    postconf -e "smtpd_helo_required = yes"
-    postconf -e "smtpd_helo_restrictions ="
-    postconf -e "smtpd_sender_restrictions ="
-    postconf -e "smtpd_client_restrictions ="
-    postconf -e "smtpd_relay_restrictions = permit_mynetworks, ${postfix_sasl} permit_tls_clientcerts, defer_unauth_destination"
-    postconf -e "smtpd_recipient_restrictions = reject_unlisted_recipient, \
+postconf -e "smtpd_helo_required = yes"
+postconf -e "smtpd_helo_restrictions ="
+postconf -e "smtpd_sender_restrictions ="
+postconf -e "smtpd_client_restrictions ="
+postconf -e "smtpd_relay_restrictions = permit_mynetworks, ${postfix_sasl} permit_tls_clientcerts, defer_unauth_destination"
+postconf -e "smtpd_recipient_restrictions = reject_unlisted_recipient, \
  check_client_access proxy:mysql:/etc/postfix/sql/mysql-client_access.cf,\
  check_recipient_access proxy:mysql:/etc/postfix/sql/mysql-recipient_access.cf,\
  check_sender_access proxy:mysql:/etc/postfix/sql/mysql-sender_access.cf,\
@@ -190,104 +188,105 @@ write_postfix_config()
  proxy:mysql:/etc/postfix/sql/mysql-virtual_restrictions.cf,\
  ${postfix_un_cl_hostname}${postfix_un_send_dom}${postfix_send_mx}${postfix_fqdn_helo} permit"
 
-    postconf -e "mime_header_checks = $postfix_mime_header_ch"
-    postconf -e "header_checks = $postfix_header_ch"
+postconf -e "mime_header_checks = $postfix_mime_header_ch"
+postconf -e "header_checks = $postfix_header_ch"
 
-    postconf -e "mua_client_restrictions = permit_sasl_authenticated, permit"
-    postconf -e "mua_helo_restrictions = permit"
-    postconf -e "mua_sender_restrictions = permit"
+postconf -e "mua_client_restrictions = permit_sasl_authenticated, permit"
+postconf -e "mua_helo_restrictions = permit"
+postconf -e "mua_sender_restrictions = permit"
 
-    postconf -e "tls_random_source = dev:/dev/urandom"
-    postconf -e "tls_random_prng_update_period = 3600s"
-    # SASL setup
-    postconf -e "smtpd_sasl_type = dovecot"
-    if [ "$START_POP3IMAP" = "yes" ]; then
-        postconf -e "smtpd_sasl_auth_enable = yes"
-        postconf -e "smtpd_sasl_path = private/auth"
-        postconf -e "broken_sasl_auth_clients = yes"
-    else
-        postconf -e "smtpd_sasl_auth_enable = no"
-        postconf -e "smtpd_sasl_path = smtpd"
-        postconf -e "broken_sasl_auth_clients = no" 
-    fi
+postconf -e "tls_random_source = dev:/dev/urandom"
+postconf -e "tls_random_prng_update_period = 3600s"
+# SASL setup
+postconf -e "smtpd_sasl_type = dovecot"
+if [ "$START_POP3IMAP" = "yes" ]; then
+    postconf -e "smtpd_sasl_auth_enable = yes"
+    postconf -e "smtpd_sasl_path = private/auth"
+    postconf -e "broken_sasl_auth_clients = yes"
+else
+    postconf -e "smtpd_sasl_auth_enable = no"
+    postconf -e "smtpd_sasl_path = smtpd"
+    postconf -e "broken_sasl_auth_clients = no" 
+fi
 
-    # relay host
-    postconf -e 'smtp_connection_cache_on_demand = no'
-    postconf -e "smtp_sender_dependent_authentication = $POSTFIX_SMARTHOST"
-    postconf -e "smtp_tls_cert_file = $VMAIL_TLS_CERT"
-    postconf -e "smtp_tls_key_file = $VMAIL_TLS_KEY"
-    postconf -e "smtp_tls_session_cache_database = btree:/var/lib/postfix/smtp_tls_session_cache"
-    postconf -e "smtp_sasl_auth_enable = $POSTFIX_SMARTHOST"
-    postconf -e "smtp_use_tls = $POSTFIX_SMARTHOST_TLS"
-    postconf -e "smtp_sasl_password_maps = $postfix_relayhosts_auth"
-    postconf -e "smtp_sasl_security_options = noanonymous"
-    postconf -e "sender_canonical_maps = proxy:mysql:/etc/postfix/sql/mysql-canonical_maps.cf"
-    postconf -e "sender_dependent_relayhost_maps = $postfix_relayhosts"
+# relay host
+postconf -e 'smtp_connection_cache_on_demand = no'
+postconf -e "smtp_sender_dependent_authentication = $POSTFIX_SMARTHOST"
+postconf -e "smtp_tls_cert_file = $VMAIL_TLS_CERT"
+postconf -e "smtp_tls_key_file = $VMAIL_TLS_KEY"
+postconf -e "smtp_tls_session_cache_database = btree:/var/lib/postfix/smtp_tls_session_cache"
+postconf -e "smtp_sasl_auth_enable = $POSTFIX_SMARTHOST"
+postconf -e "smtp_use_tls = $POSTFIX_SMARTHOST_TLS"
+postconf -e "smtp_sasl_password_maps = $postfix_relayhosts_auth"
+postconf -e "smtp_sasl_security_options = noanonymous"
+postconf -e "sender_canonical_maps = proxy:mysql:/etc/postfix/sql/mysql-canonical_maps.cf"
+postconf -e "sender_dependent_relayhost_maps = $postfix_relayhosts"
 
-    postconf -e "smtpd_tls_auth_only = no"
-    if [ "$POSTFIX_SMTP_TLS" = 'yes' ]; then
-        if [ -e ${VMAIL_TLS_CAPATH}/cacert.pem ]; then
-            postconf -e "smtpd_tls_CAfile = ${VMAIL_TLS_CAPATH}/cacert.pem"
-        else
-            postconf -e "smtpd_tls_CAfile ="
-        fi
-        postconf -e "smtpd_tls_CApath = $VMAIL_TLS_CAPATH"
-        postconf -e "smtpd_tls_cert_file = $VMAIL_TLS_CERT"
-        postconf -e "smtpd_tls_key_file = $VMAIL_TLS_KEY"
-        postconf -e "smtpd_tls_received_header = yes"
-        postconf -e "smtpd_tls_security_level = may"
+postconf -e "smtpd_tls_auth_only = no"
+if [ "$POSTFIX_SMTP_TLS" = 'yes' ]; then
+    if [ -e ${VMAIL_TLS_CAPATH}/cacert.pem ]; then
+        postconf -e "smtpd_tls_CAfile = ${VMAIL_TLS_CAPATH}/cacert.pem"
     else
         postconf -e "smtpd_tls_CAfile ="
-        postconf -e "smtpd_tls_CApath ="
-        postconf -e "smtpd_tls_cert_file ="
-        postconf -e "smtpd_tls_key_file ="
-        postconf -e "smtpd_tls_received_header = no"
-        postconf -e "smtpd_tls_security_level ="
     fi
-    postconf -e "smtpd_tls_session_cache_database = btree:/var/lib/postfix/smtpd_tls_session_cache"
-    postconf -e "smtpd_tls_session_cache_timeout  = 9600s"
-    postconf -e "smtpd_tls_req_ccert              = no"
-    postconf -e "smtpd_tls_dh1024_param_file      = /etc/postfix/ssl/dh_1024.pem"
-    postconf -e "smtpd_tls_dh512_param_file       = /etc/postfix/ssl/dh_512.pem"
-    if [ $POSTFIX_LOGLEVEL -gt 1 ]; then
-        postconf -e "smtpd_tls_loglevel = $POSTFIX_LOGLEVEL"
-    else
-        postconf -e "smtpd_tls_loglevel = 1"
-    fi
+    postconf -e "smtpd_tls_CApath = $VMAIL_TLS_CAPATH"
+    postconf -e "smtpd_tls_cert_file = $VMAIL_TLS_CERT"
+    postconf -e "smtpd_tls_key_file = $VMAIL_TLS_KEY"
+    postconf -e "smtpd_tls_received_header = yes"
+    postconf -e "smtpd_tls_security_level = may"
+else
+    postconf -e "smtpd_tls_CAfile ="
+    postconf -e "smtpd_tls_CApath ="
+    postconf -e "smtpd_tls_cert_file ="
+    postconf -e "smtpd_tls_key_file ="
+    postconf -e "smtpd_tls_received_header = no"
+    postconf -e "smtpd_tls_security_level ="
+fi
+postconf -e "smtpd_tls_session_cache_database = btree:/var/lib/postfix/smtpd_tls_session_cache"
+postconf -e "smtpd_tls_session_cache_timeout  = 9600s"
+postconf -e "smtpd_tls_req_ccert              = no"
+postconf -e "smtpd_tls_dh1024_param_file      = /etc/postfix/ssl/dh_1024.pem"
+postconf -e "smtpd_tls_dh512_param_file       = /etc/postfix/ssl/dh_512.pem"
+if [ $POSTFIX_LOGLEVEL -gt 1 ]; then
+    postconf -e "smtpd_tls_loglevel = $POSTFIX_LOGLEVEL"
+else
+    postconf -e "smtpd_tls_loglevel = 1"
+fi
 
-    rm -f /etc/postfix/header_checks.pcre
-    touch /etc/postfix/header_checks.pcre
-    count=1
-    while [ ${count} -le ${POSTFIX_HEADER_N} ]
-    do
-        eval temp1='$POSTFIX_HEADER_'${count}'_CHECK'
-        eval temp2='$POSTFIX_HEADER_'${count}'_HANDL'
-        echo "/${temp1}/ ${temp2}" >> /etc/postfix/header_checks.pcre
-        count=`expr ${count} + 1`
-    done
-    rm -f /etc/postfix/client_access_blocks.pcre
-    touch /etc/postfix/client_access_blocks.pcre
-    count=1
-    while [ ${count} -le ${POSTFIX_CLIENT_N} ]
-    do
-        eval temp1='$POSTFIX_CLIENT_'${count}'_CHECK'
-        eval temp2='$POSTFIX_CLIENT_'${count}'_HANDL'
-        echo "/${temp1}/ ${temp2}" >> /etc/postfix/client_access_blocks.pcre
-        count=`expr ${count} + 1`
-    done
+rm -f /etc/postfix/header_checks.pcre
+touch /etc/postfix/header_checks.pcre
+count=1
+while [ ${count} -le ${POSTFIX_HEADER_N} ]
+do
+    eval temp1='$POSTFIX_HEADER_'${count}'_CHECK'
+    eval temp2='$POSTFIX_HEADER_'${count}'_HANDL'
+    echo "/${temp1}/ ${temp2}" >> /etc/postfix/header_checks.pcre
+    count=`expr ${count} + 1`
+done
+rm -f /etc/postfix/client_access_blocks.pcre
+touch /etc/postfix/client_access_blocks.pcre
+count=1
+while [ ${count} -le ${POSTFIX_CLIENT_N} ]
+do
+    eval temp1='$POSTFIX_CLIENT_'${count}'_CHECK'
+    eval temp2='$POSTFIX_CLIENT_'${count}'_HANDL'
+    echo "/${temp1}/ ${temp2}" >> /etc/postfix/client_access_blocks.pcre
+    count=`expr ${count} + 1`
+done
 
-    postconf -e "milter_default_action = accept"
-    postconf -e "milter_connect_macros = j"
-    postconf -e "milter_protocol = 3"
+postconf -e "milter_default_action = accept"
+postconf -e "milter_connect_macros = j"
+postconf -e "milter_protocol = 3"
+postconf -e "smtpd_milters = unix:/run/milter/smc-milter-new.sock"
 
-    # postscreen antispam setup
-    postconf -e "postscreen_greet_action = enforce"
-#    postconf -e "postscreen_hangup_action = drop"
-    postconf -e "postscreen_dnsbl_action = $postfix_pscr_dnsbl_action"
-    postconf -e "postscreen_dnsbl_sites = $postfix_rbl_list"
-    postconf -e "postscreen_dnsbl_threshold = 3"
-    postconf -e "postscreen_access_list = permit_mynetworks, proxy:mysql:/etc/postfix/sql/mysql-client_access_postscreen.cf"
-
+# postscreen antispam setup
+postconf -e "postscreen_greet_action = enforce"
+# postconf -e "postscreen_hangup_action = drop"
+postconf -e "postscreen_dnsbl_action = $postfix_pscr_dnsbl_action"
+postconf -e "postscreen_dnsbl_sites = $postfix_rbl_list"
+postconf -e "postscreen_dnsbl_threshold = 3"
+postconf -e "postscreen_access_list = permit_mynetworks, proxy:mysql:/etc/postfix/sql/mysql-client_access_postscreen.cf"
+echo -n "."
 cat > /etc/postfix/master.cf <<EOF
 # --------------------------------------------------------------------------
 # Postfix master process configuration file by eisfair-ng config
@@ -360,56 +359,49 @@ EOF
 #    chown -R root:root   /var/spool/postfix/lib
 #    chown -R root:root   /var/spool/postfix/usr
 #    chown    root:root   /var/spool/postfix/var
-    mkdir -p /var/spool/postfix/virtual 
-    chown -R ${uidvmail}:${gidvmail} /var/spool/postfix/virtual
+mkdir -p /var/spool/postfix/virtual 
+chown -R ${uidvmail}:${gidvmail} /var/spool/postfix/virtual
 #    chmod 0777           /var/spool/postfix/var/lib
 #    chown postfix:root /var/spool/postfix
 #    chown postfix:root /var/spool/postfix/pid
-    /usr/sbin/postfix set-permissions >/dev/null 2>&1
-}
+/usr/sbin/postfix set-permissions >/dev/null 2>&1
 
 
 ### -------------------------------------------------------------------------
 ### change smc-milter.conf file
 ### -------------------------------------------------------------------------
-write_milter_config()
-{
-    local connectport=0
-    # check if installed clamav
-    if [ ! -f /usr/sbin/clamd ]; then
-        if [ "$POSTFIX_AV_CLAMAV" = 'yes' ]; then
-            mecho --error "ClamAV not found. Set POSTFIX_AV_CLAMAV='no'"
-            POSTFIX_AV_CLAMAV='no'
-        fi
+# check if installed clamav
+if [ ! -f /usr/sbin/clamd ]; then
+    if [ "$POSTFIX_AV_CLAMAV" = 'yes' ]; then
+        mecho --error "ClamAV not found. Set POSTFIX_AV_CLAMAV='no'"
+        POSTFIX_AV_CLAMAV='no'
     fi
-    [ "${VMAIL_SQL_HOST}" = "localhost" ] || connectport=3306
-    sed -i -e "s|^clamcheck.*|clamcheck			${POSTFIX_AV_CLAMAV}|"       /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^fprotcheck.*|fprotcheck		${POSTFIX_AV_FPROTD}|"       /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^avmail.*|avmail			${POSTFIX_AV_VIRUS_INFO}|"   /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^signatureadd.*|signatureadd		${POSTFIX_AUTOSIGNATURE}|"   /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbhost.*|dbhost			${VMAIL_SQL_HOST}|"          /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbport.*|dbport			${connectport}|"             /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbname.*|dbname			${VMAIL_SQL_DATABASE}|"      /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbuser.*|dbuser			${VMAIL_SQL_USER}|"          /etc/smc-milter-new/smc-milter-new.conf
-    sed -i -e "s|^dbpass.*|dbpass			${VMAIL_SQL_PASS}|"          /etc/smc-milter-new/smc-milter-new.conf
-    if [ "$POSTFIX_AV_SCRIPT" = "yes" ]; then
-        sed -i -e "s|.*scriptfile.*|scriptfile		${POSTFIX_AV_SCRIPTFILE}|"   /etc/smc-milter-new/smc-milter-new.conf
-    else
-        sed -i -e "s|^scriptfile.*|#scriptfile|"                                     /etc/smc-milter-new/smc-milter-new.conf
-    fi
-    [ -e /etc/smc-milter-new/smc-milter-new.hosts ] || touch /etc/smc-milter-new/smc-milter-new.hosts
-    mkdir -p   /var/spool/postfix/quarantine
-    chmod 0777 /var/spool/postfix/quarantine
-}
+fi
+connectport=0
+[ "${VMAIL_SQL_HOST}" = "localhost" ] || connectport=3306
+sed -i -e "s|^clamcheck.*|clamcheck			${POSTFIX_AV_CLAMAV}|"       /etc/smc-milter-new/smc-milter-new.conf
+sed -i -e "s|^fprotcheck.*|fprotcheck		${POSTFIX_AV_FPROTD}|"       /etc/smc-milter-new/smc-milter-new.conf
+sed -i -e "s|^avmail.*|avmail			${POSTFIX_AV_VIRUS_INFO}|"   /etc/smc-milter-new/smc-milter-new.conf
+sed -i -e "s|^signatureadd.*|signatureadd		${POSTFIX_AUTOSIGNATURE}|"   /etc/smc-milter-new/smc-milter-new.conf
+sed -i -e "s|^dbhost.*|dbhost			${VMAIL_SQL_HOST}|"          /etc/smc-milter-new/smc-milter-new.conf
+sed -i -e "s|^dbport.*|dbport			${connectport}|"             /etc/smc-milter-new/smc-milter-new.conf
+sed -i -e "s|^dbname.*|dbname			${VMAIL_SQL_DATABASE}|"      /etc/smc-milter-new/smc-milter-new.conf
+sed -i -e "s|^dbuser.*|dbuser			${VMAIL_SQL_USER}|"          /etc/smc-milter-new/smc-milter-new.conf
+sed -i -e "s|^dbpass.*|dbpass			${VMAIL_SQL_PASS}|"          /etc/smc-milter-new/smc-milter-new.conf
+if [ "$POSTFIX_AV_SCRIPT" = "yes" ]; then
+    sed -i -e "s|.*scriptfile.*|scriptfile		${POSTFIX_AV_SCRIPTFILE}|"   /etc/smc-milter-new/smc-milter-new.conf
+else
+    sed -i -e "s|^scriptfile.*|#scriptfile|"                                     /etc/smc-milter-new/smc-milter-new.conf
+fi
+[ -e /etc/smc-milter-new/smc-milter-new.hosts ] || touch /etc/smc-milter-new/smc-milter-new.hosts
+mkdir -p   /var/spool/postfix/quarantine
+chmod 0777 /var/spool/postfix/quarantine
 
 
 ### ----------------------------------------------------------------------------
 ### update sql query files for postfix and dovecot
 ### ----------------------------------------------------------------------------
-update_sql_files()
-{
-    # postfix:
-    for sqlfile in mysql-canonical_maps.cf mysql-client_access.cf \
+for sqlfile in mysql-canonical_maps.cf mysql-client_access.cf \
                    mysql-client_access_postscreen.cf mysql-recipient_access.cf \
                    mysql-sender_access.cf mysql-transport.cf \
                    mysql-virtual_aliases.cf mysql-virtual_domains.cf \
@@ -423,11 +415,11 @@ update_sql_files()
         sed -i -e "s|^hosts.*|hosts = ${vmail_sql_connect}|"    /etc/postfix/sql/$sqlfile
         chmod 0640 /etc/postfix/sql/$sqlfile
         chgrp postfix /etc/postfix/sql/$sqlfile
-    done
-    chmod 0750 /etc/postfix/sql
-    chgrp postfix /etc/postfix/sql
-    sed -i -e "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}')) FROM view_relaylogin WHERE email like '%s'|" /etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
-}
+done
+chmod 0750 /etc/postfix/sql
+chgrp postfix /etc/postfix/sql
+sed -i -e "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}')) FROM view_relaylogin WHERE email like '%s'|" /etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
+echo -n "."
 
 
 ### -------------------------------------------------------------------------
@@ -458,9 +450,75 @@ sed -i -r 's|^[#]log_timestamp =.*|log_timestamp = "%Y-%m-%d %H:%M:%S "|' /etc/d
 
 ### -------------------------------------------------------------------------
 #10-mail
-sed -i -r "s|^[#]mail_plugins =.*|mail_plugins = quota|" /etc/dovecot/conf.d/10-mail.conf
-sed -i -r "s|^[#]first_valid_uid =.*|first_valid_uid = 8|" /etc/dovecot/conf.d/10-mail.conf
-sed -i -r "s|^[#]first_valid_gid =.*|first_valid_gid = 12|" /etc/dovecot/conf.d/10-mail.conf
+cat > /etc/dovecot/conf.d/10-mail.conf <<EOF
+## Mailbox locations and namespaces
+mail_location = maildir:/var/spool/postfix/virtual/%d/%n/Maildir
+
+namespace inbox {
+  type = private
+  separator = /
+  #prefix =
+  inbox = yes
+  hidden = no
+  list = yes
+  subscriptions = yes
+}
+
+namespace {
+  type = shared
+  separator = /
+  prefix = shared/%%u/
+  location = maildir:/var/spool/postfix/virtual/%%d/%%n/Maildir:INDEX=~/Maildir/shared/%%u
+  subscriptions = no
+  list = children
+}
+
+#mail_shared_explicit_inbox = no
+mail_uid = mail
+mail_gid = mail
+#mail_access_groups =
+#mail_full_filesystem_access = no
+#mail_attribute_dict =
+
+## Mail processes
+
+#mmap_disable = no
+#dotlock_use_excl = yes
+#mail_fsync = optimized
+#mail_nfs_storage = no
+# Mail index files also exist in NFS. Setting this to yes requires
+# mmap_disable=yes and fsync_disable=no.
+#mail_nfs_index = no
+#lock_method = fcntl
+#mail_temp_dir = /tmp
+first_valid_uid = 8
+#last_valid_uid = 0
+first_valid_gid = 12
+#last_valid_gid = 0
+#mail_max_keyword_length = 50
+#valid_chroot_dirs =
+#mail_chroot =
+#auth_socket_path = /var/run/dovecot/auth-userdb
+#mail_plugin_dir = /usr/lib/dovecot
+mail_plugins = quota
+
+## Mailbox handling optimizations
+
+#mailbox_list_index = no
+#mail_cache_min_mail_count = 0
+#mailbox_idle_check_interval = 30 secs
+#mail_save_crlf = no
+#mail_prefetch_count = 0
+#mail_temp_scan_interval = 1w
+
+## Maildir-specific settings
+
+#maildir_stat_dirs = no
+#maildir_copy_with_hardlinks = yes
+#maildir_very_dirty_syncs = no
+#maildir_broken_filename_sizes = no
+
+EOF
 
 ### -------------------------------------------------------------------------
 #15-lda
@@ -575,9 +633,6 @@ base_dir = /run/dovecot
 protocols = imap pop3 sieve
 
 mail_privileged_group = postdrop
-mail_uid = mail
-mail_gid = mail
-mail_location = maildir:/var/spool/postfix/virtual/%d/%n/Maildir
 
 userdb {
   args = uid=$uidvmail gid=$gidvmail home=/var/spool/postfix/virtual/%d/%n mail=maildir:/var/spool/postfix/virtual/%d/%n/Maildir
@@ -618,33 +673,29 @@ dict {
 }
 EOF
 
+echo -n "."
 #    sed -i -e "s|^ssl =.*|ssl = ${POP3IMAP_TLS}|" /etc/dovecot/dovecot.conf
 #    sed -i -e "s|.*auth_username_format.*|${dovecot_authf} |" /etc/dovecot/dovecot.conf
 
-    # secure doevecot sql password include files!
+# secure doevecot sql password include files!
 #    chown dovecot:vmail /etc/dovecot
 #    chmod 0770 /etc/dovecot
 #    chown dovecot:vmail /etc/dovecot/dovecot.conf
 #    chmod 0640 /etc/dovecot/dovecot.conf
 
 
-
 ### -------------------------------------------------------------------------
 ### create ssl file
 ### -------------------------------------------------------------------------
-create_ssl_files()
-{
-    # dovecot
-#    mkdir -p /etc/ssl/dovecot
-#    if [ ! -f /etc/ssl/dovecot/server.pem ]; then
-#        cd /etc/ssl/dovecot
-#        openssl genrsa 512/1024 > server.pem
-#        openssl req -new -key server.pem -days 3650 -out request.pem  # You will get prompted for various information that is added the the file
-#        openssl genrsa 2048 > server.key
-#        openssl req -new -x509 -nodes -sha1 -days 3650 -key server.key > server.pem
-#    fi
-
-
+# dovecot
+mkdir -p /etc/ssl/dovecot
+if [ ! -f /etc/ssl/dovecot/server.pem ]; then
+    cd /etc/ssl/dovecot
+    openssl genrsa 512/1024 > server.pem
+    openssl req -new -key server.pem -days 3650 -out request.pem  # You will get prompted for various information that is added the the file
+    openssl genrsa 2048 > server.key
+    openssl req -new -x509 -nodes -sha1 -days 3650 -key server.key > server.pem
+fi
 # cd /etc/ssl/dovecot
 # openssl genrsa -aes256 -out server.key.passwd 2048
 # openssl rsa -in server.key.passwd -out server.key
@@ -657,40 +708,35 @@ create_ssl_files()
 
 mkdir -p /etc/postfix/ssl
 cd /etc/postfix/ssl
-
 #   openssl req -new -nodes -keyout server-key.pem -out server-req.pem -days 365
 #   openssl ca -out server-crt.pem -infiles server-req.pem
 # Diffie-Hellman only for postfix use!
-openssl gendh -out /etc/postfix/ssl/dh_512.pem -2 512
-openssl gendh -out /etc/postfix/ssl/dh_1024.pem -2 1024
+if [ ! -f /etc/postfix/ssl/dh_512.pem ]; then
+    openssl gendh -out /etc/postfix/ssl/dh_512.pem -2 512
+    openssl gendh -out /etc/postfix/ssl/dh_1024.pem -2 1024
+fi
 #  chmod 644 /etc/postfix/ssl/server-crt.pem /etc/postfix/ssl/demoCA/cacert.pem
 #  chmod 400 /etc/postfix/ssl/server-key.pem
 #c_rehash.sh /etc/postfix/ssl
-}
 
 
 ### --------------------------------------------------------------------------
 ### add cron job
 ### --------------------------------------------------------------------------
-add_cron_job()
-{
-    mkdir -p /etc/cron/root
-    echo "#59 23 * * * /var/install/bin/vmail-rejectlogfilter.sh" > /etc/cron/root/postfix
-    [ "$START_POP3IMAP" = 'yes' ] && echo "00,30 * * * * /usr/bin/cui-vmail-maildropfilter.sh" >> /etc/cron/root/postfix
-    [ "$START_FETCHMAIL" = "yes" ] && echo "$FETCHMAIL_CRON_SCHEDULE /var/install/bin/vmail-fetchmailstart.sh" >> /etc/cron/root/postfix
-    # update crontab file
-    /sbin/rc-service --quiet fcron reload
-}
+mkdir -p /etc/cron/root
+echo "#59 23 * * * /var/install/bin/vmail-rejectlogfilter.sh" > /etc/cron/root/postfix
+[ "$START_POP3IMAP" = 'yes' ] && echo "00,30 * * * * /usr/bin/cui-vmail-maildropfilter.sh" >> /etc/cron/root/postfix
+[ "$START_FETCHMAIL" = "yes" ] && echo "$FETCHMAIL_CRON_SCHEDULE /var/install/bin/vmail-fetchmailstart.sh" >> /etc/cron/root/postfix
+# update crontab file
+/sbin/rc-service --quiet fcron reload
 
 
 ### -------------------------------------------------------------------------
 ### make fetchmail startfile
 ### -------------------------------------------------------------------------
-create_fetchmail_file()
-{
-    logging="-s"
-    [ "$FETCHMAIL_LOG" = "yes" ] && logging="--syslog"
-    cat > /var/install/bin/vmail-fetchmailstart.sh <<EOF
+logging="-s"
+[ "$FETCHMAIL_LOG" = "yes" ] && logging="--syslog"
+cat > /var/install/bin/vmail-fetchmailstart.sh <<EOF
 #!/bin/sh
 #------------------------------------------------------------------------------
 . /etc/config.d/vmail
@@ -701,8 +747,7 @@ su mail -c "/usr/bin/mysql2fetchmail -t /var/spool/postfix/virtual/\${fetchfile}
             rm -f /var/spool/postfix/virtual/\$fetchfile"
 exit 0
 EOF
-    chmod 0700 /var/install/bin/vmail-fetchmailstart.sh
-}
+chmod 0700 /var/install/bin/vmail-fetchmailstart.sh
 
 
 ### -------------------------------------------------------------------------
@@ -790,15 +835,15 @@ sql_database_check()
 ### setup runlevel - not with init.d/vmail!
 ### -------------------------------------------------------------------------
 if [ "$START_VMAIL" = "yes" ]; then
-    [ "$START_POP3IMAP" = 'yes' ] && /sbin/rc-update add dovecot || /sbin/rc-update del dovecot
-    /sbin/rc-update add smc-milter-new
-    [ -x /etc/init.d/greylist ] && /sbin/rc-update add greylist
-    /sbin/rc-update add postfix
+    [ "$START_POP3IMAP" = 'yes' ] && /sbin/rc-update -q add dovecot 2>/dev/null || /sbin/rc-update -q del dovecot
+    /sbin/rc-update -q add smc-milter-new 2>/dev/null
+    [ -x /etc/init.d/greylist ] && /sbin/rc-update -q add greylist 2>/dev/null
+    /sbin/rc-update -q add postfix 2>/dev/null
 else
-    /sbin/rc-update del dovecot
-    /sbin/rc-update del smc-milter-new
-    [ -x /etc/init.d/greylist ] && /sbin/rc-update del greylist
-    /sbin/rc-update del postfix
+    /sbin/rc-update -q del dovecot
+    /sbin/rc-update -q del smc-milter-new
+    [ -x /etc/init.d/greylist ] && /sbin/rc-update -q del greylist
+    /sbin/rc-update -q del postfix
 fi
 
 
@@ -807,9 +852,6 @@ fi
 ### -------------------------------------------------------------------------
 case "$1" in
     update)
-        write_postfix_config
-        write_milter_config
-        update_sql_files
         if [ -e /root/.my.cnf ]; then
             sql_database_check
         else
@@ -819,38 +861,6 @@ case "$1" in
             echo " ----------------------------------------------------------"
             sleep 3
         fi
-        ;;
-    alias)
-        create_alias_file
-        newaliases
-        /etc/init.d/postfix reload
-        ;;
-    *)
-        # check if exists mail cert
-        if [ ! -f ${VMAIL_TLS_CERT} ]; then
-            logger -t 'postfix' "missing mail cert file ${VMAIL_TLS_CERT}"
-            if [ "$POSTFIX_SMTP_TLS" = 'yes' ]; then
-                echo ""
-                mecho --error "Mail certificate not found! Start without TLS services."
-                mecho "Please create email cert with package Certs Service"
-                echo ""
-                POSTFIX_SMTP_TLS='no'
-                POSTFIX_SMARTHOST_TLS='no'
-                POP3IMAP_TLS='no'
-            fi
-        else
-            [ ! -f /etc/postfix/ssl/dh_512.pem ] && create_ssl_files
-        fi
-        sql_database_check
-        echo -n "Update postfix "
-        write_postfix_config
-        write_milter_config
-        update_sql_files
-        echo "."
-       # write_dovecot_config
-        # fix permissions:
-        create_fetchmail_file
-        add_cron_job
         ;;
 esac
 

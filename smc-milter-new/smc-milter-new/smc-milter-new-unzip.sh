@@ -1,9 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 ###########
 
 mailfile=$1
 
-function cleanUp () {
+OLDIFS=$IFS
+IFS=
+
+cleanUp() {
+    IFS=$OLDIFS
     rm -fr $tmp_path
 }
 
@@ -15,12 +19,14 @@ unpack() {
         if [ "${file%.[zZ][iI][pP]}" != "${file}" ]
         then
             unzip -o "$file" >/dev/null
-            rm "$file"
+            rm "${file}"
+            unpack *
         elif [ "${file%.[rR][aA][rR]}" != "${file}" ]
         then
             unrar e "$file" >/dev/null
-            rm "$file"
-        elif [ -f "${file}" ]
+            rm "${file}"
+            unpack *
+        elif [ -d "${file}" ]
         then
             unpack ${file}/*
             rm -rf ${file}
@@ -52,12 +58,10 @@ unpack() {
 trap cleanUp EXIT
 
 tmp_path=/var/tmp/smc-$$
-mkdir -p --mode=0777 "$tmp_path"
+mkdir -p -m0777 "$tmp_path"
 cd "$tmp_path"
 /usr/bin/ripmime --unique_names -d "$tmp_path" -i "$mailfile"
 
-unpack *
-unpack *
 unpack *
 
 exit 0

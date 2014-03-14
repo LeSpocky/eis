@@ -1,0 +1,21 @@
+# bogus networks
+0.0.0.0/8        550 User unknown in virtual mailbox table bogus
+224.0.0.0/4      550 User unknown in virtual mailbox table bogus
+# wild-card MTA
+62.4.64.119 REJECT IP address of MX host is a wild-card NU.
+64.18.138.88 REJECT IP address of MX host is a wild-card CG.&RW.
+64.70.19.33 REJECT IP address of MX host is a wild-card WS.
+69.25.75.72 REJECT IP address of MX host is a wild-card NU.
+70.87.29.150 REJECT IP address of MX host is a wild-card PW.
+72.52.194.126 REJECT IP address of MX host is a wild-card VN.
+80.90.43.9 REJECT IP address of MX host is a wild-card TK.
+94.103.151.195 REJECT IP address of MX host is a wild-card TK.
+159.226.7.162 REJECT IP address of MX host is a wild-card CN.
+193.33.61.2 REJECT IP address of MX host is a wild-card TK.
+195.178.186.40 REJECT IP address of MX host is a wild-card ST.
+203.119.4.28 REJECT IP address of MX host is a wild-card PH.
+208.87.149.250 REJECT IP address of MX host is a wild-card pjn.qsrch.net.
+209.172.59.196 REJECT IP address of MX host is a wild-card TK.
+212.181.91.6 REJECT IP address of MX host is a wild-card NU.
+217.119.57.22 REJECT IP address of MX host is a wild-card TK.
+222.231.8.226 REJECT IP address of MX host is a wild-card KR.

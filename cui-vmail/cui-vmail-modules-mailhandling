@@ -1,7 +1,6 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
 # Creation:     2006-08-18 Jens Vehlhaber <jens(at)eisfair(dot)org>
-# Last Update:  $Id: vmail-modules-mailhandling 24656 2010-06-23 12:31:59Z jv $
 #-----------------------------------------------------------------------------
 
 #include eislib
@@ -10,16 +9,14 @@
 case "$1"
 in
     qlist)
-        clrhome
-        echo "List of messages that are in the mail queue:"
-        mailq
-        anykey
+        mailq >> /tmp/mailq.$$
+        /var/install/bin/show-doc.cui -f /tmp/mailq.$$
+        rm -f /tmp/mailq.$$
         ;;
     qflush)
         clrhome
         echo "Flush all e-mails and show mail queue:"
         /usr/sbin/postfix flush
-        sleep 1
         mailq
         anykey
         ;;
