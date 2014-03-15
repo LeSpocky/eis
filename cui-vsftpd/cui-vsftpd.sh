@@ -35,6 +35,7 @@ user_config_dir=/etc/vsftpd/users
 chroot_list_enable=YES
 chroot_list_file=/etc/vsftpd/chroot.list
 dirmessage_enable=YES
+force_dot_files=$FTP_LIST_DOT_FILES
 write_enable=YES
 local_umask=022
 chmod_enable=YES

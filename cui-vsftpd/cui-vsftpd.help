@@ -23,6 +23,13 @@ enable support for NAT 'yes' or 'no'<br/>
 Default: FTP_NAT_MODE='no'
 </help>
 
+<help name="FTP_LIST_DOT_FILES">
+List files beginning with a dot ('.') even when the client doesn't append the '-a' option to the list command.<br/>
+This is a workaround for badly configured FTP clients.<br/>
+<br/>
+Default: FTP_LIST_DOT_FILES='no'
+</help>
+
 <help name="FTP_LOG_INTERVAL">
 Logrotate interval: daily, weekly, monthly.<br/>
 How often shall logrotate be executed?

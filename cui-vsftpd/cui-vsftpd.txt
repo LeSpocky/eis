@@ -13,6 +13,12 @@
           Binde den FTP-Service an eine bestimmte IP-Adresse.
 
           Default:
+          
+   FTP_LIST_DOT_FILES
+          Bei Angabe von 'yes' werden versteckte Dateien, die mit einem 
+          Punkt ('.') beginnen, immer angezeigt.
+
+          Default: no          
 
    FTP_LOG_INTERVAL
           Wann soll die Log-Datei durch eine leere Datei ersetzt werden.

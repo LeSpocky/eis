@@ -34,6 +34,8 @@ packages_name=vsftpd
     printvar "FTP_PORT"           "Listen for an incoming connection. Default 21."
 
     printvar "FTP_BIND"           "If set, then bind the FTP port only to ip-address."
+    
+    printvar "FTP_LIST_DOT_FILES" "List files beginning with a dot ('.')"   
 
     printvar "FTP_LOG_INTERVAL"   "logrotate interval"
 
