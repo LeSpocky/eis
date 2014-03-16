@@ -34,7 +34,6 @@ activateWebsetup ()
         cp -f ${backupFolder}/setup ${webConfigFolder}
     else
         mecho --warn "Backup folder with phpmyadmin setup not found!"
-        anykey
     fi
 }
 
