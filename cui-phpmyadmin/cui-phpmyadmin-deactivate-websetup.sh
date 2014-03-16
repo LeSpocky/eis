@@ -39,7 +39,7 @@ deactivateWebsetup ()
         rm -rf ${webConfigFolder}
     fi
     mkdir ${webConfigFolder}
-    echo "Use eisfair setup to activate webbased phpmyadmin configuration!" > ${webConfigFolder}/index.html
+    echo "Use eisfair setup to activate webbased phpmyadmin configuration!" > ${webConfigFolder}/index.php
 }
 
 activateCreatedConfiguration ()

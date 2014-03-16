@@ -426,9 +426,11 @@ deactivateWebSetup ()
     else
         rm -rf ${backupFolder}/setup
     fi
-    if [ -d ${installFolder}/setup ] ; then
-        mv -f ${installFolder}/setup ${backupFolder}/
+    if [ -d ${webConfigFolder} ] ; then
+        mv -f ${webConfigFolder} ${backupFolder}/
     fi
+    mkdir ${webConfigFolder}
+    echo "Use eisfair setup to activate webbased phpmyadmin configuration!" > ${webConfigFolder}/index.php
 }
 
 # ----------------------------------------------------------------------------
