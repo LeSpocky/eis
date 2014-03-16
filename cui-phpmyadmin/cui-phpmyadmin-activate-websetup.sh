@@ -31,6 +31,7 @@ ownerToUse='apache:apache'
 activateWebsetup ()
 {
     if [ -d ${backupFolder}/setup ] ; then
+        rm -rf ${webConfigFolder}
         cp -rf ${backupFolder}/setup ${webConfigFolder}
     else
         mecho --warn "Backup folder with phpmyadmin setup not found!"
