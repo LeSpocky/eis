@@ -16,6 +16,8 @@
 #exec 2> /tmp/phpmyadmin-activate-websetup-trace$$.log
 #set -x
 
+. /var/install/include/eislib
+
 configFolder=/etc/phpmyadmin
 configPhp=${configFolder}/config.inc.php
 
@@ -31,7 +33,7 @@ deactivateWebsetup ()
         mkdir -p ${backupFolder}
     fi
 
-    if [ -d ${webConfigFolder} && ! -d ${backupFolder}/setup ] ; then
+    if [ -d ${webConfigFolder} -a ! -d ${backupFolder}/setup ] ; then
         mv -f ${webConfigFolder} ${backupFolder}/
     else
         rm -rf ${webConfigFolder}

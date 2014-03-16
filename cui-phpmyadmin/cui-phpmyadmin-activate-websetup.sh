@@ -31,7 +31,7 @@ ownerToUse='apache:apache'
 activateWebsetup ()
 {
     if [ -d ${backupFolder}/setup ] ; then
-        cp -f ${backupFolder}/setup ${webConfigFolder}
+        cp -rf ${backupFolder}/setup ${webConfigFolder}
     else
         mecho --warn "Backup folder with phpmyadmin setup not found!"
     fi
@@ -42,11 +42,13 @@ copyExistingConfigForWebConfiguration ()
     if [ ! -d ${configFolderForWebConfig} ] ; then
         mkdir -p ${configFolderForWebConfig}
     fi
-    chown -R ${ownerToUse} ${configFolderForWebConfig}
     if [ -e ${configPhp} ] ; then
         cp -f ${configPhp} ${configFolderForWebConfig}/
     fi
+    chown -R ${ownerToUse} ${configFolderForWebConfig}
 }
+
+createConfig
 
 activateWebsetup
 copyExistingConfigForWebConfiguration

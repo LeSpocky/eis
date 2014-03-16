@@ -25,7 +25,8 @@ package_name=phpmyadmin
 installFolder=/usr/share/webapps/phpmyadmin
 webConfigFolder=${installFolder}/setup
 backupFolder=/var/lib/phpmyadmin
-
+configFolder=/etc/phpmyadmin
+ownerToUse='apache:apache'
 
 
 # ----------------------------------------------------------------------------
@@ -435,14 +436,16 @@ deactivateWebSetup ()
 # ----------------------------------------------------------------------------
 
 # write default config file
-createConfigFile /etc/default.d/${package_name}
+#createConfigFile /etc/default.d/${package_name}
 
 # update from old version
-updateOldVariables
+#updateOldVariables
 
 # write new config file
-createConfigFile /etc/config.d/${package_name}
+#createConfigFile /etc/config.d/${package_name}
 
 deactivateWebSetup
+
+chown -R ${ownerToUse} ${configFolder}
 
 exit 0
