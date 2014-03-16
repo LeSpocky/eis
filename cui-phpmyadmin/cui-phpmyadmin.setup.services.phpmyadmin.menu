@@ -3,5 +3,5 @@
 <package>phpmyadmin</package>
 <title>phpMyAdmin Administration</title>
 <doc file="/usr/share/doc/phpmyadmin/phpmyadmin.txt">View package documentation</doc>
-<menu file="setup.services.phpmyadmin.webconfiguration.menu">Configuration</menu>
-<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
+<script file="/var/install/bin/phpmyadmin-activate-websetup.sh">Step 1: Activate web setup</script>
+<script file="/var/install/bin/phpmyadmin-deactivate-websetup.sh">Step 2: Activate created configuration</script>

@@ -20,12 +20,6 @@ zur Verfuegung.
 
   3. Configuration
      Mit diesem Menuepunkt wird die Konfiguration von phpMyAdmin vorgenommen.
-     Eine genaue Erlaeuterung der Menuepunkte folgt unter
-     "2.2 Edit configuration"
-
-  4. Advanced configuration file handling
-     Unter diesem Menuepunkt befinden sich die ueblichen Eis-Moeglichkeiten,
-     die Konfiguration zu sichern, zu vergleichen etc. pp.
 
 
 
@@ -40,16 +34,8 @@ automatisch deaktiviert wird.
 
 
 
-"START_PHPMYADMIN"
-  Soll phpMyAdmin verfuegbar sein oder nicht.
-
-  TODO: Zur Zeit noch nicht implementiert, ohne Funktion.
-
-  Gueltige Werte: yes, no
-  Standard-Einstellung: START_PHPMYADMIN='no'
-
-
 2.3 Migration von eisfair-1 bzw. eisfair-2
+==========================================
 
 Soll eine vorhandene Konfiguration aus einer der vorherigen eisfair-Versionen
 uebernommen werden, so kann die Datei 'config.inc.php' von dieser Installation
