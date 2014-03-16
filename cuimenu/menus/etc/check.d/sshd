@@ -1,13 +1,10 @@
-#------------------------------------------------------------------------------
-# /etc/check.d/ssh - eischk check file for the ssh service on eisfair
-# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
-#------------------------------------------------------------------------------
-START_SSHD                      -                              -                              YESNO
-SSHD_PORT                       -                              -                              SSHD_PORT
-SSHD_LISTEN_ADDR_N              -                              -                              NUMERIC
-SSHD_LISTEN_ADDR_%              -                              SSHD_LISTEN_ADDR_N             NUMERIC
-SSHD_USEDNS                     -                              -                              YESNO
-SSHD_ENABLE_SFTP                -                              -                              YESNO
-SSHD_PUBLIC_KEY_N               -                              -                              NUMERIC
-SSHD_PUBLIC_KEY_%               -                              SSHD_PUBLIC_KEY_N              NONE
-SSHD_LOGLEVEL                   -                              -                              SSHD_LOGLEVEL
+# Variable                    OPT_VARIABLE   VARIABLE_N            VALUE
+START_SSHD                     -             -                     YESNO
+SSHD_PORT                      START_SSHD    -                     SSHD_PORT
+SSHD_LISTEN_ADDR_N             START_SSHD    -                     NUMERIC
+SSHD_LISTEN_ADDR_%             START_SSHD    SSHD_LISTEN_ADDR_N    NUMERIC
+SSHD_USEDNS                    START_SSHD    -                     YESNO
+SSHD_ENABLE_SFTP               START_SSHD    -                     YESNO
+SSHD_PUBLIC_KEY_N              START_SSHD    -                     NUMERIC
+SSHD_PUBLIC_KEY_%              START_SSHD    SSHD_PUBLIC_KEY_N     NONE
+SSHD_LOGLEVEL                  START_SSHD    -                     SSHD_LOGLEVEL

@@ -1,21 +1,6 @@
 Environment - for eisfair
 ===============================
 
-
-EDITOR
-    joe (alternative: vi)
-
-    Legal-value: joe, vi
-
-    Default-value: EDITOR='joe'
-
-PAGER
-    less (alternative: more)
-
-    Legal-value: less, more
-
-    Default-value: PAGER='less'
-
 MAX_BACKUP_CONFIG
     maximum number of package config files
     to backup up in /etc/backup.d

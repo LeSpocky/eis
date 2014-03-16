@@ -6,3 +6,4 @@
 <menu file="setup.system.sshd.menu">SSH administration</menu>
 <menu file="setup.system.filesystems.menu">Filesystems</menu>
 <menu file="setup.system.devices.menu">Devices</menu>
+<script file="/var/install/bin/show-doc.cui -f /var/log/hwlist ; /usr/sbin/dmidecode -q > /var/log/hwlist">Hardware information</script>

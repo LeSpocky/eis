@@ -1,7 +1,7 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
 # /var/install/config.d/cui-update.sh - parameter update script
-# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+# Copyright (c) 2001-2014 The Eisfair Team <team@eisfair.org>
 #-----------------------------------------------------------------------------
 
 . /var/install/include/configlib

@@ -1,7 +1,7 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/config.d/base.sh - apply configuration for base
-# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2014 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 # include base-config

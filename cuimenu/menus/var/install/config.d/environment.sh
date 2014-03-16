@@ -1,22 +1,25 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/config.d/environment.sh - apply script for environment
-# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2014 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 
 wgetrcfile='/etc/wgetrc'
 wgetrcfiles_auth='/root/.wgetrc'
 
-### read configuration file ###
+### read configuration file
 . /etc/config.d/environment
 
-### begin writing wgetrc config ###
-    cat >${wgetrcfile} <<EOF
+### remove default proxy script
+rm -f /etc/profile.d/proxy.sh
+
+### begin writing wgetrc config
+cat >${wgetrcfile} <<EOF
 #ca_directory=/usr/local/ssl/certs
 check_certificate=off
 EOF
 
-### http proxy ###
+### http proxy
 if [ -n "$HTTP_PROXY" ]  ; then
     mkdir -p /etc/profile.d
     cat >/etc/profile.d/proxy.sh <<EOF
@@ -47,6 +50,5 @@ EOF
     done
     umask $old_umask
 fi
-
 
 exit 0

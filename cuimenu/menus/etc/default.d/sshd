@@ -1,6 +1,6 @@
 #------------------------------------------------------------------------------
 # /etc/config.d/ssh - configuration for the ssh service on eisfair
-# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2014 the eisfair team, team(at)eisfair(dot)org
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------

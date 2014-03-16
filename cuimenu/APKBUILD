@@ -2,12 +2,12 @@
 # Maintainer:team@eisfair.org
 pkgname=cuimenu
 pkgver=2.0.0
-pkgrel=8
+pkgrel=9
 pkgdesc="Eisfair CUI base menu"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
-depends="cuimenu-bin bash syslog-ng logrotate fcron"
+depends="cuimenu-bin bash syslog-ng logrotate fcron dmidecode wget"
 depends_dev=""
 makedepends=""
 install="$pkgname.pre-install $pkgname.pre-upgrade $pkgname.post-install $pkgname.post-upgrade"

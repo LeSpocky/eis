@@ -1,7 +1,3 @@
-#------------------------------------------------------------------------------
-# /etc/check.d/fcron - configuration for cron services
-# Copyright (c) 2001-2008 The Eisfair Team, <team@eisfair.org>
-#------------------------------------------------------------------------------
 # Variable                       OPT_VARIABLE            VARIABLE_N               VALUE
 START_FCRON                      -                       -                        YESNO
 FCRON_N                          START_FCRON             -                        NUMERIC

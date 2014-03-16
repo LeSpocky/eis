@@ -1,6 +1,5 @@
 #-----------------------------------------------------------------------------
 # /etc/check.d/environment.exp - expressions for eischk
-# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
 #-----------------------------------------------------------------------------
 ENVIRONMENT_PROXY  = '()|((http://)?((RE:FQDN)|(RE:IPADDR)):(RE:PORT))(/)?'
                    : 'Invalid proxy entry, use server:port'

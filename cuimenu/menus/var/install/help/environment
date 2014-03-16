@@ -1,24 +1,6 @@
 <!-- Creation:     10.04.2005  dv -->
 <!-- Last Update:  $Id: base 30791 2011-05-17 12:23:33Z schlotze $ -->
 
-<help name="EDITOR">
-    joe (alternative: vi)<br/>
-<br/>
-    Legal-value: joe, vi
-<br/>
-    Default-value: EDITOR='joe'
-</help>
-
-
-<help name="PAGER">
-    less (alternative: more)<br/>
-<br/>
-    Legal-value: less, more<br/>
-<br/>
-    Default-value: PAGER='less'
-</help>
-
-
 <help name="MAX_BACKUP_CONFIG">
     Maximum number of package config files to backup up in /etc/backup.d<br/>
 <br/>

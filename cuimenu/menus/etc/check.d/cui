@@ -1,7 +1,3 @@
-#------------------------------------------------------------------------------
-# /etc/check.d/cui - eischk file for cui
-# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
-#-----------------------------------------------------------------------------
 # Variable                    OPT_VARIABLE   VARIABLE_N   VALUE
 CUI_USE_COLORS                -              -            YESNO
 CUI_USE_MOUSE                 -              -            YESNO

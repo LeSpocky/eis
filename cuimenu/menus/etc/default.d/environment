@@ -1,14 +1,11 @@
 #-----------------------------------------------------------------------------
 # /etc/config.d/environment - config of environment (read by /etc/profile)
-# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+# Copyright (c) 2001-2014 The Eisfair Team <team@eisfair.org>
 #-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
 # Setup menu configuration
 #-----------------------------------------------------------------------------
-
-EDITOR='joe'                    # joe (alternative: vi)
-PAGER='less'                    # less (alternative: more)
 
 MAX_BACKUP_CONFIG='10'          # maximum number of package config files
                                 # to backup up in /etc/backup.d

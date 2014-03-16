@@ -1,11 +1,10 @@
 #------------------------------------------------------------------------------
 # /etc/check.d/cui.exp - eischk exp file for cui
-# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
 #-----------------------------------------------------------------------------
- CUI_BKGND_COLOR       = 'BLACK|RED|GREEN|BROWN|BLUE|MAGENTA|CYAN|LIGHTGRAY'
+CUI_BKGND_COLOR        = 'BLACK|RED|GREEN|BROWN|BLUE|MAGENTA|CYAN|LIGHTGRAY'
                        : 'invalid color. Only BLACK, RED, GREEN, BROWN,
                           BLUE, MAGENTA, CYAN, LIGHTGRAY are allowed'
-CUI_COLOR             = '(RE:CUI_BKGND_COLOR)|DARKGRAY|LIGHTRED|LIGHTGREEN|YELLOW|LIGHTBLUE|LIGHTMAGENTA|LIGHTCYAN|WHITE'
+CUI_COLOR              = '(RE:CUI_BKGND_COLOR)|DARKGRAY|LIGHTRED|LIGHTGREEN|YELLOW|LIGHTBLUE|LIGHTMAGENTA|LIGHTCYAN|WHITE'
                        : 'invalid color. Only BLACK, RED, GREEN, BROWN,
                           BLUE, MAGENTA, CYAN, LIGHTGRAY, DARKGRAY, LIGHTRED,
                           LIGHTGREEN, YELLOW, LIGHTBLUE, LIGHTMAGENTA,

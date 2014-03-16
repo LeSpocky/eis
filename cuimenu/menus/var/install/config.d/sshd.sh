@@ -1,7 +1,7 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/config.d/ssh.sh - configuration generator script for SSH
-# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2014 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 
 # include config
