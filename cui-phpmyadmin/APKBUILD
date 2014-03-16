@@ -16,7 +16,6 @@ source="${pkgname}.check
         ${pkgname}.help
         ${pkgname}.setup.services.phpmyadmin.menu
         ${pkgname}.setup.services.phpmyadmin.tools.menu
-        ${pkgname}.setup.services.phpmyadmin.webconfiguration.menu
         ${pkgname}.sh
         ${pkgname}.txt
         ${pkgname}-activate-websetup.sh
