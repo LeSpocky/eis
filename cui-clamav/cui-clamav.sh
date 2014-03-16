@@ -10,9 +10,9 @@
 . /etc/config.d/clamd
 
 # fix default clamav directories
-mkdir -p /run/clamav
-chmod 0777 /run/clamav
-chown clamav /run/clamav
+mkdir -p /tmp/clamd
+chmod 0777 /tmp/clamd
+chown clamav /tmp/clamd
 
 #-------------------------------------------------------------------------------
 # create or update crontab file for clamav
@@ -40,8 +40,8 @@ else
     cp -f /etc/clamav/clamd.conf /etc/clamav/clamd.conf.tmp
 fi
 
-sed -i -e "s|.*PidFile .*|PidFile /run/clamav/clamd.pid|" /etc/clamav/clamd.conf.tmp
-sed -i -e "s|.*LocalSocket .*|LocalSocket /run/clamav/clamd.sock|" /etc/clamav/clamd.conf.tmp
+#sed -i -e "s|.*PidFile .*|PidFile /run/clamav/clamd.pid|" /etc/clamav/clamd.conf.tmp
+sed -i -e "s|.*LocalSocket .*|LocalSocket /tmp/clamd/clamd.sock|" /etc/clamav/clamd.conf.tmp
 sed -i -e "s|.*TCPSocket .*|TCPSocket 3310 |" /etc/clamav/clamd.conf.tmp
 sed -i -e "s|.*TCPAddr .*|TCPAddr 127.0.0.1 |" /etc/clamav/clamd.conf.tmp
 if [ "$CLAMD_SELFCHECK" = "no" ]; then
@@ -116,7 +116,7 @@ else
 fi
 
 
-sed -i -e "s|.*PidFile .*|PidFile /run/clamav/freshclam.pid |" /etc/clamav/freshclam.conf.tmp
+#sed -i -e "s|.*PidFile .*|PidFile /run/clamav/freshclam.pid |" /etc/clamav/freshclam.conf.tmp
 sed -i -e "s|.*DatabaseMirror db.*|DatabaseMirror db.${CLAMD_UPDATE_REGION}.clamav.net |" /etc/clamav/freshclam.conf.tmp
 
 # remove second PrivateMirror
