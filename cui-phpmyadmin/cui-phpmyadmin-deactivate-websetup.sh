@@ -32,7 +32,7 @@ deactivateWebsetup ()
     fi
 
     if [ -d ${webConfigFolder} && ! -d ${backupFolder}/setup ] ; then
-        mv ${webConfigFolder} ${backupFolder}/
+        mv -f ${webConfigFolder} ${backupFolder}/
     else
         rm -rf ${webConfigFolder}
     fi
@@ -46,3 +46,6 @@ activateCreatedConfiguration ()
 
 deactivateWebsetup
 activateCreatedConfiguration
+
+mecho --info "Created configuration activated and webbased setup disabled."
+anykey
