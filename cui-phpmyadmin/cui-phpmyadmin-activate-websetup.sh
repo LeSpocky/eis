@@ -48,10 +48,17 @@ copyExistingConfigForWebConfiguration ()
     chown -R ${ownerToUse} ${configFolderForWebConfig}
 }
 
-createConfig
+createWebConfigFolder ()
+{
+    if [ ! -d ${configFolderForWebConfig} ] ; then
+        mkdir -p ${configFolderForWebConfig}
+    fi
+    chown -R ${ownerToUse} ${configFolderForWebConfig}
+}
 
 activateWebsetup
 copyExistingConfigForWebConfiguration
+createWebConfigFolder
 
 mecho --info "Webbased setup activated. Access it using URL <yourhost>/phpmyadmin/setup/"
 anykey

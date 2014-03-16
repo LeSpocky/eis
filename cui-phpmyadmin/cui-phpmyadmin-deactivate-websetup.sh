@@ -46,8 +46,16 @@ activateCreatedConfiguration ()
     rm -rf ${installFolder}/config
 }
 
+removeWebConfigFolder ()
+{
+    if [ ! -d ${configFolderForWebConfig} ] ; then
+        rm -rf ${configFolderForWebConfig}
+    fi
+}
+
 deactivateWebsetup
 activateCreatedConfiguration
+removeWebConfigFolder
 
 mecho --info "Created configuration activated and webbased setup disabled."
 anykey
