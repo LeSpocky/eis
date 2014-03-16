@@ -51,3 +51,6 @@ copyExistingConfigForWebConfiguration ()
 
 activateWebsetup
 copyExistingConfigForWebConfiguration
+
+mecho --info "Webbased setup activated. Access it using URL <yourhost>/phpmyadmin/setup/"
+anykey

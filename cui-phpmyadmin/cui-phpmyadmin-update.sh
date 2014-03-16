@@ -426,7 +426,7 @@ deactivateWebSetup ()
         rm -rf ${backupFolder}/setup
     fi
     if [ -d ${installFolder}/setup ] ; then
-        mv -rf ${installFolder}/setup ${backupFolder}/
+        mv -f ${installFolder}/setup ${backupFolder}/
     fi
 }
 
