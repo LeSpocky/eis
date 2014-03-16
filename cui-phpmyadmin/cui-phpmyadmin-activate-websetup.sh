@@ -34,7 +34,7 @@ activateWebsetup ()
         rm -rf ${webConfigFolder}
         cp -rf ${backupFolder}/setup ${webConfigFolder}
     else
-        mecho --warn "Backup folder with phpmyadmin setup not found!"
+        /var/install/bin/ask.cui --error "Backup folder with phpmyadmin setup not found!"
     fi
 }
 
@@ -61,5 +61,4 @@ activateWebsetup
 copyExistingConfigForWebConfiguration
 createWebConfigFolder
 
-mecho --info "Webbased setup activated. Access it using URL <yourhost>/phpmyadmin/setup/"
-anykey
+/var/install/bin/ask.cui --info "Webbased setup activated. Access it using URL <yourhost>/phpmyadmin/setup/"

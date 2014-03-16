@@ -59,5 +59,4 @@ deactivateWebsetup
 activateCreatedConfiguration
 removeWebConfigFolder
 
-mecho --info "Created configuration activated and webbased setup disabled."
-anykey
+/var/install/bin/ask.cui --info "Created configuration activated and webbased setup disabled."
