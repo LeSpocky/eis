@@ -1,7 +1,0 @@
-<!-- /var/install/menu/setup.services.phpmyadmin.menu -->
-<!-- Creation: 2006-09-15 starwarsfan -->
-<package>phpmyadmin</package>
-<title>traditional phpMyAdmin configuration</title>
-<doc file="/usr/share/doc/phpmyadmin/phpmyadmin.txt">View short package documentation</doc>
-<edit>Edit configuration</edit>
-<doc file="/usr/share/doc/phpmyadmin/Documentation.txt">View original documentation</doc>
