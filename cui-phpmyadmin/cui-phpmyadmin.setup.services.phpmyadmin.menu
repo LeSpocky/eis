@@ -3,7 +3,8 @@
 <package>phpmyadmin</package>
 <title>phpMyAdmin Administration</title>
 <doc file="/usr/share/doc/phpmyadmin/phpmyadmin.txt">View short package documentation</doc>
-<edit>Edit configuration</edit>
+<menu file="setup.services.phpmyadmin.webconfiguration.menu">Webconfiguration</menu>
+<menu file="setup.services.phpmyadmin.traditionalconfiguration.menu">Traditional configuration</menu>
 <doc file="/usr/share/doc/phpmyadmin/Documentation.txt">View original documentation</doc>
 <menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
 <menu file="setup.services.phpmyadmin.tools.menu">Tools</menu>

@@ -1,0 +1,5 @@
+<!-- Creation: 25.01.2007 starwarsfan -->
+<package>phpmyadmin</package>
+<title>phpMyAdmin configuration using browser</title>
+<script file="/var/install/bin/phpmyadmin-activate-websetup.sh">Step 1: Activate web setup</script>
+<script file="/var/install/bin/phpmyadmin-deactivate-websetup.sh">Step 2: Activate created configuration</script>

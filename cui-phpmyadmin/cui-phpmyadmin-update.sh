@@ -22,6 +22,12 @@ package_name=phpmyadmin
 # include configlib for using printvar
 . /var/install/include/configlib
 
+installFolder=/usr/share/webapps/phpmyadmin
+webConfigFolder=${installFolder}/setup
+backupFolder=/var/lib/phpmyadmin
+
+
+
 # ----------------------------------------------------------------------------
 # Set the default values for configuration
 START_PHPMYADMIN='no'
@@ -409,8 +415,20 @@ createConfigFile()
     chown root ${internal_conf_file}
 }
 
-
-
+# ----------------------------------------------------------------------------
+# Per default phpmyadmin comes with webbased setup pages. These pages should
+# be deactivated and could be reactivated if neccessary using eisfair setup
+deactivateWebSetup ()
+{
+    if [ ! -d ${backupFolder} ] ; then
+        mkdir -p ${backupFolder}
+    else
+        rm -rf ${backupFolder}/setup
+    fi
+    if [ -d ${installFolder}/setup ] ; then
+        mv -rf ${installFolder}/setup ${backupFolder}/
+    fi
+}
 
 # ----------------------------------------------------------------------------
 # Main
@@ -424,5 +442,7 @@ updateOldVariables
 
 # write new config file
 createConfigFile /etc/config.d/${package_name}
+
+deactivateWebSetup
 
 exit 0

@@ -23,6 +23,11 @@
 
 configFolder=/etc/phpmyadmin
 configPhp=${configFolder}/config.inc.php
+
+installFolder=/usr/share/webapps/phpmyadmin
+webConfigFolder=${installFolder}/setup
+configFolderForWebConfig=${installFolder}/config
+
 sweKeyConfigured=false
 ownerToUse='apache:apache'
 
