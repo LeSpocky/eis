@@ -23,7 +23,7 @@ main(int argc, char* argv[])
     }
 
     if ( strncmp(argv[1],"--err",5) == 0 )  {
-       if ( argv[2] == NULL ) {    
+       if ( argv[2] == NULL ) {
            MessageBox(WindowGetDesktop(), _T("Missing program parameter!\nStart with: ask.cui --err 'My error!'") , _T("Error"), MB_ERROR);
            return 1;
        } else {
