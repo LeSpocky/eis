@@ -10,9 +10,12 @@ license="GPL"
 depends="cuimenu cui-apache2 cui-php-apache2 php-apache2 php-xml phpmyadmin"
 depends_dev=""
 makedepends="$depends_dev"
-install="$pkgname.post-install $pkgname.post-deinstall"
+install="$pkgname.post-install $pkgname.pre-upgrade $pkgname.post-deinstall"
 subpackages=""
-source="${pkgname}.help
+source="${pkgname}.check
+        ${pkgname}.check.exp
+        ${pkgname}.check.ext
+        ${pkgname}.help
         ${pkgname}.setup.services.phpmyadmin.menu
         ${pkgname}.setup.services.phpmyadmin.tools.menu
         ${pkgname}.sh
@@ -24,7 +27,9 @@ source="${pkgname}.help
         ${pkgname}-update.sh
 "
 
+_pname="phpmyadmin"
 _builddir=
+
 prepare() {
 	local i
 	cd "$_builddir"
@@ -52,10 +57,13 @@ package() {
 		install -D -m644 ${currentDefaultConfig} ${pkgdir}/etc/default.d/${currentDefaultConfig} || return 1
 	done
 	cd -
-	install -D -m644 ${srcdir}/${pkgname}.txt                                  ${pkgdir}/usr/share/doc/phpmyadmin/phpmyadmin.txt || return 1
-	install -D -m755 ${srcdir}/${pkgname}.sh                                   ${pkgdir}/var/install/config.d/phpmyadmin.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-update.sh                            ${pkgdir}/var/install/config.d/phpmyadmin-update.sh || return 1
-	install -D -m644 ${srcdir}/${pkgname}.help                                 ${pkgdir}/var/install/help/phpmyadmin || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check                                ${pkgdir}/etc/check.d/${_pname} || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.exp                            ${pkgdir}/etc/check.d/${_pname}.exp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.ext                            ${pkgdir}/etc/check.d/${_pname}.ext || return 1
+  install -D -m644 ${srcdir}/${pkgname}.txt                                  ${pkgdir}/usr/share/doc/${_pname}/${_pname}.txt || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh                                   ${pkgdir}/var/install/config.d/${_pname}.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh                            ${pkgdir}/var/install/config.d/${_pname}-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help                                 ${pkgdir}/var/install/help/${_pname} || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.phpmyadmin.menu       ${pkgdir}/var/install/menu/setup.services.phpmyadmin.menu || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.phpmyadmin.tools.menu ${pkgdir}/var/install/menu/setup.services.phpmyadmin.tools.menu || return 1
 	install -D -m755 ${srcdir}/${pkgname}-helpers.sh                           ${pkgdir}/var/install/bin/phpmyadmin-helpers.sh || return 1

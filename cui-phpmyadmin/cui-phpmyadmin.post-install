@@ -1,4 +1,3 @@
 #!/bin/sh
-
 /var/install/bin/add-menu setup.services.menu setup.services.phpmyadmin.menu "phpMyAdmin"
 /var/install/config.d/phpmyadmin-update.sh

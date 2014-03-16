@@ -1,0 +1,111 @@
+# Variable                               OPT_VARIABLE                            VARIABLE_N                          VALUE
+START_PHPMYADMIN                         -                                       -                                   YESNO
+
+PHPMYADMIN_SERVER_N                      START_PHPMYADMIN                        -                                   NUMERIC
+PHPMYADMIN_SERVER_%_NAME                 START_PHPMYADMIN                        PHPMYADMIN_SERVER_N                 NONE
+PHPMYADMIN_SERVER_%_ACTIVE               START_PHPMYADMIN                        PHPMYADMIN_SERVER_N                 YESNO
+PHPMYADMIN_SERVER_%_HOST                 PHPMYADMIN_SERVER_%_ACTIVE              PHPMYADMIN_SERVER_N                 NONE
+PHPMYADMIN_SERVER_%_PORT                 PHPMYADMIN_SERVER_%_ACTIVE              PHPMYADMIN_SERVER_N                 ENUMERIC
+
+# Configuration of socket is not used anymore.
+# The value out of the php config is inserted automatically.
+#PHPMYADMIN_SERVER_%_SOCKET               PHPMYADMIN_SERVER_%_ACTIVE              PHPMYADMIN_SERVER_N                 NONE
+
+PHPMYADMIN_SERVER_%_CONNECT_TYPE         PHPMYADMIN_SERVER_%_ACTIVE              PHPMYADMIN_SERVER_N                 PHPMYADMIN_SERVER_CONNECT_TYPE_CUI
+PHPMYADMIN_SERVER_%_EXTENSION            PHPMYADMIN_SERVER_%_ACTIVE              PHPMYADMIN_SERVER_N                 PHPMYADMIN_SERVER_EXTENSION_CUI
+PHPMYADMIN_SERVER_%_COMPRESS             PHPMYADMIN_SERVER_%_ACTIVE              PHPMYADMIN_SERVER_N                 YESNO
+PHPMYADMIN_SERVER_%_AUTH_METHOD          PHPMYADMIN_SERVER_%_ACTIVE              PHPMYADMIN_SERVER_N                 PHPMYADMIN_GET_AUTH_METHOD_CUI
+PHPMYADMIN_SERVER_%_AUTH_SWEKEY          PHPMYADMIN_SERVER_%_ACTIVE              PHPMYADMIN_SERVER_N                 YESNO
+PHPMYADMIN_SERVER_%_AUTH_SWEKEY_N        PHPMYADMIN_SERVER_%_AUTH_SWEKEY         PHPMYADMIN_SERVER_N                 NUMERIC
+PHPMYADMIN_SERVER_%_AUTH_SWEKEY_%_ID     PHPMYADMIN_SERVER_%_AUTH_SWEKEY         PHPMYADMIN_SERVER_%_AUTH_SWEKEY_N   NOTEMPTY
+PHPMYADMIN_SERVER_%_AUTH_SWEKEY_%_NAME   PHPMYADMIN_SERVER_%_AUTH_SWEKEY         PHPMYADMIN_SERVER_%_AUTH_SWEKEY_N   NOTEMPTY
+PHPMYADMIN_SERVER_%_ONLY_DB_N            PHPMYADMIN_SERVER_%_ACTIVE              PHPMYADMIN_SERVER_N                 NUMERIC
+PHPMYADMIN_SERVER_%_ONLY_DB_%_NAME       PHPMYADMIN_SERVER_%_ACTIVE              PHPMYADMIN_SERVER_%_ONLY_DB_N       NONE
+PHPMYADMIN_SERVER_%_VERBOSE              PHPMYADMIN_SERVER_%_ACTIVE              PHPMYADMIN_SERVER_N                 NONE
+PHPMYADMIN_SERVER_%_ADVANCED_FEATURES    PHPMYADMIN_SERVER_%_ACTIVE              PHPMYADMIN_SERVER_N                 YESNO
+PHPMYADMIN_SERVER_%_USE_SSL              PHPMYADMIN_SERVER_%_ADVANCED_FEATURES   PHPMYADMIN_SERVER_N                 YESNO
+PHPMYADMIN_SERVER_%_NO_PASSWORD          PHPMYADMIN_SERVER_%_ADVANCED_FEATURES   PHPMYADMIN_SERVER_N                 YESNO
+PHPMYADMIN_SERVER_%_PMADB                PHPMYADMIN_SERVER_%_ADVANCED_FEATURES   PHPMYADMIN_SERVER_N                 NOTEMPTY
+PHPMYADMIN_SERVER_%_CONTROLUSER          PHPMYADMIN_SERVER_%_ADVANCED_FEATURES   PHPMYADMIN_SERVER_N                 NOTEMPTY
+PHPMYADMIN_SERVER_%_CONTROLPASS          PHPMYADMIN_SERVER_%_ADVANCED_FEATURES   PHPMYADMIN_SERVER_N                 PASSWD
+
+#PHPMYADMIN_SERVER_%_QUERYHISTORYDB    PHPMYADMIN_SERVER_%_ACTIVE              PHPMYADMIN_SERVER_N                 YESNO
+#PHPMYADMIN_SERVER_%_QUERYHISTORYMAX   PHPMYADMIN_SERVER_%_QUERYHISTORYDB      PHPMYADMIN_SERVER_N                 NUMERIC
+#PHPMYADMIN_SERVER_%_QUERYHISTORYTAB   PHPMYADMIN_SERVER_%_QUERYHISTORYDB      PHPMYADMIN_SERVER_N                 NONE
+
+PHPMYADMIN_BLOWFISH_SECRET               START_PHPMYADMIN                        -                     PHPMYADMIN_BLOWFISH_SECRET_EXP
+
+PHPMYADMIN_LAYOUT                        START_PHPMYADMIN                        -                     YESNO
+PHPMYADMIN_LEFTFRAME_LIGHT               PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_LEFTFRAME_DB_TREE             PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_LEFTFRAME_DB_SEPARATOR        PHPMYADMIN_LAYOUT                       -                     NONE
+PHPMYADMIN_LEFTFRAME_TABLE_SEPARATOR     PHPMYADMIN_LAYOUT                       -                     NONE
+PHPMYADMIN_LEFTFRAME_TABLE_LEVEL         PHPMYADMIN_LAYOUT                       -                     NUMERIC
+PHPMYADMIN_LEFT_DISPLAY_LOGO             PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_LEFT_DISPLAY_SERVERS          PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_LEFT_POINTER_ENABLE           PHPMYADMIN_LAYOUT                       -                     YESNO
+
+PHPMYADMIN_DEFAULT_TAB_SERVER            PHPMYADMIN_LAYOUT                       -                     PHPMYADMIN_DEFAULT_TAB_SERVER_CUI
+PHPMYADMIN_DEFAULT_TAB_DATABASE          PHPMYADMIN_LAYOUT                       -                     PHPMYADMIN_DEFAULT_TAB_DATABASE_CUI
+PHPMYADMIN_DEFAULT_TAB_TABLE             PHPMYADMIN_LAYOUT                       -                     PHPMYADMIN_DEFAULT_TAB_TABLE_CUI
+PHPMYADMIN_LIGHT_TABS                    PHPMYADMIN_LAYOUT                       -                     YESNO
+
+PHPMYADMIN_ERROR_ICONIC                  PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_MAINPAGE_ICONIC               PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_REPLACE_HELP_IMG              PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_NAVIGATION_BAR_ICONIC         PHPMYADMIN_LAYOUT                       -                     PHPMYADMIN_NAVIGATION_BAR_ICONIC_CUI
+PHPMYADMIN_PROPERTIES_ICONIC             PHPMYADMIN_LAYOUT                       -                     PHPMYADMIN_PROPERTIES_ICONIC_CUI
+
+PHPMYADMIN_BROWSE_POINTER_ENABLE         PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_BROWSE_MARKER_ENABLE          PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_MODIFY_DELETE_AT_RIGHT        PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_MODIFY_DELETE_AT_LEFT         PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_REPEAT_CELLS                  PHPMYADMIN_LAYOUT                       -                     NUMERIC
+PHPMYADMIN_DEFAULT_DISPLAY               PHPMYADMIN_LAYOUT                       -                     PHPMYADMIN_DEFAULT_DISPLAY_CUI
+
+PHPMYADMIN_TEXTAREA_COLS                 PHPMYADMIN_LAYOUT                       -                     NUMERIC
+PHPMYADMIN_TEXTAREA_ROWS                 PHPMYADMIN_LAYOUT                       -                     NUMERIC
+PHPMYADMIN_LONGTEXT_DOUBLE_TEXTAREA      PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_TEXTAREA_AUTOSELECT           PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_CHAR_EDITING                  PHPMYADMIN_LAYOUT                       -                     PHPMYADMIN_CHAR_EDITING_CUI
+PHPMYADMIN_CHAR_TEXTAREA_COLS            PHPMYADMIN_LAYOUT                       -                     NUMERIC
+PHPMYADMIN_CHAR_TEXTAREA_ROWS            PHPMYADMIN_LAYOUT                       -                     NUMERIC
+PHPMYADMIN_CTRL_ARROWS_MOVING            PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_DEFAULT_PROP_DISPLAY          PHPMYADMIN_LAYOUT                       -                     PHPMYADMIN_DEFAULT_PROP_DISPLAY_CUI
+PHPMYADMIN_INSERT_ROWS                   PHPMYADMIN_LAYOUT                       -                     NUMERIC
+
+PHPMYADMIN_EDIT_IN_WINDOW                PHPMYADMIN_LAYOUT                       -                     YESNO
+PHPMYADMIN_QUERY_WINDOW_HEIGHT           PHPMYADMIN_LAYOUT                       -                     NUMERIC
+PHPMYADMIN_QUERY_WINDOW_WIDTH            PHPMYADMIN_LAYOUT                       -                     NUMERIC
+PHPMYADMIN_QUERY_WINDOW_DEFTAB           PHPMYADMIN_LAYOUT                       -                     PHPMYADMIN_QUERY_WINDOW_DEFTAB_CUI
+
+PHPMYADMIN_MISC_FEATURES                 START_PHPMYADMIN                        -                     YESNO
+PHPMYADMIN_FORCE_SSL                     PHPMYADMIN_MISC_FEATURES                -                     YESNO
+PHPMYADMIN_SHOW_PHP_INFO                 PHPMYADMIN_MISC_FEATURES                -                     YESNO
+PHPMYADMIN_SHOW_CHG_PASSWORD             PHPMYADMIN_MISC_FEATURES                -                     YESNO
+PHPMYADMIN_ALLOW_ARBITRARY_SERVER        PHPMYADMIN_MISC_FEATURES                -                     YESNO
+PHPMYADMIN_LOGIN_COOKIE_RECALL           PHPMYADMIN_MISC_FEATURES                -                     YESNO
+PHPMYADMIN_LOGIN_COOKIE_VALIDITY         PHPMYADMIN_MISC_FEATURES                -                     NUMERIC
+
+PHPMYADMIN_PMA_ABSOLUTE_URI              PHPMYADMIN_MISC_FEATURES                -                     EFQDN
+PHPMYADMIN_PMA_NORELATION_DISABLEWARNING PHPMYADMIN_MISC_FEATURES                -                     YESNO
+
+PHPMYADMIN_UPLOADDIR                     PHPMYADMIN_MISC_FEATURES                -                     NONE
+PHPMYADMIN_SAVEDIR                       PHPMYADMIN_MISC_FEATURES                -                     NONE
+PHPMYADMIN_DOCSQLDIR                     PHPMYADMIN_MISC_FEATURES                -                     NONE
+
+PHPMYADMIN_MYSQLMANUALBASE               PHPMYADMIN_MISC_FEATURES                -                     NONE
+PHPMYADMIN_MYSQLMANUALTYPE               PHPMYADMIN_MISC_FEATURES                -                     PHPMYADMIN_MYSQLMANUALTYPE_CUI
+
+PHPMYADMIN_ALLOWANYWHERERECODING         PHPMYADMIN_MISC_FEATURES                -                     YESNO
+PHPMYADMIN_DEFAULTCHARSET                PHPMYADMIN_MISC_FEATURES                -                     PHPMYADMIN_DEFAULT_CHARSET_CUI
+PHPMYADMIN_RECODINGENGINE                PHPMYADMIN_MISC_FEATURES                -                     PHPMYADMIN_RECODINGENGINE_CUI
+PHPMYADMIN_ICONVEXTRAPARAMS              PHPMYADMIN_MISC_FEATURES                -                     NONE
+
+PHPMYADMIN_GD2AVAILABLE                  PHPMYADMIN_MISC_FEATURES                -                     YESNO
+
+PHPMYADMIN_BROWSEMIME                    PHPMYADMIN_MISC_FEATURES                -                     YESNO
+PHPMYADMIN_PDFDEFAULTPAGESIZE            PHPMYADMIN_MISC_FEATURES                -                     PHPMYADMIN_PDFDEFAULTPAGESIZE_CUI
+PHPMYADMIN_DEFAULTLANGUAGE               PHPMYADMIN_MISC_FEATURES                -                     PHPMYADMIN_DEFAULT_LANGUAGE_CUI
+PHPMYADMIN_DISABLE_SUHOSIN_WARNING       PHPMYADMIN_MISC_FEATURES                -                     YESNO
+PHPMYADMIN_ALLOW_THIRD_PARTY_FRAMING     PHPMYADMIN_MISC_FEATURES                -                     YESNO
