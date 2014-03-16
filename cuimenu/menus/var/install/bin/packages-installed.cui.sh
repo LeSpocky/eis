@@ -117,7 +117,7 @@ function install_package()
             cui_getclientrect "$win"
             local w="$p4"
             local h="$p5"
-            local p="$[$h - $h / 3 + $h / 10]"
+            local p="$[$h - $h / 2 + $h / 10]"
             cui_terminal_new "$win" "" "0" "$p" "$[$w - 2]" "$[$h -$p + 1]" "${IDC_TERMWIN}" "$CWS_POPUP" "$CWS_NONE" && termwin="$p2"
             if cui_valid_handle $termwin
             then
