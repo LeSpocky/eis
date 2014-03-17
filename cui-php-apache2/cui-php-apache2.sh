@@ -655,6 +655,19 @@ EOF
         errorsyslog php-xml
     fi
 fi
+# -----------------------------------------------------------------------------
+# XMLREADER
+rm -f /etc/php/conf.d/xmlreader.ini
+if [ "$PHP_EXT_XML" = "yes" ] ; then
+    apk info -q -e php-xmlreader || apk add -q php-xmlreader
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/xmlreader.ini <<EOF
+extension=xmlreader.so
+EOF
+    else
+        errorsyslog php-xmlreader
+    fi
+fi
 
 # -----------------------------------------------------------------------------
 # ZIP
