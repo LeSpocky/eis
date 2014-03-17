@@ -117,8 +117,8 @@ Mit 'no' wird das Modul deaktiviert (default).
 </help>
 
 <help name="PHP_EXT_XML">
-Mit 'yes' wird das XML Modul geladen.<br/>
-Mit 'no' wird das Modul deaktiviert (default).
+Mit 'yes' wird das XML und XMLREADER Modul geladen.<br/>
+Mit 'no' werden die Module deaktiviert (default).
 </help>
 
 <help name="PHP_EXT_ZIP">

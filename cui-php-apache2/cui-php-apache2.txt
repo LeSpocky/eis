@@ -166,8 +166,8 @@ Allgemeine Konfiguration
           Standardeinstellung: PHP_EXT_IMAP='no'
 
    PHP_EXT_XML
-          Mit 'yes' wird das XML Modul geladen.
-          Mit 'no' wird das Modul deaktiviert.
+          Mit 'yes' wird das XML und XMLREADER Modul geladen.
+          Mit 'no' werden die Module deaktiviert.
 
           Standardeinstellung: PHP_EXT_XML='no'
 
