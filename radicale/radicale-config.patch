@@ -1,0 +1,53 @@
+--- a/config
++++ b/config
+@@ -17,7 +17,7 @@
+ # IPv6 adresses are configured to only allow IPv6 connections
+ hosts = 0.0.0.0:5232
+ # Daemon flag
+-daemon = False
++daemon = True
+ # File storing the PID in daemon mode
+ pid =
+ # SSL flag, enable HTTPS protocol
+@@ -105,19 +105,19 @@
+ [rights]
+ # Rights backend
+ # Value: None | owner_only | owner_write | from_file | custom
+-type = None
++type = owner_only
+ 
+ # Custom rights handler
+ custom_handler =
+ 
+ # File for rights management from_file
+-file = ~/.config/radicale/rights
++file = /etc/radicale/rights
+ 
+ 
+ [storage]
+ # Storage backend
+ # Value: filesystem | multifilesystem | database | custom
+-type = filesystem
++type = multifilesystem
+ 
+ # Custom storage handler
+ custom_handler =
+ 
+@@ -123,8 +123,8 @@
+ custom_handler =
+ 
+ # Folder for storing local collections, created if not present
+-filesystem_folder = ~/.config/radicale/collections
++filesystem_folder = /var/lib/radicale
+ 
+ # Database URL for SQLAlchemy
+ # dialect+driver://user:password@host/dbname[?key=value..]
+--- a/logging
++++ b/logging
+@@ -45,7 +45,7 @@
+ [handler_file]
+ # File handler
+ class = FileHandler
+-args = ('/var/log/radicale',)
++args = ('/var/log/radicale/radicale.log',)
+ formatter = full
