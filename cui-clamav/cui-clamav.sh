@@ -9,11 +9,6 @@
 # include configuration files:
 . /etc/config.d/clamd
 
-# fix default clamav directories
-mkdir -p /run/clamav
-chmod 0777 /run/clamav
-chown clamav /run/clamav
-
 #-------------------------------------------------------------------------------
 # create or update crontab file for clamav
 #-------------------------------------------------------------------------------
@@ -160,5 +155,10 @@ chown clamav /etc/clamav/freshclam.conf
 
 # force stop freshclom (autostart with clamd)
 /sbin/rc-service --quiet freshclam stop
+killall freshclam >/dev/null 2>&1
+
+# create missing socket path with clamd prepare init script
+/sbin/rc-update -q add clamdpre 2>/dev/null
+/sbin/rc-service --quiet clamdpre restart
 
 exit 0

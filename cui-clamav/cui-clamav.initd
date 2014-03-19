@@ -1,0 +1,19 @@
+#!/sbin/runscript
+
+CONF=/etc/clamav/clamd.conf
+
+depend()
+{
+	need localmount
+	before freshclam
+}
+
+start()
+{
+	local sockdir=$(awk '$1 == "LocalSocket" { print $2 }' $CONF)
+	sockdir=$(dirname $sockdir)
+	ebegin "Prepare clamav"
+		mkdir -p -m0777 $sockdir
+		chown clamav $sockdir
+	eend 0
+}

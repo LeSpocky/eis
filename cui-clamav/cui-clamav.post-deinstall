@@ -8,4 +8,6 @@ rm -f /etc/default.d/clamd
 rm -f /etc/check.d/clamd
 rm -f /etc/check.d/clamd.exp
 
+/sbin/rc-update -q del clamdpre
+
 exit 0
