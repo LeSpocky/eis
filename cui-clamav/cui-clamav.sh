@@ -10,9 +10,9 @@
 . /etc/config.d/clamd
 
 # fix default clamav directories
-mkdir -p /tmp/clamd
-chmod 0777 /tmp/clamd
-chown clamav /tmp/clamd
+mkdir -p /run/clamav
+chmod 0777 /run/clamav
+chown clamav /run/clamav
 
 #-------------------------------------------------------------------------------
 # create or update crontab file for clamav
@@ -41,7 +41,7 @@ else
 fi
 
 #sed -i -e "s|.*PidFile .*|PidFile /run/clamav/clamd.pid|" /etc/clamav/clamd.conf.tmp
-sed -i -e "s|.*LocalSocket .*|LocalSocket /tmp/clamd/clamd.sock|" /etc/clamav/clamd.conf.tmp
+sed -i -e "s|.*LocalSocket .*|LocalSocket /run/clamav/clamd.sock|" /etc/clamav/clamd.conf.tmp
 sed -i -e "s|.*TCPSocket .*|TCPSocket 3310 |" /etc/clamav/clamd.conf.tmp
 sed -i -e "s|.*TCPAddr .*|TCPAddr 127.0.0.1 |" /etc/clamav/clamd.conf.tmp
 if [ "$CLAMD_SELFCHECK" = "no" ]; then
