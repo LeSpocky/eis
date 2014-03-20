@@ -1,29 +1,22 @@
 #!/bin/sh
-#-----------------------------------------------------------------------------
-# Creation:     2006-08-18 Jens Vehlhaber <jens(at)eisfair(dot)org>
-#-----------------------------------------------------------------------------
-
-#include eislib
-. /var/install/include/eislib
 
 case "$1"
 in
     qlist)
-        mailq >> /tmp/mailq.$$
-        /var/install/bin/show-doc.cui -f /tmp/mailq.$$
+        mailq >> /tmp/mailq.$$ &
+        /var/install/bin/show-doc.cui -t "List of messages that are in the mail queue:" -f /tmp/mailq.$$
         rm -f /tmp/mailq.$$
         ;;
     qflush)
-        clrhome
-        echo "Flush all e-mails and show mail queue:"
-        /usr/sbin/postfix flush
-        mailq
-        anykey
+        echo "Flush all e-mails and show mail queue:" > /tmp/mailq.$$
+        /usr/sbin/postfix flush >> /tmp/mailq.$$ &
+        mailq >> /tmp/mailq.$$ &
+        /var/install/bin/show-doc.cui -t "List of messages that are in the mail queue:" -f /tmp/mailq.$$
+        rm -f /tmp/mailq.$$
         ;;
     qhandle)
         /usr/bin/pfqueue -b postfix2 -q 1
         ;;
 esac
 
-### -------------------------------------------------------------------------
 exit 0

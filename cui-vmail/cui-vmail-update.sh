@@ -12,8 +12,8 @@ packages_name='vmail'
 ### ---------------------------------------------------------------------------
 ### read old and default variables
 ### ---------------------------------------------------------------------------
- . /etc/default.d/$packages_name
- . /etc/config.d/$packages_name
+ . /etc/default.d/${packages_name}
+ . /etc/config.d/${packages_name}
 
 
 ### ---------------------------------------------------------------------------
@@ -104,7 +104,8 @@ packages_name='vmail'
     printvar "POSTFIX_AV_CLAMAV" "Use ClamAV antivirus scanner"
     printvar "POSTFIX_AV_FPROTD" "Use F-Prot daemon antivirus scanner"
     printvar "POSTFIX_AV_SCRIPT" "Use scripfile"
-    printvar "POSTFIX_AV_SCRIPTFILE" "Name of scriptfile (/usr/local/postfix/smc-unzip.sh)"
+    printvar "POSTFIX_AV_SCRIPTFILE" "Scriptfile name"
+    printvar ""                      "/usr/bin/smc-milter-new-unzip.sh"
     printvar "POSTFIX_AV_VIRUS_INFO" "Send virus warn message to e-mail recipient"
     printvar "POSTFIX_AV_QUARANTINE" "Store the original virus to the quarantain"
 
@@ -135,10 +136,10 @@ packages_name='vmail'
     printend
     #-----------------------------------------------------------------------
 
-} /etc/config.d/$packages_name
+} > /etc/config.d/${packages_name}
 
-chmod 0640 /etc/config.d/$packages_name
-chown root /etc/config.d/$packages_name
+chmod 0640 /etc/config.d/${packages_name}
+chown root /etc/config.d/${packages_name}
 
 ### ---------------------------------------------------------------------------
 exit 0

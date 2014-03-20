@@ -10,4 +10,4 @@
 <script file="cui-vmail-tools-sender-access.cui.sh">E-Mail sender access administration</script>
 <script file="cui-vmail-tools-client-access.cui.sh">E-Mail client access administration</script>
 <script file="cui-vmail-user-maildropfilter.cui.sh">Sieve filter administration</script>
-<!-- script file="cui-vmail-tools-fetchmailhandling.cui.sh" Fetchmail user administration script -->
+<script file="cui-vmail-tools-fetchmailhandling.cui.sh"> Fetchmail user administration</script>

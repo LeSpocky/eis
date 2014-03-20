@@ -150,7 +150,7 @@ postconf -e "virtual_mailbox_domains = proxy:mysql:/etc/postfix/sql/mysql-virtua
 postconf -e "virtual_mailbox_maps = proxy:mysql:/etc/postfix/sql/mysql-virtual_mailbox_maps.cf"
 postconf -e "virtual_mailbox_base = /var/spool/postfix/virtual"
 postconf -e "virtual_transport = pop3imap"
-echo -n "."
+echo -n "Update configuration ."
 postconf -e "bounce_queue_lifetime = ${POSTFIX_QUEUE_LIFETIME}d"
 postconf -e "maximal_queue_lifetime = ${POSTFIX_QUEUE_LIFETIME}d"
 
@@ -726,28 +726,7 @@ fi
 mkdir -p /etc/cron/root
 echo "#59 23 * * * /var/install/bin/vmail-rejectlogfilter.sh" > /etc/cron/root/postfix
 [ "$START_POP3IMAP" = 'yes' ] && echo "00,30 * * * * /usr/bin/cui-vmail-maildropfilter.sh" >> /etc/cron/root/postfix
-[ "$START_FETCHMAIL" = "yes" ] && echo "$FETCHMAIL_CRON_SCHEDULE /var/install/bin/vmail-fetchmailstart.sh" >> /etc/cron/root/postfix
-# update crontab file
-/sbin/rc-service --quiet fcron reload
-
-
-### -------------------------------------------------------------------------
-### make fetchmail startfile
-### -------------------------------------------------------------------------
-logging="-s"
-[ "$FETCHMAIL_LOG" = "yes" ] && logging="--syslog"
-cat > /var/install/bin/vmail-fetchmailstart.sh <<EOF
-#!/bin/sh
-#------------------------------------------------------------------------------
-. /etc/config.d/vmail
-fetchfile=".fetchmailrc.\$$"
-su mail -c "/usr/bin/mysql2fetchmail -t /var/spool/postfix/virtual/\${fetchfile} \
-            -u \$VMAIL_SQL_USER -s \$VMAIL_SQL_HOST -d \$VMAIL_SQL_DATABASE -p \$VMAIL_SQL_PASS -e \$VMAIL_SQL_ENCRYPT_KEY; \\
-            /usr/bin/fetchmail -t ${FETCHMAIL_TIMEOUT} -f /var/spool/postfix/virtual/\$fetchfile $logging --nobounce --sslcertpath $VMAIL_TLS_CAPATH --postmaster $FETCHMAIL_POSTMASTER 2>/dev/null ; \\
-            rm -f /var/spool/postfix/virtual/\$fetchfile"
-exit 0
-EOF
-chmod 0700 /var/install/bin/vmail-fetchmailstart.sh
+[ "$START_FETCHMAIL" = "yes" ] && echo "$FETCHMAIL_CRON_SCHEDULE /usr/bin/cui-vmail-fetchmail.sh" >> /etc/cron/root/postfix
 
 
 ### -------------------------------------------------------------------------
@@ -825,16 +804,20 @@ echo "."
 ### -------------------------------------------------------------------------
 ### setup runlevel - not with init.d/vmail!
 ### -------------------------------------------------------------------------
+# update crontab file
+/sbin/rc-service --quiet fcron reload
 if [ "$START_VMAIL" = "yes" ]; then
     [ "$START_POP3IMAP" = 'yes' ] && /sbin/rc-update -q add dovecot 2>/dev/null || /sbin/rc-update -q del dovecot
     /sbin/rc-update -q add smc-milter-new 2>/dev/null
     [ -x /etc/init.d/greylist ] && /sbin/rc-update -q add greylist 2>/dev/null
     /sbin/rc-update -q add postfix 2>/dev/null
+#    [ "$START_FETCHMAIL" = "yes" ] && /sbin/rc-update -q add fetchmail 2>/dev/null || /sbin/rc-update -q del fetchmail
 else
     /sbin/rc-update -q del dovecot
     /sbin/rc-update -q del smc-milter-new
     [ -x /etc/init.d/greylist ] && /sbin/rc-update -q del greylist
     /sbin/rc-update -q del postfix
+#    /sbin/rc-update -q del fetchmail
 fi
 
 ### -------------------------------------------------------------------------
