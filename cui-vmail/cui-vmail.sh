@@ -294,11 +294,11 @@ cat > /etc/postfix/master.cf <<EOF
 # service type  private unpriv  chroot  wakeup  maxproc command + args
 #               (yes)   (yes)   (yes)   (never) (100)
 # ==========================================================================
-${postfix_psmtpd}smtp      inet  n       -       y       -       -       smtpd
-${postfix_pscreen}smtp      inet  n       -       y       -       1       postscreen
-${postfix_pscreen}smtpd     pass  -       -       y       -       -       smtpd
-${postfix_pscreen}dnsblog   unix  -       -       y       -       0       dnsblog
-${postfix_pscreen}tlsproxy  unix  -       -       y       -       0       tlsproxy
+${postfix_psmtpd}smtp      inet  n       -       n       -       -       smtpd
+${postfix_pscreen}smtp      inet  n       -       n       -       1       postscreen
+${postfix_pscreen}smtpd     pass  -       -       n       -       -       smtpd
+${postfix_pscreen}dnsblog   unix  -       -       n       -       0       dnsblog
+${postfix_pscreen}tlsproxy  unix  -       -       n       -       0       tlsproxy
 submission inet n       -       n       -       -       smtpd
   -o syslog_name=postfix/submission
   -o smtpd_tls_security_level=may
