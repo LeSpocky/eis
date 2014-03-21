@@ -1,2 +1,2 @@
-MYSQL_RAM     = '1GB|2GB|4GB|8GB|16BG|32GB|64GB'
-              : 'Use only: 1GB, 2GB, 4GB, 8GB, 16GB, 32GB or 64GB'
+MYSQL_RAM     = '256MB|1GB|2GB|4GB|8GB|16BG|32GB|64GB'
+              : 'Use only: 256MB, 1GB, 2GB, 4GB, 8GB, 16GB, 32GB or 64GB'

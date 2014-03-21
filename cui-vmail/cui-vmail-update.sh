@@ -19,7 +19,7 @@ packages_name='vmail'
 ### ---------------------------------------------------------------------------
 ### Write config and default files
 ### ---------------------------------------------------------------------------
-{
+(
     printgpl --conf "$packages_name"
     #-----------------------------------------------------------------------
     printgroup "Vmail settings"
@@ -136,7 +136,7 @@ packages_name='vmail'
     printend
     #-----------------------------------------------------------------------
 
-} > /etc/config.d/${packages_name}
+) > /etc/config.d/${packages_name}
 
 chmod 0640 /etc/config.d/${packages_name}
 chown root /etc/config.d/${packages_name}

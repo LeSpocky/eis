@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #----------------------------------------------------------------------------
 # Eisfair configuration parameter update script
 # Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
@@ -37,7 +37,7 @@ packages_name=mysql
 
     printvar "MYSQL_CONNECT_PORT"   "MySQL remote port, default=3306"
 
-    printvar "MYSQL_RAM"            "Use 1 ... 64 GB RAM"    
+    printvar "MYSQL_RAM"            "Use 256 MB ... 64 GB RAM"
 
     printvar "MYSQL_LOG_INTERVAL"   "logrotate interval"
 

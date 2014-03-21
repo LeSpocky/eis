@@ -14,17 +14,12 @@
 #-------------------------------------------------------------------------------
 # setup defaults
 #-------------------------------------------------------------------------------
-
 [ -e /var/lib/mysql/mysql ] || rc-service --quiet mysql setup
-
-#/usr/bin/mysqladmin -u root password 'new-password'
-#/usr/bin/mysqladmin -u root -h alpeis password 'new-password'
 
 #-------------------------------------------------------------------------------
 # creating/edit config file
 #-------------------------------------------------------------------------------
 bindaddr="bind-address                = 127.0.0.1"
-
 if [ "$MYSQL_NETWORK" = "yes" ] ; then
     bindaddr="#bind-address               = 127.0.0.1"
     [ -n "$MYSQL_BIND_IP_ADDRESS" ] && bindaddr="bind-address                = $MYSQL_BIND_IP_ADDRESS"
@@ -40,7 +35,30 @@ xarch=$(cat /etc/apk/arch)
 [ "$xarch" = "x86_64" ] && thread_stack="256K" || thread_stack="192K"
 
 # ---- set options for xx GB RAM -----------------------------------------------
-if [ "$MYSQL_RAM" = "1GB" ]; then
+if [ "$MYSQL_RAM" = "256MB" ]; then
+    sort_buffer_size="256K"
+    read_buffer_size="256K"
+    read_rnd_buffer_size="256K"
+    join_buffer_size="256K"
+    binlog_cache_size="64K"
+    ## total per-thread buffer memory usage: 134400K = 131.25MB
+    ## Query Cache - global buffer
+    query_cache_size="8M"
+    ## Connections - multiplier for memory usage via per-thread buffers
+    max_connections="60"
+    #thread_cache_size - recommend 5% of max_connections
+    thread_cache_size="4"
+    ## Table and TMP settings
+    max_heap_table_size="16M"
+    bulk_insert_buffer_size="8M"
+    tmp_table_size="8M"
+    ## MyISAM Engine - global buffer
+    key_buffer_size="4M"
+    ## InnoDB Plugin Independent Settings
+    innodb_buffer_pool_size="32M"
+    innodb_log_buffer_size="8M"
+
+elif [ "$MYSQL_RAM" = "1GB" ]; then
     sort_buffer_size="256K"
     read_buffer_size="256K"
     read_rnd_buffer_size="256K"
@@ -51,6 +69,8 @@ if [ "$MYSQL_RAM" = "1GB" ]; then
     query_cache_size="32M"
     ## Connections - multiplier for memory usage via per-thread buffers
     max_connections="100"
+    #thread_cache_size - recommend 5% of max_connections
+    thread_cache_size="5"
     ## Table and TMP settings
     max_heap_table_size="64M"
     bulk_insert_buffer_size="64M"
@@ -72,6 +92,8 @@ elif [ "$MYSQL_RAM" = "2GB" ]; then
     query_cache_size="64M"
     ## Connections - multiplier for memory usage via per-thread buffers
     max_connections="400"
+    #thread_cache_size - recommend 5% of max_connections
+    thread_cache_size="20"
     ## Table and TMP settings
     max_heap_table_size="128M"
     bulk_insert_buffer_size="128M"
@@ -93,6 +115,8 @@ elif [ "$MYSQL_RAM" = "4GB" ]; then
     query_cache_size="128M"
     ## Connections - multiplier for memory usage via per-thread buffers
     max_connections="600"
+    #thread_cache_size - recommend 5% of max_connections
+    thread_cache_size="30"
     ## Table and TMP settings
     max_heap_table_size="512M"
     bulk_insert_buffer_size="512M"
@@ -114,6 +138,8 @@ elif [ "$MYSQL_RAM" = "8GB" ]; then
     query_cache_size="256M"
     ## Connections - multiplier for memory usage via per-thread buffers
     max_connections="1000"
+    #thread_cache_size - recommend 5% of max_connections
+    thread_cache_size="50"
     ## Table and TMP settings
     max_heap_table_size="1G"
     bulk_insert_buffer_size="1G"
@@ -135,6 +161,8 @@ elif [ "$MYSQL_RAM" = "16GB" ]; then
     query_cache_size="256M"
     ## Connections - multiplier for memory usage via per-thread buffers
     max_connections="2000"
+    #thread_cache_size - recommend 5% of max_connections
+    thread_cache_size="100"
     ## Table and TMP settings
     max_heap_table_size="1G"
     bulk_insert_buffer_size="1G"
@@ -156,6 +184,8 @@ elif [ "$MYSQL_RAM" = "32GB" ]; then
     query_cache_size="256M"
     ## Connections - multiplier for memory usage via per-thread buffers
     max_connections="2000"
+    #thread_cache_size - recommend 5% of max_connections
+    thread_cache_size="100"
     ## Table and TMP settings
     max_heap_table_size="1G"
     bulk_insert_buffer_size="1G"
@@ -179,6 +209,8 @@ elif [ "$MYSQL_RAM" = "64GB" ]; then
     query_cache_size="256M"
     ## Connections - multiplier for memory usage via per-thread buffers
     max_connections="2000"
+    #thread_cache_size - recommend 5% of max_connections
+    thread_cache_size="100"
     ## Table and TMP settings
     max_heap_table_size="1G"
     bulk_insert_buffer_size="1G"
@@ -265,7 +297,7 @@ table_definition_cache      = 1024
 
 ## Thread settings
 thread_concurrency          = $ncpu  #recommend 2x CPU cores
-thread_cache_size           = 100   #recommend 5% of max_connections
+thread_cache_size           = $thread_cache_size   #recommend 5% of max_connections
 
 ## Replication
 #read_only

@@ -13,7 +13,7 @@
 exec_dialog()
 {
     win="$p2"
-    sellist="1GB,2GB,4GB,8GB,16BG,32GB,64GB"
+    sellist="256MB,1GB,2GB,4GB,8GB,16BG,32GB,64GB"
     ece_select_list_dlg "$win" "Using RAM" "$sellist"
 }
 
