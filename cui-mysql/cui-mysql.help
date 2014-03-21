@@ -24,7 +24,11 @@ Example: MYSQL_BIND='192.168.1.1'<br/>
 </help>
 
 <help name="MYSQL_RAM">
-Memory using for mysql server.<br/>
+Memory using for mysql server:<br/>
+256MB = 60 connections, without binlog (old name medium)<br/>
+1GB = 100 connections<br/>
+2GB = 400 connections (old name large)<br/>
+4GB = 600 connections<br/>
 </help>
 
 <help name="MYSQL_LOG_INTERVAL">

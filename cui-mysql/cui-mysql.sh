@@ -1,13 +1,12 @@
 #!/bin/sh
 #-------------------------------------------------------------------------------
 # Eisfair configuration generator script
-# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2007 - 2014 the eisfair team, team(at)eisfair(dot)org
 #-------------------------------------------------------------------------------
 
 #echo "Executing $0 ..."
 #exec 2> /tmp/mysql-trace$$.log
 #set -x
-
 
 . /etc/config.d/mysql
 
@@ -35,7 +34,9 @@ xarch=$(cat /etc/apk/arch)
 [ "$xarch" = "x86_64" ] && thread_stack="256K" || thread_stack="192K"
 
 # ---- set options for xx GB RAM -----------------------------------------------
+blg="" # activate binlog
 if [ "$MYSQL_RAM" = "256MB" ]; then
+    blg="#"
     sort_buffer_size="256K"
     read_buffer_size="256K"
     read_rnd_buffer_size="256K"
@@ -255,13 +256,13 @@ relay_log_index             = mysql-relay-index
 #log                        = mysql-gen.log
 log_error                   = mysql-error.log
 log_warnings
-log_bin                     = mysql-bin
+${blg}log_bin                     = mysql-bin
 slow-query-log
 slow-query-log-file         = mysql-slow.log
 #log_queries_not_using_indexes
 long_query_time             = 10    #default: 10
-max_binlog_size             = 256M  #max size for binlog before rolling
-expire_logs_days            = 4     #binlog files older than this will be purged
+${blg}max_binlog_size             = 256M  #max size for binlog before rolling
+${blg}expire_logs_days            = 4     #binlog files older than this will be purged
 
 ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
 thread_stack                = $thread_stack  #default: 32bit: 192K, 64bit: 256K
@@ -269,7 +270,7 @@ sort_buffer_size            = $sort_buffer_size
 read_buffer_size            = $read_buffer_size
 read_rnd_buffer_size        = $read_rnd_buffer_size
 join_buffer_size            = $join_buffer_size
-binlog_cache_size           = $binlog_cache_size
+${blg}binlog_cache_size           = $binlog_cache_size
 
 ## Query Cache
 query_cache_size            = $query_cache_size
