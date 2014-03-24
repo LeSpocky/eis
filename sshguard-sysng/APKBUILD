@@ -10,7 +10,7 @@ license="BSD"
 depends="iptables"
 depends_dev=""
 makedepends="$depends_dev flex bison"
-install=""
+install="$pkgname.post-install $pkgname.pre-deinstall"
 subpackages="$pkgname-doc"
 source="http://download.eisfair.org/src/sshguard-$pkgver.tar.bz2
 	sshguard.initd
@@ -46,7 +46,7 @@ package() {
 	cd "$_builddir"
 	make DESTDIR="$pkgdir" install || return 1
 	install -Dm755 "$srcdir"/sshguard.initd \
-		"$pkgdir"/etc/init.d/sshguard || return 1
+		"$pkgdir"/etc/init.d/sshguard-sysng || return 1
 	install -Dm644 "$srcdir"/sshguard.destination \
 		"$pkgdir"/etc/syslog-ng/syslog-ng-destination.sshguard || return 1
 	install -Dm644 "$srcdir"/sshguard.filter \
