@@ -53,6 +53,7 @@ package() {
 		"$pkgdir"/etc/syslog-ng/syslog-ng-log.sshguard || return 1
 	install -Dm644 "$srcdir"/sshguard.whitelist \
 		"$pkgdir"/etc/sshguard/whitelist || return 1
+	mkdir -p -m0755 "$pkgdir"/var/lib/sshguard
 }
 
 md5sums="ea8ced8eb52e33b785533472336f8d87  sshguard-1.6.tar.bz2
