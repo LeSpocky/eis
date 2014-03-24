@@ -1,0 +1,30 @@
+#!/sbin/runscript
+# init.d file for alpine linux.
+
+name=sshguard
+daemon=/usr/sbin/$name
+
+depend() {
+	need net
+    after syslog
+}
+
+start() {
+	ebegin "Prepare ${name} iptables chain"
+	# creating sshguard chain
+	iptables -N sshguard 2>/dev/null
+	# block traffic
+	iptables -I INPUT -j sshguard 2>/dev/null
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping ${name} iptables"
+	# flushes list
+	iptables -F sshguard 2>/dev/null
+	# removes sshguard firewall rules
+	iptables -D INPUT -j sshguard 2>/dev/null
+	# removing sshguard chain
+	iptables -X sshguard 2>/dev/null
+	eend $?
+}
