@@ -38,7 +38,7 @@ build() {
 		--host=$CHOST \
 		--prefix=/usr \
 		--with-firewall=iptables \
-		|| return 1
+		--with-iptables=/sbin/iptables || return 1
 	make || return 1
 }
 
