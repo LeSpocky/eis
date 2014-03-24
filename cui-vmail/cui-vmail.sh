@@ -18,7 +18,7 @@ VMAIL_TLS_CAPATH='/etc/ssl/certs'
 # default values
 POSTFIX_SMARTHOST='no'
 POSTFIX_SMARTHOST_TLS='no'
-
+pchr="n" # use postfix changeroot
 
 ### -------------------------------------------------------------------------
 ### check the password file and get the passwords
@@ -294,12 +294,12 @@ cat > /etc/postfix/master.cf <<EOF
 # service type  private unpriv  chroot  wakeup  maxproc command + args
 #               (yes)   (yes)   (yes)   (never) (100)
 # ==========================================================================
-${postfix_psmtpd}smtp      inet  n       -       n       -       -       smtpd
-${postfix_pscreen}smtp      inet  n       -       n       -       1       postscreen
-${postfix_pscreen}smtpd     pass  -       -       n       -       -       smtpd
-${postfix_pscreen}dnsblog   unix  -       -       n       -       0       dnsblog
-${postfix_pscreen}tlsproxy  unix  -       -       n       -       0       tlsproxy
-submission inet n       -       n       -       -       smtpd
+${postfix_psmtpd}smtp      inet  n       -       $pchr       -       -       smtpd
+${postfix_pscreen}smtp      inet  n       -       $pchr       -       1       postscreen
+${postfix_pscreen}smtpd     pass  -       -       $pchr       -       -       smtpd
+${postfix_pscreen}dnsblog   unix  -       -       $pchr       -       0       dnsblog
+${postfix_pscreen}tlsproxy  unix  -       -       $pchr       -       0       tlsproxy
+submission inet n       -       $pchr       -       -       smtpd
   -o syslog_name=postfix/submission
   -o smtpd_tls_security_level=may
   -o smtpd_sasl_auth_enable=yes
@@ -320,31 +320,31 @@ ${postfix_tls}  -o smtpd_sender_restrictions=\$mua_sender_restrictions
 ${postfix_tls}  -o smtpd_recipient_restrictions=permit_sasl_authenticated,reject
 ${postfix_tls}  -o milter_macro_daemon_name=ORIGINATING
 #628       inet  n       -       n       -       -       qmqpd
-pickup    unix  n       -       n       60      1       pickup
-cleanup   unix  n       -       n       -       0       cleanup
-qmgr      unix  n       -       n       300     1       qmgr
+pickup    unix  n       -       $pchr       60      1       pickup
+cleanup   unix  n       -       $pchr       -       0       cleanup
+qmgr      unix  n       -       $pchr       300     1       qmgr
 #qmgr     unix  n       -       n       300     1       oqmgr
-tlsmgr    unix  -       -       n       1000?   1       tlsmgr
-rewrite   unix  -       -       n       -       -       trivial-rewrite
-bounce    unix  -       -       n       -       0       bounce
-defer     unix  -       -       n       -       0       bounce
-trace     unix  -       -       n       -       0       bounce
-verify    unix  -       -       n       -       1       verify
-flush     unix  n       -       n       1000?   0       flush
+tlsmgr    unix  -       -       $pchr       1000?   1       tlsmgr
+rewrite   unix  -       -       $pchr       -       -       trivial-rewrite
+bounce    unix  -       -       $pchr       -       0       bounce
+defer     unix  -       -       $pchr       -       0       bounce
+trace     unix  -       -       $pchr       -       0       bounce
+verify    unix  -       -       $pchr       -       1       verify
+flush     unix  n       -       $pchr       1000?   0       flush
 proxymap  unix  -       -       n       -       -       proxymap
 proxywrite unix -       -       n       -       1       proxymap
-smtp      unix  -       -       n       -       -       smtp
-relay     unix  -       -       n       -       -       smtp
+smtp      unix  -       -       $pchr       -       -       smtp
+relay     unix  -       -       $pchr       -       -       smtp
 #       -o smtp_helo_timeout=5 -o smtp_connect_timeout=5
-showq     unix  n       -       n       -       -       showq
-error     unix  -       -       n       -       -       error
+showq     unix  n       -       $pchr       -       -       showq
+error     unix  -       -       $pchr       -       -       error
 retry     unix  -       -       n       -       -       error
-discard   unix  -       -       n       -       -       discard
+discard   unix  -       -       $pchr       -       -       discard
 local     unix  -       n       n       -       -       local
 virtual   unix  -       n       n       -       -       virtual
-lmtp      unix  -       -       n       -       -       lmtp
-anvil     unix  -       -       n       -       1       anvil
-scache    unix  -       -       n       -       1       scache
+lmtp      unix  -       -       $pchr       -       -       lmtp
+anvil     unix  -       -       $pchr       -       1       anvil
+scache    unix  -       -       $pchr       -       1       scache
 # ==========================================================================
 # Interfaces to non-Postfix software
 # ==========================================================================

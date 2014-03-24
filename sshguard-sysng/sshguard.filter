@@ -1,8 +1,1 @@
-# pass only entries with auth+authpriv facilities from programs other than sshguard
-filter sshlogs { facility(auth, authpriv) and not match("sshguard"); };
-# pass to this process with this template (avoids <ID> prefixes)
-destination sshguardproc {
-    program("/usr/sbin/sshguard"
-        template("$DATE $FULLHOST $MESSAGE\n"));
-};
-log { source(src); filter(sshlogs); destination(sshguardproc); };
+  filter sshlogs { facility(auth, authpriv) and not match("sshguard"); };
