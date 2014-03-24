@@ -14,6 +14,9 @@
 # setup defaults
 #-------------------------------------------------------------------------------
 [ -e /var/lib/mysql/mysql ] || rc-service --quiet mysql setup
+mkdir -p    /var/lib/mysql_backup
+chmod 0750  /var/lib/mysql_backup
+chown mysql /var/lib/mysql_backup
 
 #-------------------------------------------------------------------------------
 # creating/edit config file

@@ -83,9 +83,9 @@ rm -f $ssh_authorized_keys_file_tmp
 # start stop update
 #----------------------------------------------------------------------------
 if [ "$START_SSHD" = "yes" ] ; then
-	  rc-update -q add sshd 2>/dev/null
+	rc-update -q add sshd default 2>/dev/null
 else
-	  rc-update -q del sshd  2>/dev/null
+	rc-update -q del sshd default 2>/dev/null
 fi
 
 
