@@ -1,5 +1,4 @@
 #!/bin/sh
 rc-service -q sshguard stop
 rc-update -q del sshguard boot
-rm -rf /var/lib/sshguard
 exit 0

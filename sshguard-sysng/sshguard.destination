@@ -1,4 +1,4 @@
   destination sshguardproc {
-    program("/usr/sbin/sshguard -w /etc/sshguard/whitelist -b /var/lib/sshguard/blacklist.db"
+    program("/usr/sbin/sshguard -w /etc/sshguard/whitelist"
         template("$DATE $FULLHOST $MESSAGE\n"));
   };
