@@ -1,28 +1,21 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
 # template-restore-dconf - restore config file from /etc/default.d
-# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+# Copyright (c) 2001-2014 The Eisfair Team <team@eisfair.org>
 #-----------------------------------------------------------------------------
 
 # get package name from filename PACKAGE-restore-dconf
-filename=`basename $0`
-package=`echo $filename | sed "s|-restore-dconf$||"`
+filename=$(basename $0)
+package=$(echo $filename | sed "s|-restore-dconf$||")
 
-# if package is template
-#    take package from $PACKAGE
+# if package is template take package from $PACKAGE
 [ "$package" = 'template' ] && package="$PACKAGE"
-
-#debug echo "+++ TEST filename: $filename"
-#debug echo "         PACKAGE:  $PACKAGE"
-#debug echo "         package:  $package"
-#debug read answ < /dev/tty
-
 
 if [ ! -f /etc/default.d/$package ]  ; then
     /var/install/bin/ask.cui --err "Configuration file /etc/default.d/$package does not exist"
 else
     if ( /var/install/bin/ask.cui "Overwrite your current configuration with: /etc/default.d/$package ?" ) ; then
-        cp -p /etc/default.d/$package /etc/config.d/$package
+        cp -pf /etc/default.d/$package /etc/config.d/$package
     fi
 fi
 

@@ -1,29 +1,23 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
 # template-restore-bconf - restore config file from /etc/backup.d
-# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+# Copyright (c) 2001-2014 The Eisfair Team <team@eisfair.org>
 #-----------------------------------------------------------------------------
 if [ $# -gt 0 ] ; then
-    restfile="$1"
-  
+    package="$1"
+    restfile="$2"
     if ( /var/install/bin/ask.cui "Overwrite your current configuration with: $restfile ?" ) ; then
-        cp -p /etc/backup.d/$restfile /etc/config.d/$package
+        cp -pf /etc/backup.d/$restfile /etc/config.d/$package
     fi
     return 0
 fi
 
 # get package name from filename PACKAGE-restore-bconf
-filename=`basename $0`
-package=`echo $filename | sed "s|-restore-bconf$||"`
+filename=$(basename $0)
+package=$(echo $filename | sed "s|-restore-bconf$||")
 
-# if package is template
-#    take package from $PACKAGE
+# if package is template take package from $PACKAGE
 [ "$package" = 'template' ] && package="$PACKAGE"
-
-#debug echo "+++ TEST filename: $filename"
-#debug echo "         PACKAGE:  $PACKAGE"
-#debug echo "         package:  $package"
-#debug read answ < /dev/tty
 
 fmask='*[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
 
@@ -32,6 +26,6 @@ fmask='*[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0
                                 -p /etc/backup.d \
                                 -f "$package.$fmask" \
                                 -o 1 -d -n \
-                                -s "/var/install/bin/template-restore-bconf" 
+                                -s "/var/install/bin/template-restore-bconf $package"
 
-return 0
+exit 0

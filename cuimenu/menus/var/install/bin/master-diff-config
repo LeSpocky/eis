@@ -1,7 +1,7 @@
 #!/bin/bash
 #-----------------------------------------------------------------------------
 # master-diff-config - master file for config file camparison
-# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+# Copyright (c) 2001-2014 The Eisfair Team <team@eisfair.org>
 #-----------------------------------------------------------------------------
 
 # include techo only for better performance
@@ -156,7 +156,7 @@ env_diff()
         o_val=1
       fi
     fi
-      
+
     # both value are set
     if [ $n_val = 1 -a $o_val = 1 ] ; then
       if [ $n_varname = $o_varname ] ; then
@@ -184,8 +184,8 @@ env_diff()
   if [ $n_val = 1 ] ; then
     echo "> $n_varname $n_varval"
     n_val=0
-  fi 
-  
+  fi
+
   if [ $o_val = 1 ] ; then
     echo "$o_varname $o_varval <"
     o_val=0
@@ -194,7 +194,6 @@ env_diff()
 
 show_detail()
 {
-  
   show_diff_file=/tmp/show_diff_file.$$
   header > $show_diff_file
   env_diff $left_sort $right_sort >> $show_diff_file
@@ -245,7 +244,7 @@ act_count=0
 fcount=0
 
 if  [ $l_source = '-' ] ; then
-    sourcefile=/tmp/sourcefile.$$    
+    sourcefile=/tmp/sourcefile.$$
     if ! /var/install/bin/list-files.cui -t "Select backup config file for DIFF" \
                                 -c "Select:" \
                                 -p /etc/backup.d \
@@ -267,12 +266,12 @@ if  [ $r_source = '-' ] ; then
                                 -p /etc/backup.d \
                                 -f "${package}.${fmask}" \
                                 -o 1 -d -n \
-                                -s "/var/install/bin/echowrite.sh $sourcefile"  
+                                -s "/var/install/bin/echowrite.sh $sourcefile"
     then
         exit 1
     fi
     r_source=`cat $sourcefile`
-    r_source="/etc/backup.d/$r_source"    
+    r_source="/etc/backup.d/$r_source"
     rm -f $sourcefile 
 fi
 
