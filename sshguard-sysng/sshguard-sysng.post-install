@@ -1,6 +1,5 @@
 #!/bin/sh
-
 rc-update -q add sshguard boot
 rc-service -q sshguard start
-
+rc-service -q syslog-ng restart
 exit 0

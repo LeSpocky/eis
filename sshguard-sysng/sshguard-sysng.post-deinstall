@@ -1,0 +1,3 @@
+#!/bin/sh
+rc-service -q syslog-ng restart
+exit 0
