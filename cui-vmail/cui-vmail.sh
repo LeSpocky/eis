@@ -15,10 +15,11 @@
 VMAIL_TLS_CERT='/etc/ssl/certs/imapd.pem' # path to ssl cert
 VMAIL_TLS_KEY='/etc/ssl/private/imapd.key'
 VMAIL_TLS_CAPATH='/etc/ssl/certs'
+VMAIL_TLS_KEYPATH="/etc/ssl/private"
 # default values
 POSTFIX_SMARTHOST='no'
 POSTFIX_SMARTHOST_TLS='no'
-pchr="n" # use postfix changeroot
+pchr="y" # use postfix changeroot
 
 ### -------------------------------------------------------------------------
 ### check the password file and get the passwords
@@ -224,8 +225,8 @@ postconf -e "sender_dependent_relayhost_maps = $postfix_relayhosts"
 
 postconf -e "smtpd_tls_auth_only = no"
 if [ "$POSTFIX_SMTP_TLS" = 'yes' ]; then
-    if [ -e ${VMAIL_TLS_CAPATH}/cacert.pem ]; then
-        postconf -e "smtpd_tls_CAfile = ${VMAIL_TLS_CAPATH}/cacert.pem"
+    if [ -e ${VMAIL_TLS_CAPATH}/ca.pem ]; then
+        postconf -e "smtpd_tls_CAfile = ${VMAIL_TLS_CAPATH}/ca.pem"
     else
         postconf -e "smtpd_tls_CAfile ="
     fi
@@ -365,6 +366,25 @@ chown -R ${uidvmail}:${gidvmail} /var/spool/postfix/virtual
 #    chown postfix:root /var/spool/postfix
 #    chown postfix:root /var/spool/postfix/pid
 /usr/sbin/postfix set-permissions >/dev/null 2>&1
+
+### -------------------------------------------------------------------------
+### add chroot
+### -------------------------------------------------------------------------
+if [ "$pchr" = "y" ]; then
+    for i in /etc /lib /run/milter ; do
+		mkdir -p /var/spool/postfix${i}
+    done
+    rm -f /var/spool/postfix/lib/*
+	# copy system files into chroot
+    for i in /etc/TZ /etc/hosts /etc/resolv.conf /etc/services \
+             /lib/libresolv* ; do
+	    cp -f ${i} /var/spool/postfix${i}
+	done
+    if ! grep -q "^/run/milter" /etc/fstab ; then
+        echo "/run/milter /var/spool/postfix/run/milter none rw,bind 0 0" >> /etc/fstab
+    fi
+    [ -z "`mount | grep '/var/spool/postfix/run/milter'`" ] && mount /var/spool/postfix/run/milter
+fi
 
 
 ### -------------------------------------------------------------------------
@@ -517,6 +537,29 @@ mail_plugins = quota
 #maildir_copy_with_hardlinks = yes
 #maildir_very_dirty_syncs = no
 #maildir_broken_filename_sizes = no
+
+EOF
+
+### -------------------------------------------------------------------------
+#10-ssl
+cat > /etc/dovecot/conf.d/10-ssl.conf <<EOF
+## SSL settings
+
+ssl = $POSTFIX_SMTP_TLS
+ssl_cert = <$VMAIL_TLS_CERT
+ssl_key = <$VMAIL_TLS_KEY
+#ssl_key_password =
+ssl_ca = <${VMAIL_TLS_CAPATH}/ca.pem
+#ssl_require_crl = yes
+ssl_client_ca_dir = $VMAIL_TLS_CAPATH
+#ssl_client_ca_file =
+#ssl_verify_client_cert = no
+#ssl_cert_username_field = commonName
+#ssl_dh_parameters_length = 1024
+#ssl_protocols = !SSLv2
+#ssl_cipher_list = ALL:!LOW:!SSLv2:!EXP:!aNULL
+#ssl_prefer_server_ciphers = no
+#ssl_crypto_device =
 
 EOF
 
@@ -685,39 +728,33 @@ echo -n "."
 
 
 ### -------------------------------------------------------------------------
-### create ssl file
+### create ssl cert file
 ### -------------------------------------------------------------------------
-# dovecot
-mkdir -p /etc/ssl/dovecot
-if [ ! -f /etc/ssl/dovecot/server.pem ]; then
-    cd /etc/ssl/dovecot
-    openssl genrsa 512/1024 > server.pem
-    openssl req -new -key server.pem -days 3650 -out request.pem  # You will get prompted for various information that is added the the file
-    openssl genrsa 2048 > server.key
-    openssl req -new -x509 -nodes -sha1 -days 3650 -key server.key > server.pem
+mkdir -p $VMAIL_TLS_CAPATH
+mkdir -p $VMAIL_TLS_KEYPATH
+# create ca
+if [ ! -f "$VMAIL_TLS_CAPATH/ca.pem" -a "$POSTFIX_SMTP_TLS" = "yes" ]; then
+    echo ""
+    echo "Create CA"
+    echo "----------------------------------------------------------------------"
+    openssl genrsa -out $VMAIL_TLS_KEYPATH/ca.key 4096
+    openssl req -new -x509 -days 3650 -key $VMAIL_TLS_KEYPATH/ca.key -out $VMAIL_TLS_CAPATH/ca.pem
 fi
-# cd /etc/ssl/dovecot
-# openssl genrsa -aes256 -out server.key.passwd 2048
-# openssl rsa -in server.key.passwd -out server.key
-# rm server.key.passwd
-# openssl req -new -key server.key -out server.csr
-# openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
-# cat server.key server.crt>server.pem
-# chmod 400 *
-# chown dovecot *
-
+# create imap server cert
+if [ ! -f "$VMAIL_TLS_CERT" -a "$POSTFIX_SMTP_TLS" = "yes" ]; then
+    echo ""
+    echo "Create server TLS cert"
+    echo "----------------------------------------------------------------------"
+    openssl genrsa -out $VMAIL_TLS_KEY 1024
+    openssl req -new -x509 -nodes -sha1 -days 3650 -key $VMAIL_TLS_KEY -out $VMAIL_TLS_CERT
+fi
+# Diffie-Hellman only for postfix use!
 mkdir -p /etc/postfix/ssl
 cd /etc/postfix/ssl
-#   openssl req -new -nodes -keyout server-key.pem -out server-req.pem -days 365
-#   openssl ca -out server-crt.pem -infiles server-req.pem
-# Diffie-Hellman only for postfix use!
 if [ ! -f /etc/postfix/ssl/dh_512.pem ]; then
     openssl gendh -out /etc/postfix/ssl/dh_512.pem -2 512
     openssl gendh -out /etc/postfix/ssl/dh_1024.pem -2 1024
 fi
-#  chmod 644 /etc/postfix/ssl/server-crt.pem /etc/postfix/ssl/demoCA/cacert.pem
-#  chmod 400 /etc/postfix/ssl/server-key.pem
-#c_rehash.sh /etc/postfix/ssl
 
 
 ### --------------------------------------------------------------------------
