@@ -68,12 +68,12 @@ update_mysql_tables()
             read mysql_pass
             stty echo
             echo ""
-            mysql_pass="-p$mysql_pass"
+            [ -n "$mysql_pass" ] && mysql_pass="-p$mysql_pass"
             /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D mysql -e '' >/dev/null 2>&1
             if [ $? -eq 0 ]; then
                 break
             else
-                mysql_pass = "X"
+                mysql_pass="X"
             fi
             count=`expr ${count} + 1`
         done
@@ -82,6 +82,7 @@ update_mysql_tables()
         echo ""
         echo " * cannot connect MySQL server $VMAIL_SQL_HOST with user $mysql_user"
         echo ""
+        sleep 1
         return
     fi
     # check if database and user exists
