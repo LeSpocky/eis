@@ -14,7 +14,8 @@ VMAIL_TLS_KEYPATH="/etc/ssl/private"
 # default values
 POSTFIX_SMARTHOST='no'
 POSTFIX_SMARTHOST_TLS='no'
-pchr="y" # use postfix changeroot
+pchr="y"           # use postfix changeroot
+mysql_user="root"  # MySQL update user
 
 ### -------------------------------------------------------------------------
 ### check the password file and get the passwords
@@ -46,6 +47,79 @@ fi
 # get uid/gid for user vmail
 uidvmail=$(id -u mail)
 gidvmail=$(id -g mail)
+
+
+### -------------------------------------------------------------------------
+### create new SQL database or change values
+### -------------------------------------------------------------------------
+update_mysql_tables()
+{
+    local count=1
+    local npass=1
+    local mysql_pass="$1"
+
+    # test login with user backup or root
+    if [ "$mysql_pass" = "X" ]; then
+        while [ ${count} -le 3 ]
+        do
+            mysql_pass=""
+            echo -n "MySQL user root password required:"
+            stty -echo
+            read mysql_pass
+            stty echo
+            echo ""
+            mysql_pass="-p$mysql_pass"
+            /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D mysql -e '' >/dev/null 2>&1
+            if [ $? -eq 0 ]; then
+                break
+            else
+                mysql_pass = "X"
+            fi
+            count=`expr ${count} + 1`
+        done
+    fi
+    if [ "$mysql_pass" = "X" ]; then
+        echo ""
+        echo " * cannot connect MySQL server $VMAIL_SQL_HOST with user $mysql_user"
+        echo ""
+        return
+    fi
+    # check if database and user exists
+    /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select id from view_users limit 1;' >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -e "CREATE DATABASE $VMAIL_SQL_DATABASE DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
+        npass=9
+    fi
+    count=`/usr/bin/mysql -N --silent -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select id from vmail_version limit 1;' 2>/dev/null`
+    [ -z "$count" ] && count=0
+    if [ $? -ne 0 -o $count -ne 8 ]; then
+        # create all tables, if not exists
+        /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqltable.sql
+        # create all trigger, if MySQL support this (5.x) and not exists
+        /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqltrigger.sql 2>/dev/null
+
+        # make all updates (alter table...)
+        #while read sqlcmd
+        #do
+        #    echo "$sqlcmd" | grep -q '^#' && continue
+        #    /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e "$sqlcmd" 2>/dev/null
+        #done < /etc/postfix/default/install-sqlupdate.sql
+        # create all views
+        /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqlview.sql
+        # add default data for new database
+        [ $npass -eq 9 ] && /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqldata.sql
+    fi
+
+    # force VMAIL_SQL_USER access
+    if [ "$VMAIL_SQL_HOST" = "localhost" -o "$VMAIL_SQL_HOST" = "127.0.0.1" ]; then
+        /usr/bin/mysql -h $VMAIL_SQL_HOST -D mysql -u $mysql_user ${mysql_pass} -e \
+            "GRANT SELECT, INSERT, UPDATE, DELETE ON ${VMAIL_SQL_DATABASE}.* TO '${VMAIL_SQL_USER}'@'localhost' identified by '${VMAIL_SQL_PASS}'; flush privileges;"
+    fi
+    if [ "$VMAIL_SQL_HOST" != "localhost"  ]; then
+        /usr/bin/mysql -h $VMAIL_SQL_HOST -D mysql -u $mysql_user ${mysql_pass} -e \
+            "GRANT SELECT, INSERT, UPDATE, DELETE ON ${VMAIL_SQL_DATABASE}.* TO '${VMAIL_SQL_USER}'@'%' identified by '${VMAIL_SQL_PASS}'; flush privileges;"
+    fi
+}
 
 ### ----------------------------------------------------------------------------
 ### write new postfix config
@@ -704,7 +778,7 @@ dict {
 }
 EOF
 
-echo -n "."
+echo "."
 #    sed -i -e "s|^ssl =.*|ssl = ${POP3IMAP_TLS}|" /etc/dovecot/dovecot.conf
 #    sed -i -e "s|.*auth_username_format.*|${dovecot_authf} |" /etc/dovecot/dovecot.conf
 
@@ -753,83 +827,22 @@ echo "#59 23 * * * /var/install/bin/vmail-rejectlogfilter.sh" > /etc/cron/root/p
 [ "$START_POP3IMAP" = 'yes' ] && echo "00,30 * * * * /usr/bin/cui-vmail-maildropfilter.sh" >> /etc/cron/root/postfix
 [ "$START_FETCHMAIL" = "yes" ] && echo "$FETCHMAIL_CRON_SCHEDULE /usr/bin/cui-vmail-fetchmail.sh" >> /etc/cron/root/postfix
 
-
-### -------------------------------------------------------------------------
-### create new SQL database or change values
-### -------------------------------------------------------------------------
-count=1
-npass=0
-mysql_pass=""
-mysql_user='root'
-
-# check if set password for MySQL admin user 'root' if exists .my.cnf
+### --------------------------------------------------------------------------
+### run automatic mysql update if password available
+### --------------------------------------------------------------------------
 if [ -f /root/.my.cnf ]; then
     mysql_pass=$(grep -m1 'password=' /root/.my.cnf | sed "s/password=//")
-    mysql_pass="-p${mysql_pass}"
-else
-    echo " * Missing MySQL passwort file for read password"
-fi
-# test login with user backup or root
-while [ ${count} -le 3 ]
-do
+    [ -n "$mysql_pass" ] && mysql_pass="-p${mysql_pass}"
     /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D mysql -e '' >/dev/null 2>&1
     if [ $? -eq 0 ]; then
-        npass=1
-        break
+        update_mysql_tables "$mysql_pass"
     else
-        mysql_user='root'
-        mysql_pass=""
-        echo -n "MySQL user root password required:"
-        stty -echo
-        read mysql_pass
-        stty echo
-        echo ""
-        mysql_pass="-p$mysql_pass"
+        [ "$1" = "update" ] || update_mysql_tables "X"
     fi
-    count=`expr ${count} + 1`
-done
-
-if [ $npass -eq 0 ]; then
-    echo ""
-    echo " * cannot connect MySQL server $VMAIL_SQL_HOST with user $mysql_user"
 else
-    # check if database and user exists
-    /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select id from view_users limit 1;' >/dev/null 2>&1
-    if [ $? -ne 0 ]; then
-        /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -e "CREATE DATABASE $VMAIL_SQL_DATABASE DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;"
-        npass=9
-    fi
-    count=`/usr/bin/mysql -N --silent -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select id from vmail_version limit 1;' 2>/dev/null`
-    [ -z "$count" ] && count=0
-    if [ $? -ne 0 -o $count -ne 8 ]; then
-        # create all tables, if not exists
-        /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqltable.sql
-        # create all trigger, if MySQL support this (5.x) and not exists
-        /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqltrigger.sql 2>/dev/null      
-
-        # make all updates (alter table...)
-        #while read sqlcmd
-        #do
-        #    echo "$sqlcmd" | grep -q '^#' && continue
-        #    /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e "$sqlcmd" 2>/dev/null
-        #done < /etc/postfix/default/install-sqlupdate.sql
-        # create all views
-        /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqlview.sql
-        # add default data for new database
-        [ $npass -eq 9 ] && /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqldata.sql
-    fi
-
-    # force VMAIL_SQL_USER access
-    if [ "$VMAIL_SQL_HOST" = "localhost" -o "$VMAIL_SQL_HOST" = "127.0.0.1" ]; then
-        /usr/bin/mysql -h $VMAIL_SQL_HOST -D mysql -u $mysql_user ${mysql_pass} -e \
-            "GRANT SELECT, INSERT, UPDATE, DELETE ON ${VMAIL_SQL_DATABASE}.* TO '${VMAIL_SQL_USER}'@'localhost' identified by '${VMAIL_SQL_PASS}'; flush privileges;"
-    fi
-    if [ "$VMAIL_SQL_HOST" != "localhost"  ]; then
-        /usr/bin/mysql -h $VMAIL_SQL_HOST -D mysql -u $mysql_user ${mysql_pass} -e \
-            "GRANT SELECT, INSERT, UPDATE, DELETE ON ${VMAIL_SQL_DATABASE}.* TO '${VMAIL_SQL_USER}'@'%' identified by '${VMAIL_SQL_PASS}'; flush privileges;"
-    fi
+    [ "$1" = "update" ] || update_mysql_tables "X"
 fi
-echo "."
+
 
 ### -------------------------------------------------------------------------
 ### setup runlevel - not with init.d/vmail!

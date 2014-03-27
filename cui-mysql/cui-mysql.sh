@@ -364,7 +364,7 @@ innodb_log_files_in_group   = 2
 innodb_buffer_pool_size     = $innodb_buffer_pool_size
 innodb_additional_mem_pool_size = 4M  #global buffer
 innodb_status_file                  #extra reporting
-innodb_file_per_table               #enable always
+innodb_file_per_table       = 1     #enable always
 innodb_flush_log_at_trx_commit = 2  #2/0 = perf, 1 = ACID
 innodb_table_locks          = 0     #preserve table locks
 innodb_log_buffer_size      = $innodb_log_buffer_size
