@@ -1,0 +1,27 @@
+#!/sbin/runscript
+# chroot for postfix
+
+CONF=/etc/clamav/clamd.conf
+
+depend()
+{
+	need localmount
+	before postfix
+}
+
+start()
+{
+	ebegin "Prepare Postfix chroot"
+	for i in /etc /lib /run/milter ; do
+		mkdir -p /var/spool/postfix${i}
+	done
+	rm -f /var/spool/postfix/lib/*
+	# copy system files into chroot
+	for i in /etc/TZ /etc/hosts /etc/resolv.conf /etc/services \
+			/lib/libresolv* ; do
+		cp -f ${i} /var/spool/postfix${i}
+	done
+	mkdir -p -m0770 /run/milter
+	[ -z "`mount | grep '/var/spool/postfix/run/milter'`" ] &&  mount --rbind /run/milter /var/spool/postfix/run/milter
+	eend 0
+}

@@ -4,11 +4,6 @@
 # Copyright 2007 - 2014 the eisfair team, team(at)eisfair(dot)org
 #------------------------------------------------------------------------------
 
-#set -x
-
-#include eislib
-. /var/install/include/eislib
-
 ### -------------------------------------------------------------------------
 ### internal parameter - not editable with ECE:
 ### -------------------------------------------------------------------------
@@ -368,32 +363,12 @@ chown -R ${uidvmail}:${gidvmail} /var/spool/postfix/virtual
 /usr/sbin/postfix set-permissions >/dev/null 2>&1
 
 ### -------------------------------------------------------------------------
-### add chroot
-### -------------------------------------------------------------------------
-if [ "$pchr" = "y" ]; then
-    for i in /etc /lib /run/milter ; do
-		mkdir -p /var/spool/postfix${i}
-    done
-    rm -f /var/spool/postfix/lib/*
-	# copy system files into chroot
-    for i in /etc/TZ /etc/hosts /etc/resolv.conf /etc/services \
-             /lib/libresolv* ; do
-	    cp -f ${i} /var/spool/postfix${i}
-	done
-    if ! grep -q "^/run/milter" /etc/fstab ; then
-        echo "/run/milter /var/spool/postfix/run/milter none rw,bind 0 0" >> /etc/fstab
-    fi
-    [ -z "`mount | grep '/var/spool/postfix/run/milter'`" ] && mount /var/spool/postfix/run/milter
-fi
-
-
-### -------------------------------------------------------------------------
 ### change smc-milter.conf file
 ### -------------------------------------------------------------------------
 # check if installed clamav
 if [ ! -f /usr/sbin/clamd ]; then
     if [ "$POSTFIX_AV_CLAMAV" = 'yes' ]; then
-        mecho --error "ClamAV not found. Set POSTFIX_AV_CLAMAV='no'"
+        echo " * ClamAV not found. Set POSTFIX_AV_CLAMAV='no'"
         POSTFIX_AV_CLAMAV='no'
     fi
 fi
@@ -544,7 +519,6 @@ EOF
 #10-ssl
 cat > /etc/dovecot/conf.d/10-ssl.conf <<EOF
 ## SSL settings
-
 ssl = $POSTFIX_SMTP_TLS
 ssl_cert = <$VMAIL_TLS_CERT
 ssl_key = <$VMAIL_TLS_KEY
@@ -565,11 +539,25 @@ EOF
 
 ### -------------------------------------------------------------------------
 #15-lda
-sed -i -r "s|^[#]quota_full_tempfail =.*|quota_full_tempfail = yes|" /etc/dovecot/conf.d/15-lda.conf
-sed -i -r "s|^[#]rejection_reason =.*|rejection_reason = Your message to <%t> was automatically rejected:%n%r|" /etc/dovecot/conf.d/15-lda.conf
-sed -i -r "s|^[#]lda_mailbox_autocreate =.*|lda_mailbox_autocreate = yes|" /etc/dovecot/conf.d/15-lda.conf
-sed -i -r "s|^[#]lda_mailbox_autosubscribe =.*|lda_mailbox_autosubscribe = yes|" /etc/dovecot/conf.d/15-lda.conf
-sed -i -e "s|.*mail_plugins =.*|  mail_plugins = $mail_plugins sieve acl|" /etc/dovecot/conf.d/15-lda.conf
+cat > /etc/dovecot/conf.d/15-lda.conf <<EOF
+## LDA specific settings (also used by LMTP)
+#postmaster_address =
+#hostname =
+quota_full_tempfail = yes
+#sendmail_path = /usr/sbin/sendmail
+#submission_host =
+#rejection_subject = Rejected: %s
+rejection_reason = Your message to <%t> was automatically rejected:%n%r
+#recipient_delimiter = +
+#lda_original_recipient_header =
+lda_mailbox_autocreate = yes
+lda_mailbox_autosubscribe = yes
+protocol lda {
+  # Space separated list of plugins to load (default is global mail_plugins).
+  mail_plugins =  \$mail_plugins sieve acl
+}
+
+EOF
 
 ### -------------------------------------------------------------------------
 #15-mailboxes
@@ -771,11 +759,16 @@ echo "#59 23 * * * /var/install/bin/vmail-rejectlogfilter.sh" > /etc/cron/root/p
 ### -------------------------------------------------------------------------
 count=1
 npass=0
-mysql_pass="-p"
+mysql_pass=""
 mysql_user='root'
 
 # check if set password for MySQL admin user 'root' if exists .my.cnf
-[ -f /root/.my.cnf ] && mysql_pass=""
+if [ -f /root/.my.cnf ]; then
+    mysql_pass=$(grep -m1 'password=' /root/.my.cnf | sed "s/password=//")
+    mysql_pass="-p${mysql_pass}"
+else
+    echo " * Missing MySQL passwort file for read password"
+fi
 # test login with user backup or root
 while [ ${count} -le 3 ]
 do
@@ -798,7 +791,7 @@ done
 
 if [ $npass -eq 0 ]; then
     echo ""
-    mecho --error "cannot connect MySQL server $VMAIL_SQL_HOST with user $mysql_user"
+    echo " * cannot connect MySQL server $VMAIL_SQL_HOST with user $mysql_user"
 else
     # check if database and user exists
     /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select id from view_users limit 1;' >/dev/null 2>&1
@@ -849,6 +842,11 @@ if [ "$START_VMAIL" = "yes" ]; then
     [ -x /etc/init.d/greylist ] && /sbin/rc-update -q add greylist 2>/dev/null
     /sbin/rc-update -q add postfix 2>/dev/null
 #    [ "$START_FETCHMAIL" = "yes" ] && /sbin/rc-update -q add fetchmail 2>/dev/null || /sbin/rc-update -q del fetchmail
+    # add chroot
+    if [ "$pchr" = "y" ]; then
+        /sbin/rc-update -q add postfixchroot 2>/dev/null
+        /sbin/rc-service -q postfixchroot start 2>/dev/null
+    fi
 else
     /sbin/rc-update -q del dovecot
     /sbin/rc-update -q del smc-milter-new
@@ -856,6 +854,7 @@ else
     /sbin/rc-update -q del postfix
 #    /sbin/rc-update -q del fetchmail
 fi
+
 
 ### -------------------------------------------------------------------------
 exit 0
