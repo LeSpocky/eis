@@ -188,7 +188,47 @@ done
 # activate ssl 
 #----------------------------------------------------------------------------------------
 enssl="#"
-[ "$APACHE2_SSL" = "yes" ] && enssl=""
+if [ "$APACHE2_SSL" = "yes" ]; then
+    enssl=""
+    apk info -q -e apache2-ssl || apk add -q apache2-ssl
+    if [ $? -eq 0 ]; then
+        cat >/etc/apache2/conf.d/ssl.conf <<EOF
+LoadModule socache_shmcb_module modules/mod_socache_shmcb.so
+LoadModule ssl_module modules/mod_ssl.so
+
+#   Pass Phrase Dialog:
+SSLPassPhraseDialog  builtin
+
+#   Inter-Process Session Cache:
+#   Configure the SSL Session Cache: First the mechanism.
+#   to use and second the expiring timeout (in seconds).
+#SSLSessionCache        dc:UNIX:/var/cache/mod_ssl/distcache
+SSLSessionCache         shmcb:/run/apache2/ssl_scache(512000)
+SSLSessionCacheTimeout  300
+
+#   Semaphore:
+#   Configure the path to the mutual exclusion semaphore the
+#   SSL engine uses internally for inter-process synchronization..
+#SSLMutex default
+
+#   Pseudo Random Number Generator (PRNG):
+SSLRandomSeed startup file:/dev/urandom  256
+SSLRandomSeed connect builtin
+#SSLRandomSeed startup file:/dev/random  512
+#SSLRandomSeed connect file:/dev/random  512
+#SSLRandomSeed connect file:/dev/urandom 512
+
+#
+# Use "SSLCryptoDevice" to enable any supported hardware accelerators.
+# Use "openssl engine -v" to list supported engine names.
+SSLCryptoDevice builtin
+#SSLCryptoDevice ubsec
+
+EOF
+    fi
+else
+    rm -f /etc/apache2/conf.d/ssl.conf
+fi
 
 #----------------------------------------------------------------------------------------
 # activate webdav 
@@ -416,8 +456,8 @@ ${envhost}LoadModule vhost_alias_module modules/mod_vhost_alias.so
 
 # apache2-lua
 # #LoadModule lua_module modules/mod_lua.so
-# apache2-ssl:
-# ${enssl}LoadModule ssl_module modules/mod_ssl.so
+# apache2-ssl: (load with ssl.conf)
+# LoadModule ssl_module modules/mod_ssl.so
 # apache2-webdav:
 ${endav}LoadModule dav_module modules/mod_dav.so
 ${endav}LoadModule dav_fs_module modules/mod_dav_fs.so
@@ -440,17 +480,6 @@ ${endav}LoadModule dav_lock_module modules/mod_dav_lock.so
         MCacheMinObjectSize 1
         MCacheMaxObjectSize 4096
     </IfModule>
-</IfModule>
-
-<IfModule ssl_module>
-    SSLRandomSeed startup builtin
-    SSLRandomSeed connect builtin
-    AddType       application/x-x509-ca-cert .crt
-    AddType       application/x-pkcs7-crl    .crl
-    SSLPassPhraseDialog builtin
-    SSLSessionCache "shmcb:/run/apache2/ssl_scache(512000)"
-    SSLSessionCacheTimeout 300
-    SSLMutex "file:/run/apache2/ssl_mutex"
 </IfModule>
 
 <IfModule mod_mime_magic.c>
