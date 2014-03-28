@@ -50,12 +50,11 @@ if [ "$MYSQL_RAM" = "256MB" ]; then
     query_cache_size="8M"
     ## Connections - multiplier for memory usage via per-thread buffers
     max_connections="60"
-    #thread_cache_size - recommend 5% of max_connections
-    thread_cache_size="4"
+    #thread_cache_size - recommend 5% (10%?) of max_connections
+    thread_cache_size="5"
     ## Table and TMP settings
-    max_heap_table_size="16M"
+    tmp_table_size="16M"
     bulk_insert_buffer_size="8M"
-    tmp_table_size="8M"
     ## MyISAM Engine - global buffer
     key_buffer_size="4M"
     ## InnoDB Plugin Independent Settings
@@ -73,12 +72,11 @@ elif [ "$MYSQL_RAM" = "1GB" ]; then
     query_cache_size="32M"
     ## Connections - multiplier for memory usage via per-thread buffers
     max_connections="100"
-    #thread_cache_size - recommend 5% of max_connections
-    thread_cache_size="5"
+    #thread_cache_size - recommend 5% (10%?) of max_connections
+    thread_cache_size="8"
     ## Table and TMP settings
-    max_heap_table_size="64M"
-    bulk_insert_buffer_size="64M"
     tmp_table_size="64M"
+    bulk_insert_buffer_size="64M"
     ## MyISAM Engine - global buffer
     key_buffer_size="16M"
     ## InnoDB Plugin Independent Settings
@@ -99,9 +97,8 @@ elif [ "$MYSQL_RAM" = "2GB" ]; then
     #thread_cache_size - recommend 5% of max_connections
     thread_cache_size="20"
     ## Table and TMP settings
-    max_heap_table_size="128M"
-    bulk_insert_buffer_size="128M"
     tmp_table_size="128M"
+    bulk_insert_buffer_size="128M"
     ## MyISAM Engine - global buffer
     key_buffer_size="16M"
     ## InnoDB Plugin Independent Settings
@@ -122,9 +119,8 @@ elif [ "$MYSQL_RAM" = "4GB" ]; then
     #thread_cache_size - recommend 5% of max_connections
     thread_cache_size="30"
     ## Table and TMP settings
-    max_heap_table_size="512M"
-    bulk_insert_buffer_size="512M"
     tmp_table_size="512M"
+    bulk_insert_buffer_size="512M"
     ## MyISAM Engine - global buffer
     key_buffer_size="32M"
     ## InnoDB Plugin Independent Settings
@@ -145,9 +141,8 @@ elif [ "$MYSQL_RAM" = "8GB" ]; then
     #thread_cache_size - recommend 5% of max_connections
     thread_cache_size="50"
     ## Table and TMP settings
-    max_heap_table_size="1G"
-    bulk_insert_buffer_size="1G"
     tmp_table_size="1G"
+    bulk_insert_buffer_size="1G"
     ## MyISAM Engine - global buffer
     key_buffer_size="64M"
     ## InnoDB Plugin Independent Settings
@@ -168,9 +163,8 @@ elif [ "$MYSQL_RAM" = "16GB" ]; then
     #thread_cache_size - recommend 5% of max_connections
     thread_cache_size="100"
     ## Table and TMP settings
-    max_heap_table_size="1G"
-    bulk_insert_buffer_size="1G"
     tmp_table_size="1G"
+    bulk_insert_buffer_size="1G"
     ## MyISAM Engine - global buffer
     key_buffer_size="128M"
     ## InnoDB Plugin Independent Settings
@@ -191,9 +185,8 @@ elif [ "$MYSQL_RAM" = "32GB" ]; then
     #thread_cache_size - recommend 5% of max_connections
     thread_cache_size="100"
     ## Table and TMP settings
-    max_heap_table_size="1G"
-    bulk_insert_buffer_size="1G"
     tmp_table_size="1G"
+    bulk_insert_buffer_size="1G"
     ## MyISAM Engine - global buffer
     key_buffer_size="256M"
     ## InnoDB Plugin Independent Settings
@@ -216,9 +209,8 @@ elif [ "$MYSQL_RAM" = "64GB" ]; then
     #thread_cache_size - recommend 5% of max_connections
     thread_cache_size="100"
     ## Table and TMP settings
-    max_heap_table_size="1G"
-    bulk_insert_buffer_size="1G"
     tmp_table_size="1G"
+    bulk_insert_buffer_size="1G"
     ## MyISAM Engine - global buffer
     key_buffer_size="256M"
     ## InnoDB Plugin Independent Settings
@@ -283,17 +275,17 @@ query_cache_limit           = 2M     #512K #max query result size to put in cach
 max_connections             = $max_connections
 max_connect_errors          = 100
 concurrent_insert           = 2     #default: 1, 2: enable insert for all instances
-connect_timeout             = 30    #default -5.1.22: 5, +5.1.22: 10
+connect_timeout             = 60    #default -5.1.22: 5, +5.1.22: 10
 max_allowed_packet          = 32M   #max size of incoming data to allow
 
 ## Default Table Settings
 sql_mode                    = NO_AUTO_CREATE_USER
 
 ## Table and TMP settings
-max_heap_table_size         = $max_heap_table_size
-bulk_insert_buffer_size     = $bulk_insert_buffer_size
+max_heap_table_size         = $tmp_table_size
 tmp_table_size              = $tmp_table_size
 #tmpdir                     = /data/mysql-tmp0:/data/mysql-tmp1 #Recommend using RAMDISK for tmpdir
+bulk_insert_buffer_size     = $bulk_insert_buffer_size
 
 ## Table cache settings
 table_open_cache            = 1024	#5.5.x <default: 64>
