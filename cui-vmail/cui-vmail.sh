@@ -251,7 +251,7 @@ postconf -e "smtpd_helo_restrictions ="
 postconf -e "smtpd_sender_restrictions ="
 postconf -e "smtpd_client_restrictions ="
 postconf -e "smtpd_relay_restrictions = permit_mynetworks, ${postfix_sasl} permit_tls_clientcerts, defer_unauth_destination"
-postconf -e "smtpd_recipient_restrictions = reject_unlisted_recipient, \
+postconf -e "smtpd_recipient_restrictions = permit_mynetworks, ${postfix_sasl} reject_unlisted_recipient, \
  check_client_access proxy:mysql:/etc/postfix/sql/mysql-client_access.cf,\
  check_recipient_access proxy:mysql:/etc/postfix/sql/mysql-recipient_access.cf,\
  check_sender_access proxy:mysql:/etc/postfix/sql/mysql-sender_access.cf,\
@@ -436,6 +436,7 @@ chown -R ${uidvmail}:${gidvmail} /var/spool/postfix/virtual
 #    chown postfix:root /var/spool/postfix
 #    chown postfix:root /var/spool/postfix/pid
 /usr/sbin/postfix set-permissions >/dev/null 2>&1
+echo -n "."
 
 ### -------------------------------------------------------------------------
 ### change smc-milter.conf file
@@ -489,8 +490,6 @@ done
 chmod 0750 /etc/postfix/sql
 chgrp postfix /etc/postfix/sql
 sed -i -e "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}')) FROM view_relaylogin WHERE email like '%s'|" /etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
-echo -n "."
-
 
 ### -------------------------------------------------------------------------
 ### update dovecot
@@ -523,7 +522,6 @@ sed -i -r 's|^[#]log_timestamp =.*|log_timestamp = "%Y-%m-%d %H:%M:%S "|' /etc/d
 cat > /etc/dovecot/conf.d/10-mail.conf <<EOF
 ## Mailbox locations and namespaces
 mail_location = maildir:/var/spool/postfix/virtual/%d/%n/Maildir
-
 namespace inbox {
   type = private
   separator = /
@@ -533,7 +531,6 @@ namespace inbox {
   list = yes
   subscriptions = yes
 }
-
 namespace {
   type = shared
   separator = /
@@ -542,7 +539,6 @@ namespace {
   subscriptions = no
   list = children
 }
-
 #mail_shared_explicit_inbox = no
 mail_uid = mail
 mail_gid = mail
@@ -551,7 +547,6 @@ mail_gid = mail
 #mail_attribute_dict =
 
 ## Mail processes
-
 #mmap_disable = no
 #dotlock_use_excl = yes
 #mail_fsync = optimized
@@ -570,10 +565,9 @@ first_valid_gid = 12
 #mail_chroot =
 #auth_socket_path = /var/run/dovecot/auth-userdb
 #mail_plugin_dir = /usr/lib/dovecot
-mail_plugins = quota
+mail_plugins = quota fts fts_squat
 
 ## Mailbox handling optimizations
-
 #mailbox_list_index = no
 #mail_cache_min_mail_count = 0
 #mailbox_idle_check_interval = 30 secs
@@ -582,12 +576,10 @@ mail_plugins = quota
 #mail_temp_scan_interval = 1w
 
 ## Maildir-specific settings
-
 #maildir_stat_dirs = no
 #maildir_copy_with_hardlinks = yes
 #maildir_very_dirty_syncs = no
 #maildir_broken_filename_sizes = no
-
 EOF
 
 ### -------------------------------------------------------------------------
@@ -609,7 +601,6 @@ ssl_client_ca_dir = $VMAIL_TLS_CAPATH
 #ssl_cipher_list = ALL:!LOW:!SSLv2:!EXP:!aNULL
 #ssl_prefer_server_ciphers = no
 #ssl_crypto_device =
-
 EOF
 
 ### -------------------------------------------------------------------------
@@ -631,7 +622,6 @@ protocol lda {
   # Space separated list of plugins to load (default is global mail_plugins).
   mail_plugins =  \$mail_plugins sieve acl
 }
-
 EOF
 
 ### -------------------------------------------------------------------------
@@ -664,11 +654,32 @@ EOF
 ### -------------------------------------------------------------------------
 #20-imap
 sed -i -r "s|^[#]imap_client_workarounds =.*|imap_client_workarounds = tb-extra-mailbox-sep|" /etc/dovecot/conf.d/20-imap.conf
-sed -i -e "s|.*mail_plugins =.*|  mail_plugins = $mail_plugins acl imap_acl|" /etc/dovecot/conf.d/20-imap.conf
+sed -i -e "s|.*mail_plugins =.*|  mail_plugins = \$mail_plugins acl imap_acl|" /etc/dovecot/conf.d/20-imap.conf
 
 ### -------------------------------------------------------------------------
 #20-pop3
-sed -i -e "s|.*mail_plugins =.*|  mail_plugins = $mail_plugins autocreate acl|" /etc/dovecot/conf.d/20-pop3.conf
+sed -i -e "s|.*mail_plugins =.*|  mail_plugins = \$mail_plugins autocreate acl|" /etc/dovecot/conf.d/20-pop3.conf
+
+### -------------------------------------------------------------------------
+#90-acl.conf
+cat > /etc/dovecot/conf.d/90-acl.conf <<EOF
+## Mailbox access control lists.
+plugin {
+  acl = vfile
+  acl_shared_dict = proxy::acl
+}
+EOF
+
+### -------------------------------------------------------------------------
+#90-plugin.conf
+cat > /etc/dovecot/conf.d/90-plugin.conf <<EOF
+## Plugin settings
+plugin {
+  fts = squat
+  fts_squat = partial=4 full=10
+  fts_autoindex = yes
+}
+EOF
 
 ### -------------------------------------------------------------------------
 # create SQL configuration
@@ -765,11 +776,6 @@ service dict {
     user = mail
     #group =
   }
-}
-
-plugin {
-  acl = vfile
-  acl_shared_dict = proxy::acl
 }
 
 dict {
