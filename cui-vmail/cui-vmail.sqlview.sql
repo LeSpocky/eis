@@ -2,23 +2,23 @@ DROP VIEW IF EXISTS `view_sender_access`;
 CREATE VIEW `view_sender_access` AS
   SELECT source, response
   FROM access WHERE type='sender' AND active = 1
-  ORDER BY source; 
+  ORDER BY source LIMIT 1;
 
 DROP VIEW IF EXISTS `view_client_access`;
 CREATE VIEW `view_client_access` AS
   SELECT source, response
   FROM access WHERE type='client' AND active = 1
-  ORDER BY source; 
+  ORDER BY source LIMIT 1;
 
 DROP VIEW IF EXISTS `view_recipient_access`;
 CREATE VIEW `view_recipient_access` AS
   SELECT source, response
   FROM access WHERE type='recipient' AND active = 1
-  ORDER BY source; 
+  ORDER BY source LIMIT 1;
 
 DROP VIEW IF EXISTS `view_users`;
 CREATE VIEW `view_users` AS
-  SELECT virtual_users.id, 
+  SELECT virtual_users.id,
   CONCAT(virtual_users.loginuser, _utf8 '@', virtual_domains.name) AS email,
   virtual_users.password,
   virtual_users.loginuser
@@ -27,13 +27,13 @@ CREATE VIEW `view_users` AS
   ORDER BY domain_id, loginuser;
 
 DROP VIEW IF EXISTS `view_domains`;
-CREATE VIEW `view_domains` AS 
+CREATE VIEW `view_domains` AS
   SELECT id, name, transport
   FROM virtual_domains WHERE active = 1 AND NOT transport LIKE 'relay:%'
   ORDER BY name;
 
 DROP VIEW IF EXISTS `view_domains_local`;
-CREATE VIEW `view_domains_local` AS 
+CREATE VIEW `view_domains_local` AS
   SELECT id,
          name,
          transport
@@ -41,15 +41,15 @@ CREATE VIEW `view_domains_local` AS
   ORDER BY name;
 
 DROP VIEW IF EXISTS `view_domains_relay`;
-CREATE VIEW `view_domains_relay` AS 
+CREATE VIEW `view_domains_relay` AS
   SELECT id, 
-         CONCAT('@', name) AS name, 
+         CONCAT('@', name) AS name,
          SUBSTR( transport, 7) AS transport
   FROM virtual_domains WHERE active = 1 AND transport LIKE 'relay:%'
   ORDER BY name;
 
 DROP VIEW IF EXISTS `view_mailprotect`;
-CREATE VIEW `view_mailprotect` AS 
+CREATE VIEW `view_mailprotect` AS
   SELECT CONCAT(virtual_users.loginuser, _utf8 '@', virtual_domains.name) AS email,
          CONCAT('restrictions_', virtual_users.mailprotect) AS restriction
   FROM virtual_users LEFT JOIN virtual_domains ON virtual_users.domain_id = virtual_domains.id
@@ -57,16 +57,16 @@ CREATE VIEW `view_mailprotect` AS
   ORDER BY name, loginuser;
 
 DROP VIEW IF EXISTS `view_quota`;
-CREATE VIEW `view_quota` AS 
+CREATE VIEW `view_quota` AS
   SELECT CONCAT(virtual_users.loginuser, _utf8 '@', virtual_domains.name) AS email,
          virtual_users.loginuser,
          virtual_users.quota
   FROM virtual_users LEFT JOIN virtual_domains ON virtual_users.domain_id = virtual_domains.id
   WHERE virtual_users.active = 1 AND virtual_domains.active = 1
-  ORDER BY name, loginuser;  
+  ORDER BY name, loginuser;
 
 DROP VIEW IF EXISTS `view_expire`;
-CREATE VIEW `view_expire` AS 
+CREATE VIEW `view_expire` AS
   SELECT CONCAT(virtual_users.loginuser, _utf8 '@', virtual_domains.name) AS email,
          virtual_users.loginuser,
          virtual_users_mbexpire.mailbox,
@@ -78,12 +78,12 @@ CREATE VIEW `view_expire` AS
   ORDER BY domain_id, loginuser, mailbox;
 
 DROP VIEW IF EXISTS `view_signature`;
-CREATE VIEW `view_signature` AS 
+CREATE VIEW `view_signature` AS
   SELECT CONCAT(virtual_users.loginuser, _utf8 '@', virtual_domains.name) AS email,
   virtual_users.signature
   FROM virtual_users LEFT JOIN virtual_domains ON virtual_users.domain_id = virtual_domains.id
   WHERE virtual_users.active = 1 AND virtual_domains.active = 1
-  ORDER BY name, loginuser;  
+  ORDER BY name, loginuser;
 
 DROP VIEW IF EXISTS `view_aliases`;
 CREATE VIEW `view_aliases` AS
@@ -109,8 +109,8 @@ CREATE VIEW `view_canonical_maps` AS SELECT
   ORDER BY domain_id, source;
 
 DROP VIEW IF EXISTS `view_relaylogin`;
-CREATE VIEW `view_relaylogin` AS 
-  SELECT SUBSTR( virtual_domains.transport, 7) AS transport,  
+CREATE VIEW `view_relaylogin` AS
+  SELECT SUBSTR( virtual_domains.transport, 7) AS transport,
   virtual_relayhosts.email AS email,
   virtual_relayhosts.username AS username,
   virtual_relayhosts.password AS password

@@ -832,7 +832,7 @@ fi
 mkdir -p /etc/cron/root
 echo "#59 23 * * * /var/install/bin/vmail-rejectlogfilter.sh" > /etc/cron/root/postfix
 [ "$START_POP3IMAP" = 'yes' ] && echo "00,30 * * * * /usr/bin/cui-vmail-maildropfilter.sh" >> /etc/cron/root/postfix
-[ "$START_FETCHMAIL" = "yes" ] && echo "$FETCHMAIL_CRON_SCHEDULE /usr/bin/cui-vmail-fetchmail.sh" >> /etc/cron/root/postfix
+[ "$START_FETCHMAIL" = "yes" ] && echo "$FETCHMAIL_CRON_SCHEDULE /usr/bin/cui-vmail-fetchmailstart.sh" >> /etc/cron/root/postfix
 
 ### --------------------------------------------------------------------------
 ### run automatic mysql update if password available
