@@ -1,6 +1,6 @@
 user = vmailprovider
 password = vmail
 dbname = vmaildata
-query = SELECT transport FROM view_relaylogin WHERE email like '%s' 
+query = SELECT transport FROM view_relaylogin WHERE email like '%s'
 hosts = unix:/run/mysqld/mysqld.sock
 

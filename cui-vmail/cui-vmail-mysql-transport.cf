@@ -1,6 +1,6 @@
 user = vmailprovider
 password = **********
 dbname = vmaildata
-query = SELECT transport FROM view_domains WHERE name='%s'
+query = SELECT transport FROM view_domains WHERE name='%s' LIMIT 1
 hosts = unix:/run/mysqld/mysqld.sock
 

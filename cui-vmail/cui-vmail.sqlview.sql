@@ -2,19 +2,19 @@ DROP VIEW IF EXISTS `view_sender_access`;
 CREATE VIEW `view_sender_access` AS
   SELECT source, response
   FROM access WHERE type='sender' AND active = 1
-  ORDER BY source LIMIT 1;
+  ORDER BY source;
 
 DROP VIEW IF EXISTS `view_client_access`;
 CREATE VIEW `view_client_access` AS
   SELECT source, response
   FROM access WHERE type='client' AND active = 1
-  ORDER BY source LIMIT 1;
+  ORDER BY source;
 
 DROP VIEW IF EXISTS `view_recipient_access`;
 CREATE VIEW `view_recipient_access` AS
   SELECT source, response
   FROM access WHERE type='recipient' AND active = 1
-  ORDER BY source LIMIT 1;
+  ORDER BY source;
 
 DROP VIEW IF EXISTS `view_users`;
 CREATE VIEW `view_users` AS

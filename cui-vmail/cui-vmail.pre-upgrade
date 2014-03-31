@@ -5,4 +5,6 @@ rm -f /etc/check.d/vmail
 rm -f /etc/check.d/vmail.exp
 rm -f /etc/check.d/vmail.ext
 rm -f /etc/postfix/default/install-.*sql
+rm -f /etc/postfix/sql/*
+
 exit 0

@@ -1,6 +1,6 @@
 user = vmailprovider
 password = vmail
 dbname = vmaildata
-query = SELECT destination FROM view_canonical_maps WHERE email='%s' 
+query = SELECT destination FROM view_canonical_maps WHERE email='%s' LIMIT 1
 hosts = unix:/run/mysqld/mysqld.sock
 
