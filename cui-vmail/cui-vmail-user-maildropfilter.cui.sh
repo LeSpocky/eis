@@ -456,7 +456,7 @@ function maildropdlg_ok_clicked()
 # Cancel button clicked hook
 # expects: $1 : window handle of dialog window
 #          $2 : button control id
-# returns: 1  : event handled     
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
 function maildropdlg_cancel_clicked()
 {
@@ -468,7 +468,7 @@ function maildropdlg_cancel_clicked()
 # maildropdlg_create_hook
 # Dialog create hook - create dialog controls
 # expects: $1 : window handle of dialog window
-# returns: 1  : event handled      
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
 function maildropdlg_create_hook()
 {
@@ -831,6 +831,7 @@ function maildrops_editmaildrop_dialog()
                                 datefrom=UNIX_TIMESTAMP('${maildropdlg_datestart}'), \
                                 dateend=UNIX_TIMESTAMP('${maildropdlg_dateend}') \
                           WHERE id='${maildropdlg_id}';"
+
                     if p_sql_success "$p2"
                     then
                         selected_entry="$maildropdlg_id"
@@ -1094,7 +1095,7 @@ function mainwin_create_hook()
         cui_listview_setcoltext "$ctrl" 7 "Active"
         cui_listview_setcoltext "$ctrl" 8 "Start date:"
         cui_listview_setcoltext "$ctrl" 9 "End date:"
-        cui_listview_setcoltext "$ctrl" 10 "Nr"
+        cui_listview_setcoltext "$ctrl" 10 "-"
         cui_window_create       "$ctrl"
     fi
 

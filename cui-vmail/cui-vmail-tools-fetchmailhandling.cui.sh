@@ -103,12 +103,12 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT a.id,a.loginname,a.servername,a.recipient,a.options,a.prot,a.active,b.email \
+                "SELECT a.loginname,a.servername,a.recipient,a.options,a.prot,a.active,b.email,a.id \
                  FROM   fetchmail AS a LEFT JOIN view_users AS b ON a.ownerid=b.id \
                  ORDER BY a.servername,a.loginname;" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT a.id,a.loginname,a.servername,a.recipient,a.options,a.prot,a.active,b.email \
+                "SELECT a.loginname,a.servername,a.recipient,a.options,a.prot,a.active,b.email,a.id \
                  FROM   fetchmail AS a LEFT JOIN view_users AS b ON a.ownerid=b.id \
                  WHERE  a.recipient REGEXP '$keyword' \
                  ORDER BY a.servername,a.loginname;" && myres="$p2"
@@ -606,12 +606,12 @@ function fetchmails_editfetchmail_dialog()
 
         if p_valid_index $idx
         then
-            cui_listview_gettext "$ctrl" "$idx" "0" && entryname="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "1" && fetchmaildlg_login="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "2" && fetchmaildlg_server="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "3" && fetchmaildlg_recipient="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "4" && fetchmaildlg_options="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "6" && fetchmaildlg_active="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "0" && fetchmaildlg_login="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "1" && fetchmaildlg_server="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "2" && fetchmaildlg_recipient="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "3" && fetchmaildlg_options="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "5" && fetchmaildlg_active="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "7" && entryname="$p2"
 
             fetchmaildlg_passwd1="xxxxxxxxxxxxxxxx"
             fetchmaildlg_passwd2="xxxxxxxxxxxxxxxx"
@@ -692,8 +692,7 @@ function fetchmails_deletefetchmail_dialog()
 
         if p_valid_index $idx
         then
-            cui_listview_gettext "$ctrl" "$idx" "0"
-            entryname="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "7" && entryname="$p2"
 
             cui_message "$win" "Really delete selected fetchmail query?" "Question" "$MB_YESNO"
             if [ "$p2" == "$IDYES" ]
@@ -913,14 +912,14 @@ function mainwin_create_hook()
     then
         cui_listview_callback   "$ctrl" "$LISTBOX_CLICKED" "$win" "listview_clicked_hook"
         cui_listview_callback   "$ctrl" "$LISTBOX_POSTKEY" "$win" "listview_postkey_hook"
-        cui_listview_setcoltext "$ctrl" 0 "Nr."
-        cui_listview_setcoltext "$ctrl" 1 "Loginname"
-        cui_listview_setcoltext "$ctrl" 2 "Servername"
-        cui_listview_setcoltext "$ctrl" 3 "Recipient"
-        cui_listview_setcoltext "$ctrl" 4 "Options"
-        cui_listview_setcoltext "$ctrl" 5 "Prot"
-        cui_listview_setcoltext "$ctrl" 6 "Active"
-        cui_listview_setcoltext "$ctrl" 7 "Owner (e-mail)"
+        cui_listview_setcoltext "$ctrl" 0 "Loginname"
+        cui_listview_setcoltext "$ctrl" 1 "Servername"
+        cui_listview_setcoltext "$ctrl" 2 "Recipient"
+        cui_listview_setcoltext "$ctrl" 3 "Options"
+        cui_listview_setcoltext "$ctrl" 4 "Prot"
+        cui_listview_setcoltext "$ctrl" 5 "Active"
+        cui_listview_setcoltext "$ctrl" 6 "Owner (e-mail)"
+        cui_listview_setcoltext "$ctrl" 7 "-"
         cui_window_create       "$ctrl"
     fi
 

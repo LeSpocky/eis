@@ -95,12 +95,12 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT source,LEFT(response,50),active,LEFT(note,50) \
+                "SELECT source,LEFT(response,50),active,LEFT(note,50),id \
                  FROM access \
                  WHERE type='client' ORDER BY source;" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT source,LEFT(response,50),active,LEFT(note,50) \
+                "SELECT source,LEFT(response,50),active,LEFT(note,50),id \
                  FROM access \
                  WHERE type='client' AND source REGEXP '$keyword' \
                  ORDER BY source;" && myres="$p2"
@@ -492,8 +492,7 @@ function client_editclient_dialog()
             cui_listview_gettext "$ctrl" "$idx" "1" && clientdlg_response="$p2"
             cui_listview_gettext "$ctrl" "$idx" "2" && clientdlg_active="$p2"
             cui_listview_gettext "$ctrl" "$idx" "3" && clientdlg_comment="$p2"
-
-            entryname=${clientdlg_client}
+            cui_listview_gettext "$ctrl" "$idx" "4" && entryname="$p2"
 
             cui_window_new "$win" 0 0 42 12 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg
@@ -514,7 +513,7 @@ function client_editclient_dialog()
                                 response='${clientdlg_response}', \
                                 note='${clientdlg_comment}', \
                                 active='${clientdlg_active}' \
-                          WHERE source='$entryname' AND type='client';"
+                          WHERE id='$entryname';"
 
                     if p_sql_success "$p2"
                     then
@@ -548,6 +547,7 @@ function client_deleteclient_dialog()
     local result="$IDCANCEL"
     local ctrl
     local idx
+    local clientdlg_client
     local entryname
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
@@ -557,16 +557,16 @@ function client_deleteclient_dialog()
 
         if p_valid_index $idx
         then
-            cui_listview_gettext "$ctrl" "$idx" "0"
-            entryname="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "0" && clientdlg_client="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "4" && entryname="$p2"
 
-            cui_message "$win" "Really delete entry '$entryname'?" "Question" "$MB_YESNO"
+            cui_message "$win" "Really delete entry '$clientdlg_client'?" "Question" "$MB_YESNO"
             if [ "$p2" == "$IDYES" ]
             then
 
                 my_exec_sql "$myconn" \
                     "DELETE FROM access \
-                      WHERE source='${entryname}' AND type='client';"
+                      WHERE id='${entryname}';"
                 if p_sql_success "$p2"
                 then
                     result="$IDOK"
@@ -773,7 +773,7 @@ function mainwin_create_hook()
     local win="$p2"
     local ctrl
 
-    cui_listview_new "$win" "" 0 0 10 10 4 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
+    cui_listview_new "$win" "" 0 0 10 10 5 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_listview_callback   "$ctrl" "$LISTBOX_CLICKED" "$win" "listview_clicked_hook"
@@ -782,6 +782,7 @@ function mainwin_create_hook()
         cui_listview_setcoltext "$ctrl" 1 "Response"
         cui_listview_setcoltext "$ctrl" 2 "Active"
         cui_listview_setcoltext "$ctrl" 3 "Comment"
+        cui_listview_setcoltext "$ctrl" 4 "-"
         cui_window_create       "$ctrl"
     fi
 

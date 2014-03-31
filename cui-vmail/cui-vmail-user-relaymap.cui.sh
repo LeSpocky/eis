@@ -968,7 +968,7 @@ function mainwin_create_hook()
         cui_listview_setcoltext "$ctrl" 1 "Login username"
         cui_listview_setcoltext "$ctrl" 2 "Active"
         cui_listview_setcoltext "$ctrl" 3 "Comment"
-        cui_listview_setcoltext "$ctrl" 4 "Nr"
+        cui_listview_setcoltext "$ctrl" 4 "-"
         cui_window_create       "$ctrl"
     fi
     cui_textview_new "$win" "Help" 0 0 10 10 "$IDC_HELPTEXT" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"

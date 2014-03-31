@@ -100,20 +100,19 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT source,LEFT(response,50),active,LEFT(note,50) \
+                "SELECT source,LEFT(response,50),active,LEFT(note,50),id \
                  FROM access \
                  WHERE type='recipient' ORDER BY source;" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT source,LEFT(response,50),active,LEFT(note,50) \
+                "SELECT source,LEFT(response,50),active,LEFT(note,50),id \
                  FROM access \
                  WHERE type='recipient' AND source REGEXP '$keyword' \
                  ORDER BY source;" && myres="$p2"
         fi
-                        
+
         if cui_valid_handle "$myres"
         then
-            
             my_result_status "$myres"
             if [ "$p2" == "$SQL_DATA_READY" ]
             then
@@ -225,7 +224,7 @@ function inputdlg_cancel_clicked()
 # inputdlg_create_hook
 # Dialog create hook - create dialog controls
 # expects: $1 : window handle of dialog window
-# returns: 1  : event handled      
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
 function inputdlg_create_hook()
 {
@@ -492,8 +491,7 @@ function recipient_editrecipient_dialog()
             cui_listview_gettext "$ctrl" "$idx" "1" && recipientdlg_response="$p2"
             cui_listview_gettext "$ctrl" "$idx" "2" && recipientdlg_active="$p2"
             cui_listview_gettext "$ctrl" "$idx" "3" && recipientdlg_comment="$p2"
-
-            entryname=${recipientdlg_recipient}
+            cui_listview_gettext "$ctrl" "$idx" "4" && entryname="$p2"
 
             cui_window_new "$win" 0 0 42 12 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg
@@ -513,7 +511,7 @@ function recipient_editrecipient_dialog()
                                 response='${recipientdlg_response}', \
                                 note='${recipientdlg_comment}', \
                                 active='${recipientdlg_active}' \
-                          WHERE source='$entryname' AND type='recipient';"
+                          WHERE id='$entryname';"
 
                     if p_sql_success "$p2"
                     then
@@ -546,6 +544,7 @@ function recipient_deleterecipient_dialog()
     local result="$IDCANCEL"
     local ctrl
     local idx
+    local recipientdlg_recipient
     local entryname
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
@@ -555,15 +554,15 @@ function recipient_deleterecipient_dialog()
 
         if p_valid_index $idx
         then
-            cui_listview_gettext "$ctrl" "$idx" "0"
-            entryname="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "0" && recipientdlg_recipient="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "4" && entryname="$p2"
 
-            cui_message "$win" "Really delete entry '$entryname'?" "Question" "$MB_YESNO"
+            cui_message "$win" "Really delete entry '$recipientdlg_recipient'?" "Question" "$MB_YESNO"
             if [ "$p2" == "$IDYES" ]
             then
                 my_exec_sql "$myconn" \
                     "DELETE FROM access \
-                      WHERE source='${entryname}' AND type='recipient';"
+                      WHERE id='${entryname}';"
                 if p_sql_success "$p2"
                 then
                     result="$IDOK"
@@ -765,7 +764,7 @@ function mainwin_create_hook()
     local win="$p2"
     local ctrl
 
-    cui_listview_new "$win" "" 0 0 10 10 4 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
+    cui_listview_new "$win" "" 0 0 10 10 5 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_listview_callback   "$ctrl" "$LISTBOX_CLICKED" "$win" "listview_clicked_hook"
@@ -774,6 +773,7 @@ function mainwin_create_hook()
         cui_listview_setcoltext "$ctrl" 1 "Response"
         cui_listview_setcoltext "$ctrl" 2 "Active"
         cui_listview_setcoltext "$ctrl" 3 "Comment"
+        cui_listview_setcoltext "$ctrl" 4 "-"
         cui_window_create       "$ctrl"
     fi
 

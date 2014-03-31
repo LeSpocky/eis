@@ -840,9 +840,9 @@ function mainwin_create_hook()
     then
         cui_listview_callback   "$ctrl" "$LISTBOX_CLICKED" "$win" "listview_clicked_hook"
         cui_listview_callback   "$ctrl" "$LISTBOX_POSTKEY" "$win" "listview_postkey_hook"
-        cui_listview_setcoltext "$ctrl" 0 "domain name"
-        cui_listview_setcoltext "$ctrl" 1 "transport"
-        cui_listview_setcoltext "$ctrl" 2 "active"
+        cui_listview_setcoltext "$ctrl" 0 "Domain name"
+        cui_listview_setcoltext "$ctrl" 1 "Transport"
+        cui_listview_setcoltext "$ctrl" 2 "Active"
         cui_window_create       "$ctrl"
     fi
 

@@ -96,12 +96,12 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT source,LEFT(response,50),active,LEFT(note,50) \
+                "SELECT source,LEFT(response,50),active,LEFT(note,50),id \
                  FROM access \
                  WHERE type='sender' ORDER BY source;" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT source,LEFT(response,50),active,LEFT(note,50) \
+                "SELECT source,LEFT(response,50),active,LEFT(note,50),id \
                  FROM access \
                  WHERE type='sender' AND source REGEXP '$keyword' \
                  ORDER BY source;" && myres="$p2"
@@ -489,8 +489,7 @@ function sender_editsender_dialog()
             cui_listview_gettext "$ctrl" "$idx" "1" && senderdlg_response="$p2"
             cui_listview_gettext "$ctrl" "$idx" "2" && senderdlg_active="$p2"
             cui_listview_gettext "$ctrl" "$idx" "3" && senderdlg_comment="$p2"
-
-            entryname=${senderdlg_sender}
+            cui_listview_gettext "$ctrl" "$idx" "4" && entryname="$p2"
 
             cui_window_new "$win" 0 0 42 12 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg
@@ -511,7 +510,7 @@ function sender_editsender_dialog()
                                 response='${senderdlg_response}', \
                                 note='${senderdlg_comment}', \
                                 active='${senderdlg_active}' \
-                          WHERE source='$entryname' AND type='sender';"
+                          WHERE id='$entryname';"
 
                     if p_sql_success "$p2"
                     then
@@ -544,6 +543,7 @@ function sender_deletesender_dialog()
     local result="$IDCANCEL"
     local ctrl
     local idx
+    local senderdlg_sender
     local entryname
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
@@ -553,16 +553,15 @@ function sender_deletesender_dialog()
 
         if p_valid_index $idx
         then
-            cui_listview_gettext "$ctrl" "$idx" "0"
-            entryname="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "0" && senderdlg_sender="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "4" && entryname="$p2"
 
-            cui_message "$win" "Really delete entry '$entryname'?" "Question" "$MB_YESNO"
+            cui_message "$win" "Really delete entry '$senderdlg_sender'?" "Question" "$MB_YESNO"
             if [ "$p2" == "$IDYES" ]
             then
-
                 my_exec_sql "$myconn" \
                     "DELETE FROM access \
-                      WHERE source='${entryname}' AND type='sender';"
+                      WHERE id='${entryname}';"
                 if p_sql_success "$p2"
                 then
                     result="$IDOK"
@@ -765,7 +764,7 @@ function mainwin_create_hook()
     local win="$p2"
     local ctrl
 
-    cui_listview_new "$win" "" 0 0 10 10 4 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
+    cui_listview_new "$win" "" 0 0 10 10 5 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_listview_callback   "$ctrl" "$LISTBOX_CLICKED" "$win" "listview_clicked_hook"
@@ -774,6 +773,7 @@ function mainwin_create_hook()
         cui_listview_setcoltext "$ctrl" 1 "Response"
         cui_listview_setcoltext "$ctrl" 2 "Active"
         cui_listview_setcoltext "$ctrl" 3 "Comment"
+        cui_listview_setcoltext "$ctrl" 4 "-"
         cui_window_create       "$ctrl"
     fi
 
@@ -948,7 +948,7 @@ function mainwin_size_hook()
 #----------------------------------------------------------------------------
 function mainwin_destroy_hook()
 {
-    local win="$p2" 
+    local win="$p2"
     cui_return 1
 }
 
