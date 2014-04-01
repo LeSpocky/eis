@@ -133,10 +133,10 @@ Example: POSTFIX_RBL_1_SERVER='relays.ordb.org'
 
 <help name="POSTFIX_RBL_%_WEIGHT">
 Weight factor of external Realtime Blackhole List server.<br/>
-<br/>
-Example: POSTFIX_RBL_1_WEIGHT='2'  
+Range: -5...0...+3<br/>
+Example: POSTFIX_RBL_1_WEIGHT='2' for Blacklist<br/>
+Example: POSTFIX_RBL_1_WEIGHT='-2' for Whitelist<br/>
 </help>
-
 
 <help name="POSTFIX_REJECT_UNKN_CLIENT">
 Reject all email when:<br/>

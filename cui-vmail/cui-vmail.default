@@ -49,7 +49,7 @@ POSTFIX_REJECT_BOGUS_MX='yes'         # Block faked DNS entries
 POSTFIX_MIME_HEADER_CHECK='yes'       # Block all exe,com,vba... files
 POSTFIX_POSTSCREEN='yes'              # Use Postscreen antispam preegreeting
 POSTFIX_RBL='yes'                     # Use Realtime Blackhole List
-POSTFIX_RBL_N='7'                     # Count of Realtime Blackhole List server
+POSTFIX_RBL_N='9'                     # Count of Realtime Blackhole List server
 POSTFIX_RBL_1_SERVER='ix.dnsbl.manitu.net'
                                       # Realtime Blackhole List server 1 name
 POSTFIX_RBL_1_WEIGHT='3'              # Blackhole server 1 blocking weight
@@ -70,6 +70,12 @@ POSTFIX_RBL_6_WEIGHT='1'              # Blackhole server 6 blocking weight
 POSTFIX_RBL_7_SERVER='b.barracudacentral.org'
                                       # Realtime Blackhole List server 7 name
 POSTFIX_RBL_7_WEIGHT='1'              # Blackhole server 7 blocking weight
+POSTFIX_RBL_8_SERVER='bl.spamcop.net' # Realtime Blackhole List server 8 name
+POSTFIX_RBL_8_WEIGHT='1'              # Blackhole server 8 blocking weight
+POSTFIX_RBL_9_SERVER='list.dnswl.org' # Realtime White List server 9 name
+POSTFIX_RBL_9_WEIGHT='-5'             # White List 9 unblocking weight
+
+
 POSTFIX_HEADER_N='0'                  # Count of header checks
 POSTFIX_HEADER_1_CHECK='^Date:.*[+-](1[4-9]|2\d)\d\d$'
 POSTFIX_HEADER_1_HANDL='REJECT invalid timezone'

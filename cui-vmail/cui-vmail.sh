@@ -172,12 +172,14 @@ if [ "$POSTFIX_RBL" = "yes" ]; then
     count=1
     while [ ${count} -le ${POSTFIX_RBL_N} ]
     do
-        eval temp1='$POSTFIX_RBL_'${count}'_SERVER'
         eval temp2='$POSTFIX_RBL_'${count}'_WEIGHT'
-        postfix_pscr_dnsbl_action="enforce"
-        [ -n "$temp2" ] && temp2="*${temp2}"
-        postfix_rbl_list="$postfix_rbl_list ${temp1}${temp2}"
-        [ ${POSTFIX_RBL_N} -gt ${count} ] && postfix_rbl_list="$postfix_rbl_list,"
+        if [ "$temp2" != "0" ]; then
+            eval temp1='$POSTFIX_RBL_'${count}'_SERVER'
+            postfix_pscr_dnsbl_action="enforce"
+            [ -n "$temp2" ] && temp2="*${temp2}"
+            postfix_rbl_list="$postfix_rbl_list ${temp1}${temp2}"
+            [ ${POSTFIX_RBL_N} -gt ${count} ] && postfix_rbl_list="$postfix_rbl_list,"
+        fi
         count=`expr ${count} + 1`
     done
 fi
