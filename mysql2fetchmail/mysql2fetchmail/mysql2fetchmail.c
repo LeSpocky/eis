@@ -60,13 +60,13 @@ int    ngid          = 12;      // gid 12 = mail
 void
 ExitProg(int code)
 {
-    if (mysqldatabase)  free(mysqldatabase);
-    if (mysqlquery)     free(mysqlquery);
-    if (mysqluser)      free(mysqluser);
-    if (mysqlpass)      free(mysqlpass);
-    if (mysqlserver)    free(mysqlserver);
-    if (fetchfile)      free(fetchfile);
-    if (alldomains)     free(alldomains);
+    if (mysqldatabase)   free(mysqldatabase);
+    if (mysqlquery)      free(mysqlquery);
+    if (mysqluser)       free(mysqluser);
+    if (mysqlpass)       free(mysqlpass);
+    if (mysqlserver)     free(mysqlserver);
+    if (fetchfile)       free(fetchfile);
+    if (alldomains)      free(alldomains);
     if (mysqlencodepass) free(mysqlencodepass);
     exit (code);
 }
@@ -248,7 +248,7 @@ main(int argc, char* argv[])
                 break;
             case 'e':
                 mysqlencodepass = strdup(optarg);
-                break;                
+                break;
             case 'f':
                 mysqlquery = strdup(optarg);
                 break;
@@ -322,7 +322,7 @@ main(int argc, char* argv[])
         if ( atoi(row[0]) == 0 )
             continue;
         else {
-            if (verbose == 1) {                
+            if (verbose == 1) {
                 printf("Servername: '%s'\n",  row[1] );
                 printf("Protokoll:  '%s'\n",  row[2] );
                 printf("Loginname:  '%s'\n",  row[3] );
@@ -349,7 +349,6 @@ main(int argc, char* argv[])
             sslproto   = strdup(row[7]);
             sslfingerprint = strdup(row[8]);
         }
-        
 
         if ( (servername) && (prot) && (loginname) && (strlen(servername)>2) && (strlen(prot)>2) && (strlen(loginname)>0)) {
             if (strcasecmp(recipient, "*")==0) {
@@ -362,14 +361,14 @@ main(int argc, char* argv[])
                     fprintf(fd, "poll %s with proto %s:\n",servername ,prot );
                 }
             }
-            
+
             fprintf(fd, "    user '%s', with password '%s', is", loginname, upassword);
-                
+
             if (!strcmp(recipient,"*")==0)
                 fprintf(fd, " '%s' here", recipient);
             else
                 fprintf(fd, " * here");
-                
+
             if ((options) && (strlen(options)>1))
                 fprintf(fd, ", %s", options );
             if ((sslproto) && (strlen(sslproto)>1))
@@ -383,6 +382,7 @@ main(int argc, char* argv[])
     fclose(fd);
     chmod(fetchfile, 0600 );
 
+    if (mysql)      mysql_close(mysql);
     if (servername) free(servername);
     if (prot)       free(prot);
     if (loginname)  free(loginname);
