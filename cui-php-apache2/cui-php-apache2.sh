@@ -643,6 +643,21 @@ EOF
 fi
 
 # -----------------------------------------------------------------------------
+# OPENSSL
+rm -f /etc/php/conf.d/openssl.ini
+if [ "$PHP_EXT_SSL" = "yes" ] ; then
+    apk info -q -e php-openssl || apk add -q php-openssl
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/openssl.ini <<EOF
+extension=openssl.so
+EOF
+    else
+        errorsyslog php-openssl
+    fi
+fi
+
+
+# -----------------------------------------------------------------------------
 # XML
 rm -f /etc/php/conf.d/xml.ini
 if [ "$PHP_EXT_XML" = "yes" ] ; then

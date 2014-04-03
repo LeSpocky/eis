@@ -19,6 +19,7 @@ PHP_EXT_JSON              -               -            YESNO
 PHP_EXT_GETTEXT           -               -            YESNO
 PHP_EXT_ICONV             -               -            YESNO
 PHP_EXT_IMAP              -               -            YESNO
+PHP_EXT_SSL               -               -            YESNO
 PHP_EXT_XML               -               -            YESNO
 PHP_EXT_ZIP               -               -            YESNO
 PHP_EXT_ZLIB              -               -            YESNO

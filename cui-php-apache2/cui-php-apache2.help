@@ -116,6 +116,11 @@ Mit 'yes' wird das IMAP Email Modul geladen.<br/>
 Mit 'no' wird das Modul deaktiviert (default).
 </help>
 
+<help name="PHP_EXT_SSL">
+Mit 'yes' wird das OpenSSL Modul geladen.<br/>
+Mit 'no' wird das Modul deaktiviert (default).
+</help>
+
 <help name="PHP_EXT_XML">
 Mit 'yes' wird das XML und XMLREADER Modul geladen.<br/>
 Mit 'no' werden die Module deaktiviert (default).
