@@ -30,7 +30,7 @@ enum
 	PM_API_PACKAGESTOLIST      = 12,
 	PM_API_INFOTOTEXTVIEW      = 13,
 	PM_API_INSTALLED_TOLIST    = 14,
-	PM_API_DEL_PACKTOLIST      = 15,	
+	PM_API_DEL_PACKTOLIST      = 15,
 };
 
 void PMApiInit                   (void);

@@ -1,11 +1,9 @@
 /* ---------------------------------------------------------------------
- * File: pm_api.c   
+ * File: pm_api.c
  * pm = package manager
- *   
- * Copyright (C) 2013  Jens Vehlhaber, <jens@eisfair.org>
  *
- * Last Update:  $Id: pm_api.c 23987 2013-02-25 17:33:07Z jv $
- *   
+ * Copyright (C) 2012- 2014 Jens Vehlhaber, <jens@eisfair.org>
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
@@ -189,7 +187,7 @@ PMApiReposToMenu(int argc, const wchar_t* argv[])
 			if (r != 0) 
 			{
 				LibPMWriteError(ERROR_INVALID);
-			}			
+			}
 			pdb = &db;
 			for (i = 0; i < pdb->num_repos; i++)
 			{
@@ -253,10 +251,10 @@ PMApiGetRepoById(int argc, const wchar_t* argv[])
 		{
 			LibPMWriteError(ERROR_INVALID);
 			return;
-		}			
+		}
 		pdb = &db;
 		repo = &pdb->repos[index -1];
-		if (APK_BLOB_IS_NULL(repo->description)) 
+		if (APK_BLOB_IS_NULL(repo->description))
 			swprintf(buffer, 14, _T("%s"),repo->url);
 		else
 			swprintf(buffer, 14, _T("" BLOB_FMT), BLOB_PRINTF(repo->description));
@@ -585,7 +583,7 @@ PMApiInfoToTextView(int argc, const wchar_t* argv[])
 						TextviewAdd  (textview->Window, buffer);
 					}
 				}
-				if (  pkg->ipkg != NULL ) 
+				if (  pkg->ipkg != NULL )
 				{	
 					for (i = 0; i < pkg->ipkg->replaces->num; i++) 
 					{
@@ -695,7 +693,7 @@ PMApiDelPackagesList(int argc, const wchar_t* argv[])
 				pkg0 = apk_pkg_get_installed(name0);
 				if (pkg0 == NULL)
 					continue;
-				for (j = 0; j < pkg0->depends->num; j++) 
+				for (j = 0; j < pkg0->depends->num; j++)
 				{
 					if (pkg0->depends->item[j].name != pkg->name)
 						continue;
@@ -703,8 +701,8 @@ PMApiDelPackagesList(int argc, const wchar_t* argv[])
 					n = wcslen(buffer);
 					if (n < 200)
 					{
-						wcscat(buffer, str); 
-						wcscat(buffer, _T(" ")); 
+						wcscat(buffer, str);
+						wcscat(buffer, _T(" "));
 					}
 					else
 					{
@@ -749,10 +747,10 @@ PMWritePackageListEntry(WINDOWSTUB *listview, int showall, struct apk_database *
 	unsigned int latest_repos = 0;
 	int i, r = -1;
 	struct tm *ts;
-	char str[12]; 
+	char str[12];
 
 	name = pkg->name;
-	for (i = 0; i < name->providers->num; i++) 
+	for (i = 0; i < name->providers->num; i++)
 	{
 		struct apk_package *pkg0 = name->providers->item[i].pkg;
 		if (pkg0->name != name || pkg0->repos == 0)
@@ -776,14 +774,14 @@ PMWritePackageListEntry(WINDOWSTUB *listview, int showall, struct apk_database *
 	if ( r != APK_VERSION_GREATER )
 		latest = apk_blob_atomize(APK_BLOB_STR(" "));
 	ts = localtime(&pkg->build_time);
-	strftime(str, 11, "%Y-%m-%d", ts );	
-	LISTREC* rec = ListviewCreateRecord (listview->Window);  
+	strftime(str, 11, "%Y-%m-%d", ts );
+	LISTREC* rec = ListviewCreateRecord (listview->Window);
 	if (rec)
 	{
 		swprintf(buffer, PKNAMELEN, _T("%s"), pkg->name->name);
 		ListviewSetColumnText(rec, 0, buffer);
 		swprintf(buffer, PKVERSLEN, _T("" BLOB_FMT), BLOB_PRINTF(*pkg->version));
-		ListviewSetColumnText(rec, 1, buffer);		
+		ListviewSetColumnText(rec, 1, buffer);
 		swprintf(buffer,        11, _T("%s"), str);
 		ListviewSetColumnText(rec, 2, buffer);
 		swprintf(buffer, PKVERSLEN, _T("" BLOB_FMT), BLOB_PRINTF(*latest));
@@ -828,7 +826,7 @@ PMMatchNames(apk_hash_item item, void *ctx)
 			if (strstr(ictx->searchtext, "cui-*"))
 			{
 				if (strncmp(pkg->name->name, "cui-", 4) != 0) 
-					return 0;				
+					return 0;
 			}
 			else
 			{
