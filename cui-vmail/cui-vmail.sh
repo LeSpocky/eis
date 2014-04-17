@@ -318,8 +318,9 @@ fi
 postconf -e "smtpd_tls_session_cache_database = btree:/var/lib/postfix/smtpd_tls_session_cache"
 postconf -e "smtpd_tls_session_cache_timeout  = 9600s"
 postconf -e "smtpd_tls_req_ccert              = no"
-postconf -e "smtpd_tls_dh1024_param_file      = /etc/postfix/ssl/dh_1024.pem"
 postconf -e "smtpd_tls_dh512_param_file       = /etc/postfix/ssl/dh_512.pem"
+postconf -e "smtpd_tls_dh1024_param_file      = /etc/postfix/ssl/dh_2048.pem"
+
 if [ $POSTFIX_LOGLEVEL -gt 1 ]; then
     postconf -e "smtpd_tls_loglevel = $POSTFIX_LOGLEVEL"
 else
@@ -824,7 +825,7 @@ if [ ! -f "$VMAIL_TLS_CERT" ]; then
     certfn=$(hostname -f)
     cat > /etc/dovecot/dovecot-openssl.cnf <<EOF
 [ req ]
-default_bits = 1024
+default_bits = 2048
 encrypt_key = yes
 distinguished_name = req_dn
 x509_extensions = cert_type
@@ -848,20 +849,17 @@ emailAddress=postmaster@$certdn
 nsCertType = server
 EOF
     chmod 0644 /etc/dovecot/dovecot-openssl.cnf
-    openssl genrsa -out $VMAIL_TLS_KEY 1024
+    openssl genrsa -out $VMAIL_TLS_KEY 2048
     chmod 0600 $VMAIL_TLS_KEY
     openssl req -new -x509 -nodes -sha1 -days 3650 -config /etc/dovecot/dovecot-openssl.cnf -key $VMAIL_TLS_KEY -out $VMAIL_TLS_CERT
     #openssl x509 -subject -fingerprint -noout -in $VMAIL_TLS_CERT
 fi
 
-# Diffie-Hellman only for postfix use!
+# EECDH Server support
 mkdir -p /etc/postfix/ssl
-cd /etc/postfix/ssl
-if [ ! -f /etc/postfix/ssl/dh_512.pem ]; then
-    openssl gendh -out /etc/postfix/ssl/dh_512.pem -2 512
-    openssl gendh -out /etc/postfix/ssl/dh_1024.pem -2 1024
-fi
-
+[ -f /etc/postfix/ssl/dh_512.pem ]  || openssl gendh -out /etc/postfix/ssl/dh_512.pem -2 512
+[ -f /etc/postfix/ssl/dh_1024.pem ] || openssl gendh -out /etc/postfix/ssl/dh_1024.pem -2 1024
+[ -f /etc/postfix/ssl/dh_2048.pem ] || openssl gendh -out /etc/postfix/ssl/dh_2048.pem -2 2048
 
 ### --------------------------------------------------------------------------
 ### add cron job
