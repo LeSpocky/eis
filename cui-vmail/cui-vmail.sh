@@ -803,22 +803,57 @@ echo "."
 ### -------------------------------------------------------------------------
 mkdir -p $VMAIL_TLS_CAPATH
 mkdir -p $VMAIL_TLS_KEYPATH
-# create ca
+
+# create ca if missing!
 if [ ! -f "$VMAIL_TLS_CAPATH/ca.pem" -a "$POSTFIX_SMTP_TLS" = "yes" ]; then
     echo ""
     echo "Create CA"
     echo "----------------------------------------------------------------------"
     openssl genrsa -out $VMAIL_TLS_KEYPATH/ca.key 4096
+    chmod 0600 $VMAIL_TLS_KEYPATH/ca.key
     openssl req -new -x509 -days 3650 -key $VMAIL_TLS_KEYPATH/ca.key -out $VMAIL_TLS_CAPATH/ca.pem
 fi
-# create imap server cert
-if [ ! -f "$VMAIL_TLS_CERT" -a "$POSTFIX_SMTP_TLS" = "yes" ]; then
+
+# create imap server cert if not exists
+if [ ! -f "$VMAIL_TLS_CERT" ]; then
     echo ""
     echo "Create server TLS cert"
     echo "----------------------------------------------------------------------"
+    # configuration for current server
+    certdn=$(hostname -d)
+    certfn=$(hostname -f)
+    cat > /etc/dovecot/dovecot-openssl.cnf <<EOF
+[ req ]
+default_bits = 1024
+encrypt_key = yes
+distinguished_name = req_dn
+x509_extensions = cert_type
+prompt = no
+[ req_dn ]
+# country (2 letter code)
+C=DE
+# State or Province Name (full name)
+#ST=Thueringen
+# Locality Name (eg. city)
+#L=Weimar
+# Organization (eg. company)
+O=$certdn
+# Organizational Unit Name (eg. section)
+OU=mail-server
+# Common Name (*.example.com is also possible)
+CN=$certfn
+# E-mail contact
+emailAddress=postmaster@$certdn
+[ cert_type ]
+nsCertType = server
+EOF
+    chmod 0644 /etc/dovecot/dovecot-openssl.cnf
     openssl genrsa -out $VMAIL_TLS_KEY 1024
-    openssl req -new -x509 -nodes -sha1 -days 3650 -key $VMAIL_TLS_KEY -out $VMAIL_TLS_CERT
+    chmod 0600 $VMAIL_TLS_KEY
+    openssl req -new -x509 -nodes -sha1 -days 3650 -config /etc/dovecot/dovecot-openssl.cnf -key $VMAIL_TLS_KEY -out $VMAIL_TLS_CERT
+    #openssl x509 -subject -fingerprint -noout -in $VMAIL_TLS_CERT
 fi
+
 # Diffie-Hellman only for postfix use!
 mkdir -p /etc/postfix/ssl
 cd /etc/postfix/ssl

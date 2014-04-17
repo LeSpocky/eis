@@ -16,6 +16,7 @@ get_program_portnr()
 # start/stop
 case "$1" in
     start)
+        /sbin/rc-service -q postfixchroot start
         [ "$START_POP3IMAP" = 'yes' ] && /sbin/rc-service dovecot start
         /sbin/rc-service smc-milter-new start
         [ -x /etc/init.d/greylist ] && /sbin/rc-service greylist stop
@@ -26,6 +27,7 @@ case "$1" in
         /sbin/rc-service dovecot stop
         [ -x /etc/init.d/greylist ] && /sbin/rc-service greylist stop
         /sbin/rc-service smc-milter-new stop
+        /sbin/rc-service -q postfixchroot stop
     ;;
     restart)
         $0 stop
