@@ -329,6 +329,7 @@ fi
 
 rm -f /etc/postfix/header_checks.pcre
 touch /etc/postfix/header_checks.pcre
+chmod 0644 /etc/postfix/header_checks.pcre
 count=1
 while [ ${count} -le ${POSTFIX_HEADER_N} ]
 do
@@ -339,6 +340,7 @@ do
 done
 rm -f /etc/postfix/client_access_blocks.pcre
 touch /etc/postfix/client_access_blocks.pcre
+chmod 0644 /etc/postfix/client_access_blocks.pcre
 count=1
 while [ ${count} -le ${POSTFIX_CLIENT_N} ]
 do
@@ -858,8 +860,9 @@ fi
 # EECDH Server support
 mkdir -p /etc/postfix/ssl
 [ -f /etc/postfix/ssl/dh_512.pem ]  || openssl gendh -out /etc/postfix/ssl/dh_512.pem -2 512
-[ -f /etc/postfix/ssl/dh_1024.pem ] || openssl gendh -out /etc/postfix/ssl/dh_1024.pem -2 1024
+#[ -f /etc/postfix/ssl/dh_1024.pem ] || openssl gendh -out /etc/postfix/ssl/dh_1024.pem -2 1024
 [ -f /etc/postfix/ssl/dh_2048.pem ] || openssl gendh -out /etc/postfix/ssl/dh_2048.pem -2 2048
+chmod 0644 /etc/postfix/ssl/*
 
 ### --------------------------------------------------------------------------
 ### add cron job
