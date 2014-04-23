@@ -425,7 +425,7 @@ scache    unix  -       -       $pchr       -       1       scache
 # Interfaces to non-Postfix software
 # ==========================================================================
 pop3imap  unix  -       n       n       -       -       pipe
-    flags=DRhu user=mail:mail argv=/usr/libexec/dovecot/dovecot-lda -d ${dovecot_deliver}
+    flags=DRhu user=mail:mail argv=/usr/libexec/dovecot/dovecot-lda -f ${sender} -a ${recipient} -d ${dovecot_deliver}
 uucp      unix  -       n       n       -       -       pipe
     flags=Fqhu user=uucp argv=uux -r -n -z -a\$sender - \$nexthop!rmail (\$recipient)
 
@@ -641,6 +641,9 @@ namespace inbox {
   }
   mailbox Trash {
     auto = create
+    special_use = \Trash
+  }
+  mailbox "Deleted Messages" {
     special_use = \Trash
   }
   mailbox Sent {
