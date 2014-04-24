@@ -618,7 +618,7 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
     {
         fclose(fu);
         fprintf(f, "require [\"fileinto\",\"envelope\",\"reject\",\"vacation\",\"subaddress\",\"regex\",\"copy\",\"body\",\"include\"];\n");
-        fprintf(f, "include :personal \"userfilter.sieve\";\n\n");
+        fprintf(f, "include :personal \"userfilter\";\n\n");
     }
     for (p=r->first; p; p=p->next) {
         const char *fieldname=p->fieldname ? p->fieldname:"";
