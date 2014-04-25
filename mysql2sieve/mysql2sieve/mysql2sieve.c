@@ -613,11 +613,11 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
         return (-1);
 
     if (!fu)
-        fprintf(f, "require [\"fileinto\",\"envelope\",\"reject\",\"vacation\",\"subaddress\",\"regex\",\"copy\",\"body\"];\n");
+        fprintf(f, "require [\"fileinto\",\"envelope\",\"reject\",\"vacation\",\"vacation-seconds\",\"subaddress\",\"regex\",\"copy\",\"body\"];\n");
     else
     {
         fclose(fu);
-        fprintf(f, "require [\"fileinto\",\"envelope\",\"reject\",\"vacation\",\"subaddress\",\"regex\",\"copy\",\"body\",\"include\"];\n");
+        fprintf(f, "require [\"fileinto\",\"envelope\",\"reject\",\"vacation\",\"vacation-seconds\",\"subaddress\",\"regex\",\"copy\",\"body\",\"include\"];\n");
         fprintf(f, "include :personal \"userfilter\";\n\n");
     }
     for (p=r->first; p; p=p->next) {
@@ -702,9 +702,9 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
             break;
         case anymessage:
             if (*tofolder == '+')
-                /* fprintf(f, "allof (not header :contains \"Precedence\" \"bulk\", not header :contains \"Precedence\" \"list\") "); */ 
-                fprintf(f, "allof (not exists [\"list-help\", \"list-unsubscribe\", \"list-subscribe\", \"list-owner\", \"list-post\", \"list-archive\", \"list-id\", \"Mailing-List\"], not header :comparator \"i;ascii-casemap\" :is \"Precedence\" [\"list\", \"bulk\", \"junk\"], not header :comparator \"i;ascii-casemap\" :matches \"To\" \"Multiple recipients of*\" ) ");
-            else 
+                // fprintf(f, "allof (not exists [\"list-help\", \"list-unsubscribe\", \"list-subscribe\", \"list-owner\", \"list-post\", \"list-archive\", \"list-id\", \"Mailing-List\"], not header :comparator \"i;ascii-casemap\" :is \"Precedence\" [\"list\", \"bulk\", \"junk\"], not header :comparator \"i;ascii-casemap\" :matches \"To\" \"Multiple recipients of*\" ) ");
+                fprintf(f, "true ");
+            else
                 fprintf(f, "true ");
             break;
         }

@@ -690,6 +690,16 @@ plugin {
 EOF
 
 ### -------------------------------------------------------------------------
+#91-sieve-plugin.conf
+cat > /etc/dovecot/conf.d/91-sieve-plugin.conf <<EOF
+## Settings for the Sieve interpreter
+plugin {
+  # Use vacation-seconds
+  sieve_extensions = +vacation-seconds
+}
+EOF
+
+### -------------------------------------------------------------------------
 # create SQL configuration
 cat > /etc/dovecot/dovecot-sql.conf.ext <<EOF
 driver = mysql
