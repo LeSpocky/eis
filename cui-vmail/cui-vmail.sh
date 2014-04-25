@@ -696,6 +696,8 @@ cat > /etc/dovecot/conf.d/91-sieve-plugin.conf <<EOF
 plugin {
   # Use vacation-seconds
   sieve_extensions = +vacation-seconds
+  sieve_vacation_min_period = 0
+  sieve_vacation_default_period = 1d
 }
 EOF
 
