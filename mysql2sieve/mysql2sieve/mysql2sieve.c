@@ -727,8 +727,11 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
                     fprintf(f, "    AUTOREPLYFROM=$FROM\n" );
                 */
                 fprintf(f, "vacation ");
-                if (ai.days > 0)
+                if (ai.days > 0) {
                     fprintf(f, ":days %d ", ai.days );
+                } else {
+                    fprintf(f, ":seconds 60 " );
+                }
 //                fprintf(f, ":subject \"Abwesenheitsnachricht\" text:\n" );
                 fprintf(f, "text:\n" );  
                 fprintf(f, "%s", p->memotext);
