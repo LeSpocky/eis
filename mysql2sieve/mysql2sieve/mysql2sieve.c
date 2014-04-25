@@ -612,12 +612,11 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
     if ((!f) || (fchown(fileno(f), nuid, ngid)))
         return (-1);
 
-    if (!fu)
-        fprintf(f, "require [\"fileinto\",\"envelope\",\"reject\",\"vacation\",\"vacation-seconds\",\"subaddress\",\"regex\",\"copy\",\"body\"];\n");
-    else
-    {
+    if (!fu) {
+        fprintf(f, "require [\"fileinto\",\"envelope\",\"reject\",\"vacation\",\"subaddress\",\"regex\",\"copy\",\"body\"];\n");
+    } else {
         fclose(fu);
-        fprintf(f, "require [\"fileinto\",\"envelope\",\"reject\",\"vacation\",\"vacation-seconds\",\"subaddress\",\"regex\",\"copy\",\"body\",\"include\"];\n");
+        fprintf(f, "require [\"fileinto\",\"envelope\",\"reject\",\"vacation\",\"subaddress\",\"regex\",\"copy\",\"body\",\"include\"];\n");
         fprintf(f, "include :personal \"userfilter\";\n\n");
     }
     for (p=r->first; p; p=p->next) {
@@ -650,7 +649,7 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
             fprintf(f, "##Body\n");
         if (p->flags & MFR_CONTINUE)
             fprintf(f, "##Continue\n");
-*/ 
+*/
         // start rule entry
         if ( p->rulename == '\0' )
             fprintf(f, "# rule:[noname %d]\n", rand() );
@@ -720,12 +719,8 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
 
             if (maildir_filter_autoresp_info_init_str(&ai, tofolder+1) == 0) {
                 fprintf(f, "vacation ");
-                if (ai.days > 0) {
-                    fprintf(f, ":days %d ", ai.days );
-                } else {
-                    fprintf(f, ":seconds 0 " );
-                }
-//                fprintf(f, ":subject \"Abwesenheitsnachricht\" text:\n" );
+                fprintf(f, ":days %d ", ai.days );
+//                fprintf(f, ":subject \"Abwesenheitsnachricht\"" );
                 fprintf(f, "text:\n" );
                 fprintf(f, "%s", p->memotext);
                 fprintf(f, "\n.\n;\n");
