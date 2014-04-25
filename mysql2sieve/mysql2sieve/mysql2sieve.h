@@ -89,7 +89,7 @@ struct maildirfilter {
 #define MF_ERR_INTERNAL		100
 
 
-#define	MF_LOADOK	    0
+#define	MF_LOADOK	0
 #define	MF_LOADNOTFOUND	1
 #define	MF_LOADFOREIGN	2
 #define	MF_LOADERROR	3
@@ -108,7 +108,7 @@ struct maildir_filter_autoresp_info {
 #define TRASH   "Trash"
 #define SHARED  "shared"
 
-#define SHAREDSUBDIR    "shared-folders"
+#define SHAREDSUBDIR "shared-folders"
 
 #define NEWSHAREDSP "#shared"
 #define NEWSHARED   "#shared."
@@ -118,8 +118,6 @@ struct maildir_filter_autoresp_info {
 #define MDIRSEP     ":"
 
 #define NUMBUFSIZE  60
-
-#define CONTENT_CHARSET "ISO-8859-15"
 
 #define SIEVEFILE   "vmailfilter.sieve"
 

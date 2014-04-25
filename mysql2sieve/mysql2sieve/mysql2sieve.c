@@ -161,7 +161,7 @@ select_files(const struct dirent *ent)
 
 /* ---------------------------------------------------------------------
  * Maildirname to dir
- * DIR location, INBOX.name  
+ * DIR location, INBOX.name
  * --------------------------------------------------------------------- 
 char*
 maildir_name_convert(const char *maildir, 
@@ -215,6 +215,7 @@ maildir_filter_autoresp_info_init_str(struct maildir_filter_autoresp_info *i, co
 {
     char *p;
     memset(i, 0, sizeof(*i));
+    i->days=0;
     i->name=strdup(c);
     if (!(i->name))
         return (-1);
@@ -265,7 +266,7 @@ PrintPattern(FILE *f, int flags, const char *v)
 
 /* ---------------------------------------------------------------------
  * sieve filter rule update
- * Before creating a new rule, validate all input.  
+ * Before creating a new rule, validate all input
  * --------------------------------------------------------------------- */
 int
 maildir_filter_ruleupdate(struct maildirfilter *r,
@@ -488,19 +489,16 @@ maildir_filter_ruleupdate(struct maildirfilter *r,
     else if (*c == '+') /* Autorespond */
     {
         struct maildir_filter_autoresp_info ai;
-
         if (maildir_filter_autoresp_info_init_str(&ai, c+1))
             return (-1);
-
         maildir_filter_autoresp_info_free(&ai);
     }
-    else if (strcmp(c, "exit") == 0) {    /* Purge */
-
+    else if (strcmp(c, "exit") == 0) {
+        /* Purge */
     }
     else
     {
         /* char *s;
-
         if (strcmp(c, INBOX) && strncmp(c, INBOX ".", sizeof(INBOX)))
             return -1;
         s = maildir_name_convert(".", c);
@@ -527,9 +525,7 @@ maildir_filter_ruleupdate(struct maildirfilter *r,
     if (p->memotext)     free(p->memotext);
     if ((p->memotext=strdup(memotext ? memotext:"")) == NULL) return (-1);
     p->flags=flags;
-
     *errcode=0;
-
     return (0);
 }
 
