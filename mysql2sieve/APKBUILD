@@ -2,7 +2,7 @@
 # Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
 pkgname=mysql2sieve
 pkgver=1.0.0
-pkgrel=4
+pkgrel=5
 pkgdesc="Write sive script from MySQL record"
 url="http://www.eisfair.org"
 arch="all"
