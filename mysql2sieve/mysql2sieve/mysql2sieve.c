@@ -669,23 +669,23 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
                 // PrintPattern(f, p->flags, fieldvalue);
                 // fprintf(f, "*");
             } else {
-                fprintf(f, "header :matches \"%s\" \"%s*\" ", fieldname, fieldvalue);
+                fprintf(f, "header :matches \"%s\" \"%s*\"", fieldname, fieldvalue);
                 // PrintPattern(f, p->flags, fieldvalue);
                 // fprintf(f, "*");
             }
             break;
         case endswith:
             if (p->flags & MFR_BODY) {
-                fprintf(f, "body :matches \"*%s\" ", fieldvalue);
+                fprintf(f, "body :matches \"*%s\"", fieldvalue);
             } else {
-                fprintf(f, "header :matches \"%s\" \"*%s\" ", fieldname, fieldvalue);
+                fprintf(f, "header :matches \"%s\" \"*%s\"", fieldname, fieldvalue);
             }
             break;
         case contains:
             if (p->flags & MFR_BODY) {
-                fprintf(f, "body :contains \"%s\" ", fieldvalue);
+                fprintf(f, "body :contains \"%s\"", fieldvalue);
             } else {
-                fprintf(f, "header :contains \"%s\" \"%s\" ", fieldname, fieldvalue);
+                fprintf(f, "header :contains \"%s\" \"%s\"", fieldname, fieldvalue);
             }
             break;
         case hasrecipient:
@@ -701,11 +701,11 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
             fprintf(f, "size :over %s", fieldvalue);
             break;
         case anymessage:
-            if (*tofolder == '+')
-                // fprintf(f, "allof (not exists [\"list-help\", \"list-unsubscribe\", \"list-subscribe\", \"list-owner\", \"list-post\", \"list-archive\", \"list-id\", \"Mailing-List\"], not header :comparator \"i;ascii-casemap\" :is \"Precedence\" [\"list\", \"bulk\", \"junk\"], not header :comparator \"i;ascii-casemap\" :matches \"To\" \"Multiple recipients of*\" ) ");
-                fprintf(f, "true ");
-            else
-                fprintf(f, "true ");
+            if (*tofolder == '+') {
+                fprintf(f, "allof (not header :comparator \"i;ascii-casemap\" :matches \"To\" \"Multiple recipients of*\" )");
+            } else {
+                fprintf(f, "true");
+            }
             break;
         }
         fprintf(f, "\n{\n");
@@ -718,22 +718,15 @@ write_sieve_rules(struct maildirfilter *r, const char *filename,
             /* vacation handling */
             struct maildir_filter_autoresp_info ai;
 
-            if (maildir_filter_autoresp_info_init_str(&ai, tofolder+1) == 0)
-            {
-                /*
-                if (p->fromhdr && p->fromhdr[0])
-                    fprintf(f, "    AUTOREPLYFROM='%s'\n", p->fromhdr);
-                else
-                    fprintf(f, "    AUTOREPLYFROM=$FROM\n" );
-                */
+            if (maildir_filter_autoresp_info_init_str(&ai, tofolder+1) == 0) {
                 fprintf(f, "vacation ");
                 if (ai.days > 0) {
                     fprintf(f, ":days %d ", ai.days );
                 } else {
-                    fprintf(f, ":seconds 60 " );
+                    fprintf(f, ":seconds 0 " );
                 }
 //                fprintf(f, ":subject \"Abwesenheitsnachricht\" text:\n" );
-                fprintf(f, "text:\n" );  
+                fprintf(f, "text:\n" );
                 fprintf(f, "%s", p->memotext);
                 fprintf(f, "\n.\n;\n");
                 maildir_filter_autoresp_info_free(&ai);
