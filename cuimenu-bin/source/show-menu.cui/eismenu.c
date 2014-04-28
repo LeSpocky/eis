@@ -1385,7 +1385,7 @@ EisMenuUpdateVersionTitle(EISMENU* eismenu)
 	int len;
 
 	EisMenuKernelVersion(kernel, 64);
-	EisMenuGetFileData(_T("/etc/version"), base, 64);
+	EisMenuGetFileData(_T("/etc/alpine-release"), base, 64);
 
 	if (eismenu->SubTitle) 
 	{
@@ -1396,8 +1396,8 @@ EisMenuUpdateVersionTitle(EISMENU* eismenu)
 
 	swprintf(eismenu->SubTitle,
 		len,
-		_T("base: %ls  eiskernel: %ls"),
-		base,kernel);
+		_T("release: %ls"),
+		base);
 }
 
 /* ---------------------------------------------------------------------

@@ -1,7 +1,7 @@
 # Contributor: jv <jens@eisfair.org>
 # Maintainer: team@eisfair.org
 pkgname=cuimenu-bin
-pkgver=3.0.0
+pkgver=3.0.1
 pkgrel=0
 pkgdesc="Eisfair CUI basis menu - binary files"
 url="http://www.eisfair.org"
