@@ -33,6 +33,7 @@ int MenuLevel = 0;
 
 static void     EisMenuClear(EISMENU* eismenu);
 static void     EisMenuInit(EISMENU* eismenu);
+static void     EisMenuKernelVersion(wchar_t* version, int len);
 static int      EisMenuGetNextMenu(const wchar_t* filename, wchar_t* menuname, int len);
 static wchar_t* EisMenuKillSpaces(wchar_t* buffer);
 static void     EisMenuReadClassicNode(EISMENU* eismenu, XMLNODE* node, int first);
@@ -825,6 +826,51 @@ EisMenuGetFileData(const wchar_t* filename, wchar_t* data, int len)
 }
 
 /* ---------------------------------------------------------------------
+ * EisMenuKernelVersion
+ * Read the package version number of the 'eis-kernel' package.
+ * This information is found within the package info file
+ * ---------------------------------------------------------------------
+ */
+static void 
+EisMenuKernelVersion(wchar_t* version, int len)
+{
+	FILE* in;
+	char  buffer[256 + 1];
+
+	if (len <= 0) return;
+
+	version[0] = 0;
+
+	in  = FileOpen(_T("/var/install/packages/eiskernel"), _T("rt"));
+	if (in) 
+	{
+		while (fgets(buffer,256,in)) 
+		{
+			char* pos2;
+			char* pos1 = strrchr(buffer,'\n');
+			if (pos1) 
+			{
+				*pos1 = 0;
+			}
+
+			pos1 = strstr(buffer,"<version>");
+			pos2 = strstr(buffer,"</version>");
+			if (pos1 && pos2 && (pos2 > (pos1 + 9))) 
+			{
+				pos1 += 9;
+				*pos2 = 0;
+
+				mbstowcs(version, pos1, len);
+
+				version[len] = 0;
+				break;
+			}
+		}                                                                                        
+		FileClose(in);
+	}
+}
+
+/* ---------------------------------------------------------------------
  * EisMenuRemoveLoginInfo
  * Strip embedded login information (username and password) from URLs 
  * ---------------------------------------------------------------------
@@ -1106,6 +1152,7 @@ EisMenuReadXmlNode(EISMENU* eismenu, XMLNODE* node)
 			EisMenuCopyAttr(newitem,object,_T("FILE"));
 			EisMenuCopyAttr(newitem,object,_T("TAIL"));
 			EisMenuCopyAttr(newitem,object,_T("ENCODING"));
+			EisMenuCopyAttr(newitem,object,_T("TITLE"));
 			newitem->Type = ITEMTYPE_DOC;
 		}
 		else if (wcscasecmp(object->Name, _T("EDIT")) == 0)
@@ -1327,25 +1374,30 @@ EisMenuWriteToFile(const wchar_t* text, FILE* out)
 
 /* ---------------------------------------------------------------------
  * EisMenuUpdateVersionTitle
- * Update Release version in menu title
+ * Update kernel version in menu title
  * ---------------------------------------------------------------------
  */
 static void
 EisMenuUpdateVersionTitle(EISMENU* eismenu)
 {
+	wchar_t kernel[64 + 1];
 	wchar_t base[64 + 1];
 	int len;
 
-	EisMenuGetFileData(_T("/etc/alpine-release"), base, 64);
+	EisMenuKernelVersion(kernel, 64);
+	EisMenuGetFileData(_T("/etc/version"), base, 64);
 
-	if (eismenu->SubTitle)
+	if (eismenu->SubTitle) 
 	{
 		free(eismenu->SubTitle);
 	}
-	len = wcslen(base) + 25;
+	len = wcslen(kernel) + wcslen(base) + 25;
 	eismenu->SubTitle = (wchar_t*) malloc((len + 1) * sizeof(wchar_t));
 
-	swprintf(eismenu->SubTitle, len, _T("Release: %ls"), base);
+	swprintf(eismenu->SubTitle,
+		len,
+		_T("base: %ls  eiskernel: %ls"),
+		base,kernel);
 }
 
 /* ---------------------------------------------------------------------

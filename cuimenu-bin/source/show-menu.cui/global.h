@@ -20,11 +20,11 @@
 
 #define VERSION     3
 #define SUBVERSION  0
-#define PATCHLEVEL  0
+#define PATCHLEVEL  1
 #define BUILD       0
 
-#define  VERSIONSTR "3.0.0"
-#define  BUILDSTR   "(0) unicode"
+#define  VERSIONSTR "3.0.1"
+#define  BUILDSTR   "(0) unicode/title option"
 
 
 #endif

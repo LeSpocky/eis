@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: mainwin.c 33482 2013-04-15 17:50:31Z dv $
+ * Last Update:  $Id: mainwin.c 35443 2014-04-25 20:51:34Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1129,6 +1129,7 @@ MainExecuteDocument(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 {
 	EISMENUATTR* package     = EisMenuGetAttr(item,  _T("PACKAGE"));
 	EISMENUATTR* file        = EisMenuGetAttr(item,  _T("FILE"));
+	EISMENUATTR* title       = EisMenuGetAttr(item,  _T("TITLE"));
 	EISMENUATTR* tailattr    = EisMenuGetAttr(item,  _T("TAIL"));
 	EISMENUATTR* encoding    = EisMenuGetAttr(item,  _T("ENCODING"));
 	EISMENUATTR* preprocess  = EisMenuGetAttr(item,  _T("PRE"));
@@ -1176,22 +1177,39 @@ MainExecuteDocument(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 			document, 
 			NULL) )
 	{
+		int pos;
+		
+		wcscpy(shellcmd, _T("/var/install/bin/show-doc.cui "));
+		
+		pos = wcslen(shellcmd);
+		
+		/* append encoding option */
 		if (encoding && (wcslen(encoding->Value) > 0))
 		{
-			swprintf(shellcmd, 256, 
-				_T("/var/install/bin/show-doc.cui -e \"%ls\" %ls %ls"), 
-				encoding->Value,
-				tailcmd,
-				document);
+			swprintf(&shellcmd[pos], 256 - pos, 
+				_T("-e \"%ls\" "), 
+				encoding->Value);
+			shellcmd[256] = L'\0';
+			pos = wcslen(shellcmd);
 		}
-		else
+		
+		/* append title option */
+		if (title && (wcslen(title->Value) > 0))
 		{
-			swprintf(shellcmd, 256, 
-				_T("/var/install/bin/show-doc.cui %ls %ls"), 
-				tailcmd,
-				document);
+			swprintf(&shellcmd[pos], 256 - pos, 
+				_T("-t \"%ls\" "), 
+				title->Value);
+			shellcmd[256] = L'\0';
+			pos = wcslen(shellcmd);
 		}
-			
+		
+		/* append document and tail switch */
+		swprintf(&shellcmd[pos], 256 - pos, 
+			_T("%ls \"%ls\""), 
+			tailcmd,
+			document);
+		shellcmd[256] = L'\0';
+					
 		WindowLeaveCurses();
 		{
 			ExecSysCmd(shellcmd);

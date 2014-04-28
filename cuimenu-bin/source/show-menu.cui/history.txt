@@ -1,3 +1,11 @@
+show-menu.cui-3.0.1
+=============================================
+- show-menu.cui now is an autoconf project
+- static build target removed
+- release and debug build targets added
+- read additional xml attribute 'title' for tag 'doc' from 
+  menu file and call show-doc.cui accordingly.
+
 show-menu.cui-3.0.0 
 =============================================
 - only unicode build

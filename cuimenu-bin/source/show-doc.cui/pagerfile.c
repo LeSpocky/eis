@@ -106,7 +106,7 @@ PagerFileClose(PAGERFILE* pfile)
 	{
 		fclose(pfile->FileStream);
 	}
-	if ( pfile->IConvHandle != ((iconv_t)-1))
+	if ((int)pfile->IConvHandle >= 0)
 	{
 		iconv_close(pfile->IConvHandle);
 	}
@@ -338,16 +338,17 @@ PagerForwRawLine(PAGERFILE* pfile, long pos, wchar_t** lbuffer)
 		}
 		
 		/* convert string ... */
-		if (pfile->IConvHandle != (iconv_t)-1)
+		if ((int)pfile->IConvHandle >= 0)
 		{
 			char  *in  = (char*) pfile->LineBuffer;
 			char  *out = (char*) pfile->WcLineBuffer;
 			size_t inlen  = len;
 			size_t outlen = (pfile->WcLineBufferSize * sizeof(wchar_t));
+			size_t numc;
 			
 			/* ... using iconv with a specified encoding*/
 			pfile->WcLineBuffer[0] = 0;
-			iconv (
+			numc = iconv (
 				pfile->IConvHandle, 
 				&in,  &inlen, 
 				&out, &outlen);
@@ -463,8 +464,7 @@ PagerBackRawLine(PAGERFILE* pfile, long pos, wchar_t** lbuffer)
 static int
 PagerFileReadBlock(PAGERFILE* pfile)
 {
-	struct stat info;
-    long pos = pfile->FileBlock * PAGE_BLOCKSIZE + pfile->FirstBlock->DataSize;
+	long pos = pfile->FileBlock * PAGE_BLOCKSIZE + pfile->FirstBlock->DataSize;
 	int n;
 
 	if (pos != pfile->FilePos)
@@ -474,23 +474,12 @@ PagerFileReadBlock(PAGERFILE* pfile)
 			return FALSE;
 		}
 		pfile->FilePos = pos;
-	} 
+	}
 
-    /* compare file size and force position change if size has changed */
-	fstat(fileno(pfile->FileStream), &info);
-	if (info.st_size != pfile->FileSize)
-	{
-		fseek(pfile->FileStream, 0, SEEK_END);
-		if (fseek(pfile->FileStream, pos, SEEK_SET) != 0)
-		{
-			return FALSE;
-		}
-		pfile->FileSize = info.st_size;
-	} 
-	n = fread(&pfile->FirstBlock->Data[pfile->FirstBlock->DataSize], 1,
+	n = fread(&pfile->FirstBlock->Data[pfile->FirstBlock->DataSize], 
+		1,
 		PAGE_BLOCKSIZE - pfile->FirstBlock->DataSize, 
 		pfile->FileStream);
-		
 	if (n < 0)
 	{
 		return FALSE;
