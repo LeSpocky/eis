@@ -13,8 +13,6 @@ makedepends="$depends_dev"
 install="$pkgname.post-install $pkgname.post-deinstall"
 subpackages=""
 source="${pkgname}.checkd
-        ${pkgname}.checkd.exp
-        ${pkgname}.checkd.ext
         ${pkgname}.help
         ${pkgname}.sh
         ${pkgname}.txt
@@ -61,3 +59,18 @@ package() {
 	install -D -m755 ${srcdir}/${pkgname}.sh              ${pkgdir}/var/install/config.d/cui-samba.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh       ${pkgdir}/var/install/config.d/cui-samba-update.sh || return 1
 }
+md5sums="8a8b21cb561ffa12e8a9b07adb3e2d6f  cui-samba.checkd
+6f14643ad3d108cb5faac2108e1d777e  cui-samba.help
+0a4a55a74893f0321c2ec2c922f6bd7f  cui-samba.sh
+cd05cb929be52ccb375427d4886717b7  cui-samba.txt
+b844ec1a75502a9fe12dcd6875b2a539  cui-samba-update.sh"
+sha256sums="6a49164187caa3393767257e411bb936ca14f1b9b96517e116028df9aa01aad4  cui-samba.checkd
+1ec41ffc4092b935be3aa7b484abe434258b3867e31183ae5c5fcdf5d3af6a56  cui-samba.help
+dc4c625f4e2bf2391537e3746ef75ad0ac36b64b035318f6dfd700eef92bc98b  cui-samba.sh
+1ac6552c2df8114c22072301c5e81cab00c92130b6fc236e4b29bcd850233a82  cui-samba.txt
+cc1c7121f26d18165e856de6f49afcfab5e733178aab29001e1aaa3557d812b5  cui-samba-update.sh"
+sha512sums="cc7c294da990d8bc080e04c3968a2881dffb4cbf2be2847ef7f40c25f6457014a700c7bf9b858ef36e5022916ca7b690441eff68339321bb31daf8a9578fd59d  cui-samba.checkd
+21c2a7f3f49f4f458070bff5ed9fca36dc52e0e569ee9c531ef118b1d707e2518436e9090ca3e3269ca35f1713019bf783ce76720e801fae421281a99bbabc22  cui-samba.help
+f3e68f336ccf829e4130515dff3d3601168423ab6cc78646d0337bb8066c3649fdafb1cfec8e783c9a79560c84b6ef1f85e8aae5cb558af05476859287a3dd33  cui-samba.sh
+80bed5e841b3a9f66c8c1af44d048273784404fe949ba070dcc7fe9b60b80b0092d0fcdea1caaf6894a0b3d12125827375b71bf768aef69308805299eae90115  cui-samba.txt
+6e2e9be0835ab670aea80927b97ab9b186a658a0965bf81c0d9762d5095d91cb4dea8ced69a21b63e2f799b7195fcbd533899a6fe93e029a830e576aa351a314  cui-samba-update.sh"
