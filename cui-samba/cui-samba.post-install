@@ -13,31 +13,3 @@ fi
 /var/install/bin/add-menu setup.services.menu setup.services.samba.menu "Samba"
 
 /var/install/config.d/cui-samba-update.sh sample
-
-if ${isUpdate} ; then
-    /var/install/config.d/cui-samba-update.sh update
-    if grep -q "SAMBA_PDF_TARGET='mail'" "$conffile" ; then
-        base64=false
-        if [ -e /var/install/packages/perl_mime_base64 ] ; then
-            base64=true
-        fi
-        if [ -e /usr/bin/corelist ] ; then
-            base64=true
-        fi
-
-        if [ ! ${base64} ] ; then
-            mecho --warn "If you are using SAMBA_PDF_TARGET='mail', you need the perl"
-            mecho --warn "package perl_mime_base64 now! This is an additional module"
-            mecho --warn "for perl package 1.0.0 or part of the perl package 1.2.0."
-        fi
-    fi
-else
-    /var/install/config.d/cui-samba-update.sh generate
-    mecho --warn "Don't forget to configure samba in samba services menu!"
-    mecho --warn "Don't forget to configure samba users in samba services menu!"
-fi
-
-
-
-
-
