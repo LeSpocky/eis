@@ -52,8 +52,6 @@ package() {
 	done
 	cd -
 	install -D -m644 ${srcdir}/${pkgname}.checkd          ${pkgdir}/etc/check.d/cui-samba || return 1
-	install -D -m644 ${srcdir}/${pkgname}.checkd.exp      ${pkgdir}/etc/check.d/cui-samba.exp || return 1
-	install -D -m644 ${srcdir}/${pkgname}.checkd.ext      ${pkgdir}/etc/check.d/cui-samba.ext || return 1
 	install -D -m644 ${srcdir}/${pkgname}.help            ${pkgdir}/var/install/help/cui-samba || return 1
 	install -D -m644 ${srcdir}/${pkgname}.txt             ${pkgdir}/usr/share/doc/cui-samba/cui-samba.txt || return 1
 	install -D -m755 ${srcdir}/${pkgname}.sh              ${pkgdir}/var/install/config.d/cui-samba.sh || return 1
