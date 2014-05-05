@@ -1,4 +1,13 @@
-show-doc.cui-3.0.0 
+show-doc.cui-3.0.1
+=============================================
+- typecast fix done by Jens
+- fix build on eisfair1
+- show-doc.cui now is an autoconf project. Invoke:
+  ./configure --prefix=/var/install \
+      --build=i486-pc-linux-gnu \
+      --host=i486-pc-linux-gnu
+
+ show-doc.cui-3.0.0 
 =============================================
 - only unicode build
 - changed all TCHAR to wchar_t

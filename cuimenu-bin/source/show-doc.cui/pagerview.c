@@ -40,7 +40,7 @@ typedef struct
 	long         FirstPos;
 	long         LastPos;
 	PAGERFILE*   File;
-	wchar_t*       Filter;
+	wchar_t*     Filter;
 
 	CustomHook1PtrProc      SetFocusHook;      /* Custom callback */
 	CustomHookProc          KillFocusHook;     /* Custom callback */
@@ -149,10 +149,8 @@ PagerviewPaintHook(void* w)
 	CUIWINDOW*    win = (CUIWINDOW*) w;
 	CUIRECT       rc;
 	PAGERVIEWDATA* data;
-	int           yscroll;
 	int           ypos;
-	int           index;
-	wchar_t*        lbuffer;
+	wchar_t*      lbuffer;
 
 	data = (PAGERVIEWDATA*) win->InstData;
 	if (!data) return;
@@ -160,11 +158,8 @@ PagerviewPaintHook(void* w)
 	WindowGetClientRect(win, &rc);
 	if ((rc.W <= 0)||(rc.H <= 0)) return;
 
-	yscroll = WindowGetVScrollPos(win);
-
 	/* show text */
 	ypos = 0;
-	index = 0;
 
 	if (data->File)
 	{

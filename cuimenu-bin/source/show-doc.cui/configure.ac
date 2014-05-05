@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------
-# autoconf configure.ac for show-menu.cui
+# autoconf configure.ac for show-doc.cui
 #
 # Creation     : 02.02.2014
 # Last Modified: $Id$
@@ -10,7 +10,7 @@
 # (at your option) any later version.
 # ----------------------------------------------------------------------
 
-AC_INIT([show-menu.cui], [3.0.0], [daniel@eisfair.org])
+AC_INIT([show-doc.cui], [3.0.0], [daniel@eisfair.org])
 
 m4_include([m4/ax_with_curses.m4])
 m4_include([m4/ax_check_cflags.m4])
