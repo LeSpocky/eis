@@ -463,7 +463,8 @@ PagerBackRawLine(PAGERFILE* pfile, long pos, wchar_t** lbuffer)
 static int
 PagerFileReadBlock(PAGERFILE* pfile)
 {
-	long pos = pfile->FileBlock * PAGE_BLOCKSIZE + pfile->FirstBlock->DataSize;
+    struct stat info;
+    long pos = pfile->FileBlock * PAGE_BLOCKSIZE + pfile->FirstBlock->DataSize;
 	int n;
 
 	if (pos != pfile->FilePos)
@@ -475,7 +476,19 @@ PagerFileReadBlock(PAGERFILE* pfile)
 		pfile->FilePos = pos;
 	}
 
-	n = fread(&pfile->FirstBlock->Data[pfile->FirstBlock->DataSize], 
+    /* compare file size and force position change if size has changed (eisfair-ng) */
+    fstat(fileno(pfile->FileStream), &info);
+    if (info.st_size != pfile->FileSize)
+    {
+        fseek(pfile->FileStream, 0, SEEK_END);
+        if (fseek(pfile->FileStream, pos, SEEK_SET) != 0)
+        {
+            return FALSE;
+        }
+        pfile->FileSize = info.st_size;
+    }
+
+    n = fread(&pfile->FirstBlock->Data[pfile->FirstBlock->DataSize], 
 		1,
 		PAGE_BLOCKSIZE - pfile->FirstBlock->DataSize, 
 		pfile->FileStream);
