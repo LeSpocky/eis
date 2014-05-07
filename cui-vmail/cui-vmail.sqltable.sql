@@ -129,4 +129,3 @@ CREATE TABLE IF NOT EXISTS `maildropfilter` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci;
 
 COMMIT;
-
