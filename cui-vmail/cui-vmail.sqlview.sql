@@ -10,6 +10,12 @@ CREATE VIEW `view_client_access` AS
   FROM access WHERE type='client' AND active = 1
   ORDER BY source;
 
+DROP VIEW IF EXISTS `view_client_access_postscreen`;
+CREATE VIEW `view_client_access_postscreen` AS
+  SELECT sourcestart, sourceend, ELT( FIELD(response, 'OK', '554'), 'permit', 'reject') AS response
+  FROM access WHERE type='client' AND active = 1 AND sourcestart > 0
+  ORDER BY sourcestart, sourceend ;
+
 DROP VIEW IF EXISTS `view_recipient_access`;
 CREATE VIEW `view_recipient_access` AS
   SELECT source, response

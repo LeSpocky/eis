@@ -1,6 +1,8 @@
 CREATE TABLE IF NOT EXISTS `access` (
   `id`          INT(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `source`      varchar(128) NOT NULL,
+  `sourcestart` INT UNSIGNED DEFAULT 0,
+  `sourceend`   INT UNSIGNED DEFAULT 0,
   `response`    varchar(255) NOT NULL default 'DUNNO',
   `type`        enum('recipient','sender','client') NOT NULL default 'client',
   `active`      tinyint(1)   unsigned NOT NULL default '1',

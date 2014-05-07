@@ -1,6 +1,5 @@
 user = vmailprovider
 password = vmail
 dbname = vmaildata
-query = SELECT 'permit' FROM view_client_access WHERE source='%s' AND response = 'OK'
+query = SELECT response FROM view_client_access_postscreen WHERE INET_ATON('%s') >= sourcestart AND INET_ATON('%s') <= sourceend
 hosts = unix:/run/mysqld/mysqld.sock
-
