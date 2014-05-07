@@ -56,6 +56,7 @@ source="${pkgname}.default
 		${pkgname}.sqldata.sql
 		${pkgname}.sqltable.sql
 		${pkgname}.sqltrigger.sql
+		${pkgname}.sqlupdate.sql
 		${pkgname}.sqlview.sql
 		${pkgname}.txt
 "
@@ -83,6 +84,7 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.sqldata.sql                       ${pkgdir}/etc/postfix/default/install-sqldata.sql
 	install -D -m644 ${srcdir}/${pkgname}.sqltable.sql                      ${pkgdir}/etc/postfix/default/install-sqltable.sql
 	install -D -m644 ${srcdir}/${pkgname}.sqltrigger.sql                    ${pkgdir}/etc/postfix/default/install-sqltrigger.sql
+	install -D -m644 ${srcdir}/${pkgname}.sqlupdate.sql                     ${pkgdir}/etc/postfix/default/install-sqlupdate.sql
 	install -D -m644 ${srcdir}/${pkgname}.sqlview.sql                       ${pkgdir}/etc/postfix/default/install-sqlview.sql
 	install -D -m640 ${srcdir}/${pkgname}-mysql-canonical_maps.cf           ${pkgdir}/etc/postfix/sql/mysql-canonical_maps.cf
 	install -D -m640 ${srcdir}/${pkgname}-mysql-client_access.cf            ${pkgdir}/etc/postfix/sql/mysql-client_access.cf
@@ -131,7 +133,7 @@ md5sums="c6d68200216f850a56106a09e7624a74  cui-vmail.default
 6e3dc1364ae55a5b5d94d06f193c9ba2  cui-vmail.help
 4ca4d259672c694a8e35e59660c9ff30  cui-vmail.init
 f697babf3ad3dd85cea29dcb17484092  cui-vmail.postfixchroot
-a10785747862d334c29a3fdaef5c2350  cui-vmail.sh
+1e1e03332792d675a9c480b2d86f343c  cui-vmail.sh
 0b497d0d44ba291bb906a7a628a58113  cui-vmail-update.sh
 0205c16ebd7fc14b121c92a621c456ca  cui-vmail.menu
 5a3e69a8435af69f9c6fc4485a192cd6  cui-vmail.modules.menu
@@ -169,6 +171,7 @@ ddcc6cec0a94061f9a65b651be54bada  cui-vmail-user-forwardings.cui.sh
 09f44215aa0cad9e31696111288fd33c  cui-vmail.sqldata.sql
 8e1d68c340d2c0e5408fe6f7084119ea  cui-vmail.sqltable.sql
 bf59f548cdaa552532b6211c0cd87b38  cui-vmail.sqltrigger.sql
+1ca48db93a15f93204e2048cfd7ada6b  cui-vmail.sqlupdate.sql
 ede32f703984f83dc76ece10f69e3e69  cui-vmail.sqlview.sql
 11b9e278be3a9a2c7fb0be19ddcecd66  cui-vmail.txt"
 sha256sums="04dd3534c06c886ae1a7f27021b21a9d2324fb6f7e291bb5dd74a394fbb88b6c  cui-vmail.default
@@ -177,7 +180,7 @@ sha256sums="04dd3534c06c886ae1a7f27021b21a9d2324fb6f7e291bb5dd74a394fbb88b6c  cu
 0b9ab67a36d661f8b47b2fc7188e89ccd9b683142bb79956ecaab7e32882b7ab  cui-vmail.help
 79c6dd4deea777b38706d839d22911f5101226addf63ee020de32e03ed1584f1  cui-vmail.init
 bc8fc4284c713625f1e1ecf771663eab03c486114d8d16eaa941e117c58de4a2  cui-vmail.postfixchroot
-49b3c79958638910de28bfae4b47b85aefe969e68ab28cd76e16bd16c034c470  cui-vmail.sh
+21863c316e4d646bd8f2065e1b544c21a7a2f3fa4072ca1acd6c2309840d87ba  cui-vmail.sh
 75ce0ab352ddae726793b8f063784d4d1c91eb08d7095307ac9c341d4ade39b7  cui-vmail-update.sh
 c3c50c454e014bcf2147e8868ae3b7a7dc5cc6087f1bdfe3c1fb7fb87f2c151e  cui-vmail.menu
 79808136b4b692bcae3091cf487e4e79089f50bb3eb35a633cd51ee7e01d26b5  cui-vmail.modules.menu
@@ -215,6 +218,7 @@ ce284d8d99bacab41955f85ee949e858b86cb87b897e540f58bea922b2382e4a  cui-vmail-user
 1f250112d069ca8ea3ce0ef863ead99730c6c589ed81bec74d38b37aa8a69bc8  cui-vmail.sqldata.sql
 92791cb301ea7ffbe538a31c6691ef1e82c6585e3df3afa4d611471bea15ddac  cui-vmail.sqltable.sql
 75cf5e38ce693b9f995c3265719c2dd1a9965ad02363695732e0cf2e7d47e537  cui-vmail.sqltrigger.sql
+f5508cb0d434bc26c8a0c2ee2c2a23061170d29f0fbde2e1e9898b384305e53b  cui-vmail.sqlupdate.sql
 c1628c1eaf4cf0cc68529c0663f3acf541ef955718a21a283ad1f137bd4c4024  cui-vmail.sqlview.sql
 3a100ff5b8faa23c7e0b3685cf236fe42a64e51d5bdd9f8e56aa296ad7a0cbb5  cui-vmail.txt"
 sha512sums="7480aa3c8c4c466ce9a258274bdfc5edeadaf1b2459a69ed2dfde80c604ffdf50158577e4aa42257356170cd8ab20a1d112140f6c8cf6aaabcd9b4c4126a1f6d  cui-vmail.default
@@ -223,7 +227,7 @@ a54ddbeaecbf439604f69e668a172cdaa73d31f3bf7cc55241746e0d241b16702f467dc7587fe736
 868727f3bcbee3bd79a9f9171dff723edd12f6e854e12469657955b4b28cc4ada965931e137ae68df24be02d4c1f13711e706fd3e05aade7bf469b4b6aa45a61  cui-vmail.help
 553c7ee5343b7b3b801895cb3392a8d1ab8a0295fe66009410915d10f9eecb2973865a9241cbb5990377c4678e404ff92b9c2bbd628497c9927d85e1e1228f0e  cui-vmail.init
 235c04be4512b1c70521686940114177893a43737ee7a41ce32a8f56907428286465fef105afaee12718b522ec0a1205ca281f4f8d9099a324ac88ea10a46734  cui-vmail.postfixchroot
-be1aea61f3ff92dad4ad6bea66154b6db3d923faf2b808e90b79aac8db86b8dba2327e071f77b7b013719b3c951649861fffdc11913f3225512eb3248f5f77a6  cui-vmail.sh
+84279795cffc4853da2fd0e7166943a0fef73436980f24f094326ebe9230777f6ec344183614ac2cd1f97cc06bcf16f868ebab6eecaad56994b66d3a2b8a5ff8  cui-vmail.sh
 2bb32a1bfe2022b717a848f36a7ee7ce08dd02e7f82303271fee9ab6e78b3dfdf4ece798c3832cdd0182eff9cf7b77881c6612272e739526594aff8f590337ac  cui-vmail-update.sh
 31a1cb8c9cda05589e306364f4e5956ed9c360b13f71f95302ea712100e326715fd5081e5a8a5ae855ac4b04feeb89100c9fddbe1198ec19e70cb89da95c47b9  cui-vmail.menu
 1d1a7d1c6711a15b19edede0395c0018d3a83c50ccbae410307429b2f11f8f64ceeb7ad7879cf912c2d66b002910073b538b0834c95c550c8725f3c8e84ab8d3  cui-vmail.modules.menu
@@ -261,5 +265,6 @@ c3848359c7e182bd490baa3a8137c6599ea7901d1cb1f0c583e85728873e33e3ad6a932176747988
 053c6a39d320a6e2395c292a02f8d2827492693a24c3ee1719f5b49c08df676c36dcf6c825fc360052142ad1900184214bba08a0d828873899ee04f44c011657  cui-vmail.sqldata.sql
 d153cada0309304f6c04cc29c151a7ed3ed1b30f68f824725682b4552d005931511f04d3332ba6dcfe6dbb89eac2de735ace45d9b3226be2f9ba00301825730d  cui-vmail.sqltable.sql
 c938ee543bcf21562388b8424cd35a7b36fc6a8033e095a514788d30452843b9ac0fd6da00851623465a38d5bb6a81c5bb2da553cba4914d3e2392e602a9ad2c  cui-vmail.sqltrigger.sql
+fa7db58f129d53a0df17cd7bea81c6b97d45b8622f11232394f350d0924a38abead3d4b926b1ad31cecf0efe9cfa7cdb2e3d90ff14a11e3294a0c481978d8650  cui-vmail.sqlupdate.sql
 81581ba1d4100b49e8bd26de00e31da8e5a2131987b936bd74c0eed485dcc8e30a2cd642b5580567ace52a35b9101c624c8eee0a24ee45853d7330813a9bdd32  cui-vmail.sqlview.sql
 8c8a5fbc815a3f1f0811e5ce4cbc32e774b9ef7dd444fd94b94ec3b5269d9166996274385b29a296e566c60d2de7ebfdaa3178072bad44e7d088fae243b7a122  cui-vmail.txt"

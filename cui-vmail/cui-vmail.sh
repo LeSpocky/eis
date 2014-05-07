@@ -93,22 +93,21 @@ update_mysql_tables()
     fi
     count=`/usr/bin/mysql -N --silent -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select id from vmail_version limit 1;' 2>/dev/null`
     [ -z "$count" ] && count=0
-    if [ $? -ne 0 -o $count -ne 8 ]; then
+    if [ $? -ne 0 -o $count -ne 9 ]; then
         # create all tables, if not exists
         /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqltable.sql
         # create all trigger, if MySQL support this (5.x) and not exists
         /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqltrigger.sql 2>/dev/null
-
         # make all updates (alter table...)
-        #while read sqlcmd
-        #do
-        #    echo "$sqlcmd" | grep -q '^#' && continue
-        #    /usr/bin/mysql -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e "$sqlcmd" 2>/dev/null
-        #done < /etc/postfix/default/install-sqlupdate.sql
+        /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqlupdate.sql
         # create all views
         /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqlview.sql
-        # add default data for new database
-        [ $npass -eq 9 ] && /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqldata.sql
+        # add default data if not found records
+        count=`/usr/bin/mysql -N --silent -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select count(*) from access;' 2>/dev/null`
+        [ -z "$count" ] && count=0
+        if [ $? -ne 0 -o $count -le 3 ]; then
+            /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqldata.sql
+        fi
     fi
 
     # force VMAIL_SQL_USER access
