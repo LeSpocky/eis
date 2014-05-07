@@ -1,7 +1,7 @@
 #!/bin/bash
 #------------------------------------------------------------------------------
 # /var/install/bin/cui-vmail-tools-client-access.cui.sh
-# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2014 the eisfair team, team(at)eisfair(dot)org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ fi
 #----------------------------------------------------------------------------
 function p_valid_index()
 {
-    if [ "$1" != "" -a "$1" -ge "0" ]
+    if [ -n "$1" -a "$1" -ge "0" ]
     then
         return 0
     fi
@@ -66,11 +66,26 @@ function p_valid_index()
 }
 
 #----------------------------------------------------------------------------
+# check if ip and convert to start - end range
+#----------------------------------------------------------------------------
+function convert_ip_range()
+{
+    local ip="$1"
+    local startip
+    startip=$(echo "$ip" | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
+    if [ $? -eq 0 ]
+    then
+        sourstart="$startip"
+        sourend=$(/var/install/bin/netcalc broadcast "$ip")
+    fi
+}
+
+#----------------------------------------------------------------------------
 # check if SQL command was successful
 #----------------------------------------------------------------------------
 function p_sql_success()
 {
-    if [ "$1" != "" -a "$1" != "0" ]
+    if [ -n "$1" -a "$1" != "0" ]
     then
         return 0
     fi
@@ -406,7 +421,6 @@ function clientdlg_create_hook()
     cui_return 1
 }
 
-
 #============================================================================
 # invoke fetchmail dialog due to key or menu selection
 #============================================================================
@@ -422,7 +436,9 @@ function client_createclient_dialog()
     local win="$1"
     local result="$IDCANCEL"
     local dlg
-    local myres;
+    local myres
+    sourstart=0
+    sourend=0
 
     clientdlg_client=""
     clientdlg_response="DUNNO"
@@ -443,9 +459,12 @@ function client_createclient_dialog()
         then
             cui_window_destroy "$dlg"
 
+            convert_ip_range $clientdlg_client
             my_exec_sql "$myconn" \
-                "INSERT INTO access(source, response, type, note, active) \
+                "INSERT INTO access(source, sourcestart, sourceend, response, type, note, active) \
                  VALUES ('${clientdlg_client}', \
+                         INET_ATON('${sourstart}'), \
+                         INET_ATON('${sourend}'), \
                          '${clientdlg_response}', \
                          'client', \
                          '${clientdlg_comment}', \
@@ -480,6 +499,8 @@ function client_editclient_dialog()
     local ctrl
     local idx
     local entryname
+    sourstart=0
+    sourend=0
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
     if cui_valid_handle $ctrl
@@ -507,9 +528,12 @@ function client_editclient_dialog()
                 then
                     cui_window_destroy "$dlg"
 
+                    convert_ip_range $clientdlg_client
                     my_exec_sql "$myconn" \
                         "UPDATE access \
                             SET source='${clientdlg_client}', \
+                                sourcestart=INET_ATON('${sourstart}'), \
+                                sourceend=INET_ATON('${sourend}'), \
                                 response='${clientdlg_response}', \
                                 note='${clientdlg_comment}', \
                                 active='${clientdlg_active}' \
