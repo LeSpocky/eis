@@ -24,10 +24,14 @@ IDC_CLIENTDLG_BUTCANCEL='11'        # dlg Cancel button ID
 IDC_CLIENTDLG_LABEL1='12'           # dlg label ID
 IDC_CLIENTDLG_LABEL2='13'           # dlg label ID
 IDC_CLIENTDLG_LABEL3='14'           # dlg label ID
-IDC_CLIENTDLG_EDSENDER='20'         # dlg edit ID
-IDC_CLIENTDLG_EDRESPONSE='21'       # dlg edit ID
-IDC_CLIENTDLG_EDCOMMENT='22'        # dlg edit ID
-IDC_CLIENTDLG_CHKACTIVE='26'        # dlg edit ID
+IDC_CLIENTDLG_LABEL4='15'           # dlg label ID
+IDC_CLIENTDLG_LABEL5='16'           # dlg label ID
+IDC_CLIENTDLG_EDCLIENT='20'         # dlg edit ID
+IDC_CLIENTDLG_EDIPSTART='21'        # dlg edit ID
+IDC_CLIENTDLG_EDIPEND='22'          # dlg edit ID
+IDC_CLIENTDLG_EDRESPONSE='23'       # dlg edit ID
+IDC_CLIENTDLG_EDCOMMENT='24'        # dlg edit ID
+IDC_CLIENTDLG_CHKACTIVE='25'        # dlg edit ID
 
 IDC_INPUTDLG_BUTOK='10'             # dlg OK button ID
 IDC_INPUTDLG_BUTCANCEL='11'         # dlg Cancel button ID
@@ -71,13 +75,31 @@ function p_valid_index()
 function convert_ip_range()
 {
     local ip="$1"
-    local startip
-    startip=$(echo "$ip" | grep -oE "\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b")
-    if [ $? -eq 0 ]
+    local startip=""
+    clientdlg_ip_start="0"
+    clientdlg_ip_end="0"
+    startip=$(echo "$ip" | grep -oE "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
+    if [ $? -eq 0 -a -n "$startip" ]
     then
-        sourstart="$startip"
-        sourend=$(/var/install/bin/netcalc broadcast "$ip")
+        clientdlg_ip_start="$startip"
+        clientdlg_ip_end=$(/var/install/bin/netcalc broadcast "$ip")
     fi
+}
+
+#----------------------------------------------------------------------------
+# check if ip or empty
+#----------------------------------------------------------------------------
+function check_ip_or_empty()
+{
+    local ip="$1"
+    local startip=""
+    [ -z "$ip" ] && return 1
+    startip=$(echo "$ip" | grep -oE "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
+    if [ $? -eq 0 -a -n "$startip" ]
+    then
+        return 1
+    fi
+    return 0
 }
 
 #----------------------------------------------------------------------------
@@ -110,15 +132,15 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT source,LEFT(response,50),active,LEFT(note,50),id \
+                "SELECT source,INET_NTOA(sourcestart),INET_NTOA(sourceend),LEFT(response,50),active,LEFT(note,50),id \
                  FROM access \
-                 WHERE type='client' ORDER BY source;" && myres="$p2"
+                 WHERE type='client' ORDER BY sourcestart, source;" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT source,LEFT(response,50),active,LEFT(note,50),id \
+                "SELECT source,INET_NTOA(sourcestart),INET_NTOA(sourceend),LEFT(response,50),active,LEFT(note,50),id \
                  FROM access \
                  WHERE type='client' AND source REGEXP '$keyword' \
-                 ORDER BY source;" && myres="$p2"
+                 ORDER BY sourcestart, source;" && myres="$p2"
         fi
 
         if cui_valid_handle "$myres"
@@ -289,27 +311,36 @@ function clientdlg_ok_clicked()
     local ctrl
     local idx
 
-    cui_window_getctrl "$win" "$IDC_CLIENTDLG_EDSENDER" && ctrl="$p2"
+    cui_window_getctrl "$win" "$IDC_CLIENTDLG_EDCLIENT" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         clientdlg_client="$p2"
     fi
-
+    cui_window_getctrl "$win" "$IDC_CLIENTDLG_EDIPSTART" && ctrl="$p2"
+    if cui_valid_handle $ctrl
+    then
+        cui_edit_gettext "$ctrl"
+        clientdlg_ip_start="$p2"
+    fi
+    cui_window_getctrl "$win" "$IDC_CLIENTDLG_EDIPEND" && ctrl="$p2"
+    if cui_valid_handle $ctrl
+    then
+        cui_edit_gettext "$ctrl"
+        clientdlg_ip_end="$p2"
+    fi
     cui_window_getctrl "$win" "$IDC_CLIENTDLG_EDRESPONSE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         clientdlg_response="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_CLIENTDLG_EDCOMMENT" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         clientdlg_comment="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_CLIENTDLG_CHKACTIVE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
@@ -318,15 +349,28 @@ function clientdlg_ok_clicked()
 
     if [ -z "$clientdlg_client" ]
     then
-        cui_message "$win" "No client soruce entered! Please enter a valid client" \
+        cui_message "$win" "No client source entered! Please enter a valid client" \
                            "Missing data" "$MB_ERROR"
         cui_return 1
         return
     fi
-
+    if check_ip_or_empty "$clientdlg_ip_start"
+    then
+        cui_message "$win" "Input IP address or empty!" \
+                           "Input IP start fail" "$MB_ERROR"
+        cui_return 1
+        return
+    fi
+    if check_ip_or_empty "$clientdlg_ip_end"
+    then
+        cui_message "$win" "Input IP address or empty!" \
+                           "Input IP end fail" "$MB_ERROR"
+        cui_return 1
+        return
+    fi
     if [ -z "$clientdlg_response" ]
     then
-        cui_message "$win" "No response entered! Please enter a valid response." \
+        cui_message "$win" "No response entered! Please enter a valid response. (OK or 554 ...)" \
                            "Missing data" "$MB_ERROR"
         cui_return 1
         return
@@ -365,53 +409,67 @@ function clientdlg_create_hook()
     then
         cui_window_create     "$p2"
     fi
-
-    if cui_label_new "$dlg" "Response:" 2 3 10 1 $IDC_CLIENTDLG_LABEL2 $CWS_NONE $CWS_NONE
+    if cui_label_new "$dlg" "IP start:" 2 3 10 1 $IDC_CLIENTDLG_LABEL2 $CWS_NONE $CWS_NONE
+    then
+        cui_window_create     "$p2"
+    fi
+    if cui_label_new "$dlg" "IP end:" 2 5 10 1 $IDC_CLIENTDLG_LABEL3 $CWS_NONE $CWS_NONE
+    then
+        cui_window_create     "$p2"
+    fi
+    if cui_label_new "$dlg" "Response:" 2 7 10 1 $IDC_CLIENTDLG_LABEL4 $CWS_NONE $CWS_NONE
+    then
+        cui_window_create     "$p2"
+    fi
+    if cui_label_new "$dlg" "Comment:" 2 9 10 1 $IDC_CLIENTDLG_LABEL5 $CWS_NONE $CWS_NONE
     then
         cui_window_create     "$p2"
     fi
 
-    if cui_label_new "$dlg" "Comment:" 2 5 10 1 $IDC_CLIENTDLG_LABEL3 $CWS_NONE $CWS_NONE
-    then
-        cui_window_create     "$p2"
-    fi
-
-    cui_edit_new "$dlg" "" 13 1 26 1 255 $IDC_CLIENTDLG_EDSENDER $CWS_NONE $CWS_NONE && ctrl="$p2"
+    cui_edit_new "$dlg" "" 13 1 26 1 255 $IDC_CLIENTDLG_EDCLIENT $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$clientdlg_client"
     fi
-
-    cui_edit_new "$dlg" "" 13 3 26 1 255 $IDC_CLIENTDLG_EDRESPONSE $CWS_NONE $CWS_NONE && ctrl="$p2"
+    cui_edit_new "$dlg" "" 13 3 26 1 255 $IDC_CLIENTDLG_EDIPSTART $CWS_NONE $CWS_NONE && ctrl="$p2"
+    if cui_valid_handle "$ctrl"
+    then
+        cui_window_create     "$ctrl"
+        cui_edit_settext      "$ctrl" "$clientdlg_ip_start"
+    fi
+    cui_edit_new "$dlg" "" 13 5 26 1 255 $IDC_CLIENTDLG_EDIPEND $CWS_NONE $CWS_NONE && ctrl="$p2"
+    if cui_valid_handle "$ctrl"
+    then
+        cui_window_create     "$ctrl"
+        cui_edit_settext      "$ctrl" "$clientdlg_ip_end"
+    fi
+    cui_edit_new "$dlg" "" 13 7 26 1 255 $IDC_CLIENTDLG_EDRESPONSE $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$clientdlg_response"
     fi
-
-    cui_edit_new "$dlg" "" 13 5 26 1 255 $IDC_CLIENTDLG_EDCOMMENT $CWS_NONE $CWS_NONE && ctrl="$p2"
+    cui_edit_new "$dlg" "" 13 9 26 1 255 $IDC_CLIENTDLG_EDCOMMENT $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$clientdlg_comment"
     fi
-
-    cui_checkbox_new "$dlg" "Entry is &active" 13 7 20 1 $IDC_CLIENTDLG_CHKACTIVE $CWS_NONE $CWS_NONE && ctrl="$p2"
+    cui_checkbox_new "$dlg" "Entry is &active" 13 11 20 1 $IDC_CLIENTDLG_CHKACTIVE $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_checkbox_setcheck "$ctrl" "$clientdlg_active"
     fi
 
-    cui_button_new "$dlg" "&OK" 9 9 10 1 $IDC_CLIENTDLG_BUTOK $CWS_DEFOK $CWS_NONE  && ctrl="$p2"
+    cui_button_new "$dlg" "&OK" 10 13 10 1 $IDC_CLIENTDLG_BUTOK $CWS_DEFOK $CWS_NONE  && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" clientdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
-
-    cui_button_new "$dlg" "&Cancel" 20 9 10 1 $IDC_CLIENTDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE  && ctrl="$p2"
+    cui_button_new "$dlg" "&Cancel" 21 13 10 1 $IDC_CLIENTDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE  && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" clientdlg_cancel_clicked
@@ -437,15 +495,15 @@ function client_createclient_dialog()
     local result="$IDCANCEL"
     local dlg
     local myres
-    sourstart=0
-    sourend=0
 
     clientdlg_client=""
+    clientdlg_ip_start=""
+    clientdlg_ip_end=""
     clientdlg_response="DUNNO"
     clientdlg_comment=""
     clientdlg_active="1"
 
-    cui_window_new "$win" 0 0 42 12 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
+    cui_window_new "$win" 0 0 44 16 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
     if cui_valid_handle $dlg
     then
         cui_window_setcolors "$dlg" "DIALOG"
@@ -459,12 +517,17 @@ function client_createclient_dialog()
         then
             cui_window_destroy "$dlg"
 
-            convert_ip_range $clientdlg_client
+            if [ -z "$clientdlg_ip_start" ]
+            then
+                convert_ip_range $clientdlg_client
+            else
+                [ -z "$clientdlg_ip_end" ] && clientdlg_ip_end="$clientdlg_ip_start"
+            fi
             my_exec_sql "$myconn" \
                 "INSERT INTO access(source, sourcestart, sourceend, response, type, note, active) \
                  VALUES ('${clientdlg_client}', \
-                         INET_ATON('${sourstart}'), \
-                         INET_ATON('${sourend}'), \
+                         INET_ATON('${clientdlg_ip_start}'), \
+                         INET_ATON('${clientdlg_ip_end}'), \
                          '${clientdlg_response}', \
                          'client', \
                          '${clientdlg_comment}', \
@@ -498,7 +561,7 @@ function client_editclient_dialog()
     local result="$IDCANCEL"
     local ctrl
     local idx
-    local entryname
+    local entryid
     sourstart=0
     sourend=0
 
@@ -510,12 +573,17 @@ function client_editclient_dialog()
         if p_valid_index $idx
         then
             cui_listview_gettext "$ctrl" "$idx" "0" && clientdlg_client="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "1" && clientdlg_response="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "2" && clientdlg_active="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "3" && clientdlg_comment="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "4" && entryname="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "1" && clientdlg_ip_start="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "2" && clientdlg_ip_end="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "3" && clientdlg_response="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "4" && clientdlg_active="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "5" && clientdlg_comment="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "6" && entryid="$p2"
 
-            cui_window_new "$win" 0 0 42 12 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
+            [ "$clientdlg_ip_start" = "0.0.0.0" ] && clientdlg_ip_start=""
+            [ "$clientdlg_ip_end" = "0.0.0.0" ] && clientdlg_ip_end=""
+
+            cui_window_new "$win" 0 0 44 16 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg
             then
                 cui_window_setcolors "$dlg" "DIALOG"
@@ -527,8 +595,13 @@ function client_editclient_dialog()
                 if  [ "$result" == "$IDOK" ]
                 then
                     cui_window_destroy "$dlg"
-
-                    convert_ip_range $clientdlg_client
+                    if [ -z "$clientdlg_ip_start" ]
+                    then
+                        convert_ip_range $clientdlg_client
+                    else
+                        sourstart="$clientdlg_ip_start"
+                        [ -z "$clientdlg_ip_end" ] && sourend="$clientdlg_ip_start" || sourend="$clientdlg_ip_end"
+                    fi
                     my_exec_sql "$myconn" \
                         "UPDATE access \
                             SET source='${clientdlg_client}', \
@@ -537,7 +610,7 @@ function client_editclient_dialog()
                                 response='${clientdlg_response}', \
                                 note='${clientdlg_comment}', \
                                 active='${clientdlg_active}' \
-                          WHERE id='$entryname';"
+                          WHERE id='$entryid';"
 
                     if p_sql_success "$p2"
                     then
@@ -572,7 +645,7 @@ function client_deleteclient_dialog()
     local ctrl
     local idx
     local clientdlg_client
-    local entryname
+    local entryid
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
     if cui_valid_handle $ctrl
@@ -582,15 +655,12 @@ function client_deleteclient_dialog()
         if p_valid_index $idx
         then
             cui_listview_gettext "$ctrl" "$idx" "0" && clientdlg_client="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "4" && entryname="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "6" && entryid="$p2"
 
             cui_message "$win" "Really delete entry '$clientdlg_client'?" "Question" "$MB_YESNO"
             if [ "$p2" == "$IDYES" ]
             then
-
-                my_exec_sql "$myconn" \
-                    "DELETE FROM access \
-                      WHERE id='${entryname}';"
+                my_exec_sql "$myconn" "DELETE FROM access WHERE id='$entryid';"
                 if p_sql_success "$p2"
                 then
                     result="$IDOK"
@@ -797,16 +867,18 @@ function mainwin_create_hook()
     local win="$p2"
     local ctrl
 
-    cui_listview_new "$win" "" 0 0 10 10 5 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
+    cui_listview_new "$win" "" 0 0 10 10 7 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_listview_callback   "$ctrl" "$LISTBOX_CLICKED" "$win" "listview_clicked_hook"
         cui_listview_callback   "$ctrl" "$LISTBOX_POSTKEY" "$win" "listview_postkey_hook"
-        cui_listview_setcoltext "$ctrl" 0 "Client"
-        cui_listview_setcoltext "$ctrl" 1 "Response"
-        cui_listview_setcoltext "$ctrl" 2 "Active"
-        cui_listview_setcoltext "$ctrl" 3 "Comment"
-        cui_listview_setcoltext "$ctrl" 4 "-"
+        cui_listview_setcoltext "$ctrl" 0 "Client, domain or IP"
+        cui_listview_setcoltext "$ctrl" 1 "IP range start"
+        cui_listview_setcoltext "$ctrl" 2 "IP range end  "
+        cui_listview_setcoltext "$ctrl" 3 "Resp."
+        cui_listview_setcoltext "$ctrl" 4 "Act."
+        cui_listview_setcoltext "$ctrl" 5 "Comment"
+        cui_listview_setcoltext "$ctrl" 6 "-"
         cui_window_create       "$ctrl"
     fi
 
@@ -865,7 +937,8 @@ function mainwin_init_hook()
         cui_textview_add "$ctrl" "450 [optional text]" "0"
         cui_textview_add "$ctrl" "   Temporaly reject." "0"
         cui_textview_add "$ctrl" "550 [optional text]" "0"
-        cui_textview_add "$ctrl" "   Reject the entire message." "1"
+        cui_textview_add "$ctrl" "   Reject the entire message." "0"
+        cui_textview_add "$ctrl" "554 Reject" "1"
     fi
 
     my_server_connect "$vmail_sql_server" \

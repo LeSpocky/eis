@@ -105,7 +105,7 @@ update_mysql_tables()
         # add default data if not found records
         count=`/usr/bin/mysql -N --silent -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select count(*) from access;' 2>/dev/null`
         [ -z "$count" ] && count=0
-        if [ $? -ne 0 -o $count -le 3 ]; then
+        if [ $? -ne 0 -o $count -le 95 ]; then
             /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqldata.sql
         fi
     fi

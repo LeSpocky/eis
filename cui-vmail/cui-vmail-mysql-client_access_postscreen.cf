@@ -1,5 +1,5 @@
 user = vmailprovider
 password = vmail
 dbname = vmaildata
-query = SELECT response FROM view_client_access_postscreen WHERE INET_ATON('%s') >= sourcestart AND INET_ATON('%s') <= sourceend
+query = SELECT response FROM view_client_access_postscreen WHERE INET_ATON('%s') >= sourcestart AND INET_ATON('%s') <= sourceend LIMIT 1
 hosts = unix:/run/mysqld/mysqld.sock
