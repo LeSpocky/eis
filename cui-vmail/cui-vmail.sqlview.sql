@@ -59,8 +59,15 @@ CREATE VIEW `view_mailprotect` AS
   SELECT CONCAT(virtual_users.loginuser, _utf8 '@', virtual_domains.name) AS email,
          CONCAT('restrictions_', virtual_users.mailprotect) AS restriction
   FROM virtual_users LEFT JOIN virtual_domains ON virtual_users.domain_id = virtual_domains.id
-  WHERE virtual_users.active = 1 AND virtual_domains.active = 1
-  ORDER BY name, loginuser;
+  WHERE virtual_users.active = 1 AND virtual_domains.active = 1 AND virtual_users.mailprotect > 0
+  UNION ALL
+  SELECT CONCAT(virtual_aliases.source, _utf8 '@', virtual_domains.name) AS email,
+         CONCAT('restrictions_', virtual_aliases.mailprotect) AS restriction
+  FROM virtual_aliases LEFT JOIN virtual_domains
+  ON virtual_aliases.domain_id = virtual_domains.id
+  WHERE virtual_aliases.active = 1 AND virtual_domains.active = 1 AND virtual_aliases.mailprotect > 0
+  GROUP BY email
+  ORDER BY email;
 
 DROP VIEW IF EXISTS `view_quota`;
 CREATE VIEW `view_quota` AS

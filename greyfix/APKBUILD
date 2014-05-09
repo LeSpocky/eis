@@ -1,0 +1,46 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
+pkgname=greyfix
+pkgver=0.4.0
+pkgrel=0
+pkgdesc="pfqueue MTA queues control tool"
+url="http://pfqueue.sourceforge.ne"
+arch="all"
+license="GNU"
+depends=""
+depends_dev="db-dev"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+source="http://www.kim-minh.com/pub/greyfix/greyfix-${pkgver}.tar.gz
+	"
+
+_builddir="$srcdir/${pkgname}-$pkgver"
+
+prepare() {
+	local i
+	cd ${_builddir}
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i ${srcdir}/$i || return 1;;
+		esac
+	done
+	sleep 1
+}
+
+build() {
+	cd ${_builddir}
+	./configure --prefix=/usr --localstatedir=/var || return 1
+	sleep 1
+	make -j1 || return 1
+}
+
+package() {
+	cd ${_builddir}
+	make -j1 DESTDIR="$pkgdir" install || return 1
+}
+
+
+md5sums="9e69a94598350cd22899615d262d69ff  greyfix-0.4.0.tar.gz"
+sha256sums="26013edce3a38d586282bfc22eb91bd22df54e3558ea1b3dae54d3e7a769e4fe  greyfix-0.4.0.tar.gz"
+sha512sums="2ad40a5e608b6b44a82bacad434523e0a0b3bb1b1669dc488aaa9c4b687152c0492262b7965ab637243aa6048318dac263a2116bcd3baf6cb7cb271df3d72686  greyfix-0.4.0.tar.gz"

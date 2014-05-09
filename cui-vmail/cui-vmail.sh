@@ -361,6 +361,7 @@ postconf -e "postscreen_dnsbl_action = $postfix_pscr_dnsbl_action"
 postconf -e "postscreen_dnsbl_sites = $postfix_rbl_list"
 postconf -e "postscreen_dnsbl_threshold = 3"
 postconf -e "postscreen_access_list = permit_mynetworks, proxy:mysql:/etc/postfix/sql/mysql-client_access_postscreen.cf"
+postconf -e "postscreen_blacklist_action = enforce"
 echo -n "."
 cat > /etc/postfix/master.cf <<EOF
 # --------------------------------------------------------------------------
