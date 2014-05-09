@@ -240,8 +240,8 @@ postconf -e "restrictions_1 = reject_unknown_client_hostname,reject_non_fqdn_sen
     # use access list
 postconf -e "restrictions_2 = check_client_access pcre:/etc/postfix/client_access_dynblocks.pcre"
 postconf -e "restrictions_3 = reject_non_fqdn_sender,reject_non_fqdn_hostname,reject_unknown_client_hostname,check_client_access pcre:/etc/postfix/client_access_dynblocks.pcre"
-postconf -e "restrictions_4 = permit_mynetworks"
-postconf -e "restrictions_5 = permit_mynetworks"
+postconf -e "restrictions_4 = check_policy_service unix:private/greyfix"
+postconf -e "restrictions_5 = reject_non_fqdn_sender,reject_non_fqdn_hostname,reject_unknown_client_hostname,check_client_access pcre:/etc/postfix/client_access_dynblocks.pcre, check_policy_service unix:private/greyfix"
 postconf -e "restrictions_6 = permit_mynetworks"
 postconf -e "restrictions_7 = permit_mynetworks"
 postconf -e "restrictions_8 = permit_mynetworks"
@@ -428,6 +428,8 @@ pop3imap  unix  -       n       n       -       -       pipe
     flags=DRhu user=mail:mail argv=/usr/libexec/dovecot/dovecot-lda -f \${sender} -a \${recipient} -d ${dovecot_deliver}
 uucp      unix  -       n       n       -       -       pipe
     flags=Fqhu user=uucp argv=uux -r -n -z -a\$sender - \$nexthop!rmail (\$recipient)
+greyfix   unix  -       n       n       -       -       spawn
+    user=nobody argv=/usr/sbin/greyfix -/ 24 -6 56
 
 EOF
     # force permissions for chroot

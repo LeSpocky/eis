@@ -687,6 +687,8 @@ function userdlg_create_hook()
         cui_combobox_add      "$ctrl" "1 block unkn. client"
         cui_combobox_add      "$ctrl" "2 block dyn. IP"
         cui_combobox_add      "$ctrl" "3 block 1 + 2"
+        cui_combobox_add      "$ctrl" "4 greylisting"
+        cui_combobox_add      "$ctrl" "5 block 1+2+greylist"
         cui_combobox_add      "$ctrl" "9 internal mail only"
         cui_combobox_callback "$ctrl" "$COMBOBOX_CHANGED" "$dlg" "userdlg_mailprotect_changed"
         case "$userdlg_mailprotect" in
