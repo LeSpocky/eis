@@ -169,7 +169,7 @@ encache="#"
 envhost="#"
 uses_vhost_atall="no"
 # cache for doc root:
-modcache="$APACHE2_MOD_CACHE"
+[ "$APACHE2_MOD_CACHE" = "yes" ] && encache=""
 idx=0
 while [ "$idx" -le "$APACHE2_VHOST_N" ]
 do
@@ -178,11 +178,10 @@ do
         envhost=""
         uses_vhost_atall="yes"
         eval modcache='$APACHE2_VHOST_'$idx'_MOD_CACHE'
-        [ "$modcache" = "yes" ] && break
+        [ "$modcache" = "yes" ] && encache=""
     fi
     idx=`expr $idx + 1`
 done
-[ "$modcache" = "yes" ] && encache=""
 
 #----------------------------------------------------------------------------------------
 # activate ssl 
