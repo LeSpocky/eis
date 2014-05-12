@@ -13,6 +13,7 @@ PHP_SENDMAIL_PATH         -               -            NONE
 PHP_SENDMAIL_APP          -               -            NONE
 PHP_DATE_TIMEZONE         -               -            PHP_DATE_TIMEZONE
 PHP_EXT_CACHE             -               -            PHP_CACHING_MODULE
+PHP_EXT_CURL              -               -            YESNO
 PHP_EXT_SOAP              -               -            YESNO
 PHP_EXT_GD                -               -            YESNO
 PHP_EXT_JSON              -               -            YESNO

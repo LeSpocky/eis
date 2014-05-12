@@ -2,7 +2,8 @@
 
 <help name="PHP_MAX_EXECUTION_TIME">
 Hat ein PHP-Script eine laengere Laufzeit als die hier angegebene, 
-wird die Ausfuehrung des Scripts abgebrochen.
+wird die Ausfuehrung des Scripts abgebrochen. Fuer TYPO3 wird z.B. ein Wert
+von mindestens 240 benoetigt.
 </help>
 
 <help name="PHP_DISPLAY_ERRORS">
@@ -84,6 +85,11 @@ Mit 'apc' wird das APC Chaching Modul geladen.<br/>
 Mit 'memcache' wird das Memcache Modul geladen.<br/>
 Mit 'xcache' wird das XCache Modul geladen.<br/>
 Mit 'no' wird das Chaching deaktiviert (default).
+</help>
+
+<help name="PHP_EXT_CURL">
+Mit 'yes' wird das CURL Modul geladen.<br/>
+Mit 'no' wird das Modul deaktiviert (default).
 </help>
 
 <help name="PHP_EXT_SOAP">

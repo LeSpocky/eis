@@ -914,7 +914,6 @@ fi
 if [ "$START_VMAIL" = "yes" ]; then
     [ "$START_POP3IMAP" = 'yes' ] && /sbin/rc-update -q add dovecot 2>/dev/null || /sbin/rc-update -q del dovecot
     /sbin/rc-update -q add smc-milter-new 2>/dev/null
-    [ -x /etc/init.d/greylist ] && /sbin/rc-update -q add greylist 2>/dev/null
     /sbin/rc-update -q add postfix 2>/dev/null
 #    [ "$START_FETCHMAIL" = "yes" ] && /sbin/rc-update -q add fetchmail 2>/dev/null || /sbin/rc-update -q del fetchmail
     # add chroot
@@ -925,11 +924,9 @@ if [ "$START_VMAIL" = "yes" ]; then
 else
     /sbin/rc-update -q del dovecot
     /sbin/rc-update -q del smc-milter-new
-    [ -x /etc/init.d/greylist ] && /sbin/rc-update -q del greylist
     /sbin/rc-update -q del postfix
 #    /sbin/rc-update -q del fetchmail
 fi
-
 
 ### -------------------------------------------------------------------------
 exit 0

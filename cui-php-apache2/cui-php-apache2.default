@@ -7,9 +7,9 @@
 # General settings
 # ----------------------------------------------------------------------------
 
-PHP_MAX_EXECUTION_TIME='30'           # Time in sec. until the script will be
+PHP_MAX_EXECUTION_TIME='240'          # Time in sec. until the script will be
                                       # terminated.
-                                      # default: 30
+                                      # default: 240
                                      
 PHP_DISPLAY_ERRORS='yes'              # Show syntaxerrors of your PHP-Scripts
                                       # in your Browser.
@@ -57,8 +57,8 @@ PHP_MAX_POST_SIZE='32M'               # Maximal POST size
                                       # PHP_MAX_UPLOAD_FILESIZE
                                       # default: 32M --> means 32 Megabytes
                                      
-PHP_MAX_UPLOAD_FILESIZE='16M'         # Max. filesize for uploads
-                                      # default: 16M --> means 16 Megabytes
+PHP_MAX_UPLOAD_FILESIZE='32M'         # Max. filesize for uploads
+                                      # default: 13M --> means 32 Megabytes
                                      
 PHP_MEMORY_LIMIT='128M'               # Memory, PHP is allowed to use
                                       # default: 128M --> means 128 Megabytes
@@ -75,6 +75,7 @@ PHP_EXT_CACHE='no'                    # Activate caching module in PHP.
                                       # xcache: for XCache
                                       # default: no -> switch caching module off
                                       
+PHP_EXT_CURL="no"                     # Activate CURL module in PHP.
 PHP_EXT_SOAP='no'                     # Activate SOAP module in PHP.                                      
 PHP_EXT_GD='yes'                      # Activate GD extension for PHP.
 PHP_EXT_JSON='no'                     # Activate json extension for PHP.

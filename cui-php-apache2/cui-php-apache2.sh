@@ -529,6 +529,20 @@ EOF
 fi
 
 # -----------------------------------------------------------------------------
+# CURL
+rm -f /etc/php/conf.d/curl.ini
+if [ "$PHP_EXT_CURL" = "yes" ] ; then
+    apk info -q -e php-curl || apk add -q php-curl
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/curl.ini <<EOF
+extension=curl.so
+EOF
+    else
+        errorsyslog php-curl
+    fi
+fi
+
+# -----------------------------------------------------------------------------
 # CACHE
 rm -f /etc/php/conf.d/apc.ini
 rm -f /etc/php/conf.d/xcache.ini

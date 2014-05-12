@@ -73,7 +73,7 @@ POSTFIX_RBL_7_WEIGHT='1'              # Blackhole server 7 blocking weight
 POSTFIX_RBL_8_SERVER='bl.spamcop.net' # Realtime Blackhole List server 8 name
 POSTFIX_RBL_8_WEIGHT='1'              # Blackhole server 8 blocking weight
 POSTFIX_RBL_9_SERVER='list.dnswl.org' # Realtime White List server 9 name
-POSTFIX_RBL_9_WEIGHT='-3'             # White List 9 unblocking weight
+POSTFIX_RBL_9_WEIGHT='-1'             # White List 9 unblocking weight
 
 
 POSTFIX_HEADER_N='0'                  # Count of header checks

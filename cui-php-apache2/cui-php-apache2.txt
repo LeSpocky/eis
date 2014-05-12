@@ -16,7 +16,7 @@ Allgemeine Konfiguration
           Hat ein PHP-Script eine laengere Laufzeit als die hier
           angegebene, wird die Ausfuehrung des Scripts abgebrochen.
 
-          Standardeinstellung: PHP_MAX_EXECUTION='30'
+          Standardeinstellung: PHP_MAX_EXECUTION='240'
 
    PHP_DISPLAY_ERRORS
           Hier kann man die Anzeige von Syntaxfehlern im Browser waehrend
@@ -106,7 +106,7 @@ Allgemeine Konfiguration
           Diese Variable definiert, wie gross die Datenmenge fuer einen
           Upload generell sein darf.
 
-          Standardeinstellung: PHP_MAX_UPLOAD_FILESIZE='16M'
+          Standardeinstellung: PHP_MAX_UPLOAD_FILESIZE='32M'
 
    PHP_MEMORY_LIMIT
           Verbraucht ein Script mehr als den in dieser Variable defnierten
@@ -128,6 +128,12 @@ Allgemeine Konfiguration
           (zur Verfuegung stehen apc, memcache und xcache).
 
           Standardeinstellung: PHP_EXT_CACHE='no'
+
+   PHP_EXT_CURL
+          Mit 'yes' wird das CURL Modul geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_CURL='no'
 
    PHP_EXT_SOAP
           Mit 'yes' wird das SOAP Modul geladen.

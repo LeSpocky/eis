@@ -25,7 +25,7 @@ package_name=php-apache2
 
     printvar "PHP_MAX_EXECUTION_TIME" "Time in sec. until the script will be"
     printvar "" "terminated."
-    printvar "" "default: 30"
+    printvar "" "default: 240"
 
     printvar "PHP_DISPLAY_ERRORS" "Show syntaxerrors of your PHP-Scripts"
     printvar "" "in your Browser."
@@ -88,6 +88,7 @@ package_name=php-apache2
     printvar "" "apc: for APC"
     printvar "" "xcache: for XCache"
     printvar "" "default: no -> switch caching module off"
+    printvar "PHP_EXT_CURL" "Activate CURL module in PHP."
     printvar "PHP_EXT_SOAP" "Activate SOAP module in PHP."
     printvar "PHP_EXT_GD" "Activate GD extension for PHP."
     printvar "PHP_EXT_JSON" "Activate json extension for PHP."

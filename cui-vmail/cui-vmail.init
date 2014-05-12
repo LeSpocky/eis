@@ -19,13 +19,11 @@ case "$1" in
         /sbin/rc-service -q postfixchroot start
         [ "$START_POP3IMAP" = 'yes' ] && /sbin/rc-service dovecot start
         /sbin/rc-service smc-milter-new start
-        [ -x /etc/init.d/greylist ] && /sbin/rc-service greylist stop
         /sbin/rc-service postfix start
     ;;
     stop)
         /sbin/rc-service postfix stop
         /sbin/rc-service dovecot stop
-        [ -x /etc/init.d/greylist ] && /sbin/rc-service greylist stop
         /sbin/rc-service smc-milter-new stop
         /sbin/rc-service -q postfixchroot stop
     ;;
