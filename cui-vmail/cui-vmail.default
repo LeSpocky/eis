@@ -106,7 +106,6 @@ POSTFIX_AV_QUARANTINE='yes'           # Store the original virus to the
 #------------------------------------------------------------------------------
 
 START_POP3IMAP='yes'                  # Start POP3 and IMAP
-POP3IMAP_TLS='no'                     # Activate POP3S and IMAPS (TLS and SSL)
 
 #------------------------------------------------------------------------------
 # Fetchmail settings

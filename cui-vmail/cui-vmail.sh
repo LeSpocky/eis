@@ -591,13 +591,14 @@ EOF
 
 ### -------------------------------------------------------------------------
 #10-ssl
+[ ! -f "$VMAIL_TLS_CAPATH/ca.pem" ] && nocafile="#"
 cat > /etc/dovecot/conf.d/10-ssl.conf <<EOF
 ## SSL settings
 ssl = $POSTFIX_SMTP_TLS
 ssl_cert = <$VMAIL_TLS_CERT
 ssl_key = <$VMAIL_TLS_KEY
 #ssl_key_password =
-ssl_ca = <${VMAIL_TLS_CAPATH}/ca.pem
+${nocafile}ssl_ca = <${VMAIL_TLS_CAPATH}/ca.pem
 #ssl_require_crl = yes
 ssl_client_ca_dir = $VMAIL_TLS_CAPATH
 #ssl_client_ca_file =
@@ -808,31 +809,12 @@ dict {
 EOF
 
 echo "."
-#    sed -i -e "s|^ssl =.*|ssl = ${POP3IMAP_TLS}|" /etc/dovecot/dovecot.conf
-#    sed -i -e "s|.*auth_username_format.*|${dovecot_authf} |" /etc/dovecot/dovecot.conf
-
-# secure doevecot sql password include files!
-#    chown dovecot:vmail /etc/dovecot
-#    chmod 0770 /etc/dovecot
-#    chown dovecot:vmail /etc/dovecot/dovecot.conf
-#    chmod 0640 /etc/dovecot/dovecot.conf
-
 
 ### -------------------------------------------------------------------------
 ### create ssl cert file
 ### -------------------------------------------------------------------------
 mkdir -p $VMAIL_TLS_CAPATH
 mkdir -p $VMAIL_TLS_KEYPATH
-
-# create ca if missing!
-if [ ! -f "$VMAIL_TLS_CAPATH/ca.pem" -a "$POSTFIX_SMTP_TLS" = "yes" ]; then
-    echo ""
-    echo "Create CA"
-    echo "----------------------------------------------------------------------"
-    openssl genrsa -out $VMAIL_TLS_KEYPATH/ca.key 4096
-    chmod 0600 $VMAIL_TLS_KEYPATH/ca.key
-    openssl req -new -x509 -days 3650 -key $VMAIL_TLS_KEYPATH/ca.key -out $VMAIL_TLS_CAPATH/ca.pem
-fi
 
 # create imap server cert if not exists
 if [ ! -f "$VMAIL_TLS_CERT" ]; then

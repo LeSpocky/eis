@@ -34,7 +34,7 @@ IDC_USERDLG_EDPASSWD1='22'       # dlg edit ID
 IDC_USERDLG_EDPASSWD2='23'       # dlg edit ID
 IDC_USERDLG_CHKTOALL='24'        # dlg edit ID
 IDC_USERDLG_EDQUOTA='25'         # dlg edit ID
-IDC_USERDLG_EDPROTECT='26'       # dlg edit ID
+IDC_USERDLG_EDANTISPAM='26'      # dlg edit ID
 IDC_USERDLG_EXPIRED='27'         # dlg edit ID
 IDC_USERDLG_CHKACTIVE='28'       # dlg edit ID
 
@@ -64,7 +64,6 @@ fi
 #============================================================================
 # helper functions
 #============================================================================
-
 #----------------------------------------------------------------------------
 # check if is a valid list index
 #----------------------------------------------------------------------------
@@ -115,13 +114,15 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT loginuser, username, toall, quota, mailprotect, DATE(expired), active \
+                "SELECT loginuser, username, ELT(toall +1, ' ', 'x'), quota, \
+                  mailprotect, DATE(expired), ELT(active +1, ' ', 'x'), id \
                  FROM   virtual_users \
                  WHERE  domain_id = ${current_domain_id}  \
                  ORDER BY loginuser" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT loginuser, username, toall, quota, mailprotect, DATE(expired), active \
+                "SELECT loginuser, username, ELT(toall +1, ' ', 'x'), quota, \
+                  mailprotect, DATE(expired), ELT(active +1, ' ', 'x'), id \
                  FROM   virtual_users \
                  WHERE  domain_id = ${current_domain_id} AND loginuser REGEXP '$keyword' \
                  ORDER BY loginuser" && myres="$p2"
@@ -132,7 +133,7 @@ function load_data()
             my_result_status "$myres"
             if [ "$p2" == "$SQL_DATA_READY" ]
             then
-                my_result_tolist "$myres" "$ctrl" "0" "$selected_entry"
+                my_result_tolist "$myres" "$ctrl" "7" "$selected_entry"
             else
                 my_server_geterror "$myconn"
                 cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -196,7 +197,6 @@ function resize_windows()
 #============================================================================
 # select menu hooks
 #============================================================================
-
 #----------------------------------------------------------------------------
 # menu_clicked_hook
 # expects: $p2 : window handle
@@ -245,7 +245,6 @@ function menu_postkey_hook()
 #============================================================================
 # mail domain selection menu
 #============================================================================
-
 #----------------------------------------------------------------------------
 # resize menu depending on number of entries
 # $1 --> appl. window
@@ -338,7 +337,6 @@ function select_domain()
 #============================================================================
 # data input dialog
 #============================================================================
-
 #----------------------------------------------------------------------------
 # inputdlg_ok_clicked
 # Ok button clicked hook
@@ -405,7 +403,6 @@ function inputdlg_create_hook()
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" inputdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
-
     cui_button_new "$dlg" "&Cancel" 22 3 10 1 $IDC_INPUTDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE  && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
@@ -416,9 +413,8 @@ function inputdlg_create_hook()
 }
 
 #============================================================================
-# user edit/create dialog
+# edit/create dialog
 #============================================================================
-
 #----------------------------------------------------------------------------
 # userdlg_ok_clicked
 # Ok button clicked hook
@@ -436,114 +432,102 @@ function userdlg_ok_clicked()
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
-        userdlg_user="$p2"
+        dlgdata_user="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_USERDLG_EDUSERNM" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
-        userdlg_username="$p2"
+        dlgdata_username="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_USERDLG_EDPASSWD1" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
-        userdlg_passwd1="$p2"
+        dlgdata_passwd1="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_USERDLG_EDPASSWD2" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
-        userdlg_passwd2="$p2"
+        dlgdata_passwd2="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_USERDLG_CHKTOALL" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
-        cui_checkbox_getcheck "$ctrl"  && userdlg_toall="$p2"
+        cui_checkbox_getcheck "$ctrl"  && dlgdata_toall="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_USERDLG_EDQUOTA" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
-        userdlg_quota="$p2"
+        dlgdata_quota="$p2"
     fi
-
-    cui_window_getctrl "$win" "$IDC_USERDLG_EDPROTECT" && ctrl="$p2"
+    cui_window_getctrl "$win" "$IDC_USERDLG_EDANTISPAM" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_combobox_getsel "$ctrl"        && idx="$p2"
-        cui_combobox_get    "$ctrl" "$idx" && userdlg_mailprotect="${p2:0:1}"
+        cui_combobox_get    "$ctrl" "$idx" && dlgdata_antispam="${p2:0:1}"
     fi
-
     cui_window_getctrl "$win" "$IDC_USERDLG_EXPIRED" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
-        userdlg_expired="$p2"
+        dlgdata_expired="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_USERDLG_CHKACTIVE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
-        cui_checkbox_getcheck "$ctrl"  && userdlg_active="$p2"
+        cui_checkbox_getcheck "$ctrl"  && dlgdata_active="$p2"
     fi
 
-    if [ -z "$userdlg_user" ]
+    if [ -z "$dlgdata_user" ]
     then
         cui_message "$win" "No user name entered! Please enter a valid user name" \
                            "Missing data" "$MB_ERROR"
         cui_return 1
         return
     fi
-
-    if [ -z "$userdlg_passwd1" ]
+    if [ -z "$dlgdata_passwd1" ]
     then
         cui_message "$win" "Empty password supplied! Please enter a valid password" \
                            "Missing data" "$MB_ERROR"
         cui_return 1
         return
     fi
-
-    if [ -z "$userdlg_quota" ]
+    if [ -z "$dlgdata_quota" ]
     then
         cui_message "$win" "No quota for account given! Please enter a valid value." \
                            "Missing data" "$MB_ERROR"
         cui_return 1
         return
-    elif ! p_is_numeric "$userdlg_quota"
+    elif ! p_is_numeric "$dlgdata_quota"
     then
         cui_message "$win" "Value for quota not numeric! Please enter a numeric value." \
                            "Invalid data" "$MB_ERROR"
         cui_return 1
         return
     fi
-
-    if [ -z "$userdlg_mailprotect" ]
+    if [ -z "$dlgdata_antispam" ]
     then
         cui_message "$win" "No mail protection specified! Please enter a value from 0 .. 9." \
                            "Missing data" "$MB_ERROR"
         cui_return 1
         return
-    elif ! p_is_numeric "$userdlg_mailprotect"
+    elif ! p_is_numeric "$dlgdata_antispam"
     then
         cui_message "$win" "Value for mail protection not numeric! Please enter a numeric value." \
                            "Invalid data" "$MB_ERROR"
         cui_return 1
         return
-    elif [ "$userdlg_mailprotect" -gt "9" ]
+    elif [ "$dlgdata_antispam" -gt "9" ]
     then
         cui_message "$win" "Wrong mail protection specified! Please enter a value from 0 .. 9." \
                            "Invalid data" "$MB_ERROR"
         cui_return 1
         return
     fi
-
-    if [ "$userdlg_passwd1" != "$userdlg_passwd2" ]
+    if [ "$dlgdata_passwd1" != "$dlgdata_passwd2" ]
     then
         cui_message "$win" "Passwords do not match. Please reenter passwords." \
                            "Missing data" "$MB_ERROR"
@@ -569,22 +553,21 @@ function userdlg_cancel_clicked()
 }
 
 #----------------------------------------------------------------------------
-# userdlg_mailprotect_changed
-# Mailprotect changed hook
+# dlgdata_antispam_changed
+# Antispam changed hook
 # expects: $1 : window handle of dialog window
 #          $2 : combobox control id
 # returns: 1  : event handled
 #----------------------------------------------------------------------------
-function userdlg_mailprotect_changed()
+function dlgdata_antispam_changed()
 {
     local win="$p2"
     local ctrl="$p3"
     local edit
     local idx
-    local text
 
     cui_combobox_getsel "$ctrl" && idx="$p2"
-    cui_window_getctrl  "$win" "$IDC_USERDLG_EDPROTECT" && edit="$p2"
+    cui_window_getctrl  "$win" "$IDC_USERDLG_EDANTISPAM" && edit="$p2"
     cui_return 1
 }
 
@@ -604,82 +587,70 @@ function userdlg_create_hook()
     then
         cui_window_create     "$p2"
     fi
-
     if cui_label_new "$dlg" "Username:" 2 3 14 1 "$IDC_USERDLG_LABEL2" "$CWS_NONE" "$CWS_NONE"
     then
         cui_window_create     "$p2"
     fi
-
     if cui_label_new "$dlg" "Password:" 2 5 14 1 "$IDC_USERDLG_LABEL3" "$CWS_NONE" "$CWS_NONE"
     then
         cui_window_create     "$p2"
     fi
-
     if cui_label_new "$dlg" "Retype passwd.:" 2 7 14 1 "$IDC_USERDLG_LABEL4" "$CWS_NONE" "$CWS_NONE"
     then
         cui_window_create     "$p2"
     fi
-
     # checkbox toall 9
     if cui_label_new "$dlg" "Quota:" 2 11 14 1 "$IDC_USERDLG_LABEL5" "$CWS_NONE" "$CWS_NONE"
     then
         cui_window_create     "$p2"
     fi
-
     if cui_label_new "$dlg" "Spam protect:" 2 13 14 1 "$IDC_USERDLG_LABEL6" "$CWS_NONE" "$CWS_NONE"
     then
         cui_window_create     "$p2"
     fi
-
     if cui_label_new "$dlg" "Expiry date:" 2 15 14 1 "$IDC_USERDLG_LABEL7" "$CWS_NONE" "$CWS_NONE"
     then
         cui_window_create     "$p2"
     fi
-
     # checkbox active 17
     cui_edit_new "$dlg" "" 17 1 25 1 255 "$IDC_USERDLG_EDUSER" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
-        cui_edit_settext      "$ctrl" "$userdlg_user"
+        cui_edit_settext      "$ctrl" "$dlgdata_user"
     fi
 
     cui_edit_new "$dlg" "" 17 3 25 1 255 "$IDC_USERDLG_EDUSERNM" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
-        cui_edit_settext      "$ctrl" "$userdlg_username"
+        cui_edit_settext      "$ctrl" "$dlgdata_username"
     fi
-
     cui_edit_new "$dlg" "" 17 5 25 1 255 "$IDC_USERDLG_EDPASSWD1" "$EF_PASSWORD" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
-        cui_edit_settext      "$ctrl" "$userdlg_passwd1"
+        cui_edit_settext      "$ctrl" "$dlgdata_passwd1"
     fi
-
     cui_edit_new "$dlg" "" 17 7 25 1 255 "$IDC_USERDLG_EDPASSWD2" "$EF_PASSWORD" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
-        cui_edit_settext      "$ctrl" "$userdlg_passwd2"
+        cui_edit_settext      "$ctrl" "$dlgdata_passwd2"
     fi
-
     cui_checkbox_new "$dlg" "Mailinglist to-all" 13 9 22 1 "$IDC_USERDLG_CHKTOALL" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
-        cui_checkbox_setcheck "$ctrl" "$userdlg_toall"
+        cui_checkbox_setcheck "$ctrl" "$dlgdata_toall"
     fi
-
     cui_edit_new "$dlg" "" 17 11 10 1 255 "$IDC_USERDLG_EDQUOTA" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
-        cui_edit_settext      "$ctrl" "$userdlg_quota"
+        cui_edit_settext      "$ctrl" "$dlgdata_quota"
     fi
-
-    cui_combobox_new "$dlg" 17 13 25 8 "$IDC_USERDLG_EDPROTECT" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
+    cui_combobox_new "$dlg" 17 13 25 8 "$IDC_USERDLG_EDANTISPAM" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
@@ -690,8 +661,8 @@ function userdlg_create_hook()
         cui_combobox_add      "$ctrl" "4 greylisting"
         cui_combobox_add      "$ctrl" "5 block 1+2+greylist"
         cui_combobox_add      "$ctrl" "9 internal mail only"
-        cui_combobox_callback "$ctrl" "$COMBOBOX_CHANGED" "$dlg" "userdlg_mailprotect_changed"
-        case "$userdlg_mailprotect" in
+        cui_combobox_callback "$ctrl" "$COMBOBOX_CHANGED" "$dlg" "dlgdata_antispam_changed"
+        case "$dlgdata_antispam" in
             0)
                 cui_combobox_select "$ctrl" "0 disabled"
                 ;;
@@ -704,29 +675,33 @@ function userdlg_create_hook()
             3)
                 cui_combobox_select "$ctrl" "3 block 1 + 2"
                 ;;
+            4)
+                cui_combobox_select "$ctrl" "4 greylisting"
+                ;;
+            5)
+                cui_combobox_select "$ctrl" "5 block 1+2+greylist"
+                ;;
             9)
                 cui_combobox_select "$ctrl" "9 internal mail only"
                 ;;
             *) 
-                cui_combobox_add    "$ctrl" "$userdlg_mailprotect"
-                cui_combobox_select "$ctrl" "$userdlg_mailprotect"
+                cui_combobox_add    "$ctrl" "$dlgdata_antispam"
+                cui_combobox_select "$ctrl" "$dlgdata_antispam"
                 ;;
         esac
         cui_combobox_getsel   "$ctrl" && idx="$p2"
     fi
-
     cui_edit_new "$dlg" "" 17 15 10 1 255 "$IDC_USERDLG_EXPIRED" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
-        cui_edit_settext      "$ctrl" "$userdlg_expired"
+        cui_edit_settext      "$ctrl" "$dlgdata_expired"
     fi
-
     cui_checkbox_new "$dlg" "Account is &active" 13 17 22 1 "$IDC_USERDLG_CHKACTIVE" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
-        cui_checkbox_setcheck "$ctrl" "$userdlg_active"
+        cui_checkbox_setcheck "$ctrl" "$dlgdata_active"
     fi
 
     cui_button_new "$dlg" "&OK" 11 20 10 1 $IDC_USERDLG_BUTOK $CWS_DEFOK $CWS_NONE  && ctrl="$p2"
@@ -735,7 +710,6 @@ function userdlg_create_hook()
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" userdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
-
     cui_button_new "$dlg" "&Cancel" 22 20 10 1 $IDC_USERDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE  && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
@@ -748,28 +722,28 @@ function userdlg_create_hook()
 #============================================================================
 # invoke user dialog due to key or menu selection
 #============================================================================
-
 #----------------------------------------------------------------------------
-# users_createuser_dialog
+# users_create_dialog
 # Create a new mail user
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function users_createuser_dialog()
+function users_create_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
     local dlg
+    local myres
 
-    userdlg_user=""
-    userdlg_passwd1=""
-    userdlg_passwd2=""
-    userdlg_username=""
-    userdlg_toall="1"
-    userdlg_quota="0"
-    userdlg_mailprotect="0"
-    userdlg_expired="0000-00-00"
-    userdlg_active="1"
+    dlgdata_user=""
+    dlgdata_passwd1=""
+    dlgdata_passwd2=""
+    dlgdata_username=""
+    dlgdata_toall="1"
+    dlgdata_quota="0"
+    dlgdata_antispam="0"
+    dlgdata_expired="0000-00-00"
+    dlgdata_active="1"
 
     cui_window_new "$win" 0 0 46 23 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
     if cui_valid_handle $dlg
@@ -783,21 +757,43 @@ function users_createuser_dialog()
         if  [ "$result" == "$IDOK" ]
         then
             cui_window_destroy "$dlg"
-            [ -z "$userdlg_username" ] && userdlg_username="$userdlg_user"
+            [ -z "$dlgdata_username" ] && dlgdata_username="$dlgdata_user"
             my_exec_sql "$myconn" \
                 "INSERT INTO virtual_users(domain_id, loginuser, password, username, toall, quota, mailprotect, expired, active) \
                  VALUES ('${current_domain_id}', \
-                         '${userdlg_user}', \
-                         AES_ENCRYPT('${userdlg_passwd1}','${VMAIL_SQL_ENCRYPT_KEY}'), \
-                         '${userdlg_username}', \
-                         '${userdlg_toall}', \
-                         '${userdlg_quota}', \
-                         '${userdlg_mailprotect}', \
-                         '${userdlg_expired} 00:00:00', \
-                         '${userdlg_active}');"
+                         '${dlgdata_user}', \
+                         AES_ENCRYPT('${dlgdata_passwd1}','${VMAIL_SQL_ENCRYPT_KEY}'), \
+                         '${dlgdata_username}', \
+                         '${dlgdata_toall}', \
+                         '${dlgdata_quota}', \
+                         '${dlgdata_antispam}', \
+                         '${dlgdata_expired} 00:00:00', \
+                         '${dlgdata_active}');"
             if p_sql_success "$p2"
             then
-                selected_entry=${userdlg_user}
+                my_query_sql "$myconn" \
+                    "SELECT id FROM virtual_users \
+                      WHERE domain_id='${current_domain_id}' \
+                        AND loginuser='${dlgdata_user}'" && myres="$p2"
+                if cui_valid_handle "$myres"
+                then
+                    my_result_status "$myres"
+                    if [ "$p2" == "$SQL_DATA_READY" ]
+                    then
+                        my_result_fetch "$myres"
+                        if p_sql_success "$p2"
+                        then
+                            my_result_data "$myres" "0" && selected_entry="$p2"
+                        fi
+                    else
+                        my_server_geterror "$myconn"
+                        cui_message "$win" "$p2" "Error" "$MB_ERROR"
+                    fi
+                    my_result_free "$myres"
+                else
+                    my_server_geterror "$myconn"
+                    cui_message "$win" "$p2" "Error" "$MB_ERROR"
+                fi
             else
                 my_server_geterror "$myconn"
                 cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -811,19 +807,19 @@ function users_createuser_dialog()
 }
 
 #----------------------------------------------------------------------------
-# users_edituser_dialog
+# users_edit_dialog
 # Modify an existing mail user
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function users_edituser_dialog()
+function users_edit_dialog()
 {
     local win="$1"
     local dlg
     local result="$IDCANCEL"
     local ctrl
     local idx
-    local entryname
+    local edit_id
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
     if cui_valid_handle $ctrl
@@ -831,25 +827,21 @@ function users_edituser_dialog()
         cui_listview_getsel "$ctrl" && idx="$p2"
         if p_valid_index $idx
         then
-            cui_listview_gettext "$ctrl" "$idx" "0"
-            userdlg_user="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "1"
-            userdlg_username="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "2"
-            userdlg_toall="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "3"
-            userdlg_quota="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "4"
-            userdlg_mailprotect="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "5"
-            userdlg_expired="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "6"
-            userdlg_active="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "0" && dlgdata_user="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "1" && dlgdata_username="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "2" && dlgdata_toall="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "3" && dlgdata_quota="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "4" && dlgdata_antispam="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "5" && dlgdata_expired="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "6" && dlgdata_active="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "7" && edit_id="$p2"
 
-            userdlg_passwd1="xxxxxxxxxxxxxxxx"
-            userdlg_passwd2="xxxxxxxxxxxxxxxx"
+            [ "$dlgdata_toall" = "x" ] && dlgdata_toall="1" || dlgdata_toall="0"
+            [ "$dlgdata_active" = "x" ] && dlgdata_active="1" || dlgdata_active="0"
+            dlgdata_passwd1="xxxxxxxxxxxxxxxx"
+            dlgdata_passwd2="xxxxxxxxxxxxxxxx"
 
-            entryname="$userdlg_user"
+            entryname="$dlgdata_user"
 
             cui_window_new "$win" 0 0 46 23 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg
@@ -862,34 +854,34 @@ function users_edituser_dialog()
                 if  [ "$result" == "$IDOK" ]
                 then
                     cui_window_destroy "$dlg"
-                    if [ "$userdlg_passwd1" != "xxxxxxxxxxxxxxxx" ]
+                    if [ "$dlgdata_passwd1" != "xxxxxxxxxxxxxxxx" ]
                     then
                         my_exec_sql "$myconn" \
                             "UPDATE virtual_users \
-                                SET loginuser='${userdlg_user}', \
-                                    password=AES_ENCRYPT('${userdlg_passwd1}','${VMAIL_SQL_ENCRYPT_KEY}'), \
-                                    username= '${userdlg_username}', \
-                                    toall= '${userdlg_toall}', \
-                                    quota= '${userdlg_quota}', \
-                                    mailprotect= '${userdlg_mailprotect}', \
-                                    expired= '${userdlg_expired} 00:00:00', \
-                                    active= '${userdlg_active}' \
-                              WHERE domain_id = ${current_domain_id} AND loginuser = '$entryname';"
+                                SET loginuser='${dlgdata_user}', \
+                                    password=AES_ENCRYPT('${dlgdata_passwd1}','${VMAIL_SQL_ENCRYPT_KEY}'), \
+                                    username= '${dlgdata_username}', \
+                                    toall= '${dlgdata_toall}', \
+                                    quota= '${dlgdata_quota}', \
+                                    mailprotect= '${dlgdata_antispam}', \
+                                    expired= '${dlgdata_expired} 00:00:00', \
+                                    active= '${dlgdata_active}' \
+                              WHERE id = '${edit_id}'"
                     else
                         my_exec_sql "$myconn" \
                             "UPDATE virtual_users \
-                                SET loginuser='${userdlg_user}', \
-                                    username= '${userdlg_username}', \
-                                    toall= '${userdlg_toall}', \
-                                    quota= '${userdlg_quota}', \
-                                    mailprotect= '${userdlg_mailprotect}', \
-                                    expired= '${userdlg_expired} 00:00:00', \
-                                    active= '${userdlg_active}' \
-                              WHERE domain_id = ${current_domain_id} AND loginuser = '$entryname';"
+                                SET loginuser='${dlgdata_user}', \
+                                    username= '${dlgdata_username}', \
+                                    toall= '${dlgdata_toall}', \
+                                    quota= '${dlgdata_quota}', \
+                                    mailprotect= '${dlgdata_antispam}', \
+                                    expired= '${dlgdata_expired} 00:00:00', \
+                                    active= '${dlgdata_active}' \
+                              WHERE id = '${edit_id}'"
                     fi
                     if p_sql_success "$p2"
                     then
-                        selected_entry=${userdlg_user}
+                        selected_entry="$edit_id"
                     else
                         my_server_geterror "$myconn"
                         cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -907,18 +899,18 @@ function users_edituser_dialog()
 }
 
 #----------------------------------------------------------------------------
-# users_deleteuser_dialog
+# users_delete_dialog
 # Delete an existing mail user
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function users_deleteuser_dialog()
+function users_delete_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
     local ctrl
     local idx
-    local entryname
+    local delete_id
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
     if cui_valid_handle $ctrl
@@ -926,14 +918,14 @@ function users_deleteuser_dialog()
         cui_listview_getsel "$ctrl" && idx="$p2"
         if p_valid_index $idx
         then
-            cui_listview_gettext "$ctrl" "$idx" "0"
-            userdlg_user="$p2"
-            cui_message "$win" "Really delete \"$userdlg_user\"?" "Question" "$MB_YESNO"
+            cui_listview_gettext "$ctrl" "$idx" "0" && dlgdata_user="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "7" && delete_id="$p2"
+
+            cui_message "$win" "Really delete \"$dlgdata_user\"?" "Question" "$MB_YESNO"
             if [ "$p2" == "$IDYES" ]
             then
                 my_exec_sql "$myconn" \
-                    "DELETE FROM virtual_users \
-                      WHERE domain_id = ${current_domain_id} AND loginuser = '${userdlg_user}';"
+                    "DELETE FROM virtual_users WHERE id='${delete_id}';"
                 if p_sql_success "$p2"
                 then
                     result="$IDOK"
@@ -954,7 +946,6 @@ function users_deleteuser_dialog()
 #============================================================================
 # listview callbacks
 #============================================================================
-
 #----------------------------------------------------------------------------
 # listview_clicked_hook
 # listitem has been clicked
@@ -998,21 +989,21 @@ function listview_clicked_hook()
             case $item in
             1)
                 cui_window_destroy  "$menu"
-                if users_edituser_dialog $win
+                if users_edit_dialog $win
                 then
                      load_data "$win"
                 fi
                 ;;
             2)
                 cui_window_destroy  "$menu"
-                if users_deleteuser_dialog $win
+                if users_delete_dialog $win
                 then
                     load_data "$win"
                 fi
                 ;;
             3)
                 cui_window_destroy  "$menu"
-                if users_createuser_dialog $win
+                if users_create_dialog $win
                 then
                     load_data "$win"
                 fi
@@ -1100,7 +1091,7 @@ function mainwin_create_hook()
     local win="$p2"
     local ctrl
 
-    cui_listview_new "$win" "" 0 0 10 10 7 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
+    cui_listview_new "$win" "" 0 0 10 10 8 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_listview_callback   "$ctrl" "$LISTBOX_CLICKED" "$win" "listview_clicked_hook"
@@ -1112,6 +1103,7 @@ function mainwin_create_hook()
         cui_listview_setcoltext "$ctrl" 4 "Spam"
         cui_listview_setcoltext "$ctrl" 5 "Expired"
         cui_listview_setcoltext "$ctrl" 6 "Active"
+        cui_listview_setcoltext "$ctrl" 7 "-"
         cui_window_create       "$ctrl"
     fi
 
@@ -1199,7 +1191,7 @@ function mainwin_key_hook()
         resize_windows $win
         ;;
     "$KEY_F4")
-        if users_edituser_dialog $win
+        if users_edit_dialog $win
         then
             load_data "$win"
         fi
@@ -1227,13 +1219,13 @@ function mainwin_key_hook()
         fi
         ;;
     "$KEY_F7")
-        if users_createuser_dialog $win
+        if users_create_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F8")
-        if users_deleteuser_dialog $win
+        if users_delete_dialog $win
         then
             load_data "$win"
         fi

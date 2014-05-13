@@ -41,7 +41,7 @@ show_help="no"
 
 keyword=""
 
-forwarddlg_id=0
+canonicalmap_id=0
 selected_entry=""
 
 vmail_sql_server="localhost"
@@ -61,7 +61,6 @@ fi
 #============================================================================
 # helper functions
 #============================================================================
-
 #----------------------------------------------------------------------------
 # check if is a valid list index
 #----------------------------------------------------------------------------
@@ -104,13 +103,13 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT source, destination, active, id \
+                "SELECT source, destination, ELT(active +1, ' ', 'x'), id \
                  FROM canonical_maps \
                  WHERE  domain_id = ${current_domain_id} \
                  ORDER BY source, destination" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT source, destination, active, id \
+                "SELECT source, destination, ELT(active +1, ' ', 'x'), id \
                  FROM   canonical_maps \
                  WHERE  domain_id = ${current_domain_id} AND destination REGEXP '$keyword' \
                  ORDER BY source, destination" && myres="$p2"
@@ -125,7 +124,7 @@ function load_data()
                 then
                     my_result_tolist "$myres" "$ctrl" "1" "$selected_entry"
                 else
-                    my_result_tolist "$myres" "$ctrl" "3" "$forwarddlg_id"
+                    my_result_tolist "$myres" "$ctrl" "3" "$canonicalmap_id"
                 fi 
             else
                 my_server_geterror "$myconn"
@@ -420,17 +419,16 @@ function inputdlg_create_hook()
 }
 
 #============================================================================
-# forwarding edit/create dialog
+# canonicalma edit/create dialog
 #============================================================================
-
 #----------------------------------------------------------------------------
-# forwarddlg_ok_clicked
+# canonicalmap_ok_clicked
 # Ok button clicked hook
 # expects: $1 : window handle of dialog window
 #          $2 : button control id
 # returns: 1  : event handled
 #----------------------------------------------------------------------------
-function forwarddlg_ok_clicked()
+function canonicalmap_ok_clicked()
 {
     local win="$p2"
     local ctrl
@@ -440,23 +438,23 @@ function forwarddlg_ok_clicked()
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
-        forwarddlg_source="$p2"
+        canonicalmap_source="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_FORWARDDLG_DESTINATION" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
-        forwarddlg_destination="$p2"
+        canonicalmap_destination="$p2"
     fi
 
     cui_window_getctrl "$win" "$IDC_FORWARDDLG_CHKACTIVE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
-        cui_checkbox_getcheck "$ctrl"  && forwarddlg_active="$p2"
+        cui_checkbox_getcheck "$ctrl"  && canonicalmap_active="$p2"
     fi
 
-    if [ -z "$forwarddlg_destination" ]
+    if [ -z "$canonicalmap_destination" ]
     then
         cui_message "$win" "Empty destination supplied! Please enter a valid destination" \
                            "Missing data" "$MB_ERROR"
@@ -469,27 +467,25 @@ function forwarddlg_ok_clicked()
 }
 
 #----------------------------------------------------------------------------
-# forwarddlg_cancel_clicked
+# canonicalmap_cancel_clicked
 # Cancel button clicked hook
 # expects: $1 : window handle of dialog window
 #          $2 : button control id
 # returns: 1  : event handled
 #----------------------------------------------------------------------------
-function forwarddlg_cancel_clicked()
+function canonicalmap_cancel_clicked()
 {
     cui_window_close "$p2" "$IDCANCEL"
     cui_return 1
 }
 
-
-
 #----------------------------------------------------------------------------
-# forwarddlg_create_hook
+# canonicalmap_create_hook
 # Dialog create hook - create dialog controls
 # expects: $1 : window handle of dialog window
 # returns: 1  : event handled
 #----------------------------------------------------------------------------
-function forwarddlg_create_hook()
+function canonicalmap_create_hook()
 {
     local dlg="$p2"
     local ctrl
@@ -509,65 +505,64 @@ function forwarddlg_create_hook()
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
-        cui_edit_settext      "$ctrl" "$forwarddlg_source"
+        cui_edit_settext      "$ctrl" "$canonicalmap_source"
     fi
 
     cui_edit_new "$dlg" "" 17 3 25 1 255 "$IDC_FORWARDDLG_DESTINATION" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
-        cui_edit_settext      "$ctrl" "$forwarddlg_destination"
+        cui_edit_settext      "$ctrl" "$canonicalmap_destination"
     fi
 
     cui_checkbox_new "$dlg" "Entry is &active" 17 5 22 1 "$IDC_FORWARDDLG_CHKACTIVE" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
-        cui_checkbox_setcheck "$ctrl" "$forwarddlg_active"
+        cui_checkbox_setcheck "$ctrl" "$canonicalmap_active"
     fi
 
     cui_button_new "$dlg" "&OK" 11 7 10 1 $IDC_FORWARDDLG_BUTOK $CWS_DEFOK $CWS_NONE  && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
-        cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" forwarddlg_ok_clicked
+        cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" canonicalmap_ok_clicked
         cui_window_create     "$ctrl"
     fi
 
     cui_button_new "$dlg" "&Cancel" 22 7 10 1 $IDC_FORWARDDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE  && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
-        cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" forwarddlg_cancel_clicked
+        cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" canonicalmap_cancel_clicked
         cui_window_create     "$ctrl"
     fi
     cui_return 1
 }
 
 #============================================================================
-# invoke forward dialog due to key or menu selection
+# invoke canonicalmap dialog due to key or menu selection
 #============================================================================
-
 #----------------------------------------------------------------------------
-# forwards_createforwards_dialog
-# Create a new mail alias or forward
+# canonicalmap_create_dialog
+# Create a new canonicalmap entry
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function forwards_createforwards_dialog()
+function canonicalmap_create_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
     local dlg
 
-    forwarddlg_source=""
-    forwarddlg_destination=""
-    forwarddlg_active="1"
+    canonicalmap_source=""
+    canonicalmap_destination=""
+    canonicalmap_active="1"
 
     cui_window_new "$win" 0 0 46 11 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
     if cui_valid_handle $dlg
     then
         cui_window_setcolors "$dlg" "DIALOG"
         cui_window_settext   "$dlg" "Create canonical map entry"
-        cui_window_sethook   "$dlg" "$HOOK_CREATE"  forwarddlg_create_hook
+        cui_window_sethook   "$dlg" "$HOOK_CREATE"  canonicalmap_create_hook
         cui_window_create    "$dlg"
 
         cui_window_modal     "$dlg" && result="$p2"
@@ -579,12 +574,12 @@ function forwards_createforwards_dialog()
             my_exec_sql "$myconn" \
                 "INSERT INTO canonical_maps(domain_id, source, destination, active) \
                  VALUES ('${current_domain_id}', \
-                         '${forwarddlg_source}', \
-                         '${forwarddlg_destination}', \
-                         '${forwarddlg_active}');"
+                         '${canonicalmap_source}', \
+                         '${canonicalmap_destination}', \
+                         '${canonicalmap_active}');"
             if p_sql_success "$p2"
             then
-                selected_entry=${forwarddlg_destination}
+                selected_entry=${canonicalmap_destination}
             else
                 my_server_geterror "$myconn"
                 cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -599,12 +594,12 @@ function forwards_createforwards_dialog()
 
 
 #----------------------------------------------------------------------------
-# forwards_copyforwards_dialog
-# Copy an existing mail alias or forward
+# canonicalmap_copy_dialog
+# Copy an existing canonicalmap entry
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function forwards_copyforwards_dialog()
+function canonicalmap_copy_dialog()
 {
     local win="$1"
     local dlg
@@ -623,28 +618,30 @@ function forwards_copyforwards_dialog()
         if p_valid_index $idx
         then
             cui_listview_gettext "$ctrl" "$idx" "0"
-            forwarddlg_source="$p2"
-            old_source="$forwarddlg_source"
+            canonicalmap_source="$p2"
+            old_source="$canonicalmap_source"
             cui_listview_gettext "$ctrl" "$idx" "1"
-            forwarddlg_destination="$p2"
-            old_destination="$forwarddlg_destination"
+            canonicalmap_destination="$p2"
+            old_destination="$canonicalmap_destination"
             cui_listview_gettext "$ctrl" "$idx" "2"
-            forwarddlg_active="$p2"
+            canonicalmap_active="$p2"
             cui_listview_gettext "$ctrl" "$idx" "3"
-            forwarddlg_id="$p2"
+            canonicalmap_id="$p2"
+
+            [ "$canonicalmap_active" = "x" ] && canonicalmap_active="1" || canonicalmap_active="0"
 
             cui_window_new "$win" 0 0 46 11 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg
             then
                 cui_window_setcolors "$dlg" "DIALOG"
                 cui_window_settext   "$dlg" "Copy canonical maps entry"
-                cui_window_sethook   "$dlg" "$HOOK_CREATE"  forwarddlg_create_hook
+                cui_window_sethook   "$dlg" "$HOOK_CREATE"  canonicalmap_create_hook
                 cui_window_create    "$dlg"
 
                 cui_window_modal     "$dlg" && result="$p2"
                 if  [ "$result" == "$IDOK" ]
                 then
-                    if [ "$old_source" = "$forwarddlg_source" -a "$old_destination" = "$forwarddlg_destination" ]
+                    if [ "$old_source" = "$canonicalmap_source" -a "$old_destination" = "$canonicalmap_destination" ]
                     then
                         cui_message "$win" "Please change source or destination before save entry!" "Error" "$MB_ERROR"
                         cui_window_destroy "$dlg"
@@ -654,12 +651,12 @@ function forwards_copyforwards_dialog()
                         my_exec_sql "$myconn" \
                             "INSERT INTO canonical_maps(domain_id, source, destination, active) \
                                   VALUES ('${current_domain_id}', \
-                                          '${forwarddlg_source}', \
-                                          '${forwarddlg_destination}', \
-                                          '${forwarddlg_active}');"
+                                          '${canonicalmap_source}', \
+                                          '${canonicalmap_destination}', \
+                                          '${canonicalmap_active}');"
                         if p_sql_success "$p2"
                         then
-                            selected_entry="$forwarddlg_destination"
+                            selected_entry="$canonicalmap_destination"
                         else
                             my_server_geterror "$myconn"
                             cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -679,12 +676,12 @@ function forwards_copyforwards_dialog()
 }
 
 #----------------------------------------------------------------------------
-# forwards_editforwards_dialog
-# Modify an existing mail alias or forward
+# canonicalmap_edit_dialog
+# Modify an existing canonicalmap entry
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function forwards_editforwards_dialog()
+function canonicalmap_edit_dialog()
 {
     local win="$1"
     local dlg
@@ -701,20 +698,22 @@ function forwards_editforwards_dialog()
         if p_valid_index $idx
         then
             cui_listview_gettext "$ctrl" "$idx" "0"
-            forwarddlg_source="$p2"
+            canonicalmap_source="$p2"
             cui_listview_gettext "$ctrl" "$idx" "1"
-            forwarddlg_destination="$p2"
+            canonicalmap_destination="$p2"
             cui_listview_gettext "$ctrl" "$idx" "2"
-            forwarddlg_active="$p2"
+            canonicalmap_active="$p2"
             cui_listview_gettext "$ctrl" "$idx" "3"
-            forwarddlg_id="$p2"
+            canonicalmap_id="$p2"
+
+            [ "$canonicalmap_active" = "x" ] && canonicalmap_active="1" || canonicalmap_active="0"
 
             cui_window_new "$win" 0 0 46 11 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg
             then
                 cui_window_setcolors "$dlg" "DIALOG"
                 cui_window_settext   "$dlg" "Edit canonical maps entry"
-                cui_window_sethook   "$dlg" "$HOOK_CREATE"  forwarddlg_create_hook
+                cui_window_sethook   "$dlg" "$HOOK_CREATE"  canonicalmap_create_hook
                 cui_window_create    "$dlg"
 
                 cui_window_modal     "$dlg" && result="$p2"
@@ -724,10 +723,10 @@ function forwards_editforwards_dialog()
 
                     my_exec_sql "$myconn" \
                             "UPDATE canonical_maps \
-                                SET source='${forwarddlg_source}', \
-                                    destination= '${forwarddlg_destination}', \
-                                    active='${forwarddlg_active}' \
-                              WHERE domain_id = ${current_domain_id} AND id = $forwarddlg_id"
+                                SET source='${canonicalmap_source}', \
+                                    destination= '${canonicalmap_destination}', \
+                                    active='${canonicalmap_active}' \
+                              WHERE domain_id = ${current_domain_id} AND id = $canonicalmap_id"
 
                     if p_sql_success "$p2"
                     then
@@ -749,12 +748,12 @@ function forwards_editforwards_dialog()
 }
 
 #----------------------------------------------------------------------------
-# forwards_deletforward_dialog
-# Delete an existing mail alias or forward
+# canonicalmap_delete_dialog
+# Delete an existing canonicalmap entry
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function forwards_deletforward_dialog()
+function canonicalmap_delete_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
@@ -770,18 +769,18 @@ function forwards_deletforward_dialog()
         if p_valid_index $idx
         then
             cui_listview_gettext "$ctrl" "$idx" "0"
-            forwarddlg_source="$p2"
+            canonicalmap_source="$p2"
             cui_listview_gettext "$ctrl" "$idx" "1"
-            forwarddlg_destination="$p2"
+            canonicalmap_destination="$p2"
             cui_listview_gettext "$ctrl" "$idx" "3"
-            forwarddlg_id="$p2"
+            canonicalmap_id="$p2"
 
-            cui_message "$win" "Really delete \"$forwarddlg_source\" -> \"$forwarddlg_destination\" ?" "Question" "$MB_YESNO"
+            cui_message "$win" "Really delete \"$canonicalmap_source\" -> \"$canonicalmap_destination\" ?" "Question" "$MB_YESNO"
             if [ "$p2" == "$IDYES" ]
             then
 
                 my_exec_sql "$myconn" \
-                    "DELETE FROM canonical_maps WHERE id = ${forwarddlg_id};"
+                    "DELETE FROM canonical_maps WHERE id = ${canonicalmap_id};"
                 if p_sql_success "$p2"
                 then
                     result="$IDOK"
@@ -802,7 +801,6 @@ function forwards_deletforward_dialog()
 #============================================================================
 # listview callbacks
 #============================================================================
-
 #----------------------------------------------------------------------------
 # listview_clicked_hook
 # listitem has been clicked
@@ -848,28 +846,28 @@ function listview_clicked_hook()
             case $item in
             1)
                 cui_window_destroy  "$menu"
-                if forwards_editforwards_dialog $win
+                if canonicalmap_edit_dialog $win
                 then
                      load_data "$win"
                 fi
                 ;;
             2)
                 cui_window_destroy  "$menu"
-                if forwards_deletforward_dialog $win
+                if canonicalmap_delete_dialog $win
                 then
                     load_data "$win"
                 fi
                 ;;
             3)
                 cui_window_destroy  "$menu"
-                if forwards_createforwards_dialog $win
+                if canonicalmap_create_dialog $win
                 then
                     load_data "$win"
                 fi
                 ;;
             4)
                 cui_window_destroy  "$menu"
-                if forwards_copyforwards_dialog $win
+                if canonicalmap_copy_dialog $win
                 then
                     load_data "$win"
                 fi
@@ -1006,7 +1004,7 @@ function mainwin_init_hook()
         my_server_isconnected "$myconn"
         if p_sql_success "$p2"
         then
-            forwarddlg_id=0
+            canonicalmap_id=0
             selected_entry=""
             select_domain "$win"
 
@@ -1073,25 +1071,25 @@ function mainwin_key_hook()
         fi
         ;;
     "$KEY_F4")
-        if forwards_editforwards_dialog $win
+        if canonicalmap_edit_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F5")
-        if forwards_copyforwards_dialog $win
+        if canonicalmap_copy_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F7")
-        if forwards_createforwards_dialog $win
+        if canonicalmap_create_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F8")
-        if forwards_deletforward_dialog $win
+        if canonicalmap_delete_dialog $win
         then
             load_data "$win"
         fi

@@ -60,7 +60,6 @@ fi
 #============================================================================
 # helper functions
 #============================================================================
-
 #----------------------------------------------------------------------------
 # check if is a valid list index
 #----------------------------------------------------------------------------
@@ -103,24 +102,25 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT a.loginname,a.servername,a.recipient,a.options,a.prot,a.active,b.email,a.id \
-                 FROM   fetchmail AS a LEFT JOIN view_users AS b ON a.ownerid=b.id \
-                 ORDER BY a.servername,a.loginname;" && myres="$p2"
+                "SELECT a.loginname, a.servername, a.recipient, a.options, \
+                   a.prot, ELT(a.active +1, ' ', 'x'), b.email, a.id \
+                 FROM fetchmail AS a LEFT JOIN view_users AS b ON a.ownerid=b.id \
+                 ORDER BY a.servername, a.loginname" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT a.loginname,a.servername,a.recipient,a.options,a.prot,a.active,b.email,a.id \
-                 FROM   fetchmail AS a LEFT JOIN view_users AS b ON a.ownerid=b.id \
-                 WHERE  a.recipient REGEXP '$keyword' \
-                 ORDER BY a.servername,a.loginname;" && myres="$p2"
+                "SELECT a.loginname, a.servername, a.recipient, a.options, \
+                   a.prot, ELT(a.active +1, ' ', 'x'), b.email, a.id \
+                 FROM fetchmail AS a LEFT JOIN view_users AS b ON a.ownerid=b.id \
+                 WHERE a.recipient REGEXP '$keyword' \
+                 ORDER BY a.servername, a.loginname" && myres="$p2"
         fi
 
         if cui_valid_handle "$myres"
         then
-
             my_result_status "$myres"
             if [ "$p2" == "$SQL_DATA_READY" ]
             then
-                my_result_tolist "$myres" "$ctrl" "0" "$selected_entry"
+                my_result_tolist "$myres" "$ctrl" "7" "$selected_entry"
             else
                 my_server_geterror "$myconn"
                 cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -188,7 +188,6 @@ function resize_windows()
 #============================================================================
 # data input dialog
 #============================================================================
-
 #----------------------------------------------------------------------------
 # inputdlg_ok_clicked
 # Ok button clicked hook
@@ -268,9 +267,8 @@ function inputdlg_create_hook()
 
 
 #============================================================================
-# fetchmail edit/create dialog
+# edit/create dialog
 #============================================================================
-
 #----------------------------------------------------------------------------
 # fetchmaildlg_ok_clicked
 # Ok button clicked hook
@@ -290,46 +288,40 @@ function fetchmaildlg_ok_clicked()
         cui_edit_gettext "$ctrl"
         fetchmaildlg_server="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_FETCHMAILDLG_EDLOGIN" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         fetchmaildlg_login="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_FETCHMAILDLG_EDPASSWD1" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         fetchmaildlg_passwd1="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_FETCHMAILDLG_EDPASSWD2" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         fetchmaildlg_passwd2="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_FETCHMAILDLG_EDRECIPIENT" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         fetchmaildlg_recipient="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_FETCHMAILDLG_EDOPTIONS" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_edit_gettext "$ctrl"
         fetchmaildlg_options="$p2"
     fi
-
     cui_window_getctrl "$win" "$IDC_FETCHMAILDLG_CHKACTIVE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
-        cui_checkbox_getcheck "$ctrl" && fetchmaildlg_active="$p2"
+        cui_checkbox_getcheck "$ctrl" && dlgdata_active="$p2"
     fi
 
     if [ -z "$fetchmaildlg_server" ]
@@ -339,7 +331,6 @@ function fetchmaildlg_ok_clicked()
         cui_return 1
         return
     fi
-
     if [ -z "$fetchmaildlg_login" ]
     then
         cui_message "$win" "No login name given! Please enter a valid name." \
@@ -347,7 +338,6 @@ function fetchmaildlg_ok_clicked()
         cui_return 1
         return
     fi
-
     if [ -z "$fetchmaildlg_passwd1" ]
     then
         cui_message "$win" "Empty password supplied! Please enter a valid password." \
@@ -355,7 +345,6 @@ function fetchmaildlg_ok_clicked()
         cui_return 1
         return
     fi
-
     if [ "$fetchmaildlg_passwd1" != "$fetchmaildlg_passwd2" ]
     then
         cui_message "$win" "Passwords do not match! Please reenter passwords." \
@@ -363,7 +352,6 @@ function fetchmaildlg_ok_clicked()
         cui_return 1
         return
     fi
-
     if [ -z "$fetchmaildlg_recipient" ]
     then
         cui_message "$win" "No recipient given! Please enter a valid recipient address." \
@@ -405,27 +393,22 @@ function fetchmaildlg_create_hook()
     then
         cui_window_create     "$p2"
     fi
-
     if cui_label_new "$dlg" "Loginname:" 2 3 14 1 $IDC_FETCHMAILDLG_LABEL2 $CWS_NONE $CWS_NONE
     then
         cui_window_create     "$p2"
     fi
-
     if cui_label_new "$dlg" "Password:" 2 5 14 1 $IDC_FETCHMAILDLG_LABEL3 $CWS_NONE $CWS_NONE
     then
         cui_window_create     "$p2"
     fi
-
     if cui_label_new "$dlg" "Retype passwd:" 2 7 14 1 $IDC_FETCHMAILDLG_LABEL4 $CWS_NONE $CWS_NONE
     then
         cui_window_create     "$p2"
     fi
-
     if cui_label_new "$dlg" "Recipient:" 2 9 14 1 $IDC_FETCHMAILDLG_LABEL5 $CWS_NONE $CWS_NONE
     then
         cui_window_create     "$p2"
     fi
-
     if cui_label_new "$dlg" "Options:" 2 11 14 1 $IDC_FETCHMAILDLG_LABEL6 $CWS_NONE $CWS_NONE
     then
         cui_window_create     "$p2"
@@ -437,47 +420,41 @@ function fetchmaildlg_create_hook()
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$fetchmaildlg_server"
     fi
-
     cui_edit_new "$dlg" "" 17 3 20 1 255 $IDC_FETCHMAILDLG_EDLOGIN $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$fetchmaildlg_login"
     fi
-
     cui_edit_new "$dlg" "" 17 5 20 1 255 $IDC_FETCHMAILDLG_EDPASSWD1 $EF_PASSWORD $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$fetchmaildlg_passwd1"
     fi
-
     cui_edit_new "$dlg" "" 17 7 20 1 255 $IDC_FETCHMAILDLG_EDPASSWD2 $EF_PASSWORD $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$fetchmaildlg_passwd2"
     fi
-
     cui_edit_new "$dlg" "" 17 9 20 1 255 $IDC_FETCHMAILDLG_EDRECIPIENT $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$fetchmaildlg_recipient"
     fi
-
     cui_edit_new "$dlg" "" 17 11 20 1 255 $IDC_FETCHMAILDLG_EDOPTIONS $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
         cui_edit_settext      "$ctrl" "$fetchmaildlg_options"
     fi
-
     cui_checkbox_new "$dlg" "Account is &active" 13 13 20 1 $IDC_FETCHMAILDLG_CHKACTIVE $CWS_NONE $CWS_NONE && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl" 
-        cui_checkbox_setcheck "$ctrl" "$fetchmaildlg_active"
+        cui_checkbox_setcheck "$ctrl" "$dlgdata_active"
     fi
 
     cui_button_new "$dlg" "&OK" 9 15 10 1 $IDC_FETCHMAILDLG_BUTOK $CWS_DEFOK $CWS_NONE  && ctrl="$p2"
@@ -486,7 +463,6 @@ function fetchmaildlg_create_hook()
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" fetchmaildlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
-
     cui_button_new "$dlg" "&Cancel" 20 15 10 1 $IDC_FETCHMAILDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE  && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
@@ -497,23 +473,21 @@ function fetchmaildlg_create_hook()
     cui_return 1
 }
 
-
 #============================================================================
-# invoke fetchmail dialog due to key or menu selection
+# invoke dialog due to key or menu selection
 #============================================================================
-
 #----------------------------------------------------------------------------
-# fetchmails_createfetchmail_dialog
+# fetchmails_create_dialog
 # Create a new mail fetchmail
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function fetchmails_createfetchmail_dialog()
+function fetchmails_create_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
     local dlg
-    local myres;
+    local myres
 
     fetchmaildlg_server=""
     fetchmaildlg_login=""
@@ -521,7 +495,7 @@ function fetchmails_createfetchmail_dialog()
     fetchmaildlg_passwd2=""
     fetchmaildlg_recipient=""
     fetchmaildlg_options="keep"
-    fetchmaildlg_active="1"
+    dlgdata_active="1"
 
     cui_window_new "$win" 0 0 42 18 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
     if cui_valid_handle $dlg
@@ -544,7 +518,7 @@ function fetchmails_createfetchmail_dialog()
                          AES_ENCRYPT('${fetchmaildlg_passwd1}','${VMAIL_SQL_ENCRYPT_KEY}'), \
                          '${fetchmaildlg_recipient}', \
                          '${fetchmaildlg_options}', \
-                         '${fetchmaildlg_active}');"
+                         '${dlgdata_active}');"
             if p_sql_success "$p2"
             then
                 my_query_sql "$myconn" \
@@ -585,19 +559,19 @@ function fetchmails_createfetchmail_dialog()
 }
 
 #----------------------------------------------------------------------------
-# fetchmails_editfetchmail_dialog
+# fetchmails_edit_dialog
 # Modify a mail fetchmail
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function fetchmails_editfetchmail_dialog()
+function fetchmails_edit_dialog()
 {
     local win="$1"
     local dlg
     local result="$IDCANCEL"
     local ctrl
     local idx
-    local entryname
+    local edit_id
 
     cui_window_getctrl "$win" "$IDC_LISTVIEW" && ctrl="$p2"
     if cui_valid_handle $ctrl
@@ -610,11 +584,12 @@ function fetchmails_editfetchmail_dialog()
             cui_listview_gettext "$ctrl" "$idx" "1" && fetchmaildlg_server="$p2"
             cui_listview_gettext "$ctrl" "$idx" "2" && fetchmaildlg_recipient="$p2"
             cui_listview_gettext "$ctrl" "$idx" "3" && fetchmaildlg_options="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "5" && fetchmaildlg_active="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "7" && entryname="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "5" && dlgdata_active="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "7" && edit_id="$p2"
 
             fetchmaildlg_passwd1="xxxxxxxxxxxxxxxx"
             fetchmaildlg_passwd2="xxxxxxxxxxxxxxxx"
+            [ "$dlgdata_active" = "x" ] && dlgdata_active="1" || dlgdata_active="0"
 
             cui_window_new "$win" 0 0 42 18 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg
@@ -638,8 +613,8 @@ function fetchmails_editfetchmail_dialog()
                                     recipient='${fetchmaildlg_recipient}', \
                                     options='${fetchmaildlg_options}', \
                                     password=AES_ENCRYPT('${fetchmaildlg_passwd1}','${VMAIL_SQL_ENCRYPT_KEY}'), \
-                                    active='${fetchmaildlg_active}' \
-                              WHERE id='$entryname';"
+                                    active='${dlgdata_active}' \
+                              WHERE id='${edit_id}';"
                     else
                         my_exec_sql "$myconn" \
                             "UPDATE fetchmail \
@@ -647,13 +622,13 @@ function fetchmails_editfetchmail_dialog()
                                     servername='${fetchmaildlg_server}', \
                                     recipient='${fetchmaildlg_recipient}', \
                                     options='${fetchmaildlg_options}', \
-                                    active='${fetchmaildlg_active}' \
-                              WHERE id='$entryname';"
+                                    active='${dlgdata_active}' \
+                              WHERE id='${edit_id}';"
                     fi
 
                     if p_sql_success "$p2"
                     then
-                        selected_entry=${entryname}
+                        selected_entry="$edit_id"
                     else
                         my_server_geterror "$myconn"
                         cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -672,12 +647,12 @@ function fetchmails_editfetchmail_dialog()
 }
 
 #----------------------------------------------------------------------------
-# fetchmails_deletefetchmail_dialog
+# fetchmails_delete_dialog
 # Delete a mail fetchmail
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function fetchmails_deletefetchmail_dialog()
+function fetchmails_delete_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
@@ -719,11 +694,9 @@ function fetchmails_deletefetchmail_dialog()
     return "$?"
 }
 
-
 #============================================================================
 # select menu when hitting "ENTER" or "SPACE" on the list
 #============================================================================
-
 #----------------------------------------------------------------------------
 # menu_clicked_hook
 # expects: $p2 : window handle
@@ -769,11 +742,9 @@ function menu_postkey_hook()
    fi
 }
 
-
 #============================================================================
 # listview callbacks
 #============================================================================
-
 #----------------------------------------------------------------------------
 # listview_clicked_hook
 # listitem has been clicked
@@ -816,21 +787,21 @@ function listview_clicked_hook()
             case $item in
             1)
                 cui_window_destroy  "$menu"
-                if fetchmails_editfetchmail_dialog $win
+                if fetchmails_edit_dialog $win
                 then
                      load_data "$win"
                 fi
                 ;;
             2)
                 cui_window_destroy  "$menu"
-                if fetchmails_deletefetchmail_dialog $win
+                if fetchmails_delete_dialog $win
                 then
                     load_data "$win"
                 fi
                 ;;
             3)
                 cui_window_destroy  "$menu"
-                if fetchmails_createfetchmail_dialog $win
+                if fetchmails_create_dialog $win
                 then
                     load_data "$win"
                 fi
@@ -897,7 +868,6 @@ function listview_postkey_hook()
 #============================================================================
 # main window hooks
 #============================================================================
-
 #----------------------------------------------------------------------------
 # mainwin_create_hook (for creation of child windows)
 #    $p2 --> mainwin window handle
@@ -1021,19 +991,19 @@ function mainwin_key_hook()
         fi
         ;;
     "$KEY_F4")
-        if fetchmails_editfetchmail_dialog $win
+        if fetchmails_edit_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F7")
-        if fetchmails_createfetchmail_dialog $win
+        if fetchmails_create_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F8")
-        if fetchmails_deletefetchmail_dialog $win
+        if fetchmails_delete_dialog $win
         then
             load_data "$win"
         fi

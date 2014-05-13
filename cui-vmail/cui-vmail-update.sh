@@ -114,7 +114,6 @@ packages_name='vmail'
     #-----------------------------------------------------------------------
 
     printvar "START_POP3IMAP" "Start POP3 and IMAP"
-    printvar "POP3IMAP_TLS" "Activate POP3S and IMAPS (TLS and SSL)"
 
     #-----------------------------------------------------------------------
     printgroup "Fetchmail settings"

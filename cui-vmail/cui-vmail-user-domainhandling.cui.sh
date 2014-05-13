@@ -53,7 +53,6 @@ fi
 #============================================================================
 # helper functions
 #============================================================================
-
 #----------------------------------------------------------------------------
 # check if is a valid list index
 #----------------------------------------------------------------------------
@@ -96,12 +95,12 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT    name, transport, active \
+                "SELECT    name, transport, ELT(active +1, ' ', 'x') \
                  FROM      virtual_domains \
                  ORDER BY  name, transport;" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT    name, transport, active \
+                "SELECT    name, transport, ELT(active +1, ' ', 'x') \
                  FROM      virtual_domains \
                  WHERE     name REGEXP '$keyword' 
                  ORDER BY  name, transport;" && myres="$p2"
@@ -414,8 +413,6 @@ function domaindlg_create_hook()
         cui_combobox_add      "$ctrl" "smtp:"
         cui_combobox_add      "$ctrl" "relay:"
         cui_combobox_add      "$ctrl" "uucp:"
-        cui_combobox_add      "$ctrl" "fax:"
-        cui_combobox_add      "$ctrl" "sms:"
 
         cui_combobox_callback "$ctrl" "$COMBOBOX_CHANGED" "$dlg" "domaindlg_transport_changed"
 
@@ -553,10 +550,8 @@ function domains_editdomain_dialog()
             domaindlg_transport="${domaindlg_transport%%:*}:"
             entryname="$domaindlg_domainname"
 
-            if [ "$domaindlg_transport" == "pop3imap:" ]
-            then
-                domaindlg_address="-"
-            fi
+            [ "$domaindlg_transport" = "pop3imap:" ] && domaindlg_address="-"
+            [ "$domaindlg_active" = "x" ] && domaindlg_active="1" || domaindlg_active="0"
 
             cui_window_new "$win" 0 0 42 12 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg

@@ -41,11 +41,6 @@ Nicht im Paket enthalten, aber empfohlen werden die Pakete:
 * MySQL - Der Datenbankserver kann auch auf einem anderen Computer
   installiert sein.
 * Clamav - der Virenscanner.
-* Greylist - Der optional installiebare Greylisting Daemon soll das 
-  Spamunwesen etwas eindaemmen. Da etliche Spambots aber das periodische 
-  Versenden von Nachrichten beherrschen, wird das Tool aber immer weniger
-  sinnvoll. Das integrierte Postscreen ist hier eine Alternative.
- 
 
 Installation und Konfiguration
 ------------------------------
@@ -375,11 +370,6 @@ START_POP3IMAP
 
     Gueltige Werte: yes,no
 
-POP3IMAP_TLS
-    Aktiviert die Protokolle POP3S and IMAP3 und die Transportsicherheit 
-    fuer das Abholen von E-Maildaten.
-
-    Gueltige Werte: yes,no
 
 
 START_FETCHMAIL

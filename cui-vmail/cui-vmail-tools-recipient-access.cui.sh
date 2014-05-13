@@ -54,11 +54,9 @@ fi
 #============================================================================
 # helper functions
 #============================================================================
-
 #----------------------------------------------------------------------------
 # check if is a valid list index
 #----------------------------------------------------------------------------
-
 function p_valid_index()
 {
     if [ "$1" != "" -a "$1" -ge "0" ]
@@ -71,7 +69,6 @@ function p_valid_index()
 #----------------------------------------------------------------------------
 # check if SQL command was successful
 #----------------------------------------------------------------------------
-
 function p_sql_success()
 {
     if [ "$1" != "" -a "$1" != "0" ]
@@ -84,7 +81,6 @@ function p_sql_success()
 #----------------------------------------------------------------------------
 # read data from a MySQL database and copy result to the listview window
 #----------------------------------------------------------------------------
-
 function load_data()
 {
     local win="$1"
@@ -100,15 +96,15 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT source,LEFT(response,50),active,LEFT(note,50),id \
+                "SELECT source, LEFT(response,50), ELT(active +1, ' ', 'x'), LEFT(note,50),id \
                  FROM access \
-                 WHERE type='recipient' ORDER BY source;" && myres="$p2"
+                 WHERE type='recipient' ORDER BY source" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT source,LEFT(response,50),active,LEFT(note,50),id \
+                "SELECT source, LEFT(response,50), ELT(active +1, ' ', 'x'), LEFT(note,50),id \
                  FROM access \
                  WHERE type='recipient' AND source REGEXP '$keyword' \
-                 ORDER BY source;" && myres="$p2"
+                 ORDER BY source" && myres="$p2"
         fi
 
         if cui_valid_handle "$myres"
@@ -183,7 +179,6 @@ function resize_windows()
 #============================================================================
 # data input dialog
 #============================================================================
-
 #----------------------------------------------------------------------------
 # inputdlg_ok_clicked
 # Ok button clicked hook
@@ -261,9 +256,8 @@ function inputdlg_create_hook()
 }
 
 #============================================================================
-# fetchmail edit/create dialog
+# recipient edit/create dialog
 #============================================================================
-
 #----------------------------------------------------------------------------
 # recipientdlg_ok_clicked
 # Ok button clicked hook
@@ -408,16 +402,15 @@ function recipientdlg_create_hook()
 }
 
 #============================================================================
-# invoke fetchmail dialog due to key or menu selection
+# invoke reciepient dialog due to key or menu selection
 #============================================================================
-
 #----------------------------------------------------------------------------
-# recipient_createrecipient_dialog
-# Create a new mail fetchmail
+# recipient_create_dialog
+# Create a new recipient
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function recipient_createrecipient_dialog()
+function recipient_create_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
@@ -466,12 +459,12 @@ function recipient_createrecipient_dialog()
 }
 
 #----------------------------------------------------------------------------
-# recipient_editrecipient_dialog
-# Modify a mail fetchmail
+# recipient_edit_dialog
+# Modify a recipient entry
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function recipient_editrecipient_dialog()
+function recipient_edit_dialog()
 {
     local win="$1"
     local dlg
@@ -492,6 +485,7 @@ function recipient_editrecipient_dialog()
             cui_listview_gettext "$ctrl" "$idx" "2" && recipientdlg_active="$p2"
             cui_listview_gettext "$ctrl" "$idx" "3" && recipientdlg_comment="$p2"
             cui_listview_gettext "$ctrl" "$idx" "4" && entryname="$p2"
+            [ "$recipientdlg_active" = "x" ] && recipientdlg_active="1" || recipientdlg_active="0"
 
             cui_window_new "$win" 0 0 42 12 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg
@@ -533,12 +527,12 @@ function recipient_editrecipient_dialog()
 }
 
 #----------------------------------------------------------------------------
-# recipient_deleterecipient_dialog
-# Delete a mail fetchmail
+# recipient_delete_dialog
+# Delete a recipient entry
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function recipient_deleterecipient_dialog()
+function recipient_delete_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
@@ -632,8 +626,7 @@ function menu_postkey_hook()
 #============================================================================
 # listview callbacks
 #============================================================================
-
-#----------------------------------------------------------------------------
+ #----------------------------------------------------------------------------
 # listview_clicked_hook
 # listitem has been clicked
 # expects: $p1 : window handle of parent window
@@ -674,21 +667,21 @@ function listview_clicked_hook()
             case $item in
             1)
                 cui_window_destroy  "$menu"
-                if recipient_editrecipient_dialog $win
+                if recipient_edit_dialog $win
                 then
                      load_data "$win"
                 fi
                 ;;
             2)
                 cui_window_destroy  "$menu"
-                if recipient_deleterecipient_dialog $win
+                if recipient_delete_dialog $win
                 then
                     load_data "$win"
                 fi
                 ;;
             3)
                 cui_window_destroy  "$menu"
-                if recipient_createrecipient_dialog $win
+                if recipient_create_dialog $win
                 then
                     load_data "$win"
                 fi
@@ -902,19 +895,19 @@ function mainwin_key_hook()
         fi
         ;;
     "$KEY_F4")
-        if recipient_editrecipient_dialog $win
+        if recipient_edit_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F7")
-        if recipient_createrecipient_dialog $win
+        if recipient_create_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F8")
-        if recipient_deleterecipient_dialog $win
+        if recipient_delete_dialog $win
         then
             load_data "$win"
         fi

@@ -132,12 +132,12 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT source,INET_NTOA(sourcestart),INET_NTOA(sourceend),LEFT(response,50),active,LEFT(note,50),id \
+                "SELECT source,INET_NTOA(sourcestart),INET_NTOA(sourceend),LEFT(response,50),ELT(active +1, ' ', 'x'),LEFT(note,50),id \
                  FROM access \
                  WHERE type='client' ORDER BY sourcestart, source;" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT source,INET_NTOA(sourcestart),INET_NTOA(sourceend),LEFT(response,50),active,LEFT(note,50),id \
+                "SELECT source,INET_NTOA(sourcestart),INET_NTOA(sourceend),LEFT(response,50),ELT(active +1, ' ', 'x'),LEFT(note,50),id \
                  FROM access \
                  WHERE type='client' AND source REGEXP '$keyword' \
                  ORDER BY sourcestart, source;" && myres="$p2"
@@ -148,7 +148,7 @@ function load_data()
             my_result_status "$myres"
             if [ "$p2" == "$SQL_DATA_READY" ]
             then
-                my_result_tolist "$myres" "$ctrl" "0" "$selected_entry"
+                my_result_tolist "$myres" "$ctrl" "6" "$selected_entry"
             else
                 my_server_geterror "$myconn"
                 cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -212,11 +212,9 @@ function resize_windows()
     fi
 }
 
-
 #============================================================================
 # data input dialog
 #============================================================================
-
 #----------------------------------------------------------------------------
 # inputdlg_ok_clicked
 # Ok button clicked hook
@@ -295,9 +293,8 @@ function inputdlg_create_hook()
 }
 
 #============================================================================
-# fetchmail edit/create dialog
+# edit/create dialog
 #============================================================================
-
 #----------------------------------------------------------------------------
 # clientdlg_ok_clicked
 # Ok button clicked hook
@@ -480,16 +477,15 @@ function clientdlg_create_hook()
 }
 
 #============================================================================
-# invoke fetchmail dialog due to key or menu selection
+# invoke dialog due to key or menu selection
 #============================================================================
-
 #----------------------------------------------------------------------------
-# client_createclient_dialog
-# Create a new mail fetchmail
+# client_create_dialog
+# Create a entry
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function client_createclient_dialog()
+function client_create_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
@@ -534,11 +530,34 @@ function client_createclient_dialog()
                          '${clientdlg_active}');"
             if p_sql_success "$p2"
             then
-                selected_entry="$clientdlg_client"
+                my_query_sql "$myconn" \
+                    "SELECT id FROM access \
+                      WHERE source='${clientdlg_client}' \
+                        AND type='client'" && myres="$p2"
+                if cui_valid_handle "$myres"
+                then
+                    my_result_status "$myres"
+                    if [ "$p2" == "$SQL_DATA_READY" ]
+                    then
+                        my_result_fetch "$myres"
+                        if p_sql_success "$p2"
+                        then
+                            my_result_data "$myres" "0" && selected_entry="$p2"
+                        fi
+                    else
+                        my_server_geterror "$myconn"
+                        cui_message "$win" "$p2" "Error" "$MB_ERROR"
+                    fi
+                    my_result_free "$myres"
+                else
+                    my_server_geterror "$myconn"
+                    cui_message "$win" "$p2" "Error" "$MB_ERROR"
+                fi
             else
                 my_server_geterror "$myconn"
                 cui_message "$win" "$p2" "Error" "$MB_ERROR"
             fi
+
         else
             cui_window_destroy "$dlg"
         fi
@@ -549,12 +568,12 @@ function client_createclient_dialog()
 }
 
 #----------------------------------------------------------------------------
-# client_editclient_dialog
-# Modify a mail fetchmail
+# client_edit_dialog
+# Modify a entry
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function client_editclient_dialog()
+function client_edit_dialog()
 {
     local win="$1"
     local dlg
@@ -582,6 +601,7 @@ function client_editclient_dialog()
 
             [ "$clientdlg_ip_start" = "0.0.0.0" ] && clientdlg_ip_start=""
             [ "$clientdlg_ip_end" = "0.0.0.0" ] && clientdlg_ip_end=""
+            [ "$clientdlg_active" = "x" ] && clientdlg_active="1" || clientdlg_active="0"
 
             cui_window_new "$win" 0 0 44 16 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg
@@ -614,7 +634,7 @@ function client_editclient_dialog()
 
                     if p_sql_success "$p2"
                     then
-                        selected_entry=${clientdlg_client}
+                        selected_entry="$entryid"
                     else
                         my_server_geterror "$myconn"
                         cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -633,12 +653,12 @@ function client_editclient_dialog()
 }
 
 #----------------------------------------------------------------------------
-# client_deleteclient_dialog
-# Delete a mail fetchmail
+# client_delete_dialog
+# Delete a entry
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function client_deleteclient_dialog()
+function client_delete_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
@@ -682,7 +702,6 @@ function client_deleteclient_dialog()
 #============================================================================
 # select menu when hitting "ENTER" or "SPACE" on the list
 #============================================================================
-
 #----------------------------------------------------------------------------
 # menu_clicked_hook
 # expects: $p2 : window handle
@@ -728,11 +747,9 @@ function menu_postkey_hook()
    fi
 }
 
-
 #============================================================================
 # listview callbacks
 #============================================================================
-
 #----------------------------------------------------------------------------
 # listview_clicked_hook
 # listitem has been clicked
@@ -775,21 +792,21 @@ function listview_clicked_hook()
             case $item in
             1)
                 cui_window_destroy  "$menu"
-                if client_editclient_dialog $win
+                if client_edit_dialog $win
                 then
                      load_data "$win"
                 fi
                 ;;
             2)
                 cui_window_destroy  "$menu"
-                if client_deleteclient_dialog $win
+                if client_delete_dialog $win
                 then
                     load_data "$win"
                 fi
                 ;;
             3)
                 cui_window_destroy  "$menu"
-                if client_createclient_dialog $win
+                if client_create_dialog $win
                 then
                     load_data "$win"
                 fi
@@ -857,7 +874,6 @@ function listview_postkey_hook()
 #============================================================================
 # main window hooks
 #============================================================================
-
 #----------------------------------------------------------------------------
 # mainwin_create_hook (for creation of child windows)
 #    $p2 --> mainwin window handle
@@ -1010,19 +1026,19 @@ function mainwin_key_hook()
         fi
         ;;
     "$KEY_F4")
-        if client_editclient_dialog $win
+        if client_edit_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F7")
-        if client_createclient_dialog $win
+        if client_create_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F8")
-        if client_deleteclient_dialog $win
+        if client_delete_dialog $win
         then
             load_data "$win"
         fi

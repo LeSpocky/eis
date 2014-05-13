@@ -57,7 +57,6 @@ POSTFIX_AV_VIRUS_INFO        START_VMAIL       -               EMAILADDR
 POSTFIX_AV_QUARANTINE        START_VMAIL       -               YESNO
 
 START_POP3IMAP               START_VMAIL       -               YESNO
-POP3IMAP_TLS                 START_POP3IMAP    -               YESNO
 
 START_FETCHMAIL              START_VMAIL       -               YESNO
 FETCHMAIL_CRON_SCHEDULE      START_FETCHMAIL   -               CRONTAB

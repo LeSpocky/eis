@@ -24,11 +24,9 @@ IDC_FORWARDDLG_BUTCANCEL='11'    # dlg Cancel button ID
 IDC_FORWARDDLG_LABEL1='12'       # dlg label ID
 IDC_FORWARDDLG_LABEL2='13'       # dlg label ID
 IDC_FORWARDDLG_LABEL3='14'       # dlg label ID
-IDC_FORWARDDLG_LABEL4='15'       # dlg label ID
-IDC_FORWARDDLG_LABEL5='16'       # dlg label ID
-IDC_FORWARDDLG_LABEL6='17'       # dlg label ID
 IDC_FORWARDDLG_SOURCE='20'       # dlg edit ID
 IDC_FORWARDDLG_DESTINATION='21'  # dlg edit ID
+IDC_FORWARDDLG_EDANTISPAM='22'   # dlg edit ID
 IDC_FORWARDDLG_CHKACTIVE='26'    # dlg edit ID
 
 IDC_INPUTDLG_BUTOK='10'          # dlg OK button ID
@@ -61,7 +59,6 @@ fi
 #============================================================================
 # helper functions
 #============================================================================
-
 #----------------------------------------------------------------------------
 # check if is a valid list index
 #----------------------------------------------------------------------------
@@ -104,13 +101,13 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT source, destination, active, id \
+                "SELECT source, destination, mailprotect, ELT(active +1, ' ', 'x'), id \
                  FROM virtual_aliases \
                  WHERE  domain_id = ${current_domain_id} \
                  ORDER BY source, destination" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT source, destination, active, id \
+                "SELECT source, destination, mailprotect, ELT(active +1, ' ', 'x'), id \
                  FROM   virtual_aliases \
                  WHERE  domain_id = ${current_domain_id} AND destination REGEXP '$keyword' \
                  ORDER BY source, destination" && myres="$p2"
@@ -121,12 +118,7 @@ function load_data()
             my_result_status "$myres"
             if [ "$p2" == "$SQL_DATA_READY" ]
             then
-                if [ -n "$selected_entry" ]
-                then
-                    my_result_tolist "$myres" "$ctrl" "1" "$selected_entry"
-                else
-                    my_result_tolist "$myres" "$ctrl" "3" "$forwarddlg_id"
-                fi 
+                my_result_tolist "$myres" "$ctrl" "4" "$selected_entry"
             else
                 my_server_geterror "$myconn"
                 cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -194,7 +186,6 @@ function resize_windows()
 #============================================================================
 # select menu hooks
 #============================================================================
-
 #----------------------------------------------------------------------------
 # menu_clicked_hook
 # expects: $p2 : window handle
@@ -243,7 +234,6 @@ function menu_postkey_hook()
 #============================================================================
 # mail domain selection menu
 #============================================================================
-
 #----------------------------------------------------------------------------
 # resize menu depending on number of entries
 # $1 --> appl. window
@@ -341,7 +331,6 @@ function select_domain()
 #============================================================================
 # data input dialog
 #============================================================================
-
 #----------------------------------------------------------------------------
 # inputdlg_ok_clicked
 # Ok button clicked hook
@@ -419,8 +408,25 @@ function inputdlg_create_hook()
 }
 
 #============================================================================
-# forwarding edit/create dialog
+# edit/create dialog
 #============================================================================
+# forwarddlg_mailprotect_changed
+# Antispam changed hook
+# expects: $1 : window handle of dialog window
+#          $2 : combobox control id
+# returns: 1  : event handled
+#----------------------------------------------------------------------------
+function forwarddlg_mailprotect_changed()
+{
+    local win="$p2"
+    local ctrl="$p3"
+    local edit
+    local idx
+
+    cui_combobox_getsel "$ctrl" && idx="$p2"
+    cui_window_getctrl  "$win" "$IDC_FORWARDDLG_EDANTISPAM" && edit="$p2"
+    cui_return 1
+}
 
 #----------------------------------------------------------------------------
 # forwarddlg_ok_clicked
@@ -448,7 +454,12 @@ function forwarddlg_ok_clicked()
         cui_edit_gettext "$ctrl"
         forwarddlg_destination="$p2"
     fi
-
+    cui_window_getctrl "$win" "$IDC_FORWARDDLG_EDANTISPAM" && ctrl="$p2"
+    if cui_valid_handle $ctrl
+    then
+        cui_combobox_getsel "$ctrl"        && idx="$p2"
+        cui_combobox_get    "$ctrl" "$idx" && forwarddlg_mailprotect="${p2:0:1}"
+    fi
     cui_window_getctrl "$win" "$IDC_FORWARDDLG_CHKACTIVE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
@@ -496,8 +507,11 @@ function forwarddlg_create_hook()
     then
         cui_window_create     "$p2"
     fi
-
     if cui_label_new "$dlg" "Destination:" 2 3 14 1 "$IDC_FORWARDDLG_LABEL2" "$CWS_NONE" "$CWS_NONE"
+    then
+        cui_window_create     "$p2"
+    fi
+    if cui_label_new "$dlg" "Spam protect:" 2 5 14 1 "$IDC_FORWARDDLG_LABEL3" "$CWS_NONE" "$CWS_NONE"
     then
         cui_window_create     "$p2"
     fi
@@ -508,29 +522,67 @@ function forwarddlg_create_hook()
         cui_window_create     "$ctrl"
         cui_edit_settext      "$ctrl" "$forwarddlg_source"
     fi
-
     cui_edit_new "$dlg" "" 17 3 25 1 255 "$IDC_FORWARDDLG_DESTINATION" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl"
         cui_edit_settext      "$ctrl" "$forwarddlg_destination"
     fi
-
-    cui_checkbox_new "$dlg" "Entry is &active" 17 5 22 1 "$IDC_FORWARDDLG_CHKACTIVE" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
+    cui_combobox_new "$dlg" 17 5 25 8 "$IDC_FORWARDDLG_EDANTISPAM" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
+    if cui_valid_handle "$ctrl"
+    then
+        cui_window_create     "$ctrl"
+        cui_combobox_add      "$ctrl" "0 disabled"
+        cui_combobox_add      "$ctrl" "1 block unkn. client"
+        cui_combobox_add      "$ctrl" "2 block dyn. IP"
+        cui_combobox_add      "$ctrl" "3 block 1 + 2"
+        cui_combobox_add      "$ctrl" "4 greylisting"
+        cui_combobox_add      "$ctrl" "5 block 1+2+greylist"
+        cui_combobox_add      "$ctrl" "9 internal mail only"
+        cui_combobox_callback "$ctrl" "$COMBOBOX_CHANGED" "$dlg" "forwarddlg_mailprotect_changed"
+        case "$forwarddlg_mailprotect" in
+            0)
+                cui_combobox_select "$ctrl" "0 disabled"
+                ;;
+            1)
+                cui_combobox_select "$ctrl" "1 block unkn. client"
+                ;;
+            2)
+                cui_combobox_select "$ctrl" "2 block dyn. IP"
+                ;;
+            3)
+                cui_combobox_select "$ctrl" "3 block 1 + 2"
+                ;;
+            4)
+                cui_combobox_select "$ctrl" "4 greylisting"
+                ;;
+            5)
+                cui_combobox_select "$ctrl" "5 block 1+2+greylist"
+                ;;
+            9)
+                cui_combobox_select "$ctrl" "9 internal mail only"
+                ;;
+            *)
+                cui_combobox_add    "$ctrl" "$forwarddlg_mailprotect"
+                cui_combobox_select "$ctrl" "$forwarddlg_mailprotect"
+                ;;
+        esac
+        cui_combobox_getsel   "$ctrl" && idx="$p2"
+    fi
+    cui_checkbox_new "$dlg" "Entry is &active" 17 7 22 1 "$IDC_FORWARDDLG_CHKACTIVE" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_window_create     "$ctrl"
         cui_checkbox_setcheck "$ctrl" "$forwarddlg_active"
     fi
 
-    cui_button_new "$dlg" "&OK" 11 7 10 1 $IDC_FORWARDDLG_BUTOK $CWS_DEFOK $CWS_NONE  && ctrl="$p2"
+    cui_button_new "$dlg" "&OK" 11 9 10 1 $IDC_FORWARDDLG_BUTOK $CWS_DEFOK $CWS_NONE  && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" forwarddlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
-
-    cui_button_new "$dlg" "&Cancel" 22 7 10 1 $IDC_FORWARDDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE  && ctrl="$p2"
+    cui_button_new "$dlg" "&Cancel" 22 9 10 1 $IDC_FORWARDDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE  && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" forwarddlg_cancel_clicked
@@ -542,14 +594,13 @@ function forwarddlg_create_hook()
 #============================================================================
 # invoke forward dialog due to key or menu selection
 #============================================================================
-
 #----------------------------------------------------------------------------
-# forwards_createforwards_dialog
+# forwards_create_dialog
 # Create a new mail alias or forward
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function forwards_createforwards_dialog()
+function forwards_create_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
@@ -557,9 +608,10 @@ function forwards_createforwards_dialog()
 
     forwarddlg_source=""
     forwarddlg_destination=""
+    forwarddlg_mailprotect="0"
     forwarddlg_active="1"
 
-    cui_window_new "$win" 0 0 46 11 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
+    cui_window_new "$win" 0 0 46 13 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
     if cui_valid_handle $dlg
     then
         cui_window_setcolors "$dlg" "DIALOG"
@@ -572,14 +624,38 @@ function forwards_createforwards_dialog()
         then
             cui_window_destroy "$dlg"
             my_exec_sql "$myconn" \
-                "INSERT INTO virtual_aliases(domain_id, source, destination, active) \
+                "INSERT INTO virtual_aliases(domain_id, source, destination, mailprotect, active) \
                  VALUES ('${current_domain_id}', \
                          '${forwarddlg_source}', \
                          '${forwarddlg_destination}', \
+                         '${forwarddlg_mailprotect}', \
                          '${forwarddlg_active}');"
             if p_sql_success "$p2"
             then
-                selected_entry=${forwarddlg_destination}
+                my_query_sql "$myconn" \
+                    "SELECT id FROM virtual_aliases \
+                      WHERE domain_id='${current_domain_id}' \
+                        AND source='${forwarddlg_source}' \
+                        AND destination='${forwarddlg_destination}'" && myres="$p2"
+                if cui_valid_handle "$myres"
+                then
+                    my_result_status "$myres"
+                    if [ "$p2" == "$SQL_DATA_READY" ]
+                    then
+                        my_result_fetch "$myres"
+                        if p_sql_success "$p2"
+                        then
+                            my_result_data "$myres" "0" && selected_entry="$p2"
+                        fi
+                    else
+                        my_server_geterror "$myconn"
+                        cui_message "$win" "$p2" "Error" "$MB_ERROR"
+                    fi
+                    my_result_free "$myres"
+                else
+                    my_server_geterror "$myconn"
+                    cui_message "$win" "$p2" "Error" "$MB_ERROR"
+                fi
             else
                 my_server_geterror "$myconn"
                 cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -594,12 +670,12 @@ function forwards_createforwards_dialog()
 
 
 #----------------------------------------------------------------------------
-# forwards_copyforwards_dialog
+# forwards_copy_dialog
 # Copy an existing mail alias or forward
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function forwards_copyforwards_dialog()
+function forwards_copy_dialog()
 {
     local win="$1"
     local dlg
@@ -623,11 +699,14 @@ function forwards_copyforwards_dialog()
             forwarddlg_destination="$p2"
             old_destination="$forwarddlg_destination"
             cui_listview_gettext "$ctrl" "$idx" "2"
-            forwarddlg_active="$p2"
+            forwarddlg_mailprotect="$p2"
             cui_listview_gettext "$ctrl" "$idx" "3"
+            forwarddlg_active="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "4"
             forwarddlg_id="$p2"
+            [ "$forwarddlg_active" = "x" ] && forwarddlg_active="1" || forwarddlg_active="0"
 
-            cui_window_new "$win" 0 0 46 11 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
+            cui_window_new "$win" 0 0 46 13 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg
             then
                 cui_window_setcolors "$dlg" "DIALOG"
@@ -642,18 +721,41 @@ function forwards_copyforwards_dialog()
                     then
                         cui_message "$win" "Please change source or destination before save entry!" "Error" "$MB_ERROR"
                         cui_window_destroy "$dlg"
-
                     else
                         cui_window_destroy "$dlg"
                         my_exec_sql "$myconn" \
-                            "INSERT INTO virtual_aliases(domain_id, source, destination, active) \
+                            "INSERT INTO virtual_aliases(domain_id, source, destination, mailprotect, active) \
                                   VALUES ('${current_domain_id}', \
                                           '${forwarddlg_source}', \
                                           '${forwarddlg_destination}', \
+                                          '${forwarddlg_mailprotect}', \
                                           '${forwarddlg_active}');"
                         if p_sql_success "$p2"
                         then
-                            selected_entry="$forwarddlg_destination"
+                            my_query_sql "$myconn" \
+                                "SELECT id FROM virtual_aliases \
+                                  WHERE domain_id='${current_domain_id}' \
+                                    AND source='${forwarddlg_source}' \
+                                    AND destination='${forwarddlg_destination}'" && myres="$p2"
+                            if cui_valid_handle "$myres"
+                            then
+                                my_result_status "$myres"
+                                if [ "$p2" == "$SQL_DATA_READY" ]
+                                then
+                                    my_result_fetch "$myres"
+                                    if p_sql_success "$p2"
+                                    then
+                                        my_result_data "$myres" "0" && selected_entry="$p2"
+                                    fi
+                                else
+                                    my_server_geterror "$myconn"
+                                    cui_message "$win" "$p2" "Error" "$MB_ERROR"
+                                fi
+                                my_result_free "$myres"
+                            else
+                                my_server_geterror "$myconn"
+                                cui_message "$win" "$p2" "Error" "$MB_ERROR"
+                            fi
                         else
                             my_server_geterror "$myconn"
                             cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -672,12 +774,12 @@ function forwards_copyforwards_dialog()
 }
 
 #----------------------------------------------------------------------------
-# forwards_editforwards_dialog
+# forwards_edit_dialog
 # Modify an existing mail alias or forward
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function forwards_editforwards_dialog()
+function forwards_edit_dialog()
 {
     local win="$1"
     local dlg
@@ -697,11 +799,14 @@ function forwards_editforwards_dialog()
             cui_listview_gettext "$ctrl" "$idx" "1"
             forwarddlg_destination="$p2"
             cui_listview_gettext "$ctrl" "$idx" "2"
-            forwarddlg_active="$p2"
+            forwarddlg_mailprotect="$p2"
             cui_listview_gettext "$ctrl" "$idx" "3"
+            forwarddlg_active="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "4"
             forwarddlg_id="$p2"
+            [ "$forwarddlg_active" = "x" ] && forwarddlg_active="1" || forwarddlg_active="0"
 
-            cui_window_new "$win" 0 0 46 11 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
+            cui_window_new "$win" 0 0 46 13 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg
             then
                 cui_window_setcolors "$dlg" "DIALOG"
@@ -717,13 +822,14 @@ function forwards_editforwards_dialog()
                     my_exec_sql "$myconn" \
                             "UPDATE virtual_aliases \
                                 SET source='${forwarddlg_source}', \
-                                    destination= '${forwarddlg_destination}', \
+                                    destination='${forwarddlg_destination}', \
+                                    mailprotect='${forwarddlg_mailprotect}', \
                                     active='${forwarddlg_active}' \
                               WHERE domain_id = ${current_domain_id} AND id = $forwarddlg_id"
 
                     if p_sql_success "$p2"
                     then
-                        selected_entry=""
+                        selected_entry="$forwarddlg_id"
                     else
                         my_server_geterror "$myconn"
                         cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -741,12 +847,12 @@ function forwards_editforwards_dialog()
 }
 
 #----------------------------------------------------------------------------
-# forwards_deletforward_dialog
+# forwards_delete_dialog
 # Delete an existing mail alias or forward
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function forwards_deletforward_dialog()
+function forwards_delete_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
@@ -764,7 +870,7 @@ function forwards_deletforward_dialog()
             forwarddlg_source="$p2"
             cui_listview_gettext "$ctrl" "$idx" "1"
             forwarddlg_destination="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "3"
+            cui_listview_gettext "$ctrl" "$idx" "4"
             forwarddlg_id="$p2"
 
             cui_message "$win" "Really delete \"$forwarddlg_source\" -> \"$forwarddlg_destination\" ?" "Question" "$MB_YESNO"
@@ -794,7 +900,6 @@ function forwards_deletforward_dialog()
 #============================================================================
 # listview callbacks
 #============================================================================
-
 #----------------------------------------------------------------------------
 # listview_clicked_hook
 # listitem has been clicked
@@ -839,28 +944,28 @@ function listview_clicked_hook()
             case $item in
             1)
                 cui_window_destroy  "$menu"
-                if forwards_editforwards_dialog $win
+                if forwards_edit_dialog $win
                 then
                      load_data "$win"
                 fi
                 ;;
             2)
                 cui_window_destroy  "$menu"
-                if forwards_deletforward_dialog $win
+                if forwards_delete_dialog $win
                 then
                     load_data "$win"
                 fi
                 ;;
             3)
                 cui_window_destroy  "$menu"
-                if forwards_createforwards_dialog $win
+                if forwards_create_dialog $win
                 then
                     load_data "$win"
                 fi
                 ;;
             4)
                 cui_window_destroy  "$menu"
-                if forwards_copyforwards_dialog $win
+                if forwards_copy_dialog $win
                 then
                     load_data "$win"
                 fi
@@ -936,7 +1041,6 @@ function listview_postkey_hook()
 #============================================================================
 # main window hooks
 #============================================================================
-
 #----------------------------------------------------------------------------
 # mainwin_create_hook (for creation of child windows)
 #    $p2 --> mainwin window handle
@@ -946,15 +1050,16 @@ function mainwin_create_hook()
     local win="$p2"
     local ctrl
 
-    cui_listview_new "$win" "" 0 0 10 10 4 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
+    cui_listview_new "$win" "" 0 0 10 10 5 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_listview_callback   "$ctrl" "$LISTBOX_CLICKED" "$win" "listview_clicked_hook"
         cui_listview_callback   "$ctrl" "$LISTBOX_POSTKEY" "$win" "listview_postkey_hook"
         cui_listview_setcoltext "$ctrl" 0 "Source"
         cui_listview_setcoltext "$ctrl" 1 "Destination"
-        cui_listview_setcoltext "$ctrl" 2 "Active"
-        cui_listview_setcoltext "$ctrl" 3 "-"
+        cui_listview_setcoltext "$ctrl" 2 "Spam"
+        cui_listview_setcoltext "$ctrl" 3 "Active"
+        cui_listview_setcoltext "$ctrl" 4 "-"
 
         cui_window_create       "$ctrl"
     fi
@@ -1080,25 +1185,25 @@ function mainwin_key_hook()
         fi
         ;;
     "$KEY_F4")
-        if forwards_editforwards_dialog $win
+        if forwards_edit_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F5")
-        if forwards_copyforwards_dialog $win
+        if forwards_copy_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F7")
-        if forwards_createforwards_dialog $win
+        if forwards_create_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F8")
-        if forwards_deletforward_dialog $win
+        if forwards_delete_dialog $win
         then
             load_data "$win"
         fi

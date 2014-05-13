@@ -53,7 +53,6 @@ fi
 #============================================================================
 # helper functions
 #============================================================================
-
 #----------------------------------------------------------------------------
 # check if is a valid list index
 #----------------------------------------------------------------------------
@@ -96,12 +95,12 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT source,LEFT(response,50),active,LEFT(note,50),id \
+                "SELECT source, LEFT(response,50), ELT(active +1, ' ', 'x'), LEFT(note,50), id \
                  FROM access \
                  WHERE type='sender' ORDER BY source;" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT source,LEFT(response,50),active,LEFT(note,50),id \
+                "SELECT source ,LEFT(response,50), ELT(active +1, ' ', 'x'), LEFT(note,50), id \
                  FROM access \
                  WHERE type='sender' AND source REGEXP '$keyword' \
                  ORDER BY source;" && myres="$p2"
@@ -109,7 +108,6 @@ function load_data()
 
         if cui_valid_handle "$myres"
         then
-
             my_result_status "$myres"
             if [ "$p2" == "$SQL_DATA_READY" ]
             then
@@ -180,7 +178,6 @@ function resize_windows()
 #============================================================================
 # data input dialog
 #============================================================================
-
 #----------------------------------------------------------------------------
 # inputdlg_ok_clicked
 # Ok button clicked hook
@@ -258,9 +255,8 @@ function inputdlg_create_hook()
 }
 
 #============================================================================
-# fetchmail edit/create dialog
+# edit/create dialog
 #============================================================================
-
 #----------------------------------------------------------------------------
 # senderdlg_ok_clicked
 # Ok button clicked hook
@@ -406,16 +402,15 @@ function senderdlg_create_hook()
 }
 
 #============================================================================
-# invoke fetchmail dialog due to key or menu selection
+# invoke dialog due to key or menu selection
 #============================================================================
-
 #----------------------------------------------------------------------------
-# sender_createsender_dialog
-# Create a new mail fetchmail
+# sender_create_dialog
+# Create a new entry
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function sender_createsender_dialog()
+function sender_create_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
@@ -464,12 +459,12 @@ function sender_createsender_dialog()
 }
 
 #----------------------------------------------------------------------------
-# sender_editsender_dialog
-# Modify a mail fetchmail
+# sender_edit_dialog
+# Modify a entry
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function sender_editsender_dialog()
+function sender_edit_dialog()
 {
     local win="$1"
     local dlg
@@ -490,6 +485,7 @@ function sender_editsender_dialog()
             cui_listview_gettext "$ctrl" "$idx" "2" && senderdlg_active="$p2"
             cui_listview_gettext "$ctrl" "$idx" "3" && senderdlg_comment="$p2"
             cui_listview_gettext "$ctrl" "$idx" "4" && entryname="$p2"
+            [ "$senderdlg_active" = "x" ] && senderdlg_active="1" || senderdlg_active="0"
 
             cui_window_new "$win" 0 0 42 12 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"
             if cui_valid_handle $dlg
@@ -532,12 +528,12 @@ function sender_editsender_dialog()
 }
 
 #----------------------------------------------------------------------------
-# sender_deletesender_dialog
-# Delete a mail fetchmail
+# sender_delete_dialog
+# Delete a entry
 # returns: 0  : created (reload data)
 #          1  : not modified (don't reload data)
 #----------------------------------------------------------------------------
-function sender_deletesender_dialog()
+function sender_delete_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
@@ -582,7 +578,6 @@ function sender_deletesender_dialog()
 #============================================================================
 # select menu when hitting "ENTER" or "SPACE" on the list
 #============================================================================
-
 #----------------------------------------------------------------------------
 # menu_clicked_hook
 # expects: $p2 : window handle
@@ -631,7 +626,6 @@ function menu_postkey_hook()
 #============================================================================
 # listview callbacks
 #============================================================================
-
 #----------------------------------------------------------------------------
 # listview_clicked_hook
 # listitem has been clicked
@@ -674,21 +668,21 @@ function listview_clicked_hook()
             case $item in
             1)
                 cui_window_destroy  "$menu"
-                if sender_editsender_dialog $win
+                if sender_edit_dialog $win
                 then
                      load_data "$win"
                 fi
                 ;;
             2)
                 cui_window_destroy  "$menu"
-                if sender_deletesender_dialog $win
+                if sender_delete_dialog $win
                 then
                     load_data "$win"
                 fi
                 ;;
             3)
                 cui_window_destroy  "$menu"
-                if sender_createsender_dialog $win
+                if sender_create_dialog $win
                 then
                     load_data "$win"
                 fi
@@ -754,7 +748,6 @@ function listview_postkey_hook()
 #============================================================================
 # main window hooks
 #============================================================================
-
 #----------------------------------------------------------------------------
 # mainwin_create_hook (for creation of child windows)
 #    $p2 --> mainwin window handle
@@ -904,19 +897,19 @@ function mainwin_key_hook()
         fi
         ;;
     "$KEY_F4")
-        if sender_editsender_dialog $win
+        if sender_edit_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F7")
-        if sender_createsender_dialog $win
+        if sender_create_dialog $win
         then
             load_data "$win"
         fi
         ;;
     "$KEY_F8")
-        if sender_deletesender_dialog $win
+        if sender_delete_dialog $win
         then
             load_data "$win"
         fi
