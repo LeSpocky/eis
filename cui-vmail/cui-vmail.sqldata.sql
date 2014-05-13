@@ -1,21 +1,26 @@
-INSERT INTO virtual_domains (`name`,`active`)  VALUES ( 'virtual.test', 1 );
-INSERT INTO virtual_domains (`name`,`transport`,`active`)  VALUES ( 'web.de', 'relay:smtp.web.de', 0 );
+INSERT INTO virtual_domains (`id`,`name`,`transport`,`active`)  VALUES
+( 1, 'virtual.test', 'pop3imap:', 1 ),
+( 2, 'web.de', 'relay:smtp.web.de', 0 );
 
-INSERT INTO virtual_users (`domain_id`,`loginuser`,`password`,`username`,`quota`,`mailprotect`,`signature`) VALUES (1, 'info', 'encrypt', 'Info user', 0, 0, '-- \r\nInfo\r\nDemo signature \r\n\r\n' );
+INSERT INTO virtual_users (`id`,`domain_id`,`loginuser`,`password`,`username`,`quota`,`mailprotect`,`signature`) VALUES
+(1, 1, 'info', 'encrypt', 'Info user', 0, 0, '-- \r\nInfo\r\nDemo signature \r\n\r\n' );
 
-INSERT INTO virtual_relayhosts (`domain_id`,`email`,`username`,`active` ) VALUES (2, 'testuser@web.de','testuser@web.de', 0 );
+INSERT INTO virtual_relayhosts (`id`,`domain_id`,`email`,`username`,`active`) VALUES
+(1, 2, 'testuser@web.de','testuser@web.de', 0 );
 
-INSERT INTO virtual_users_mbexpire (`ownerid`,`mailbox`,`expirestamp`) VALUES (1, 'Drafts', 0 );
-INSERT INTO virtual_users_mbexpire (`ownerid`,`mailbox`,`expirestamp`) VALUES (1, 'Send', 0 );
-INSERT INTO virtual_users_mbexpire (`ownerid`,`mailbox`,`expirestamp`) VALUES (1, 'Trash', 0 );
+INSERT INTO virtual_users_mbexpire (`id`,`ownerid`,`mailbox`,`expirestamp`) VALUES
+(1, 1, 'Drafts', 0 ),
+(2, 1, 'Send', 0 ),
+(3, 1, 'Trash', 0 );
 
-INSERT INTO virtual_aliases (`domain_id`,`source`,`destination`) VALUES ( 1, 'abuse', 'user@virtual.test' );
-INSERT INTO virtual_aliases (`domain_id`,`source`,`destination`) VALUES ( 1, 'mailadmin', 'user@virtual.test' );
-INSERT INTO virtual_aliases (`domain_id`,`source`,`destination`) VALUES ( 1, 'postmaster', 'user@virtual.test' );
-INSERT INTO virtual_aliases (`domain_id`,`source`,`destination`) VALUES ( 1, 'mailing-list1', 'user@virtual.test' );
-INSERT INTO virtual_aliases (`domain_id`,`source`,`destination`) VALUES ( 1, 'mailing-list1', 'user2@virtual.test' );
-INSERT INTO virtual_aliases (`domain_id`,`source`,`destination`) VALUES ( 1, 'mailing-list1', 'test@virtual.test' );
-INSERT INTO virtual_aliases (`domain_id`,`source`,`destination`) VALUES ( 1, 'mailing-list1', 'user@external-domain.test' );
+INSERT INTO virtual_aliases (`id`,`domain_id`,`source`,`destination`) VALUES
+(1, 1, 'abuse', 'user@virtual.test' ),
+(2, 1, 'mailadmin', 'user@virtual.test' ),
+(3, 1, 'postmaster', 'user@virtual.test' ),
+(4, 1, 'mailing-list1', 'user@virtual.test' ),
+(5, 1, 'mailing-list1', 'user2@virtual.test' ),
+(6, 1, 'mailing-list1', 'test@virtual.test' ),
+(7, 1, 'mailing-list1', 'user@external-domain.test' );
 
 INSERT INTO `access` (`id`, `source`, `sourcestart`, `sourceend`, `response`, `type`, `active`, `note`) VALUES
 (1, 'abuse@', 0, 0, 'OK', 'recipient', 1, 'Dont do RBL checking for mail to abuse!'),
