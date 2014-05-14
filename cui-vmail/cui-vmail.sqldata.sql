@@ -1,19 +1,19 @@
-INSERT INTO virtual_domains (`id`,`name`,`transport`,`active`)  VALUES
+INSERT IGNORE INTO virtual_domains (`id`,`name`,`transport`,`active`)  VALUES
 ( 1, 'virtual.test', 'pop3imap:', 1 ),
 ( 2, 'web.de', 'relay:smtp.web.de', 0 );
 
-INSERT INTO virtual_users (`id`,`domain_id`,`loginuser`,`password`,`username`,`quota`,`mailprotect`,`signature`) VALUES
+INSERT IGNORE INTO virtual_users (`id`,`domain_id`,`loginuser`,`password`,`username`,`quota`,`mailprotect`,`signature`) VALUES
 (1, 1, 'info', 'encrypt', 'Info user', 0, 0, '-- \r\nInfo\r\nDemo signature \r\n\r\n' );
 
-INSERT INTO virtual_relayhosts (`id`,`domain_id`,`email`,`username`,`active`) VALUES
+INSERT IGNORE INTO virtual_relayhosts (`id`,`domain_id`,`email`,`username`,`active`) VALUES
 (1, 2, 'testuser@web.de','testuser@web.de', 0 );
 
-INSERT INTO virtual_users_mbexpire (`id`,`ownerid`,`mailbox`,`expirestamp`) VALUES
+INSERT IGNORE INTO virtual_users_mbexpire (`id`,`ownerid`,`mailbox`,`expirestamp`) VALUES
 (1, 1, 'Drafts', 0 ),
 (2, 1, 'Send', 0 ),
 (3, 1, 'Trash', 0 );
 
-INSERT INTO virtual_aliases (`id`,`domain_id`,`source`,`destination`) VALUES
+INSERT IGNORE INTO virtual_aliases (`id`,`domain_id`,`source`,`destination`) VALUES
 (1, 1, 'abuse', 'user@virtual.test' ),
 (2, 1, 'mailadmin', 'user@virtual.test' ),
 (3, 1, 'postmaster', 'user@virtual.test' ),
@@ -22,7 +22,7 @@ INSERT INTO virtual_aliases (`id`,`domain_id`,`source`,`destination`) VALUES
 (6, 1, 'mailing-list1', 'test@virtual.test' ),
 (7, 1, 'mailing-list1', 'user@external-domain.test' );
 
-INSERT INTO `access` (`id`, `source`, `sourcestart`, `sourceend`, `response`, `type`, `active`, `note`) VALUES
+REPLACE INTO `access` (`id`, `source`, `sourcestart`, `sourceend`, `response`, `type`, `active`, `note`) VALUES
 (1, 'abuse@', 0, 0, 'OK', 'recipient', 1, 'Dont do RBL checking for mail to abuse!'),
 (2, 'postmaster@', 0, 0, 'OK', 'recipient', 1, 'Dont do RBL checking for mail to postmaster!'),
 (3, 'aol.com', 0, 0, 'reject_unverified_sender', 'sender', 1, 'check if aol user exists'),
@@ -120,9 +120,12 @@ INSERT INTO `access` (`id`, `source`, `sourcestart`, `sourceend`, `response`, `t
 (95, '217.76.96.46', 3645661230, 3645661230, 'OK', 'client', 1, 'mail.bn-online.net'),
 (96, '176.32.127.4/25', 2954919684, 2954919790, 'OK', 'client', 1, 'smtp-out-127-NNN.amazon.com');
 
-INSERT INTO fetchmail VALUES ( 1, 1, 'mail.testserver.test', 'pop3', 'user', '', 'info@virtual.test', 'keep', '', '', 0);
+INSERT IGNORE INTO `access` (`id`, `source`, `sourcestart`, `sourceend`, `response`, `type`, `active`, `note`) VALUES
+(200, '255.255.255.255', 0, 0, 'OK', 'client', 0, 'BENUTZERDATEN ab ID Nr. 200');
 
-INSERT INTO `maildropfilter` (`id`, `ownerid`, `position`, `datefrom`, `dateend`, `filtertype`, `flags`, `fieldname`, `fieldvalue`, `tofolder`, `body`, `active`) VALUES
+INSERT IGNORE INTO fetchmail VALUES ( 1, 1, 'mail.testserver.test', 'pop3', 'user', '', 'info@virtual.test', 'keep', '', '', 0);
+
+INSERT IGNORE INTO `maildropfilter` (`id`, `ownerid`, `position`, `datefrom`, `dateend`, `filtertype`, `flags`, `fieldname`, `fieldvalue`, `tofolder`, `body`, `active`) VALUES
 (1, 1, 50, 0, 0, 'contains',   8, 'Message-ID', 'bugs.eisfair.org',        'Tracker', 'Move to Tracker folder', 1),
 (2, 1, 50, 0, 0, 'contains',   8, 'List-Id',    'org-website.eisler.',     'org-website', 'Move to org-website', 1),
 (3, 1, 50, 0, 0, 'contains',   8, 'List-Id',    'org-dev.eisler.',         'org-dev', 'Move to Org-dev', 1),
@@ -132,7 +135,8 @@ INSERT INTO `maildropfilter` (`id`, `ownerid`, `position`, `datefrom`, `dateend`
 (7, 1, 50, 0, 0, 'contains',   8, 'List-Id',    'fleis-team.eisler',       'fleis-team', 'Move to the fleis-team folder', 1),
 (8, 1, 50, 0, 0, 'anymessage', 4, '',           '',                        '!user2@virtual.test', 'Forward CC to: user2@virtual.test', 0),
 (9, 1, 50, 0, 0, 'startwith',  0, 'subject',    '[SPAM]',                  'Trash',      'Write spam to Trash', 0),
-(10,1, 75, 0, 0, 'anymessage', 0, '',           '',                        '+days=4','Write the out of office message text here...', 0);
+(10,1, 75, 0, 0, 'anymessage', 0, '',           '',                        '+days=4','Write the out of office message text here...', 0)
+ON DUPLICATE KEY UPDATE id = id ;
 
 COMMIT;
 

@@ -99,8 +99,12 @@ update_mysql_tables()
         # create all trigger, if MySQL support this (5.x) and not exists
         /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqltrigger.sql 2>/dev/null
         # make all updates (alter table...)
-        /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqlupdate.sql
-        # create all views
+        while read sqlcmd
+        do
+            echo "$sqlcmd" | grep -q '^#' && continue
+            /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} -e "$sqlcmd" 2>/dev/null
+        done < /etc/postfix/default/install-sqlupdate.sql
+        # (re)create all views
         /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqlview.sql
         # add default data if not found records
         count=`/usr/bin/mysql -N --silent -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select count(*) from access;' 2>/dev/null`
