@@ -67,6 +67,7 @@ packages_name='vmail'
     printvar "POSTFIX_REJECT_DYNADDRESS" "Block all sender with pppoe, dialin etc. names"
     printvar "POSTFIX_REJECT_BOGUS_MX" "Block faked DNS entries"
     printvar "POSTFIX_MIME_HEADER_CHECK" "Block all exe,com,vba... files"
+    printvar "POSTFIX_GREYLISTING_FOR_ALL" "Use greyfix for all SMTP Traffic"
     printvar "POSTFIX_POSTSCREEN" "Use Postscreen antispam preegreeting"
 
     printvar "POSTFIX_RBL" "Use Realtime Blackhole List"

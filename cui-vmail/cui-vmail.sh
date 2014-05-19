@@ -35,11 +35,11 @@ fi
 
 # login with completed mail address or username only
 if [ "$VMAIL_LOGIN_WITH_MAILADDR" = "yes" ]; then
-    dovecot_query="email"
+    dovecot_pass_query="email='%u'"
     dovecot_authf="%Lu"
     dovecot_deliver="\${recipient}"
 else
-    dovecot_query="loginuser"
+    dovecot_pass_query="loginuser='%n'"
     dovecot_authf="%Ln"
     dovecot_deliver="\${user}"
 fi
@@ -131,6 +131,7 @@ postfix_un_cl_hostname=""
 postfix_un_send_dom=""
 postfix_send_mx=""
 postfix_fqdn_helo=""
+postfix_greylisting=""
 postfix_rbl_list=""
 postfix_mime_header_ch=""
 postfix_header_ch=""
@@ -163,6 +164,7 @@ done
 [ "$POSTFIX_REJECT_DYNADDRESS" = "yes" ] && postfix_dyn_client_bl="check_client_access pcre:/etc/postfix/client_access_dynblocks.pcre,"
 [ "$POSTFIX_REJECT_BOGUS_MX" = "yes" ] && postfix_send_mx="check_sender_mx_access proxy:cidr:/etc/postfix/bogus_mx.cidr,"
 [ "$POSTFIX_REJECT_NON_FQDN_HOST" = "yes" ] && postfix_fqdn_helo="reject_non_fqdn_helo_hostname," # kann Probleme mit Webmailern machen!
+[ "$POSTFIX_GREYLISTING_FOR_ALL" = "yes" ] && postfix_greylisting="check_policy_service unix:private/greyfix,"
 if [ "$POSTFIX_POSTSCREEN" = "yes" ]; then
     postfix_pscreen=""
     postfix_psmtpd="#"
@@ -252,13 +254,20 @@ postconf -e "smtpd_helo_restrictions ="
 postconf -e "smtpd_sender_restrictions ="
 postconf -e "smtpd_client_restrictions ="
 postconf -e "smtpd_relay_restrictions = permit_mynetworks, ${postfix_sasl} permit_tls_clientcerts, defer_unauth_destination"
-postconf -e "smtpd_recipient_restrictions = permit_mynetworks, ${postfix_sasl} reject_unlisted_recipient, \
+postconf -e "smtpd_recipient_restrictions = permit_mynetworks, ${postfix_sasl} reject_unlisted_recipient,\
+ $postfix_greylisting\
  check_client_access proxy:mysql:/etc/postfix/sql/mysql-client_access.cf,\
  check_recipient_access proxy:mysql:/etc/postfix/sql/mysql-recipient_access.cf,\
  check_sender_access proxy:mysql:/etc/postfix/sql/mysql-sender_access.cf,\
- reject_invalid_helo_hostname,${postfix_cl_access_bl}${postfix_dyn_client_bl}\
+ reject_invalid_helo_hostname,\
+ ${postfix_cl_access_bl}\
+ ${postfix_dyn_client_bl}\
  proxy:mysql:/etc/postfix/sql/mysql-virtual_restrictions.cf,\
- ${postfix_un_cl_hostname}${postfix_un_send_dom}${postfix_send_mx}${postfix_fqdn_helo} permit"
+ ${postfix_un_cl_hostname}\
+ ${postfix_un_send_dom}\
+ ${postfix_send_mx}\
+ ${postfix_fqdn_helo}\
+ permit"
 
 postconf -e "mime_header_checks = $postfix_mime_header_ch"
 postconf -e "header_checks = $postfix_header_ch"
@@ -505,14 +514,17 @@ sed -i -e "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '
 sed -i -r "s|^[#]?disable_plaintext_auth =.*|disable_plaintext_auth = no|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -r "s|^[#]?auth_username_format =.*|auth_username_format = ${dovecot_authf}|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -r "s|^[#]?auth_failure_delay =.*|auth_failure_delay = 2 secs|" /etc/dovecot/conf.d/10-auth.conf
+sed -i -r "s|^[#]?auth_master_user_separator =.*|auth_master_user_separator = \*|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -e "s|^auth_mechanisms =.*|auth_mechanisms = plain login digest-md5 cram-md5|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -e "s|^!include auth-system.conf.ext.*|#!include auth-system.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i -e "s|^#!include auth-master.conf.ext.*|!include auth-master.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -e "s|^#!include auth-sql.conf.ext.*|!include auth-sql.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -e "s|^!include auth-ldap.conf.ext.*|#!include auth-ldap.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -e "s|^!include auth-passwdfile.conf.ext.*|#!include auth-passwdfile.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -e "s|^!include auth-checkpassword.conf.ext.*|#!include auth-checkpassword.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -e "s|^!include auth-vpopmail.conf.ext.*|#!include auth-vpopmail.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -e "s|^!include auth-static.conf.ext.*|#!include auth-static.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+
 
 ### -------------------------------------------------------------------------
 #10-logging
@@ -705,19 +717,43 @@ plugin {
 EOF
 
 ### -------------------------------------------------------------------------
+# create AUTH MASTER configuration
+cat > /etc/dovecot/conf.d/auth-master.conf.ext <<EOF
+# Authentication for master users. Included from 10-auth.conf.
+passdb {
+  driver = sql
+  args = /etc/dovecot/dovecot-sql-master.conf.ext
+  master = yes
+  pass = yes
+}
+EOF
+
+### -------------------------------------------------------------------------
 # create SQL configuration
 cat > /etc/dovecot/dovecot-sql.conf.ext <<EOF
 driver = mysql
 default_pass_scheme = PLAIN
 # CRYPT or PLAIN
 connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}
-password_query = SELECT email as user, AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}') as password FROM view_users WHERE $dovecot_query = '%u'
-user_query = SELECT '/var/spool/postfix/virtual/%d/%n' AS home, $uidvmail as uid, $gidvmail as gid, concat('*:bytes=', quota, 'M') AS quota_rule FROM view_quota WHERE email = '%u'
-iterate_query = SELECT email AS user FROM view_quota
+password_query = SELECT loginuser as username, domain, AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}') as password FROM view_users WHERE $dovecot_pass_query LIMIT 1
+#force found only if exists domain %d and user %n !
+user_query = SELECT '/var/spool/postfix/virtual/%d/%n' AS home, 8 as uid, 12 as gid, concat('*:bytes=', quota, 'M') AS quota_rule FROM view_quota WHERE domain='%d' AND loginuser='%n' LIMIT 1
+iterate_query = SELECT loginuser AS user, domain FROM view_quota
 EOF
 
 chown dovecot:root /etc/dovecot/dovecot-sql.conf.ext
 chmod 0640 /etc/dovecot/dovecot-sql.conf.ext
+
+cat > /etc/dovecot/dovecot-sql-master.conf.ext <<EOF
+driver = mysql
+default_pass_scheme = PLAIN
+# CRYPT or PLAIN
+connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}
+password_query = SELECT AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}') as password FROM view_users WHERE admin='1' AND $dovecot_pass_query LIMIT 1
+EOF
+
+chown dovecot:root /etc/dovecot/dovecot-sql-master.conf.ext
+chmod 0640 /etc/dovecot/dovecot-sql-master.conf.ext
 
 ### -------------------------------------------------------------------------
 # create dict configuration

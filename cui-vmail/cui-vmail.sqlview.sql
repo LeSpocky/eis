@@ -14,7 +14,7 @@ DROP VIEW IF EXISTS `view_client_access_postscreen`;
 CREATE VIEW `view_client_access_postscreen` AS
   SELECT sourcestart, sourceend, ELT( FIELD(response, 'OK', '554'), 'permit', 'reject') AS response
   FROM access WHERE type='client' AND active = 1 AND sourcestart > 0
-  ORDER BY sourcestart, sourceend ;
+  ORDER BY sourcestart, sourceend;
 
 DROP VIEW IF EXISTS `view_recipient_access`;
 CREATE VIEW `view_recipient_access` AS
@@ -27,10 +27,12 @@ CREATE VIEW `view_users` AS
   SELECT virtual_users.id,
   CONCAT(virtual_users.loginuser, _utf8 '@', virtual_domains.name) AS email,
   virtual_users.password,
-  virtual_users.loginuser
+  virtual_users.loginuser,
+  virtual_domains.name AS domain,
+  virtual_users.admin
   FROM virtual_users LEFT JOIN virtual_domains ON virtual_users.domain_id = virtual_domains.id
   WHERE virtual_users.active = 1 AND virtual_domains.active = 1 AND (UNIX_TIMESTAMP(virtual_users.expired) = 0 or UNIX_TIMESTAMP(virtual_users.expired) > UNIX_TIMESTAMP(NOW()))
-  ORDER BY domain_id, loginuser;
+  ORDER BY domain, loginuser;
 
 DROP VIEW IF EXISTS `view_domains`;
 CREATE VIEW `view_domains` AS
@@ -70,13 +72,13 @@ CREATE VIEW `view_mailprotect` AS
   ORDER BY email;
 
 DROP VIEW IF EXISTS `view_quota`;
-CREATE VIEW `view_quota` AS
-  SELECT CONCAT(virtual_users.loginuser, _utf8 '@', virtual_domains.name) AS email,
+CREATE VIEW `view_quota` AS SELECT
          virtual_users.loginuser,
+         virtual_domains.name as domain,
          virtual_users.quota
   FROM virtual_users LEFT JOIN virtual_domains ON virtual_users.domain_id = virtual_domains.id
   WHERE virtual_users.active = 1 AND virtual_domains.active = 1
-  ORDER BY name, loginuser;
+  ORDER BY domain, loginuser;
 
 DROP VIEW IF EXISTS `view_expire`;
 CREATE VIEW `view_expire` AS

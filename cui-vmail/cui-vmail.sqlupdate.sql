@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS `vmail_version`;
 COMMIT;
 # add new fields:
+ALTER TABLE `virtual_users` ADD `admin` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 AFTER `toall`;
 ALTER TABLE `access` ADD `sourcestart` INT UNSIGNED DEFAULT 0 AFTER `source`;
 ALTER TABLE `access` ADD `sourceend` INT UNSIGNED DEFAULT 0 AFTER `sourcestart`;
 COMMIT;

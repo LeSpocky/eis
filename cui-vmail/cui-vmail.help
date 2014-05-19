@@ -87,29 +87,16 @@ Max size of e-mail message (default 20MB)<br/>
 Default: '20'
 </help>
 
-
-<help name="POSTFIX_GLD">
-Use greylisting daemon for blocking spam mails<br/>
-<br/>
-Default: POSTFIX_GLD='yes'
+<help name="POSTFIX_GREYLISTING_FOR_ALL">
+Greylisting for delaying incoming mails. (Only for backup MX server)<br/>
+Otherwise it is better, per user setup for 'Spam protect'!<br/>
+Default: POSTFIX_GREYLISTING_FOR_ALL='no'
 </help>
 
-<help name="POSTFIX_GLD_MINTIME">
+<help name="POSTFIX_GREYLISTING_MINTIME">
 Minimal count of seconds before greylisting give access.<br/>
 <br/>
-Default: POSTFIX_GLD_MINTIME='300'
-</help>
-
-<help name="POSTFIX_GLD_CLR_ONE">
-Clean the database for entries not updated since # days with only one hit.<br/>
-<br/>
-Default: POSTFIX_GLD_CLR_ONE='1'
-</help>
-
-<help name="POSTFIX_GLD_CLR_UNUSED">
-Clean the database for ALL entries not updated since # days.<br/>
-<br/>
-Default: POSTFIX_GLD_CLR_UNUSED='30'
+Default: POSTFIX_GREYLISTING_MINTIME='3600'
 </help>
 
 <help name="POSTFIX_RBL">

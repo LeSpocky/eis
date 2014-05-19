@@ -47,6 +47,8 @@ POSTFIX_REJECT_DYNADDRESS='no'        # Block all sender with pppoe, dialin
                                       # etc. names
 POSTFIX_REJECT_BOGUS_MX='yes'         # Block faked DNS entries
 POSTFIX_MIME_HEADER_CHECK='yes'       # Block all exe,com,vba... files
+POSTFIX_GREYLISTING_FOR_ALL='no'      # Use greyfix for all SMTP Traffic
+
 POSTFIX_POSTSCREEN='yes'              # Use Postscreen antispam preegreeting
 POSTFIX_RBL='yes'                     # Use Realtime Blackhole List
 POSTFIX_RBL_N='9'                     # Count of Realtime Blackhole List server

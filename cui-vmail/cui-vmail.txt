@@ -222,6 +222,13 @@ POSTFIX_MIME_HEADER_CHECK
 
     Gueltige Werte: yes,no
 
+POSTFIX_GREYLISTING_FOR_ALL
+    Ankommende E-Mails werden temporaere abgewiesen. Das Greylisting
+    fuer alle sollte nur fuer Backup-MX Server ohne Benutzer verwendet
+    werden.
+
+    Gueltige Werte: yes,no
+
 POSTFIX_POSTSCREEN
     Antispam Service, basiert auf externe RBL und Kommunikationstests.
     Wenn Vmail keine E-Mail empfaengt, kann dieser Dienst abgeschaltet
