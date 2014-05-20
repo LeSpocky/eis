@@ -59,3 +59,33 @@ package() {
     install -D -m644 ${srcdir}/${pkgname}.txt.toc                              ${pkgdir}/usr/share/doc/${_pname}/${_pname}.toc || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh                            ${pkgdir}/var/install/config.d/${_pname}-update.sh || return 1
 }
+md5sums="02fd723452812c2196e357e4a617fe23  cui-openntpd.check
+40b486a06df277e2ad84e1543cb5b9b2  cui-openntpd.check.exp
+b07a8f6b6bd547fba3d4754b6fb58a03  cui-openntpd.check.ext
+79630b8c98d5e665547abe55ef90d7e7  cui-openntpd.default
+dee2dd9987fa63de0a4260b9b9aa8d74  cui-openntpd.help
+da50ef43a580b1cb836ce40ed0cf4332  cui-openntpd.setup.services.ntp.menu
+4d337a4a50c4413fcbb1518ce821cbd8  cui-openntpd.sh
+91c442dab67e664971c3eac21fca6c3e  cui-openntpd.txt
+c946902d0050024057a114bdd2d5f876  cui-openntpd.txt.toc
+b8ae8eab2b45e292045fc30c59782ee0  cui-openntpd-update.sh"
+sha256sums="43bc588082c505bd1cfbb0b0940d402e3fa2dd1a4be416748180125e12bdf0d7  cui-openntpd.check
+2a6b5a61bc1ccf058b0eee0a4ae9426342751dfafc88ef6572462627d345dc95  cui-openntpd.check.exp
+d6aa5475e26fa5e6c5aad3a3ecc9e35215a47b2ebbb00fe726d675e9487557c8  cui-openntpd.check.ext
+6a981684654a1e1a51f085ffe91a8fd8325cb1a7ceb93a3141c85515be573bd2  cui-openntpd.default
+bef4108c9811116d31ee2741b6820fa0b1a3e5a0acfac7e437feae3d1ce8b5dd  cui-openntpd.help
+3f956ec71898e513a92672b688f9787f6f4d2c8376ffd14aacbf0b1be59b7171  cui-openntpd.setup.services.ntp.menu
+0ddd8ed371f1aa7afbe0e46814ba68bff82668083c3e3905726d6a0d264bb350  cui-openntpd.sh
+4fae137f9e4efee8daeb7b4f99b57846d0c56a2cb9054be1250738168baec062  cui-openntpd.txt
+cae14e8557329c2b53e1e609981973a0f66a35bc7766d0938f2d4945634936d8  cui-openntpd.txt.toc
+3d1dd21ee0d1056fb35e3056d2923263d8d968ce604ef4720c65409ab604ed31  cui-openntpd-update.sh"
+sha512sums="25fc5950f6b0a638b64807152086a8aae7226958def77a09ee8d5d56e84bafb485b2269cee16f7e464b476faad04fd71dac2f94b8c22bfdf41fe2fc51bc31ddf  cui-openntpd.check
+15ca2199be7ffd9f861cecc0420f8f79829b874c0e5e673db7df7674e24fd16e3e3afa635e2452f7515c8893e5ca387dceab6d22617820a70258cf934f258dd7  cui-openntpd.check.exp
+af6debf3ebc2e0fc953aeef55af9b4a7cb509964680e0d4b6cc25e6fe0649290b8789f11e99a25bee8a24ce01e9a6295ed4914238f3a58c0b044e7a56dcd4fc2  cui-openntpd.check.ext
+05bead289d9d7430dba379cdb08bd03e3d658c0c67e88e2e91c40c1f03ab1268546a1cb1e9119d1cbd4109ec01d8283e15cc37ea791f51474abd09eebb2fc1bc  cui-openntpd.default
+beedd1ccdba807a393079256ad20e56040ba2c9be7942b460c1bef08de821c0db18ff9eb5d34978c3ce7926dadcbb451644ce2b1cb502e17dc154a324580b297  cui-openntpd.help
+46cdcebb8646debff2e39c2570379ac18b9d9e1d95872ee816a666f3888c366a93b722d81182a9ef67f1aea3e61f206451b63dfac2e4fbcf3b58ffeaa2303697  cui-openntpd.setup.services.ntp.menu
+01e4ec2369d375c3f8a10cbc9d46252b691e980a70d1bcc73f3c6819281dea8554c62af9fe61583be60f817036056abc8f6ae79eb7f1fe12ce2b858ee09a0608  cui-openntpd.sh
+d1f37a5b690c915a93004619fed1770bb7f4016b70e5798c848e6f7f70e917ca99a1ac8fba5671f6046820cb72d0c2070d602be482b8735fdef6c43993d64e06  cui-openntpd.txt
+896542662ce3fce85ac453b49481ef92467331ee23967dc062434e5207ff61fd6dc89a13889573133e697bb8296d40672e067dce7b9a52e8ac0f2f3c67fbfee1  cui-openntpd.txt.toc
+107b4b97324d698f51ea884549b5d871849d78dba2b7a10520e96419a82864bd4ae3b7fb39b21c90be2a1285f9880cbcb4c24874aaf4366f8382c4c406244385  cui-openntpd-update.sh"
