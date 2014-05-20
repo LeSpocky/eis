@@ -2,7 +2,7 @@
 # Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
 pkgname=cui-vmail
 pkgver=1.0.1
-pkgrel=0
+pkgrel=1
 pkgdesc="CUI setup for postfix/dovecot with virtual mail user"
 url="http://www.eisfair.org"
 arch="noarch"
