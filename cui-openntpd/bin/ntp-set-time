@@ -1,0 +1,74 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/ntp-set-time - set time
+#
+# Copyright (c) 2003-2004 Albert Steiner <albert.steiner.dw(at)gmx(dot)at>
+# Copyright (c) 2005-2009 The Eisfair Team, team(at)eisfair(dot)org
+#
+# Creation:     27.12.2003  as
+# Last Update:  $Id: ntp-set-time 17849 2009-01-08 19:34:14Z starwarsfan $
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+
+# read eislib
+. /var/install/include/eislib
+
+. /etc/config.d/ntp
+
+clrhome
+
+if [ $NTP_SET_SERVER_N -eq 0 ]
+then
+    mecho
+    mecho -error "No Server's defined to set the Time ..."
+    mecho
+    anykey
+else
+    if /var/install/bin/ask "Set Time via other NTP Server"
+    then
+        mecho
+        /etc/init.d/ntp stop
+        mecho
+
+        sleep 2
+
+        idx=1
+        while [ $idx -le $NTP_SET_SERVER_N ]
+        do
+            eval server='$NTP_SET_SERVER_'$idx
+
+            mecho -info "Try to set Time via $server ..."
+            /usr/sbin/ntpdate $server
+
+            if [ $? -eq 0 ]
+            then
+                idx=$NTP_SET_SERVER_N
+            fi
+            idx=`expr $idx + 1`
+        done
+
+        sleep 1
+        echo
+
+        /sbin/hwclock -uw
+
+        mecho -info "Hardware Clock Time is now ..."
+        hwclock --show --localtime
+
+        mecho -info "Software Clock Time is now ..."
+        date
+
+        mecho
+        sleep 1
+
+        /etc/init.d/ntp start
+        mecho
+        anykey
+    fi
+fi
+
+exit 0

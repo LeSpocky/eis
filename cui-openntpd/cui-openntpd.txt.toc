@@ -1,0 +1,38 @@
+<!-- cui-openntpd.txt - table of content -->
+<index title="Das NTP-Paket">
+    <entry line="9" level="1">Die Einleitung</entry>
+    <entry line="16" level="1">Die Funktionen</entry>
+    <entry line="26" level="1">Die Voraussetzungen</entry>
+    <entry line="31" level="1">Die Installation</entry>
+    <entry line="41" level="1">Das Menue im Setup-Programm</entry>
+    <entry line="64" level="2">Die Hardware</entry>
+    <entry line="74" level="2">Zu Variante 1:</entry>
+    <entry line="89" level="2">Zu Variante 2:</entry>
+    <entry line="118" level="2">Die Software</entry>
+    <entry line="210" level="1">Die Aenderung der Konfiguration</entry>
+    <entry line="219" level="1">Die Konfigurationsdatei</entry>
+    <entry line="225" level="1">Die Parameter</entry>
+    <entry line="227" level="2">START_NTP</entry>
+    <entry line="236" level="2">NTP_CLOCK_N</entry>
+    <entry line="256" level="3">NTP_CLOCK_x_TYPE</entry>
+    <entry line="263" level="3">NTP_CLOCK_x_MODE</entry>
+    <entry line="271" level="3">NTP_CLOCK_x_DEVICE</entry>
+    <entry line="280" level="3">NTP_CLOCK_x_LINK_DEVICE</entry>
+    <entry line="289" level="3">NTP_CLOCK_x_LINK_DEVICE_N</entry>
+    <entry line="298" level="3">NTP_CLOCK_x_STRATUM</entry>
+    <entry line="306" level="2">NTP_SERVER_N</entry>
+    <entry line="314" level="3">NTP_SERVER_x</entry>
+    <entry line="321" level="2">NTP_SET_SERVER_N</entry>
+    <entry line="329" level="3">NTP_SET_SERVER_x</entry>
+    <entry line="357" level="2">NTP_LOG_CONFIG</entry>
+    <entry line="370" level="2">NTP_LOG_COUNT</entry>
+    <entry line="379" level="2">NTP_LOG_INTERVAL</entry>
+    <entry line="389" level="1">Serielle Empfaenger testen</entry>
+    <entry line="461" level="1">Den Zeitempfang per Netzwerk ueberpruefen</entry>
+    <entry line="468" level="1">Die NTP-Empfangsqualitaet</entry>
+    <entry line="522" level="1">Windows als NTP Client / Server</entry>
+    <entry line="524" level="2">Allgemeines</entry>
+    <entry line="539" level="2">Windows NT</entry>
+    <entry line="544" level="2">Windows 2000</entry>
+    <entry line="599" level="2">Windows XP</entry>
+</index>

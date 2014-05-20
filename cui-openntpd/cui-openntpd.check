@@ -1,0 +1,39 @@
+# General settings
+# Variable                       OPT_VARIABLE            VARIABLE_N                 VALUE
+
+START_NTP                        -                       -                          YESNO
+NTP_CLOCK_N                      START_NTP               -                          NUMERIC
+NTP_CLOCK_%_TYPE                 START_NTP               NTP_CLOCK_N                NTP_GET_CLOCK_TYPE_CUI
+NTP_CLOCK_%_PREFER               START_NTP               NTP_CLOCK_N                YESNO
+NTP_CLOCK_%_DEVICE               START_NTP               NTP_CLOCK_N                NONE
+NTP_CLOCK_%_LINK_DEVICE          START_NTP               NTP_CLOCK_N                NONE
+NTP_CLOCK_%_LINK_DEVICE_NBR      START_NTP               NTP_CLOCK_N                ENUMERIC
+NTP_CLOCK_%_STRATUM              START_NTP               NTP_CLOCK_N                ENUMERIC
+
+# inside server settings -  server's are included to the Peer
+
+NTP_SERVER_N                     START_NTP               -                          NUMERIC
+NTP_SERVER_%                     START_NTP               NTP_SERVER_N               FQDN
+
+NTP_SET_SERVER_N                 START_NTP               -                          NUMERIC
+NTP_SET_SERVER_%                 START_NTP               NTP_SET_SERVER_N           FQDN
+
+# Peers to synchronize with
+
+NTP_PEER_N                       START_NTP               -                          NUMERIC
+NTP_PEER_%                       START_NTP               NTP_PEER_N                 FQDN
+
+# additional parameter
+
+NTP_ADD_PARAM_N                  START_NTP               -                          NUMERIC
+NTP_ADD_PARAM_%                  START_NTP               NTP_ADD_PARAM_N            NOTEMPTY
+
+# log handling
+
+#NTP_LOG_CONFIG                   START_NTP               -                          NOTEMPTY
+NTP_LOG_EVENT_N                  START_NTP               -                          NUMERIC
+NTP_LOG_EVENT_%_ENTRY            START_NTP               NTP_LOG_EVENT_N            NTP_LOG_TYPES_CUI
+NTP_LOG_COUNT                    START_NTP               -                          NUMERIC
+NTP_LOG_INTERVAL                 START_NTP               -                          NTP_LOG_INTERVAL_CUI
+
+# End

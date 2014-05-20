@@ -1,0 +1,242 @@
+<help name="START_NTP">
+    Ueber START_NTP wird mit den Werten 'yes' bzw. 'no' gesteuert, ob
+    NTP beim Boot des Rechners automatisch gestartet werden soll.<br/>
+    <br/>
+    Standard-Einstellung: START_NTP='no'<br/>
+</help>
+
+<help name="NTP_CLOCK_N">
+    Gibt die Anzahl der angeschlossenen Uhren an.<br/>
+<br/>
+    Standard-Einstellung: NTP_CLOCK_N='0'<br/>
+</help>
+
+<help name="NTP_CLOCK_%_TYPE">
+    Typ der angeschlossenen Uhr, siehe folgende Liste der Referenzuhren.<br/>
+    <br/>
+    Standard-Einstellung: NTP_CLOCK_1_TYPE='1'<br/>
+    <br/>
+    NTP wurde mit allen moeglichen Referenzuhren compiliert. Genauere Infos
+	sind unter 'http://www.eecis.udel.edu/~mills/ntp/html/refclock.html'
+	zu finden.<br/>
+<br/>
+    NTP_CLOCK_#_TYPE  <br/>
+    |<br/>
+    |    Comprehensive list of clock drivers<br/>
+    1    Type  1 - undisciplined local clock (LOCAL)<br/>
+    2    Type  2 - Trak 8820 GPS receiver (GPS_TRAK)<br/>
+    3    Type  3 - PSTI/Traconex 1020 WWV/WWVH receiver (WWV_PST)<br/>
+    4    Type  4 - Spectracom WWVB and GPS receivers (WWVB_SPEC)<br/>
+    5    Type  5 - TrueTime GPS/GOES/OMEGA receivers (TRUETIME)<br/>
+    6    Type  6 - IRIG audio decoder (IRIG_AUDIO)<br/>
+    7    Type  7 - radio CHU audio demodulator/decoder (CHU)<br/>
+         Type  8 - generic reference driver (PARSE)<br/>
+    8 0            * server 127.127.8.0-3 mode 0<br/>
+                   Meinberg PZF535/PZF509 receiver (FM demodulation/TCXO / 50us)<br/>
+    8 1            * server 127.127.8.0-3 mode 1<br/>
+                   Meinberg PZF535/PZF509 receiver (FM demodulation/OCXO / 50us)<br/>
+    8 2            * server 127.127.8.0-3 mode 2<br/>
+                   Meinberg DCF U/A 31/DCF C51 receiver (AM demodulation / 4ms)<br/>
+    8 3            * server 127.127.8.0-3 mode 3<br/>
+                   ELV DCF7000 (sloppy AM demodulation / 50ms)<br/>
+    8 4            * server 127.127.8.0-3 mode 4<br/>
+                   Walter Schmid DCF receiver Kit (AM demodulation / 1ms)<br/>
+    8 5            * server 127.127.8.0-3 mode 5<br/>
+                   RAW DCF77 100/200ms pulses (Conrad DCF77 receiver module / 5ms)<br/>
+    8 6            * server 127.127.8.0-3 mode 6<br/>
+                   RAW DCF77 100/200ms pulses (TimeBrick DCF77 receiver module / 5ms)<br/>
+    8 7            * server 127.127.8.0-3 mode 7<br/>
+                   Meinberg GPS166/GPS167 receiver (GPS / 1us)<br/>
+    8 8            * server 127.127.8.0-3 mode 8<br/>
+                   IGEL clock<br/>
+    8 9            * server 127.127.8.0-3 mode 9<br/>
+                   Trimble SVeeSix GPS receiverTAIP protocol (GPS / 1us)<br/>
+    8 10           * server 127.127.8.0-3 mode 10<br/>
+                   Trimble SVeeSix GPS receiver TSIP protocol (GPS / 1us) (no kernel support yet)<br/>
+    8 11           * server 127.127.8.0-3 mode 11<br/>
+                   Radiocode Clocks Ltd RCC 8000 Intelligent Off-Air master clock support<br/>
+    8 12           * server 127.127.8.0-3 mode 12<br/>
+                   HOPF Funkuhr 6021<br/>
+    8 13           * server 127.127.8.0-3 mode 13<br/>
+                   Diem's Computime radio clock<br/>
+    8 14           * server 127.127.8.0-3 mode 14<br/>
+                   RAWDCF receiver (DTR=high/RTS=low)<br/>
+                   e. g. Expert mouseCLOCK<br/>
+    8 15           * server 127.127.8.0-3 mode 15<br/>
+                   WHARTON 400A Series Clocks with a 404.2 serial interface<br/>
+    8 16           * server 127.127.8.0-3 mode 16<br/>
+                   RAWDCF receiver (DTR=low/RTS=high)<br/>
+    8 17           * server 127.127.8.0-3 mode 17<br/>
+                   VARITEXT receiver (MSF)<br/>
+    9    Type  9 - Magnavox MX4200 GPS receiver (GPS_MX4200)<br/>
+    10   Type 10 - Austron 2200A/2201A GPS receivers (GPS_AS2201)<br/>
+    11   Type 11 - Arbiter 1088A/B GPS receiver (GPS_ARBITER)<br/>
+    12   Type 12 - KSI/Odetics TPRO/S IRIG interface (IRIG_TPRO)<br/>
+    13   Type 13 - Leitch CSD 5300 master clock controller (ATOM_LEITCH)<br/>
+    14   Type 14 - EES M201 MSF receiver (MSF_EES)<br/>
+    15   Type 15 - TrueTime generic receivers<br/>
+    16   Type 16 - Bancomm GPS/IRIG receiver (GPS_BANCOMM)<br/>
+    17   Type 17 - Datum Precision time system (GPS_DATUM)<br/>
+    18   Type 18 - NIST Modem time service (ACTS_NIST)<br/>
+    19   Type 19 - Heath WWV/WWVH receiver (WWV_HEATH)<br/>
+    20   Type 20 - Generic NMEA GPS receiver (NMEA)<br/>
+    21   Type 21 - TrueTime GPS-VME interface (GPS_VME)<br/>
+    22   Type 22 - PPS Clock Discipline (PPS)<br/>
+    23   Type 23 - PTB Modem time service (ACTS_PTB)<br/>
+    24   Type 24 - USNO Modem time service (ACTS_USNO)<br/>
+    25   Type 25 - * TrueTime generic receivers<br/>
+    26   Type 26 - Hewlett Packard 58503A GPS receiver (GPS_HP)<br/>
+    27   Type 27 - Arcron MSF receiver (MSF_ARCRON)<br/>
+    28   Type 28 - Shared memory driver (SHM)<br/>
+    29   Type 29 - Trimble Navigation Palisade GPS (GPS_PALISADE)<br/>
+    30   Type 30 - Motorola UT Oncore GPS GPS_ONCORE)<br/>
+    31   Type 31 - Rockwell Jupiter GPS (GPS_JUPITER)<br/>
+    32   Type 32 - Chrono-log K-series WWVB receiver (CHRONOLOG)<br/>
+    33   Type 33 - Dumb Clock (DUMBCLOCK)<br/>
+    34   Type 34 - Ultralink WWVB receivers (ULINK)<br/>
+    35   Type 35 - Conrad Parallel port radio clock (PCF)<br/>
+    36   Type 36 - Radio WWV/H audio demodulator/decoder (WWV)<br/>
+    37   Type 37 - Forum Graphic GPS dating station (FG)<br/>
+    38   Type 38 - hopf GPS/DCF77 6021/komp for serial line (HOPF_S)<br/>
+    39   Type 39 - hopf GPS/DCF77 6039 for PCI-Bus (HOPF_P)<br/>
+    40   Type 40 - JJY receivers (JJY)<br/>
+    41   Type 41 - TrueTime 560 IRIG-B decoder<br/>
+    42   Type 42 - Zyfer GPStarplus receiver<br/>
+    43   Type 43 - RIPE NCC interface for Trimble Palisade<br/>
+    44   Type 44 - NeoClock4X - DCF77 / TDF serial line<br/>
+<br/>
+    For additionally Information look at:<br/>
+    http://www.eecis.udel.edu/~mills/ntp/html/refclock.html<br/>
+</help>
+
+<help name="NTP_CLOCK_%_PREFER">
+    Soll diese Uhr die bevorzugte Zeitquelle sein, so muss dieser Parameter
+	auf 'yes' gestellt werden.<br/>
+<br/>
+    Bei mehreren Uhren kann nur eine einzige die bevorzugte Uhr sein.<br/>
+<br/>
+    Standard-Einstellung: NTP_CLOCK_%_PREFER='no'<br/>
+</help>
+
+<help name="NTP_CLOCK_%_DEVICE">
+    Device der Uhr, siehe Referenzuhren. Falls kein Device gebraucht wird,
+	einfach leer lassen. Der Eintrag ist von Uhr zu Uhr verschieden, je 
+	nachdem wo sie angeschlossen wird, z. B. '/dev/ttyS0' entspricht COM1.<br/>
+    <br/>
+    Standard-Einstellung: NTP_CLOCK_%_DEVICE=''<br/>
+</help>
+
+<help name="NTP_CLOCK_%_LINK_DEVICE">
+    LinkDevice der Uhr, siehe Referenzuhren. Falls kein LinkDevice gebraucht 
+	wird, einfach leer lassen. Der Eintrag ist von Uhr zu Uhr verschieden, 
+	z. B. '/dev/refclock-' fuer die serielle Conrad Uhr.<br/>
+    <br/>
+    Standard-Einstellung: NTP_CLOCK_%_LINK_DEVICE=''<br/>
+</help>
+
+<help name="NTP_CLOCK_%_LINK_DEVICE_NBR">
+    LinkDeviceNumber der Uhr, siehe Referenzuhren. Falls keine 
+	LinkDeviceNumber gebraucht wird, einfach leer lassen. Der Eintrag ist von
+	Uhr zu Uhr verschieden, z. B. 0 bis 3 fuer die serielle Conrad Uhr.<br/>
+    <br/>
+    Standard-Einstellung: NTP_CLOCK_%_LINK_NBR=''<br/>
+</help>
+
+<help name="NTP_CLOCK_%_STRATUM">
+    Stratum der Uhr, siehe Referenzuhren. Falls kein Stratum gebraucht wird,
+	einfach leer lassen.<br/>
+    <br/>
+    Standard-Einstellung: NTP_CLOCK_%_STRATUM='10'<br/>
+</help>
+
+<help name="NTP_SERVER_N">
+    Gibt die Anzahl der NTP Server an, die in das Peer includiert werden
+	sollen.<br/>
+    <br/>
+    Standard-Einstellung: NTP_SERVER_N='0'<br/>
+</help>
+
+<help name="NTP_SERVER_%">
+    Ein NTP Server im eigenen Netz oder ausserhalb.<br/>
+    <br/>
+    Standard-Einstellung: NTP_SERVER_%='0.pool.ntp.org'<br/>
+</help>
+
+<help name="NTP_SET_SERVER_N">
+    Gibt die Anzahl der NTP Server an, ueber die die Zeit per Menue gesetzt
+	wird, falls der Zeitunterschied zu gross ist.<br/>
+    <br/>
+    Standard-Einstellung: NTP_SET_SERVER_N='0'<br/>
+</help>
+
+<help name="NTP_SET_SERVER_%">
+    Ein NTP Server im eigenen Netz oder ausserhalb.<br/>
+    <br/>
+    Standard-Einstellung: NTP_SET_SERVER_%='0.pool.ntp.org'<br/>
+</help>
+
+<help name="NTP_PEER_N">
+    Gibt die Anzahl der Peers an, mit welchen NTP eine gemeinsame Zeit 
+	aushandeln soll.<br/>
+    <br/>
+    Standard-Einstellung: NTP_PEER_N='0'<br/>
+</help>
+
+<help name="NTP_PEER_%">
+    Gibt ein Peer an, mit welchem NTP eine gemeinsame Zeit aushandeln soll.<br/>
+    <br/>
+    Standard-Einstellung: NTP_PEER_%=''<br/>
+</help>
+
+<help name="NTP_ADD_PARAM_N">
+    Gibt die Anzahl der hinzuzufuegenden Parameter an.<br/>
+    <br/>
+    Standard-Einstellung: NTP_ADD_PARAM_N='0'<br/>
+</help>
+
+<help name="NTP_ADD_PARAM_%">
+    Der hier angegebene Parameter wird im NTP-Konfigurationsfile 'ntp.conf'
+	eingefuegt.<br/>
+    <br/>
+    Standard-Einstellung: NTP_ADD_PARAM_%='statsdir /var/log/ntp/'<br/>
+</help>
+
+<help name="NTP_LOG_EVENT_N">
+    Ueber diesen Parameter kann man festlegen, wieviele verschiedene Events
+	im Log erfasst werden sollen.<br/>
+<br/>
+    Gueltige Werte: Ziffer<br/>
+    <br/>
+    Standard-Einstellung: NTP_LOG_EVENT_N='1'<br/>
+</help>
+
+<help name="NTP_LOG_EVENT_%_ENTRY">
+    Ueber diesen Parameter kann man festlegen, welche Informationen in
+    die Logdatei geschrieben werden sollen. <br/>
+    <br/>
+    Es kann zwischen den folgenden Optionen gewaehlt werden:<br/>
+<br/>
+    all         : alles<br/>
+    syncstatus  : syncstatus<br/>
+    sysevents   : events<br/>
+    syncall     : sync alles<br/>
+    clockall    : clock alles<br/>
+<br/>
+    Standard-Einstellungen: NTP_LOG_EVENT_%_ENTRY='all'<br/>
+</help>
+
+<help name="NTP_LOG_COUNT">
+    Ueber diesen Parameter wird eingestellt, wie viele Log-Dateien
+    vorgehalten werden sollen. Wird dieser Wert ueberschritten, so
+    wird die aelteste Log-Datei geloescht.<br/>
+    <br/>
+    Standard-Einstellungen: NTP_LOG_COUNT='10'<br/>
+</help>
+
+<help name="NTP_LOG_INTERVAL">
+    Dieser Parameter bestimmt, in welchen Intervallen die Log-Dateien
+    archiviert werden sollen. Zur Auswahl stehen die Schluesselwoerter
+    'daily' - taeglich, 'weekly' - woechentlich und 'monthly - monatlich.<br/>
+    <br/>
+    Standard-Einstellungen: NTP_LOG_INTERVALL='weekly'<br/>
+</help>

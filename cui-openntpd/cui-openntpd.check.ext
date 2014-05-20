@@ -1,0 +1,14 @@
+set countOfActivePrefer=0
+foreach i in ntp_clock_n
+do
+    if ( ntp_clock_%_prefer[i] == "yes" )
+    then
+        set countOfActivePrefer=countOfActivePrefer+1
+    fi
+done
+
+if ( countOfActivePrefer > "1" )
+then
+    error "You can not activate more than one of the parameters NTP_CLOCK_%_PREFER!"
+    error "Only one clock can be the prefered clock."
+fi

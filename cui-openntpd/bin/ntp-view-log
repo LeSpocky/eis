@@ -1,0 +1,37 @@
+#!/bin/sh
+#----------------------------------------------------------------------------
+# /var/install/bin/ntp-view-log - view show NTP log
+#
+# Copyright (c) 2003-2004 Albert Steiner <albert.steiner.dw(at)gmx(dot)at> 
+# Copyright (c) 2005-2009 The Eisfair Team, team(at)eisfair(dot)org
+#
+# Creation:     27.12.2003  as
+# Last Update:  $Id: ntp-view-log 17849 2009-01-08 19:34:14Z starwarsfan $
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+
+# read eislib
+. /var/install/include/eislib
+
+log_dir=/var/log
+log_file=$log_dir/ntp.log
+
+### view log file ###
+clrhome
+mecho -info "Viewing \"$log_file\""
+mecho
+
+if [ -f $log_file -a -s $log_file ]
+then
+    export LESSCHARSET=latin1
+    /usr/bin/less +G $log_file
+else
+    mecho -warn "Could not find desired log file or file is empty, please try again later!"
+fi
+
+mecho
+anykey

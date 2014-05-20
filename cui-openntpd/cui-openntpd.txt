@@ -1,0 +1,612 @@
+
+
+                                 Das NTP-Paket
+
+   Dieses Paket wurde initial von Albert Steiner (E-MAIL
+   [1]albert.steiner.dw@gmx.at) zusammengestellt und spaeter von Juergen
+   Edner (E-MAIL [2]juergen@eisfair.org) ueberarbeitet.
+
+                                 Die Einleitung
+
+   NTP ist das Network Time Protocol, der Server funktioniert damit auch
+   als NTP Server/Client d.h. man kann mit Hilfe von
+   NTP-Server/Clientprogrammen den Linux Rechner als NTP Server/Client im
+   LAN verwenden.
+
+                                 Die Funktionen
+
+   Das NTP-Paket besteht aus folgenden Komponenten:
+
+     * NTP - wird fuer den Zeitabgleich benoetigt.
+       ([3]http://www.ntp.org/downloads.html)
+     * Power Deamon (setserialbits-Programm extrahiert) wird
+       zur Konfiguration der seriellen Schnittstelle benoetigt.
+       ([4]http://power.sourceforge.net/)
+
+                              Die Voraussetzungen
+
+   Dieses Paket benoetigt zur korrekten Funktion ein installiertes
+   Inet-Paket.
+
+                                Die Installation
+
+   Das NTP-Paket wird ueber das Setup-Menue installiert. Wird eine aeltere
+   Paketversion vorgefunden, so wird deren Konfiguration gesichert und das
+   alte Paket deinstalliert bevor die neuen Programmdateien installiert
+   und die Konfiguration uebernommen wird. Danach wird direkt der
+   Konfigurations-Editor gestartet um die Konfiguration eventuell anpassen
+   zu koennen. Nach Beendigung dieses Schrittes werden die
+   Konfigurationsdateien generiert und das benoetigte Programm gestartet.
+
+                          Das Menue im Setup-Programm
+
+   Das Menue im Setup-Programm ist wie folgt aufgebaut:
+
+     * NTP Service administration
+          + View documentation: Anzeigen der Dokumentation
+          + Edit configuration: Bearbeiten der Konfiguration
+          + Advanced configuration file handling: Konfigurationen
+            verwalten
+          + Show status: NTP Status anzeigen
+          + Stop NTP server: NTP anhalten
+          + Start NTP server: NTP starten
+          + Set time via other NTP server: Zeit ueber einen anderen NTP
+            Server einstellen!
+          + View NTP information: NTP Informationen ueber peers anzeigen
+          + View linked devices: Informationen ueber Linked Devices
+            anzeigen
+          + View log file: Logfile anzeigen
+
+   Die Menuepunkte duerften selbsterklaerend sein, da sie keinerlei
+   weitere Eingaben erwarten. Aus diesem Grund wird auf deren Funktion
+   nicht weiter eingegangen.
+
+Die Hardware
+
+   Fuer den Betrieb braucht man nicht zwingend einen eigenen Empfaenger!
+
+   Es gibt 3 Varianten, die Zeitinformation fuer eisfair zu erhalten:
+
+     * 1. mit Hardware-Empfaenger
+     * 2. per Netzwerk
+     * 3. Variante 1 und 2 gemischt
+
+   Zu Variante 1:
+          Wenn man einen eigenen Empfaenger verwenden moechte, so muss man
+          ein Geraet aus der Liste der unterstuetzten Geraete auswaehlen
+          oder eines selber bauen.
+
+          Fuer den Bau eines eigenen DCF77 Empfaengers gibt es eine
+          Anleitung bei:
+
+          [5]http://www.obbl-net.de/dcf77.html
+
+          Ich habe diese Anleitung benutzt und es funktioniert super, nur
+          sollte man den Empfaenger mit 5V versorgen, da die
+          Schnittstellen manchmal zuwenig liefern, mit einem Asus TUV4X
+          ging es nicht ohne!
+
+   Zu Variante 2:
+          Es muessen mindestens zwei Zeitquellen (time sources) definiert
+          werden. Mehr als drei Zeitquellen bringen keine erhoehte
+          Genauigkeit. Aus Gruenden der Redundanz koennen jedoch mehrere
+          angegeben werden. Das Intervall fuer den Abgleich verwaltet der
+          ntpd selbststaendig in Abhaengigkeit von der Zeitdifferenz und
+          weiteren Faktoren.
+
+          Nr. 1 - Type 1 Undisciplined Local Clock (LOCAL) Nr. 2 - ein
+          Zeitserver, der per Netzwerk erreichbar ist. (Lan oder WAN)
+
+          Die Zeitserver im Internet sind hierarchisch organisiert. Es
+          gibt sog. Primary Time Sources, Secondary Time Sources etc.
+          (siehe www.ntp.org Public Time Server List)
+
+          In vielen Dokumentationen wird ein Zeitserver der PTB (siehe
+          [6]http://www.ptb.de) angegeben. Das ist ein stratum 1 Server.
+
+          Fuer ein Heimnetzwerk oder ein Firmennetz, das nicht eine auf
+          die Millisekunde genaue Zeit benoetigt, kann zur Entlastung o.a.
+          Server 'de.pool.ntp.org' genutzt werden. (siehe
+          [7]http://www.pool.ntp.org/zone/europe)
+
+          Zumeist ist es von Vorteil, im eigenen Netz eine 'Zeithierachie'
+          zu etablieren. Ein oder zwei Server holen die Zeit von einer
+          externen Quelle. Alle Rechner im Hausnetz holen die Zeit von
+          diesen ein oder zwei Servern. (alle haben identische Zeit, ggf.
+          alle die 'falsche'!)
+
+Die Software
+
+   NTP wurde mit allen moeglichen Referenzuhren compiliert!
+
+   Genauere infos:
+   [8]http://www.eecis.udel.edu/~mills/ntp/html/refclock.html
+
+     * Type 1 Undisciplined Local Clock (LOCAL)
+     * Type 2 Trak 8820 GPS Receiver (GPS_TRAK)
+     * Type 3 PSTI/Traconex 1020 WWV/WWVH Receiver (WWV_PST)
+     * Type 4 Spectracom WWVB and GPS Receivers (WWVB_SPEC)
+     * Type 5 TrueTime GPS/GOES/OMEGA Receivers (TRUETIME)
+     * Type 6 IRIG Audio Decoder (IRIG_AUDIO)
+     * Type 7 Radio CHU Audio Demodulator/Decoder (CHU)
+     * Type 8 Generic Reference Driver (PARSE)
+          + * server 127.127.8.0-3 mode 0
+            Meinberg PZF535/PZF509 receiver (FM demodulation/TCXO / 50us)
+          + * server 127.127.8.0-3 mode 1
+            Meinberg PZF535/PZF509 receiver (FM demodulation/OCXO / 50us)
+          + * server 127.127.8.0-3 mode 2
+            Meinberg DCF U/A 31/DCF C51 receiver (AM demodulation / 4ms)
+          + * server 127.127.8.0-3 mode 3
+            ELV DCF7000 (sloppy AM demodulation / 50ms)
+          + * server 127.127.8.0-3 mode 4
+            Walter Schmid DCF receiver Kit (AM demodulation / 1ms)
+          + * server 127.127.8.0-3 mode 5
+            RAW DCF77 100/200ms pulses (Conrad DCF77 receiver module /
+            5ms)
+          + * server 127.127.8.0-3 mode 6
+            RAW DCF77 100/200ms pulses (TimeBrick DCF77 receiver module /
+            5ms)
+          + * server 127.127.8.0-3 mode 7
+            Meinberg GPS166/GPS167 receiver (GPS / < <1us)
+          + * server 127.127.8.0-3 mode 8
+            IGEL clock
+          + * server 127.127.8.0-3 mode 9
+            Trimble SVeeSix GPS receiverTAIP protocol (GPS / < <1us)
+          + * server 127.127.8.0-3 mode 10
+            Trimble SVeeSix GPS receiver TSIP protocol (GPS / < <1us) (no
+            kernel support yet)
+          + * server 127.127.8.0-3 mode 11
+            Radiocode Clocks Ltd RCC 8000 Intelligent Off-Air Master Clock
+            support
+          + * server 127.127.8.0-3 mode 12
+            HOPF Funkuhr 6021
+          + * server 127.127.8.0-3 mode 13
+            Diem's Computime Radio Clock
+          + * server 127.127.8.0-3 mode 14
+            RAWDCF receiver (DTR=high/RTS=low)
+          + * server 127.127.8.0-3 mode 15
+            WHARTON 400A Series Clocks with a 404.2 Serial Interface
+          + * server 127.127.8.0-3 mode 16
+            RAWDCF receiver (DTR=low/RTS=high)
+          + * server 127.127.8.0-3 mode 17
+            VARITEXT Receiver (MSF)
+     * Type 9 Magnavox MX4200 GPS Receiver (GPS_MX4200)
+     * Type 10 Austron 2200A/2201A GPS Receivers (GPS_AS2201)
+     * Type 11 Arbiter 1088A/B GPS Receiver (GPS_ARBITER)
+     * Type 12 KSI/Odetics TPRO/S IRIG Interface (IRIG_TPRO)
+     * Type 13 Leitch CSD 5300 Master Clock Controller (ATOM_LEITCH)
+     * Type 14 EES M201 MSF Receiver (MSF_EES)
+     * Type 15 * TrueTime generic receivers
+     * Type 16 Bancomm GPS/IRIG Receiver (GPS_BANCOMM)
+     * Type 17 Datum Precision Time System (GPS_DATUM)
+     * Type 18 NIST Modem Time Service (ACTS_NIST)
+     * Type 19 Heath WWV/WWVH Receiver (WWV_HEATH)
+     * Type 20 Generic NMEA GPS Receiver (NMEA)
+     * Type 21 TrueTime GPS-VME Interface (GPS_VME)
+     * Type 22 PPS Clock Discipline (PPS)
+     * Type 23 PTB Modem Time Service (ACTS_PTB)
+     * Type 24 USNO Modem Time Service (ACTS_USNO)
+     * Type 25 * TrueTime generic receivers
+     * Type 26 Hewlett Packard 58503A GPS Receiver (GPS_HP)
+     * Type 27 Arcron MSF Receiver (MSF_ARCRON)
+     * Type 28 Shared Memory Driver (SHM)
+     * Type 29 Trimble Navigation Palisade GPS (GPS_PALISADE)
+     * Type 30 Motorola UT Oncore GPS (GPS_ONCORE)
+     * Type 31 Rockwell Jupiter GPS (GPS_JUPITER)
+     * Type 32 Chrono-log K-series WWVB receiver (CHRONOLOG)
+     * Type 33 Dumb Clock (DUMBCLOCK)
+     * Type 34 Ultralink WWVB Receivers (ULINK)
+     * Type 35 Conrad Parallel Port Radio Clock (PCF)
+     * Type 36 Radio WWV/H Audio Demodulator/Decoder (WWV)
+     * Type 37 Forum Graphic GPS Dating station (FG)
+     * Type 38 hopf GPS/DCF77 6021/komp for Serial Line (HOPF_S)
+     * Type 39 hopf GPS/DCF77 6039 for PCI-Bus (HOPF_P)
+     * Type 40 JJY Receivers (JJY)
+     * Type 41 TrueTime 560 IRIG-B Decoder
+     * Type 42 Zyfer GPStarplus Receiver
+     * Type 43 RIPE NCC interface for Trimble Palisade
+     * Type 44 NeoClock4X - DCF77 / TDF serial line
+
+                        Die Aenderung der Konfiguration
+
+   Die Konfiguration kann ueber den Menuepunkt 'Edit configuration'
+   geaendert werden. Standardmaessig wird der Editor aufgerufen, der in
+   der Environment- Konfiguration ueber die Variable 'EDITOR' festgelegt
+   wurde. Nachdem der Editor beendet wurde wird abgefragt, ob die
+   Konfiguration aktiviert werden soll. Wird dies bestaetigt, werden ueber
+   ein Skript die Anpassungen umgehend wirksam gemacht
+
+                            Die Konfigurationsdatei
+
+   In der Konfigurationsdatei, welche ueber das Menue zugaenglich ist,
+   sind folgende Parameter vorhanden; wer sie von Hand editieren will
+   findet die Konfigurationsdatei unter /etc/config.d/ntp.
+
+                                 Die Parameter
+
+   START_NTP
+          Ueber diesen Parameter wird mit den Werten yes bzw. no
+          gesteuert, ob NTP beim Boot des Rechners automatisch gestartet
+          werden soll.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: START_NTP='no'
+
+   NTP_CLOCK_N
+          Gibt die Anzahl der Uhren an. Diesen Parameter sollte man
+          unbedingt erhoehen!
+
+          Gueltige Werte: Zahl
+
+          Beispiel:
+
+#
+# Type 1 Undisciplined Local Clock (LOCAL) vordefiniert!
+#
+NTP\_CLOCK\_1\_TYPE='1'
+NTP\_CLOCK\_1\_MODE=''
+NTP\_CLOCK\_1\_DEVICE=''
+NTP\_CLOCK\_1\_LINK\_DEVICE=''
+NTP\_CLOCK\_1\_LINK\_DEVICE\_N=''
+NTP\_CLOCK\_1\_STRATUM='10'
+
+          Standardeinstellung: NTP_CLOCK_N='0'
+
+   NTP_CLOCK_x_TYPE
+          Type der Uhr siehe Referenzuhren.
+
+          Gueltige Werte: Zahl
+
+          Standardeinstellung: NTP_CLOCK_1_TYPE='1'
+
+   NTP_CLOCK_x_MODE
+          Modus der Uhr, siehe Referenzuhren. Falls kein Mode gebraucht
+          wird, einfach leer lassen.
+
+          Gueltige Werte: Zahl
+
+          Standardeinstellung: NTP_CLOCK_1_MODE=''
+
+   NTP_CLOCK_x_DEVICE
+          Device der Uhr, siehe Referenzuhren. Falls kein Device gebraucht
+          wird einfach leer lassen. Von Uhr zu Uhr verschieden, je nachdem
+          wo sie angeschlossen wird z.B. /dev/ttyS0 = Com1
+
+          Gueltige Werte: Device-Name
+
+          Standardeinstellung: NTP_CLOCK_1_DEVICE=''
+
+   NTP_CLOCK_x_LINK_DEVICE
+          LinkDevice der Uhr, siehe Referenzuhren. Falls kein LinkDevice
+          gebraucht wird einfach leer lassen. Von Uhr zu Uhr verschieden,
+          z.B. /dev/refclock- fuer die serielle Conrad Uhr
+
+          Gueltige Werte: LinkDevice-Name
+
+          Standardeinstellung: NTP_CLOCK_1_LINK_DEVICE=''
+
+   NTP_CLOCK_x_LINK_DEVICE_N
+          LinkDeviceNumber der Uhr, siehe Referenzuhren. Falls kein
+          LinkDeviceNumber gebraucht wird einfach leer lassen. Von Uhr zu
+          Uhr verschieden, z.B. 0 bis 3 fuer die serielle Conrad Uhr.
+
+          Gueltige Werte: Zahl
+
+          Standardeinstellung: NTP_CLOCK_x_LINK_DEVICE_N=''
+
+   NTP_CLOCK_x_STRATUM
+          Stratum der Uhr, siehe Referenzuhren. Falls kein Stratum
+          gebraucht wird einfach leer lassen.
+
+          Gueltige Werte: Zahl
+
+          Standardeinstellung: NTP_CLOCK_1_STRATUM=''
+
+   NTP_SERVER_N
+          Gibt die Anzahl der NTP Server an, die in das Peer includiert
+          werden!
+
+          Gueltige Werte: Zahl
+
+          Standardeinstellung: NTP_SERVER_N='0'
+
+   NTP_SERVER_x
+          Ein NTP Server im eigenen Netz oder ausserhalb.
+
+          Gueltige Werte: NTP Server
+
+          Beispiel: NTP_SERVER_1='de.pool.ntp.org'
+
+   NTP_SET_SERVER_N
+          Gibt die Anzahl der NTP Server an ueber die die Zeit per Menue
+          gesetzt wird falls der Zeitunterschied zu gross ist!
+
+          Gueltige Werte: Zahl
+
+          Standardeinstellung: NTP_SET_SERVER_N='0'
+
+   NTP_SET_SERVER_x
+          n NTP Server im eigenen Netz oder ausserhalb.
+
+          Gueltige Werte: NTP Server
+
+          Beispiel: NTP_SET_SERVER_1='de.pool.ntp.org'
+
+#----------------------------------------------------------------
+# Zusaetzliche Parameter for NTP
+#
+# Damit kann man die ntp.conf nach seinen wuenschen gestalten
+# *** Fuer Benutzer die wissen was Sie tun !!! ***
+#
+# moegliche Parameter siehe : http://ntp.org
+#----------------------------------------------------------------
+
+NTP_ADD_PARAM_N='0'
+    (Zahl): Gibt die Anzahl der Parameter an.
+    Default ist 0.
+
+NTP_ADD_PARAM_1='statsdir /var/log/ntp/'
+    (Parameter) : Wird in ntp.conf eingefuegt!
+
+          Das NTP-Paket verwendet Logdateien, um Meldungen ueber seinen
+          laufenden Betrieb zu speichern. Um zu verhindern, dass diese
+          Dateien zu gross und unuebersichtlich werden, kann man
+          einstellen wie das System mit den Dateien umgehen soll.
+
+   NTP_LOG_CONFIG
+          Ueber diesen Parameter kann man festlegen welche Informationen
+          in die Logdatei geschrieben werden sollen. Es kann zwischen
+          folgenden Optionen gewaehlt werden. Einzelne Optionen koennen
+          mit Hilfe eines '+'-Zeichens kombiniert werden!
+
+          all : alles syncstatus : syncstatus sysevents : events syncall :
+          sync alles clockall : clock alles
+
+          Beispiel: syncstatus + sysevents + clockall
+
+          Standardeinstellung: NTP_LOG_CONFIG='all'
+
+   NTP_LOG_COUNT
+          Ueber diesen Parameter wird eingestellt, wie viele Logdateien
+          vorgehalten werden sollen. Wird dieser Wert ueberschritten, so
+          wird die aelteste Logdatei geloescht.
+
+          Gueltige Werte: Zahl
+
+          Standardeinstellung: NTP_LOG_COUNT='10'
+
+   NTP_LOG_INTERVAL
+          Dieser Parameter bestimmt in welchen Intervallen die Logdateien
+          archiviert werden sollen. Zur Auswahl stehen die
+          Schluesselwoerter 'daily' - taeglich, 'weekly' - woechentlich
+          und 'monthly - monatlich.
+
+          Gueltige Werte: daily, weekly, monthly
+
+          Standardeinstellung: NTP_LOG_INTERVALL='weekly'
+
+                           Serielle Empfaenger testen
+
+   Schliessen Sie den Empfaenger an dem ComPort den Sie in
+   [9]NTP_CLOCK_x_DEVICE definiert haben an. Der symbolischen Link
+   NTP_CLOCK_x_LINK_DEVICE + NTP_CLOCK_x_LINK_DEVICE_N, welcher auf das
+   NTP_CLOCK_x_DEVICE zeigt wurde beim Konfigurieren erzeugt.
+
+   Beispiel DCF77 Empfaenger:
+
+NTP_CLOCK_2_DEVICE='/dev/ttyS1'
+NTP_CLOCK_2_LINK_DEVICE='/dev/refclock-'
+NTP_CLOCK_2_LINK_DEVICE_N='1'
+
+/dev/ttyS1 an /dev/refclock-1 # also an com2
+
+   Nun gilt es eine gute Position fuer den Empfaenger ausfindig zu machen.
+   Das im Quellcode enthaltene Tool testdcf macht dies sehr bequem
+   moeglich. NTP muss vor dem Start von testdcf beendet werden, genauso
+   umgekehrt testdcf muss vor dem Start von NTP beendet werden! Starten
+   Sie es mit dem Kommando: testdcf /dev/refclock-1. Die LED sollte nun
+   gleichmaessig einmal pro Sekunde blinken. Haben Sie eine gute Position
+   ausfindig machen koennen (das serielle Kabel der Uhr kann bis auf 100m
+   verlaengert werden!), so sollte etwa 3 Minuten nach den Aufruf von
+   'testdcf' eine Uhrzeit empfangen worden sein (hier : Sa, 22:46:07,
+   24.01.04).
+
+testdcf /dev/refclock-1
+
+DCF77 monitor - Copyright (C) 1993-1996, Frank Kardel
+
+RADMLSMin....PHour..PMDay..DayMonthYear....P
+RADMLS1248124P124812P1248121241248112481248P
+\ #-###------#------.......................... *** INCOMPLETE
+/ ............................................ Sa, 22:46:07, 24.01.04, <____>
+
+   Zu erwaehnen ist hier nur, dass die Uhr mindestens eine Minute braucht,
+   um ein erstes Mal die korrekte Zeit zu liefern, da ein kompletter
+   Datensatz bei DCF77 eine ganze Minute einnimmt. Die zahlreichen
+   meldungen nach Starten des NTP-Daemons sind also kein Grund zur
+   Beunruhigung. Nach ein paar Minuten sollte sich das Problem mit dem
+   Auftauchen der Logmeldung clk_okay selber loesen:
+
+   Nach einer erfolgreichen Synchronisation taucht im NTP-Logfile folgende
+   Nachricht auf:
+
+24 Jan 20:57:02 ntpd[3260]: system event 'event_restart' (0x01)
+    status 'sync_alarm, sync_unspec, 1 event, event_unspec' (0xc010)
+24 Jan 20:57:12 ntpd[3260]: peer LOCAL(1) event 'event_reach' (0x84)
+    status 'unreach, conf, 1 event, event_reach' (0x8014)
+24 Jan 20:58:00 ntpd[3260]: parse: convert_rawdcf: BAD DATA - no conversion
+    for "---------------R-D--s12-81--p--48--P--4-121------1------4"
+24 Jan 20:58:00 ntpd[3260]: PARSE receiver #1: conversion status
+    "CONVERSION FAILED; DATE ILLEGAL"
+24 Jan 20:58:00 ntpd[3260]: PARSE receiver #1: interval for following error
+    message class is at least 00:01:00
+24 Jan 20:58:00 ntpd[3260]: PARSE receiver #1: FAILED TIMECODE:
+    "---------------R-D--s12-81--p--48--P--4-121------1------" (check
+    receiver configuration / cableling)
+24 Jan 20:58:00 ntpd[3260]: clock GENERIC(1) event 'clk_baddate' (0x05)
+24 Jan 20:58:00 ntpd[3260]: peer GENERIC(1) event 'event_peer_clock' (0x85)
+    status 'unreach, conf, 1 event, event_peer_clock' (0x8015)
+24 Jan 20:58:00 ntpd[3260]: system event 'event_clock_excptn' (0x07) status
+    'sync_alarm, sync_unspec, 2 events, event_restart' (0xc021)
+24 Jan 20:59:00 ntpd[3260]: PARSE receiver #1: packet format "RAW DCF77
+    Timecode"
+24 Jan 20:59:00 ntpd[3260]: PARSE receiver #1: STATE CHANGE:  -> TIME CODE;
+    (LEAP INDICATION; ANTENNA)
+24 Jan 20:59:00 ntpd[3260]: PARSE receiver #1: SYNCHRONIZED
+24 Jan 20:59:00 ntpd[3260]: clock GENERIC(1) event 'clk_okay' (0x00)
+
+   Wie man hier sehr schoen sieht, hat es zwei Minuten gedauert.
+
+                   Den Zeitempfang per Netzwerk ueberpruefen
+
+   Der Benutzer root kann den Status mit dem Kommando 'ntpq -p'
+   ueberpruefen. Aenderungen erfolgen jedoch langsam. Das Intervall legt
+   der ntpd selbst anhand der Zeitdifferenz etc. fest. Einige Minuten
+   Geduld sind hier erforderlich.
+
+                           Die NTP-Empfangsqualitaet
+
+   Hinweis
+   Diese Informationen erhalten Sie wenn Sie Im Menue Info anwaehlen
+
+   Um eine genaue Aussage ueber die Empfangsqualitaet des Empfaengers zu
+   erhalten, kann das Programm ntpq mit dem Befehl 'ntpq -c clocklist'
+   verwendet werden.
+
+   Mit dem Shell-Befehl 'ntpq' kann der Status eines laufenden NTP-Servers
+   abgefragt werden. Wird ntpq ohne weiter Optionen aufgerufen, so wird
+   der Localhost als NTP-Server angenommen, die Steuerung von ntpq erfolgt
+   dann ueber die Kommandozeile:
+
+ntpq -c clocklist
+
+status=0005 clk_okay, last_clk_baddate,
+device="RAW DCF77 CODE (Conrad DCF77 receiver module)",
+timecode="------------------M-S1--8--4P1----2p--4--2-241------4-----p",
+poll=49, noreply=0, badformat=5, baddata=0, fudgetime1=292.000,
+fudgetime2=0.000, stratum=0, refid=DCFa, flags=0,
+refclock_time="c3bd58e1.00000000  Sat, Jan 24 2004 20:49:37.000 UTC",
+refclock_status="TIME CODE; (LEAP INDICATION; ANTENNA)",
+refclock_format="RAW DCF77 Timecode",
+refclock_states="*NOMINAL: 00:50:37 (96.29%); NO RESPONSE: 00:00:57
+    (1.80%); ILLEGAL DATE: 00:01:00 (1.90%); running time: 00:52:34"
+
+   In diesem Beispiel hat die Uhr bei einer Gesamtlaufzeit von ca. 52
+   Minuten (siehe running time) etwa 50 Minuten lang guten Empfang. Dies
+   entspricht 96.29 Mit dem Kommando 'peers' werden in einer Tabelle die
+   aktiven Referenzuhren zeilenweise angezeigt. Ein der Zeile
+   vorangestellter Stern '*' zeigt an, dass dieser Peer die aktuelle
+   Zeitreferenz ist:
+
+tpq -c peers localhost
+
+remote         refid      st t when poll reach  delay  offset  jitter
+=====================================================================
+*GENERIC(1)    .DCFa.      0 l   47   64  377   0.000  -0.728  0.015
+ LOCAL(1)      LOCAL(1)   10 l   58   64  377   0.000   0.000  0.015
+
+   Folgende Informationen werden u.a. angezeigt:
+
+   - remote: Auflistung aller verfuegbaren Zeit-Server (ntp.conf)
+
+   - refid: Referenznummer
+
+   - when: wann die letzte Abfrage stattgefunden hat (in Sekunden)
+
+   - poll: in welchem Intervall der Zeitserver abgefragt wird
+
+   - offset: Differenz zwischen Systemzeit und Referenzzeit (in
+   Millisekunden)
+
+                        Windows als NTP Client / Server
+
+Allgemeines
+
+   Will mann die Zeit seines Windows-PCs mit einem zentralen Zeitserver
+   synchronisieren, so kann man entweder auf mitgelieferte Programme des
+   Betreibssystems zurueckgreifen oder auch eine kostenlose
+   Windows-Version des originalen NTP-Programms [10]http://www.ntp.org
+   verwenden, welches man z.B. von folgender Seite herunter laden kann:
+
+   [11]http://www.meinberg.de/german/sw/ntp.htm
+
+   Wer den Status seines Zeitservers bequem ueberwachen moechte, findet
+   auf folgende Seite auch ein kostenloses NTP Monitorprogramm:
+
+   http://www.meinberg.de/german/sw/time-server-monitor.htm
+
+Windows NT
+
+   Dieser Dienst ist auch fuer Windows NT erhaeltlich und ersetzt den
+   alten Zeitdienst aus dem NT Resource-Kit
+
+Windows 2000
+
+   Windows 2000 bietet mit dem integrierten Dienst 'w32time.exe' die
+   Moeglichkeit als NTP Server oder Client zu fungieren. Zur Aktivierung
+   des NTP-Client/Servers unter Windows 2000 muessen dem System die
+   erforderlichen Parameter bekannt und der entsprechende Zeitdienst
+   dauerhaft gestartet sein. Der Zeitdienst findet sich unter
+   'Verwaltung/Dienste' als 'Windows-Zeitgeber' (engl.: 'Windows Time').
+   Er sollte nach Einstellung der Parameter mit dem Autostarttyp
+   'Automatisch' gestartet werden. (Starts und Stopps dieses Dienstes sind
+   auch mit den Command-Line-Befehlen 'net start w32time' beziehungsweise
+   'net stop w32time' moeglich.) Die fuer den Zeitdienst relevanten
+   Parameter finden sich alle in der Registry und lassen sich dort bei
+   Bedarf auch editieren:
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\Parameters.
+
+   Eine Dokumentation der einzelnen Registry-Eintraege finden Sie bei
+   Microsoft.
+
+   Damit Windows 2000 als NTP-Client fungieren kann ist die Adresse des
+   Zeit-Servers, der bei jeder Synchronisation abgefragt werden soll,
+   einzutragen. Der oder die ausgewaehlten NTP-Server lassen sich entweder
+   in der Registry unter dem Eintrag 'ntpserver' editieren oder mit dem
+   Command-Line-Befehl 'net time /setsntp[:NTP-Serverliste]'. (Wird eine
+   ganze Liste eingegeben, so sind die einzelnen Adressen durch
+   Leerzeichen abzutrennen und die Liste beim net-Befehl in
+   Anfuehrungszeichen zu setzen.) Beim naechsten Start des Zeitdienstes
+   werden die Eintraege uebernommen und die Zeit synchronisiert.
+   Standardmaessig geschieht dies dann in Folge alle acht Stunden. Die
+   Frequenz versteckt sich unter dem Eintrag 'Period' und ist
+   standardmaessig als REG_SZ mit dem Wert 'SpecialSkew' abgelegt. Um
+   beispielsweise 24-mal am Tag zu synchronisieren, muss dieser
+   'Period'-Eintrag durch einen entsprechenden REG_DWORD mit dem
+   Dezimalwert 24 ersetzt werden (das heisst: den alten Eintrag komplett
+   loeschen oder umbenennen und einen Neueintrag zur Eingabe numerischer
+   Werte anlegen). Die aktuell gesetzten Zeit-Server lassen sich uebrigens
+   auch via Command-Line mit dem Befehl 'net time /querysntp' anzeigen.
+
+   Damit Windows 2000 nicht nur als NTP-Client, sondern auch als Server
+   fungiert, ist in der Registry folgender Eintrag noetig:
+   'LocalNTP' muss von standardmaessig '0' auf '1' gesetzt werden.
+   Nach anschliessendem Neustart des Dienstes koennen jetzt auch beliebige
+   NTP/SNTP-Clients von diesem Windows-2000-Rechner die Zeit abfragen. Ein
+   weiterer Parameter in der Registry koennte gegebenenfalls interessant
+   werden: die Frequenz, mit der die Zeit-Server von Windows 2000
+   abgefragt werden.
+
+   Eventuelle Fehlermeldungen des Zeitdienstes werden im Systemprotokoll
+   der Ereignisanzeige eingetragen. Zu Diagnosezwecken laesst sich
+   uebrigens auch die Command-Line-Utility 'w32tm.exe' nutzen, der
+   Zeitdienst muss dabei deaktiviert sein. Eine Uebersicht der
+   Aufrufvarianten bietet der Hilfe-Befehl 'w32tm /?'. Beispielsweise kann
+   mit 'w32tm -once' eine einmalige Synchronisation mit detaillierter
+   Anzeige ausgeloest werden.
+
+Windows XP
+
+   Windows XP kann bereits selbstaendig einen NTP Server abfragen und die
+   Zeit angleichen. Die Einstellungen koennen in der Systemsteuerung unter
+   'Datum/Uhrzeit' vorgenommen werden. Damit Windows XP auch als
+   NTP-Server fungiert, ist in der Registry, wie auch bei Windows 2000,
+   folgender Eintrag noetig: 'LocalNTP' = '1'.
+     __________________________________________________________________
+
+
+
+
+    Juergen Edner 2012-05-23
+

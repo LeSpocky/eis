@@ -1,0 +1,12 @@
+<package>cui-openntpd</package>
+<title>NTP Service administration</title>
+<doc>View documentation</doc>
+<edit>Edit configuration</edit>
+<init task="status">Show status</init>
+<init task="stop">Stop NTP server</init>
+<init task="start">Start NTP server</init>
+<script file="ntp-set-time">Set time via other NTP server</script>
+<script file="ntp-view-info">View NTP information</script>
+<script file="ntp-view-links">View linked devices</script>
+<script file="ntp-view-log">View log file</script>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
