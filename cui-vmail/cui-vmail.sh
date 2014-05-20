@@ -93,7 +93,7 @@ update_mysql_tables()
     fi
     count=`/usr/bin/mysql -N --silent -h $VMAIL_SQL_HOST -u $mysql_user ${mysql_pass} -D $VMAIL_SQL_DATABASE -e 'select id from vmail_version limit 1;' 2>/dev/null`
     [ -z "$count" ] && count=0
-    if [ $? -ne 0 -o $count -ne 9 ]; then
+    if [ $? -ne 0 -o $count -ne 10 ]; then
         # create all tables, if not exists
         /usr/bin/mysql -h $VMAIL_SQL_HOST -D $VMAIL_SQL_DATABASE -u $mysql_user ${mysql_pass} < /etc/postfix/default/install-sqltable.sql
         # create all trigger, if MySQL support this (5.x) and not exists
