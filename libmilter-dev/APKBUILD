@@ -13,12 +13,13 @@ makedepends="$depends_dev"
 install=""
 subpackages=""
 source="ftp://ftp.sendmail.org/pub/sendmail/sendmail.${pkgver}.tar.gz
-	"
+	libmilter.m4"
 
 _builddir="${srcdir}/sendmail-${pkgver}/libmilter"
 
 prepare() {
-	cd "$_builddir"
+	# From http://www.j-chkmail.org/wiki/doku.php/doc/installation/start#libmilter
+	cp -f ${srcdir}/libmilter.m4 ${srcdir}/sendmail-${pkgver}/devtools/Site/site.config.m4
 }
 
 build() {
@@ -32,6 +33,9 @@ package() {
 	./Build DESTDIR="${pkgdir}" install
 }
 
-md5sums="73bfc621c75dbdd3d719e54685d92577  sendmail.8.14.8.tar.gz"
-sha256sums="02eb69125fc19890fa922496a5230ebb32faedc8da670d8500a8ff37e4fcb0fe  sendmail.8.14.8.tar.gz"
-sha512sums="16cda9ff2af325e661d2be0008bed27e170cfe75aeab2b0a56e5579046309509bed4415494dbfb831cc723ab3ffab03dcef2748c16bb0b8f7fe9b4891467b425  sendmail.8.14.8.tar.gz"
+md5sums="73bfc621c75dbdd3d719e54685d92577  sendmail.8.14.8.tar.gz
+dbfd3bae2b8c6320b8640e508bbc8ed5  libmilter.m4"
+sha256sums="02eb69125fc19890fa922496a5230ebb32faedc8da670d8500a8ff37e4fcb0fe  sendmail.8.14.8.tar.gz
+5254aedc3dfc576bea6abc6221a53915f44fb981490df48bc5591f96cb0c7c3e  libmilter.m4"
+sha512sums="16cda9ff2af325e661d2be0008bed27e170cfe75aeab2b0a56e5579046309509bed4415494dbfb831cc723ab3ffab03dcef2748c16bb0b8f7fe9b4891467b425  sendmail.8.14.8.tar.gz
+01dcfd8c08e19ee2062ff6fc7464b60cbd7dc50f2e8956c6f931ec2f48cdb9d123a9dff089b687101148c5ec367a69e68c8e4e6f8d2491365a4c8d6e33cce416  libmilter.m4"
