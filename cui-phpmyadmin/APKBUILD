@@ -2,7 +2,7 @@
 # Maintainer: starwarsfan <yves@eisfair.org>
 pkgname=cui-phpmyadmin
 pkgver=1.0.0
-pkgrel=5
+pkgrel=6
 pkgdesc="CUI Setup for phpMyAdmin"
 url="http://www.eisfair.org"
 arch="noarch"
@@ -33,9 +33,9 @@ _builddir=
 prepare() {
 	local i
 	cd "$_builddir"
-	for i in $source ; do
-		case $i in
-		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+	for i in ${source} ; do
+		case ${i} in
+		*.patch) msg ${i}; patch -p1 -i "$srcdir"/${i} || return 1;;
 		esac
 	done
 }
@@ -45,12 +45,6 @@ build() {
 }
 
 package() {
-#	cd "$_builddir"
-#	cd ${startdir}/dialog.d
-#	for currentDialogScript in `ls` ; do
-#		install -D -m755 ${currentDialogScript} ${pkgdir}/var/install/dialog.d/${currentDialogScript} || return 1
-#	done
-#	cd -
 	cd "$_builddir"
 	cd ${startdir}/default.d
 	for currentDefaultConfig in `ls` ; do
@@ -61,11 +55,19 @@ package() {
     install -D -m644 ${srcdir}/${pkgname}.txt                                  ${pkgdir}/usr/share/doc/${_pname}/${_pname}.txt || return 1
 	install -D -m755 ${srcdir}/${pkgname}.sh                                   ${pkgdir}/var/install/config.d/${_pname}.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh                            ${pkgdir}/var/install/config.d/${_pname}-update.sh || return 1
-#	install -D -m644 ${srcdir}/${pkgname}.help                                 ${pkgdir}/var/install/help/${_pname} || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.phpmyadmin.menu       ${pkgdir}/var/install/menu/setup.services.phpmyadmin.menu || return 1
-#	install -D -m644 ${srcdir}/${pkgname}.setup.services.phpmyadmin.tools.menu ${pkgdir}/var/install/menu/setup.services.phpmyadmin.tools.menu || return 1
 	install -D -m755 ${srcdir}/${pkgname}-activate-websetup.sh                 ${pkgdir}/var/install/bin/phpmyadmin-activate-websetup.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-deactivate-websetup.sh               ${pkgdir}/var/install/bin/phpmyadmin-deactivate-websetup.sh || return 1
+
+# Unused at the moment:
+#	cd "$_builddir"
+#	cd ${startdir}/dialog.d
+#	for currentDialogScript in `ls` ; do
+#		install -D -m755 ${currentDialogScript} ${pkgdir}/var/install/dialog.d/${currentDialogScript} || return 1
+#	done
+#	cd -
+#	install -D -m644 ${srcdir}/${pkgname}.help                                 ${pkgdir}/var/install/help/${_pname} || return 1
+#	install -D -m644 ${srcdir}/${pkgname}.setup.services.phpmyadmin.tools.menu ${pkgdir}/var/install/menu/setup.services.phpmyadmin.tools.menu || return 1
 #	install -D -m755 ${srcdir}/${pkgname}-helpers.sh                           ${pkgdir}/var/install/bin/phpmyadmin-helpers.sh || return 1
 #	install -D -m755 ${srcdir}/${pkgname}-tools-listservers.sh                 ${pkgdir}/var/install/bin/phpmyadmin-tools-listservers.sh || return 1
 #	install -D -m755 ${srcdir}/${pkgname}-tools-pma-db.sh                      ${pkgdir}/var/install/bin/phpmyadmin-tools-pma-db.sh || return 1
