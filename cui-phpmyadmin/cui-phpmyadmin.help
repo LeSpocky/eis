@@ -2,7 +2,6 @@
 
 <help name="START_PHPMYADMIN">
   Soll phpMyAdmin verfuegbar sein oder nicht.<br/>
-  TODO: Zur Zeit noch nicht implementiert, ohne Funktion.
 <br/>
   Gueltige Werte: yes, no<br/> 
   Standard-Einstellung: START_PHPMYADMIN='no'

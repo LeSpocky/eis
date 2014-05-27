@@ -37,7 +37,6 @@ ownerToUse='apache:apache'
 activatePhpMyAdmin ()
 {
     cp /etc/default.d/*.phpmyadmin.ini /etc/php/conf.d/
-    restartWebserver
 }
 
 
@@ -47,7 +46,6 @@ activatePhpMyAdmin ()
 deactivatePhpMyAdmin ()
 {
     rm -f /etc/php/conf.d/*.phpmyadmin.ini
-    restartWebserver
 }
 
 
@@ -69,11 +67,11 @@ else
     quietmode=false
 fi
 
-#if [ "${START_PHPMYADMIN}" = 'yes' ] ; then
-#	activatePhpMyAdmin
-#else
-#    deactivatePhpMyAdmin
-#fi
-#restartWebserver
+if [ "${START_PHPMYADMIN}" = 'yes' ] ; then
+	activatePhpMyAdmin
+else
+    deactivatePhpMyAdmin
+fi
+restartWebserver
 
 exit 0
