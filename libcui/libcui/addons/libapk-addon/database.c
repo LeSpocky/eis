@@ -760,6 +760,8 @@ int apk_db_index_read(struct apk_database *db, struct apk_bstream *bs, int repo)
 
 			if (repo >= 0) {
 				pkg->repos |= BIT(repo);
+			} else if (repo == -2) {
+				pkg->cached_non_repository = 1;
 			} else if (repo == -1 && ipkg == NULL) {
 				/* Installed package without files */
 				ipkg = apk_pkg_install(db, pkg);
@@ -2293,6 +2295,9 @@ static int apk_db_install_archive_entry(void *_ctx,
 					break;
 				/* Upgrading package? */
 				if (opkg->name == pkg->name)
+					break;
+				/* Or same source package? */
+				if (opkg->origin == pkg->origin && pkg->origin)
 					break;
 				/* Does the original package replace the new one? */
 				foreach_array_item(dep, opkg->ipkg->replaces) {

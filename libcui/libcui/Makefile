@@ -20,9 +20,9 @@ FLEX=flex
 
 # unicode support
 CFLAGS          = -Wall -Wextra
-CFLAGS         += -Wstrict-prototypes 
+CFLAGS         += -Wstrict-prototypes
 CFLAGS         += -Wimplicit-function-declaration
-CFLAGS         += -D_XOPEN_SOURCE_EXTENDED 
+CFLAGS         += -D_XOPEN_SOURCE_EXTENDED
 CFLAGS         += -D_UNICODE -D_GNU_SOURCE
 CFLAGS         += -std=c99
 CFLAGS         += -g

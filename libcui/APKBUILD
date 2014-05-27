@@ -2,7 +2,7 @@
 # Maintainer: daniel@eisfair.org, jens@eisfair.org
 pkgname=libcui
 pkgver=2.0.0
-pkgrel=6
+pkgrel=7
 pkgdesc="Eisfair CUI basis libs"
 url="http://www.eisfair.org"
 arch="all"
