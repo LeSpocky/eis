@@ -1,13 +1,13 @@
 # Contributor: jv <jens@eisfair.org>
 # Maintainer: jv <jens@eisfair.org>
 pkgname=dovecot-pigeonhole
-pkgver=0.4.2
+pkgver=0.4.3
 pkgrel=0
 pkgdesc="Pigeonhole for Dovecot - sieve service"
 url="http://pigeonhole.dovecot.org"
 arch="all"
 license="GNU"
-depends="dovecot>=2.2.7"
+depends="dovecot>=2.2.12"
 depends_dev="openssl-dev dovecot-dev"
 makedepends="$depends_dev"
 install=""
@@ -51,6 +51,6 @@ package() {
 }
 
 
-md5sums="e8cb4976db9811d37e9d870f2f75ffef  dovecot-2.2-pigeonhole-0.4.2.tar.gz"
-sha256sums="0499f07037b86489fdc1d48fb19e298d5360ec41273bccaec230eb1bcf5a3e13  dovecot-2.2-pigeonhole-0.4.2.tar.gz"
-sha512sums="3b66d00a8462ee668b8671f5eaa48bb91d47ed8bf8b331f7d879ba8c581e2bef11e236b06a8c5da9f1248572348ad0b3e2b867fd0a17badf32152fedbe61c1ed  dovecot-2.2-pigeonhole-0.4.2.tar.gz"
+md5sums="b52858c0016b9ad7dabccf01f0098dbd  dovecot-2.2-pigeonhole-0.4.3.tar.gz"
+sha256sums="d692f4ab077bdf2c43c98829ed24b2e6f148db488ef8ba429b430394d8b4d757  dovecot-2.2-pigeonhole-0.4.3.tar.gz"
+sha512sums="f2bb83578bb05c7ca2213ecc110f5e7059935746f720ee43897508394f3ab8a7072d193c78caf1fa77df81a20fbbeab1ac14069989250b3032ef459e798c54ff  dovecot-2.2-pigeonhole-0.4.3.tar.gz"
