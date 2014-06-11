@@ -2,7 +2,7 @@
 # Maintainer: jv <jens@eisfair.org>
 pkgname=pfqueue
 pkgver=0.5.6
-pkgrel=0
+pkgrel=1
 pkgdesc="pfqueue MTA queues control tool"
 url="http://pfqueue.sourceforge.ne"
 arch="all"
