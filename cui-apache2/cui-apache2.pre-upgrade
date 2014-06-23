@@ -3,4 +3,5 @@
 rm -f /etc/default.d/apache2
 rm -f /etc/check.d/apache2
 rm -f /etc/check.d/apache2.exp
+cp -f /var/install/menu/setup.services.apache2.menu  /var/install/menu/setup.services.apache2.menu.old
 exit 0

@@ -2,7 +2,7 @@
 # Maintainer: jv <jens@eisfair.org>
 pkgname=cui-apache2
 pkgver=2.4.0
-pkgrel=3
+pkgrel=4
 pkgdesc="CUI Setup for Apache 2.4.x"
 url="http://www.eisfair.org"
 arch="noarch"

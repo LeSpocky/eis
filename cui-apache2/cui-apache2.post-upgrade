@@ -1,3 +1,4 @@
 #!/bin/sh
 [ -f /etc/config.d/apache2 ] && /var/install/config.d/apache2-update.sh
+mv -f /var/install/menu/setup.services.apache2.menu.old /var/install/menu/setup.services.apache2.menu
 exit 0
