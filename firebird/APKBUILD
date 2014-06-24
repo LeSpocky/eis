@@ -15,14 +15,15 @@ subpackages="$pkgname-libs $pkgname-doc"
 source="http://downloads.sourceforge.net/project/firebird/firebird/2.1.5-Release/Firebird-2.1.5.18497-0.tar.bz2
 	firebird.initd
 	firebird-libio.patch
-	firebird-innetgr.patch
 	firebird-honour-buildflags.patch
+	firebird-innetgr.patch
 	firebird-cppflags.patch
 	firebird-gcc-4.7.patch
 	firebird-file-perms.patch
 	firebird-log-path.patch
 	firebird-charp-conversion.patch
-	firebird-no-static-link.patch"
+	firebird-no-static-link.patch
+	firebird-rwlock.patch"
 
 _builddir="$srcdir/Firebird-2.1.5.18497-0"
 
@@ -38,6 +39,7 @@ prepare() {
 }
 
 build() {
+	export CFLAGS="$CFLAGS -pthread"
 	cd ${_builddir}
 	./configure --prefix=/usr/lib/firebird \
 	--enable-superserver \
@@ -45,7 +47,7 @@ build() {
 	--includedir=/usr/include \
 	--disable-static \
 	--without-system-editline \
-	--with-system-icu || return 1
+	--enable-system-icu || return 1
 	sleep 1
 	make -j1 || return 1
 }
@@ -144,33 +146,36 @@ doc() {
 md5sums="70e1071fe030f00ae04c372082653eb4  Firebird-2.1.5.18497-0.tar.bz2
 540730271ce7d61c4ee7f9b8cfc89fc9  firebird.initd
 c58e789176a992a64ad6cff7b26b547a  firebird-libio.patch
-5ae2806faec1fa6cac241367de6d368a  firebird-innetgr.patch
 b2a434c67234e789a5d744de67a04931  firebird-honour-buildflags.patch
+5ae2806faec1fa6cac241367de6d368a  firebird-innetgr.patch
 ca7c2cc442ab4bfccd3c404c5b5c27ff  firebird-cppflags.patch
 399b739975be4c01f26e799111501009  firebird-gcc-4.7.patch
 3542effab077c1eb65df32792b729664  firebird-file-perms.patch
 16f4cf5559e7fa174032db858ba3db50  firebird-log-path.patch
 957d017e62a49e610b643484cf14b9c6  firebird-charp-conversion.patch
-7e2b683acb9a6c5e5f8175d9893b2488  firebird-no-static-link.patch"
+7e2b683acb9a6c5e5f8175d9893b2488  firebird-no-static-link.patch
+d1dc4f745dd33d6ad4576b826ba1d35f  firebird-rwlock.patch"
 sha256sums="8eaf5910ccee12af8f6abc17747cdea2c3ff4e6bee381a870d192679a44f83eb  Firebird-2.1.5.18497-0.tar.bz2
 c7c575138aadb471fc950bd49a39a5a903bcf03b0d463e691d245a62c76d1a50  firebird.initd
 9a59a58ba4c2edf4a77a531377c4bb4eae9966bf1f12277c3d46eb62f762f92e  firebird-libio.patch
-6500a16fbb151e0d115e71812be661dc3b8d12b19af671ed4fd86626159b6faa  firebird-innetgr.patch
 780d9271735309bba08181c96230880e4a6f0b74135ddd032cf5dcb8ac6126f7  firebird-honour-buildflags.patch
+6500a16fbb151e0d115e71812be661dc3b8d12b19af671ed4fd86626159b6faa  firebird-innetgr.patch
 669c334eadfff908aab989a3043031fcaedcc7e004ef64d40bdef768f5142cd8  firebird-cppflags.patch
 0fe6ccdef87801b05db93bd3395f234cbb6deb5e2ff669799408e4ab1f3b1dc0  firebird-gcc-4.7.patch
 0a9473b7f650b81a1d98f518e66ecdd90600fa45182d2f44b10c99c3ab0dbcca  firebird-file-perms.patch
 44a1919bea092adb421571efba1bbbcfc5b05c2fe13b74fb5b1b670f6a411e57  firebird-log-path.patch
 2810cd702e0080306d9fa78c627d0b135ca29aafec2e425aa54c4f735288448f  firebird-charp-conversion.patch
-c55995d5bbbd5cbfab1382a69c0403eec83618716f2cbd71ab90e3b97913d75f  firebird-no-static-link.patch"
+c55995d5bbbd5cbfab1382a69c0403eec83618716f2cbd71ab90e3b97913d75f  firebird-no-static-link.patch
+42fa0990c1243bd89b49152d100533d921407b22bfb1ac76719861d43efb1d2a  firebird-rwlock.patch"
 sha512sums="2c0afab35a20741a19dd005cdc9a479306e56a15e8f4f62cffd6c628355464ddd3ffc8a3ee772bd89a2392db86b7d773e794a5d819b4c857be258ad976a1e00d  Firebird-2.1.5.18497-0.tar.bz2
 41728e2537ac68dbcc08cc0d97bfde53102366632e0df521d4ab5bebace7a01b0c6f43416667e896fa2a1fd2b4e7b55b5e477a8245b7f3e2bc4bbb7665fb2c8c  firebird.initd
 8ae0a6e2d63a0e00cc3a051f6cd62d8dbc0d0fcb77ed0ff8de60ebbe4edc6b1a372487570192b34514216cb01e0ff4b1fd23cded2b421a98a7d0e347eaf12429  firebird-libio.patch
-ad0c91aa38216020f395b6d45fe069f5e15f2725a2b1a5ce43a85213ce259b670d65907d2c2f6a07a705d656731ee170f92ab376eef8f931a13e6062f0f8041c  firebird-innetgr.patch
 46392a5d562d98bf7f4936b064e29e32f62473c592770ed10ea1fb37a6a2a598dd6e1957ecb03a7dce84920bfb27eac50fcfea00715174d9143d96240911008f  firebird-honour-buildflags.patch
+ad0c91aa38216020f395b6d45fe069f5e15f2725a2b1a5ce43a85213ce259b670d65907d2c2f6a07a705d656731ee170f92ab376eef8f931a13e6062f0f8041c  firebird-innetgr.patch
 e00c4021d93b390fa7d512e05ca5f62c20ba882d05e39856f5c5fc8d83f077d3ddec7dae22070c174a79c2140a48f9caedb69e85042e9cade8ea11d1afce9655  firebird-cppflags.patch
 38500c1e05321bbe182e3cb6d15d10ed6efc2c53cd192d4b2445f84066c8db6defff884da2de2222fd8172b377dfe2806b31896ba695dff7eae67b54bfbcf3a8  firebird-gcc-4.7.patch
 ee30117296649100df7ee4afba9cd55604b4b1f8bc1bf7c62478278e4df4f23fcf55fa7ddcd6ee8c48d29e4eb266cdc3b1c37c60d843b2ce47b912ad5f2f252a  firebird-file-perms.patch
 c9c38785e29a25140687b5ab3e474b37e931c9463166e332e523921edfd08e72e7e312a23b44299cf5f5197e4a6f94f37803b785e44303fae2d643c21f3f2599  firebird-log-path.patch
 e41b6158a78addbca4e4c629d2d189e822de3d9f6249a4bc1fb2fb6db5e0f88abcd0c6e30718c51d0ebf0d49ea9211e17db7c5dcd3b9ada30946ca0026ed22a2  firebird-charp-conversion.patch
-ecf132e70ceaeefcd543a6669af2c818bb3de481fd2db0ec4c40d617643aa6b075fc5e9920e7172402ef5f6234ea34fd5c858926ef040157195b63c79b30a31c  firebird-no-static-link.patch"
+ecf132e70ceaeefcd543a6669af2c818bb3de481fd2db0ec4c40d617643aa6b075fc5e9920e7172402ef5f6234ea34fd5c858926ef040157195b63c79b30a31c  firebird-no-static-link.patch
+c2e1314b8817c46a8d079c7188ff4f412ffaf97c1aa423e71011a733fa8eedf01af41e179c10bba9b80883c4be0bbb24c61f3226a439fd656a025140915d8916  firebird-rwlock.patch"
