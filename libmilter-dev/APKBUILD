@@ -1,8 +1,8 @@
-# Contributor: jv <jens@eisfair.org>
-# Maintainer:
+# Contributor: jens vehlhaber <jens@eisfair.org>
+# Maintainer: jens vehlhaber <jens@eisfair.org>
 pkgname=libmilter-dev
 pkgver=8.14.8
-pkgrel=0
+pkgrel=1
 pkgdesc="Libmilter"
 url="http://www.sendmail.org/"
 arch="all"
@@ -34,8 +34,8 @@ package() {
 }
 
 md5sums="73bfc621c75dbdd3d719e54685d92577  sendmail.8.14.8.tar.gz
-dbfd3bae2b8c6320b8640e508bbc8ed5  libmilter.m4"
+725ec864179d934da170edc821938e16  libmilter.m4"
 sha256sums="02eb69125fc19890fa922496a5230ebb32faedc8da670d8500a8ff37e4fcb0fe  sendmail.8.14.8.tar.gz
-5254aedc3dfc576bea6abc6221a53915f44fb981490df48bc5591f96cb0c7c3e  libmilter.m4"
+8903f490e816b41a93aa783e26b02ebbb9189c4cbeec50f4ae77b14a192152d5  libmilter.m4"
 sha512sums="16cda9ff2af325e661d2be0008bed27e170cfe75aeab2b0a56e5579046309509bed4415494dbfb831cc723ab3ffab03dcef2748c16bb0b8f7fe9b4891467b425  sendmail.8.14.8.tar.gz
-01dcfd8c08e19ee2062ff6fc7464b60cbd7dc50f2e8956c6f931ec2f48cdb9d123a9dff089b687101148c5ec367a69e68c8e4e6f8d2491365a4c8d6e33cce416  libmilter.m4"
+2af17028b953c6290554683b1dfc681f9c2e9b311ff1546adce40a6d9654af6646e5d187746f41de7dce87b3169a31046027f1848fa64ab82f57818429a29db1  libmilter.m4"
