@@ -39,7 +39,6 @@ prepare() {
 }
 
 build() {
-	export CFLAGS="$CFLAGS -pthread"
 	cd ${_builddir}
 	./configure --prefix=/usr/lib/firebird \
 	--enable-superserver \
