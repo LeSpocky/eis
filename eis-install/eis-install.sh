@@ -6,11 +6,6 @@
 #       correct timezone select
 #       optional view logfile
 
-hw_backtitle() {
-    echo "Alpine Linux with eisfair-ng - Installation   $PDRIVE"
-    return 0
-}
-
 
 isValidIp() {
     if echo $1 | egrep -qs '\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b' ; then
@@ -82,8 +77,8 @@ apk add -q bkeymaps
 
 while true ; do
     if [ "$PNETIPSTATIC" = "1" ] ; then
-        n_item=$(dialog --stdout --no-shadow --no-cancel --item-help \
-            --backtitle "$(hw_backtitle)" \
+        n_item=$(dialog --no-shadow --no-cancel --item-help \
+            --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
             --default-item "$n_item" \
             --title " Server configuration "  --clear \
             --menu "Base setup" 21 50 14 \
@@ -100,10 +95,10 @@ while true ; do
             10 "Domain" "DNS Domain name." \
             11 "Root password" "Set password for user root" \
             12 "Start installation" "Start installation" \
-            13 "Reboot server" "Reboot server after installation"  )
+            13 "Reboot server" "Reboot server after installation" 3>&1 1>&2 2>&3 3>&-)
     else
-        n_item=$(dialog --stdout --no-shadow --no-cancel --item-help \
-            --backtitle "$(hw_backtitle)" \
+        n_item=$(dialog --no-shadow --no-cancel --item-help \
+            --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
             --default-item "$n_item" \
             --title "Server configuration"  --clear \
             --menu "Base setup" 21 50 14 \
@@ -116,7 +111,7 @@ while true ; do
             10 "Domain" "DNS Domain name." \
             11 "Root password" "Set password for user root" \
             12 "Start installation" "Start installation" \
-            13 "Reboot server" "Reboot server after installation"  )
+            13 "Reboot server" "Reboot server after installation" 3>&1 1>&2 2>&3 3>&-)
     fi
 
     case ${n_item} in
@@ -128,19 +123,19 @@ while true ; do
                 drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 off/p')
             fi
             if [ -z "$drivelist" ] ; then
-                dialog --backtitle "$(hw_backtitle)" --title "" \
+                dialog --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" --title "" \
                     --msgbox " No drive found!\n Please try again." 6 30
             else
-                new=$(dialog --stdout --no-shadow \
-                    --backtitle "$(hw_backtitle)" \
+                new=$(dialog --no-shadow \
+                    --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                     --title "Select drive" \
                     --clear \
                     --checklist "Select drive(s) to partition:" 12 40 6 \
-                    $drivelist )
+                    $drivelist 3>&1 1>&2 2>&3 3>&-)
                 if [ -n "$new" ] ; then
                     if countDisks $new ; then
-                        dialog --stdout --no-shadow \
-                            --backtitle "$(hw_backtitle)" \
+                        dialog --no-shadow \
+                            --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                             --title "Software RAID installation"  --clear \
                             --yesno "Use drives for RAID:\n${new}" 7 40
                         if [ "$?" = "0" ] ; then
@@ -161,10 +156,10 @@ while true ; do
                 n_item="1"
             else
                 PSWAPSIZE=$(calulate_swap_size ${PDRIVE})
-                new=$(dialog --stdout --no-shadow \
-                    --backtitle "$(hw_backtitle)" \
+                new=$(dialog --no-shadow \
+                    --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                     --title "Adjust size of swap Partition"  --clear \
-                    --inputbox "Size in MB:" 10 45 "$PSWAPSIZE")
+                    --inputbox "Size in MB:" 10 45 "$PSWAPSIZE" 3>&1 1>&2 2>&3 3>&-)
                 if [ "$?" -eq 0 ] ; then
                     PPSWAPSIZE="$new"
                     getNextMenuItem
@@ -178,24 +173,24 @@ while true ; do
             for I in * ; do
                 sellist="${sellist}${I} . "
             done
-            PKEYBLAYOUT=$(dialog --stdout --no-shadow --no-cancel \
-                --backtitle "$(hw_backtitle)" \
+            PKEYBLAYOUT=$(dialog --no-shadow --no-cancel \
+                --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                 --default-item "$PKEYBLAYOUT" \
                 --title "Keyboard configuration"  --clear \
                 --menu "Select keyboard layout:" 18 40 11 \
-                $sellist )
+                $sellist 3>&1 1>&2 2>&3 3>&-)
             sellist=""
             cd /usr/share/bkeymaps/$PKEYBLAYOUT
             for I in * ; do
                 stemp="$(basename $I .bmap)"
                 sellist="${sellist}$stemp . "
             done
-            new=$(dialog --stdout --no-shadow --no-cancel \
-                --backtitle "$(hw_backtitle)" \
+            new=$(dialog --no-shadow --no-cancel \
+                --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                 --default-item "$PKEYBVARIANT" \
                 --title "Keyboard configuration"  --clear \
                 --menu "Available variants:" 18 40 11 \
-                $sellist )
+                $sellist 3>&1 1>&2 2>&3 3>&-)
             if [ "$?" -eq 0 ] ; then
                 PKEYBVARIANT="$new"
                 cat /usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap | loadkmap
@@ -204,8 +199,8 @@ while true ; do
             ;;
             ### DHCP ###########################################################
         4)
-            dialog --stdout --no-shadow \
-                --backtitle "$(hw_backtitle)" \
+            dialog --no-shadow \
+                --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                 --title "Network interface IP-address"  --clear \
                 --yesno "Get automatic IP-address with DHCP?" 5 40
             PNETIPSTATIC="$?"
@@ -218,17 +213,17 @@ while true ; do
         5)
             ### IP-address #####################################################
             while true ; do
-                new=$(dialog --stdout --no-shadow \
-                    --backtitle "$(hw_backtitle)" \
+                new=$(dialog --no-shadow \
+                    --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                     --title "Network interface IP-address"  --clear \
-                    --inputbox "Enter the IP-Address (192.168.1.2)" 10 45 "$PIPADDRESS")
+                    --inputbox "Enter the IP-Address (192.168.1.2)" 10 45 "$PIPADDRESS" 3>&1 1>&2 2>&3 3>&-)
                 if [ "$?" -eq 0 ] ; then
                     if isValidIp $new ; then
                         PIPADDRESS="$new"
                         getNextMenuItem
                         break
                     else
-                        dialog --backtitle "$(hw_backtitle)" --title "" \
+                        dialog --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" --title "" \
                             --msgbox " Wrong IP-address!\n Please try again." 6 30
                     fi
                 else
@@ -239,17 +234,17 @@ while true ; do
         6)
             ### Netmask ########################################################
             while true ; do
-                new=$(dialog --stdout --no-shadow \
-                    --backtitle "$(hw_backtitle)" \
+                new=$(dialog --no-shadow \
+                    --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                     --title "Network mask"  --clear \
-                    --inputbox "Enter the network mask (255.255.255.0)" 10 45 "$PNETMASK")
+                    --inputbox "Enter the network mask (255.255.255.0)" 10 45 "$PNETMASK" 3>&1 1>&2 2>&3 3>&-)
                 if [ "$?" -eq 0 ] ; then
                     if isValidIp $new ; then
                         PNETMASK="$new"
                         getNextMenuItem
                         break
                     else
-                        dialog --backtitle "$(hw_backtitle)" --title "" \
+                        dialog --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" --title "" \
                             --msgbox " Wrong network mask!\n Please try again." 6 30
                     fi
                 else
@@ -260,10 +255,10 @@ while true ; do
         7)
             ### Gateway ########################################################
             while true ; do
-                new=$(dialog --stdout --no-shadow \
-                    --backtitle "$(hw_backtitle)" \
+                new=$(dialog --no-shadow \
+                    --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                     --title "Default gateway"  --clear \
-                    --inputbox "Enter the default gateway (192.168.1.1)" 10 45 "$PGATEWAY")
+                    --inputbox "Enter the default gateway (192.168.1.1)" 10 45 "$PGATEWAY" 3>&1 1>&2 2>&3 3>&-)
                 if [ "$?" -eq 0 ] ; then
                     if isValidIp $new ; then
                         PGATEWAY="$new"
@@ -271,7 +266,7 @@ while true ; do
                         getNextMenuItem
                         break
                     else
-                        dialog --backtitle "$(hw_backtitle)" --title "" \
+                        dialog --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" --title "" \
                             --msgbox " Wrong default gateway!\n Please try again." 6 30
                     fi
                 else
@@ -281,10 +276,10 @@ while true ; do
             ;;
         8)
             ### DNS Server #####################################################
-            new=$(dialog --stdout --no-shadow \
-                --backtitle "$(hw_backtitle)" \
+            new=$(dialog --no-shadow \
+                --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                 --title "Management DNS Servers"  --clear \
-                --inputbox " Enter a space delimited list of DNS Servers to be used by the Managment Interface" 10 45 "${PDNSSERVER}")
+                --inputbox " Enter a space delimited list of DNS Servers to be used by the Managment Interface" 10 45 "${PDNSSERVER}" 3>&1 1>&2 2>&3 3>&-)
             if [ "$?" -eq 0 ] ; then
                 PDNSSERVER="${new}"
                 getNextMenuItem
@@ -293,19 +288,19 @@ while true ; do
         9)
             ### Hostname #######################################################
             while true ; do
-                new=$(dialog --stdout --no-shadow --backtitle "$(hw_backtitle)" \
+                new=$(dialog --no-shadow --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                     --title "Management Hostname"  --clear \
-                    --inputbox "Enter the system Hostname (Host only part of FQDN)\n For example, the Hostname of the FQDN \"myhost.some.domain\" is \"myhost\"." 10 55 "${PHOSTNAME}")
+                    --inputbox "Enter the system Hostname (Host only part of FQDN)\n For example, the Hostname of the FQDN \"myhost.some.domain\" is \"myhost\"." 10 55 "${PHOSTNAME}" 3>&1 1>&2 2>&3 3>&-)
                 if [ $? -eq 0 ] ; then
                     if [ "x${new}" == "x" ] ; then
-                        dialog --stdout --no-shadow --cancel-label "Return to main menu"\
-                            --backtitle "$(hw_backtitle)" \
+                        dialog --no-shadow --cancel-label "Return to main menu"\
+                            --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                             --title "Management Hostname"  --clear \
                             --msgbox "\n   Hostname cannot be null." 10 55
                         [ $? -eq 1 ] && break
                     elif [ "$(echo "${new}" | egrep -c "[\.|_]")" -gt 0 ] ; then
-                        dialog --stdout --no-shadow --cancel-label "Return to main menu"\
-                            --backtitle "$(hw_backtitle)" \
+                        dialog --no-shadow --cancel-label "Return to main menu"\
+                            --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                             --title "Management Hostname"  --clear \
                             --msgbox "\n   Hostname cannot contian \".\" or \"_\" ." 10 55
                         [ $? -eq 1 ] && break
@@ -322,15 +317,15 @@ while true ; do
        10)
             ### Domain #########################################################
             while true ; do
-                new=$(dialog --stdout --no-shadow \
-                    --backtitle "$(hw_backtitle)" \
+                new=$(dialog --no-shadow \
+                    --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                     --title "Domain Name"  --clear \
-                    --inputbox "Enter the DNS domain if you have one (localhost if not).  The DNS domain will be appended to the Hostname to form the fully qualified domain name (FQDN)." 12 55 "${PDOMAIN}")
+                    --inputbox "Enter the DNS domain if you have one (localhost if not).  The DNS domain will be appended to the Hostname to form the fully qualified domain name (FQDN)." 12 55 "${PDOMAIN}" 3>&1 1>&2 2>&3 3>&-)
 
                 if [ $? -eq 0 ] ; then
                     if [ "x${new}" == "x" ] ; then
-                        dialog --stdout --no-shadow --cancel-label "Return to main menu"\
-                            --backtitle "$(hw_backtitle)" \
+                        dialog --no-shadow --cancel-label "Return to main menu"\
+                            --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                             --title "Management Domain Name"  --clear \
                             --msgbox "\n   Domain cannot be null." 10 55
                         [ $? -eq 1 ] && break;
@@ -346,22 +341,22 @@ while true ; do
             ;;
         11)
             ### root password ##################################################
-            new=$(dialog --stdout --no-shadow \
-                --backtitle "$(hw_backtitle)" \
+            new=$(dialog --no-shadow \
+                --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                 --title "Set root password" \
                 --clear --no-cancel --insecure \
-                --passwordbox "Enter a password for user root" 10 45 "${free}")
-            new2=$(dialog --stdout --no-shadow \
-                --backtitle "$(hw_backtitle)" \
+                --passwordbox "Enter a password for user root" 10 45 "${free}" 3>&1 1>&2 2>&3 3>&-)
+            new2=$(dialog --no-shadow \
+                --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                 --title "Confirm root password" \
                 --clear --no-cancel --insecure \
-                --passwordbox "Re enter password for user root" 10 45 "${free}")
+                --passwordbox "Re enter password for user root" 10 45 "${free}" 3>&1 1>&2 2>&3 3>&-)
             if [ "$?" -eq 0 ] ; then
                 if [ "$new" = "$new2" ] ; then
                     PPASSWORD="${new}"
                     getNextMenuItem
                 else
-                    dialog --backtitle "$(hw_backtitle)" --title "" \
+                    dialog --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" --title "" \
                       --msgbox " Password not match!\n Please try again." 6 30
                 fi
             fi
@@ -369,8 +364,8 @@ while true ; do
         12)
             ### Start installation #############################################
             if [ -n "$PDRIVE" ] ; then
-                dialog --stdout --no-shadow \
-                  --backtitle "$(hw_backtitle)" \
+                dialog --no-shadow \
+                  --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                   --title "Start installation"  --clear \
                   --yesno "Delete all partitions on drive(s):\n${PDRIVE}\nand start installation?" 8 40
                 if [ "$?" = "0" ] ; then
@@ -383,7 +378,7 @@ while true ; do
                     date > /tmp/fdisk.log 
                     dialog --no-shadow \
                       --title "Start installation"  \
-                      --backtitle "$(hw_backtitle)" \
+                      --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                       --no-kill \
                       --tailboxbg /tmp/fdisk.log 21 75 2>$tempfile
                     /bin/eis-install.setup-disk -e "$PKEYBVARIANT" -E "$PKEYBLAYOUT" \

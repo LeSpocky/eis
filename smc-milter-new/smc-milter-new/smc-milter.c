@@ -644,14 +644,14 @@ mlfi_header (SMFICTX *ctx, char *headerf, char *headerv) {
     if(strcasecmp(headerf, "Subject") == 0) {
         strncpy(priv->subject, headerv, MAXLINE - 1);
         if (debuglevel > 2)
-                syslog(LOG_INFO, "Header Subject: %s", headerv );          
+                syslog(LOG_INFO, "Header Subject: %s", headerv );
     }
     /* get Content-Type header */
     if (strcasecmp(headerf, "Content-Type") == 0) {
         if (strstr(headerv, "UTF-8" )) {
             priv->utf8 = 1;
             if (debuglevel > 1)
-                syslog(LOG_INFO, "Header Content-Type: %s", headerv );               
+                syslog(LOG_INFO, "Header Content-Type: %s", headerv );
         }
     }
  
