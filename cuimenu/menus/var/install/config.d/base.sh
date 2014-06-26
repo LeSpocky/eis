@@ -17,7 +17,8 @@ iface lo inet loopback
 
 EOF
 
-echo "loopback 127.0.0.0" > /etc/networks
+#echo "loopback 127.0.0.0" > /etc/networks
+rm -f /etc/networks
 
 #----------------------------------------------------------------------------
 # add interface template (openvz venet...)
@@ -59,8 +60,8 @@ do
 		eval point2p='$IP_NET_'$idx'_IPV4_POINTOPOINT'
 		if [ -n "$ipaddr" -a "$ipaddr" != 0.0.0.0 ]
 		then
-			network=$(/var/install/bin/netcalc network $ipaddr $netmask)
-			echo "localnet $network" >> /etc/networks
+#			network=$(/var/install/bin/netcalc network $ipaddr $netmask)
+#			echo "localnet $network" >> /etc/networks
 			cat <<-EOF >>/etc/network/interfaces
 			iface $name inet static
 			  address $ipaddr
@@ -91,8 +92,8 @@ do
 		eval gateway='$IP_NET_'$idx'_IPV6_GATEWAY'
 		eval point2p='$IP_NET_'$idx'_IPV6_POINTOPOINT'
 		if [ -n "$ipaddr" -a "$ipaddr" != :: ] ; then
-			network=$(/var/install/bin/netcalc network $ipaddr $netmask)
-			echo "localnet $network" >> /etc/networks
+#			network=$(/var/install/bin/netcalc network $ipaddr $netmask)
+#			echo "localnet $network" >> /etc/networks
 			cat <<-EOF >>/etc/network/interfaces
 		iface $name inet6 static
 		  address $ipaddr
