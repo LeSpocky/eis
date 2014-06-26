@@ -545,27 +545,22 @@ fi
 # -----------------------------------------------------------------------------
 # CACHE
 rm -f /etc/php/conf.d/apc.ini
+rm -f /etc/php/conf.d/apcu.ini
 rm -f /etc/php/conf.d/xcache.ini
 rm -f /etc/php/conf.d/memcache.ini
+rm -f /etc/php/conf.d/opcache.ini
 
 if [ "$PHP_EXT_CACHE" = "apc" ] ; then
-    apk info -q -e php-apc || apk add -q php-apc
+    apk info -q -e php-apcu || apk add -q php-apcu
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/apc.ini <<EOF
-extension=apc.so
-apc.enabled=1
-;apc.shm_segments=1
-;apc.shm_size=128
-;apc.ttl=7200
-;apc.user_ttl=7200
-;apc.num_files_hint=1024
-apc.mmap_file_mask=/tmp/apc.XXXXXX
-;apc.enable_cli=1
+        cat >/etc/php/conf.d/apcu.ini <<EOF
+extension=apcu.so
+;nur noch User-Cache-Funktionen!
 EOF
     else
         errorsyslog apc
     fi
-elif [ "${PHP_EXT_CACHE}" = "xcache" ] ; then
+elif [ "$PHP_EXT_CACHE" = "xcache" ] ; then
     apk info -q -e php-xcache || apk add -q php-xcache
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/xcache.ini <<EOF
@@ -576,7 +571,7 @@ EOF
     else
         errorsyslog php-xcache
     fi
-elif [ "${PHP_EXT_CACHE}" = "memcache" ] ; then
+elif [ "$PHP_EXT_CACHE" = "memcache" ] ; then
     apk info -q -e php-memcache || apk add -q php-memcache
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/memcache.ini <<EOF
@@ -597,6 +592,15 @@ extension=memcache.so
 EOF
     else
         errorsyslog php-memcache
+    fi
+elif [ "$PHP_EXT_CACHE" = "opcache" ] ; then
+    apk info -q -e php-opcache || apk add -q php-opcache
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/opcache.ini <<EOF
+extension=opcache.so
+EOF
+    else
+        errorsyslog php-opcache
     fi
 fi
 
