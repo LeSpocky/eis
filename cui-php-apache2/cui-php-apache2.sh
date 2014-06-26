@@ -597,7 +597,7 @@ elif [ "$PHP_EXT_CACHE" = "opcache" ] ; then
     apk info -q -e php-opcache || apk add -q php-opcache
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/opcache.ini <<EOF
-extension=opcache.so
+zend_extension=opcache.so
 EOF
     else
         errorsyslog php-opcache
