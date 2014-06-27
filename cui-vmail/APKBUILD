@@ -2,12 +2,12 @@
 # Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
 pkgname=cui-vmail
 pkgver=1.0.1
-pkgrel=1
+pkgrel=2
 pkgdesc="CUI setup for postfix/dovecot with virtual mail user"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
-depends="cuimenu postfix postfix-mysql postfix-pcre pfqueue smc-milter-new dovecot dovecot-mysql dovecot-sample-config dovecot-pigeonhole mysql2sieve mysql2fetchmail fetchmail ca-certificates greyfix"
+depends="cuimenu libcui-addonmysql postfix postfix-mysql postfix-pcre pfqueue smc-milter-new dovecot dovecot-mysql dovecot-sample-config dovecot-pigeonhole mysql2sieve mysql2fetchmail fetchmail ca-certificates greyfix"
 depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall"
