@@ -155,8 +155,6 @@ done
 
 [ $POSTFIX_LIMIT_MAILSIZE -gt 10 ] || POSTFIX_LIMIT_MAILSIZE="10"
 [ $POSTFIX_LIMIT_DESTINATIONS -gt 10 ] || POSTFIX_LIMIT_DESTINATIONS="10"
-[ "$POSTFIX_DRACD" = "yes" ] && postfix_int_netw="${postfix_int_netw}, proxy:btree:/etc/postfix/dracd"
-[ "$POSTFIX_DRACD" = "yes" ] && postfix_prxmynet="\$mynetworks,"
 
 [ "$POSTFIX_CLIENT_N" -gt 0 ] && postfix_cl_access_bl="check_client_access pcre:/etc/postfix/client_access_blocks.pcre," 
 [ "$POSTFIX_REJECT_UNKN_CLIENT" = "yes" ] && postfix_un_cl_hostname="reject_unknown_client_hostname,"
@@ -483,7 +481,6 @@ fi
 [ -e /etc/smc-milter-new/smc-milter-new.hosts ] || touch /etc/smc-milter-new/smc-milter-new.hosts
 mkdir -p   /var/spool/postfix/quarantine
 chmod 0777 /var/spool/postfix/quarantine
-
 
 ### ----------------------------------------------------------------------------
 ### update sql query files for postfix and dovecot
