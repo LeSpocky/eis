@@ -8,7 +8,7 @@
 #------------------------------------------------------------------------------
 
 START_QUASSELCORE='yes'              # Use: yes or no
-QUASSELCORE_PORT=''                  # Port for quasselcore
+QUASSELCORE_PORT='4242'              # Port for quasselcore
 QUASSELCORE_DATADIR='/var/lib/quassel' # Default: /var/lib/quassel
 QUASSELCORE_DAEMON_OPTS=''           # Default: empty
 
