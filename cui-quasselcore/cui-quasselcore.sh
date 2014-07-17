@@ -52,17 +52,4 @@ EOF
 chmod 0600 /etc/logrotate.d/quasselcore
 chown root /etc/logrotate.d/quasselcore
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-# restart if START_QUASSELCORE='yes'
-if [ "${START_QUASSELCORE}" = 'yes' ] ; then
-    rc-update --quiet add quasselcore
-    rc-service quasselcore start
-else
-    rc-service quasselcore stop
-    rc-update --quiet del quasselcore
-fi
-
 exit 0
