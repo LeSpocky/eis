@@ -129,6 +129,12 @@ Allgemeine Konfiguration
 
           Standardeinstellung: PHP_EXT_CACHE='no'
 
+   PHP_EXT_CTYPE
+          Mit 'yes' wird das CType Modul geladen.
+          Mit 'no' wird das Modul deaktiviert.
+
+          Standardeinstellung: PHP_EXT_CURL='no'
+
    PHP_EXT_CURL
           Mit 'yes' wird das CURL Modul geladen.
           Mit 'no' wird das Modul deaktiviert.

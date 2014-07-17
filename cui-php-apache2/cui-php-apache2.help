@@ -86,6 +86,11 @@ Mit 'opcache' wird das OpCache Modeul geladen.<br/>
 Mit 'no' wird das Chaching deaktiviert (default).
 </help>
 
+<help name="PHP_EXT_CTYPE">
+Mit 'yes' wird das CType Modul geladen.<br/>
+Mit 'no' wird das Modul deaktiviert (default).
+</help>
+
 <help name="PHP_EXT_CURL">
 Mit 'yes' wird das CURL Modul geladen.<br/>
 Mit 'no' wird das Modul deaktiviert (default).

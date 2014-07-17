@@ -5,8 +5,8 @@
 <doc>View documentation</doc>
 <edit>Edit configuration</edit>
 <menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
-<script file="quasselcore.status">Quassel-Core status</script>
-<script file="quasselcore.start">Start Quassel-Core</script>
-<script file="quasselcore.stop">Stop Quassel-Core</script>
-<script file="quasselcore.restart">Restart Quassel-Core</script>
+<script file="quasselcore.status">Status</script>
+<script file="quasselcore.start">Start</script>
+<script file="quasselcore.stop">Stop</script>
+<script file="quasselcore.restart">Restart</script>
 <menu file="setup.services.cui-quassel-core.user.menu">User Management</menu>

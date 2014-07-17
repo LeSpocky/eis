@@ -15,21 +15,22 @@
     <entry line="111" level="2">PHP_MEMORY_LIMIT</entry>
     <entry line="117" level="2">PHP_UPLOAD_DIR</entry>
     <entry line="124" level="2">PHP_EXT_CACHE</entry>
-    <entry line="132" level="2">PHP_EXT_CURL</entry>
-    <entry line="138" level="2">PHP_EXT_SOAP</entry>
-    <entry line="144" level="2">PHP_EXT_GD</entry>
-    <entry line="150" level="2">PHP_EXT_JSON</entry>
-    <entry line="156" level="2">PHP_EXT_GETTEXT</entry>
-    <entry line="162" level="2">PHP_EXT_ICONV</entry>
-    <entry line="168" level="2">PHP_EXT_IMAP</entry>
-    <entry line="174" level="2">PHP_EXT_SSL</entry>
-    <entry line="180" level="2">PHP_EXT_XML</entry>
-    <entry line="186" level="2">PHP_EXT_ZIP</entry>
-    <entry line="192" level="2">PHP_EXT_ZLIB</entry>
-    <entry line="198" level="2">PHP_EXT_MYSQL</entry>
-    <entry line="203" level="3">PHP_EXT_MYSQL_SOCKET</entry>
-    <entry line="210" level="3">PHP_EXT_MSSQL</entry>
-    <entry line="215" level="2">PHP_EXT_PGSQL</entry>
-    <entry line="220" level="2">PHP_EXT_INTER</entry>
-    <entry line="225" level="2">PHP_EXT_SQLITE3</entry>
+    <entry line="132" level="2">PHP_EXT_CTYPE</entry>
+    <entry line="138" level="2">PHP_EXT_CURL</entry>
+    <entry line="134" level="2">PHP_EXT_SOAP</entry>
+    <entry line="150" level="2">PHP_EXT_GD</entry>
+    <entry line="156" level="2">PHP_EXT_JSON</entry>
+    <entry line="162" level="2">PHP_EXT_GETTEXT</entry>
+    <entry line="168" level="2">PHP_EXT_ICONV</entry>
+    <entry line="174" level="2">PHP_EXT_IMAP</entry>
+    <entry line="180" level="2">PHP_EXT_SSL</entry>
+    <entry line="186" level="2">PHP_EXT_XML</entry>
+    <entry line="192" level="2">PHP_EXT_ZIP</entry>
+    <entry line="198" level="2">PHP_EXT_ZLIB</entry>
+    <entry line="204" level="2">PHP_EXT_MYSQL</entry>
+    <entry line="209" level="3">PHP_EXT_MYSQL_SOCKET</entry>
+    <entry line="216" level="3">PHP_EXT_MSSQL</entry>
+    <entry line="221" level="2">PHP_EXT_PGSQL</entry>
+    <entry line="226" level="2">PHP_EXT_INTER</entry>
+    <entry line="231" level="2">PHP_EXT_SQLITE3</entry>
 </index>

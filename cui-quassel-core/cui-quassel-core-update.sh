@@ -29,9 +29,9 @@ QUASSEL_CORE_PORT='4242'
 QUASSEL_CORE_LOG_LEVEL='info'
 QUASSEL_CORE_LOG_COUNT='4'
 QUASSEL_CORE_LOG_INTERVAL='weekly'
-QUASSEL_CORE_LOG_FILE='/var/log/quassel/quasselcore.log'
+QUASSEL_CORE_LOG_FILE='/var/log/quassel.log'
 
-QUASSEL_CORE_DATADIR='/usr/local/quasselcore'
+QUASSEL_CORE_DATADIR='/var/lib/quassel'
 
 QUASSEL_CORE_DAEMON_OPTS=''
 
@@ -68,9 +68,9 @@ makeConfigFile()
         printvar 'QUASSEL_CORE_LOG_LEVEL'      'Loglevel (debug,info,warning,error)'
         printvar 'QUASSEL_CORE_LOG_COUNT'      'Number of log files to save'
         printvar 'QUASSEL_CORE_LOG_INTERVAL'   'Interval: daily, weekly, monthly'
-        printvar 'QUASSEL_CORE_LOG_FILE'       'Default: /var/log/quassel/quasselcore.log'
+        printvar 'QUASSEL_CORE_LOG_FILE'       'Default: /var/log/quassel.log'
 
-        printvar 'QUASSEL_CORE_DATADIR'        'Default: /usr/local/quasselcore'
+        printvar 'QUASSEL_CORE_DATADIR'        'Default: /var/lib/quassel'
 
         printvar 'QUASSEL_CORE_DAEMON_OPTS'    'Default: empty'
 

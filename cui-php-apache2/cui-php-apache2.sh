@@ -471,6 +471,20 @@ EOF
 fi
 
 # -----------------------------------------------------------------------------
+# CTYPE
+rm -f /etc/php/conf.d/ctype.ini
+if [ "$PHP_EXT_CTYPE" = "yes" ] ; then
+    apk info -q -e php-ctype || apk add -q php-ctype
+    if [ $? -eq 0 ]; then
+        cat >/etc/php/conf.d/ctype.ini <<EOF
+extension=ctype.so
+EOF
+    else
+        errorsyslog php-ctype
+    fi
+fi
+
+# -----------------------------------------------------------------------------
 # SOAP
 rm -f /etc/php/conf.d/soap.ini
 if [ "$PHP_EXT_SOAP" = "yes" ] ; then

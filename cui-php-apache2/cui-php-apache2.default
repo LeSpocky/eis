@@ -76,6 +76,7 @@ PHP_EXT_CACHE='no'                    # Activate caching module in PHP.
                                       # opcache: for OpCache
                                       # default: no -> switch caching module off
 
+PHP_EXT_CTYPE="no"                    # Activate CType module in PHP.
 PHP_EXT_CURL="no"                     # Activate CURL module in PHP.
 PHP_EXT_SOAP='no'                     # Activate SOAP module in PHP.
 PHP_EXT_GD='yes'                      # Activate GD extension for PHP.

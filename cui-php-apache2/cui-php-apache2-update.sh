@@ -88,6 +88,7 @@ package_name=php-apache2
     printvar "" "apc: for APC"
     printvar "" "xcache: for XCache"
     printvar "" "default: no -> switch caching module off"
+    printvar "PHP_EXT_CTYPE" "Activate CURL module in PHP."
     printvar "PHP_EXT_CURL" "Activate CURL module in PHP."
     printvar "PHP_EXT_SOAP" "Activate SOAP module in PHP."
     printvar "PHP_EXT_GD" "Activate GD extension for PHP."

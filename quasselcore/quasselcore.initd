@@ -1,42 +1,63 @@
 #!/sbin/runscript
-# quasselcore init.d file for alpine linux.
-
-QUASSEL_CONFIG=/etc/config.d/quasselcore
-DAEMON=/usr/bin/quasselcore
-ACCOUNT=quassel
-PID=/var/run/quasselcore.pid
-
-# Load defaults
-. /etc/default.d/quasselcore
-
-# Load specific configuration
-if [ -e ${QUASSEL_CONFIG} ] ; then
-    . ${QUASSEL_CONFIG}
-fi
+# Copyright 1999-2011 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /var/cvsroot/gentoo-x86/net-irc/quassel/files/quasselcore.init,v 1.8 2011/08/19 11:43:49 scarabeus Exp $
 
 depend() {
-    need net
-    after firewall
+	need localmount net
+	after bootmisc postgres
+}
+
+CORE="$(which quasselcore)"
+PID="/run/quassel.pid"
+LOGFILE=${LOGFILE:-"/var/log/quassel.log"}
+CONFIGDIR=${CONFIGDIR:-"/var/lib/quassel"}
+QUASSEL_USER=${QUASSEL_USER:-"quassel"}
+
+checkconfig() {
+	# set defaults
+	LOGLEVEL=${LOGLEVEL:-"Info"}
+
+	# check config folder
+	if [ ! -d "${CONFIGDIR}" ]; then
+		mkdir "${CONFIGDIR}" || return 1
+	fi
+	# permissions always changed just to avoid runtime issues
+	chown -R "${QUASSEL_USER}":"${QUASSEL_USER}" "${CONFIGDIR}" || return 1
+
+	# check log file
+	if [ ! -e "${LOGFILE}" ]; then
+		touch "${LOGFILE}" || return 1
+	fi
+	# permissions always changed just to avoid runtime issues
+	chown "${QUASSEL_USER}":"${QUASSEL_USER}" "${LOGFILE}" || return 1
 }
 
 start() {
-    ebegin "Starting quasselcore"
-        start-stop-daemon --start \
-            --pidfile ${PID} \
-            --make-pidfile \
-            --background \
-            --user ${ACCOUNT} \
-            --exec ${DAEMON} -- \
-                --logfile=${QUASSEL_CORE_LOG_FILE} \
-                --loglevel=${QUASSEL_CORE_LOG_LEVEL} \
-                --configdir=${QUASSEL_CORE_DATADIR} \
-                --port=${QUASSEL_CORE_PORT} \
-                ${QUASSEL_CORE_DAEMON_OPTS}
-    eend $?
+	checkconfig || return 1
+
+	ebegin "Starting Quassel Core"
+
+	if [ -n "${RC_UNAME}" ]; then
+		# running on baselayout-2/openrc
+		start-stop-daemon --start --user "${QUASSEL_USER}" --background --make-pidfile \
+		--pidfile "${PID}" \
+		--exec "${CORE}" -- --logfile="${LOGFILE}" --loglevel="${LOGLEVEL}" \
+		${LISTEN:+--listen="${LISTEN}"} ${PORT:+--port="${PORT}"} \
+		--configdir="${CONFIGDIR}"
+	else
+		# running on baselayout-1
+		start-stop-daemon --start --chuid "${QUASSEL_USER}" --background --make-pidfile \
+		--pidfile "${PID}" --env HOME="${CONFIGDIR}" \
+		--exec "${CORE}" -- --logfile="${LOGFILE}" --loglevel="${LOGLEVEL}" \
+		${LISTEN:+--listen="${LISTEN}"} ${PORT:+--port="${PORT}"} \
+		--configdir="${CONFIGDIR}"
+	fi
+	eend $?
 }
 
 stop() {
-    ebegin "Stopping quasselcore"
-        start-stop-daemon --stop --pidfile ${PID}
-    eend $?
+	ebegin "Stopping Quassel Core"
+	start-stop-daemon --stop --pidfile "${PID}" --exec "${CORE}"
+	eend $?
 }
