@@ -1,5 +1,5 @@
 
-                     Quassel-core - Distributed IRC Client
+                     Quasselcore - Distributed IRC Client
 
    Marcel Weiler, <marcel(at)eisfair(dot)org>
    2001-2013 The eisfair team, <team(at)eisfair(dot)org>
@@ -111,41 +111,43 @@
    die folgenden Parameter vorhanden; wer sie von Hand editieren will findet
    sie unter /etc/conf.d/quassel-core.
 
-   START_QUASSEL_CORE
+   START_QUASSELCORE
           Sorgt dafuer, das der quassel-core gestartet wird.
 
           Gueltige Werte: yes, no
 
-          Standardeinstellung: START_QUASSEL_CORE='no'
+          Standardeinstellung: START_QUASSELCORE='yes'
 
-   QUASSEL_CORE_PORT
+   QUASSELCORE_PORT
           Hier wird der Port eingestellt auf dem quassel-core laufen soll
 
           Gueltige Werte: Port
 
-          Standardeinstellung: QUASSEL_CORE_PORT='4242'
+          Standardeinstellung: QUASSELCORE_PORT='4242'
 
-   QUASSEL_CORE_LOG_LEVEL
+   QUASSELCORE_LOG_LEVEL
           Mit diesem Parameter wird das Loglevel eingestellt.
 
           Gueltige Werte: debug, info, warning, error
 
-          Standardeinstellung: QUASSEL_CORE_LOG_LEVEL='info'
+          Standardeinstellung: QUASSELCORE_LOG_LEVEL='info'
 
-   QUASSEL_CORE_LOG_COUNT
-          Anzahl der Logfiles, die gespeichert werden sollen.
-
-          Gueltige Werte: Zahl
-
-          Standardeinstellung: QUASSEL_CORE_LOG_COUNT='4'
-
-   QUASSEL_CORE_LOG_INTERVAL
+   QUASSELCORE_LOG_INTERVAL
           Hiermit wird festgelegt in welchem Intervall die Logfiles
           rotiert werden sollen.
 
           Gueltige Werte: daily, weekly, monthly
 
-          Standardeinstellung: QUASSEL_CORE_LOG_INTERVAL='weekly'
+          Standardeinstellung: QUASSELCORE_LOG_INTERVAL='weekly'
+
+   QUASSELCORE_LOG_COUNT
+          Anzahl der Logfiles, die gespeichert werden sollen.
+
+          Gueltige Werte: Zahl
+
+          Standardeinstellung: QUASSELCORE_LOG_COUNT='4'
+
+
 
     Hinweis: Alle weiteren Einstellungen werden direkt ueber den Client in
     der SQLite Datenbank konfiguriert.

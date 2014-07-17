@@ -1,0 +1,2 @@
+QUASSELCORE_LOG_LEVEL_CUI  = 'debug|info|warning|error'
+                           : 'No valid loglevel. Must be "debug", "info", "warning" or "error".'

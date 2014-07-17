@@ -1,0 +1,11 @@
+<!-- /var/install/menu/setup.services.quasselcore.menu -->
+<!-- Creation: 2014-07-17  marwe -->
+<package>quasselcore</package>
+<title>Quassel-IRC administration</title>
+<doc>View documentation</doc>
+<edit>Edit configuration</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
+<init task="status">Status</init>
+<init task="start">Start</init>
+<init task="stop">Stop</init>
+<menu file="setup.services.quasselcore.user.menu">User Management</menu>

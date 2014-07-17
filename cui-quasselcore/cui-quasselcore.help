@@ -1,0 +1,55 @@
+<!-- Creation:     2009-12-14 Marcel Weiler  -->
+
+<help name="START_QUASSELCORE">
+    Fuer die Aktivierung von 'QUASSEL' muss diese Variable
+    lediglich auf den Wert 'yes' gestellt werden.<br/>
+    Die Einstellung 'no' schaltet 'QUASSEL' ab.<br/>
+<br/>
+    Gueltige Werte: yes, no<br/>
+<br/>
+    Standard-Einstellung: START_QUASSELCORE='yes'<br/>
+</help>
+
+<help name="QUASSELCORE_PORT">
+    Hier wird der Port eingestellt auf dem quasselcore laufen soll.<br/>
+<br/>
+    Standard-Einstellung: QUASSELCORE_PORT='4242'<br/>
+</help>
+
+<help name="QUASSELCORE_LOG_LEVEL">
+    Mit diesem Parameter wird das Loglevel eingestellt.<br/>
+<br/>
+    Gueltige Werte: debug, info, warning, error<br/>
+<br/>
+    Standard-Einstellung: QUASSELCORE_LOG_LEVEL='info'<br/>
+</help>
+
+<help name="QUASSELCORE_LOG_COUNT">
+    Anzahl der Logfiles, die gespeichert werden sollen.<br/>
+<br/>
+    Standard-Einstellung: QUASSELCORE_LOG_COUNT='4'<br/>
+</help>
+
+<help name="QUASSELCORE_LOG_INTERVAL">
+    Hiermit wird festgelegt in welchem Intervall die Logfiles rotiert werden sollen.<br/>
+<br/>
+    Gueltige Werte: daily, weekly, monthly<br/>
+<br/>
+    Standard-Einstellung: QUASSELCORE_LOG_INTERVAL='weekly'<br/>
+</help>
+
+<help name="QUASSELCORE_DATADIR">
+     Hiermit wird festgelegt, in welchem Verzeichnis die SQLite-DB abgelegt werden soll.<br/>
+<br/>
+     Gueltige Werte: Gueltiges Verzeichnis, in welches der User 'quassel' schreiben darf.<br/>
+<br/>
+     Standard-Einstellung: QUASSELCORE_DATADIR='/var/lib/quassel'<br/>
+</help>
+
+<help name="QUASSELCORE_DAEMON_OPTS">
+     Hiermit koennen beim Start des Core optional weitere Parameter uebergeben werden.<br/>
+<br/>
+     Gueltige Werte: <br/>
+<br/>
+     Standard-Einstellung: QUASSELCORE_DAEMON_OPTS=''<br/>
+</help>

@@ -1,0 +1,89 @@
+# Contributor: starwarsfan <yves@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
+pkgname=cui-quasselcore
+pkgver=1.0.1
+pkgrel=0
+pkgdesc="CUI Setup for quassel irc"
+url="http://www.quassel-irc.org"
+arch="noarch"
+license="GPL"
+depends="cuimenu quassel-core quassel qt-sqlite"
+depends_dev=""
+makedepends="$depends_dev"
+install="$pkgname.post-install $pkgname.post-deinstall"
+subpackages=""
+source="${pkgname}.check
+        ${pkgname}.check.exp
+        ${pkgname}.default
+        ${pkgname}.help
+        ${pkgname}.dloglevel.sh
+        ${pkgname}.setup.services.menu
+        ${pkgname}.setup.services.user.menu
+        ${pkgname}.sh
+        ${pkgname}.txt
+        ${pkgname}-add-user.sh
+        ${pkgname}-change-userpass.sh
+        ${pkgname}-update.sh
+"
+_pname="quasselcore"
+_builddir=
+
+prepare() {
+	cd "$_builddir"
+}
+
+build() {
+	cd "$_builddir"
+}
+
+package() {
+	cd "$_builddir"
+	install -D -m644 ${srcdir}/${pkgname}.check                      ${pkgdir}/etc/check.d/${_pname} || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.exp                  ${pkgdir}/etc/check.d/${_pname}.exp || return 1
+	install -D -m640 ${srcdir}/${pkgname}.default                    ${pkgdir}/etc/default.d/${_pname} || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt                        ${pkgdir}/usr/share/doc/${_pname}/${_pname}.txt || return 1
+	install -D -m755 ${srcdir}/${pkgname}-add-user.sh                ${pkgdir}/var/install/bin/${_pname}-add-user.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-change-userpass.sh         ${pkgdir}/var/install/bin/${_pname}-change-userpass.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh                         ${pkgdir}/var/install/config.d/${_pname}.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh                  ${pkgdir}/var/install/config.d/${_pname}-update.sh || return 1
+ 	install -D -m755 ${srcdir}/${pkgname}.dloglevel.sh               ${pkgdir}/var/install/dialog.d/QUASSELCORE_LOG_LEVEL_CUI.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help                       ${pkgdir}/var/install/help/${pkgname} || return 1
+	install -D -m644 ${srcdir}/${pkgname}.setup.services.menu        ${pkgdir}/var/install/menu/setup.services.${_pname}.menu || return 1
+	install -D -m644 ${srcdir}/${pkgname}.setup.services.user.menu   ${pkgdir}/var/install/menu/setup.services.${_pname}.user.menu || return 1
+}
+md5sums="d02565accbcda950a2ecb79b3b39969d  cui-quasselcore.check
+68caac83cd95325a4943f3e79cc30b50  cui-quasselcore.check.exp
+075c47e4f53a77364ec8389454d1f21d  cui-quasselcore.default
+3faa4f5b35f586ae9784c0f6b8c0abd5  cui-quasselcore.help
+c8ad5c14f43a9d670d50d1f66df2cdaf  cui-quasselcore.dloglevel.sh
+b1a31f9f6590c2fb93e0e0c15baba61d  cui-quasselcore.setup.services.menu
+20cb7e04c31fc7712ded2284f4f01d09  cui-quasselcore.setup.services.user.menu
+2e70946a853d9dfc77cc7a0876e3d030  cui-quasselcore.sh
+f40e4bd3fdb282c0db901a3c664e597b  cui-quasselcore.txt
+358357345314d6a2cd7f7ebe433d749e  cui-quasselcore-add-user.sh
+d792c6fcccf5f3394fe5789ea0ca66f0  cui-quasselcore-change-userpass.sh
+f32c29a78ccdb98c6aff0433100fb14a  cui-quasselcore-update.sh"
+sha256sums="34c0af48105633db3889b3295e6ba385b7f80cd8951b64db9fa5dce07a1ed156  cui-quasselcore.check
+8b7e06e7cbd7149df64d052724b0745037fa4eebe1e6b3af8eae09571ff85724  cui-quasselcore.check.exp
+b4395bf2066956f513c4ed780a353802ab1abba9fdaec46c8b2f12dc13dd37f9  cui-quasselcore.default
+cac316c73ef3c1c67fdd245f6bdcb62ac61e1179e735156f42d3ee3e63cb5cb9  cui-quasselcore.help
+d1be0418263066c27567127aff8187563811c7371dbc7ab4c073c34aa4fea04d  cui-quasselcore.dloglevel.sh
+23b98ea1ed3243bfab065450c94b961e00ba6cc797f1c122bb70974608077d19  cui-quasselcore.setup.services.menu
+4c4e5784f3238866b6a008de0a38f2e791a21d7f4d931abafdb7db9492590c6d  cui-quasselcore.setup.services.user.menu
+91307232b8ac55092b6469be3946c7f65ab3883d89a549f38ab66c0d6f3db1d4  cui-quasselcore.sh
+332cecd36fdb4f8d2e19f63f4cdc6c0286d2234fd55a5df8d048e10f4d76295d  cui-quasselcore.txt
+6e8d7b61f66032ce664925303f89d557a7b0492d3c82c671e9da52e8b945bab7  cui-quasselcore-add-user.sh
+6ed17600af298a22d017e9d0a8e606f194c728dc879f3ab46e9f02fffd57b821  cui-quasselcore-change-userpass.sh
+0c83028645237d0814af5fd997f751b174172216df681a3d379c5457c2ccb550  cui-quasselcore-update.sh"
+sha512sums="836d7a39fce0c4d30f5b719e5259711361714441fdf07df6adcaa745480dc6e49ba20eae10424f21420ccc84a7d0d80f0ef5bfa189051f4a6117b3b1365e35aa  cui-quasselcore.check
+f31f480fdc2ebae2abcfd9b98dee095e7e7f390465f97fd2fac94333db270ccecb6a14d74ecb304aacba0ec7e3b06b5707a95ff59ee9f12c2ae16494804dd760  cui-quasselcore.check.exp
+e506c233dc043e5620891e959f30912825d5d8d8498ae401490ca3ac2c664e68cb9eb9ef0d3f1ce4e70da5c5401dbdb38e39e74d247d3dc5cff5d92437eccfb3  cui-quasselcore.default
+b36e74ff83a99c426d1df836ddce796ae972a56cb92bca934a45d3769b7bad92f3ff155c4dcee24441da612e98f04afaccdd41636d05261e4356529b50afc4d1  cui-quasselcore.help
+b5ed6fd1cdc46102f2ef414616e559150a956be64d698d9c05a4a8f1688d5539ab0dc4bc87a301620c7d12c60c13fad452160d19ba163e0442e14f51e17dfc09  cui-quasselcore.dloglevel.sh
+189463324ec5569b7d0150d2ec8ba47d87f2cf34c77eda63923728e76142a72c7730b7cb5f2feddbe0ce7a99a7995c239943b385ffc3bb8ebc543bdd9b535eb2  cui-quasselcore.setup.services.menu
+f476e9ca8d2a6ca259d9c0370c3656c813eb43b558aacd0f767956d9f4dce2dde58a0f0c6351cdd9cd527795123010db20cc28b86930af46051d92d9bc7a367f  cui-quasselcore.setup.services.user.menu
+7df1ea3aac99fd3a729f4064896460faa5e36a46c46379abf67c17d279773bc69ebc09cb64cbda2b8bba8d39ac645afd65e1a3d7e7b4c2f2dc7b1942dda4770a  cui-quasselcore.sh
+86783bdcdbe7cf2ac33a9540e5fe6f08ea90ddee10bdef8e3abbb67ead6377432349c78a605028c750ef4f90fda9383b3e4ba995ecb569aeef4f720f434de2bb  cui-quasselcore.txt
+b2af314a17cc8b3c3293467374471df79f564538b9d1856f4c68002779ecd869daa088301490baed2c3e6d1f32eae4926423e987f7d61d76793b97e29b5d68ab  cui-quasselcore-add-user.sh
+eb218df73e3734d3c35494048a73ff8ac4440aefe6c0d00903325247a7e162ad27b947b1cf47ab2072184dc6546e2a0e58e7c03e5517dea0c349a4cde3b669f3  cui-quasselcore-change-userpass.sh
+0912026745569158982293984c8bec66af6997dc2ed35b13af9912318abb6624a0b435ad5a32c788170d3f8ab4e8293560c04df4c6bbf6a76135300e01d0379a  cui-quasselcore-update.sh"

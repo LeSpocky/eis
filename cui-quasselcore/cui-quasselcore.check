@@ -1,0 +1,8 @@
+# Variable                  OPT_VARIABLE         VARIABLE_N          VALUE
+START_QUASSELCORE           -                    -                   YESNO
+QUASSELCORE_PORT            START_QUASSELCORE    -                   PORT
+QUASSELCORE_DATADIR         START_QUASSELCORE    -                   NOTEMPTY
+QUASSELCORE_DAEMON_OPTS     START_QUASSELCORE    -                   NONE
+QUASSELCORE_LOG_LEVEL       START_QUASSELCORE    -                   QUASSELCORE_LOG_LEVEL_CUI
+QUASSELCORE_LOG_INTERVAL    START_QUASSELCORE    -                   LOG_INTERVAL
+QUASSELCORE_LOG_COUNT       START_QUASSELCORE    -                   NUMERIC

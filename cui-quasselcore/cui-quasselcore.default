@@ -1,0 +1,21 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/quasselcore - configuration file for quassel-irc
+# Copyright (c) 2007 - 2014 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# General settings
+#------------------------------------------------------------------------------
+
+START_QUASSELCORE='yes'              # Use: yes or no
+QUASSELCORE_PORT=''                  # Port for quasselcore
+QUASSELCORE_DATADIR='/var/lib/quassel' # Default: /var/lib/quassel
+QUASSELCORE_DAEMON_OPTS=''           # Default: empty
+
+# -----------------------------------------------------------------------------
+# Log settings
+# -----------------------------------------------------------------------------
+
+QUASSELCORE_LOG_LEVEL='info'         # Loglevel (debug,info,warning,error)
+QUASSELCORE_LOG_INTERVAL='weekly'    # Interval: daily, weekly, monthly
+QUASSELCORE_LOG_COUNT='4'            # Number of log files to save

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+rc-service quasselcore stop
+rc-update --quiet del quasselcore
+
+/var/install/bin/del-menu setup.services.menu setup.services.quasselcore.menu
+
+rm -f /etc/backup.d/quasselcore*
+rm -f /etc/logrotate.d/quasselcore
+
+exit 0

@@ -1,0 +1,6 @@
+<!-- /var/install/menu/setup.services.quasselcore.user.menu -->
+<!-- Creation: 2014-07-17  marwe/jv -->
+<package>quasselcore</package>
+<title>Quassel-IRC User Management</title>
+<script file="quasselcore-add-user.sh">Add User to Database</script>
+<script file="quasselcore-change-userpass.sh">Change Password of User</script>
