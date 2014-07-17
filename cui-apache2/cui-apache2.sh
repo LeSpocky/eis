@@ -968,6 +968,10 @@ rm -f /tmp/setup.system.logfileview.menu.$$
 /var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/apache2/access.log" "Show apache access"
 /var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/apache2/error.log" "Show apache error"
 
+# fix log-directory for run logrotate!
+chmod 0750 /var/log/apache2
+chown apache:adm /var/log/apache2
+
 idx=1
 while [ "$idx" -le "$APACHE2_VHOST_N" ]
 do
