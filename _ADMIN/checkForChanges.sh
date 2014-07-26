@@ -85,10 +85,22 @@ if [ -e /tmp/determinedFolders-$$.txt ] ; then
         while read packageToTrigger ; do
             echo "Triggering build of package '$packageToTrigger':"
             buildJobNamePrefix=${jobNamePrefix}__${packageToTrigger}__
-            jobTemplates=`java -Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl list-jobs --username $jenkinsUser --password-file $jenkinsPasswordFile | grep $buildJobNamePrefix | tr '\n' ' '`
-            for currentBuildJob in $jobTemplates ; do
+            jobTemplates=$(java -Xms${javaMinHeap} \
+                                -Xmx${javaMaxHeap} \
+                                -jar ${jenkinsCliJar} \
+                                -s ${jenkinsUrl} \
+                                list-jobs \
+                                --username ${jenkinsUser} \
+                                --password-file ${jenkinsPasswordFile} | grep ${buildJobNamePrefix} | tr '\n' ' ')
+            for currentBuildJob in ${jobTemplates} ; do
                 echo -n " - Job $currentBuildJob "
-                java -Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl build $currentBuildJob --username $jenkinsUser --password-file $jenkinsPasswordFile
+                java -Xms${javaMinHeap} \
+                     -Xmx${javaMaxHeap} \
+                     -jar ${jenkinsCliJar} \
+                     -s ${jenkinsUrl} \
+                     build ${currentBuildJob} \
+                     --username ${jenkinsUser} \
+                     --password-file ${jenkinsPasswordFile}
             done
             echo "Finished triggering '$packageToTrigger'"
         done < /tmp/determinedFoldersUnique-$$.txt

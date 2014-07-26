@@ -30,7 +30,7 @@ packageListTmp=packages.tmp.txt
 packageList=packages.txt
 
 delimiter=''
-echo -n "packages=" > $packageListTmp
+echo -n "packages=" > ${packageListTmp}
 for currentFile in `ls -d ../*/` ; do
     # Skip _ADMIN folder
     if [ "${currentFile}" != '../_ADMIN/' ] ; then
@@ -42,12 +42,12 @@ for currentFile in `ls -d ../*/` ; do
     fi
 done
 
-cat $packageListTmp
+cat ${packageListTmp}
 echo ''
 
-if diff $packageListTmp $packageList >/dev/null 2>&1 ; then
+if diff ${packageListTmp} ${packageList} >/dev/null 2>&1 ; then
     echo 'No changes on package list'
 else
     echo 'Package list changed, activating new list'
-    mv $packageListTmp $packageList
+    mv ${packageListTmp} ${packageList}
 fi

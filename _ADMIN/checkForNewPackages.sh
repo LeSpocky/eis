@@ -1,7 +1,7 @@
 #! /bin/bash
 # ----------------------------------------------------------------------------
-# checkForNewPackages.sh - Check if every package on the repository has a
-#                          jenkins job and if not, create one.
+# checkForNewPackages.sh - Check if every package on the repo${${jenkinsCliJar}
+# jenkins job and if not, create one.
 #
 # Creation   :  2013-04-19  starwarsfan
 #
@@ -67,7 +67,13 @@ fi
 getTemplateJobs ()
 {
     local jobsToFind=${templateJobPrefix}${jobNamePrefix}__${templateJobPlaceholder}__
-    jobTemplates=`java -Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl list-jobs --username $jenkinsUser --password-file $jenkinsPasswordFile | grep $jobsToFind | tr '\n' ' '`
+    jobTemplates=$(java -Xms${javaMinHeap} \
+                        -Xmx${javaMaxHeap} \
+                        -jar ${jenkinsCliJar} \
+                        -s ${jenkinsUrl} \
+                        list-jobs \
+                        --username ${jenkinsUser} \
+                        --password-file ${jenkinsPasswordFile} | grep ${jobsToFind} | tr '\n' ' ')
 }
 
 
@@ -78,16 +84,16 @@ getTemplateJobs ()
 # corresponding build jobs must exist or will be created.
 iteratePackageFolders ()
 {
-    cd $jobsFolder
+    cd ${jobsFolder}
 	echo "=============================================================================="
-    for currentFolder in `ls -d $workspaceFolder/*/ | grep -v "_ADMIN"` ; do
+    for currentFolder in $(ls -d ${workspaceFolder}/*/ | grep -v "_ADMIN") ; do
         # Cut last '/' and everything beyond
         currentCheckedPackage="${currentFolder%/*}"
         # Cut everything before last '/' including the '/' itself
         currentCheckedPackage=${currentCheckedPackage##*/}
 
         echo "Checking jenkins jobs for package '$currentCheckedPackage'"
-        for currentJobTemplate in $jobTemplates ; do
+        for currentJobTemplate in ${jobTemplates} ; do
             # $currentJobTemplate is something like '_eisfair-ng__TEMPLATE__v2.6_x86'
             createJob "$currentCheckedPackage" "$currentJobTemplate"
         done
@@ -109,18 +115,30 @@ createJob ()
     local templateJobName=$2
     local currentRtc=0
     local jobName=${jobNamePrefix}__${currentPackage}__${currentJobTemplate##*__}
-    if [ ! -d $jobName -o ! -f $jobName/config.xml ] ; then
+    if [ ! -d ${jobName} -o ! -f ${jobName}/config.xml ] ; then
         # Config file not found, create it
         echo "Calling jenkins api to create job '$jobName'"
-        java -Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl get-job $templateJobName --username $jenkinsUser --password-file $jenkinsPasswordFile | \
+        java -Xms${javaMinHeap} \
+             -Xmx${javaMaxHeap} \
+             -jar ${jenkinsCliJar} \
+             -s ${jenkinsUrl} \
+             get-job ${templateJobName} \
+             --username ${jenkinsUser} \
+             --password-file ${jenkinsPasswordFile} | \
             sed "s/TEMPLATE/$currentPackage/g" | \
-            java -Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl create-job $jobName --username $jenkinsUser --password-file $jenkinsPasswordFile
+            java -Xms${javaMinHeap} \
+                 -Xmx${javaMaxHeap} \
+                 -jar ${jenkinsCliJar} \
+                 -s ${jenkinsUrl} \
+                 create-job ${jobName} \
+                 --username ${jenkinsUser} \
+                 --password-file ${jenkinsPasswordFile}
         currentRtc=$?
-        if [ $currentRtc != 0 ] ; then
+        if [ ${currentRtc} != 0 ] ; then
             echo "ERROR: Something went wrong during creation of build-job '$jobName'"
-            rtc=$currentRtc
-        elif $buildNewJobs ; then
-            triggerBuild $jobName
+            rtc=${currentRtc}
+        elif ${buildNewJobs} ; then
+            triggerBuild ${jobName}
         fi
     fi
 }
@@ -136,13 +154,19 @@ createJob ()
 triggerBuild ()
 {
     local jobName=$1
-    if [ -d $jobName -a -f $jobName/config.xml ] ; then
+    if [ -d ${jobName} -a -f ${jobName}/config.xml ] ; then
         echo "Calling jenkins api to build job '$jobName'"
-        java -Xms$javaMinHeap -Xmx$javaMaxHeap -jar $jenkinsCliJar -s $jenkinsUrl build $jobName --username $jenkinsUser --password-file $jenkinsPasswordFile
+        java -Xms${javaMinHeap} \
+             -Xmx${javaMaxHeap} \
+             -jar ${jenkinsCliJar} \
+             -s ${jenkinsUrl} \
+             build ${jobName} \
+             --username ${jenkinsUser} \
+             --password-file ${jenkinsPasswordFile}
         currentRtc=$?
-        if [ $currentRtc != 0 ] ; then
+        if [ ${currentRtc} != 0 ] ; then
             echo "ERROR: Something went wrong during trigger of build-job '$jobName'"
-            rtc=$currentRtc
+            rtc=${currentRtc}
         fi
     fi
 }
@@ -191,7 +215,7 @@ do
     esac
 done
 
-if [ ! -d $jobsFolder ] ; then
+if [ ! -d ${jobsFolder} ] ; then
     echo "Jenkins job folder '$jobsFolder' not existing! Exiting."
     exit 1
 fi
@@ -199,14 +223,14 @@ fi
 
 
 # Go into the repo root folder for the next steps and store it's full path
-cd $scriptDir/..
+cd ${scriptDir}/..
 workspaceFolder=`pwd`
 
 # Now do the job :-)
 getTemplateJobs
 iteratePackageFolders
 
-exit $rtc
+exit ${rtc}
 
 # ============================================================================
 # End
