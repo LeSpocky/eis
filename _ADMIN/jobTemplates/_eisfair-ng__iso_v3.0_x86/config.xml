@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Build job for x86_64 version of eisfair-ng iso image based on latest alpine version (edge)</description>
+  <description>Build job for x86 version of eisfair-ng iso image based on alpine release 3.0</description>
   <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>-1</daysToKeep>
     <numToKeep>25</numToKeep>
@@ -16,8 +16,6 @@
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <name></name>
-        <refspec></refspec>
         <url>ssh://git@nettworks-git:7999/EIS/eis-iso.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
@@ -27,7 +25,6 @@
       </hudson.plugins.git.BranchSpec>
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
-    <gitTool>Default</gitTool>
     <browser class="hudson.plugins.git.browser.FisheyeGitRepositoryBrowser">
       <url>https://ssl.nettworks.org/repo/browse/eisfair-ng-iso/</url>
     </browser>
@@ -35,7 +32,7 @@
     <extensions/>
   </scm>
   <quietPeriod>20</quietPeriod>
-  <assignedNode>alpine_edge_x86-64</assignedNode>
+  <assignedNode>alpine_v3.0_x86</assignedNode>
   <canRoam>false</canRoam>
   <disabled>true</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -52,7 +49,7 @@
     <hudson.tasks.Shell>
       <command>sudo apk update
 make clean
-rm -f *x86_64.iso*
+rm -f *x86.iso*
 rm -rf isotmp.alpine-eisfair-ng
 make PROFILE=alpine-eisfair-ng iso
 rtc=$?
@@ -61,10 +58,10 @@ if [ $rtc = 0 ] ; then
     rtc=$?
     if [ $rtc = 0 ] ; then
         eisInstallVersion=`find . -name eis-install*.apk | sed -e &quot;s/^.*eis-install-//g&quot; -e &quot;s/.apk//g&quot;`
-        rm -f ${CI_RESULTFOLDER_EISFAIR_NG}/edge/main/*x86_64.iso*
-        mv alpine-eisfair-ng-*-x86_64.iso      alpine-eisfair-ng-${eisInstallVersion}-x86_64.iso
-        mv alpine-eisfair-ng-*-x86_64.iso.sha1 alpine-eisfair-ng-${eisInstallVersion}-x86_64.iso.sha1
-        cp *x86_64.iso* ${CI_RESULTFOLDER_EISFAIR_NG}/edge/main/
+        rm -f ${CI_RESULTFOLDER_EISFAIR_NG}/v3.0/main/*x86.iso*
+        mv alpine-eisfair-ng-*-x86.iso      alpine-eisfair-ng-${eisInstallVersion}-x86.iso
+        mv alpine-eisfair-ng-*-x86.iso.sha1 alpine-eisfair-ng-${eisInstallVersion}-x86.iso.sha1
+        cp *x86.iso* ${CI_RESULTFOLDER_EISFAIR_NG}/v3.0/main/
     else
         echo &quot;Error during ISO SHA1 calculation!&quot;
         exit $rtc
@@ -72,8 +69,7 @@ if [ $rtc = 0 ] ; then
 else
     echo &quot;Error during ISO build!&quot;
     exit $rtc
-fi
-</command>
+fi</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
@@ -203,6 +199,7 @@ fi
       <notifyUpstreamCommitters>false</notifyUpstreamCommitters>
       <buildToChatNotifier class="hudson.plugins.im.build_notify.SummaryOnlyBuildToChatNotifier" plugin="instant-messaging@1.28"/>
       <matrixMultiplier>ONLY_CONFIGURATIONS</matrixMultiplier>
+      <channels/>
     </hudson.plugins.ircbot.IrcPublisher>
   </publishers>
   <buildWrappers>
