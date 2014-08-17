@@ -7,22 +7,9 @@ Es bleibt somit von jedem Paket jeweils nur die neueste Version im Repository.&#
 Nach einem Release-Build eines Paketes wird das für das jeweilige Repository automatisch gemacht.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>11783</diskUsageWithoutBuilds>
-      <slaveWorkspacesUsage class="concurrent-hash-map">
-        <entry>
-          <string>alpine edge x86 (eb2)</string>
-          <concurrent-hash-map>
-            <entry>
-              <string>/home/jenkins/ci/workspace/_eisfair-ng__updateRepoIndex__all__main</string>
-              <long>8814940</long>
-            </entry>
-          </concurrent-hash-map>
-        </entry>
-      </slaveWorkspacesUsage>
-    </hudson.plugins.disk__usage.DiskUsageProperty>
+    <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.24"/>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.0">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.2.5">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -72,7 +59,7 @@ _ADMIN/createRepoIndex.sh -v v2.6 -b main -a x86_64
   </builders>
   <publishers/>
   <buildWrappers>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.7"/>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.14"/>
     <com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.3">
       <includes>eisfair-ng.buildsettings.txt</includes>
       <excludes></excludes>

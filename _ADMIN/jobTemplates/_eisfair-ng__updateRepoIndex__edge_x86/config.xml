@@ -4,31 +4,9 @@
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.22">
-      <diskUsageWithoutBuilds>23498</diskUsageWithoutBuilds>
-      <slaveWorkspacesUsage class="concurrent-hash-map">
-        <entry>
-          <string>alpine edge x86 (b6b)</string>
-          <concurrent-hash-map>
-            <entry>
-              <string>/home/jenkins/ci/workspace/_eisfair-ng__updateRepoIndex__edge_x86</string>
-              <long>479956</long>
-            </entry>
-          </concurrent-hash-map>
-        </entry>
-        <entry>
-          <string>alpine edge x86 (eb2)</string>
-          <concurrent-hash-map>
-            <entry>
-              <string>/home/jenkins/ci/workspace/_eisfair-ng__updateRepoIndex__edge_x86</string>
-              <long>10142847</long>
-            </entry>
-          </concurrent-hash-map>
-        </entry>
-      </slaveWorkspacesUsage>
-    </hudson.plugins.disk__usage.DiskUsageProperty>
+    <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.24"/>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.0">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.2.5">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -66,7 +44,7 @@ _ADMIN/createRepoIndex.sh -v edge -b testing -a x86
   </builders>
   <publishers/>
   <buildWrappers>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.7"/>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.14"/>
     <com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.3">
       <includes>eisfair-ng.buildsettings.txt</includes>
       <excludes></excludes>
