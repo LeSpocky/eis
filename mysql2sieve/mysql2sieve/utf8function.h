@@ -29,6 +29,9 @@
   typedef unsigned char byte;
 #endif
 
+int      is_utf8( const char * string );
 char     *native_to_utf8( const char *string );
+
+
 
 #endif

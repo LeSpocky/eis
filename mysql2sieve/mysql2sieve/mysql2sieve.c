@@ -1014,10 +1014,14 @@ row12= maildropfilter.dateupdate
                 if ( !row[9] ) {
                     append_sieve_rule(&mf, rulename, typelist[i].type ,atoi(row[5]), row[6], row[7], row[8], ".", "", &errcode);
                 } else {
-                    char *p = native_to_utf8(row[9]);
-                    append_sieve_rule(&mf, rulename, typelist[i].type ,atoi(row[5]), row[6], row[7], row[8], ".", p, &errcode);
-                    if ( p )
-                        free ( p );
+                    if ( is_utf8(row[9]) == 0) {
+                        char *p = native_to_utf8(row[9]);
+                        append_sieve_rule(&mf, rulename, typelist[i].type ,atoi(row[5]), row[6], row[7], row[8], ".", p, &errcode);
+                        if ( p )
+                            free ( p );
+                    } else {
+                        append_sieve_rule(&mf, rulename, typelist[i].type ,atoi(row[5]), row[6], row[7], row[8], ".", row[9], &errcode);
+                    }
                 }
             }
         }
