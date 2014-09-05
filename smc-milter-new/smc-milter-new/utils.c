@@ -2,7 +2,7 @@
  * utils.c
  *
  * Description:  File utilities
- * Copyright (c) 2005-2013 Jens Vehlhaber
+ * Copyright (c) 2005-2014 Jens Vehlhaber
  * All rights reserved.
  *
  */
@@ -240,7 +240,8 @@ file_save_local(const char *quarantinedir, const char *filename, const char *vir
  * Removes all dangling white-spaces and EOL chars from the end of a string.
  * Returns total number of chopped-off characters.
  * ----------------------------------------------------------------------------*/
-int chop ( char* string ) {
+int
+chop ( char* string ) {
     int i;
     int chopped;
     int stop = 0;
@@ -269,7 +270,8 @@ int chop ( char* string ) {
  * Get the file size
  * Return bytes
  * ----------------------------------------------------------------------------*/
-u_int32_t get_file_size(const char *file_name) {
+u_int32_t
+get_file_size(const char *file_name) {
     struct stat buf;
     if ( stat(file_name, &buf) != 0 ) 
         return(0);
@@ -287,6 +289,117 @@ strtolower (char *str) {
 	if (!str) 
         return;
 	for (; *str; str++) *str = tolower(*str);
+}
+
+
+/* ----------------------------------------------------------------------------
+ * Replaces UTF-8 characters with ISO characters.
+ *
+ * @param input the UTF-8 encoded, zero terminated input string.
+ * @returns newly allocated string with replaced characters. Caller is
+ *      responsible for freeing the memory.
+ * ----------------------------------------------------------------------------*/
+char*
+UTF8toISO(char *input, int inputlen)
+{
+    unsigned int replacement;
+    int i, j;
+    char c;
+    char *result = malloc(inputlen + 1);
+    if (result == NULL )
+        return NULL;
+
+    i = j = 0;
+    while ((c = input[i++])) {
+        if (c == (char) 195) {
+            switch ((unsigned char) input[i]) {
+                case 164: replacement = 228; break;
+                case 182: replacement = 246; break;
+                case 188: replacement = 252; break;
+                case 132: replacement = 196; break;
+                case 150: replacement = 214; break;
+                case 156: replacement = 220; break;
+                case 159: replacement = 223; break;
+                default: replacement = 0;
+            }
+            if (replacement > 0) {
+                result[j++] = replacement;
+                 ++i;
+                continue;
+            }
+        }
+        result[j++] = c;
+    }
+    result[j++] = '\0';
+    return realloc(result, j);
+}
+
+
+/* ----------------------------------------------------------------------------
+ * Replaces UTF-8 characters by HTML entities.
+ *
+ * @param input the UTF-8 encoded, zero terminated input string.
+ * @returns newly allocated string with replaced characters. Caller is
+ *      responsible for freeing the memory.
+ * ----------------------------------------------------------------------------*/
+char*
+UTF8toHTML(char *input, int inputlen)
+{
+    char *replacement;
+    int i, j;
+    char c;
+    /* Allocate enough memory for the worst case which is an input of
+     * just 'sz' characters, each two bytes long, which will be replaced
+     * by seven bytes ("&szlig;").  */
+    char *result = malloc(inputlen * 6 + 1);
+    if (result == NULL )
+        return NULL;
+
+    i = j = 0;
+    while ((c = input[i++])) {
+        if (c == (char) 195) {
+            switch ((unsigned char) input[i]) {
+                case 164: replacement = "auml"; break;
+                case 182: replacement = "ouml"; break;
+                case 188: replacement = "uuml"; break;
+                case 132: replacement = "Auml"; break;
+                case 150: replacement = "Ouml"; break;
+                case 156: replacement = "Uuml"; break;
+                case 159: replacement = "szlig"; break;
+                default: replacement = NULL;
+            }
+            if (replacement) {
+                result[j++] = '&';
+                while ((result[j++] = *replacement++));
+                result[j - 1] = ';';
+                ++i;
+                continue;
+            }
+        }
+        result[j++] = c;
+    }
+    result[j++] = '\0';
+    return realloc(result, j);
+}
+
+
+/* ----------------------------------------------------------------------------
+ * Function to remove line feeds from string
+ * ----------------------------------------------------------------------------*/
+void
+remove_crln(char *value)
+{
+    int i = 0;
+    while (value[i] != '\0') {
+        if (value[i] == '\n') {
+            if (value[i + 1] == '\0') {
+                value[i] = '\0';
+            } else {
+                value[i] = ' ';
+            }
+        }
+        i++;
+    }
 }
 
 /* eof */

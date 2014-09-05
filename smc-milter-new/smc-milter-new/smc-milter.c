@@ -254,10 +254,9 @@ add_external_signature(SMFICTX *ctx ) {
     snprintf(buffer, 1023, "SELECT signature FROM %s WHERE email = '%s' ORDER BY email LIMIT 1", dbtable, priv->from_addr );
 
     g_mysql= mysql_init( NULL );
-    if ( priv->utf8 == 1) {
-        mysql_options(g_mysql, MYSQL_SET_CHARSET_NAME, "utf8"); 
-        mysql_options(g_mysql, MYSQL_INIT_COMMAND, "SET NAMES utf8");
-    } 
+    mysql_options(g_mysql, MYSQL_SET_CHARSET_NAME, "utf8");
+    mysql_options(g_mysql, MYSQL_INIT_COMMAND, "SET NAMES utf8");
+
     mysql_options(g_mysql, MYSQL_OPT_RECONNECT, "1"); 
     if ( ! mysql_real_connect(g_mysql, dbhost, dbuser, dbpass, dbname, dbport, 0, 0)) {
         syslog(LOG_ERR, "add_external_signature: mysql_real_connect failed");
@@ -265,10 +264,10 @@ add_external_signature(SMFICTX *ctx ) {
         mysql_close(g_mysql);
         return FALSE;
     }
-    else
+    else  {
         if (debuglevel > 0)
              syslog(LOG_INFO, "mysql: new connect" );
-
+    }
 
 	while ( count < 4)
 	{
@@ -307,13 +306,29 @@ add_external_signature(SMFICTX *ctx ) {
                 fp = fopen(priv->temp_signtxt, "wb");
                 row = mysql_fetch_row(result);
                 lengths = mysql_fetch_lengths(result);
-                fwrite(row[0], lengths[0], 1, fp);
-                fwrite(STR_CRLF, strlen(STR_CRLF), 1, fp);                        
+                if ( priv->utf8 == 0) {
+                    /* if mail not utf-8 encoded then translate signature to ISO */
+                    char *tmp1 = UTF8toISO(row[0], lengths[0]);
+                    if (tmp1) {
+                        fwrite(tmp1, strlen(tmp1), 1, fp);
+                        free(tmp1);
+                    } else {
+                        fwrite(row[0], lengths[0], 1, fp);
+                    }
+                } else {
+                    fwrite(row[0], lengths[0], 1, fp);
+                }
+                fwrite(STR_CRLF, strlen(STR_CRLF), 1, fp);
                 fclose(fp);
 
                 fp = fopen(priv->temp_signhtm, "wb");
                 fwrite( MOZ_SIGNATURE, strlen(MOZ_SIGNATURE), 1, fp);
-                fwrite(row[0], lengths[0], 1, fp);
+                char *tmp2 = UTF8toHTML(row[0], lengths[0]);
+                if (tmp2) {
+                    fwrite(tmp2, strlen(tmp2), 1, fp);
+                    free(tmp2);
+                } else
+                    fwrite(row[0], lengths[0], 1, fp);
                 fwrite("</pre>", 6, 1, fp);                
                 fwrite(STR_CRLF, strlen(STR_CRLF), 1, fp);                        
                 fclose(fp);
@@ -650,8 +665,10 @@ mlfi_header (SMFICTX *ctx, char *headerf, char *headerv) {
     if (strcasecmp(headerf, "Content-Type") == 0) {
         if (strstr(headerv, "UTF-8" )) {
             priv->utf8 = 1;
-            if (debuglevel > 1)
-                syslog(LOG_INFO, "Header Content-Type: %s", headerv );
+        }
+        if (debuglevel > 1) {
+            remove_crln( headerv );
+            syslog(LOG_INFO, "Header Content-Type: %s ", headerv );
         }
     }
  

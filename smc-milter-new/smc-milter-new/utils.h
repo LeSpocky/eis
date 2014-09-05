@@ -16,5 +16,7 @@ int file_save_local(const char *quarantinedir, const char *filename, const char 
 int chop( char* string ); 
 u_int32_t get_file_size(const char *file_name);
 void strtolower (char *str);
-
+char* UTF8toISO(char *input, int inputlen);
+char* UTF8toHTML(char *input, int inputlen);
+void  remove_crln(char *value);
 #endif /* UTILS */
