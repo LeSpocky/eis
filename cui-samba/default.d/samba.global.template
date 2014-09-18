@@ -11,7 +11,7 @@
     hosts allow = HOSTS_ALLOW
     hosts deny = HOSTS_DENY
     interfaces = INTERFACES
-    invalid users = nobody root
+    invalid users = INVALID_USERS
     load printers = LOAD_PRINTERS
     max connections = MAX_CONNECTIONS
     netbios name = NETBIOS_NAME

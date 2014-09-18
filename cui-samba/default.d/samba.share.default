@@ -1,5 +1,5 @@
-[SHARE_NAME]
-    create mask = CREATE_MASK
-    directory mask = DIRECTORY_MASK
-    path = DIRECTORY_PATH
-    writeable = WRITEABLE
+SHARE_NAME=''
+CREATE_MASK='0400'
+DIRECTORY_MASK='0700'
+DIRECTORY_PATH=''
+WRITEABLE='yes'

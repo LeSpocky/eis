@@ -1,28 +1,29 @@
-[global]
-    bind interfaces only = BIND_INTERFACES_ONLY
-    deadtime = DEADTIME
-    default case = DEFAULT_CASE
-    disable netbios = DISABLE_NETBIOS
-    dns proxy = DNS_PROXY
-    domain master = DOMAIN_MASTER
-    encrypt passwords = ENCRYPT_PASSWORDS
-    guest ok = GUEST_OK
-    guest only = GUEST_ONLY
-    hosts allow = HOSTS_ALLOW
-    hosts deny = HOSTS_DENY
-    interfaces = INTERFACES
-    invalid users = nobody root
-    load printers = LOAD_PRINTERS
-    max connections = MAX_CONNECTIONS
-    netbios name = NETBIOS_NAME
-    preferred master = PREFERRED_MASTER
-    preserve case = PRESERVE_CASE
-    printable = PRINTABLE
-    security = SECURITY
-    server string = SERVER_STRING
-    socket options = SOCKET_OPTIONS
-    strict sync = STRICT_SYNC
-    sync always = SYNC_ALWAYS
-    syslog = SYSLOG
-    syslog only = SYSLOG_ONLY
-    workgroup = WORKGROUP
+#!/bin/bash
+#[global]
+BIND_INTERFACES_ONLY='yes'
+DEADTIME='15'
+DEFAULT_CASE='lower'
+DISABLE_NETBIOS='yes'
+DNS_PROXY='no'
+DOMAIN_MASTER='yes'
+ENCRYPT_PASSWORDS='true'
+GUEST_OK='yes'
+GUEST_ONLY='yes'
+HOSTS_ALLOW='10.10.10.0/255.255.255.0 127.0.0.1'
+HOSTS_DENY='all'
+INTERFACES=''
+INVALID_USERS='nobody root'
+LOAD_PRINTERS='no'
+MAX_CONNECTIONS='10'
+NETBIOS_NAME='eisfair-ng'
+PREFERRED_MASTER='yes'
+PRESERVE_CASE='no'
+PRINTABLE='no'
+SECURITY='share'
+SERVER_STRING='eifsair-ng'
+SOCKET_OPTIONS='TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=65536 SO_SNDBUF=65536'
+STRICT_SYNC='no'
+SYNC_ALWAYS='no'
+SYSLOG='1'
+SYSLOG_ONLY='yes'
+WORKGROUP='WORKGROUP'
