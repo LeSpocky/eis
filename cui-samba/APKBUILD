@@ -56,11 +56,11 @@ package() {
 		install -D -m644 ${currentMenu} ${pkgdir}/var/install/menu/${currentMenu#cui-samba.*} || return 1
 	done
 	cd -
-	install -D -m644 ${srcdir}/${pkgname}.checkd          ${pkgdir}/etc/check.d/cui-samba || return 1
-	install -D -m644 ${srcdir}/${pkgname}.help            ${pkgdir}/var/install/help/cui-samba || return 1
-	install -D -m644 ${srcdir}/${pkgname}.txt             ${pkgdir}/usr/share/doc/cui-samba/cui-samba.txt || return 1
-	install -D -m755 ${srcdir}/${pkgname}.sh              ${pkgdir}/var/install/config.d/cui-samba.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-update.sh       ${pkgdir}/var/install/config.d/cui-samba-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.checkd          ${pkgdir}/etc/check.d/samba || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help            ${pkgdir}/var/install/help/samba || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt             ${pkgdir}/usr/share/doc/samba/samba.txt || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh              ${pkgdir}/var/install/config.d/samba.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh       ${pkgdir}/var/install/config.d/samba-update.sh || return 1
 }
 md5sums="8735237bffcfc363bf6bdebd813412b2  cui-samba.checkd
 6f14643ad3d108cb5faac2108e1d777e  cui-samba.help
