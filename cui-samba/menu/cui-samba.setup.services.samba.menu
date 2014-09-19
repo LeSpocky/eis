@@ -1,7 +1,7 @@
 <!-- /var/install/menu/setup.services.samba.menu -->
 <!-- Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net -->
 <!-- Creation: 2005-06-16 tb -->
-<package>cui-samba</package>
+<package>samba</package>
 <title>Samba Administration</title>
 <doc file="cui-samba.txt">Read Samba Documentation</doc>
 <menu file="setup.configuration.samba.menu">Samba Configuration Handling</menu>

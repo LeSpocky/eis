@@ -1,7 +1,7 @@
 <!-- /var/install/menu/setup.user.samba.menu -->
 <!-- Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net -->
 <!-- Creation: 2005-06-16 tb -->
-<package>cui-samba</package>
+<package>samba</package>
 <title>Samba User Handling</title>
 <script file="samba-list-user">List Samba User</script>
 <script file="samba-add-user">Add Samba User</script>
