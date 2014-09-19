@@ -1,0 +1,9 @@
+#----------------------------------------------------------------------------
+# /etc/config.d/-check_exp - configuration file for -check_exp
+# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+#----------------------------------------------------------------------------
+
+SAMBA_DEFAULT_CASE      = 'upper|lower'
+                        : 'Possible cases are upper and lower'
+SAMBA_SYSLOG            = '1|2|3|4|5'
+                        : 'Log levels must be between 1 and 5'

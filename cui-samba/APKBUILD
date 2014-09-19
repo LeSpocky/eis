@@ -57,6 +57,7 @@ package() {
 	done
 	cd -
 	install -D -m644 ${srcdir}/${pkgname}.checkd          ${pkgdir}/etc/check.d/samba || return 1
+	install -D -m644 ${srcdir}/${pkgname}.checkd.exp      ${pkgdir}/etc/check.d/samba.exp || return 1
 	install -D -m644 ${srcdir}/${pkgname}.help            ${pkgdir}/var/install/help/samba || return 1
 	install -D -m644 ${srcdir}/${pkgname}.txt             ${pkgdir}/usr/share/doc/samba/samba.txt || return 1
 	install -D -m755 ${srcdir}/${pkgname}.sh              ${pkgdir}/var/install/config.d/samba.sh || return 1
