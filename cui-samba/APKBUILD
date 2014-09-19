@@ -62,17 +62,17 @@ package() {
 	install -D -m755 ${srcdir}/${pkgname}.sh              ${pkgdir}/var/install/config.d/cui-samba.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh       ${pkgdir}/var/install/config.d/cui-samba-update.sh || return 1
 }
-md5sums="bf7e88318e8bdb517a2c379edfee6baa  cui-samba.checkd
+md5sums="8735237bffcfc363bf6bdebd813412b2  cui-samba.checkd
 6f14643ad3d108cb5faac2108e1d777e  cui-samba.help
 0a4a55a74893f0321c2ec2c922f6bd7f  cui-samba.sh
 cd05cb929be52ccb375427d4886717b7  cui-samba.txt
 50a8a7d14f22ada2d47792c59d294c47  cui-samba-update.sh"
-sha256sums="d58a693e11e47a1129bdf2750b790c2e37b71562842bf82421ea2ea151c67f2c  cui-samba.checkd
+sha256sums="781f89508bad24f3f3151e2092621182acf88d7715ce6940c1b65072bca7e37b  cui-samba.checkd
 1ec41ffc4092b935be3aa7b484abe434258b3867e31183ae5c5fcdf5d3af6a56  cui-samba.help
 dc4c625f4e2bf2391537e3746ef75ad0ac36b64b035318f6dfd700eef92bc98b  cui-samba.sh
 1ac6552c2df8114c22072301c5e81cab00c92130b6fc236e4b29bcd850233a82  cui-samba.txt
 e73b960ae81e772a517cdbec5349b4d9a24c451d87897118251f9e84b4f2656a  cui-samba-update.sh"
-sha512sums="a52fe32e404d9e5543b4b2c3267ea804d9e777d1b44839ebb6b8206baac9b53540682c3df1c01cd26f1bb1cc036155743c9a83a56b99b61197c9c61e4ec26884  cui-samba.checkd
+sha512sums="2165617a16dbf3fba17a3a5dd18c393adb834d8534149a3d08336b544009c9a28b908e7ce7482132d3bc1ae5b9315feb904935097e7297f2713c636937333e57  cui-samba.checkd
 21c2a7f3f49f4f458070bff5ed9fca36dc52e0e569ee9c531ef118b1d707e2518436e9090ca3e3269ca35f1713019bf783ce76720e801fae421281a99bbabc22  cui-samba.help
 f3e68f336ccf829e4130515dff3d3601168423ab6cc78646d0337bb8066c3649fdafb1cfec8e783c9a79560c84b6ef1f85e8aae5cb558af05476859287a3dd33  cui-samba.sh
 80bed5e841b3a9f66c8c1af44d048273784404fe949ba070dcc7fe9b60b80b0092d0fcdea1caaf6894a0b3d12125827375b71bf768aef69308805299eae90115  cui-samba.txt
