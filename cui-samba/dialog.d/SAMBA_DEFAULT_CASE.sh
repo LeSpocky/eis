@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 #-----------------------------------------------------------------------------
 # /var/install/dialog.d/SAMBA_DEFAULT_CASE.sh - script dialog for ece
 #

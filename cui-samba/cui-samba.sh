@@ -14,4 +14,5 @@
 #set -x
 . /var/install/include/eislib
 . /etc/config.d/base
-. /etc/config.d/cui-samba
+. /etc/config.d/samba
+

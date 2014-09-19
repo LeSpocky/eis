@@ -1,8 +1,113 @@
 <help name="START_SAMBA">
-Should Samba be started at boot time?: yes or no<br/><br/>
+Should Samba be started at boot time?: yes or no<br/>
+tbd<br/>
+<br/>
 If you say 'yes' here, Samba will be started at boot time. If you want to<br/>
 start Samba by hand, you have to set this to 'no' and start Samba with<br/>
 'Service administration', 'Samba', 'Samba Server Handling', 'Start Samba'<br/>
-or on console with '/etc/init.d/samba forcestart'.<br/><br/>
+or on console with '/etc/init.d/samba forcestart'.<br/>
+tbd<br/>
+<br/>
 Default: START_SAMBA='yes'
+</help>
+
+<help name="SAMBA_BIND_INTERFACES_ONLY">
+tbd<br/>
+</help>
+<help name="SAMBA_DEADTIME">
+tbd<br/>
+</help>
+<help name="SAMBA_DEFAULT_CASE">
+tbd<br/>
+</help>
+<help name="SAMBA_DISABLE_NETBIOS">
+tbd<br/>
+</help>
+<help name="SAMBA_DNS_PROXY">
+tbd<br/>
+</help>
+<help name="SAMBA_DOMAIN_MASTER">
+tbd<br/>
+</help>
+<help name="SAMBA_ENCRYPT_PASSWORDS">
+tbd<br/>
+</help>
+<help name="SAMBA_GUEST_OK">
+tbd<br/>
+</help>
+<help name="SAMBA_GUEST_ONLY">
+tbd<br/>
+</help>
+<help name="SAMBA_HOSTS_ALLOW">
+tbd<br/>
+</help>
+<help name="SAMBA_HOSTS_DENY">
+tbd<br/>
+</help>
+<help name="SAMBA_INTERFACES">
+tbd<br/>
+</help>
+<help name="SAMBA_INVALID_USERS">
+tbd<br/>
+</help>
+<help name="SAMBA_LOAD_PRINTERS">
+tbd<br/>
+</help>
+<help name="SAMBA_MAX_CONNECTIONS">
+tbd<br/>
+</help>
+<help name="SAMBA_NETBIOS_NAME">
+tbd<br/>
+</help>
+<help name="SAMBA_PREFERRED_MASTER">
+tbd<br/>
+</help>
+<help name="SAMBA_PRESERVE_CASE">
+tbd<br/>
+</help>
+<help name="SAMBA_PRINTABLE">
+tbd<br/>
+</help>
+<help name="SAMBA_SECURITY">
+tbd<br/>
+</help>
+<help name="SAMBA_SERVER_STRING">
+tbd<br/>
+</help>
+<help name="SAMBA_SOCKET_OPTIONS">
+tbd<br/>
+</help>
+<help name="SAMBA_STRICT_SYNC">
+tbd<br/>
+</help>
+<help name="SAMBA_SYNC_ALWAYS">
+tbd<br/>
+</help>
+<help name="SAMBA_SYSLOG">
+tbd<br/>
+</help>
+<help name="SAMBA_SYSLOG_ONLY">
+tbd<br/>
+</help>
+<help name="SAMBA_WORKGROUP">
+tbd<br/>
+</help>
+
+<help name="SAMBA_SHARE_N">
+tbd<br/>
+</help>
+<help name="SAMBA_SHARE_%_NAME">
+tbd<br/>
+</help>
+<help name="SAMBA_SHARE_%_CREATE_MASK">
+tbd<br/>
+</help>
+<help name="SAMBA_SHARE_%_DIRECTORY_MASK">
+tbd<br/>
+</help>
+<help name="SAMBA_SHARE_%_DIRECTORY_PATH">
+tbd<br/>
+</help>
+<help name="SAMBA_SHARE_%_WRITEABLE">
+tbd<br/>
 </help>

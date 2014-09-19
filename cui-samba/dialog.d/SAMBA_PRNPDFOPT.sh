@@ -1,11 +1,11 @@
-#! /bin/sh
+#!/bin/bash
 #-----------------------------------------------------------------------------
 # /var/install/dialog.d/SAMBA_PRNPDFOPT.sh - script dialog for ece
 #
 # Creation:     2013-05-08 tb
-# Last update:  2013-05-08 tb
 #
 # Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+# Copyright (c) 2014 the eisfair team <team@eisfair.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
