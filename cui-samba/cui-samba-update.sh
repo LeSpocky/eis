@@ -156,21 +156,21 @@ makeConfigFile()
 # ----------------------------------------------------------------------------
 # Write default config file
 if [ -f /etc/config.d/${packageName} ] ; then
-    mecho -info -n "Updating configuration."
+    mecho --info -n "Updating configuration."
 else
-    mecho -info -n "Creating configuration."
+    mecho --info -n "Creating configuration."
 fi
 
 makeConfigFile /etc/default.d/${packageName}
 
 # Update from old version
-mecho -info -n "."
+mecho --info -n "."
 renameOldVariables
 
 # Write new config file
-mecho -info -n "."
+mecho --info -n "."
 makeConfigFile /etc/config.d/${packageName}
 
-mecho -info " Finished."
+mecho --info " Finished."
 
 exit 0
