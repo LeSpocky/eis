@@ -41,6 +41,11 @@ package() {
 		install -D -m755 ${currentHelperScript} ${pkgdir}/var/install/bin/${currentHelperScript} || return 1
 	done
 	cd -
+	cd ${startdir}/default.d
+	for currentDefaultScript in `ls` ; do
+		install -D -m644 ${currentDefaultScript} ${pkgdir}/etc/default.d/${currentDefaultScript} || return 1
+	done
+	cd -
 	cd ${startdir}/dialog.d
 	for currentDialogScript in `ls` ; do
 		install -D -m755 ${currentDialogScript} ${pkgdir}/var/install/dialog.d/${currentDialogScript} || return 1
