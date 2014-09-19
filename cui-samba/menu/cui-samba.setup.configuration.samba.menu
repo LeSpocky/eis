@@ -3,6 +3,6 @@
 <!-- Creation: 2005-06-16 tb -->
 <package>samba</package>
 <title>Samba Configuration Handling</title>
-<script file="samba-edit">Edit Samba Configuration</script>
+<edit>Edit Samba Configuration</edit>
 <script file="samba-show-variables">Show all Samba Variables</script>
 <menu file="setup.services.advancedconfig.menu">Samba Advanced configuration file handling</menu>
