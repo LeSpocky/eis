@@ -1,11 +1,12 @@
 <!-- /var/install/menu/setup.user.samba.menu -->
 <!-- Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net -->
+<!-- Copyright (c) 2014 the eisfair team <team@eisfair.org> -->
 <!-- Creation: 2005-06-16 tb -->
 <package>samba</package>
 <title>Samba User Handling</title>
-<script file="samba-list-user">List Samba User</script>
+<script file="samba-list-users.sh">List Samba Users</script>
 <script file="samba-add-user">Add Samba User</script>
 <script file="samba-remove-user">Remove Samba User</script>
 <script file="samba-activate-user">Activate Existing Samba User</script>
 <script file="samba-deactivate-user">Deactivate Existing Samba User</script>
-<script file="samba-smbpasswd-user">Change Samba Password of existing Samba User</script>
+<script file="samba-smbpasswd-user">Change Samba Password of existing User</script>

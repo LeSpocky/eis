@@ -1,5 +1,6 @@
 <!-- /var/install/menu/setup.services.samba.menu -->
 <!-- Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net -->
+<!-- Copyright (c) 2014 the eisfair team <team@eisfair.org> -->
 <!-- Creation: 2005-06-16 tb -->
 <package>samba</package>
 <title>Samba Administration</title>
@@ -11,7 +12,6 @@
 <menu file="setup.user.samba.menu">Samba User Handling</menu>
 <menu file="setup.services.advancedconfig.menu">Samba Advanced configuration file handling</menu>
 <!--<menu file="setup.configuration.samba.menu">Samba Configuration Handling</menu>-->
-<menu file="setup.user.samba.menu">Samba User Handling</menu>
 <!--<menu file="setup.handle.samba.menu">Samba Server Handling</menu>-->
 <!--<menu file="setup.domainoptions.samba.menu">Samba Domain Handling</menu>-->
 <!--<menu file="setup.smbfs.samba.menu">SMB Filesystem Handling</menu>-->
