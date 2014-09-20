@@ -7,6 +7,5 @@
 <script file="samba-list-users.sh">List Samba Users</script>
 <script file="samba-add-user">Add Samba User</script>
 <script file="samba-remove-user">Remove Samba User</script>
-<script file="samba-activate-user">Activate Existing Samba User</script>
-<script file="samba-deactivate-user">Deactivate Existing Samba User</script>
+<script file="samba-user-activation-state.sh">De-/Activate Existing Samba User</script>
 <script file="samba-smbpasswd-user">Change Samba Password of existing User</script>

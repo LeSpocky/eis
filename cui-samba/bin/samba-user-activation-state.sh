@@ -1,6 +1,6 @@
 #!/bin/bash
 #-----------------------------------------------------------------------------
-# /var/install/bin/samba-activate-user.sh - activate samba user
+# /var/install/bin/samba-user-activation-state.sh - activate samba user
 #
 # Creation:     2014-09-20 starwarsfan
 #
