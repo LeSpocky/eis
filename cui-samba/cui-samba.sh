@@ -22,33 +22,33 @@ sambaNativeConfig=/tmp/smb.conf
 # Create global section of samba configuration
 createGlobalSambaConfiguration()
 {
-    sed -e "s/BIND_INTERFACES_ONLY/${BIND_INTERFACES_ONLY}/g" \
-        -e "s/DEADTIME/${DEADTIME}/g" \
-        -e "s/DEFAULT_CASE/${DEFAULT_CASE}/g" \
-        -e "s/DISABLE_NETBIOS/${DISABLE_NETBIOS}/g" \
-        -e "s/DNS_PROXY/${DNS_PROXY}/g" \
-        -e "s/DOMAIN_MASTER/${DOMAIN_MASTER}/g" \
-        -e "s/ENCRYPT_PASSWORDS/${ENCRYPT_PASSWORDS}/g" \
-        -e "s/GUEST_OK/${GUEST_OK}/g" \
-        -e "s/GUEST_ONLY/${GUEST_ONLY}/g" \
-        -e "s/HOSTS_ALLOW/${HOSTS_ALLOW}/g" \
-        -e "s/HOSTS_DENY/${HOSTS_DENY}/g" \
-        -e "s/INTERFACES/${INTERFACES}/g" \
-        -e "s/INVALID_USERS/${INVALID_USERS}/g" \
-        -e "s/LOAD_PRINTERS/${LOAD_PRINTERS}/g" \
-        -e "s/MAX_CONNECTIONS/${MAX_CONNECTIONS}/g" \
-        -e "s/NETBIOS_NAME/${NETBIOS_NAME}/g" \
-        -e "s/PREFERRED_MASTER/${PREFERRED_MASTER}/g" \
-        -e "s/PRESERVE_CASE/${PRESERVE_CASE}/g" \
-        -e "s/PRINTABLE/${PRINTABLE}/g" \
-        -e "s/SECURITY/${SECURITY}/g" \
-        -e "s/SERVER_STRING/${SERVER_STRING}/g" \
-        -e "s/SOCKET_OPTIONS/${SOCKET_OPTIONS}/g" \
-        -e "s/STRICT_SYNC/${STRICT_SYNC}/g" \
-        -e "s/SYNC_ALWAYS/${SYNC_ALWAYS}/g" \
-        -e "s/SYSLOG/${SYSLOG}/g" \
-        -e "s/SYSLOG_ONLY/${SYSLOG_ONLY}/g" \
-        -e "s/WORKGROUP/${WORKGROUP}/g" \
+    sed -e "s/BIND_INTERFACES_ONLY/${SAMBA_BIND_INTERFACES_ONLY}/g" \
+        -e "s/DEADTIME/${SAMBA_DEADTIME}/g" \
+        -e "s/DEFAULT_CASE/${SAMBA_DEFAULT_CASE}/g" \
+        -e "s/DISABLE_NETBIOS/${SAMBA_DISABLE_NETBIOS}/g" \
+        -e "s/DNS_PROXY/${SAMBA_DNS_PROXY}/g" \
+        -e "s/DOMAIN_MASTER/${SAMBA_DOMAIN_MASTER}/g" \
+        -e "s/ENCRYPT_PASSWORDS/${SAMBA_ENCRYPT_PASSWORDS}/g" \
+        -e "s/GUEST_OK/${SAMBA_GUEST_OK}/g" \
+        -e "s/GUEST_ONLY/${SAMBA_GUEST_ONLY}/g" \
+        -e "s/HOSTS_ALLOW/${SAMBA_HOSTS_ALLOW}/g" \
+        -e "s/HOSTS_DENY/${SAMBA_HOSTS_DENY}/g" \
+        -e "s/INTERFACES/${SAMBA_INTERFACES}/g" \
+        -e "s/INVALID_USERS/${SAMBA_INVALID_USERS}/g" \
+        -e "s/LOAD_PRINTERS/${SAMBA_LOAD_PRINTERS}/g" \
+        -e "s/MAX_CONNECTIONS/${SAMBA_MAX_CONNECTIONS}/g" \
+        -e "s/NETBIOS_NAME/${SAMBA_NETBIOS_NAME}/g" \
+        -e "s/PREFERRED_MASTER/${SAMBA_PREFERRED_MASTER}/g" \
+        -e "s/PRESERVE_CASE/${SAMBA_PRESERVE_CASE}/g" \
+        -e "s/PRINTABLE/${SAMBA_PRINTABLE}/g" \
+        -e "s/SECURITY/${SAMBA_SECURITY}/g" \
+        -e "s/SERVER_STRING/${SAMBA_SERVER_STRING}/g" \
+        -e "s/SOCKET_OPTIONS/${SAMBA_SOCKET_OPTIONS}/g" \
+        -e "s/STRICT_SYNC/${SAMBA_STRICT_SYNC}/g" \
+        -e "s/SYNC_ALWAYS/${SAMBA_SYNC_ALWAYS}/g" \
+        -e "s/SYSLOG/${SAMBA_SYSLOG}/g" \
+        -e "s/SYSLOG_ONLY/${SAMBA_SYSLOG_ONLY}/g" \
+        -e "s/WORKGROUP/${SAMBA_WORKGROUP}/g" \
         /etc/default.d/samba.global.template > ${sambaNativeConfig}
 }
 
@@ -56,12 +56,22 @@ createGlobalSambaConfiguration()
 # Create share sections of samba configuration
 createShareConfiguration()
 {
-    sed -e "s/SHARE_NAME/${SHARE_NAME}/g" \
-        -e "s/CREATE_MASK/${CREATE_MASK}/g" \
-        -e "s/DIRECTORY_MASK/${DIRECTORY_MASK}/g" \
-        -e "s/DIRECTORY_PATH/${DIRECTORY_PATH}/g" \
-        -e "s/WRITEABLE/${WRITEABLE}/g" \
-        /etc/default.d/samba.share.template >> ${sambaNativeConfig}
+    idx=1
+    while [ ${idx} -le ${SAMBA_SHARE_N} ] ; do
+        eval SAMBA_SHARE_NAME='$SAMBA_SHARE_'${idx}'_NAME'
+        eval SAMBA_SHARE_CREATE_MASK='$SAMBA_SHARE_'${idx}'_CREATE_MASK'
+        eval SAMBA_SHARE_DIRECTORY_MASK='$SAMBA_SHARE_'${idx}'_DIRECTORY_MASK'
+        eval SAMBA_SHARE_DIRECTORY_PATH='$SAMBA_SHARE_'${idx}'_DIRECTORY_PATH'
+        eval SAMBA_SHARE_WRITEABLE='$SAMBA_SHARE_'${idx}'_WRITEABLE'
+
+        sed -e "s/SHARE_NAME/${SAMBA_SHARE_NAME}/g" \
+            -e "s/CREATE_MASK/${SAMBA_SHARE_CREATE_MASK}/g" \
+            -e "s/DIRECTORY_MASK/${SAMBA_SHARE_DIRECTORY_MASK}/g" \
+            -e "s/DIRECTORY_PATH/${SAMBA_SHARE_DIRECTORY_PATH}/g" \
+            -e "s/WRITEABLE/${SAMBA_SHARE_WRITEABLE}/g" \
+            /etc/default.d/samba.share.template >> ${sambaNativeConfig}
+        idx=$((idx+1))
+    done
 }
 
 # ----------------------------------------------------------------------------
