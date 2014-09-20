@@ -25,7 +25,7 @@ ${pdbeditbin} -Lw | grep -v "^.*$:" | sort -t: -k2n |
     echo
 
     techo begin 2 25 13 20 20
-    techo row '' -info User -info Uid -info Password -info Active
+    techo row '' --info User --info Uid --info Password --info Active
     row=4
 
     while read line ; do
@@ -64,7 +64,7 @@ ${pdbeditbin} -Lw | grep -v "^.*$:" | sort -t: -k2n |
             mecho --info "List Samba Users"
             echo
             techo begin 2 25 13 20 20
-            techo row '' -info User -info Uid -info Password -info Active
+            techo row '' --info User --info Uid --info Password --info Active
             row=4
         fi
     done

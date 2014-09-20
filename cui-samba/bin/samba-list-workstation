@@ -1,8 +1,9 @@
 #!/bin/bash
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # /var/install/bin/samba-list-workstation - list samba workstations
 #
 # Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+# Copyright (c) 2014 the eisfair team <team@eisfair.org>
 #
 # Creation   : 2002-06-02 tb
 #
@@ -10,7 +11,7 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # set -x
 . /var/install/include/eislib
 
@@ -24,11 +25,10 @@ $pdbeditbin -Lw | grep "^.*$:" | sort -t: -k2n |
     echo
 
     techo begin 2 48 30
-    techo row '' -info Workstation -info Uid
+    techo row '' --info Workstation --info Uid
     row=4
 
-    while read line
-    do
+    while read line ; do
         oldifs="$IFS"
         IFS=':'
         set -- $line
@@ -38,8 +38,7 @@ $pdbeditbin -Lw | grep "^.*$:" | sort -t: -k2n |
         techo row '' "$workstation" "$uid"
         row=`expr $row + 1`
 
-        if [ $row = 21 ]
-        then
+        if [ $row = 21 ] ; then
             echo
             anykey <$tty
 
@@ -48,7 +47,7 @@ $pdbeditbin -Lw | grep "^.*$:" | sort -t: -k2n |
             echo
 
             techo begin 2 48 30
-            techo row '' -info Workstation -info Uid
+            techo row '' --info Workstation --info Uid
             row=4
         fi
     done
