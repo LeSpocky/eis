@@ -23,6 +23,6 @@
     socket options = SOCKET_OPTIONS
     strict sync = STRICT_SYNC
     sync always = SYNC_ALWAYS
-    syslog = SYSLOG
+    syslog = SYSLOG_LEVEL
     syslog only = SYSLOG_ONLY
     workgroup = WORKGROUP

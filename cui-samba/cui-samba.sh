@@ -59,7 +59,7 @@ createGlobalConfiguration()
         -e "s/SOCKET_OPTIONS/${SAMBA_SOCKET_OPTIONS}/g" \
         -e "s/STRICT_SYNC/${SAMBA_STRICT_SYNC}/g" \
         -e "s/SYNC_ALWAYS/${SAMBA_SYNC_ALWAYS}/g" \
-        -e "s/SYSLOG/${SAMBA_SYSLOG}/g" \
+        -e "s/SYSLOG_LEVEL/${SAMBA_SYSLOG_LEVEL}/g" \
         -e "s/SYSLOG_ONLY/${SAMBA_SYSLOG_ONLY}/g" \
         -e "s/WORKGROUP/${SAMBA_WORKGROUP}/g" \
         /etc/default.d/samba.global.template >> ${sambaNativeConfig}
@@ -87,9 +87,19 @@ createShareConfiguration()
     done
 }
 
+setupBooleanValues()
+{
+    if [ "$ENCRYPT_PASSWORDS" = 'yes' ] ; then
+        ENCRYPT_PASSWORDS='true'
+    else
+        ENCRYPT_PASSWORDS='false'
+    fi
+}
+
 # ----------------------------------------------------------------------------
 # Main
 if [ "$START_SAMBA" = 'yes' ] ; then
+    setupBooleanValues
     createConfigFileHeader
     createGlobalConfiguration
     createShareConfiguration
