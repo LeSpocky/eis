@@ -46,7 +46,7 @@ ${pdbeditbin} -Lw | grep -v "^.*$:" | sort -t: -k2n |
             passcolor='-warn'
         fi
 
-        if [ -n "`echo $active | grep "\[U"`" -a "$pass" != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ] ; then
+        if [ -n "`echo ${active} | grep "\[U"`" -a "$pass" != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ] ; then
             active='yes'
             activecolor='-std'
         else
