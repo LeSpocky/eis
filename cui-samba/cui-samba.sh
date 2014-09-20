@@ -16,3 +16,19 @@
 . /etc/config.d/base
 . /etc/config.d/samba
 
+# ----------------------------------------------------------------------------
+# Create inadyn configuration file
+createSambaConfiguration()
+{
+    echo tbd
+}
+
+# ----------------------------------------------------------------------------
+# Main
+if [ "$START_SAMBA" = 'yes' ] ; then
+    createSambaConfiguration
+    rc-update add samba
+else
+    rc-update del samba
+fi
+exit 0
