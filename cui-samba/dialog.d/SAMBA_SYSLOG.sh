@@ -23,8 +23,8 @@
 exec_dialog()
 {
     win="${p2}"
-    sellist="1,2,3,4,5"
-    ece_select_list_dlg "${win}" "${p3}" "${sellist}"
+    sellist="1|Info,2|More info,3|Debug info,4|More debug info,5|Debug info+,6|Debug info++,7|Debug info+++,8|Debug info++++,9|Debug info+++++,10|Plethora of low-level information"
+    ece_comment_list_dlg "${win}" "${p3}" "${sellist}"
 }
 
 #-----------------------------------------------------------------------------
