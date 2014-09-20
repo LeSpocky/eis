@@ -31,7 +31,7 @@ createGlobalSambaConfiguration()
         -e "s/ENCRYPT_PASSWORDS/${SAMBA_ENCRYPT_PASSWORDS}/g" \
         -e "s/GUEST_OK/${SAMBA_GUEST_OK}/g" \
         -e "s/GUEST_ONLY/${SAMBA_GUEST_ONLY}/g" \
-        -e "s/HOSTS_ALLOW/${SAMBA_HOSTS_ALLOW}/g" \
+        -e "s#HOSTS_ALLOW#${SAMBA_HOSTS_ALLOW}#g" \
         -e "s/HOSTS_DENY/${SAMBA_HOSTS_DENY}/g" \
         -e "s/INTERFACES/${SAMBA_INTERFACES}/g" \
         -e "s/INVALID_USERS/${SAMBA_INVALID_USERS}/g" \
@@ -67,7 +67,7 @@ createShareConfiguration()
         sed -e "s/SHARE_NAME/${SAMBA_SHARE_NAME}/g" \
             -e "s/CREATE_MASK/${SAMBA_SHARE_CREATE_MASK}/g" \
             -e "s/DIRECTORY_MASK/${SAMBA_SHARE_DIRECTORY_MASK}/g" \
-            -e "s/DIRECTORY_PATH/${SAMBA_SHARE_DIRECTORY_PATH}/g" \
+            -e "s#DIRECTORY_PATH#${SAMBA_SHARE_DIRECTORY_PATH}#g" \
             -e "s/WRITEABLE/${SAMBA_SHARE_WRITEABLE}/g" \
             /etc/default.d/samba.share.template >> ${sambaNativeConfig}
         idx=$((idx+1))
