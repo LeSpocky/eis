@@ -23,7 +23,7 @@ IDC_LABEL__HEADLINE='10'
 IDC_LISTBOX__USERS='11'
 IDC_BUTOK='100'
 
-addUserEntries() {
+getSambaUsers() {
     ${pdbeditbin} -Lw | grep -v "^.*$:" | sort -t: -k2n |
     (
         while read line ; do
@@ -99,7 +99,7 @@ dlg_setup_hook() {
         ctrl="$p2"
         cui_window_setcolors  "$ctrl" "MENU"
         cui_window_create     "$ctrl"
-        addUserEntries
+        getSambaUsers
     fi
 
     if cui_button_new "$dlg" "&OK" 24 9 10 1 ${IDC_BUTOK} ${CWS_DEFOK} ${CWS_NONE} ; then
