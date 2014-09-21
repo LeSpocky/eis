@@ -2,14 +2,6 @@
 
 . /var/install/include/eislib
 
-conffile='/etc/config.d/cui-samba'
-smbconffile='/etc/smb.conf'
-isUpdate=false
-
-if [ -f "$smbconffile" ] ; then
-    isUpdate=true
-fi
-
 /var/install/bin/add-menu setup.services.menu setup.services.samba.menu "Samba"
 
-/var/install/config.d/cui-samba-update.sh sample
+/var/install/config.d/samba-update.sh
