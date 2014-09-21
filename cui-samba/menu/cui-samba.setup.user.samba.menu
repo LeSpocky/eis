@@ -4,5 +4,5 @@
 <!-- Creation: 2005-06-16 tb -->
 <package>samba-usermapping</package>
 <title>Samba User Handling</title>
-<script file="userman.cui.sh ">eisfair Account Handling</script>
+<script file="userman.cui.sh ">Account Handling</script>
 <edit>Account Mapping: eisfair - Windows</edit>
