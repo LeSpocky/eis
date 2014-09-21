@@ -18,6 +18,10 @@ source="${pkgname}.checkd
         ${pkgname}.sh
         ${pkgname}.txt
         ${pkgname}-update.sh
+        ${pkgname}-usermapping.checkd
+        ${pkgname}-usermapping.help
+        ${pkgname}-usermapping.sh
+        ${pkgname}-usermapping-update.sh
 "
 
 _builddir=
@@ -57,28 +61,44 @@ package() {
 		install -D -m644 ${currentMenu} ${pkgdir}/var/install/menu/${currentMenu#cui-samba.*} || return 1
 	done
 	cd -
-	install -D -m644 ${srcdir}/${pkgname}.checkd          ${pkgdir}/etc/check.d/samba || return 1
-	install -D -m644 ${srcdir}/${pkgname}.checkd.exp      ${pkgdir}/etc/check.d/samba.exp || return 1
-	install -D -m644 ${srcdir}/${pkgname}.help            ${pkgdir}/var/install/help/samba || return 1
-	install -D -m644 ${srcdir}/${pkgname}.txt             ${pkgdir}/usr/share/doc/samba/samba.txt || return 1
-	install -D -m755 ${srcdir}/${pkgname}.sh              ${pkgdir}/var/install/config.d/samba.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-update.sh       ${pkgdir}/var/install/config.d/samba-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.checkd                  ${pkgdir}/etc/check.d/samba || return 1
+	install -D -m644 ${srcdir}/${pkgname}.checkd.exp              ${pkgdir}/etc/check.d/samba.exp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help                    ${pkgdir}/var/install/help/samba || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt                     ${pkgdir}/usr/share/doc/samba/samba.txt || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh                      ${pkgdir}/var/install/config.d/samba.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh               ${pkgdir}/var/install/config.d/samba-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}-usermapping.checkd      ${pkgdir}/etc/check.d/samba-usermapping || return 1
+	install -D -m644 ${srcdir}/${pkgname}-usermapping.help        ${pkgdir}/var/install/help/samba-usermapping || return 1
+	install -D -m755 ${srcdir}/${pkgname}-usermapping.sh          ${pkgdir}/var/install/config.d/samba-usermapping.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-usermapping-update.sh   ${pkgdir}/var/install/config.d/samba-usermapping-update.sh || return 1
 }
 md5sums="63d63d7b156be2bdcfa9a0d40a870ded  cui-samba.checkd
 5f1f89fe20fdf62dec536eb832f6e253  cui-samba.checkd.exp
 cada47abe258b709ac9d6049705e29ea  cui-samba.help
 121ca2f9deba4225012a6165fbbe5bf4  cui-samba.sh
 cd05cb929be52ccb375427d4886717b7  cui-samba.txt
-ae3172a949c6d537b9f53525d695ed11  cui-samba-update.sh"
+ae3172a949c6d537b9f53525d695ed11  cui-samba-update.sh
+f07dee53b65a9dc2dd0c4e790cac7601  cui-samba-usermapping.checkd
+f92866bf53f18549f7d66afa5658c6b9  cui-samba-usermapping.help
+676ef9a4b4faeebb49c1ca348e120e29  cui-samba-usermapping.sh
+df74931e724a2cb22fc28cee559443b8  cui-samba-usermapping-update.sh"
 sha256sums="cfd040dfdc55107862754060dc14f49e0158a7e87f2fd5352ee09b108712d041  cui-samba.checkd
 5fdc0d8d8bc5cf6c996462e4e8d9ccd988dc6cef269439f75fbbefdb80503beb  cui-samba.checkd.exp
 e37fe3e8b9ab8a2a25f85207cd42cca63444b826e7ba6d26210604425bbd939b  cui-samba.help
 519c2a699558ad36f7191cffe2852da5c558e8fe351cade3eaf6ddabbb5dfd57  cui-samba.sh
 1ac6552c2df8114c22072301c5e81cab00c92130b6fc236e4b29bcd850233a82  cui-samba.txt
-1fbb37812c5f5c5f625ea7fa60d49572a30cf133c914c246dd7c8a08904b109e  cui-samba-update.sh"
+1fbb37812c5f5c5f625ea7fa60d49572a30cf133c914c246dd7c8a08904b109e  cui-samba-update.sh
+5b71b1e1a8d7b6000751a939876c632a4ffb3df9f614fabad697062ad54d95ad  cui-samba-usermapping.checkd
+aa8fa55fa0811e0bd910e6fc34cfb09f223ea5c0e638ccb06931033890cc93c7  cui-samba-usermapping.help
+600a4be95080a99a3fe5c48367f294fc6d5b2547c87c618a4ab46fa4573f04bb  cui-samba-usermapping.sh
+d68cf264c3aa048011241646c9aa3ae47b06d2823f7e0e1df18014ae31c597c1  cui-samba-usermapping-update.sh"
 sha512sums="f5a23cd2338e94b322b0d57da43400250943b9877ea0c8775c063ade8870fc203bd152222d3190bac66f5abd3c104cf087d5965ab7d2deba4f690f0eaa533a98  cui-samba.checkd
 b7d25b31386f7cce28b80d811e7f4b690ffa83a5f1f8a02638376d57f17405fb6764e54ebd58a936db9033e8b26049c2db77a76d8606e1d95e6faf547495afc2  cui-samba.checkd.exp
 3966c7a9a79791c7b4cef2607734a6f6e863cffab5aed18c99e91fa1ddb74c271f69abee5ea69e641c667be9b30867e278f4f9db3964773a28cbe19d81485a34  cui-samba.help
 98ce3b566a3f25cf662780ffb3fc1c4240048d70f0c8b07bc733fe65101eaaafd0408897bc462dce8336e835fae8072b429eeb9660f7b62942c42506e63595b3  cui-samba.sh
 80bed5e841b3a9f66c8c1af44d048273784404fe949ba070dcc7fe9b60b80b0092d0fcdea1caaf6894a0b3d12125827375b71bf768aef69308805299eae90115  cui-samba.txt
-c1b8b28e8e72bd8e76ec0640a5ef4c4ad56de1bd2018e8f1011813296ad8fe4013811114be1e6a8bb8c3501a70ac40bc32cd9b6482b5595891ac7dc9465f1553  cui-samba-update.sh"
+c1b8b28e8e72bd8e76ec0640a5ef4c4ad56de1bd2018e8f1011813296ad8fe4013811114be1e6a8bb8c3501a70ac40bc32cd9b6482b5595891ac7dc9465f1553  cui-samba-update.sh
+c081125a2fa6971d156a89a7ef2bad332cd3057b48ab07cd7cb2c76e8571efc4a2db9888b071f0432572f952c834e05b43fcae474fdbf44a2ac304d0ae25b7f7  cui-samba-usermapping.checkd
+a2f21e461ffebd1c805c96045abbb6e1700b2db684373ff5747d108292ded0d1b0433839819f3e42d2ff2680b745e49296a2786bc16434639688a4d6719af05e  cui-samba-usermapping.help
+20bca9d4ba34beac78dab8c7acba0ac34477a3181a3bd5c976596421ea55603b1154a06a2cefa5de7c4170474843ff115c4ef966c52508bac939f476ce3a7762  cui-samba-usermapping.sh
+cd78d7e1e5edea57d3239acb6f34609edbc3f0fd86864749d36428613033ca0cc79b89532d8e7b11354015feeaf2ebba1a798b257a26922cf253a0df5299d02e  cui-samba-usermapping-update.sh"
