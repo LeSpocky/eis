@@ -19,7 +19,7 @@ SAMBA_HOSTS_ALLOW                   -                               -           
 SAMBA_HOSTS_DENY                    -                               -                               NONE
 SAMBA_SERVER_STRING                 -                               -                               NONE
 
-SAMBA_ADVANCED_SETTINGS
+SAMBA_ADVANCED_SETTINGS             -                               -                               YESNO
 SAMBA_BIND_INTERFACES_ONLY          SAMBA_ADVANCED_SETTINGS         -                               YESNO
 SAMBA_DEADTIME                      SAMBA_ADVANCED_SETTINGS         -                               NUMERIC
 SAMBA_DEFAULT_CASE                  SAMBA_ADVANCED_SETTINGS         -                               SAMBA_DEFAULT_CASE
@@ -40,10 +40,10 @@ SAMBA_SECURITY                      SAMBA_ADVANCED_SETTINGS         -           
 SAMBA_SOCKET_OPTIONS                SAMBA_ADVANCED_SETTINGS         -                               NONE
 SAMBA_STRICT_SYNC                   SAMBA_ADVANCED_SETTINGS         -                               YESNO
 SAMBA_SYNC_ALWAYS                   SAMBA_ADVANCED_SETTINGS         -                               YESNO
-SAMBA_SYSLOG                        SAMBA_ADVANCED_SETTINGS         -                               SAMBA_SYSLOG
+SAMBA_SYSLOG_LEVEL                  SAMBA_ADVANCED_SETTINGS         -                               SAMBA_SYSLOG_LEVEL
 SAMBA_SYSLOG_ONLY                   SAMBA_ADVANCED_SETTINGS         -                               YESNO
 
-SAMBA_SHARE_N                       -                               SAMBA_SHARE_N                   NUMERIC
+SAMBA_SHARE_N                       -                               -                               NUMERIC
 SAMBA_SHARE_%_NAME                  -                               SAMBA_SHARE_N                   NOTEMPTY
 SAMBA_SHARE_%_CREATE_MASK           -                               SAMBA_SHARE_N                   NUMERIC
 SAMBA_SHARE_%_DIRECTORY_MASK        -                               SAMBA_SHARE_N                   NUMERIC

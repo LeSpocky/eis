@@ -1,6 +1,6 @@
 #!/bin/bash
 #-----------------------------------------------------------------------------
-# /var/install/dialog.d/SAMBA_SYSLOG.sh - script dialog for ece
+# /var/install/dialog.d/SAMBA_SYSLOG_LEVEL.sh - script dialog for ece
 #
 # Creation:     2014-09-19 starwarsfan
 #
