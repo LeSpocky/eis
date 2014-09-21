@@ -19,6 +19,7 @@ source="${pkgname}.checkd
         ${pkgname}.txt
         ${pkgname}-update.sh
         ${pkgname}-usermapping.checkd
+        ${pkgname}-usermapping.checkd.exp
         ${pkgname}-usermapping.help
         ${pkgname}-usermapping.sh
         ${pkgname}-usermapping-update.sh
@@ -68,6 +69,7 @@ package() {
 	install -D -m755 ${srcdir}/${pkgname}.sh                      ${pkgdir}/var/install/config.d/samba.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh               ${pkgdir}/var/install/config.d/samba-update.sh || return 1
 	install -D -m644 ${srcdir}/${pkgname}-usermapping.checkd      ${pkgdir}/etc/check.d/samba-usermapping || return 1
+	install -D -m644 ${srcdir}/${pkgname}-usermapping.checkd.exp  ${pkgdir}/etc/check.d/samba-usermapping.exp || return 1
 	install -D -m644 ${srcdir}/${pkgname}-usermapping.help        ${pkgdir}/var/install/help/samba-usermapping || return 1
 	install -D -m755 ${srcdir}/${pkgname}-usermapping.sh          ${pkgdir}/var/install/config.d/samba-usermapping.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-usermapping-update.sh   ${pkgdir}/var/install/config.d/samba-usermapping-update.sh || return 1

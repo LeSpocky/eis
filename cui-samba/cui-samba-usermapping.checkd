@@ -13,6 +13,6 @@
 # Variable                          OPT_VARIABLE                    VARIABLE_N                      VALUE
 SAMBA_USERMAP_N                     -                               -                               NUMERIC
 SAMBA_USERMAP_%_ACTIVE              -                               SAMBA_USERMAP_N                 YESNO
-SAMBA_USERMAP_%_EISNAME             SAMBA_USERMAP_%_ACTIVE          SAMBA_USERMAP_N                 NOTEMPTY
+SAMBA_USERMAP_%_EISNAME             SAMBA_USERMAP_%_ACTIVE          SAMBA_USERMAP_N                 SAMBA_USERMAP_EISFAIR_ACCOUNT
 SAMBA_USERMAP_%_WINNAME_N           SAMBA_USERMAP_%_ACTIVE          SAMBA_USERMAP_N                 NUMERIC
 SAMBA_USERMAP_%_WINNAME_%           SAMBA_USERMAP_%_ACTIVE          SAMBA_USERMAP_%_WINNAME_N       NOTEMPTY
