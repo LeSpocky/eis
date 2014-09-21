@@ -23,8 +23,8 @@
 exec_dialog()
 {
     win="${p2}"
-    sellist="upper,lower"
-    ece_select_list_dlg "${win}" "${p3}" "${sellist}"
+    sellist="upper|Uppercase,lower|Lowercase"
+    ece_comment_list_dlg "${win}" "${p3}" "${sellist}"
 }
 
 #-----------------------------------------------------------------------------
