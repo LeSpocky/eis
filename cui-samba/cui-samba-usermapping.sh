@@ -41,12 +41,12 @@ createUserMappingConfiguration()
     while [ "${idx}" -le "${SAMBA_USERMAP_N}" ] ; do
         eval SAMBA_USERMAP_ACTIVE='$SAMBA_USERMAP_'${idx}'_ACTIVE'
         if [ "$SAMBA_USERMAP_ACTIVE" = 'yes' ] ; then
-            eval SAMBA_USERMAP_EISNAME='SAMBA_USERMAP_'${idx}'_EISNAME'
-            eval SAMBA_USERMAP_WINNAME_N='SAMBA_USERMAP_'${idx}'_WINNAME_N'
+            eval SAMBA_USERMAP_EISNAME='$SAMBA_USERMAP_'${idx}'_EISNAME'
+            eval SAMBA_USERMAP_WINNAME_N='$SAMBA_USERMAP_'${idx}'_WINNAME_N'
             idx2=1
             local winNames=''
             while [ "${idx2}" -le "${SAMBA_USERMAP_WINNAME_N}" ] ; do
-                eval SAMBA_USERMAP_WINNAME='SAMBA_USERMAP_'${idx}'_WINNAME_'${idx2}
+                eval SAMBA_USERMAP_WINNAME='$SAMBA_USERMAP_'${idx}'_WINNAME_'${idx2}
                 winNames="$winNames \"$SAMBA_USERMAP_WINNAME\""
                 idx2=$((idx2+1))
             done
