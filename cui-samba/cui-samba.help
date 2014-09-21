@@ -1,6 +1,5 @@
 <help name="START_SAMBA">
     Should Samba be started at boot time?: yes or no<br/>
-    tbd<br/>
     <br/>
     If you say 'yes' here, Samba will be started at boot time. If you want to<br/>
     start Samba by hand, you have to set this to 'no' and start Samba with<br/>
@@ -16,7 +15,7 @@
     by clients. Note that this parameter also controls the Domain name used
     with the security = domain setting.
     <br/>
-Default: SAMBA_WORKGROUP=WORKGROUP<br/>
+    Default: SAMBA_WORKGROUP='WORKGROUP'<br/>
 </help>
 
 <help name="SAMBA_INTERFACES">
@@ -25,10 +24,8 @@ Default: SAMBA_WORKGROUP=WORKGROUP<br/>
     TCP/IP (NBT) traffic. By default Samba will query the kernel for the list
     of all active interfaces and use any interfaces except 127.0.0.1 that are
     broadcast capable.<br/>
-    <br/>
     The option takes a list of interface strings. Each string can be in any of
     the following forms:<br/>
-    <br/>
     - a network interface name (such as eth0). This may include shell-like
       wildcards so eth* will match any interface starting with the substring
       "eth"<br/>
@@ -36,24 +33,19 @@ Default: SAMBA_WORKGROUP=WORKGROUP<br/>
       interfaces obtained from the kernel<br/>
     - an IP/mask pair.<br/>
     - a broadcast/mask pair.<br/>
-    <br/>
     The "mask" parameters can either be a bit length (such as 24 for a C class
     network) or a full netmask in dotted decimal form.<br/>
-    <br/>
     The "IP" parameters above can either be a full dotted decimal IP address or
     a hostname which will be looked up via the OS's normal hostname resolution
     mechanisms.<br/>
-    <br/>
     By default Samba enables all active interfaces that are broadcast capable
     except the loopback adaptor (IP address 127.0.0.1).<br/>
-    <br/>
     The example below configures three network interfaces corresponding to the
     eth0 device and IP addresses 192.168.2.10 and 192.168.3.10. The netmasks of
     the latter two interfaces would be set to 255.255.255.0.<br/>
     <br/>
-    Default: SAMBA_INTERFACES=<br/>
-    <br/>
-    Example: SAMBA_INTERFACES=eth0 192.168.2.10/24 192.168.3.10/255.255.255.0<br/>
+    Default: SAMBA_INTERFACES=''<br/>
+    Example: SAMBA_INTERFACES='eth0 192.168.2.10/24 192.168.3.10/255.255.255.0'<br/>
 </help>
 
 <help name="SAMBA_HOSTS_ALLOW">
@@ -72,16 +64,12 @@ Default: SAMBA_WORKGROUP=WORKGROUP<br/>
     This controls what string will show up in the printer comment box in print
     manager and next to the IPC connection in net view. It can be any string
     that you wish to show to your users.<br/>
-    <br/>
     It also sets what will appear in browse lists next to the machine name.<br/>
-    <br/>
     A %v will be replaced with the Samba version number.<br/>
-    <br/>
     A %h will be replaced with the hostname.<br/>
     <br/>
-    Default: SAMBA_SERVER_STRING=Samba %v<br/>
-    <br/>
-    Example: SAMBA_SERVER_STRING=University of GNUs Samba Server<br/>
+    Default: SAMBA_SERVER_STRING='Samba %v'<br/>
+    Example: SAMBA_SERVER_STRING='University of GNUs Samba Server'<br/>
 </help>
 
 <help name="SAMBA_BIND_INTERFACES_ONLY">
@@ -163,43 +151,35 @@ tbd<br/>
     mode is then bit-wise 'AND'ed with this parameter. This parameter may be
     thought of as a bit-wise MASK for the UNIX modes of a file. Any bit not set
     here will be removed from the modes set on a file when it is created.<br/>
-    <br/>
     The default value of this parameter removes the group and other write and
     execute bits from the UNIX modes.<br/>
-    <br/>
     Following this Samba will bit-wise 'OR' the UNIX mode created from this
     parameter with the value of the force create mode parameter which is set
     to 000 by default.<br/>
-    <br/>
     This parameter does not affect directory masks. See the parameter directory
     mask for details.<br/>
     <br/>
-    Default: SAMBA_SHARE_%_CREATE_MASK=0744<br/>
-    <br/>
-    Example: SAMBA_SHARE_%_CREATE_MASK=0775<br/>
+    Default: SAMBA_SHARE_%_CREATE_MASK='0744'<br/>
+    Example: SAMBA_SHARE_%_CREATE_MASK='0775'<br/>
 </help>
 <help name="SAMBA_SHARE_%_DIRECTORY_MASK">
     This parameter is the octal modes which are used when converting DOS modes
     to UNIX modes when creating UNIX directories.<br/>
-    <br/>
     When a directory is created, the necessary permissions are calculated
     according to the mapping from DOS modes to UNIX permissions, and the
     resulting UNIX mode is then bit-wise 'AND'ed with this parameter. This
     parameter may be thought of as a bit-wise MASK for the UNIX modes of a
     directory. Any bit not set here will be removed from the modes set on a
     directory when it is created.<br/>
-    <br/>
     The default value of this parameter removes the 'group' and 'other' write
     bits from the UNIX mode, allowing only the user who owns the directory to
     modify it.<br/>
-    <br/>
     Following this Samba will bit-wise 'OR' the UNIX mode created from this
     parameter with the value of the force directory mode parameter. This
     parameter is set to 000 by default (i.e. no extra mode bits are added).<br/>
     <br/>
-    Default: SAMBA_SHARE_%_DIRECTORY_MASK=0755<br/>
-    <br/>
-    Example: SAMBA_SHARE_%_DIRECTORY_MASK=0775<br/>
+    Default: SAMBA_SHARE_%_DIRECTORY_MASK='0755'<br/>
+    Example: SAMBA_SHARE_%_DIRECTORY_MASK='0775'<br/>
 </help>
 <help name="SAMBA_SHARE_%_DIRECTORY_PATH">
     The path to the directory which should be shared<br/>
@@ -212,5 +192,5 @@ tbd<br/>
     to the directory (user privileges permitting), but only via spooling
     operations.<br/>
     <br/>
-    Default: SAMBA_SHARE_%_WRITEABLE=no<br/>
+    Default: SAMBA_SHARE_%_WRITEABLE='no'<br/>
 </help>
