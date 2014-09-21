@@ -29,7 +29,6 @@ createConfigFileHeader()
 # Do not modify it by hand as it will be overwritten as soon as the
 # eisfair-ng configuration editor is used next time configuring samba.
 # ===========================================================================
-
 EOF
 }
 
