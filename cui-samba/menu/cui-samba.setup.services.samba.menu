@@ -9,7 +9,7 @@
 <init task="status">Status</init>
 <init task="start">Start</init>
 <init task="stop">Stop</init>
-<script file="userman.cui.sh ">Account Handling</script>
+<menu file="samba.setup.user.samba.menu">User Account Handling</menu>
 <menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
 <!--<menu file="setup.configuration.samba.menu">Samba Configuration Handling</menu>-->
 <!--<menu file="setup.handle.samba.menu">Samba Server Handling</menu>-->

@@ -1,6 +1,6 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# /var/install/config.d/cui-samba.sh - configuration generator script for Samba
+# /var/install/config.d/samba.sh - configuration generator script for Samba
 #
 # Copyright (c) 2014 the eisfair team <team@eisfair.org>
 #

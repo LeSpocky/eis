@@ -4,4 +4,5 @@
 
 /var/install/bin/add-menu setup.services.menu setup.services.samba.menu "Samba"
 
+/var/install/config.d/samba-usermapping-update.sh
 /var/install/config.d/samba-update.sh

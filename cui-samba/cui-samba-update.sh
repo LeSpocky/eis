@@ -1,6 +1,6 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# /var/install/config.d/cui-samba-update.sh - creating or updating
+# /var/install/config.d/samba-update.sh - creating or updating
 #                                             /etc/config.d/samba
 #
 # Copyright (c) 2014 the eisfair team <team@eisfair.org>
