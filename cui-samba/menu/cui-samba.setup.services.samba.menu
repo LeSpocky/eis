@@ -7,7 +7,6 @@
 <doc file="samba.txt">Read Documentation</doc>
 <menu file="setup.handle.samba.menu">Samba Server Handling</menu>
 <menu file="setup.user.samba.menu">User Account Handling</menu>
-<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
 <!--<menu file="setup.configuration.samba.menu">Samba Configuration Handling</menu>-->
 <!--<menu file="setup.handle.samba.menu">Samba Server Handling</menu>-->
 <!--<menu file="setup.domainoptions.samba.menu">Samba Domain Handling</menu>-->

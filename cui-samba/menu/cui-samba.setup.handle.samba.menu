@@ -8,3 +8,4 @@
 <init task="status">Status</init>
 <init task="start">Start</init>
 <init task="stop">Stop</init>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
