@@ -12,34 +12,36 @@
 # ----------------------------------------------------------------------------
 # Variable                          OPT_VARIABLE                    VARIABLE_N                      VALUE
 START_SAMBA                         -                               -                               YESNO
+SAMBA_WORKGROUP                     -                               -                               NOTEMPTY
 
-SAMBA_BIND_INTERFACES_ONLY          -                               -                               YESNO
-SAMBA_DEADTIME                      -                               -                               NUMERIC
-SAMBA_DEFAULT_CASE                  -                               -                               SAMBA_DEFAULT_CASE
-SAMBA_DISABLE_NETBIOS               -                               -                               YESNO
-SAMBA_DNS_PROXY                     -                               -                               YESNO
-SAMBA_DOMAIN_MASTER                 -                               -                               YESNO
-SAMBA_ENCRYPT_PASSWORDS             -                               -                               YESNO
-SAMBA_GUEST_OK                      -                               -                               YESNO
-SAMBA_GUEST_ONLY                    -                               -                               YESNO
+SAMBA_INTERFACES                    -                               -                               NONE
 SAMBA_HOSTS_ALLOW                   -                               -                               NONE
 SAMBA_HOSTS_DENY                    -                               -                               NONE
-SAMBA_INTERFACES                    -                               -                               NONE
-SAMBA_INVALID_USERS                 -                               -                               NONE
-SAMBA_LOAD_PRINTERS                 -                               -                               YESNO
-SAMBA_MAX_CONNECTIONS               -                               -                               NONE
-SAMBA_NETBIOS_NAME                  -                               -                               NONE
-SAMBA_PREFERRED_MASTER              -                               -                               YESNO
-SAMBA_PRESERVE_CASE                 -                               -                               YESNO
-SAMBA_PRINTABLE                     -                               -                               YESNO
-SAMBA_SECURITY                      -                               -                               NONE
 SAMBA_SERVER_STRING                 -                               -                               NONE
-SAMBA_SOCKET_OPTIONS                -                               -                               NONE
-SAMBA_STRICT_SYNC                   -                               -                               YESNO
-SAMBA_SYNC_ALWAYS                   -                               -                               YESNO
-SAMBA_SYSLOG                        -                               -                               SAMBA_SYSLOG
-SAMBA_SYSLOG_ONLY                   -                               -                               YESNO
-SAMBA_WORKGROUP                     -                               -                               NOTEMPTY
+
+SAMBA_ADVANCED_SETTINGS
+SAMBA_BIND_INTERFACES_ONLY          SAMBA_ADVANCED_SETTINGS         -                               YESNO
+SAMBA_DEADTIME                      SAMBA_ADVANCED_SETTINGS         -                               NUMERIC
+SAMBA_DEFAULT_CASE                  SAMBA_ADVANCED_SETTINGS         -                               SAMBA_DEFAULT_CASE
+SAMBA_DISABLE_NETBIOS               SAMBA_ADVANCED_SETTINGS         -                               YESNO
+SAMBA_DNS_PROXY                     SAMBA_ADVANCED_SETTINGS         -                               YESNO
+SAMBA_DOMAIN_MASTER                 SAMBA_ADVANCED_SETTINGS         -                               YESNO
+SAMBA_ENCRYPT_PASSWORDS             SAMBA_ADVANCED_SETTINGS         -                               YESNO
+SAMBA_GUEST_OK                      SAMBA_ADVANCED_SETTINGS         -                               YESNO
+SAMBA_GUEST_ONLY                    SAMBA_ADVANCED_SETTINGS         -                               YESNO
+SAMBA_INVALID_USERS                 SAMBA_ADVANCED_SETTINGS         -                               NONE
+SAMBA_LOAD_PRINTERS                 SAMBA_ADVANCED_SETTINGS         -                               YESNO
+SAMBA_MAX_CONNECTIONS               SAMBA_ADVANCED_SETTINGS         -                               NONE
+SAMBA_NETBIOS_NAME                  SAMBA_ADVANCED_SETTINGS         -                               NONE
+SAMBA_PREFERRED_MASTER              SAMBA_ADVANCED_SETTINGS         -                               YESNO
+SAMBA_PRESERVE_CASE                 SAMBA_ADVANCED_SETTINGS         -                               YESNO
+SAMBA_PRINTABLE                     SAMBA_ADVANCED_SETTINGS         -                               YESNO
+SAMBA_SECURITY                      SAMBA_ADVANCED_SETTINGS         -                               NONE
+SAMBA_SOCKET_OPTIONS                SAMBA_ADVANCED_SETTINGS         -                               NONE
+SAMBA_STRICT_SYNC                   SAMBA_ADVANCED_SETTINGS         -                               YESNO
+SAMBA_SYNC_ALWAYS                   SAMBA_ADVANCED_SETTINGS         -                               YESNO
+SAMBA_SYSLOG                        SAMBA_ADVANCED_SETTINGS         -                               SAMBA_SYSLOG
+SAMBA_SYSLOG_ONLY                   SAMBA_ADVANCED_SETTINGS         -                               YESNO
 
 SAMBA_SHARE_N                       -                               SAMBA_SHARE_N                   NUMERIC
 SAMBA_SHARE_%_NAME                  -                               SAMBA_SHARE_N                   NOTEMPTY
