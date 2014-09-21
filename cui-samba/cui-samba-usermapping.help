@@ -1,0 +1,24 @@
+<help name="SAMBA_USERMAP_N">
+    <br/>
+    Default: SAMBA_USERMAP_N='1'
+</help>
+
+<help name="SAMBA_USERMAP_1_ACTIVE">
+    <br/>
+    Default: SAMBA_USERMAP_1_ACTIVE='no'
+</help>
+
+<help name="SAMBA_USERMAP_1_EISNAME">
+    <br/>
+    Default: SAMBA_USERMAP_1_EISNAME='root'
+</help>
+
+<help name="SAMBA_USERMAP_1_WINNAME_N">
+    <br/>
+    Default: SAMBA_USERMAP_1_WINNAME_N='1'
+</help>
+
+<help name="SAMBA_USERMAP_1_WINNAME_1">
+    <br/>
+    Default: SAMBA_USERMAP_1_WINNAME_1='administrator'
+</help>
