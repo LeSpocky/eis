@@ -73,78 +73,376 @@
 </help>
 
 <help name="SAMBA_BIND_INTERFACES_ONLY">
-tbd<br/>
+    This global parameter allows the Samba admin to limit what interfaces on a
+    machine will serve SMB requests. It affects file service smbd(8) and name
+    service nmbd(8) in a slightly different ways.<br/>
+    For name service it causes nmbd to bind to ports 137 and 138 on the
+    interfaces listed in the interfaces parameter. nmbd also binds to the "all
+    addresses" interface (0.0.0.0) on ports 137 and 138 for the purposes of
+    reading broadcast messages. If this option is not set then nmbd will
+    service name requests on all of these sockets. If bind interfaces only is
+    set then nmbd will check the source address of any packets coming in on the
+    broadcast sockets and discard any that don't match the broadcast addresses
+    of the interfaces in the interfaces parameter list. As unicast packets are
+    received on the other sockets it allows nmbd to refuse to serve names to
+    machines that send packets that arrive through any interfaces not listed in
+    the interfaces list. IP Source address spoofing does defeat this simple
+    check, however, so it must not be used seriously as a security feature for
+    nmbd.<br/>
+    For file service it causes smbd(8) to bind only to the interface list given
+    in the interfaces parameter. This restricts the networks that smbd will
+    serve, to packets coming in on those interfaces. Note that you should not
+    use this parameter for machines that are serving PPP or other intermittent
+    or non-broadcast network interfaces as it will not cope with non-permanent
+    interfaces.<br/>
+    If bind interfaces only is set and the network address 127.0.0.1 is not
+    added to the interfaces parameter list smbpasswd(8) and swat(8) may not
+    work as expected due to the reasons covered below.<br/>
+    To change a users SMB password, the smbpasswd by default connects to the
+    localhost - 127.0.0.1 address as an SMB client to issue the password change
+    request. If bind interfaces only is set then unless the network address
+    127.0.0.1 is added to the interfaces parameter list then smbpasswd will
+    fail to connect in it's default mode. smbpasswd can be forced to use the
+    primary IP interface of the local host by using its smbpasswd(8) -r
+    remote machine parameter, with remote machine set to the IP name of the
+    primary interface of the local host.<br/>
+    The swat status page tries to connect with smbd and nmbd at the address
+    127.0.0.1 to determine if they are running. Not adding 127.0.0.1 will
+    cause smbd and nmbd to always show "not running" even if they really are.
+    This can prevent swat from starting/stopping/restarting smbd and nmbd.<br/>
+    <br/>
+    Default: SAMBA_BIND_INTERFACES_ONLY='yes'<br/>
 </help>
+
 <help name="SAMBA_DEADTIME">
-tbd<br/>
+    The value of the parameter (a decimal integer) represents the number of
+    minutes of inactivity before a connection is considered dead, and it is
+    disconnected. The deadtime only takes effect if the number of open files
+    is zero.<br/>
+    This is useful to stop a server's resources being exhausted by a large
+    number of inactive connections.<br/>
+    Most clients have an auto-reconnect feature when a connection is broken
+    so in most cases this parameter should be transparent to users.<br/>
+    Using this parameter with a timeout of a few minutes is recommended for
+    most systems.<br/>
+    A deadtime of zero indicates that no auto-disconnection should be
+    performed.<br/>
+    <br/>
+    Default: SAMBA_DEADTIME='15'<br/>
 </help>
+
 <help name="SAMBA_DEFAULT_CASE">
-tbd<br/>
+    Controls what the default case is for new filenames (ie. files that don't
+    currently exist in the filesystem). Default lower. IMPORTANT NOTE: As part
+    of the optimizations for directories containing large numbers of files,
+    the following special case applies. If the options case sensitive = yes,
+    preserve case = No, and short preserve case = No are set, then the case of
+    all incoming client filenames, not just new filenames, will be modified.<br/>
 </help>
+
 <help name="SAMBA_DISABLE_NETBIOS">
-tbd<br/>
+    Enabling this parameter will disable netbios support in Samba. Netbios is
+    the only available form of browsing in all windows versions except for 2000
+    and XP.<br/>
+    Note: Clients that only support netbios won't be able to see your samba
+    server when netbios support is disabled.<br/>
+    <br/>
+    Default: SAMBA_DISABLE_NETBIOS='yes'<br/>
 </help>
+
 <help name="SAMBA_DNS_PROXY">
-tbd<br/>
+    Specifies that nmbd(8) when acting as a WINS server and finding that a
+    NetBIOS name has not been registered, should treat the NetBIOS name
+    word-for-word as a DNS name and do a lookup with the DNS server for that
+    name on behalf of the name-querying client.<br/>
+    Note that the maximum length for a NetBIOS name is 15 characters, so the
+    DNS name (or DNS alias) can likewise only be 15 characters, maximum.<br/>
+    nmbd spawns a second copy of itself to do the DNS name lookup requests, as
+    doing a name lookup is a blocking action.<br/>
+    <br/>
+    Default: SAMBA_DNS_PROXY='no'<br/>
 </help>
+
 <help name="SAMBA_DOMAIN_MASTER">
-tbd<br/>
+    Tell smbd(8) to enable WAN-wide browse list collation. Setting this option
+    causes nmbd to claim a special domain specific NetBIOS name that identifies
+    it as a domain master browser for its given workgroup. Local master
+    browsers in the same workgroup on broadcast-isolated subnets will give this
+    nmbd their local browse lists, and then ask smbd(8) for a complete copy of
+    the browse list for the whole wide area network. Browser clients will then
+    contact their local master browser, and will receive the domain-wide browse
+    list, instead of just the list for their broadcast-isolated subnet.<br/>
+    Note that Windows NT Primary Domain Controllers expect to be able to claim
+    this workgroup specific special NetBIOS name that identifies them as domain
+    master browsers for that workgroup by default (i.e. there is no way to
+    prevent a Windows NT PDC from attempting to do this). This means that if
+    this parameter is set and nmbd claims the special name for a workgroup
+    before a Windows NT PDC is able to do so then cross subnet browsing will
+    behave strangely and may fail.<br/>
+    If domain logons = yes, then the default behavior is to enable the domain
+    master parameter. If domain logons is not enabled (the default setting),
+    then neither will domain master be enabled by default.<br/>
+    When domain logons = Yes the default setting for this parameter is Yes,
+    with the result that Samba will be a PDC. If domain master = No, Samba
+    will function as a BDC. In general, this parameter should be set to 'No'
+    only on a BDC.<br/>
+    <br/>
+    Default: SAMBA_DOMAIN_MASTER='yes'<br/>
 </help>
+
 <help name="SAMBA_ENCRYPT_PASSWORDS">
-tbd<br/>
+    This boolean controls whether encrypted passwords will be negotiated with
+    the client. Note that Windows NT 4.0 SP3 and above and also Windows 98 will
+    by default expect encrypted passwords unless a registry entry is changed.
+    To use encrypted passwords in Samba see the chapter "User Database" in the
+    Samba HOWTO Collection.<br/>
+    MS Windows clients that expect Microsoft encrypted passwords and that do
+    not have plain text password support enabled will be able to connect only
+    to a Samba server that has encrypted password support enabled and for
+    which the user accounts have a valid encrypted password. Refer to the
+    smbpasswd command man page for information regarding the creation of
+    encrypted passwords for user accounts.<br/>
+    The use of plain text passwords is NOT advised as support for this feature
+    is no longer maintained in Microsoft Windows products. If you want to use
+    plain text passwords you must set this parameter to no.<br/>
+    In order for encrypted passwords to work correctly smbd(8) must either have
+    access to a local smbpasswd(5) file (see the smbpasswd(8) program for
+    information on how to set up and maintain this file), or set the
+    security = [domain|ads] parameter which causes smbd to authenticate against
+    another server.<br/>
+    <br/>
+    Default: SAMBA_ENCRYPT_PASSWORDS='yes'<br/>
 </help>
+
 <help name="SAMBA_GUEST_OK">
-tbd<br/>
+    If this parameter is yes for a service, then no password is required to
+    connect to the service. Privileges will be those of the guest account.<br/>
+    This parameter nullifies the benefits of setting restrict anonymous = 2<br/>
+    See the section below on security for more information about this option.<br/>
+    <br/>
+    Default: SAMBA_GUEST_OK='yes'<br/>
 </help>
+
 <help name="SAMBA_GUEST_ONLY">
-tbd<br/>
+    If this parameter is yes for a service, then only guest connections to the
+    service are permitted. This parameter will have no effect if guest ok is
+    not set for the service.<br/>
+    See the section below on security for more information about this option.<br/>
+    <br/>
+    Default: SAMBA_GUEST_ONLY='yes'<br/>
 </help>
+
 <help name="SAMBA_INVALID_USERS">
-tbd<br/>
+    This is a list of users that should not be allowed to login to this
+    service. This is really a paranoid check to absolutely ensure an improper
+    setting does not breach your security.<br/>
+    A name starting with a '@' is interpreted as an NIS netgroup first (if
+    your system supports NIS), and then as a UNIX group if the name was not
+    found in the NIS netgroup database.<br/>
+    A name starting with '+' is interpreted only by looking in the UNIX group
+    database via the NSS getgrnam() interface. A name starting with '&' is
+    interpreted only by looking in the NIS netgroup database (this requires
+    NIS to be working on your system). The characters '+' and '&' may be used
+    at the start of the name in either order so the value +&group means check
+    the UNIX group database, followed by the NIS netgroup database, and the
+    value &+group means check the NIS netgroup database, followed by the UNIX
+    group database (the same as the '@' prefix).<br/>
+    The current servicename is substituted for %S. This is useful in the
+    [homes] section.<br/>
+    <br/>
+    Default: SAMBA_INVALID_USERS='nobody root'<br/>
+    Example: SAMBA_INVALID_USERS='root fred admin @wheel'<br/>
 </help>
+
 <help name="SAMBA_LOAD_PRINTERS">
-tbd<br/>
+    A boolean variable that controls whether all printers in the printcap will
+    be loaded for browsing by default.<br/>
+    <br/>
+    Default: SAMBA_LOAD_PRINTERS='yes'<br/>
 </help>
+
 <help name="SAMBA_MAX_CONNECTIONS">
-tbd<br/>
+    This option allows the number of simultaneous connections to a service to
+    be limited. If max connections is greater than 0 then connections will be
+    refused if this number of connections to the service are already open. A
+    value of zero mean an unlimited number of connections may be made.<br/>
+    Record lock files are used to implement this feature. The lock files will
+    be stored in the directory specified by the lock directory option.<br/>
+    <br/>
+    Default: SAMBA_MAX_CONNECTIONS='0'<br/>
+    Example: SAMBA_MAX_CONNECTIONS='10'<br/>
 </help>
+
 <help name="SAMBA_NETBIOS_NAME">
-tbd<br/>
+    This sets the NetBIOS name by which a Samba server is known. By default it
+    is the same as the first component of the host's DNS name. If a machine is
+    a browse server or logon server this name (or the first component of the
+    hosts DNS name) will be the name that these services are advertised under.<br/>
+    There is a bug in Samba-3 that breaks operation of browsing and access to
+    shares if the netbios name is set to the literal name PIPE. To avoid this
+    problem, do not name your Samba-3 server PIPE.<br/>
+    <br/>
+    Default: SAMBA_NETBIOS_NAME='eisfair-ng'<br/>
 </help>
+
 <help name="SAMBA_PREFERRED_MASTER">
-tbd<br/>
+    This boolean parameter controls if nmbd(8) is a preferred master browser
+    for its workgroup.<br/>
+    If this is set to yes, on startup, nmbd will force an election, and it will
+    have a slight advantage in winning the election. It is recommended that
+    this parameter is used in conjunction with domain master = yes, so that
+    nmbd can guarantee becoming a domain master.<br/>
+    Use this option with caution, because if there are several hosts (whether
+    Samba servers, Windows 95 or NT) that are preferred master browsers on the
+    same subnet, they will each periodically and continuously attempt to become
+    the local master browser. This will result in unnecessary broadcast traffic
+    and reduced browsing capabilities.<br/>
+    <br/>
+    Default: SAMBA_PREFERRED_MASTER='yes'<br/>
 </help>
+
 <help name="SAMBA_PRESERVE_CASE">
-tbd<br/>
+    This controls if new filenames are created with the case that the client
+    passes, or if they are forced to be the default case.<br/>
+    See the section on NAME MANGLING for a fuller discussion.<br/>
+    <br/>
+    Default: SAMBA_PRESERVE_CASE='yes'<br/>
 </help>
+
 <help name="SAMBA_PRINTABLE">
-tbd<br/>
+    If this parameter is yes, then clients may open, write to and submit spool
+    files on the directory specified for the service.<br/>
+    Note that a printable service will ALWAYS allow writing to the service path
+    (user privileges permitting) via the spooling of print data. The read only
+    parameter controls only non-printing access to the resource.<br/>
+    <br/>
+    Default: SAMBA_PRINTABLE='no'<br/>
 </help>
+
 <help name="SAMBA_SECURITY">
-tbd<br/>
+    This option affects how clients respond to Samba and is one of the most
+    important settings in the smb.conf file.<br/>
+    The default is security = user, as this is the most common setting, used
+    for a standalone file server or a DC.<br/>
+    The alternatives are security = ads or security = domain , which support
+    joining Samba to a Windows domain.<br/>
+    You should use security = user and map to guest if you want to mainly setup
+    shares without a password (guest shares). This is commonly used for a
+    shared printer server.<br/>
+    <br/>
+    Default: SAMBA_SECURITY='user'<br/>
 </help>
+
 <help name="SAMBA_SOCKET_OPTIONS">
-tbd<br/>
+    This option allows you to set socket options to be used when talking with
+    the client.<br/>
+    Socket options are controls on the networking layer of the operating
+    systems which allow the connection to be tuned.<br/>
+    This option will typically be used to tune your Samba server for optimal
+    performance for your local network. There is no way that Samba can know
+    what the optimal parameters are for your net, so you must experiment and
+    choose them yourself. We strongly suggest you read the appropriate
+    documentation for your operating system first (perhaps man setsockopt will
+    help).<br/>
+    You may find that on some systems Samba will say "Unknown socket option"
+    when you supply an option. This means you either incorrectly typed it or
+    you need to add an include file to includes.h for your OS. If the latter
+    is the case please send the patch to samba-technical@samba.org.<br/>
+    Any of the supported socket options may be combined in any way you like,
+    as long as your OS allows it.<br/>
+    This is the list of socket options currently settable using this option:<br/>
+    - SO_KEEPALIVE<br/>
+    - SO_REUSEADDR<br/>
+    - SO_BROADCAST<br/>
+    - TCP_NODELAY<br/>
+    - IPTOS_LOWDELAY<br/>
+    - IPTOS_THROUGHPUT<br/>
+    - SO_SNDBUF *<br/>
+    - SO_RCVBUF *<br/>
+    - SO_SNDLOWAT *<br/>
+    - SO_RCVLOWAT *<br/>
+    <br/>
+    Those marked with a '*' take an integer argument. The others can optionally
+    take a 1 or 0 argument to enable or disable the option, by default they
+    will be enabled if you don't specify 1 or 0.<br/>
+    To specify an argument use the syntax SOME_OPTION = VALUE for example
+    SO_SNDBUF = 8192. Note that you must not have any spaces before or after
+    the = sign.<br/>
+    If you are on a local network then a sensible option might be:<br/>
+    <br/>
+    socket options = IPTOS_LOWDELAY<br/>
+    <br/>
+    If you have a local network then you could try:<br/>
+    <br/>
+    socket options = IPTOS_LOWDELAY TCP_NODELAY<br/>
+    <br/>
+    If you are on a wide area network then perhaps try setting
+    IPTOS_THROUGHPUT.<br/>
+    Note that several of the options may cause your Samba server to fail
+    completely. Use these options with caution!<br/>
+    <br/>
+    Default: SAMBA_SOCKET_OPTIONS='TCP_NODELAY IPTOS_LOWDELAY SO_RCVBUF=65536 SO_SNDBUF=65536'<br/>
 </help>
+
 <help name="SAMBA_STRICT_SYNC">
-tbd<br/>
+    Many Windows applications (including the Windows 98 explorer shell) seem
+    to confuse flushing buffer contents to disk with doing a sync to disk.
+    Under UNIX, a sync call forces the process to be suspended until the kernel
+    has ensured that all outstanding data in kernel disk buffers has been
+    safely stored onto stable storage. This is very slow and should only be
+    done rarely. Setting this parameter to no (the default) means that smbd(8)
+    ignores the Windows applications requests for a sync call. There is only a
+    possibility of losing data if the operating system itself that Samba is
+    running on crashes, so there is little danger in this default setting. In
+    addition, this fixes many performance problems that people have reported
+    with the new Windows98 explorer shell file copies.<br/>
+    <br/>
+    Default: SAMBA_STRICT_SYNC='no'<br/>
 </help>
+
 <help name="SAMBA_SYNC_ALWAYS">
-tbd<br/>
+    This is a boolean parameter that controls whether writes will always be
+    written to stable storage before the write call returns. If this is no then
+    the server will be guided by the client's request in each write call
+    (clients can set a bit indicating that a particular write should be
+    synchronous). If this is yes then every write will be followed by a fsync()
+    call to ensure the data is written to disk. Note that the strict sync
+    parameter must be set to yes in order for this parameter to have any
+    effect.<br/>
+    <br/>
+    Default: SAMBA_SYNC_ALWAYS='no'<br/>
 </help>
-<help name="SAMBA_SYSLOG">
-tbd<br/>
+
+<help name="SAMBA_SYSLOG_LEVEL">
+    This parameter maps how Samba debug messages are logged onto the system
+    syslog logging levels. Samba debug level zero maps onto syslog LOG_ERR,
+    debug level one maps onto LOG_WARNING, debug level two maps onto
+    LOG_NOTICE, debug level three maps onto LOG_INFO. All higher levels are
+    mapped to LOG_DEBUG.<br/>
+    This parameter sets the threshold for sending messages to syslog. Only
+    messages with debug level less than this value will be sent to syslog.
+    There still will be some logging to log.[sn]mbd even if syslog only is
+    enabled.<br/>
+    <br/>
+    Default: SAMBA_SYSLOG_LEVEL='1'<br/>
 </help>
+
 <help name="SAMBA_SYSLOG_ONLY">
-tbd<br/>
+    If this parameter is set then Samba debug messages are logged into the
+    system syslog only, and not to the debug log files. There still will be
+    some logging to log.[sn]mbd even if syslog only is enabled.<br/>
+    <br/>
+    Default: SAMBA_SYSLOG_ONLY='yes'<br/>
 </help>
 
 <help name="SAMBA_SHARE_N">
     The amount of shares to create<br/>
 </help>
+
 <help name="SAMBA_SHARE_%_NAME">
     The name of the share<br/>
 </help>
+
 <help name="SAMBA_SHARE_%_CREATE_MASK">
     When a file is created, the necessary permissions are calculated according
     to the mapping from DOS modes to UNIX permissions, and the resulting UNIX
@@ -162,6 +460,7 @@ tbd<br/>
     Default: SAMBA_SHARE_%_CREATE_MASK='0744'<br/>
     Example: SAMBA_SHARE_%_CREATE_MASK='0775'<br/>
 </help>
+
 <help name="SAMBA_SHARE_%_DIRECTORY_MASK">
     This parameter is the octal modes which are used when converting DOS modes
     to UNIX modes when creating UNIX directories.<br/>
@@ -181,9 +480,11 @@ tbd<br/>
     Default: SAMBA_SHARE_%_DIRECTORY_MASK='0755'<br/>
     Example: SAMBA_SHARE_%_DIRECTORY_MASK='0775'<br/>
 </help>
+
 <help name="SAMBA_SHARE_%_DIRECTORY_PATH">
     The path to the directory which should be shared<br/>
 </help>
+
 <help name="SAMBA_SHARE_%_WRITEABLE">
     If this parameter is yes, then users of a service may create or modify
     files in the service's directory.<br/>

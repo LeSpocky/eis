@@ -31,7 +31,7 @@ SAMBA_GUEST_OK                      SAMBA_ADVANCED_SETTINGS         -           
 SAMBA_GUEST_ONLY                    SAMBA_ADVANCED_SETTINGS         -                               YESNO
 SAMBA_INVALID_USERS                 SAMBA_ADVANCED_SETTINGS         -                               NONE
 SAMBA_LOAD_PRINTERS                 SAMBA_ADVANCED_SETTINGS         -                               YESNO
-SAMBA_MAX_CONNECTIONS               SAMBA_ADVANCED_SETTINGS         -                               NONE
+SAMBA_MAX_CONNECTIONS               SAMBA_ADVANCED_SETTINGS         -                               NUMERIC
 SAMBA_NETBIOS_NAME                  SAMBA_ADVANCED_SETTINGS         -                               NONE
 SAMBA_PREFERRED_MASTER              SAMBA_ADVANCED_SETTINGS         -                               YESNO
 SAMBA_PRESERVE_CASE                 SAMBA_ADVANCED_SETTINGS         -                               YESNO
@@ -45,7 +45,7 @@ SAMBA_SYSLOG_ONLY                   SAMBA_ADVANCED_SETTINGS         -           
 
 SAMBA_SHARE_N                       -                               -                               NUMERIC
 SAMBA_SHARE_%_NAME                  -                               SAMBA_SHARE_N                   NOTEMPTY
-SAMBA_SHARE_%_CREATE_MASK           -                               SAMBA_SHARE_N                   NUMERIC
-SAMBA_SHARE_%_DIRECTORY_MASK        -                               SAMBA_SHARE_N                   NUMERIC
-SAMBA_SHARE_%_DIRECTORY_PATH        -                               SAMBA_SHARE_N                   NONE
+SAMBA_SHARE_%_CREATE_MASK           -                               SAMBA_SHARE_N                   SAMBA_PERMISSION_MASK
+SAMBA_SHARE_%_DIRECTORY_MASK        -                               SAMBA_SHARE_N                   SAMBA_PERMISSION_MASK
+SAMBA_SHARE_%_DIRECTORY_PATH        -                               SAMBA_SHARE_N                   ABS_PATH
 SAMBA_SHARE_%_WRITEABLE             -                               SAMBA_SHARE_N                   YESNO
