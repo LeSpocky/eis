@@ -28,7 +28,18 @@ IDC_BUTTON_CANCEL='110'
 IDC_BUTTON_ACTIVATE='120'
 IDC_BUTTON_DEACTIVATE='130'
 
-getSambaUsers() {
+# ----------------------------------------------------------------------------
+# Clear the listbox given with param $2 on control element $1 and fill it with
+# elements given on the list $3.
+# ----------------------------------------------------------------------------
+updateListboxContent () {
+    local dialogElement=$1
+    local controlElement=$2
+
+    cui_window_getctrl ${dlg} ${controlElement}
+    ctrl="$p2"
+    cui_listbox_clear "$ctrl"
+
     ${pdbeditbin} -Lw | grep -v "^.*$:" | sort -t: -k2n |
     (
         while read line ; do
@@ -37,20 +48,35 @@ getSambaUsers() {
             set -- ${line}
             user="$1"
             uid="$2"
-            pass="$4"
-            active="$5"
+            passwordHash="$4"
+            flags="$5"
             IFS="$oldifs"
 
-            if [ "$pass" != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ] ; then
-                pass='set'
+            # Account flags (see http://www.samba.org/samba/docs/man/manpages/smbpasswd.5.html)
+            # U - This means this is a "User" account, i.e. an ordinary user.
+            # N - This means the account has no password (the passwords in
+            #     the fields LANMAN Password Hash and NT Password Hash are
+            #     ignored). Note that this will only allow users to log on
+            #     with no password if the null passwords parameter is set in
+            #     the smb.conf(5) config file.
+            # D - This means the account is disabled and no SMB/CIFS logins
+            #     will be allowed for this user.
+            # X - This means the password does not expire.
+            # W - This means this account is a "Workstation Trust" account.
+            #     This kind of account is used in the Samba PDC code stream
+            #     to allow Windows NT Workstations and Servers to join a
+            #     Domain hosted by a Samba PDC.
+
+            if [ -n "$(echo "${flags}" | grep "N")" -o "$passwordHash" = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ] ; then
+                pass='Not set'
             else
-                pass='not set'
+                pass='Set'
             fi
 
-            if [ -n "`echo ${active} | grep "\[U"`" -a "$pass" != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ] ; then
-                active='yes'
+            if [ -n "$(echo "${flags}" | grep "D")" ] ; then
+                active='No'
             else
-                active='no'
+                active='Yes'
             fi
 
             currentUser=$(printf "%-23s   %5s   %-7s   %3s\n" "${user}" "${uid}" "${pass}" "${active}")
@@ -71,23 +97,6 @@ ok_button_clicked() {
     local ctrl="$p3"
 
     cui_window_close "$dlg" "$IDOK"
-    cui_return 1
-}
-
-
-
-# ----------------------------------------------------------------------------
-# cancel_button_clicked
-#         $p2 --> dialog window handle
-#         $p3 --> control's window handle
-# ----------------------------------------------------------------------------
-cancel_button_clicked() {
-    # -----------------------------
-    # Just for sure: use the backup
-    value=${valueBackup}
-    valueBackup=''
-
-    cui_window_close "$p2" "$IDCANCEL"
     cui_return 1
 }
 
@@ -125,8 +134,12 @@ deactivate_button_clicked() {
 
 
 
+
+# ----------------------------------------------------------------------------
+# Determine the selected user and set the desired activation state
+# ----------------------------------------------------------------------------
 setActivationState() {
-    local activationState=$1
+    local activationStateToSet=$1
     local idx=0
     cui_window_getctrl ${dlg} ${IDC_LISTBOX__USERS}
     cui_listbox_getsel ${p2}
@@ -141,13 +154,13 @@ setActivationState() {
             IFS=':'
             set -- ${line}
             user="$1"
-            active="$5"
+            flags="$5"
             IFS="$oldifs"
 
             if [ ${idx} -eq ${index} ] ; then
-                if [ -n "`echo ${active} | grep "\[U"`" -a "$pass" != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ] ; then
+                if [ -z "$(echo ${flags} | grep "D")" ] ; then
                     # Account is active
-                    if ${activationState} ; then
+                    if ${activationStateToSet} ; then
                         # Activate
                         echo "Account $user is already activated" >> /tmp/check.txt
                     else
@@ -157,7 +170,7 @@ setActivationState() {
                     fi
                 else
                     # Account is deactivated
-                    if ${activationState} ; then
+                    if ${activationStateToSet} ; then
                         # Activate
                         echo "Activating deactivated user $user" >> /tmp/check.txt
                         "$smbpasswdbin" -D "$SAMBA_SYSLOG" -e "$user"
@@ -170,26 +183,7 @@ setActivationState() {
             idx=$((idx+1))
         done
     )
-}
-
-
-
-# ----------------------------------------------------------------------------
-# listbox_changed
-#         $p2 --> dialog window handle
-#         $p3 --> control's window handle
-# ----------------------------------------------------------------------------
-listbox_changed() {
-    local dlg="$p2"
-    local list="$p3"
-    local index="0"
-
-    cui_listbox_getsel "$list"
-    index="$p2"
-
-    updateListboxContent ${dlg} ${IDC_LISTBOX__DISPLAYMODEL} "${drivers[index]}"
-
-    cui_return 1
+    updateListboxContent a ${IDC_LISTBOX__USERS}
 }
 
 
@@ -220,33 +214,26 @@ dlg_setup_hook() {
 
     if cui_listbox_new "$dlg" "" 1 3 55 5 ${IDC_LISTBOX__USERS} ${CWS_NONE} ${CWS_BORDER} ; then
         ctrl="$p2"
-        cui_listbox_callback  "$ctrl" "$LISTBOX_CHANGED" "$dlg" listbox_changed
         cui_window_setcolors  "$ctrl" "MENU"
         cui_window_create     "$ctrl"
-        getSambaUsers
+        updateListboxContent a ${IDC_LISTBOX__USERS}
     fi
 
-    if cui_button_new "$dlg" "&Activate" 6 9 12 1 ${IDC_BUTTON_ACTIVATE} ${CWS_NONE} ${CWS_NONE} ; then
+    if cui_button_new "$dlg" "&Activate" 18 9 12 1 ${IDC_BUTTON_ACTIVATE} ${CWS_NONE} ${CWS_NONE} ; then
         ctrl="$p2"
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" activate_button_clicked
         cui_window_create     "$ctrl"
     fi
 
-    if cui_button_new "$dlg" "&Deactivate" 19 9 14 1 ${IDC_BUTTON_DEACTIVATE} ${CWS_NONE} ${CWS_NONE} ; then
+    if cui_button_new "$dlg" "&Deactivate" 31 9 14 1 ${IDC_BUTTON_DEACTIVATE} ${CWS_NONE} ${CWS_NONE} ; then
         ctrl="$p2"
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" deactivate_button_clicked
         cui_window_create     "$ctrl"
     fi
 
-    if cui_button_new "$dlg" "&OK" 34 9 10 1 ${IDC_BUTTON_OK} ${CWS_DEFOK} ${CWS_NONE} ; then
+    if cui_button_new "$dlg" "&OK" 46 9 10 1 ${IDC_BUTTON_OK} ${CWS_DEFOK} ${CWS_NONE} ; then
         ctrl="$p2"
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" ok_button_clicked
-        cui_window_create     "$ctrl"
-    fi
-
-    if cui_button_new "$dlg" "&Cancel" 45 9 10 1 ${IDC_BUTTON_CANCEL} ${CWS_DEFCANCEL} ${CWS_NONE} ; then
-        ctrl="$p2"
-        cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" cancel_button_clicked
         cui_window_create     "$ctrl"
     fi
 
