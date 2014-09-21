@@ -32,20 +32,35 @@ getSambaUsers() {
             set -- ${line}
             user="$1"
             uid="$2"
-            pass="$4"
-            active="$5"
+            passwordHash="$4"
+            flags="$5"
             IFS="$oldifs"
 
-            if [ "$pass" != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ] ; then
-                pass='set'
+            # Account flags (see http://www.samba.org/samba/docs/man/manpages/smbpasswd.5.html)
+            # U - This means this is a "User" account, i.e. an ordinary user.
+            # N - This means the account has no password (the passwords in
+            #     the fields LANMAN Password Hash and NT Password Hash are
+            #     ignored). Note that this will only allow users to log on
+            #     with no password if the null passwords parameter is set in
+            #     the smb.conf(5) config file.
+            # D - This means the account is disabled and no SMB/CIFS logins
+            #     will be allowed for this user.
+            # X - This means the password does not expire.
+            # W - This means this account is a "Workstation Trust" account.
+            #     This kind of account is used in the Samba PDC code stream
+            #     to allow Windows NT Workstations and Servers to join a
+            #     Domain hosted by a Samba PDC.
+
+            if [ -n "$(echo "${flags}" | grep "N")" -o "$passwordHash" = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ] ; then
+                pass='Not set'
             else
-                pass='not set'
+                pass='Set'
             fi
 
-            if [ -n "`echo ${active} | grep "\[U"`" -a "$pass" != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ] ; then
-                active='yes'
+            if [ -n "$(echo "${flags}" | grep "D")" ] ; then
+                active='No'
             else
-                active='no'
+                active='Yes'
             fi
 
             currentUser=$(printf "%-23s   %5s   %-7s   %3s\n" "${user}" "${uid}" "${pass}" "${active}")
