@@ -1,24 +1,29 @@
 <help name="SAMBA_USERMAP_N">
+    The amount of user mapping to configure<br/>
     <br/>
     Default: SAMBA_USERMAP_N='1'
 </help>
 
-<help name="SAMBA_USERMAP_1_ACTIVE">
+<help name="SAMBA_USERMAP_%_ACTIVE">
+    To activate the mapping, set this entry to 'yes'<br/>
     <br/>
-    Default: SAMBA_USERMAP_1_ACTIVE='no'
+    Default: SAMBA_USERMAP_%_ACTIVE='no'
 </help>
 
-<help name="SAMBA_USERMAP_1_EISNAME">
+<help name="SAMBA_USERMAP_%_EISNAME">
+    The name of the eisfair account to which one or more mapping should be configured<br/>
     <br/>
-    Default: SAMBA_USERMAP_1_EISNAME='root'
+    Default: SAMBA_USERMAP_%_EISNAME='root'
 </help>
 
-<help name="SAMBA_USERMAP_1_WINNAME_N">
+<help name="SAMBA_USERMAP_%_WINNAME_N">
+    The amount of Windows accounts which should be mapped to SAMBA_USERMAP_%_EISNAME<br/>
     <br/>
-    Default: SAMBA_USERMAP_1_WINNAME_N='1'
+    Default: SAMBA_USERMAP_%_WINNAME_N='1'
 </help>
 
-<help name="SAMBA_USERMAP_1_WINNAME_1">
+<help name="SAMBA_USERMAP_%_WINNAME_%">
+    The Windows account which should be mapped to SAMBA_USERMAP_%_EISNAME<br/>
     <br/>
-    Default: SAMBA_USERMAP_1_WINNAME_1='administrator'
+    Default: SAMBA_USERMAP_%_WINNAME_%='administrator'
 </help>
