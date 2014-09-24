@@ -18,29 +18,25 @@
 #-----------------------------------------------------------------------------
 # rename variables
 #-----------------------------------------------------------------------------
-rename_variables ()
-{
+rename_variables () {
     renamed=0
     mecho -n "Renaming parameter(s)... "
 
     # v0.90.2
-    if [ $NTP_CLOCK_N -eq 0 ]
-    then
+    if [ ${NTP_CLOCK_N} -eq 0 ] ; then
         imax=1
     else
-        imax=$NTP_CLOCK_N
+        imax=${NTP_CLOCK_N}
     fi
 
     renamedParams=false
     idx=1
-    while [ $idx -le $imax ]
-    do
-        if [ ! -z "`grep ^NTP_CLOCK_${idx}_LINK_DEVICE_N= $source_conf`" ]
-        then
+    while [ ${idx} -le ${imax} ] ; do
+        if [ ! -z "`grep ^NTP_CLOCK_${idx}_LINK_DEVICE_N= ${source_conf}`" ] ; then
             eval ntp_link_device_nbr='$NTP_CLOCK_'${idx}'_LINK_DEVICE_N'
 
             echo "- NTP_CLOCK_${idx}_LINK_DEVICE_N -> NTP_CLOCK_${idx}_LINK_DEVICE_NBR"
-            eval NTP_CLOCK_${idx}_LINK_DEVICE_NBR="$ntp_link_device_nbr"
+            eval NTP_CLOCK_${idx}_LINK_DEVICE_NBR="${ntp_link_device_nbr}"
             renamedParams=true
         fi
         
@@ -49,11 +45,9 @@ rename_variables ()
         eval currentClockType='$NTP_CLOCK_'${idx}'_TYPE'
         currentClockMode=`echo ${currentClockType} | cut -d " " -f2`
         currentClockType=`echo ${currentClockType} | cut -d " " -f1`
-        if [ "${currentClockType}" = '8' ]
-        then
+        if [ "${currentClockType}" = '8' ] ; then
             eval preferCurrentClock='$NTP_CLOCK_'${idx}'_PREFER'
-            if [ -z "${preferCurrentClock}" ]
-            then
+            if [ -z "${preferCurrentClock}" ] ; then
                 # ------------------------------------------------------------
                 # $NTP_CLOCK_'${idx}'_PREFER not found, so this must be an old
                 # installation with the other setup method for the clock mode
@@ -62,8 +56,7 @@ rename_variables ()
                 # ---------------------------------------------------------------
                 # Now search the string 'prefer' and de-/activate the new setting
                 echo "${currentClockMode}" | grep prefer > /dev/null 2>&1
-                if [ $? -eq 0 ]
-                then
+                if [ $? -eq 0 ] ; then
                     eval NTP_CLOCK_${idx}_PREFER='yes'
                 else
                     eval NTP_CLOCK_${idx}_PREFER='no'
@@ -71,8 +64,7 @@ rename_variables ()
                 
                 # ----------------------------------------------------------
                 # Set default value for the case that no mode could be found
-                if [ -z "${currentClockMode}" ]
-                then
+                if [ -z "${currentClockMode}" ] ; then
                     eval NTP_CLOCK_${idx}_TYPE="'${currentClockType} 14'"
                 fi
                 
@@ -80,14 +72,12 @@ rename_variables ()
                 # Now detect the mode to use
                 modeEntries=`echo ${currentMode} | wc -w`
                 modeIdx=1
-                while [ ${modeIdx} -le ${modeEntries} ]
-                do
+                while [ ${modeIdx} -le ${modeEntries} ] ; do
                     modeToUse=`echo ${currentMode} | cut -d " " -f ${modeIdx}`
                     # ----------------------------------------------------------
                     # Check if it is a number. If so, use it as the mode number.
                     expr ${modeToUse} + 0 > /dev/null 2>&1
-                    if [ $? -lt 3 ]
-                    then
+                    if [ $? -lt 3 ] ; then
                         eval NTP_CLOCK_${idx}_TYPE="'${currentClockType} ${modeToUse}'"
                         break
                     fi
@@ -106,13 +96,10 @@ rename_variables ()
     # ------------------------------------------------------
     # V1.1.1 - Added cui script to choose log events, so the 
     # old var 'NTP_LOG_CONFIG' must be removed
-    if [ -n "${NTP_LOG_CONFIG}" ]
-    then
+    if [ -n "${NTP_LOG_CONFIG}" ] ; then
         idx=0
-        for currentLogConfigParam in ${NTP_LOG_CONFIG}
-        do
-            if [ "${currentLogConfigParam}" != "+" ]
-            then
+        for currentLogConfigParam in ${NTP_LOG_CONFIG} ; do
+            if [ "${currentLogConfigParam}" != "+" ] ; then
                 idx=$((idx+1))
                 eval NTP_LOG_EVENT_${idx}_ENTRY="${currentLogConfigParam}"
             fi
@@ -122,8 +109,7 @@ rename_variables ()
     fi
 
 
-    if ${renamedParams}
-    then
+    if ${renamedParams} ; then
         mecho "Done."
     else
         mecho "Nothing renamed, parameters up to date."
@@ -135,13 +121,11 @@ rename_variables ()
 #-----------------------------------------------------------------------------
 # modify variables
 #-----------------------------------------------------------------------------
-modify_variables ()
-{
+modify_variables () {
     modifiedParams=false
     mecho -n "Modifying parameter(s)... "
 
-    if ${modifiedParams}
-    then
+    if ${modifiedParams} ; then
         mecho "Done."
     else
         mecho "Nothing modified, parameters up to date."
@@ -153,35 +137,30 @@ modify_variables ()
 #-----------------------------------------------------------------------------
 # add variables
 #-----------------------------------------------------------------------------
-add_variables ()
-{
+add_variables () {
     addedParams=false
     mecho -n "Adding new parameter(s)... "
 
     # v0.90.2
-    if [ -z "`grep ^NTP_LOG_COUNT $source_conf`" ]
-    then
+    if [ -z "`grep ^NTP_LOG_COUNT $source_conf`" ] ; then
 #        echo "- NTP_LOG_COUNT='10'"
         NTP_LOG_COUNT='10'
         addedParams=true
     fi
 
-    if [ -z "`grep ^NTP_LOG_INTERVAL $source_conf`" ]
-    then
+    if [ -z "`grep ^NTP_LOG_INTERVAL $source_conf`" ] ; then
 #        echo "- NTP_LOG_INTERVAL='weekly'"
         NTP_LOG_INTERVAL='weekly'
         addedParams=true
     fi
 
-    if [ -z "${NTP_PEER_N}" ]
-    then
+    if [ -z "${NTP_PEER_N}" ] ; then
         NTP_PEER_N=0
         NTP_PEER_1=''
         addedParams=true
     fi
 
-    if ${addedParams}
-    then
+    if ${addedParams} ; then
         mecho "Done."
     else
         mecho "No new parameters available."
@@ -193,22 +172,19 @@ add_variables ()
 #-----------------------------------------------------------------------------
 # delete variables
 #-----------------------------------------------------------------------------
-delete_variables ()
-{
+delete_variables () {
     deleted=0
     mecho -n "Removing old parameters... "
 
     for varname in NTP_DRIFT_FILE NTP_LOG_FILE NTP_LOG_ROTATE NTP_MAX_LOGSIZE
     do
-        if [ ! -z "`grep \"^$varname\" $source_conf`" ]
-        then
+        if [ ! -z "`grep \"^$varname\" $source_conf`" ] ; then
 #            echo "- $varname"
             deleted=1
         fi
     done
 
-    if [ ${deleted} -eq 1 ]
-    then
+    if [ ${deleted} -eq 1 ] ; then
         mecho "Done."
     else
         mecho "Nothing to remove, parameters up to date."
@@ -220,8 +196,7 @@ delete_variables ()
 #-----------------------------------------------------------------------------
 # create new configuration
 #-----------------------------------------------------------------------------
-create_config ()
-{
+create_config () {
     config_level="$1"
 
     mecho -n "Updating/creating configuration... "
@@ -331,10 +306,8 @@ EOF
         #---------------------------------------------------------------------
         printvar "NTP_CLOCK_N" "Nbr of clock's"
 
-        if [ $NTP_CLOCK_N -eq 0 ]
-        then
-            if [ "$config_level" = "update" ]
-            then
+        if [ $NTP_CLOCK_N -eq 0 ] ; then
+            if [ "$config_level" = "update" ] ; then
                 imax=3
             else
                 imax=1
@@ -344,8 +317,7 @@ EOF
         fi
 
         idx=1
-        while [ $idx -le $imax ]
-        do
+        while [ $idx -le $imax ] ; do
             printvar "NTP_CLOCK_${idx}_TYPE"            "${idx}. clock type"
             printvar "NTP_CLOCK_${idx}_PREFER"          "   prefer this clock?"
             printvar "NTP_CLOCK_${idx}_DEVICE"          "   clock device, default: ''"
@@ -361,10 +333,8 @@ EOF
         #---------------------------------------------------------------------
         printvar "NTP_PEER_N" "Nbr of peers"
 
-        if [ ${NTP_PEER_N} -eq 0 ]
-        then
-            if [ "${config_level}" = "update" ]
-            then
+        if [ ${NTP_PEER_N} -eq 0 ] ; then
+            if [ "${config_level}" = "update" ] ; then
                 imax=2
             else
                 imax=0
@@ -374,8 +344,7 @@ EOF
         fi
 
         idx=1
-        while [ $idx -le $imax ]
-        do
+        while [ $idx -le $imax ] ; do
             printvar "NTP_PEER_${idx}" "${idx}. NTP peer"
             idx=`expr $idx + 1`
         done
@@ -385,10 +354,8 @@ EOF
         #---------------------------------------------------------------------
         printvar "NTP_SERVER_N" "Nbr of server's"
 
-        if [ $NTP_SERVER_N -eq 0 ]
-        then
-            if [ "$config_level" = "update" ]
-            then
+        if [ $NTP_SERVER_N -eq 0 ] ; then
+            if [ "$config_level" = "update" ] ; then
                 imax=2
             else
                 imax=0
@@ -398,8 +365,7 @@ EOF
         fi
 
         idx=1
-        while [ $idx -le $imax ]
-        do
+        while [ $idx -le $imax ] ; do
             printvar "NTP_SERVER_${idx}" "${idx}. NTP server"
 
             idx=`expr $idx + 1`
@@ -410,10 +376,8 @@ EOF
         #---------------------------------------------------------------------
         printvar "NTP_SET_SERVER_N" "Nbr of server's"
 
-        if [ $NTP_SET_SERVER_N -eq 0 ]
-        then
-            if [ "$config_level" = "update" ]
-            then
+        if [ $NTP_SET_SERVER_N -eq 0 ] ; then
+            if [ "$config_level" = "update" ] ; then
                 imax=2
             else
                 imax=0
@@ -423,8 +387,7 @@ EOF
         fi
 
         idx=1
-        while [ $idx -le $imax ]
-        do
+        while [ $idx -le $imax ] ; do
             printvar "NTP_SET_SERVER_${idx}" "${idx}. NTP server"
             idx=`expr $idx + 1`
         done
@@ -434,10 +397,8 @@ EOF
         #---------------------------------------------------------------------
         printvar "NTP_ADD_PARAM_N" "Nbr of additional parameter"
 
-        if [ $NTP_ADD_PARAM_N -eq 0 ]
-        then
-            if [ "$config_level" = "update" ]
-            then
+        if [ $NTP_ADD_PARAM_N -eq 0 ] ; then
+            if [ "$config_level" = "update" ] ; then
                 imax=5
             else
                 imax=0
@@ -447,8 +408,7 @@ EOF
         fi
 
         idx=1
-        while [ $idx -le $imax ]
-        do
+        while [ $idx -le $imax ] ; do
             printvar "NTP_ADD_PARAM_${idx}" "${idx}. parameter"
 
             idx=`expr $idx + 1`
@@ -469,8 +429,7 @@ EOF
 EOF
         printvar "NTP_LOG_EVENT_N"    "Amount of different log events to log"
         idx=1
-        while [ ${idx} -le ${NTP_LOG_EVENT_N} ]
-        do
+        while [ ${idx} -le ${NTP_LOG_EVENT_N} ] ; do
             printvar "NTP_LOG_EVENT_${idx}_ENTRY" "Event type to log: all, syncstatus, sysevents, syncall, clockall"
             idx=$((idx+1))
         done
@@ -528,10 +487,8 @@ in
         goflag=0
 esac
 
-if [ $goflag -eq 1 ]
-then
-    if [ -f $source_conf ]
-    then
+if [ $goflag -eq 1 ] ; then
+    if [ -f $source_conf ] ; then
         # previous configuration file exists
         mecho -info "previous configuration found ..."
         . $source_conf
