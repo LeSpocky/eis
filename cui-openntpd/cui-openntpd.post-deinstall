@@ -1,0 +1,7 @@
+#!/bin/bash
+/var/install/bin/del-menu setup.services.menu setup.services.openntpd.menu
+
+rm -f /etc/check.d/openntpd*
+rm -f /etc/default.d/openntpd*
+rm -f /etc/config.d/openntpd*
+rm -f /etc/backup.d/openntpd*
