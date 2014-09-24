@@ -1,8 +1,9 @@
 #!/bin/bash
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # /var/install/bin/samba-list-user - list samba users
 #
 # Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+# Copyright (c) 2014 the eisfair team <team@eisfair.org>
 #
 # Creation   : 2001-11-04 tb
 #
@@ -10,25 +11,24 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 #set -x
 . /var/install/include/eislib
 
 pdbeditbin='/usr/bin/pdbedit'
 
 tty=`tty`
-$pdbeditbin -Lw | grep -v "^.*$:" | sort -t: -k2n |
+${pdbeditbin} -Lw | grep -v "^.*$:" | sort -t: -k2n |
 (
     clrhome
     mecho --info "List Samba Users"
     echo
 
     techo begin 2 25 13 20 20
-    techo row '' -info User -info Uid -info Password -info Active
+    techo row '' --info User --info Uid --info Password --info Active
     row=4
 
-    while read line
-    do
+    while read line ; do
         oldifs="$IFS"
         IFS=':'
         set -- $line
@@ -38,8 +38,7 @@ $pdbeditbin -Lw | grep -v "^.*$:" | sort -t: -k2n |
         active="$5"
         IFS="$oldifs"
 
-        if [ "$pass" != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ]
-        then
+        if [ "$pass" != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ] ; then
             pass='set'
             passcolor='-std'
         else
@@ -47,8 +46,7 @@ $pdbeditbin -Lw | grep -v "^.*$:" | sort -t: -k2n |
             passcolor='-warn'
         fi
 
-        if [ -n "`echo $active | grep "\[U"`" -a "$pass" != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ]
-        then
+        if [ -n "`echo ${active} | grep "\[U"`" -a "$pass" != "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" ] ; then
             active='yes'
             activecolor='-std'
         else
@@ -59,15 +57,14 @@ $pdbeditbin -Lw | grep -v "^.*$:" | sort -t: -k2n |
         techo row '' "$user" "$uid" "$passcolor" "$pass" "$activecolor" "$active"
         row=`expr $row + 1`
 
-        if [ $row = 21 ]
-        then
+        if [ $row = 21 ] ; then
             echo
             anykey <$tty
             clrhome
             mecho --info "List Samba Users"
             echo
             techo begin 2 25 13 20 20
-            techo row '' -info User -info Uid -info Password -info Active
+            techo row '' --info User --info Uid --info Password --info Active
             row=4
         fi
     done

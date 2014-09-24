@@ -2,7 +2,12 @@
 
 /var/install/bin/del-menu setup.services.menu setup.services.samba.menu
 
-rm -rf /etc/config.d/cui-samba
-rm -rf /etc/default.d/cui-samba
+rm -rf /etc/config.d/samba*
+rm -rf /etc/default.d/samba*
+
+if [ -f /etc/samba/smbusers.apk-new ] ; then
+    # Restore original smbusers
+    mv -f /etc/samba/smbusers.apk-new /etc/samba/smbusers
+fi
 
 exit 0

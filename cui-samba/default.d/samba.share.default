@@ -1,3 +1,5 @@
+#!/bin/bash
+#[share]
 SHARE_NAME=''
 CREATE_MASK='0400'
 DIRECTORY_MASK='0700'

@@ -1,8 +1,9 @@
 #!/bin/bash
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # /var/install/bin/samba-add-user - add samba user
 #
 # Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+# Copyright (c) 2014 the eisfair team <team@eisfair.org>
 #
 # usage: /var/install/bin/samba-add-user
 #    or: /var/install/bin/samba-add-user "user" "password"
@@ -13,17 +14,16 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 . /var/install/include/eislib
 
 debuglevel=`grep 'debug level =' /etc/smb.conf | cut -d'=' -f2 | sed 's# ##g'`
 smbpasswdbin='/usr/bin/smbpasswd'
 passwdfile='/etc/passwd'
 pdbeditbin='/usr/bin/pdbedit'
-tdbsamfile='/etc/passdb.tdb'
+tdbsamfile='/var/lib/samba/private/passdb.tdb'
 
-if [ ! -f "$tdbsamfile" ]
-then
+if [ ! -f "$tdbsamfile" ] ; then
     >"$tdbsamfile"
     chown root.root "$tdbsamfile"
     chmod 0600 "$tdbsamfile"
@@ -31,12 +31,12 @@ fi
 
 case $# in
 0)
-    interactive='true'
+    interactive=true
     user=''
     password=''
     ;;
 2)
-    interactive='false'
+    interactive=false
     user="$1"
     password="$2"
     (echo "$password"; echo "$password") | "$smbpasswdbin" -D "$debuglevel" -sa "$user"
@@ -49,14 +49,12 @@ case $# in
     ;;
 esac
 
-if [ "$interactive" = "true" ]
-then
+if ${interactive} ; then
     clrhome
     mecho --info "Add Samba User"
 
     echo
-    if [ -z "$user" ]
-    then
+    if [ -z "$user" ] ; then
         echo "User-ID must exist in eisfair-User-Configuration"
         echo "User-ID (e.g. 'samba1'):"
         echo
@@ -68,12 +66,10 @@ then
         mecho --error "No user added"
         ;;
     *)
-        if grep -q "^$user:" "$passwdfile"
-        then
+        if grep -q "^$user:" "$passwdfile" ; then
             echo "Found entry for samba user $user in $passwdfile."
 
-            if `$pdbeditbin -Lw | grep -q "^$user:"`
-            then
+            if `${pdbeditbin} -Lw | grep -q "^$user:"` ; then
                 "$smbpasswdbin" -D "$debuglevel" -e "$user"
             else
                 "$smbpasswdbin" -D "$debuglevel" -a "$user"

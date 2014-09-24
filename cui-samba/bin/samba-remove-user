@@ -1,8 +1,9 @@
 #!/bin/bash
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # /var/install/bin/samba-remove-user - remove a samba user
 #
 # Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
+# Copyright (c) 2014 the eisfair team <team@eisfair.org>
 #
 # usage: /var/install/bin/samba-remove-user
 #    or: /var/install/bin/samba-remove-user "user"
@@ -13,31 +14,29 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 . /var/install/include/eislib
 
 debuglevel=`grep 'debug level =' /etc/smb.conf | cut -d'=' -f2 | sed 's# ##g'`
 smbpasswdbin='/usr/bin/smbpasswd'
 pdbeditbin='/usr/bin/pdbedit'
-tdbsamfile='/etc/passdb.tdb'
+tdbsamfile='/var/lib/samba/private/passdb.tdb'
 
 case $# in
 0)
-    interactive='true'
+    interactive=true
     user=''
     ;;
 1)
-    interactive='false'
+    interactive=false
     user="$1"
 
-    if ! `$pdbeditbin -Lw | grep -q "^$user:"`
-    then
+    if ! `${pdbeditbin} -Lw | grep -q "^$user:"` ; then
         mecho --error "Failed to find entry for samba user $user in $tdbsamfile!"
         exit 1
     else
         "$pdbeditbin" -d "$debuglevel" -x "$user" >/dev/null 2>&1
-        if [ $? -eq 0 ]
-        then
+        if [ $? -eq 0 ] ; then
             echo "Removed samba user $user from $tdbsamfile."
         else
             mecho --error "Failed to remove samba user $user from $tdbsamfile."
@@ -51,34 +50,29 @@ case $# in
     ;;
 esac
 
-if [ "$interactive" = "true" ]
-then
+if ${interactive} ; then
     clrhome
     mecho --info "Remove Samba User"
     echo
 
-    if [ -z "$user" ]
-    then
+    if [ -z "$user" ] ; then
         echo "Samba user to remove (e.g. 'www'):"
         echo
         read user
     fi
 
-    if [ -z "$user" ]
-    then
+    if [ -z "$user" ] ; then
         mecho --error "No samba user removed!"
         exit 1
     fi
 
-    if ! `$pdbeditbin -Lw | grep -q "^$user:"`
-    then
+    if ! `${pdbeditbin} -Lw | grep -q "^$user:"` ; then
         mecho --error "Failed to find entry for samba user $user in $tdbsamfile!"
         exit 1
     fi
 
     "$pdbeditbin" -d "$debuglevel" -x "$user" >/dev/null 2>&1
-    if [ $? -eq 0 ]
-    then
+    if [ $? -eq 0 ] ; then
         echo "Removed samba user $user from $tdbsamfile."
     else
         mecho --error "Failed to remove samba user $user from $tdbsamfile."

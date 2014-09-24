@@ -1,11 +1,11 @@
 <!-- /var/install/menu/setup.handle.samba.menu -->
 <!-- Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net -->
+<!-- Copyright (c) 2014 the eisfair team <team@eisfair.org> -->
 <!-- Creation: 2005-06-16 tb -->
 <package>samba</package>
 <title>Samba Server Handling</title>
-<script file="samba-status">Show Status of Samba</script>
-<script file="samba-stop">Stop Samba</script>
-<script file="samba-delayed-stop">Stop Samba delayed</script>
-<script file="samba-start">Start Samba</script>
-<script file="samba-restart">Restart Samba</script>
-<script file="samba-reload">Reload Samba</script>
+<edit>Edit Configuration</edit>
+<init task="status">Status</init>
+<init task="start">Start</init>
+<init task="stop">Stop</init>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>

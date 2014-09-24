@@ -1,12 +1,14 @@
 <!-- /var/install/menu/setup.services.samba.menu -->
 <!-- Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net -->
+<!-- Copyright (c) 2014 the eisfair team <team@eisfair.org> -->
 <!-- Creation: 2005-06-16 tb -->
 <package>samba</package>
 <title>Samba Administration</title>
-<doc file="cui-samba.txt">Read Samba Documentation</doc>
-<menu file="setup.configuration.samba.menu">Samba Configuration Handling</menu>
-<menu file="setup.user.samba.menu">Samba User Handling</menu>
+<doc file="samba.txt">Read Documentation</doc>
 <menu file="setup.handle.samba.menu">Samba Server Handling</menu>
-<menu file="setup.domainoptions.samba.menu">Samba Domain Handling</menu>
-<menu file="setup.smbfs.samba.menu">SMB Filesystem Handling</menu>
-<script file="samba-netsend">Send Message to SMB Hosts</script>
+<menu file="setup.user.samba.menu">User Account Handling</menu>
+<!--<menu file="setup.configuration.samba.menu">Samba Configuration Handling</menu>-->
+<!--<menu file="setup.handle.samba.menu">Samba Server Handling</menu>-->
+<!--<menu file="setup.domainoptions.samba.menu">Samba Domain Handling</menu>-->
+<!--<menu file="setup.smbfs.samba.menu">SMB Filesystem Handling</menu>-->
+<!--<script file="samba-netsend">Send Message to SMB Hosts</script>-->

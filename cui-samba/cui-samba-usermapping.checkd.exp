@@ -1,0 +1,7 @@
+#----------------------------------------------------------------------------
+# /etc/config.d/-check_exp - configuration file for -check_exp
+# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+#----------------------------------------------------------------------------
+
+SAMBA_USERMAP_EISFAIR_ACCOUNT = '(RE:NOTEMPTY)'
+                              : 'You must choose a valid user account name!'
