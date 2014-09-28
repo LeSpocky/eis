@@ -1,7 +1,7 @@
 # Contributor: starwarsfan <yves@eisfair.org>
 # Maintainer: starwarsfan <yves@eisfair.org>
 pkgname=cui-samba
-pkgver=1.0.0
+pkgver=0.1.0
 pkgrel=0
 pkgdesc="CUI Setup for samba"
 url="http://www.eisfair.org"
@@ -29,9 +29,9 @@ _builddir=
 prepare() {
 	local i
 	cd "$_builddir"
-	for i in $source ; do
-		case $i in
-		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+	for i in ${source} ; do
+		case ${i} in
+		*.patch) msg ${i}; patch -p1 -i "$srcdir"/${i} || return 1;;
 		esac
 	done
 }
