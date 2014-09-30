@@ -1,7 +1,7 @@
 # Contributor: Jens Vehlhaber jv <jens@eisfair.org>
 # Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
 pkgname=radicale
-pkgver=0.9b1
+pkgver=0.9b2
 pkgrel=0
 pkgdesc="Radicale caldav and carddav server"
 url="http://www.radicale.org/"
@@ -13,7 +13,7 @@ makedepends="$depends_dev"
 install=""
 subpackages=""
 source="
-	https://pypi.python.org/packages/source/R/Radicale/Radicale-0.9b1.tar.gz
+	https://pypi.python.org/packages/source/R/Radicale/Radicale-0.9b2.tar.gz
 	$pkgname-config.patch
 	$pkgname.initd"
 
@@ -49,12 +49,12 @@ package() {
 		"$pkgdir"/etc/init.d/${pkgname} || return 1
 }
 
-md5sums="863fec072cb5c11194062f237a1eb22c  Radicale-0.9b1.tar.gz
-6f623c4563c8f8a2df33c41baf70ec52  radicale-config.patch
+md5sums="1903412cdc0f01fb878eb6bfd9f205fc  Radicale-0.9b2.tar.gz
+75f1c82979bfb5706de6a1319b775f78  radicale-config.patch
 60c54f69f377c52b201e22c36a185ee8  radicale.initd"
-sha256sums="3a8451909de849f173f577ddec0a085f19040dbb6aa13d5256208a0f8e11d88d  Radicale-0.9b1.tar.gz
-7b3d25fcca25077075f352be77ea8d086c6f80456cf5975a29c6b7fe6a6e13f0  radicale-config.patch
+sha256sums="89013e76ff688b77a357acbe2cb98fcc50cb60f55209b94f80a860050de53443  Radicale-0.9b2.tar.gz
+fd051e3191ebb4195ee7494cd00849147a7520c37ea5745465509de943f8b821  radicale-config.patch
 1f3a6586a3ab9c9abc561b6ce663942908a5ad359848cb244a1850a4268139eb  radicale.initd"
-sha512sums="4106e1dbb1b57eed1d565facc56cd1c6d2127901206adbf35d77a004cc15ea8950b1e87a93f833d457ce0200c80462540d802836f7006df450b851cb37d7e74b  Radicale-0.9b1.tar.gz
-4b6b70af31b35d961e7a29d34484b29b54b5d7f4d9fcaf5e51edf3768e74e74b20168cdac5bdbf4ae358d7aad561e01ee74741ed4b96b9192a36e7a94c6f75af  radicale-config.patch
+sha512sums="cb2fc0965fb4bddfdac6e36195754ebbde564decc7e29ca82cdb1499ff9d721ba01de60fd49553cac2c18c6ab644f524e6a679578afe6b9946e6244f17adc9eb  Radicale-0.9b2.tar.gz
+63a4236ddd02564829ad36df38f71a9a6030aaf96355c453d1afa55620bb4c3115d877a5d9a7a945e5f769af8abde8a0d5e3d34b286cf948281dc8a3de59f6f4  radicale-config.patch
 f460b4935754a3a4fa0eaec36a61013f10db857bf381c2ff6ad7a31782c17a5242867e7ee8f4583883455033be4e6087249f941dee17826593fffe3a4a13926e  radicale.initd"
