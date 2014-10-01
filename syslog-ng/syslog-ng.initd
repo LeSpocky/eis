@@ -14,24 +14,24 @@ depend() {
 start() {
 	[ ! -f /etc/syslog-ng/syslog.conf ] && update
 	ebegin "Starting syslog-ng"
-	start-stop-daemon --start --quiet --exec /usr/sbin/syslog-ng --pidfile /var/run/syslog-ng.pid
+	start-stop-daemon --start --quiet --exec /usr/sbin/syslog-ng --pidfile /run/syslog-ng.pid
 	eend $?
 }
 
 stop() {
 	ebegin "Stopping syslog-ng"
-	start-stop-daemon --stop --quiet --pidfile /var/run/syslog-ng.pid --exec /usr/sbin/syslog-ng
+	start-stop-daemon --stop --quiet --pidfile /run/syslog-ng.pid --exec /usr/sbin/syslog-ng
 	eend $?
 }
 
 reload() {
-	if [ ! -f /var/run/syslog-ng.pid ]
+	if [ ! -f /run/syslog-ng.pid ]
 	then
 		eerror "syslog-ng not running!"
 		return 1
 	fi
 	ebegin "Reloading syslog-ng"
-	start-stop-daemon --signal HUP --pidfile /var/run/syslog-ng.pid --exec /usr/sbin/syslog-ng
+	start-stop-daemon --signal HUP --pidfile /run/syslog-ng.pid --exec /usr/sbin/syslog-ng
 	eend $?
 }
 
