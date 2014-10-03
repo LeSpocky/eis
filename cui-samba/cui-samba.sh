@@ -76,12 +76,14 @@ createShareConfiguration()
 
         eval shareIsActive='$SAMBA_SHARE_'${idx}'_ACTIVE'
         if [ "${shareIsActive}" = 'yes' ] ; then
+            eval SAMBA_SHARE_COMMENT='$SAMBA_SHARE_'${idx}'_COMMENT'
             eval SAMBA_SHARE_CREATE_MASK='$SAMBA_SHARE_'${idx}'_CREATE_MASK'
             eval SAMBA_SHARE_DIRECTORY_MASK='$SAMBA_SHARE_'${idx}'_DIRECTORY_MASK'
             eval SAMBA_SHARE_DIRECTORY_PATH='$SAMBA_SHARE_'${idx}'_DIRECTORY_PATH'
             eval SAMBA_SHARE_WRITEABLE='$SAMBA_SHARE_'${idx}'_WRITEABLE'
 
             sed -e "s/SHARE_NAME/${SAMBA_SHARE_NAME}/g" \
+                -e "s/COMMENT/${SAMBA_SHARE_COMMENT}/g" \
                 -e "s/CREATE_MASK/${SAMBA_SHARE_CREATE_MASK}/g" \
                 -e "s/DIRECTORY_MASK/${SAMBA_SHARE_DIRECTORY_MASK}/g" \
                 -e "s#DIRECTORY_PATH#${SAMBA_SHARE_DIRECTORY_PATH}#g" \

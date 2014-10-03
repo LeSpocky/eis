@@ -1,4 +1,5 @@
 [SHARE_NAME]
+    comment = COMMENT
     create mask = CREATE_MASK
     directory mask = DIRECTORY_MASK
     path = DIRECTORY_PATH
