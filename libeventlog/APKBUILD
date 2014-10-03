@@ -2,7 +2,7 @@
 # Maintainer: jv jens@eisfair.org
 pkgname=libeventlog
 pkgver=0.2.12
-pkgrel=0
+pkgrel=1
 pkgdesc="Syslog event logger library"
 url="http://www.balabit.com"
 arch="all"
@@ -12,7 +12,7 @@ depends_dev=""
 makedepends="$depends_dev"
 install=""
 subpackages="$pkgname-dev"
-source="http://www.balabit.com/downloads/files?path=/syslog-ng/sources/3.3.9/source/eventlog_${pkgver}.tar.gz"
+source="http://www.balabit.com/downloads/files/eventlog/0.2/eventlog_${pkgver}.tar.gz"
 
 _builddir="$srcdir/eventlog-$pkgver"
 
@@ -22,7 +22,9 @@ prepare() {
 
 build() {
 	cd "$_builddir"
-	./configure --prefix=/usr || return 1
+	./configure --prefix=/usr \
+	--sysconfdir=/etc \
+	--localstatedir=/var || return 1
 	make || return 1
 }
 
