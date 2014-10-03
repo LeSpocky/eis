@@ -503,3 +503,58 @@
     <br/>
     Default: SAMBA_SHARE_%_WRITEABLE='no'<br/>
 </help>
+
+<help name="SAMBA_SHARE_%_BROWSEABLE">
+    This controls whether this share is seen in the list of available shares
+    in a net view and in the browse list.
+
+    Default: SAMBA_SHARE_%_BROWSEABLE='yes'<br/>
+</help>
+
+<help name="SAMBA_SHARE_%_VALID_USERS">
+    This is a list of users that should be allowed to login to this service.
+    Names starting with '@', '+' and '&' are interpreted using the same rules
+    as described in the invalid users parameter.<br/>
+    <br/>
+    If this is empty (the default) then any user can login. If a username is
+    in both this list and the invalid users list then access is denied for
+    that user.<br/>
+    <br/>
+    The current servicename is substituted for %S. This is useful in the
+    [homes] section.<br/>
+    <br/>
+    Default: SAMBA_SHARE_%_VALID_USERS='' # No valid users list (anyone can login)<br/>
+    Example: SAMBA_SHARE_%_VALID_USERS='greg, @pcusers'<br/>
+</help>
+
+<help name="SAMBA_SHARE_%_FORCE_CREATE_MODE">
+    This parameter specifies a set of UNIX mode bit permissions that will
+    always be set on a file created by Samba. This is done by bitwise 'OR'ing
+    these bits onto the mode bits of a file that is being created. The default
+    for this parameter is (in octal) 000. The modes in this parameter are
+    bitwise 'OR'ed onto the file mode after the mask set in the create mask
+    parameter is applied.<br/>
+    <br/>
+    The example below would force all newly created files to have read and
+    execute permissions set for 'group' and 'other' as well as the
+    read/write/execute bits set for the 'user'.<br/>
+    <br/>
+    Default: SAMBA_SHARE_%_FORCE_CREATE_MODE='0600'<br/>
+    Example: SAMBA_SHARE_%_FORCE_CREATE_MODE='0755'<br/>
+</help>
+
+<help name="SAMBA_SHARE_%_FORCE_DIRECTORY_MODE">
+    This parameter specifies a set of UNIX mode bit permissions that will
+    always be set on a directory created by Samba. This is done by bitwise
+    'OR'ing these bits onto the mode bits of a directory that is being created.
+    The default for this parameter is (in octal) 0000 which will not add any
+    extra permission bits to a created directory. This operation is done after
+    the mode mask in the parameter directory mask is applied.<br/>
+    <br/>
+    The example below would force all created directories to have read and
+    execute permissions set for 'group' and 'other' as well as the
+    read/write/execute bits set for the 'user'.<br/>
+    <br/>
+    Default: SAMBA_SHARE_%_FORCE_DIRECTORY_MODE='0700'<br/>
+    Example: SAMBA_SHARE_%_FORCE_DIRECTORY_MODE='0755'<br/>
+</help>

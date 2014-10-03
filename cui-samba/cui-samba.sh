@@ -81,13 +81,20 @@ createShareConfiguration()
             eval SAMBA_SHARE_DIRECTORY_MASK='$SAMBA_SHARE_'${idx}'_DIRECTORY_MASK'
             eval SAMBA_SHARE_DIRECTORY_PATH='$SAMBA_SHARE_'${idx}'_DIRECTORY_PATH'
             eval SAMBA_SHARE_WRITEABLE='$SAMBA_SHARE_'${idx}'_WRITEABLE'
-
+            eval SAMBA_SHARE_BROWSEABLE='SAMBA_SHARE_'${idx}'_BROWSEABLE'
+            eval SAMBA_SHARE_VALID_USERS='SAMBA_SHARE_'${idx}'_VALID_USERS'
+            eval SAMBA_SHARE_FORCE_CREATE_MODE='SAMBA_SHARE_'${idx}'_FORCE_CREATE_MODE'
+            eval SAMBA_SHARE_FORCE_DIRECTORY_MODE='SAMBA_SHARE_'${idx}'_FORCE_DIRECTORY_MODE'
             sed -e "s/SHARE_NAME/${SAMBA_SHARE_NAME}/g" \
                 -e "s/COMMENT/${SAMBA_SHARE_COMMENT}/g" \
                 -e "s/CREATE_MASK/${SAMBA_SHARE_CREATE_MASK}/g" \
                 -e "s/DIRECTORY_MASK/${SAMBA_SHARE_DIRECTORY_MASK}/g" \
                 -e "s#DIRECTORY_PATH#${SAMBA_SHARE_DIRECTORY_PATH}#g" \
                 -e "s/WRITEABLE/${SAMBA_SHARE_WRITEABLE}/g" \
+                -e "s/BROWSEABLE/${SAMBA_SHARE_BROWSEABLE}/g" \
+                -e "s/VALID_USERS/${SAMBA_SHARE_VALID_USERS}/g" \
+                -e "s/FORCE_CREATE_MODE/${SAMBA_SHARE_FORCE_CREATE_MODE}/g" \
+                -e "s/FORCE_DIRECTORY_MODE/${SAMBA_SHARE_FORCE_DIRECTORY_MODE}/g" \
                 /etc/default.d/samba.share.template >> ${sambaNativeConfig}
         fi
         idx=$((idx+1))
