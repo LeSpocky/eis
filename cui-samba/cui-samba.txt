@@ -1,10 +1,12 @@
 
 
+
+                   Achtung, die Dokumentation wurde noch nicht
+                       an das eisfair-ng Paket angepasst!
+
+
+
                                 Das Samba-Paket
-
-... Fill something in here ...
-
-                           Copyrights/Paket-Ersteller
 
    Samba ist ein OpenSource-Projekt und unterliegt der GNU General Public
    Licence. Die Heimat von Samba im WWW ist
@@ -55,10 +57,6 @@ Was ist Samba?
        Details kann man auf den oben genannten Internetseiten nachlesen.
        Zusammengefasst bietet Samba weitestgehend die Funktionalitaet
        eines Windows-(NT-4.0-)Servers.
-
-
-
-... Fill something in here ...
 
 
 

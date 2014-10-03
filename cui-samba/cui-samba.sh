@@ -69,21 +69,26 @@ createGlobalConfiguration()
 # Create share sections of samba configuration
 createShareConfiguration()
 {
+    local shareIsActive='no'
     idx=1
     while [ ${idx} -le ${SAMBA_SHARE_N} ] ; do
         eval SAMBA_SHARE_NAME='$SAMBA_SHARE_'${idx}'_NAME'
-        eval SAMBA_SHARE_CREATE_MASK='$SAMBA_SHARE_'${idx}'_CREATE_MASK'
-        eval SAMBA_SHARE_DIRECTORY_MASK='$SAMBA_SHARE_'${idx}'_DIRECTORY_MASK'
-        eval SAMBA_SHARE_DIRECTORY_PATH='$SAMBA_SHARE_'${idx}'_DIRECTORY_PATH'
-        eval SAMBA_SHARE_WRITEABLE='$SAMBA_SHARE_'${idx}'_WRITEABLE'
 
-        sed -e "s/SHARE_NAME/${SAMBA_SHARE_NAME}/g" \
-            -e "s/CREATE_MASK/${SAMBA_SHARE_CREATE_MASK}/g" \
-            -e "s/DIRECTORY_MASK/${SAMBA_SHARE_DIRECTORY_MASK}/g" \
-            -e "s#DIRECTORY_PATH#${SAMBA_SHARE_DIRECTORY_PATH}#g" \
-            -e "s/WRITEABLE/${SAMBA_SHARE_WRITEABLE}/g" \
-            /etc/default.d/samba.share.template >> ${sambaNativeConfig}
-        idx=$((idx+1))
+        eval shareIsActive='$SAMBA_SHARE_'${idx}'_ACTIVE'
+        if [ "${shareIsActive}" = 'yes' ] ; then
+            eval SAMBA_SHARE_CREATE_MASK='$SAMBA_SHARE_'${idx}'_CREATE_MASK'
+            eval SAMBA_SHARE_DIRECTORY_MASK='$SAMBA_SHARE_'${idx}'_DIRECTORY_MASK'
+            eval SAMBA_SHARE_DIRECTORY_PATH='$SAMBA_SHARE_'${idx}'_DIRECTORY_PATH'
+            eval SAMBA_SHARE_WRITEABLE='$SAMBA_SHARE_'${idx}'_WRITEABLE'
+
+            sed -e "s/SHARE_NAME/${SAMBA_SHARE_NAME}/g" \
+                -e "s/CREATE_MASK/${SAMBA_SHARE_CREATE_MASK}/g" \
+                -e "s/DIRECTORY_MASK/${SAMBA_SHARE_DIRECTORY_MASK}/g" \
+                -e "s#DIRECTORY_PATH#${SAMBA_SHARE_DIRECTORY_PATH}#g" \
+                -e "s/WRITEABLE/${SAMBA_SHARE_WRITEABLE}/g" \
+                /etc/default.d/samba.share.template >> ${sambaNativeConfig}
+            idx=$((idx+1))
+        fi
     done
 }
 

@@ -443,6 +443,10 @@
     The name of the share<br/>
 </help>
 
+<help name="SAMBA_SHARE_%_ACTIVE">
+    Should this share activated or not<br/>
+</help>
+
 <help name="SAMBA_SHARE_%_CREATE_MASK">
     When a file is created, the necessary permissions are calculated according
     to the mapping from DOS modes to UNIX permissions, and the resulting UNIX
