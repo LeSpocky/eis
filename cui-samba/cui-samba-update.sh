@@ -65,7 +65,7 @@ SAMBA_SHARE_1_DIRECTORY_PATH='%H'
 SAMBA_SHARE_1_WRITEABLE=${WRITEABLE}
 
 SAMBA_SHARE_2_NAME=${SHARE_NAME}
-SAMBA_SHARE_1_COMMENT='Share ... on %h'
+SAMBA_SHARE_2_COMMENT='Share ... on %h'
 SAMBA_SHARE_2_ACTIVE='no'
 SAMBA_SHARE_2_CREATE_MASK=${CREATE_MASK}
 SAMBA_SHARE_2_DIRECTORY_MASK=${DIRECTORY_MASK}
@@ -154,7 +154,7 @@ makeConfigFile()
         printvar "SAMBA_SHARE_${idx}_DIRECTORY_MASK"
         printvar "SAMBA_SHARE_${idx}_DIRECTORY_PATH"
         printvar "SAMBA_SHARE_${idx}_WRITEABLE"
-        idx=`/usr/bin/expr ${idx} + 1`
+        idx=$((idx+1))
     done
 
     # ------------------------------------------------------------------------

@@ -1,7 +1,6 @@
 #!/bin/bash
 #[share]
 SHARE_NAME=''
-COMMENT=''
 CREATE_MASK='0400'
 DIRECTORY_MASK='0700'
 DIRECTORY_PATH=''
