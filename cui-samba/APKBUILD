@@ -74,7 +74,7 @@ package() {
 	install -D -m755 ${srcdir}/${pkgname}-usermapping.sh          ${pkgdir}/var/install/config.d/samba-usermapping.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-usermapping-update.sh   ${pkgdir}/var/install/config.d/samba-usermapping-update.sh || return 1
 }
-md5sums="4168e518961160dc1953c9709eee768c  cui-samba.checkd
+md5sums="1ba8876158fd220ae2560b60bceacbe6  cui-samba.checkd
 5f1cdbd5072b0150c62a20ccb7c5728a  cui-samba.checkd.exp
 f73678c86d9883d2340dab3bf5ff596d  cui-samba.help
 813f06794590e767807b84f299e73b52  cui-samba.sh
@@ -85,7 +85,7 @@ b11bc42f4d3fc438735df64b1f550495  cui-samba-update.sh
 c4f8f7c6957273c347abc7845e5960d2  cui-samba-usermapping.help
 617b26e24d49991b8a507d0dc8963007  cui-samba-usermapping.sh
 df74931e724a2cb22fc28cee559443b8  cui-samba-usermapping-update.sh"
-sha256sums="2c92b2f7755e75545dc383ccb9dcfce1523176accf44c4e6abfe90b57c451fb1  cui-samba.checkd
+sha256sums="0e24cb1fadbc84ba6d09651cb7aee0c7cc961ef0a9d5ee3d3348487be06ed538  cui-samba.checkd
 20ebcb32b4886cac2d76def80e792d21a0659bc33678d52d611e37b14a96234e  cui-samba.checkd.exp
 dc8a1f8cff265a516583c8082b19e1bcb9e0037a5802384408688c68a9be1ac8  cui-samba.help
 c948058fddb1b4a4c42efe6c4b81aec1860b3e0a1d6754fbbb338ca05decb75e  cui-samba.sh
@@ -96,7 +96,7 @@ c948058fddb1b4a4c42efe6c4b81aec1860b3e0a1d6754fbbb338ca05decb75e  cui-samba.sh
 7be935c5784d3b0878faf6112d64da4d62f4c002fa30b23cdbbb0ffd9266ba73  cui-samba-usermapping.help
 dc41760a29f81c19fc437f6ead377083117e7b8fd042cb16f474ea45662b81fc  cui-samba-usermapping.sh
 d68cf264c3aa048011241646c9aa3ae47b06d2823f7e0e1df18014ae31c597c1  cui-samba-usermapping-update.sh"
-sha512sums="54964152be349f063c0f623c67691c011840e0aeb8ae8970ce9c770252f94c4a3277c1ad07eff9b6fbaa4054f5cbed629d7d61e8d63fe189da18c275eeaba6cd  cui-samba.checkd
+sha512sums="7ea264ed06df27a5c8e5c062da864a0eaed12f46a440a1c20c29925795671572c25127e191be35e108c400e3eab59e4dd14b2cee83db922e6b94a0e3e1c255b5  cui-samba.checkd
 c550ae01838b57f70e7cb76451b9ad81fa21f355783b3bbd7c424b578cd3b08ffb837ed843039d83a4cf562400979363542d50856abfcda3e56704778462569b  cui-samba.checkd.exp
 65e637a06137421286eb1ec500faf2531469798f4b79b10f1806db9d24aee3d6faacb66af5edbaf9593bbb36932ac1d4c208435438b43becc11dec0832f227d7  cui-samba.help
 dd360648fc12a896eb492633b99e70a9fd6837ef99c52cfa94ff21580a1ce881e2e90bf49ef5e8063dffda23ebee986e878641052cbaeac6a033a6c913a7b85f  cui-samba.sh
