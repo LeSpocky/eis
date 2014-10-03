@@ -87,8 +87,8 @@ createShareConfiguration()
                 -e "s#DIRECTORY_PATH#${SAMBA_SHARE_DIRECTORY_PATH}#g" \
                 -e "s/WRITEABLE/${SAMBA_SHARE_WRITEABLE}/g" \
                 /etc/default.d/samba.share.template >> ${sambaNativeConfig}
-            idx=$((idx+1))
         fi
+        idx=$((idx+1))
     done
 }
 

@@ -48,5 +48,5 @@ SAMBA_SHARE_%_NAME                  -                               SAMBA_SHARE_
 SAMBA_SHARE_%_ACTIVE                -                               SAMBA_SHARE_N                   YESNO
 SAMBA_SHARE_%_CREATE_MASK           SAMBA_SHARE_%_ACTIVE            SAMBA_SHARE_N                   SAMBA_PERMISSION_MASK
 SAMBA_SHARE_%_DIRECTORY_MASK        SAMBA_SHARE_%_ACTIVE            SAMBA_SHARE_N                   SAMBA_PERMISSION_MASK
-SAMBA_SHARE_%_DIRECTORY_PATH        SAMBA_SHARE_%_ACTIVE            SAMBA_SHARE_N                   ABS_PATH
+SAMBA_SHARE_%_DIRECTORY_PATH        SAMBA_SHARE_%_ACTIVE            SAMBA_SHARE_N                   SAMBA_SHARE_DIRECTORY_PATH
 SAMBA_SHARE_%_WRITEABLE             SAMBA_SHARE_%_ACTIVE            SAMBA_SHARE_N                   YESNO
