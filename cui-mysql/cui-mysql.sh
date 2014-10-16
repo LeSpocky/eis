@@ -222,12 +222,12 @@ fi
 # ---- write config file -------------------------------------------------------
 cat > /etc/mysql/my.cnf <<EOF
 [mysqld_safe]
-#nice                       = -15
+nice                        = -2
 #syslog
 #syslog-tag=mysqld
 
 [client]
-socket                      = /var/run/mysqld/mysqld.sock
+socket                      = /run/mysqld/mysqld.sock
 default-character-set       = utf8
 
 [mysqld]
@@ -240,7 +240,7 @@ back_log                    = 300
 open_files_limit            = 8192
 $bindaddr
 port                        = $MYSQL_CONNECT_PORT
-socket                      = /var/run/mysqld/mysqld.sock
+socket                      = /run/mysqld/mysqld.sock
 skip-external-locking
 skip-name-resolve
 
