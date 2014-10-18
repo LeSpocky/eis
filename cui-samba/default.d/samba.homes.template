@@ -1,0 +1,9 @@
+[homes]
+    comment = COMMENT
+    create mask = CREATE_MASK
+    directory mask = DIRECTORY_MASK
+    writeable = WRITEABLE
+    browseable = BROWSEABLE
+    valid users = VALID_USERS
+    force create mode = FORCE_CREATE_MODE
+    force directory mode = FORCE_DIRECTORY_MODE

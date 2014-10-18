@@ -435,6 +435,115 @@
     Default: SAMBA_SYSLOG_ONLY='yes'<br/>
 </help>
 
+<help name="SAMBA_SHARE_HOMES_COMMENT">
+    Comment string to associate with the home share<br/>
+    <br/>
+    Default: SAMBA_SHARE_HOMES_COMMENT='Home directories on %h'<br/>
+</help>
+
+<help name="SAMBA_SHARE_HOMES_ACTIVE">
+    Should user's home available as a share<br/>
+    <br/>
+    Default: SAMBA_SHARE_HOMES_ACTIVE='yes'<br/>
+</help>
+
+<help name="SAMBA_SHARE_HOMES_ADVANCED_SETTINGS">
+    Configure advanced settings<br/>
+    <br/>
+    Default: SAMBA_SHARE_HOMES_ADVANCED_SETTINGS='no'<br/>
+</help>
+
+<help name="SAMBA_SHARE_HOMES_CREATE_MASK">
+    When a file is created, the necessary permissions are calculated according
+    to the mapping from DOS modes to UNIX permissions, and the resulting UNIX
+    mode is then bit-wise 'AND'ed with this parameter. This parameter may be
+    thought of as a bit-wise MASK for the UNIX modes of a file. Any bit not set
+    here will be removed from the modes set on a file when it is created.<br/>
+    The default value of this parameter removes the group and other write and
+    execute bits from the UNIX modes.<br/>
+    Following this Samba will bit-wise 'OR' the UNIX mode created from this
+    parameter with the value of the force create mode parameter which is set
+    to 000 by default.<br/>
+    This parameter does not affect directory masks. See the parameter directory
+    mask for details.<br/>
+    <br/>
+    Default: SAMBA_SHARE_HOMES_CREATE_MASK=''<br/>
+</help>
+
+<help name="SAMBA_SHARE_HOMES_DIRECTORY_MASK">
+    This parameter is the octal modes which are used when converting DOS modes
+    to UNIX modes when creating UNIX directories.<br/>
+    When a directory is created, the necessary permissions are calculated
+    according to the mapping from DOS modes to UNIX permissions, and the
+    resulting UNIX mode is then bit-wise 'AND'ed with this parameter. This
+    parameter may be thought of as a bit-wise MASK for the UNIX modes of a
+    directory. Any bit not set here will be removed from the modes set on a
+    directory when it is created.<br/>
+    The default value of this parameter removes the 'group' and 'other' write
+    bits from the UNIX mode, allowing only the user who owns the directory to
+    modify it.<br/>
+    Following this Samba will bit-wise 'OR' the UNIX mode created from this
+    parameter with the value of the force directory mode parameter. This
+    parameter is set to 000 by default (i.e. no extra mode bits are added).<br/>
+    <br/>
+    Default: SAMBA_SHARE_HOMES_DIRECTORY_MASK=''<br/>
+</help>
+
+<help name="SAMBA_SHARE_HOMES_WRITEABLE">
+    If this parameter is yes, then users of a service may create or modify
+    files in the service's directory.<br/>
+    <br/>
+    Note that a printable service (printable = yes) will ALWAYS allow writing
+    to the directory (user privileges permitting), but only via spooling
+    operations.<br/>
+    <br/>
+    Default: SAMBA_SHARE_HOMES_WRITEABLE='yes'<br/>
+</help>
+
+<help name="SAMBA_SHARE_HOMES_VALID_USERS">
+    This is a list of users that should be allowed to login to this service.
+    Names starting with '@', '+' and '&' are interpreted using the same rules
+    as described in the invalid users parameter.<br/>
+    <br/>
+    If this is empty (the default) then any user can login. If a username is
+    in both this list and the invalid users list then access is denied for
+    that user.<br/>
+    <br/>
+    The current servicename is substituted for %S.<br/>
+    <br/>
+    Default: SAMBA_SHARE_HOMES_VALID_USERS='%S root'<br/>
+</help>
+
+<help name="SAMBA_SHARE_HOMES_FORCE_CREATE_MODE">
+    This parameter specifies a set of UNIX mode bit permissions that will
+    always be set on a file created by Samba. This is done by bitwise 'OR'ing
+    these bits onto the mode bits of a file that is being created. The default
+    for this parameter is (in octal) 000. The modes in this parameter are
+    bitwise 'OR'ed onto the file mode after the mask set in the create mask
+    parameter is applied.<br/>
+    <br/>
+    The example below would force all newly created files to have read and
+    execute permissions set for 'group' and 'other' as well as the
+    read/write/execute bits set for the 'user'.<br/>
+    <br/>
+    Default: SAMBA_SHARE_HOMES_FORCE_CREATE_MODE=''<br/>
+</help>
+
+<help name="SAMBA_SHARE_HOMES_FORCE_DIRECTORY_MODE">
+    This parameter specifies a set of UNIX mode bit permissions that will
+    always be set on a directory created by Samba. This is done by bitwise
+    'OR'ing these bits onto the mode bits of a directory that is being created.
+    The default for this parameter is (in octal) 0000 which will not add any
+    extra permission bits to a created directory. This operation is done after
+    the mode mask in the parameter directory mask is applied.<br/>
+    <br/>
+    The example below would force all created directories to have read and
+    execute permissions set for 'group' and 'other' as well as the
+    read/write/execute bits set for the 'user'.<br/>
+    <br/>
+    Default: SAMBA_SHARE_HOMES_FORCE_DIRECTORY_MODE=''<br/>
+</help>
+
 <help name="SAMBA_SHARE_N">
     The amount of shares to create<br/>
 </help>
