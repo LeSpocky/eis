@@ -65,12 +65,12 @@ createGlobalConfiguration()
         /etc/default.d/samba.global.template >> ${sambaNativeConfig}
 }
 
-# --------------------------------------------
-# Create share sections of samba configuration
+# --------------------------------------------------
+# Create homes share sections of samba configuration
 createHomeShareConfiguration()
 {
     if [ "${SAMBA_SHARE_HOMES_ACTIVE}" = 'yes' ] ; then
-        if [ ${SAMBA_SHARE_HOMES_ADVANCED_SETTINGS} = 'yes' ] ; then
+        if [ "${SAMBA_SHARE_HOMES_ADVANCED_SETTINGS}" = 'yes' ] ; then
             sambaShareHomeCreateMask=$SAMBA_SHARE_HOMES_CREATE_MASK
             sambaHomeShareDirectoryMask=$SAMBA_SHARE_HOMES_DIRECTORY_MASK
             sambaHomeShareWriteable=$SAMBA_SHARE_HOMES_WRITEABLE
@@ -95,24 +95,7 @@ createHomeShareConfiguration()
             -e "s/FORCE_DIRECTORY_MODE/${sambaHomeShareForceDirectoryMode}/g" \
             /etc/default.d/samba.homes.template >> ${sambaNativeConfig}
     fi
-
-
-
-SAMBA_SHARE_HOMES_NAME='homes'
-SAMBA_SHARE_HOMES_COMMENT='Home directory on %h'
-SAMBA_SHARE_HOMES_ACTIVE='yes'
-SAMBA_SHARE_HOMES_ADVANCED_SETTINGS='no'
-SAMBA_SHARE_HOMES_CREATE_MASK=${CREATE_MASK}
-SAMBA_SHARE_HOMES_DIRECTORY_MASK=${DIRECTORY_MASK}
-SAMBA_SHARE_HOMES_DIRECTORY_PATH='%H'
-SAMBA_SHARE_HOMES_WRITEABLE=${WRITEABLE}
-SAMBA_SHARE_HOMES_BROWSEABLE='no'
-SAMBA_SHARE_HOMES_VALID_USERS='%S root'
-SAMBA_SHARE_HOMES_FORCE_CREATE_MODE=${FORCE_CREATE_MODE}
-SAMBA_SHARE_HOMES_FORCE_DIRECTORY_MODE=${FORCE_DIRECTORY_MODE}
-
 }
-
 
 # --------------------------------------------
 # Create share sections of samba configuration
@@ -165,6 +148,7 @@ if [ "$START_SAMBA" = 'yes' ] ; then
     setupBooleanValues
     createConfigFileHeader
     createGlobalConfiguration
+    createHomeShareConfiguration
     createShareConfiguration
     rc-update add samba
 else

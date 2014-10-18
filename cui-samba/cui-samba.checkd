@@ -46,12 +46,12 @@ SAMBA_SYSLOG_ONLY                   SAMBA_ADVANCED_SETTINGS         -           
 SAMBA_SHARE_HOMES_COMMENT           -                               -                               NOTEMPTY
 SAMBA_SHARE_HOMES_ACTIVE            -                               -                               YESNO
 SAMBA_SHARE_HOMES_ADVANCED_SETTINGS SAMBA_SHARE_HOMES_ACTIVE        -                               YESNO
-SAMBA_SHARE_HOMES_CREATE_MASK       SAMBA_SHARE_HOMES_ACTIVE        -                               SAMBA_PERMISSION_MASK
-SAMBA_SHARE_HOMES_DIRECTORY_MASK    SAMBA_SHARE_HOMES_ACTIVE        -                               SAMBA_PERMISSION_MASK
-SAMBA_SHARE_HOMES_WRITEABLE         SAMBA_SHARE_HOMES_ACTIVE        -                               YESNO
-SAMBA_SHARE_HOMES_VALID_USERS       SAMBA_SHARE_HOMES_ACTIVE        -                               NONE
-SAMBA_SHARE_HOMES_FORCE_CREATE_MODE SAMBA_SHARE_HOMES_ACTIVE        -                               SAMBA_PERMISSION_MASK
-SAMBA_SHARE_HOMES_FORCE_DIRECTORY_MODE  SAMBA_SHARE_HOMES_ACTIVE    -                               SAMBA_PERMISSION_MASK
+SAMBA_SHARE_HOMES_CREATE_MASK       SAMBA_SHARE_HOMES_ADVANCED_SETTINGS        -                    SAMBA_PERMISSION_MASK
+SAMBA_SHARE_HOMES_DIRECTORY_MASK    SAMBA_SHARE_HOMES_ADVANCED_SETTINGS        -                    SAMBA_PERMISSION_MASK
+SAMBA_SHARE_HOMES_WRITEABLE         SAMBA_SHARE_HOMES_ADVANCED_SETTINGS        -                    YESNO
+SAMBA_SHARE_HOMES_VALID_USERS       SAMBA_SHARE_HOMES_ADVANCED_SETTINGS        -                    NONE
+SAMBA_SHARE_HOMES_FORCE_CREATE_MODE SAMBA_SHARE_HOMES_ADVANCED_SETTINGS        -                    SAMBA_PERMISSION_MASK
+SAMBA_SHARE_HOMES_FORCE_DIRECTORY_MODE  SAMBA_SHARE_HOMES_ADVANCED_SETTINGS    -                    SAMBA_PERMISSION_MASK
 
 SAMBA_SHARE_N                       -                               -                               NUMERIC
 SAMBA_SHARE_%_NAME                  -                               SAMBA_SHARE_N                   NOTEMPTY
