@@ -30,7 +30,11 @@ prepare() {
 
 build() {
 	cd "$_builddir"
-	./autogen.sh --prefix=/usr/local || return 1
+	./autogen.sh \
+		--prefix=/usr \
+		--disable-nls \
+		--with-static_mono=no \
+		|| return 1
 	make || return 1
 }
 
