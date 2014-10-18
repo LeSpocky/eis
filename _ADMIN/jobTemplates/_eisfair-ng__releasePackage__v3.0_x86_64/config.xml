@@ -28,9 +28,8 @@ must be choosen. The choosen package will be released and deployed to the corres
         </com.cwctravel.hudson.plugins.extended__choice__parameter.ExtendedChoiceParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
-    <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.23"/>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.2.2">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.2.5">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -51,7 +50,7 @@ must be choosen. The choosen package will be released and deployed to the corres
   </scm>
   <assignedNode>alpine_v3.0_x86-64</assignedNode>
   <canRoam>false</canRoam>
-  <disabled>true</disabled>
+  <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <jdk>java-6-64-openjdk</jdk>
@@ -66,7 +65,7 @@ _ADMIN/releasePackage.sh
     </hudson.tasks.Shell>
   </builders>
   <publishers>
-    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.38.1">
+    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.38.2">
       <recipientList>$DEFAULT_RECIPIENTS</recipientList>
       <configuredTriggers>
         <hudson.plugins.emailext.plugins.trigger.UnstableTrigger>
@@ -178,7 +177,7 @@ _ADMIN/releasePackage.sh
     </hudson.plugins.emailext.ExtendedEmailPublisher>
     <hudson.plugins.ircbot.IrcPublisher plugin="ircbot@2.25">
       <targets>
-        <hudson.plugins.im.GroupChatIMMessageTarget plugin="instant-messaging@1.29">
+        <hudson.plugins.im.GroupChatIMMessageTarget plugin="instant-messaging@1.30">
           <name>#eisfair-ng-ci</name>
           <notificationOnly>true</notificationOnly>
         </hudson.plugins.im.GroupChatIMMessageTarget>
@@ -189,9 +188,8 @@ _ADMIN/releasePackage.sh
       <notifyCulprits>false</notifyCulprits>
       <notifyFixers>false</notifyFixers>
       <notifyUpstreamCommitters>false</notifyUpstreamCommitters>
-      <buildToChatNotifier class="hudson.plugins.im.build_notify.SummaryOnlyBuildToChatNotifier" plugin="instant-messaging@1.29"/>
+      <buildToChatNotifier class="hudson.plugins.im.build_notify.SummaryOnlyBuildToChatNotifier" plugin="instant-messaging@1.30"/>
       <matrixMultiplier>ONLY_CONFIGURATIONS</matrixMultiplier>
-      <channels/>
     </hudson.plugins.ircbot.IrcPublisher>
     <hudson.plugins.twitter.TwitterPublisher plugin="twitter@0.7"/>
   </publishers>
@@ -204,6 +202,6 @@ _ADMIN/releasePackage.sh
       <hudsonHomeRelative>false</hudsonHomeRelative>
       <relativeTo>userContent</relativeTo>
     </com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.13"/>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.14"/>
   </buildWrappers>
 </project>
