@@ -39,7 +39,7 @@ start()
 	ebegin "Setting terminal encoding [UTF-8]"
 	x=1
 	while [ $x -le $ttyn ]
-    do
+	do
 		kbd_mode -u -C ${ttydev}${x}
 		printf "\033%G" >${ttydev}${x}
 		: $(( x += 1 ))
@@ -50,9 +50,9 @@ start()
 	ebegin "Setting console font [$CONSOLEFONT]"
 	x=1
 	while [ $x -le $ttyn ]
-    do
+	do
 		if ! setfont $CONSOLEFONT $param -C $ttydev$x 
-        then
+		then
 			retval=1
 			break
 		fi
