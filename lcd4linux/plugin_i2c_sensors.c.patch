@@ -1,0 +1,11 @@
+--- a/plugin_i2c_sensors.c
++++ b/plugin_i2c_sensors.c
+@@ -76,6 +76,8 @@
+ #include "qprintf.h"
+ #include "evaluator.h"		// if strndup() is not available
+ 
++#include <linux/limits.h>
++
+ #ifdef WITH_DMALLOC
+ #include <dmalloc.h>
+ #endif

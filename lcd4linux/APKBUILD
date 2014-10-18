@@ -12,7 +12,7 @@ depends=""
 depends_dev="libusb-compat-dev subversion libtool automake"
 makedepends="$depends_dev"
 install=""
-source=""
+source="plugin_i2c_sensors.c.patch"
 repoURL="https://ssl.bulix.org/svn/lcd4linux/trunk"
 
 _builddir="$srcdir/${pkgname}-$pkgver${pkgRC}"
@@ -30,9 +30,11 @@ prepare() {
 
 build() {
 	cd "$_builddir"
+	./bootstrap
 	./configure \
 	    --without-x \
-	    --without-python || return 1
+	    --without-python \
+	    --with-drivers='all,!TeakLCM' || return 1
 	make || return 1
 }
 
@@ -41,3 +43,6 @@ package() {
 	install -D -m755 ${pkgname} ${pkgdir}/usr/bin/${pkgname} || return 1
 	mkdir -p -m 755 ${pkgdir}/etc/${pkgname}
 }
+md5sums="07515690b392eeb44374aaff977194e8  plugin_i2c_sensors.c.patch"
+sha256sums="1a6a9e68be0ae91ab366b319cfbcc1a1fea4ae837984f3575cd9152349e57713  plugin_i2c_sensors.c.patch"
+sha512sums="e0a9ac5692d08ebbd3c513f95ef47ac0b04af4a13a44d97407cd921c96e538b6875f0c7756411f1ce2787df6aa18370e9e7e80fc55958f14a22fce2736177359  plugin_i2c_sensors.c.patch"
