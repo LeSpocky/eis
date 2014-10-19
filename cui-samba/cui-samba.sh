@@ -18,6 +18,10 @@
 
 sambaNativeConfig=/etc/samba/smb.conf
 
+# Load default config values
+. /etc/default.d/samba.global.default
+. /etc/default.d/samba.share.default
+
 createConfigFileHeader()
 {
     cat > ${sambaNativeConfig} <<EOF
@@ -85,7 +89,7 @@ createHomeShareConfiguration()
             sambaHomeShareForceCreateMode=${FORCE_CREATE_MODE}
             sambaHomeShareForceDirectoryMode=${FORCE_DIRECTORY_MODE}
         fi
-        sed -e "s/COMMENT/${SAMBA_SHARE_COMMENT}/g" \
+        sed -e "s/COMMENT/${SAMBA_SHARE_HOMES_COMMENT}/g" \
             -e "s/CREATE_MASK/${sambaShareHomeCreateMask}/g" \
             -e "s/DIRECTORY_MASK/${sambaHomeShareDirectoryMask}/g" \
             -e "s/WRITEABLE/${sambaHomeShareWriteable}/g" \

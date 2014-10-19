@@ -72,6 +72,13 @@
     Example: SAMBA_SERVER_STRING='University of GNUs Samba Server'<br/>
 </help>
 
+<help name="SAMBA_ADVANCED_SETTINGS">
+    Configure advanced settings.<br/>
+    <br/>
+    Default: SAMBA_ADVANCED_SETTINGS='no'<br/>
+</help>
+
+
 <help name="SAMBA_BIND_INTERFACES_ONLY">
     This global parameter allows the Samba admin to limit what interfaces on a
     machine will serve SMB requests. It affects file service smbd(8) and name
