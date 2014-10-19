@@ -553,7 +553,7 @@
 </help>
 
 <help name="SAMBA_SHARE_%_ACTIVE">
-    Should this share activated or not<br/>
+    Should this share be activated or not<br/>
 </help>
 
 <help name="SAMBA_SHARE_%_COMMENT">
