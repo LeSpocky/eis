@@ -39,7 +39,7 @@ function vgsdlg_ok_clicked()
 {
     local win="$p2"
     local ctrl
-    
+
     cui_window_getctrl "$win" "$IDC_VGSDLG_EDNAME"
     if [ "$p2" != "0" ]
     then
@@ -56,6 +56,22 @@ function vgsdlg_ok_clicked()
         return
     fi
 
+    cui_window_getctrl "$win" "$IDC_VGSDLG_CBGROUP" && ctrl="$p2"
+    if cui_valid_handle "$ctrl"
+    then
+        cui_combobox_getsel "$ctrl" && index="$p2"
+        if cui_valid_index "$index"
+        then
+            cui_combobox_get "$ctrl" "$index"
+            pvName="$p2"
+        else
+            cui_message "$win" "No physical volume selected!" \
+                               "Missing data" "$MB_ERROR"
+            cui_return 1
+            return
+        fi
+    fi
+
     cui_window_close "$win" "$IDOK"
     cui_return 1
 }
@@ -65,7 +81,7 @@ function vgsdlg_ok_clicked()
 # Cancel button clicked hook
 # expects: $1 : window handle of dialog window
 #          $2 : button control id
-# returns: 1  : event handled     
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
 function vgsdlg_cancel_clicked()
 {
@@ -107,15 +123,15 @@ function vgsdlg_create_hook()
     if cui_combobox_new "$dlg" 17 3 12 10 $IDC_VGSDLG_CBGROUP $CWS_NONE $CWS_NONE
     then
         ctrl="$p2"
-	    pvs|while read line
-		do
-		    set -- $line
-		    if [ "$1" != "PV" ]
-		    then
-            	cui_combobox_add      "$ctrl" "$1"
-		    fi
-		done
-        cui_combobox_select   "$ctrl" "${pvCombo}"        
+        pvs | while read line
+        do
+            set -- $line
+            if [ "$1" != "PV" ]
+            then
+                cui_combobox_add      "$ctrl" "$1"
+            fi
+        done
+        cui_combobox_select   "$ctrl" "${pvCombo}"
         cui_window_create     "$ctrl"
     fi
 
@@ -125,14 +141,14 @@ function vgsdlg_create_hook()
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" vgsdlg_ok_clicked
         cui_window_create     "$ctrl"
     fi
-                                    
+
     if cui_button_new "$dlg" "&Cancel" 21 5 10 1 $IDC_VGSDLG_BUTCANCEL $CWS_DEFCANCEL $CWS_NONE
     then
         ctrl="$p2"
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" vgsdlg_cancel_clicked
         cui_window_create     "$ctrl"
     fi
-                                                                        
+
     cui_return 1
 }
 
@@ -157,12 +173,12 @@ function vgs_editvgs_dialog()
     if [ "$p2" != "0" ]
     then
         ctrl="$p2"
-        
+
         cui_listview_getsel "$ctrl"
         if [ "$p2" != "-1" ]
         then
             index="$p2"
-            
+
             cui_listview_gettext "$ctrl" "$index" "0" && vgName="$p2"
 
             local orig_vgsname="${vgName}"
@@ -180,7 +196,7 @@ function vgs_editvgs_dialog()
                 if  [ "$result" == "$IDOK" ]
                 then
                     if [ "${orig_vgsname}" != "${vgName}" ]
-                    then                
+                    then
                         grep "^${vgName}:" /etc/vgs >/dev/null
                         if [ $? == 0 ]
                         then
@@ -204,7 +220,7 @@ function vgs_editvgs_dialog()
             fi
         fi
     fi
-      
+
     [ "$result" == "$IDOK" ]
     return "$?"
 }
@@ -219,7 +235,7 @@ function vgs_createvgs_dialog()
 {
     local win="$1"
     local result="$IDCANCEL"
-    
+
     vgName=""
 
     if cui_window_new "$win" 0 0 36 9 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED]
@@ -237,24 +253,24 @@ function vgs_createvgs_dialog()
         then
             pvs | grep "^${vgName}:" >/dev/null
             if [ $? != 0 ]
-            then          
-                errmsg=$(/sbin/pvcreate ${vgName} 2>&1)
+            then
+                errmsg=$(vgcreate ${vgName} ${pvName} 2>&1)
 
                 if [ "$?" != "0" ]
                 then
                     cui_message "$win" "Error! $errmsg" "Error" "$MB_ERROR"
                     result="$IDCANCEL"
                 fi
-            else  
+            else
                 cui_message "$win" "Group \"${vgName}\" already exists!" \
                     "Error" "$MB_ERROR"
                 result="$IDCANCEL"
             fi
         fi
-          
+
         cui_window_destroy "$dlg"
     fi
-      
+
     [ "$result" == "$IDOK" ]
     return "$?"
 }
@@ -297,7 +313,7 @@ function deleteVGsDialog()
                          "Error! $errmsg" "Error" "$MB_ERROR"
                     result="$IDCANCEL"
                 fi
-			fi
+            fi
         fi
     fi
 
@@ -341,7 +357,7 @@ function vgs_sort_list()
         fi
     fi
 }
- 
+
 #----------------------------------------------------------------------------
 # vgs_sortmenu_clicked_hook
 # expects: $p2 : window handle
@@ -356,7 +372,7 @@ function vgs_sortmenu_clicked_hook()
 
 #----------------------------------------------------------------------------
 # vgs_sortmenu_escape_hook
-# expects: $p2 : window handle                                          
+# expects: $p2 : window handle
 #          $p3 : control window handle
 # returns: nothing
 #----------------------------------------------------------------------------
@@ -368,7 +384,7 @@ function vgs_sortmenu_escape_hook()
  
 #----------------------------------------------------------------------------
 # vgs_sortmenu_postkey_hook
-# expects: $p2 : window handle                                          
+# expects: $p2 : window handle
 #          $p3 : control window handle
 #          $p4 : key code
 # returns: 1 : Key handled, 2 : Key ignored
@@ -423,7 +439,7 @@ function selectSortColumn()
         cui_menu_addseparator "$menu"
         cui_menu_additem      "$menu" "Close menu" 0
         cui_menu_selitem      "$menu" 1
-        
+
         cui_menu_callback     "$menu" "$MENU_CLICKED" "$win" vgs_sortmenu_clicked_hook
         cui_menu_callback     "$menu" "$MENU_ESCAPE"  "$win" vgs_sortmenu_escape_hook 
         cui_menu_callback     "$menu" "$MENU_POSTKEY" "$win" vgs_sortmenu_postkey_hook
@@ -436,66 +452,66 @@ function selectSortColumn()
             item="$p2"
 
             case $item in
-            1) 
+            1)
                vgs_sortcolumn="-1"
                ;;
-            2)   
+            2)
                vgs_sortcolumn="0"
                vgs_sortmode="up" 
                ;;
-            3)   
+            3)
                vgs_sortcolumn="0"
                vgs_sortmode="down"
                ;;
-            4)   
+            4)
                vgs_sortcolumn="1"
                vgs_sortmode="up" 
                ;;
-            5)   
+            5)
                vgs_sortcolumn="1"
                vgs_sortmode="down"
                ;;
-            6)   
+            6)
                vgs_sortcolumn="2"
                vgs_sortmode="up" 
                ;;
-            7)   
+            7)
                vgs_sortcolumn="2"
                vgs_sortmode="down"
                ;;
-            8)   
+            8)
                vgs_sortcolumn="3"
                vgs_sortmode="up" 
                ;;
-            9)   
+            9)
                vgs_sortcolumn="3"
                vgs_sortmode="down"
                ;;
-            10)   
+            10)
                vgs_sortcolumn="4"
                vgs_sortmode="up" 
                ;;
-            11)   
+            11)
                vgs_sortcolumn="4"
                vgs_sortmode="down"
                ;;
-            12)   
+            12)
                vgs_sortcolumn="5"
                vgs_sortmode="up" 
                ;;
-            13)   
+            13)
                vgs_sortcolumn="5"
                vgs_sortmode="down"
                ;;
-            14)   
+            14)
                vgs_sortcolumn="6"
-               vgs_sortmode="up" 
+               vgs_sortmode="up"
                ;;
-            15)   
+            15)
                vgs_sortcolumn="6"
                vgs_sortmode="down"
                ;;
-            esac 
+            esac
         fi
 
         cui_window_destroy  "$menu"
@@ -527,14 +543,14 @@ function vgs_list_postkey_hook()
 {
     local win="$p2"
     local key="$p4"
-    
+
     if [ "$key" == "${KEY_ENTER}" ]
     then
         vgs_key "$win" "$KEY_F4"
         cui_return 1
     else
         cui_return 0
-    fi       
+    fi
 }
 
 #----------------------------------------------------------------------------
@@ -559,14 +575,14 @@ function vgs_init()
         cui_listview_callback   "$ctrl" "$LISTVIEW_POSTKEY" "$win" vgs_list_postkey_hook
         cui_window_create "$ctrl"
     fi
-    
+
     cui_window_getctrl "$win" "${IDC_HELPTEXT}" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
         cui_textview_add "$ctrl" "Add, modify or delete vgs" 1
         cui_window_totop "$ctrl"
     fi
-    
+
     cui_window_setlstatustext "$win" "Commands: F4=Edit F7=Create F8=Delete F9=Sort F10=Exit"
 }
 
@@ -603,7 +619,7 @@ function vgs_close()
 function vgs_size()
 {
     local ctrl
-    
+
     cui_window_getctrl "$1" "${IDC_VGS_LIST}" && ctrl="$p2"
     if cui_valid_handle "$ctrl"
     then
@@ -619,9 +635,9 @@ function vgs_readdata()
 {
     local ctrl
     local win="$1"
-    local sel;  
-    local count;
-    local index;
+    local sel
+    local count
+    local index
 
     # read vgs inforamtion
     cui_window_getctrl "$win" "$IDC_VGS_LIST"  && ctrl="$p2"
@@ -660,7 +676,7 @@ function vgs_readdata()
         else
             vgs_sort_list    "$ctrl"
             cui_listview_setsel "$ctrl" "0"
-        fi        
+        fi
     fi
 }
 
@@ -683,7 +699,7 @@ function vgs_activate()
 }
 
 #----------------------------------------------------------------------------
-# vgs_key (handle keyboard input)         
+# vgs_key (handle keyboard input)
 #    $1 --> window handle of main window
 #    $2 --> keyboard input
 #----------------------------------------------------------------------------
@@ -713,16 +729,16 @@ function vgs_key()
             vgs_readdata $win
         fi
         return 0
-        ;;      
+        ;;
     "$KEY_F9")
         selectSortColumn $win
-        return 0  
+        return 0
         ;;
-    esac        
+    esac
 
     return 1
-} 
- 
+}
+
 #============================================================================
 # end of vgs module
 #============================================================================

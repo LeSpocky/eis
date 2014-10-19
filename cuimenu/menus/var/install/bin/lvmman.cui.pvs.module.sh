@@ -60,7 +60,7 @@ function pvsdlg_ok_clicked()
 {
     local win="$p2"
     local ctrl
-    
+
     cui_window_getctrl "$win" "$IDC_PVSDLG_EDNAME"
     if [ "$p2" != "0" ]
     then
@@ -98,7 +98,7 @@ function pvsdlg_cancel_clicked()
 # pvsdlg_create_hook
 # Dialog create hook - create dialog controls
 # expects: $1 : window handle of dialog window
-# returns: 1  : event handled      
+# returns: 1  : event handled
 #----------------------------------------------------------------------------
 function pvsdlg_create_hook()
 {
@@ -238,7 +238,7 @@ function pvs_createpvs_dialog()
             then          
                 pvs_create_gid
 
-                errmsg=$(/sbin/pvcreate /dev/sdb4 2>&1)
+                errmsg=$(/sbin/pvcreate /dev/sdb1 2>&1)
 
                 if [ "$?" != "0" ]
                 then
