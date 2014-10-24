@@ -2,6 +2,11 @@
 #------------------------------------------------------------------------------
 # eisfair configuration update script
 # Copyright 2007 - 2014 the eisfair team, team(at)eisfair(dot)org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #------------------------------------------------------------------------------
 
 ### -------------------------------------------------------------------------
@@ -186,8 +191,8 @@ fi
 [ "$POSTFIX_MIME_HEADER_CHECK" = 'yes' ] && postfix_mime_header_ch="pcre:/etc/postfix/header_check_mime.pcre"
 [ "$POSTFIX_HEADER_N" -gt 0 ] && postfix_header_ch="pcre:/etc/postfix/header_checks.pcre"
 [ "$START_POP3IMAP" = 'yes' ] && postfix_sasl="permit_sasl_authenticated,"
-[ "$POSTFIX_SMARTHOST" = "yes" ] && postfix_relayhosts="proxy:mysql:/etc/postfix/mysql-virtual_relayhosts.cf"
-[ "$POSTFIX_SMARTHOST" = "yes" ] && postfix_relayhosts_auth="proxy:mysql:/etc/postfix/mysql-virtual_relayhosts_auth.cf"
+[ "$POSTFIX_SMARTHOST" = "yes" ] && postfix_relayhosts="proxy:mysql:/etc/postfix/sql/mysql-virtual_relayhosts.cf"
+[ "$POSTFIX_SMARTHOST" = "yes" ] && postfix_relayhosts_auth="proxy:mysql:/etc/postfix/sql/mysql-virtual_relayhosts_auth.cf"
 
 postconf -e "queue_directory = /var/spool/postfix"
 #postconf -e "command_directory = /usr/sbin"

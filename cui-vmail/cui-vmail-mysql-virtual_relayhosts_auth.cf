@@ -1,6 +1,6 @@
 user = vmailprovider
 password = vmail
 dbname = vmaildata
-query = SELECT CONCAT(username,':',AES_DECRYPT(password, '**********')) FROM view_relaylogin WHERE email like '%s' 
+query = SELECT CONCAT(username,':',AES_DECRYPT(password, '**********')) FROM view_relaylogin WHERE email like '%s'
 hosts = unix:/run/mysqld/mysqld.sock
 
