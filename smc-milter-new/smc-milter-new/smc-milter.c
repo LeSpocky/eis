@@ -661,10 +661,12 @@ mlfi_header (SMFICTX *ctx, char *headerf, char *headerv) {
         if (debuglevel > 2)
                 syslog(LOG_INFO, "Header Subject: %s", headerv );
     }
+    /* set default to UTF-8 */
+    priv->utf8 = 1;
     /* get Content-Type header */
     if (strcasecmp(headerf, "Content-Type") == 0) {
-        if ((strstr(headerv, "utf-8" )) || (strstr(headerv, "UTF-8" )))  {
-            priv->utf8 = 1;
+        if ((strstr(headerv, "ISO-" )) || (strstr(headerv, "iso-" )))  {
+            priv->utf8 = 0;
         }
         if (debuglevel > 1) {
             remove_crln( headerv );
