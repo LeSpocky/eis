@@ -8,7 +8,7 @@ url="http://www.firebirdsql.org"
 arch="all"
 license="GNU"
 depends=""
-depends_dev="icu-dev ncurses-dev"
+depends_dev="icu-dev ncurses-dev libedit-dev"
 makedepends="$depends_dev"
 install="$pkgname.pre-install $pkgname.post-install"
 subpackages="$pkgname-libs $pkgname-doc"
@@ -36,11 +36,18 @@ build() {
 	--enable-superserver \
 	--datadir=/var/firebird \
 	--includedir=/usr/include \
+	--with-fbudf=/usr/lib/firebird/UDF \
+	--with-fbhelp=/usr/lib/firebird/help \
+	--with-fbintl=/usr/lib/firebird/intl \
+	--with-fbsecure-db=/usr/lib/firebird \
+	--with-fbmsg=/usr/lib/firebird \
+	--with-fblog=/var/log/firebird/ \
+	--with-fbglock=/run/firebird \
+	--with-fbplugins=/usr/lib/firebird/plugins \
+	--with-system-editline \
 	--enable-system-icu || return 1
 	sleep 1
 	make -j1 || return 1
-#	--disable-static \
-
 }
 
 package() {
@@ -139,12 +146,12 @@ doc() {
 md5sums="5feff765e11a5fb0ec17c71e155bb974  Firebird-2.5.3.26778-0.tar.bz2
 d1dc4f745dd33d6ad4576b826ba1d35f  firebird-rwlock.patch
 c58e789176a992a64ad6cff7b26b547a  firebird-libio.patch
-540730271ce7d61c4ee7f9b8cfc89fc9  firebird.initd"
+69cd883920847987d72a964c2159c337  firebird.initd"
 sha256sums="d4c561185e5df1c24b9c19d335d178b82d03bd15bab4963d2bc374eb75d41c4b  Firebird-2.5.3.26778-0.tar.bz2
 42fa0990c1243bd89b49152d100533d921407b22bfb1ac76719861d43efb1d2a  firebird-rwlock.patch
 9a59a58ba4c2edf4a77a531377c4bb4eae9966bf1f12277c3d46eb62f762f92e  firebird-libio.patch
-c7c575138aadb471fc950bd49a39a5a903bcf03b0d463e691d245a62c76d1a50  firebird.initd"
+a78c44f71ef9ec54647982b77a46af6384e175c63650a7c7df935f88dc24d0e0  firebird.initd"
 sha512sums="4d2e97791bdb8445ceff6686cffb2f78e315591e1f8b5d355d8006003218d78212c788bb29b1e3323235c6d63f19d82ad30cfddd94267d9079d4963ddf88b185  Firebird-2.5.3.26778-0.tar.bz2
 c2e1314b8817c46a8d079c7188ff4f412ffaf97c1aa423e71011a733fa8eedf01af41e179c10bba9b80883c4be0bbb24c61f3226a439fd656a025140915d8916  firebird-rwlock.patch
 8ae0a6e2d63a0e00cc3a051f6cd62d8dbc0d0fcb77ed0ff8de60ebbe4edc6b1a372487570192b34514216cb01e0ff4b1fd23cded2b421a98a7d0e347eaf12429  firebird-libio.patch
-41728e2537ac68dbcc08cc0d97bfde53102366632e0df521d4ab5bebace7a01b0c6f43416667e896fa2a1fd2b4e7b55b5e477a8245b7f3e2bc4bbb7665fb2c8c  firebird.initd"
+5f1360d9a6ec77b389f77c3ad430c344f7328de1016b4af241d01161edf72b7359d206e6ec5b4fde8848fa5aedd0bece953098adf85b2c0c76796cc88806e16e  firebird.initd"

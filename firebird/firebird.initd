@@ -4,9 +4,9 @@
 FBUSER=firebird
 FBGROUP=nogroup
 FIREBIRD=/usr/lib/firebird
-FBGUARD=/usr/lib/firebird/bin/fbmgr.bin
+FBGUARD=/usr/lib/firebird/bin/fbguard
 PIDFILE=/run/firebird/firebird.pid
-FB_OPTS="-pidfile $PIDFILE -start -forever"
+FB_OPTS="-pidfile $PIDFILE -daemon -forever"
 LD_LIBRARY_PATH=/usr/lib/:/usr/lib/firebird/intl/:/usr/lib/firebird/plugins/:/usr/lib/firebird/UDF/
 export FIREBIRD
 export LD_LIBRARY_PATH
@@ -19,6 +19,7 @@ depend() {
 start_pre() {
 	checkpath --directory /var/firebird --owner $FBUSER
 	checkpath --directory /run/firebird --owner $FBUSER
+	checkpath --directory /var/log/firebird --owner $FBUSER
 	chown -R $FBUSER:$FBGROUP /usr/lib/firebird
 }
 
