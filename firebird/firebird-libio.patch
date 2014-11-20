@@ -5,7 +5,7 @@
  #define JRD_PERF_H
  
 -#ifdef LINUX
-+#ifdef NO_UCLIBC
++#ifdef HAVE_LIBIO_H
  #include <libio.h>
  #endif
  

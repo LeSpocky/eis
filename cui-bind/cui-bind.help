@@ -27,7 +27,7 @@ Default: BIND_FORWARDER_1_EDNS='yes'
 <help name="BIND_ALLOW_QUERY">
 Enable DNS query from any, localnets or localhost<br/>
 <br/>
-Default: BIND_ALLOW_QUERY='any'
+Default: BIND_ALLOW_QUERY='localnets'
 </help>
 
 <help name="BIND_N">

@@ -1,6 +1,6 @@
 --- a/src/common/classes/rwlock.h
 +++ b/src/common/classes/rwlock.h
-@@ -260,7 +260,7 @@
+@@ -196,7 +196,7 @@
  		if (pthread_rwlockattr_init(&attr))
  			system_call_failed::raise("pthread_rwlockattr_init");
  		// Do not worry if target misses support for this option

@@ -12,7 +12,7 @@ BIND_FORWARDER_1_IP='8.8.8.8'         # IP-Address of forwarder
 BIND_FORWARDER_1_EDNS='yes'           # Use EDNS for communication
 BIND_FORWARDER_2_IP='8.8.4.4'
 BIND_FORWARDER_2_EDNS='yes'
-BIND_ALLOW_QUERY='any'                # any, localnets, localhost
+BIND_ALLOW_QUERY='localnets'          # any, localnets, localhost
 
 #------------------------------------------------------------------------------
 # DNS zones

@@ -7,7 +7,7 @@ FIREBIRD=/usr/lib/firebird
 FBGUARD=/usr/lib/firebird/bin/fbguard
 PIDFILE=/run/firebird/firebird.pid
 FB_OPTS="-pidfile $PIDFILE -daemon -forever"
-LD_LIBRARY_PATH=/usr/lib/:/usr/lib/firebird/intl/:/usr/lib/firebird/plugins/:/usr/lib/firebird/UDF/
+LD_LIBRARY_PATH=/usr/lib/:/usr/lib/firebird/plugins/:/usr/lib/firebird/UDF/
 export FIREBIRD
 export LD_LIBRARY_PATH
 

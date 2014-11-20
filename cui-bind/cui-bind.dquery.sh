@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #------------------------------------------------------------------------------
 # /var/install/dialog.d/BIND_QUERY.sh - script dialog for ece
 # Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
