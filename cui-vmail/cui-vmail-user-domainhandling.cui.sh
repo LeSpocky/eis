@@ -413,6 +413,7 @@ function domaindlg_create_hook()
         cui_combobox_add      "$ctrl" "smtp:"
         cui_combobox_add      "$ctrl" "relay:"
         cui_combobox_add      "$ctrl" "uucp:"
+#	cui_combobox_add      "$ctrl" "fax:"
 
         cui_combobox_callback "$ctrl" "$COMBOBOX_CHANGED" "$dlg" "domaindlg_transport_changed"
 

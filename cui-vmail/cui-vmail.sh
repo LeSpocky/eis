@@ -442,7 +442,8 @@ uucp      unix  -       n       n       -       -       pipe
     flags=Fqhu user=uucp argv=uux -r -n -z -a\$sender - \$nexthop!rmail (\$recipient)
 greyfix   unix  -       n       n       -       -       spawn
     user=nobody argv=/usr/sbin/greyfix -/ 24 -6 56
-
+#fax       unix  -       n       n       -       1       pipe
+#    flags= user=fax argv=/usr/bin/mail2fax \${sender} \${recipient}
 EOF
     # force permissions for chroot
 #    chown    root:root   /var/spool/postfix/etc
