@@ -1,8 +1,8 @@
 # Contributor: Jens Vehlhaber jv <jens@eisfair.org>
 # Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
 pkgname=smc-milter-new
-pkgver=1.0.0
-pkgrel=9
+pkgver=1.0.1
+pkgrel=0
 pkgdesc="Virus scanner milter for postfix"
 url="http://www.eisfair.org"
 arch="all"

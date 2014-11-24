@@ -257,7 +257,6 @@ add_external_signature(SMFICTX *ctx ) {
     mysql_options(g_mysql, MYSQL_SET_CHARSET_NAME, "utf8");
     mysql_options(g_mysql, MYSQL_INIT_COMMAND, "SET NAMES utf8");
 
-    mysql_options(g_mysql, MYSQL_OPT_RECONNECT, "1"); 
     if ( ! mysql_real_connect(g_mysql, dbhost, dbuser, dbpass, dbname, dbport, 0, 0)) {
         syslog(LOG_ERR, "add_external_signature: mysql_real_connect failed");
         syslog(LOG_ERR, "%s", mysql_error(g_mysql));
@@ -265,6 +264,8 @@ add_external_signature(SMFICTX *ctx ) {
         return FALSE;
     }
     else  {
+        /* Reconnect must be set *after* real_connect()! */
+        mysql_options(g_mysql, MYSQL_OPT_RECONNECT, "1"); 
         if (debuglevel > 0)
              syslog(LOG_INFO, "mysql: new connect" );
     }
