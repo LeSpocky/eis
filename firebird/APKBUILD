@@ -36,19 +36,27 @@ build() {
 	cd ${_builddir}
 	./configure --prefix=/usr/lib/firebird \
 	--enable-superserver \
+	--with-editline \
+	--with-system-editline \
+	--with-system-icu \
 	--datadir=/var/firebird \
 	--includedir=/usr/include \
+	--with-fbbin=/usr/lib/firbeird/bin \
 	--with-fblib=/usr/lib \
+	--with-fbinclude=/usr/include \
+	--with-fbdoc=/usr/share/doc/firebird \
 	--with-fbudf=/usr/lib/firebird/UDF \
-	--with-fbhelp=/usr/lib/firebird/help \
+	--with-fbsample=/usr/lib/firebird/examples \
+	--with-fbsample-db=/var/firebird \
+	--with-fbhelp=/usr//lib/firebird/help \
 	--with-fbintl=/usr/lib/firebird/intl \
+	--with-fbmisc=/usr/lib/firebird \
 	--with-fbsecure-db=/usr/lib/firebird \
 	--with-fbmsg=/usr/lib/firebird \
 	--with-fblog=/var/log/firebird/ \
 	--with-fbglock=/run/firebird \
 	--with-fbplugins=/usr/lib/firebird/plugins \
-	--with-system-editline \
-	--with-system-icu || return 1
+	--with-gnu-ld || return 1
 	sleep 1
 	make -j1 || return 1
 }
@@ -59,22 +67,22 @@ package() {
 	install -m 0755 -D ${srcdir}/$pkgname.initd \
 		${pkgdir}/etc/init.d/$pkgname || return 1
         
-        # create firebird base dir
-        mkdir -p ${pkgdir}/usr/lib/firebird
+	# create firebird base dir
+	mkdir -p ${pkgdir}/usr/lib/firebird
 	chmod 0755 ${pkgdir}/usr/lib/firebird
 
-    	# superserver
-	for f in fbguard fbserver fbsvcmgr fbtracemgr fb_lock_print ; do
-		strip -R .note -R .comment ${_builddir}/gen/firebird/bin/$f
-		install -m 0755 -D ${_builddir}/gen/firebird/bin/$f \
-			${pkgdir}/usr/lib/firebird/bin/$f || return 1
+	cp -R ${_builddir}/gen/firebird/* ${pkgdir}/usr/lib/firebird/
+	mv ${pkgdir}/usr/lib/firebird/intl/libfbintl.so ${pkgdir}/usr/lib/firebird/intl/fbintl
+	mv ${pkgdir}/usr/lib/firebird/security2.fdb ${pkgdir}/usr/lib/firebird/security2.fdb.default
+	for f in fb_config gpre_boot gpre_current create_db codes build_file blrtable ; 
+	do
+	    rm "${pkgdir}/usr/lib/firebird/bin/$f"
 	done
+	rm -f ${pkgdir}/usr/lib/firebird/bin/*_static
+	rm -f ${pkgdir}/usr/lib/firebird/bin/*.sh
+	strip -R .note -R .comment ${pkgdir}/usr/lib/firebird/bin/* 
 
 	# UDFs
-	install -m 0644 -D ${_builddir}/gen/firebird/UDF/fbudf.so \
-		${pkgdir}/usr/lib/firebird/UDF/fbudf.so || return 1
-	install -m 0644 -D ${_builddir}/gen/firebird/UDF/ib_udf.so \
-		${pkgdir}/usr/lib/firebird/UDF/ib_udf.so || return 1
 	install -m 0644 -D ${_builddir}/src/extlib/fbudf/fbudf.sql \
 		${pkgdir}/usr/lib/firebird/UDF/fbudf.sql || return 1
 	install -m 0644 -D ${_builddir}/src/extlib/ib_udf.sql \
@@ -82,26 +90,11 @@ package() {
 	install -m 0644 -D ${_builddir}/src/extlib/ib_udf2.sql \
 		${pkgdir}/usr/lib/firebird/UDF/ib_udf2.sql || return 1
 
-	# defaults
-	install -m 0644 ${_builddir}/gen/firebird/security2.fdb \
-		${pkgdir}/usr/lib/firebird/security2.fdb.default || return 1
-	install -m 0644 ${_builddir}/gen/firebird/de_DE.msg \
-		${pkgdir}/usr/lib/firebird/de_DE.msg || return 1
-	install -m 0644 ${_builddir}/gen/firebird/firebird.msg \
-		${pkgdir}/usr/lib/firebird/firebird.msg || return 1
-	install -m 0644 ${_builddir}/gen/firebird/fr_FR.msg \
-		${pkgdir}/usr/lib/firebird/fr_FR.msg || return 1
-	install -m 0644 -D ${_builddir}/gen/firebird/help/help.fdb \
-		${pkgdir}/usr/lib/firebird/help/help.fdb || return 1
-
 	# utils
 	mkdir -p ${pkgdir}/usr/bin
 	cd ${pkgdir}/usr/bin
 	for f in gbak gdef gfix gpre gsplit gstat nbackup isql qli;
 	do
-		strip -R .note -R .comment ${_builddir}/gen/firebird/bin/$f
-		install -m 0755 -D ${_builddir}/gen/firebird/bin/$f \
-			${pkgdir}/usr/lib/firebird/bin/$f || return 1
 		target="$f"
 		if [ "$f" = "gstat" ]
 		then
@@ -114,9 +107,6 @@ package() {
 	done
 	cd ${_builddir}
 
-	strip -R .note -R .comment ${_builddir}/gen/firebird/intl/libfbintl.so
-	install -m 0644 -D ${_builddir}/gen/firebird/intl/libfbintl.so \
-		${pkgdir}/usr/lib/firebird/intl/fbintl.so || return 1
 	install -m 0644 -D ${_builddir}/gen/install/misc/fbintl.conf \
 		${pkgdir}/usr/lib/firebird/intl/fbintl.conf || return 1
 	install -m 0644 -D ${_builddir}/gen/install/misc/firebird.conf \
@@ -127,10 +117,10 @@ package() {
 	strip -R .note -R .comment ${_builddir}/gen/firebird/lib/*.so.*
 	rm -f ${_builddir}/gen/firebird/lib/*.a
 	cp -f ${_builddir}/gen/firebird/lib/* ${pkgdir}/usr/lib
-	chmod 0644 ${pkgdir}/usr/lib/*
 	rm -f ${pkgdir}/usr/lib/libfbclient*
 	sed -i -e "s|^#TempDirectories.*|TempDirectories = /var/firebird|" ${pkgdir}/usr/lib/firebird/firebird.conf
 	sed -i -e "s|^#DatabaseAccess.*|DatabaseAccess = Full|" ${pkgdir}/usr/lib/firebird/firebird.conf
+
 }
 
 libs() {

@@ -1,56 +1,41 @@
-# Contributor: jv <jens@eisfair.org>
-# Maintainer: jv <jens@eisfair.org>
-pkgname=dovecot-pigeonhole
-pkgver=0.4.3
+# Contributor: Kozak Ivan <kozak-iv@yandex.ru>
+# Maintainer: Kozak Ivan <kozak-iv@yandex.ru>
+_pkgname=dovecot-2.2-pigeonhole
+pkgname=dovecot-pigeonhole-plugin
+pkgver=0.4.6
 pkgrel=0
-pkgdesc="Pigeonhole for Dovecot - sieve service"
+pkgdesc="Pigeonhole project provides Sieve support as a plugin to Dovecot's LDA"
 url="http://pigeonhole.dovecot.org"
 arch="all"
-license="GNU"
-depends="dovecot>=2.2.12"
-depends_dev="openssl-dev dovecot-dev"
+license="LGPL"
+depends="dovecot"
+depends_dev="dovecot-dev mercurial openssl-dev"
 makedepends="$depends_dev"
 install=""
-subpackages="$pkgname-doc"
-source="http://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-${pkgver}.tar.gz
-	"
+subpackages="$pkgname-doc $pkgname-dev"
+source="http://pigeonhole.dovecot.org/releases/2.2/$_pkgname-$pkgver.tar.gz"
 
-_builddir="$srcdir/dovecot-2.2-pigeonhole-$pkgver"
+_builddir="$srcdir/$_pkgname-$pkgver"
 
 prepare() {
-	local i
-	cd ${_builddir}
-	for i in $source; do
-		case $i in
-		*.patch) msg $i; patch -p1 -i ${srcdir}/$i || return 1;;
-		esac
-	done
-	sleep 1
+	cd "$_builddir"
 }
 
 build() {
-	cd ${_builddir}
-	export LDFLAGS="-Wl,-rpath=/usr/lib/dovecot"
-	./configure --prefix=/usr \
-	--libexec=/usr/sbin \
-	--with-dovecot=/usr/lib/dovecot \
-	--with-managesieve=yes \
-	--disable-static || return 1
-	sleep 1
-	make -j1 || return 1
+	cd "$_builddir"
+	./configure --prefix=/usr --with-dovecot=/usr/lib/dovecot --disable-static || return 1
+	make || return 1
 }
 
 package() {
-	cd ${_builddir}
-	make -j1 DESTDIR="$pkgdir" install || return 1
-	rm -f ${pkgdir}/usr/lib/dovecot/*.la \
-		rm -f ${pkgdir}/usr/lib/dovecot/*/*.la
-	mkdir -p ${pkgdir}/etc/dovecot/conf.d
-	cp -f ${pkgdir}/usr/share/doc/dovecot/example-config/conf.d/* ${pkgdir}/etc/dovecot/conf.d/
-	rm -rf ${pkgdir}/usr/include
+	cd "$_builddir"
+	make DESTDIR="$pkgdir" install || return 1
+	rm -f "$pkgdir"/usr/lib/dovecot/*.la
+	rm -f "$pkgdir"/usr/lib/dovecot/doveadm/*.la
+	rm -f "$pkgdir"/usr/lib/dovecot/settings/*.la
+	rm -f "$pkgdir"/usr/lib/dovecot/sieve/*.la
 }
 
-
-md5sums="b52858c0016b9ad7dabccf01f0098dbd  dovecot-2.2-pigeonhole-0.4.3.tar.gz"
-sha256sums="d692f4ab077bdf2c43c98829ed24b2e6f148db488ef8ba429b430394d8b4d757  dovecot-2.2-pigeonhole-0.4.3.tar.gz"
-sha512sums="f2bb83578bb05c7ca2213ecc110f5e7059935746f720ee43897508394f3ab8a7072d193c78caf1fa77df81a20fbbeab1ac14069989250b3032ef459e798c54ff  dovecot-2.2-pigeonhole-0.4.3.tar.gz"
+md5sums="9c41cfda06129ac85700b5ddce809d95  dovecot-2.2-pigeonhole-0.4.6.tar.gz"
+sha256sums="91034669f9ce07661bbadcfb00fe50b6929bf7f616d9aa79d3f5a351d1a47d3d  dovecot-2.2-pigeonhole-0.4.6.tar.gz"
+sha512sums="50b0df4438f6fc751a7dd058919628a2f3bc631c119e86356495d7de94d24b9f9cc8c11fa5e3646bc2429170bf3c9473d42542ee8b15b7c94a1502bb76042b9e  dovecot-2.2-pigeonhole-0.4.6.tar.gz"

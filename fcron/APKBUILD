@@ -2,7 +2,7 @@
 # Maintainer: jens@eisfair.org
 pkgname=fcron
 pkgver=3.0.6
-pkgrel=2
+pkgrel=3
 pkgdesc="cron scheduler"
 url="http://fcron.free.fr"
 arch="all"
@@ -10,6 +10,7 @@ license="GNU"
 depends=""
 depends_dev="perl"
 makedepends="$depends_dev"
+options="suid"
 install="$pkgname.pre-install $pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall $pkgname.pre-upgrade $pkgname.post-upgrade"
 subpackages=""
 source="http://fcron.free.fr/archives/fcron-3.0.6.src.tar.gz

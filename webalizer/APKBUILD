@@ -2,13 +2,13 @@
 # Maintainer:
 pkgname=webalizer
 pkgver=2.23
-pkgrel=0
+pkgrel=1
 pkgdesc="Webalizer"
 url="http://www.webalizer.org/"
 arch="all"
 license="GPL"
 depends=""
-depends_dev="db-dev libgd-dev libpng-dev jpeg-dev geoip-dev"
+depends_dev="db-dev gd-dev libpng-dev jpeg-dev geoip-dev"
 makedepends="$depends_dev"
 install=""
 subpackages="$pkgname-doc"
