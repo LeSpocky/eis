@@ -720,6 +720,15 @@ plugin {
 EOF
 
 ### -------------------------------------------------------------------------
+#95-vsz-limit.conf
+cat > /etc/dovecot/conf.d/95-vsz-limit.conf <<EOF
+## Settings for Memory usage optimization
+service indexer-worker {
+  vsz_limit = 512M
+}
+EOF
+
+### -------------------------------------------------------------------------
 # create AUTH MASTER configuration
 cat > /etc/dovecot/conf.d/auth-master.conf.ext <<EOF
 # Authentication for master users. Included from 10-auth.conf.
