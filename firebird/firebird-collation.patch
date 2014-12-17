@@ -1,0 +1,59 @@
+--- a/src/jrd/unicode_util.cpp
++++ b/src/jrd/unicode_util.cpp
+@@ -823,6 +823,7 @@ UnicodeUtil::ICU* UnicodeUtil::loadICU(c
+ 
+ 		if (!icu->ucModule)
+ 		{
++			gds__log("Unable to load uc module (%s)", filename.c_str());
+ 			delete icu;
+ 			continue;
+ 		}
+@@ -838,6 +839,7 @@ UnicodeUtil::ICU* UnicodeUtil::loadICU(c
+ 
+ 		if (!icu->inModule)
+ 		{
++			gds__log("Unable to load in module (%s)", filename.c_str());
+ 			delete icu;
+ 			continue;
+ 		}
+@@ -869,6 +871,7 @@ UnicodeUtil::ICU* UnicodeUtil::loadICU(c
+ 			!icu->ucolSetAttribute || !icu->ucolStrColl || !icu->ucolGetVersion ||
+ 			!icu->utransOpen || !icu->utransClose || !icu->utransTransUChars)
+ 		{
++			gds__log("Missing entry point(s)");
+ 			delete icu;
+ 			continue;
+ 		}
+@@ -880,6 +883,7 @@ UnicodeUtil::ICU* UnicodeUtil::loadICU(c
+ 			icu->uInit(&status);
+ 			if (status != U_ZERO_ERROR)
+ 			{
++				gds__log("Initialization error %d", status);
+ 				delete icu;
+ 				continue;
+ 			}
+@@ -888,6 +892,7 @@ UnicodeUtil::ICU* UnicodeUtil::loadICU(c
+ 		UCollator* collator = icu->ucolOpen("", &status);
+ 		if (!collator)
+ 		{
++			gds__log("Open collator error %d", status);
+ 			delete icu;
+ 			continue;
+ 		}
+@@ -913,6 +918,7 @@ UnicodeUtil::ICU* UnicodeUtil::loadICU(c
+ 		return icu;
+ 	}
+ 
++	gds__log("ICU: Returning failure");
+ 	return NULL;
+ }
+ 
+@@ -1291,7 +1297,7 @@ UnicodeUtil::ICU* UnicodeUtil::Utf16Coll
+ 		icu->uVersionToString(icu->collVersion, version);
+ 
+ 		if (collVersion != version)
+-			continue;
++			gds__log("Ignoring collation version mismatch. Wanted %s but will try to work with %s", collVersion.c_str(), version);
+ 
+ 		return icu;
+ 	}

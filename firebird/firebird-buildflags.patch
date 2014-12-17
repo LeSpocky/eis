@@ -1,0 +1,30 @@
+Description: Use build flags from environment
+ Necessary for hardening flags.
+ While not relevant for the final binaries, having the flags for intermediate
+ binaries helps avoid false positives while screening build logs.
+Author: Simon Ruderich <simon@ruderich.org>
+Reviewed-by: Damyan Ivanov <dmn@debian.org>
+Last-Update: 2012-03-27
+
+--- a/builds/posix/Makefile.in.firebird
++++ b/builds/posix/Makefile.in.firebird
+@@ -446,7 +446,7 @@ MAKE_HEADER_Src = $(addprefix $(SRC_ROOT
+ MAKE_HEADER_Bin = ./makeHeader
+ 
+ $(INCLUDE_DEST)/ibase.h: $(SRC_IBASE_ExtraFiles)
+-	$(STATICEXE_LINK) -o $(MAKE_HEADER_Bin) $(MAKE_HEADER_Src)
++	$(STATICEXE_LINK) $(CPPFLAGS) $(LINK_OPTS) -o $(MAKE_HEADER_Bin) $(MAKE_HEADER_Src)
+ 	$(CP) $^ .
+ 	$(MAKE_HEADER_Bin) <ibase.h >$@
+ 	$(RM) -f ibase.h
+--- a/extern/btyacc/Makefile
++++ b/extern/btyacc/Makefile
+@@ -12,7 +12,7 @@ HDRS	      = defs.h mstring.h
+ # across all of our supported compilers/platforms.
+ 
+ # Vanilla CFLAGS
+-CFLAGS=
++CFLAGS?=
+ 
+ # No LDFLAGS
+ #LDFLAGS=
