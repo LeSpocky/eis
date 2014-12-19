@@ -441,7 +441,7 @@ pop3imap  unix  -       n       n       -       -       pipe
 uucp      unix  -       n       n       -       -       pipe
     flags=Fqhu user=uucp argv=uux -r -n -z -a\$sender - \$nexthop!rmail (\$recipient)
 greyfix   unix  -       n       n       -       -       spawn
-    user=nobody argv=/usr/sbin/greyfix -/ 24 -6 56
+    user=nobody argv=/usr/sbin/greyfix -/ 24 -6 56 -g 13600
 #fax       unix  -       n       n       -       1       pipe
 #    flags= user=fax argv=/usr/bin/mail2fax \${sender} \${recipient}
 EOF
