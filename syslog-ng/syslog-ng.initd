@@ -57,6 +57,7 @@ update() {
 	done
 	{
 		# create options entries
+		echo "@version: 3.0"
 		echo "options {"
 		grep_syslog_conf_entries options
 		echo "};"

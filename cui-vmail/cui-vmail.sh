@@ -724,7 +724,10 @@ EOF
 cat > /etc/dovecot/conf.d/95-vsz-limit.conf <<EOF
 ## Settings for Memory usage optimization
 service indexer-worker {
-  vsz_limit = 512M
+  vsz_limit = 0
+}
+protocol imap {
+  mail_max_userip_connections = 30
 }
 EOF
 

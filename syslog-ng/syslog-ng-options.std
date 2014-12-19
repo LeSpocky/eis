@@ -9,6 +9,8 @@
   time_reopen(10);
 # the time to wait before an idle destination file is closed (default is 60)
   time_reap(360);
+# Timestamp format: rfc3164|rfc3339|bsd|iso
+  ts_format(rfc3164);
 # the number of lines buffered before written to file you might want to 
 # increase this if your disk isn't catching with all the log messages you get 
 # or if you want less disk activity (say on a laptop) (default is 0)
