@@ -2,7 +2,7 @@
 # Maintainer: starwarsfan <yves@eisfair.org>
 pkgname=cui-samba
 pkgver=0.1.0
-pkgrel=1
+pkgrel=2
 pkgdesc="CUI Setup for samba"
 url="http://www.eisfair.org"
 arch="noarch"
