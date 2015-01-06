@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # alpine linux - eisfair-ng version
 
 PREFIX=
@@ -9,7 +9,6 @@ ROOTFS=${ROOTFS:-ext4}
 BOOTFS=${BOOTFS:-ext4}
 VARFS=${VARFS:-ext4}
 
-PALPVERSION="3.1"
 PKEYBLAYOUT="de"
 PKEYBVARIANT="de-latin1"
 PNETIPSTATIC="1"
@@ -719,8 +718,8 @@ setup_root() {
 	} > /mnt/etc/motd
 	# change package repos
 	{
-	echo "http://dl-5.alpinelinux.org/alpine/v${PALPVERSION}/main"
-	echo "http://download.eisfair.org/v${PALPVERSION}/main"
+	echo "http://dl-5.alpinelinux.org/alpine/v_RELVERS_/main"
+	echo "http://download.eisfair.org/v_RELVERS_/main"
 	} > /mnt/etc/apk/repositories
 	unmount_partitions /mnt
 	swapoff -a

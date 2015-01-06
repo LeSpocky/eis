@@ -2,7 +2,7 @@
 # Maintainer: jv <jens@eisfair.org>
 pkgname=eis-install
 pkgver=1.0.0
-pkgrel=2
+pkgrel=4
 pkgdesc="eisfair-ng installer"
 url="http://www.eisfair.org"
 arch="noarch"
@@ -28,22 +28,23 @@ build() {
 }
 
 package() {
+	alpinerelease=`awk -F \. {'printf "%s.%s",$1,$2'} /etc/alpine-release`
 	cd "$_builddir"
-
 	install -m755 -D "$srcdir"/$pkgname.initd \
 		"$pkgdir"/etc/init.d/$pkgname || return 1
 	install -m755 -D "$srcdir"/$pkgname.sh \
 		"$pkgdir"/bin/$pkgname || return 1
 	install -m755 -D "$srcdir"/$pkgname.setup-disk \
 		"$pkgdir"/bin/$pkgname.setup-disk || return 1
+	sed -i -e "s/_RELVERS_/${alpinerelease}/g" ${pkgdir}/bin/$pkgname.setup-disk
 }
 
 md5sums="a98734dee80911e7a4340ab5b3898a9c  eis-install.initd
 8be9c4f47938817e26da03278e16922b  eis-install.sh
-678bba3a8f1b90ef0050d9f8d07bacc6  eis-install.setup-disk"
+72fcddf75f7e5331615ac3264180c7ae  eis-install.setup-disk"
 sha256sums="b4fbfc83c5beaeed746c4e42bf9698d3529a123ffd36bc2a2de8faf3daab2495  eis-install.initd
 44ccf5d7f1cbd32c569ea706de626c7d93bfaa4ce5ebf0c92c0808b979f2983f  eis-install.sh
-e800053e0912496066187bdad365a15846bebc359b44e4243d82cee4511e6b6f  eis-install.setup-disk"
+adc6238d3303ba73e9f92c27225eeb860c7f30323c4063357d035645c9a3ad24  eis-install.setup-disk"
 sha512sums="81cfd80aa85adda7948cf40c6b093521a5bf33e87c12c9338a346d31455e6ca5e166aef8647c9d4a40d06e4c4ecb64da386cc81b422338c469f986cc6503656c  eis-install.initd
 5d494afef6776a7fda07d6a058b79724108e98bb0384c21c17440341cb7f3f3628f10462e312e8ff89e0867a70732d68580d141b3b22efd02c3c85c8a6bfde44  eis-install.sh
-de14aa264ce143a2afcc17a3687bd48bf7242ea99b1a7b7be99dffcc595a27ebd3d30408679761c4c8530198680948dc9f81b66baccda68a5e96175cf0686c38  eis-install.setup-disk"
+1482670f29c294ecdc7723f586ca81a62852fcb1949a19008a20debd2b3b1ccd44c123dc9e5470fd6b449440cb3385c7b549e72fa0613ebcc6b56ad8ebd865ce  eis-install.setup-disk"
