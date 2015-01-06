@@ -2,7 +2,7 @@
 # Maintainer: jv <jens@eisfair.org>
 pkgname=eis-install
 pkgver=1.0.0
-pkgrel=4
+pkgrel=3
 pkgdesc="eisfair-ng installer"
 url="http://www.eisfair.org"
 arch="noarch"
