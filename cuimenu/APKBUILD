@@ -1,7 +1,7 @@
 # Contributor:
 # Maintainer:team@eisfair.org
 pkgname=cuimenu
-pkgver=2.0.1
+pkgver=2.0.2
 pkgrel=0
 pkgdesc="Eisfair CUI base menu"
 url="http://www.eisfair.org"
@@ -25,8 +25,10 @@ build() {
 }
 
 package() {
+	alpinerelease=`awk -F \. {'printf "%s.%s",$1,$2'} /etc/alpine-release`
 	mkdir -p ${pkgdir}
 	cp -r ${startdir}/menus/* ${pkgdir}/
+	sed -i -e "s/_RELVERS_/${alpinerelease}/g" ${pkgdir}/etc/default.d/apk-repositories
 	chmod 0770 ${pkgdir}/etc/default.d
 	chmod 0755 ${pkgdir}/usr/sbin/*
 	chmod 0755 ${pkgdir}/var/install/bin/*

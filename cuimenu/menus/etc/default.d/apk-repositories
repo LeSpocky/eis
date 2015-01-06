@@ -16,15 +16,15 @@ APK_REPOSITORY_1_URL='/media/cdrom/apks'
 
 APK_REPOSITORY_2_NAME='alpine packages'
 APK_REPOSITORY_2_ACTIVE='yes'
-APK_REPOSITORY_2_URL='http://dl-5.alpinelinux.org/alpine/v3.1/main'
+APK_REPOSITORY_2_URL='http://dl-5.alpinelinux.org/alpine/_RELVERS_/main'
 
 APK_REPOSITORY_3_NAME='eisfair-ng packages'
 APK_REPOSITORY_3_ACTIVE='yes'
-APK_REPOSITORY_3_URL='http://download.eisfair.org/v3.1/main'
+APK_REPOSITORY_3_URL='http://download.eisfair.org/_RELVERS_/main'
 
 APK_REPOSITORY_4_NAME='alpine packages (mirror)'
 APK_REPOSITORY_4_ACTIVE='no'
-APK_REPOSITORY_4_URL='http://nl.alpinelinux.org/alpine/v3.1/main'
+APK_REPOSITORY_4_URL='http://nl.alpinelinux.org/alpine/_RELVERS_/main'
 
 # ----------------------------------------------------------------------------
 # End
