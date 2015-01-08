@@ -1,1 +1,1 @@
-  filter sshlogs { facility(auth, authpriv) and not match("sshguard"); };
+  filter sshlogs { facility(auth, authpriv) and not match("sshguard" value("PROGRAM")); };

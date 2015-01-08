@@ -1,0 +1,20 @@
+--- sshguard-1.6/src/parser/attack_scanner.l	
++++ sshguard-1.6-patched/src/parser/attack_scanner.l	
+@@ -70,7 +70,7 @@
+  /* for FTP services */
+ %s freebsdftpd_loginerr  proftpd_loginerr  pureftpd_loginerr vsftpd_loginerr
+ 
+-
++IMAPORPOP3  (imap|pop3)
+ MONTH       (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)
+ DAYNO       [1-9][0-9]?
+ HOUR        (0|1)[0-9]|2[0-4]
+@@ -169,7 +169,7 @@
+ <sendmail_relaydenied>"]"                                       { BEGIN(INITIAL); return SENDMAIL_RELAYDENIED_SUFF; }
+ 
+  /* dovecot */
+-"imap-login: Aborted login (auth failed, "{NUMBER}" attempts): ".+" rip=" { BEGIN(dovecot_loginerr); return DOVECOT_IMAP_LOGINERR_PREF; }
++{IMAPORPOP3}"-login: ".+" (auth failed, "{NUMBER}" attempts): ".+" rip=" { BEGIN(dovecot_loginerr); return DOVECOT_IMAP_LOGINERR_PREF; }
+ <dovecot_loginerr>", lip=".+                                        { BEGIN(INITIAL); return DOVECOT_IMAP_LOGINERR_SUFF; }
+ 
+  /* UWimap login errors */
