@@ -51,7 +51,7 @@ package() {
 	cd "$_builddir"
 	make -j1 DESTDIR="$pkgdir" install || return 1
 	rm -rf ${pkgdir}/usr/share
-	rm -rf ${pkgdir}/var/run
+	rm -rf ${pkgdir}/run
 	strip -R .note -R .comment ${pkgdir}/usr/bin/*
 	strip -R .note -R .comment ${pkgdir}/usr/sbin/*
 	install -D -m755 ${srcdir}/${pkgname}.initd ${pkgdir}/etc/init.d/${pkgname} || return 1
