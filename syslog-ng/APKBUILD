@@ -34,7 +34,7 @@ build() {
 	cd "$_builddir"
 	./configure --prefix=/usr \
 	--sysconfdir=/etc/syslog-ng \
-	--localstatedir=/var \
+	--localstatedir=/run \
 	--enable-ipv6 \
 	--disable-sql \
 	--disable-mongodb \
@@ -56,6 +56,7 @@ package() {
 	rm -f  ${pkgdir}/etc/syslog-ng/syslog-ng.conf
 	rm -f  ${pkgdir}/etc/syslog-ng/scl.conf
 	rm -f  ${pkgdir}/usr/lib/libsyslog-ng.so
+	rm -rf ${pkgdir}/run
 	install -D -m755 "$srcdir"/$pkgname.initd ${pkgdir}/etc/init.d/$pkgname || return 1
 	install -D -m644 "$srcdir"/syslog-ng-destination.std ${pkgdir}/etc/syslog-ng/syslog-ng-destination.std || return 1
 	install -D -m644 "$srcdir"/syslog-ng-filter.std ${pkgdir}/etc/syslog-ng/syslog-ng-filter.std || return 1
