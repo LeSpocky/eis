@@ -1,14 +1,14 @@
 # Contributor: jv <jens@eisfair.org>
 # Maintainer: jv <jens@eisfair.org>
 pkgname=syslog-ng
-pkgver=2.1.4
-pkgrel=1
+pkgver=3.6.1
+pkgrel=0
 pkgdesc="Next generation logging daemon"
 url="http://www.balabit.com"
 arch="all"
 license="GPLv2"
 depends=""
-depends_dev="glib-dev libeventlog-dev"
+depends_dev="glib-dev libeventlog-dev pcre-dev"
 makedepends="$depends_dev"
 install="$pkgname.pre-install $pkgname.post-install $pkgname.pre-deinstall $pkgname.pre-upgrade $pkgname.post-upgrade"
 subpackages=""
@@ -20,6 +20,7 @@ source="http://www.balabit.com/downloads/files/syslog-ng/open-source-edition/${p
 	syslog-ng-filter.std
 	syslog-ng-log.std
 	syslog-ng-options.std
+	syslog-ng-plugins.std
 	syslog-ng-source.std
 	"
 
@@ -33,6 +34,7 @@ build() {
 	cd "$_builddir"
 	./configure --prefix=/usr \
 	--sysconfdir=/etc/syslog-ng \
+	--localstatedir=/var \
 	--enable-ipv6 \
 	--disable-sql \
 	--disable-mongodb \
@@ -45,36 +47,49 @@ package() {
 	cd "$_builddir"
 	make -j1 DESTDIR=${pkgdir} install || return 1
 	rm -rf ${pkgdir}/usr/share
+	rm -rf ${pkgdir}/usr/include
+	rm -rf ${pkgdir}/usr/lib/pkgconfig
+	rm -f  ${pkgdir}/usr/lib/*.la
+	rm -f  ${pkgdir}/usr/lib/libsyslog-ng.so
+	rm -f  ${pkgdir}/usr/lib/$pkgname/*.la
+	rm -rf ${pkgdir}/usr/lib/$pkgname/libtest
+	rm -f  ${pkgdir}/etc/syslog-ng/syslog-ng.conf
+	rm -f  ${pkgdir}/etc/syslog-ng/scl.conf
+	rm -f  ${pkgdir}/usr/lib/libsyslog-ng.so
 	install -D -m755 "$srcdir"/$pkgname.initd ${pkgdir}/etc/init.d/$pkgname || return 1
 	install -D -m644 "$srcdir"/syslog-ng-destination.std ${pkgdir}/etc/syslog-ng/syslog-ng-destination.std || return 1
 	install -D -m644 "$srcdir"/syslog-ng-filter.std ${pkgdir}/etc/syslog-ng/syslog-ng-filter.std || return 1
 	install -D -m644 "$srcdir"/syslog-ng-log.std ${pkgdir}/etc/syslog-ng/syslog-ng-log.std || return 1
 	install -D -m644 "$srcdir"/syslog-ng-options.std ${pkgdir}/etc/syslog-ng/syslog-ng-options.std || return 1
+	install -D -m644 "$srcdir"/syslog-ng-plugins.std ${pkgdir}/etc/syslog-ng/syslog-ng-plugins.std || return 1
 	install -D -m644 "$srcdir"/syslog-ng-source.std ${pkgdir}/etc/syslog-ng/syslog-ng-source.std || return 1
 	install -D -m644 "$srcdir"/syslog-ng.logrotate ${pkgdir}/etc/logrotate.d/syslog || return 1
 }
 
-md5sums="17c4c7725d2eab62b588395f1ed93f32  syslog-ng_2.1.4.tar.gz
+md5sums="45fa07be94b5afb16fd1a91af7b2bb7b  syslog-ng_3.6.1.tar.gz
 8916d55f8213d2746e8c2a6a89c29d6c  syslog-ng.logrotate
-db64baad91a6ab0098c008724373d269  syslog-ng.initd
+155cc5d701aca534f62ebbf6d35ca7af  syslog-ng.initd
 f0b4a0b530e269c51bc63f5b9d817c9b  syslog-ng-destination.std
 405f4730412fec3a170460d724a6b50e  syslog-ng-filter.std
 bc676f733ea162ea4de7a8c2a16c06ed  syslog-ng-log.std
 d656d4c58416ac8240fc844986c14f06  syslog-ng-options.std
-8c166661270cd8459897ca3df06066c9  syslog-ng-source.std"
-sha256sums="e2189c7dbf617f2fc883ab0a8a86100dbe7cb4853c6b39732d77e73f335b0502  syslog-ng_2.1.4.tar.gz
+5b54d79cb535f20a8524ea70f6f87ffb  syslog-ng-plugins.std
+d1b01c819861945675a6e2fcff8d9a2c  syslog-ng-source.std"
+sha256sums="a7823679038117eb63aff7b5cd66fc6a0adcef8e85cfaadc94c3cf2b66d774e8  syslog-ng_3.6.1.tar.gz
 a886b65863d72476504165e6a6dfe3d2922945d8cb61adb6b8eec73ac35d825e  syslog-ng.logrotate
-92623fa1fbae452e30af75996ef256c4e089c2d519673743da0ca6b7dbb9961a  syslog-ng.initd
+37f132d567b214ab7bea49297afdd2bdae60c185909dbac22c3b9578785ef6e3  syslog-ng.initd
 bd3097c1d8ff6754df0d7e470659827ae4d6bf86976badf5aabe4d25504fd572  syslog-ng-destination.std
 4ee19a76624624a9742f3399887784a55f684d141e115996b82c593aa74dcb66  syslog-ng-filter.std
 df30f0ce37bdf8cc0ac0fcc04800d7d14880bf3a19d01ab96220a325f1ab3943  syslog-ng-log.std
 6f4b45dd380fdcd7b90dd022425696a34ac6916cd4ad04d877c76f5d851189ad  syslog-ng-options.std
-51399e8d5d3a2d7b2d30f4adefe92776c9ddcae98d5189af9ddae1d2e66db8f3  syslog-ng-source.std"
-sha512sums="5ff5e3a36dbcb99a3b1b36cda3336764290bd9251379244f10a48bd396785d16ed9200d746acb66f69f471d9ce1e8ec2e337afdadd109d7eba0c12d0de403ae0  syslog-ng_2.1.4.tar.gz
+6f052e1cc3523b0d23696b450058e4bfee89cb75eb9039cc405eded79c996aa1  syslog-ng-plugins.std
+0f3ea572b98d21f3afd82d64b17d518d6584b2ea4bfe96df2c1aa9c648890014  syslog-ng-source.std"
+sha512sums="2d321b7b7e330019c9c5111d54ebdce273a054f3c8db2770e141a1119233ec6663e5c10a45a313602c7af6b7d7adaf70fe8f535617492837a4f4807bbc73bb1d  syslog-ng_3.6.1.tar.gz
 a062d1601f5215f60e2fc40c6ca498d768aa97af3647a9468731123a28fdd67962421b4412bfbe08a1123141b730cb78f102230ab72befec05ba7f398b39e27a  syslog-ng.logrotate
-ca5b279fc0049eef76b4eae507639bfe4da4634ec905dcd6c61fada4861ddde7587d81b3bd0e05e600cd9d08940bd06c067d11544a77b4e5967d2f376e57ed80  syslog-ng.initd
+dfbe16d0e1d5d1e18f0ac24fbd779dee585603d534beede39a87923d263a1ff779085ae0c0b367f627dd6df568dfe523ddc76e2a6b0c2914e3c089ab26449438  syslog-ng.initd
 b51d8b3da9584b6cb5b5c023b5ca1085d8e4c2cfa56f6ed12fe6feb0f33a390b43825aaaf4dd74eb6b7765485fe42f7f21c74380b72de9ed2c7775787ab1e720  syslog-ng-destination.std
 e04a70a0b8fc4f40951c9b608b0dede1fa561dd7f58ce8fd8bac70b578b749d15d202973fd9de9fe494656ee138ef5efd32ea6229e6ec0a2f19672dd621acc91  syslog-ng-filter.std
 d7864f6666101e0818dd0178a4d1ada2417280de153ff916fe4879348a37b7bfab5936e86629dc52e4edf82fbd601e04d08ed5a2117bcb0470a3d5884add9f55  syslog-ng-log.std
 a1d4caa6615184db414a14adf89fe75afa39db5375632475dff413e71db5674294c0739017539a466094d592a3eb19a363fde79014e1c21317595c5353ffd391  syslog-ng-options.std
-fe4e4921426ea58186d1fbc54d36a2ba7a88992e7b1ce9b1a41470e4f791b6c7850d34785ec458d2793399b8de1a25ef2b290a95437083fd350b3925d11b9aea  syslog-ng-source.std"
+9dd65da6a805aa709441ec8080789b2d0aba7a773ed91c807c39d2b0d82dd9cf3ac014f357ec6f45038db8d5c162e04179821437662d7ece35872204fbf44cf6  syslog-ng-plugins.std
+42cc7728a182fee30675aefee9055eb14bdfbf2006bcf1c731864221ea494ad82d9ae4417190ff18da4a663fa9d5efcd514b6e64a568e228cfed1fb2abd2b10c  syslog-ng-source.std"

@@ -10,13 +10,13 @@ depend() {
 
 start() {
 	ebegin "Starting fcron"
-	start-stop-daemon --start --pidfile /var/run/fcron.pid --exec /usr/sbin/fcron -- $CRON_OPTS
+	start-stop-daemon --start --pidfile /run/fcron.pid --exec /usr/sbin/fcron -- $CRON_OPTS
 	eend $?
 }
 
 stop () {
 	ebegin "Stopping fcron"
-	start-stop-daemon --stop --pidfile /var/run/fcron.pid --exec /usr/sbin/fcron
+	start-stop-daemon --stop --pidfile /run/fcron.pid --exec /usr/sbin/fcron
 	eend $?
 }
 
@@ -25,13 +25,13 @@ update() {
 	cd /etc/cron
 	for user in *
 	do
-		[ -d /etc/cron/${user} ] && cat /etc/cron/${user}/* 2>/dev/null | fcrontab - -u ${user} 
+		[ -d /etc/cron/${user} ] && cat /etc/cron/${user}/* 2>/dev/null | fcrontab -u ${user} -
 	done
 }
 
 reload() {
 	update >/dev/null 2>&1
 	ebegin "Reloading fcron"
-	start-stop-daemon --signal HUP --pidfile /var/run/fcron.pid --exec /usr/sbin/fcron
+	start-stop-daemon --signal HUP --pidfile /run/fcron.pid --exec /usr/sbin/fcron
 	eend $?
 }
