@@ -985,7 +985,6 @@ read_config (void) {
 
 	if (!fh) 
         return -1;
-	syslog(LOG_INFO, "config: load/reload configuration");
 	
 	while (fgets(buffer, MAXLINE, fh))
 	if (*buffer == '#') {
@@ -1079,7 +1078,7 @@ help () {
 	printf("\t[dbname name]\t\tName of MySQL database.\n");
 	printf("\t[dbtable name]\t\tName of MySQL table.\n");
 	printf("\t[dbuser name]\t\tName of MySQL connect user.\n");
-  	printf("\t[dbpass name]\t\tPassword to connect MySQL table.\n");	
+	printf("\t[dbpass name]\t\tPassword to connect MySQL table.\n");	
 	printf("\t[clamcheck (yes|no)]\tEnable or disable mail checks\n");
 	printf("\t\t\t\tusing ClamAV antivirus.\n");
 	printf("\t[clamsocket path]\tPath to ClamAV socket.\n");
@@ -1222,15 +1221,15 @@ start:
 	}
 	/* terminate processes */
 	for (i = 0; i < 4; i++) {
-	    if (kill(-pid, SIGTERM) < 0) {
-		waitpid(-pid, NULL, 0);
-		if (kill(pid, SIGTERM) < 0) {
+		if (kill(-pid, SIGTERM) < 0) {
+			waitpid(-pid, NULL, 0);
+			if (kill(pid, SIGTERM) < 0) {
 		    waitpid(pid, NULL, 0);
 		    sleep(1);
 		    break;
+			}
+			usleep(999999);
 		}
-		usleep(999999);
-	    }
 	}
 
 	/* rip threads */
@@ -1340,7 +1339,7 @@ main (int argc, char **argv) {
 	syslog(LOG_INFO, "running in %s as user '%s'", (runmode) ? "foreground" : "background", pw->pw_name);
   
   
-  	if (smfi_settimeout(SOCKET_TIMEOUT) == MI_FAILURE)
+	if (smfi_settimeout(SOCKET_TIMEOUT) == MI_FAILURE)
 	    exit(EX_UNAVAILABLE);
 	if (smfi_setconn(smfisock) == MI_FAILURE) {
 	    syslog(LOG_ERR, "could not set milter socket");
