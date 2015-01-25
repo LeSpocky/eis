@@ -93,8 +93,8 @@ iteratePackageFolders ()
         currentCheckedPackage=${currentCheckedPackage##*/}
 
         echo "Checking jenkins jobs for package '$currentCheckedPackage'"
-        for currentJobTemplate in ${jobTemplates} ; do
-            # $currentJobTemplate is something like '_eisfair-ng__TEMPLATE__v2.6_x86'
+        for currentJobTemplate in ${jobTemplateList} ; do
+            # $currentJobTemplate is something like 'eisfair-ng/v3.1/testing/x86_64'
             createJob "$currentCheckedPackage" "$currentJobTemplate"
         done
     done
@@ -114,7 +114,7 @@ createJob ()
     local currentPackage=$1
     local templateJobName=$2
     local currentRtc=0
-    local jobName=${jobNamePrefix}__${currentPackage}__${currentJobTemplate##*__}
+    local jobName=${currentPackage}
     if [ ! -d ${jobName} -o ! -f ${jobName}/config.xml ] ; then
         # Config file not found, create it
         echo "Calling jenkins api to create job '$jobName'"
@@ -209,6 +209,12 @@ do
             # Do not directly build new jobs
             buildNewJobs=false
             ;;
+        --jtl|--job-template-list)
+            if [ $# -ge 2 ] ; then
+                jobTemplateList=$(echo "$2" | sed "s/,/ /g")
+                shift
+            fi
+            ;;
         * )
             shift
             ;;
@@ -227,7 +233,7 @@ cd ${scriptDir}/..
 workspaceFolder=`pwd`
 
 # Now do the job :-)
-getTemplateJobs
+#getTemplateJobs
 iteratePackageFolders
 
 exit ${rtc}
