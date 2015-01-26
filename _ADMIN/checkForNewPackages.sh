@@ -5,7 +5,7 @@
 #
 # Creation   :  2013-04-19  starwarsfan
 #
-# Copyright (c) 2013 the eisfair team, team(at)eisfair(dot)org>
+# Copyright (c) 2013-2015 the eisfair team, team(at)eisfair(dot)org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -63,22 +63,6 @@ fi
 
 
 # ============================================================================
-# Extract the list of template jobs out of the list of all build jobs
-getTemplateJobs ()
-{
-    local jobsToFind=${templateJobPrefix}${jobNamePrefix}__${templateJobPlaceholder}__
-    jobTemplates=$(java -Xms${javaMinHeap} \
-                        -Xmx${javaMaxHeap} \
-                        -jar ${jenkinsCliJar} \
-                        -s ${jenkinsUrl} \
-                        list-jobs \
-                        --username ${jenkinsUser} \
-                        --password-file ${jenkinsPasswordFile} | grep ${jobsToFind} | tr '\n' ' ')
-}
-
-
-
-# ============================================================================
 # Iterate over all folders on local working copy. In fact every folder
 # represents a package (except folder _ADMIN), so for every folder the
 # corresponding build jobs must exist or will be created.
@@ -110,7 +94,6 @@ iteratePackageFolders ()
         if [ ${tmpCounter} -gt 3 ] ; then
             break
         fi
-
     done
 	echo "=============================================================================="
 }
@@ -208,7 +191,14 @@ usage ()
         be created.
 
   Options:
-  -n|--no-build .. Do not build new jobs immediately after their creation.
+  -n|--no-build
+        .. Do not trigger a build of new jobs immediately after their creation.
+  --jfl|--job-folder-list
+        .. Comma separated list of package folders following Jenkins logical structure e. g.
+           'eisfair-ng/v3.1/testing/x86,eisfair-ng/v3.1/testing/x86_64'
+  -t|--job-template-name
+        .. Name of the template job which should be used as base for new jobs.
+           Default: '_TEMPLATE'
 
 EOF
 }
