@@ -85,6 +85,9 @@ getTemplateJobs ()
 iteratePackageFolders ()
 {
     cd ${jobsFolder}
+
+    local tmpCounter=0
+
 	echo "=============================================================================="
     for currentFolder in $(ls -d ${workspaceFolder}/*/ | grep -v "_ADMIN") ; do
         # Cut last '/' and everything beyond
@@ -97,6 +100,13 @@ iteratePackageFolders ()
             # $currentJobTemplate is something like 'eisfair-ng/v3.1/testing/x86_64'
             createJob "$currentCheckedPackage" "$currentJobTemplate" ${jobTemplateName}
         done
+
+        # For testing: Only create 3 jobs
+        tmpCounter=$((tmpCounter+1))
+        if ${tmpCounter} -gt 3 ; then
+            break
+        fi
+
     done
 	echo "=============================================================================="
 }
