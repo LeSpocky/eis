@@ -128,13 +128,13 @@ createJob ()
     local currentPackage=$1
     local logicalJobFolder=$2
     local jobTemplateName=$3
-    local physicalJobFolder=$(echo "$logicalJobFolder" | sed "s#/#/jobs/#g")
+    local physicalJobFolder="$(echo "$logicalJobFolder" | sed "s#/#/jobs/#g")/jobs"
     local currentRtc=0
 
     echo "Logical:  $logicalJobFolder"
     echo "Physical: $physicalJobFolder"
 
-    if [ ! -d ${physicalJobFolder} -o ! -f ${physicalJobFolder}/config.xml ] ; then
+    if [ ! -d ${physicalJobFolder}/${currentPackage} -o ! -f ${physicalJobFolder}/${currentPackage}/config.xml ] ; then
         # Config file not found, create it
         echo "Calling jenkins api to create job '${logicalJobFolder}/${jobTemplateName}'"
         java -Xms${javaMinHeap} \
