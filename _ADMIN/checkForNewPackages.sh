@@ -103,7 +103,7 @@ iteratePackageFolders ()
 
         # For testing: Only create 3 jobs
         tmpCounter=$((tmpCounter+1))
-        if ${tmpCounter} -gt 3 ; then
+        if [ ${tmpCounter} -gt 3 ] ; then
             break
         fi
 
