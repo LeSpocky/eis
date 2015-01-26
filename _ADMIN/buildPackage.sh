@@ -67,20 +67,16 @@ checkEnvironment ()
 
 extractVariables ()
 {
-    # Extract package name from <some-text>__<package-name>__<release>_<arch>
+    # Extract package name from eisfair-ng/<alpine-release>/<stage>/<architecture>/<package>
     # Example:
-    # eisfair-ng__cuimenu__edge_x86
-    # eisfair-ng__cuimenu__edge_x86_64
-    # eisfair-ng__cuimenu__v2.6_x86
-    # eisfair-ng__cuimenu__v2.6_x86_64
-    # eisfair-ng__eis-install__edge_x86
-    # eisfair-ng__eis-install__edge_x86_64
-    # eisfair-ng__eis-install__v2.6_x86
-    # eisfair-ng__eis-install__v2.6_x86_64
-    packageName=`echo ${JOB_NAME} | sed "s/\(.*__\)\(.*\)\(__.*\)/\2/g"`
-    releaseArch=`echo ${JOB_NAME} | sed "s/\(.*__.*__\)\(.*\)/\2/g"`
-    alpineRelease=`echo ${releaseArch%%_*}`
-    packageArch=`echo ${releaseArch#*_}`
+    # JOB_NAME='eisfair-ng/v3.1/testing/x86_64/bonnie'
+    packageName=${JOB_NAME##*\/}
+    packageArch=${JOB_NAME%\/*}
+    packageArch=${packageArch#*\/}
+    stage=${packageArch%\/*}
+    alpineRelease=${stage%\/*}
+    stage=${stage#*\/}
+    packageArch=${packageArch##*\/}
 }
 
 
