@@ -93,9 +93,9 @@ iteratePackageFolders ()
         currentCheckedPackage=${currentCheckedPackage##*/}
 
         echo "Checking jenkins jobs for package '$currentCheckedPackage'"
-        for currentJobTemplate in ${jobTemplateList} ; do
+        for currentJobTemplate in ${jobFolderList} ; do
             # $currentJobTemplate is something like 'eisfair-ng/v3.1/testing/x86_64'
-            createJob "$currentCheckedPackage" "$currentJobTemplate"
+            createJob "$currentCheckedPackage" "$currentJobTemplate" ${jobTemplateName}
         done
     done
 	echo "=============================================================================="
@@ -112,17 +112,18 @@ iteratePackageFolders ()
 createJob ()
 {
     local currentPackage=$1
-    local templateJobName=$2
+    local logicalJobFolder=$2
+    local jobTemplateName=$3
+    local physicalJobFolder=$(echo "$logicalJobFolder" | sed "s#/#/jobs/#g")
     local currentRtc=0
-    local jobName=${currentPackage}
-    if [ ! -d ${jobName} -o ! -f ${jobName}/config.xml ] ; then
+    if [ ! -d ${physicalJobFolder} -o ! -f ${physicalJobFolder}/config.xml ] ; then
         # Config file not found, create it
-        echo "Calling jenkins api to create job '$jobName'"
+        echo "Calling jenkins api to create job '${logicalJobFolder}/${jobTemplateName}'"
         java -Xms${javaMinHeap} \
              -Xmx${javaMaxHeap} \
              -jar ${jenkinsCliJar} \
              -s ${jenkinsUrl} \
-             get-job ${templateJobName} \
+             get-job ${logicalJobFolder}/${jobTemplateName} \
              --username ${jenkinsUser} \
              --password-file ${jenkinsPasswordFile} | \
             sed "s/TEMPLATE/$currentPackage/g" | \
@@ -130,15 +131,15 @@ createJob ()
                  -Xmx${javaMaxHeap} \
                  -jar ${jenkinsCliJar} \
                  -s ${jenkinsUrl} \
-                 create-job ${jobName} \
+                 create-job ${logicalJobFolder}/${currentPackage} \
                  --username ${jenkinsUser} \
                  --password-file ${jenkinsPasswordFile}
         currentRtc=$?
         if [ ${currentRtc} != 0 ] ; then
-            echo "ERROR: Something went wrong during creation of build-job '$jobName'"
+            echo "ERROR: Something went wrong during creation of build-job '${logicalJobFolder}/${jobTemplateName}'"
             rtc=${currentRtc}
         elif ${buildNewJobs} ; then
-            triggerBuild ${jobName}
+            triggerBuild ${logicalJobFolder}/${currentPackage}
         fi
     fi
 }
@@ -153,19 +154,20 @@ createJob ()
 #       as the base for the new job
 triggerBuild ()
 {
-    local jobName=$1
-    if [ -d ${jobName} -a -f ${jobName}/config.xml ] ; then
-        echo "Calling jenkins api to build job '$jobName'"
+    local logicalJobName=$1
+    local physicalJobFolder=$(echo "$logicalJobFolder" | sed "s#/#/jobs/#g")
+    if [ -d ${physicalJobFolder} -a -f ${physicalJobFolder}/config.xml ] ; then
+        echo "Calling jenkins api to build job '$logicalJobName'"
         java -Xms${javaMinHeap} \
              -Xmx${javaMaxHeap} \
              -jar ${jenkinsCliJar} \
              -s ${jenkinsUrl} \
-             build ${jobName} \
+             build ${logicalJobName} \
              --username ${jenkinsUser} \
              --password-file ${jenkinsPasswordFile}
         currentRtc=$?
         if [ ${currentRtc} != 0 ] ; then
-            echo "ERROR: Something went wrong during trigger of build-job '$jobName'"
+            echo "ERROR: Something went wrong during trigger of build-job '$logicalJobName'"
             rtc=${currentRtc}
         fi
     fi
@@ -195,6 +197,8 @@ EOF
 
 # Set some defaults
 buildNewJobs=true
+jobFolderList='eisfair-ng/v3.1/testing/x86 eisfair-ng/v3.1/testing/x86_64'
+jobTemplateName=_TEMPLATE
 
 while [ $# -ne 0 ]
 do
@@ -209,9 +213,15 @@ do
             # Do not directly build new jobs
             buildNewJobs=false
             ;;
-        --jtl|--job-template-list)
+        --jfl|--job-folder-list)
             if [ $# -ge 2 ] ; then
-                jobTemplateList=$(echo "$2" | sed "s/,/ /g")
+                jobFolderList=$(echo "$2" | sed "s/,/ /g")
+                shift
+            fi
+            ;;
+        -t|--job-template-name)
+            if [ $# -ge 2 ] ; then
+                jobTemplateName=$2
                 shift
             fi
             ;;
