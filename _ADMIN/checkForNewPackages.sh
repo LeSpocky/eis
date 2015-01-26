@@ -70,9 +70,6 @@ iteratePackageFolders ()
 {
     cd ${jobsFolder}
 
-    pwd
-    echo "'$jobFolderList'"
-
     local tmpCounter=0
 
 	echo "=============================================================================="
@@ -113,9 +110,6 @@ createJob ()
     local jobTemplateName=$3
     local physicalJobFolder="$(echo "$logicalJobFolder" | sed "s#/#/jobs/#g")/jobs"
     local currentRtc=0
-
-    echo "Logical:  $logicalJobFolder"
-    echo "Physical: $physicalJobFolder"
 
     if [ ! -d ${physicalJobFolder}/${currentPackage} -o ! -f ${physicalJobFolder}/${currentPackage}/config.xml ] ; then
         # Config file not found, create it
@@ -234,9 +228,9 @@ do
             fi
             ;;
         * )
-            shift
             ;;
     esac
+    shift
 done
 
 if [ ! -d ${jobsFolder} ] ; then
