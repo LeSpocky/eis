@@ -19,7 +19,6 @@
 #exec 2> /tmp/buildPackage-trace$$.txt
 #set -x
 
-branch='main'
 rtc=0
 
 
@@ -102,10 +101,10 @@ buildPackage ()
         echo "Copying apk file(s) to repository folder"
         checkDeploymentDestination
         if ls *.apk >/dev/null 2>&1 ; then
-            cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/testing/${packageArch}
+            cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${stage}/${packageArch}
             rtc=$?
         else
-            cp -f ~/packages/${JOB_NAME}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/testing/${packageArch}
+            cp -f ~/packages/${JOB_NAME}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${stage}/${packageArch}
             rtc=$?
         fi
     else
@@ -117,9 +116,9 @@ buildPackage ()
 
 checkDeploymentDestination ()
 {
-    if [ ! -d ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/${packageArch} ] ; then
+    if [ ! -d ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${stage}/${packageArch} ] ; then
         echo "Repository directory not existing, creating it"
-        mkdir -p ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/${packageArch}
+        mkdir -p ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${stage}/${packageArch}
     fi
 }
 
