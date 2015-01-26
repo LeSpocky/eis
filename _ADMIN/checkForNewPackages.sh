@@ -136,7 +136,7 @@ createJob ()
 
     if [ ! -d ${physicalJobFolder}/${currentPackage} -o ! -f ${physicalJobFolder}/${currentPackage}/config.xml ] ; then
         # Config file not found, create it
-        echo "Calling jenkins api to create job '${logicalJobFolder}/${jobTemplateName}'"
+        echo "Calling jenkins api to create job '${logicalJobFolder}/${currentPackage}'"
         java -Xms${javaMinHeap} \
              -Xmx${javaMaxHeap} \
              -jar ${jenkinsCliJar} \
