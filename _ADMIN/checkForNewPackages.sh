@@ -86,6 +86,9 @@ iteratePackageFolders ()
 {
     cd ${jobsFolder}
 
+    pwd
+    echo "'$jobFolderList'"
+
     local tmpCounter=0
 
 	echo "=============================================================================="
@@ -96,9 +99,10 @@ iteratePackageFolders ()
         currentCheckedPackage=${currentCheckedPackage##*/}
 
         echo "Checking jenkins jobs for package '$currentCheckedPackage'"
-        for currentJobTemplate in ${jobFolderList} ; do
+        for currentJobFolder in ${jobFolderList} ; do
+            echo ${currentJobFolder}
             # $currentJobTemplate is something like 'eisfair-ng/v3.1/testing/x86_64'
-            createJob "$currentCheckedPackage" "$currentJobTemplate" ${jobTemplateName}
+            createJob "$currentCheckedPackage" "$currentJobFolder" ${jobTemplateName}
         done
 
         # For testing: Only create 3 jobs
@@ -126,6 +130,10 @@ createJob ()
     local jobTemplateName=$3
     local physicalJobFolder=$(echo "$logicalJobFolder" | sed "s#/#/jobs/#g")
     local currentRtc=0
+
+    echo "Logical:  $logicalJobFolder"
+    echo "Physical: $physicalJobFolder"
+
     if [ ! -d ${physicalJobFolder} -o ! -f ${physicalJobFolder}/config.xml ] ; then
         # Config file not found, create it
         echo "Calling jenkins api to create job '${logicalJobFolder}/${jobTemplateName}'"
