@@ -101,10 +101,10 @@ buildPackage ()
         echo "Copying apk file(s) to repository folder"
         checkDeploymentDestination
         if ls *.apk >/dev/null 2>&1 ; then
-            cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${stage}/${packageArch}
+            cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${stage}/${packageArch}/
             rtc=$?
         else
-            cp -f ~/packages/${JOB_NAME}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${stage}/${packageArch}
+            cp -f ~/packages/${JOB_NAME}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${stage}/${packageArch}/
             rtc=$?
         fi
     else
