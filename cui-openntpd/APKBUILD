@@ -44,10 +44,14 @@ build() {
 package() {
 	cd "$_builddir"
 	cd ${startdir}/dialog.d
-	for currentDialogScript in `ls` ; do
-		install -D -m755 ${currentDialogScript} ${pkgdir}/var/install/dialog.d/${currentDialogScript} || return 1
+	for currentFile in `ls` ; do
+		install -D -m755 ${currentFile} ${pkgdir}/var/install/dialog.d/${currentFile} || return 1
 	done
-	cd -
+	cd ${startdir}/bin
+	for currentFile in `ls` ; do
+		install -D -m755 ${currentFile} ${pkgdir}/var/install/bin/${currentFile} || return 1
+	done
+	cd "$_builddir"
 	install -D -m644 ${srcdir}/${pkgname}.check                                ${pkgdir}/etc/check.d/${_pname} || return 1
 	install -D -m644 ${srcdir}/${pkgname}.check.exp                            ${pkgdir}/etc/check.d/${_pname}.exp || return 1
 	install -D -m644 ${srcdir}/${pkgname}.check.ext                            ${pkgdir}/etc/check.d/${_pname}.ext || return 1
