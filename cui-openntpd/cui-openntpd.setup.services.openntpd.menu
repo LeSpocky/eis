@@ -2,9 +2,9 @@
 <title>NTP Service administration</title>
 <doc>View documentation</doc>
 <edit>Edit configuration</edit>
-<init task="status">Show status</init>
-<init task="stop">Stop NTP server</init>
-<init task="start">Start NTP server</init>
+<init package="ntpd" task="status">Show status</init>
+<init package="ntpd" task="stop">Stop NTP server</init>
+<init package="ntpd" task="start">Start NTP server</init>
 <script file="ntp-set-time">Set time via other NTP server</script>
 <script file="ntp-view-info">View NTP information</script>
 <script file="ntp-view-links">View linked devices</script>
