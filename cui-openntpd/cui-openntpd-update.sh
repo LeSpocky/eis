@@ -1,5 +1,5 @@
 #!/bin/sh
-# ----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # /var/install/config.d/cui-openntpd-update.sh - update or generate a new ntp
 #                                                configuration
 #
@@ -9,15 +9,15 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# ----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 # include eislib
 . /var/install/include/eislib
 . /var/install/include/configlib
 
-#-----------------------------------------------------------------------------
-# rename variables
-#-----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Rename variables
+# ---------------------------------------------------------------------------
 rename_variables () {
     renamed=0
     mecho -n "Renaming parameter(s)... "
@@ -90,7 +90,7 @@ rename_variables () {
             eval NTP_CLOCK_${idx}_PREFER='no'
         fi
         
-        idx=`expr $idx + 1`
+        idx=$((idx+1))
     done
     
     # ------------------------------------------------------
@@ -118,9 +118,9 @@ rename_variables () {
 
 
 
-#-----------------------------------------------------------------------------
-# modify variables
-#-----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Modify variables
+# ---------------------------------------------------------------------------
 modify_variables () {
     modifiedParams=false
     mecho -n "Modifying parameter(s)... "
@@ -134,9 +134,9 @@ modify_variables () {
 
 
 
-#-----------------------------------------------------------------------------
-# add variables
-#-----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Add variables
+# ---------------------------------------------------------------------------
 add_variables () {
     addedParams=false
     mecho -n "Adding new parameter(s)... "
@@ -169,9 +169,9 @@ add_variables () {
 
 
 
-#-----------------------------------------------------------------------------
-# delete variables
-#-----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Delete variables
+# ---------------------------------------------------------------------------
 delete_variables () {
     deleted=0
     mecho -n "Removing old parameters... "
@@ -193,23 +193,23 @@ delete_variables () {
 
 
 
-#-----------------------------------------------------------------------------
-# create new configuration
-#-----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Create new configuration
+# ---------------------------------------------------------------------------
 create_config () {
     config_level="$1"
 
     mecho -n "Updating/creating configuration... "
 
     {
-        #---------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printgpl "ntp" "27.12.2003" "jed" "Copyright (c) 2001-2006 The Eisfair Team, team(at)eisfair(dot)org"
-        #---------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printgroup "NTP configuration"
-        #--------------------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printvar "START_NTP" "use ntp: yes or no"
         cat << EOF
-#-----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Clock types
 #
 # NTP_CLOCK_#_TYPE  
@@ -301,23 +301,23 @@ create_config () {
 # http://www.eecis.udel.edu/~mills/ntp/html/refclock.html
 #
 EOF
-        #---------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printgroup "Clock settings"
-        #---------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printvar "NTP_CLOCK_N" "Nbr of clock's"
 
-        if [ $NTP_CLOCK_N -eq 0 ] ; then
+        if [ ${NTP_CLOCK_N} -eq 0 ] ; then
             if [ "$config_level" = "update" ] ; then
                 imax=3
             else
                 imax=1
             fi
         else
-            imax=$NTP_CLOCK_N
+            imax=${NTP_CLOCK_N}
         fi
 
         idx=1
-        while [ $idx -le $imax ] ; do
+        while [ ${idx} -le ${imax} ] ; do
             printvar "NTP_CLOCK_${idx}_TYPE"            "${idx}. clock type"
             printvar "NTP_CLOCK_${idx}_PREFER"          "   prefer this clock?"
             printvar "NTP_CLOCK_${idx}_DEVICE"          "   clock device, default: ''"
@@ -325,12 +325,12 @@ EOF
             printvar "NTP_CLOCK_${idx}_LINK_DEVICE_NBR" "   clock link device dumber, default: ''"
             printvar "NTP_CLOCK_${idx}_STRATUM"         "   clock stratum, default: ''"
             echo
-            idx=`expr $idx + 1`
+            idx=$((idx+1))
         done
 
-        #---------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printgroup "Peers to synchronize with"
-        #---------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printvar "NTP_PEER_N" "Nbr of peers"
 
         if [ ${NTP_PEER_N} -eq 0 ] ; then
@@ -344,78 +344,78 @@ EOF
         fi
 
         idx=1
-        while [ $idx -le $imax ] ; do
+        while [ ${idx} -le ${imax} ] ; do
             printvar "NTP_PEER_${idx}" "${idx}. NTP peer"
-            idx=`expr $idx + 1`
+            idx=$((idx+1))
         done
 
-        #---------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printgroup "Inside server settings -- Server's to include into the peer"
-        #---------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printvar "NTP_SERVER_N" "Nbr of server's"
 
-        if [ $NTP_SERVER_N -eq 0 ] ; then
+        if [ ${NTP_SERVER_N} -eq 0 ] ; then
             if [ "$config_level" = "update" ] ; then
                 imax=2
             else
                 imax=0
             fi
         else
-            imax=$NTP_SERVER_N
+            imax=${NTP_SERVER_N}
         fi
 
         idx=1
-        while [ $idx -le $imax ] ; do
+        while [ ${idx} -le ${imax} ] ; do
             printvar "NTP_SERVER_${idx}" "${idx}. NTP server"
 
-            idx=`expr $idx + 1`
+            idx=$((idx+1))
         done
 
-        #---------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printgroup "Outside server settings -- Server's used for synchronization via menu"
-        #---------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printvar "NTP_SET_SERVER_N" "Nbr of server's"
 
-        if [ $NTP_SET_SERVER_N -eq 0 ] ; then
+        if [ ${NTP_SET_SERVER_N} -eq 0 ] ; then
             if [ "$config_level" = "update" ] ; then
                 imax=2
             else
                 imax=0
             fi
         else
-            imax=$NTP_SET_SERVER_N
+            imax=${NTP_SET_SERVER_N}
         fi
 
         idx=1
-        while [ $idx -le $imax ] ; do
+        while [ ${idx} -le ${imax} ] ; do
             printvar "NTP_SET_SERVER_${idx}" "${idx}. NTP server"
-            idx=`expr $idx + 1`
+            idx=$((idx+1))
         done
 
-        #---------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printgroup "Additional parameter" "*** YOU SHOULD NOW WHAT YOU DO, USE IT ON YOUR OWN RISK !!! ***"
-        #---------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printvar "NTP_ADD_PARAM_N" "Nbr of additional parameter"
 
-        if [ $NTP_ADD_PARAM_N -eq 0 ] ; then
+        if [ ${NTP_ADD_PARAM_N} -eq 0 ] ; then
             if [ "$config_level" = "update" ] ; then
                 imax=5
             else
                 imax=0
             fi
         else
-            imax=$NTP_ADD_PARAM_N
+            imax=${NTP_ADD_PARAM_N}
         fi
 
         idx=1
-        while [ $idx -le $imax ] ; do
+        while [ ${idx} -le ${imax} ] ; do
             printvar "NTP_ADD_PARAM_${idx}" "${idx}. parameter"
 
-            idx=`expr $idx + 1`
+            idx=$((idx+1))
         done
 
         cat << EOF
-#-----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # log handling
 #
 # Here you can specify how many logs should be saved and in with interval.
@@ -425,7 +425,7 @@ EOF
 #   NTP_LOG_EVENT_1_ENTRY='all'   - Log all events
 #   NTP_LOG_COUNT='10'            - Save the last 10 log files
 #   NTP_LOG_INTERVAL='daily'      - Save one log file per day
-#-----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 EOF
         printvar "NTP_LOG_EVENT_N"    "Amount of different log events to log"
         idx=1
@@ -435,30 +435,25 @@ EOF
         done
         printvar "NTP_LOG_COUNT"      "Nbr of log files to save"
         printvar "NTP_LOG_INTERVAL"   "Interval: daily, weekly, monthly"
-        #---------------------------------------------------------------------
+        # -------------------------------------------------------------------
         printend
-        #---------------------------------------------------------------------
-    } > $generate_conf
+        # -------------------------------------------------------------------
+    } > ${generate_conf}
 
     mecho " Done."
     anykey
 }
 
-#==============================================================================
-# main
-#==============================================================================
+# ===========================================================================
+# Main
+# ===========================================================================
 
-LOGNAME='jed'
-
-#testroot=/cvs/eis/etc/ntp
- testroot=''
-
-ntpfile=$testroot/etc/config.d/ntp
-installfile=$testroot/var/run/ntp.install
+ntpfile=/etc/config.d/ntp
+installfile=/var/run/ntp.install
 
 # setting defaults
-source_conf=$installfile
-generate_conf=$ntpfile
+source_conf=${installfile}
+generate_conf=${ntpfile}
 
 goflag=0
 
@@ -470,10 +465,10 @@ in
 
     test)
       # source_conf=$ntpfile
-        source_conf=$testroot/etc/default.d/ntp
+        source_conf=/etc/default.d/ntp
 
-      # generate_conf=$testroot/tmp/config.d/mk_ntp.test
-        generate_conf=$testroot/tmp/mk_ntp.test
+      # generate_conf=/tmp/config.d/mk_ntp.test
+        generate_conf=/tmp/mk_ntp.test
         goflag=1
         ;;
 
@@ -487,11 +482,11 @@ in
         goflag=0
 esac
 
-if [ $goflag -eq 1 ] ; then
-    if [ -f $source_conf ] ; then
+if [ ${goflag} -eq 1 ] ; then
+    if [ -f ${source_conf} ] ; then
         # previous configuration file exists
         mecho -info "previous configuration found ..."
-        . $source_conf
+        . ${source_conf}
 
         rename_variables
         modify_variables
@@ -505,6 +500,6 @@ if [ $goflag -eq 1 ] ; then
     fi
 fi
 
-#==============================================================================
-# end
-#==============================================================================
+# ===========================================================================
+# End
+# ===========================================================================
