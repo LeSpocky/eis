@@ -1,5 +1,5 @@
 #!/bin/sh
-# ----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # /var/install/config.d/cui-openntpd.sh - configuration generator script
 #
 # Copyright (c) 2001-2014 The Eisfair Team, team(at)eisfair(dot)org
@@ -8,26 +8,23 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# ----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 # read eislib
 . /var/install/include/eislib
-. /var/install/include/jedlib
 
 #exec 2>/var/install/config.d/ntp-trace-$$.log
 #set -x
-#testroot=/soft/jedntp                                   # only for testing
- testroot=""
 
 pgmname=`basename $0`
 
 ### set file names ###
-ntpConfigfile=$testroot/etc/config.d/ntp
-ntpDriftfile=$testroot/etc/ntp.drift
-ntpLogfile=$testroot/var/log/ntp.log
-generate_ntpconf=$testroot/etc/ntp.conf
-generate_ntplinks=$testroot/etc/ntp.links
-generate_logrotate=$testroot/etc/logrotate.d/ntp
+ntpConfigfile=/etc/config.d/ntp
+ntpDriftfile=/etc/ntp.drift
+ntpLogfile=/var/log/ntp.log
+generate_ntpconf=/etc/ntp.conf
+generate_ntplinks=/etc/ntp.links
+generate_logrotate=/etc/logrotate.d/ntp
 
 ### other parameters ###
 packageVersion=`grep "<version>" /var/install/packages/ntp | sed "s#<version>##g" | sed "s#</version>##g"`
@@ -36,49 +33,45 @@ packageVersion=`grep "<version>" /var/install/packages/ntp | sed "s#<version>##g
 . ${ntpConfigfile}
 chmod 600 ${ntpConfigfile}
 
-#-------------------------------------------------------------------------------
-# check NTP_LINK_N and delete the old links device
-#-------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Check NTP_LINK_N and delete the old links device
+# ---------------------------------------------------------------------------
 delete_oldlinkdevice () {
-    if [ -f $generate_ntplinks ] ; then
-        . $generate_ntplinks
+    if [ -f ${generate_ntplinks} ] ; then
+        . ${generate_ntplinks}
 
         idx=1
-        while [ $idx -le $NTP_LINK_N ]
-        do
-            eval softlinkdevice='$NTP_LINK_'$idx
-
+        while [ ${idx} -le ${NTP_LINK_N} ] ; do
+            eval softlinkdevice='$NTP_LINK_'${idx}
             if [ "$softlinkdevice" != "" ] ; then
                 mecho -n "Removing soft link '${softlinkdevice}'..."
-                rm -f $softlinkdevice
+                rm -f ${softlinkdevice}
                 mecho " Done."
             fi
-
-            idx=`expr $idx + 1`
+            idx=$((idx+1))
         done
     fi
 }
 
 
 
-#-------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # create NTP configuration file /etc/ntp.conf
-#-------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 create_ntpconf () {
     mecho -n "Creating ntp configuration file..."
 
     {
-        #-------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
         print_short_header "$generate_ntpconf" "$pgmname" "${packageVersion}"
-        #-------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
 
         idx=1
-        while [ $idx -le $NTP_CLOCK_N ]
-        do
-            eval clock_type='$NTP_CLOCK_'$idx'_TYPE'
-            eval clock_prefer='$NTP_CLOCK_'$idx'_PREFER'
-            eval clock_link_device_nbr='$NTP_CLOCK_'$idx'_LINK_DEVICE_NBR'
-            eval clock_stratum='$NTP_CLOCK_'$idx'_STRATUM'
+        while [ ${idx} -le ${NTP_CLOCK_N} ] ; do
+            eval clock_type='$NTP_CLOCK_'${idx}'_TYPE'
+            eval clock_prefer='$NTP_CLOCK_'${idx}'_PREFER'
+            eval clock_link_device_nbr='$NTP_CLOCK_'${idx}'_LINK_DEVICE_NBR'
+            eval clock_stratum='$NTP_CLOCK_'${idx}'_STRATUM'
 
             # --------------------------------------------------------------
             # Split the clock type here because if it is of type '8' it will
@@ -86,7 +79,7 @@ create_ntpconf () {
             # next test.
             local mode=`echo ${clock_type} | cut -d " " -f 2`
             clock_type=`echo ${clock_type} | cut -d " " -f 1`
-            if [ $clock_type -eq 1 ] ; then
+            if [ ${clock_type} -eq 1 ] ; then
                 echo "server    127.127.$clock_type.1"
 
                 if [ "$clock_stratum" != "" ] ; then
@@ -123,23 +116,21 @@ create_ntpconf () {
                 fi
             fi
 
-            idx=`expr $idx + 1`
+            idx=$((idx+1))
         done
 
         idx=1
-        while [ $idx -le $NTP_SERVER_N ]
-        do
-            eval server='$NTP_SERVER_'$idx
+        while [ ${idx} -le ${NTP_SERVER_N} ] ; do
+            eval server='$NTP_SERVER_'${idx}
             echo "server    $server"
-            idx=`expr $idx + 1`
+            idx=$((idx+1))
         done
 
         idx=1
-        while [ $idx -le $NTP_PEER_N ]
-        do
-            eval peer='$NTP_PEER_'$idx
+        while [ ${idx} -le ${NTP_PEER_N} ] ; do
+            eval peer='$NTP_PEER_'${idx}
             echo "peer      $peer"
-            idx=`expr $idx + 1`
+            idx=$((idx+1))
         done
 
         echo
@@ -151,8 +142,7 @@ create_ntpconf () {
         echo -n "logconfig ="
         separator=''
         idx=1
-        while [ ${idx} -le ${NTP_LOG_EVENT_N} ]
-        do
+        while [ ${idx} -le ${NTP_LOG_EVENT_N} ] ; do
             eval currentEvent='$NTP_LOG_EVENT_'${idx}'_ENTRY'
             echo -n "${separator}${currentEvent}"
             separator=' +'
@@ -161,54 +151,53 @@ create_ntpconf () {
         echo ""
 
         idx=1
-        while [ $idx -le $NTP_ADD_PARAM_N ]
-        do
-            eval addparam='$NTP_ADD_PARAM_'$idx
+        while [ ${idx} -le ${NTP_ADD_PARAM_N} ] ; do
+            eval addparam='$NTP_ADD_PARAM_'${idx}
 
             echo "$addparam"
 
-            idx=`expr $idx + 1`
+            idx=$((idx+1))
         done
-    } >$generate_ntpconf
+    } >${generate_ntpconf}
     mecho " Done."
 }
 
 
 
-#-------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Create NTP Links File /etc/ntp.links
-#-------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 create_ntplinks () {
 
     mecho -n "Creating ntp links file..."
 
     {
-        #-------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
         print_short_header "$generate_ntplinks" "$pgmname" "${packageVersion}"
-        #-------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
 
         idx=1
         jdx=0
-        while [ $idx -le $NTP_CLOCK_N ]
+        while [ ${idx} -le $NTP_CLOCK_N ]
         do
-            eval clock_device='$NTP_CLOCK_'$idx'_DEVICE'
-            eval clock_link_device='$NTP_CLOCK_'$idx'_LINK_DEVICE''$NTP_CLOCK_'$idx'_LINK_DEVICE_NBR'
+            eval clock_device='$NTP_CLOCK_'${idx}'_DEVICE'
+            eval clock_link_device='$NTP_CLOCK_'${idx}'_LINK_DEVICE''$NTP_CLOCK_'${idx}'_LINK_DEVICE_NBR'
 
             if [ "$clock_device" != "" ] && [ "$clock_link_device" != "" ] ; then
                 jdx=`expr $jdx + 1`
             fi
 
-            idx=`expr $idx + 1`
+            idx=`expr ${idx} + 1`
         done
 
         echo "NTP_LINK_N='$jdx'"
 
         idx=1
         jdx=0
-        while [ $idx -le $NTP_CLOCK_N ]
+        while [ ${idx} -le $NTP_CLOCK_N ]
         do
-            eval clock_device='$NTP_CLOCK_'$idx'_DEVICE'
-            eval clock_link_device='$NTP_CLOCK_'$idx'_LINK_DEVICE''$NTP_CLOCK_'$idx'_LINK_DEVICE_NBR'
+            eval clock_device='$NTP_CLOCK_'${idx}'_DEVICE'
+            eval clock_link_device='$NTP_CLOCK_'${idx}'_LINK_DEVICE''$NTP_CLOCK_'${idx}'_LINK_DEVICE_NBR'
 
             if [ "$clock_device" != "" ] && [ "$clock_link_device" != "" ] ; then
                 jdx=`expr $jdx + 1`
@@ -216,7 +205,7 @@ create_ntplinks () {
                 echo "NTP_LINK_${jdx}='$clock_link_device'"
             fi
 
-            idx=`expr $idx + 1`
+            idx=`expr ${idx} + 1`
         done
     } >$generate_ntplinks
     mecho " Done."
@@ -224,38 +213,38 @@ create_ntplinks () {
 
 
 
-#-------------------------------------------------------------------------------
-# create NTP link device
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Create NTP link device
+# ------------------------------------------------------------------------------
 create_ntplinkdevice () {
     idx=1
-    while [ $idx -le $NTP_CLOCK_N ]
+    while [ ${idx} -le ${NTP_CLOCK_N} ]
     do
-        eval clock_device='$NTP_CLOCK_'$idx'_DEVICE'
-        eval clock_link_device='$NTP_CLOCK_'$idx'_LINK_DEVICE''$NTP_CLOCK_'$idx'_LINK_DEVICE_NBR'
+        eval clock_device='$NTP_CLOCK_'${idx}'_DEVICE'
+        eval clock_link_device='$NTP_CLOCK_'${idx}'_LINK_DEVICE''$NTP_CLOCK_'${idx}'_LINK_DEVICE_NBR'
 
         if [ "$clock_device" != "" ] && [ "$clock_link_device" != "" ] ; then
             mecho "Creating soft link '${clock_device}' to '${clock_link_device}'..."
-            ln -sf $clock_device $clock_link_device
+            ln -sf ${clock_device} ${clock_link_device}
             mecho " Done."
         fi
 
-        idx=`expr $idx + 1`
+        idx=`expr ${idx} + 1`
     done
 }
 
 
 
-#----------------------------------------------------------------------------------------
-# create logrotate file
-#----------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------
+# Create logrotate file
+# ------------------------------------------------------------------------------------
 create_logrotate () {
     mecho -n "Creating logrotate configuration file..."
 
     {
-        #-------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
         print_short_header "$generate_logrotate" "$pgmname" "${packageVersion}"
-        #-------------------------------------------------------------------------------
+        # ---------------------------------------------------------------------------
 
         if [ "$START_NTP" = "yes" ] ; then
             echo "${ntpLogfile} {"
@@ -272,12 +261,12 @@ create_logrotate () {
         else
             echo "# NTP disabled!"
         fi
-    } >$generate_logrotate
+    } >${generate_logrotate}
     mecho " Done."
 }
 
 #===============================================================================
-# main
+# Main
 #===============================================================================
 
 mecho
