@@ -1,5 +1,5 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # /var/install/bin/ntp-set-time - set time
 #
 # Copyright (c) 2003-2004 Albert Steiner <albert.steiner.dw(at)gmx(dot)at>
@@ -12,24 +12,22 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 # read eislib
 . /var/install/include/eislib
 
-. /etc/config.d/ntp
+. /etc/config.d/openntpd
 
 clrhome
 
-if [ $NTP_SET_SERVER_N -eq 0 ]
-then
+if [ ${NTP_SET_SERVER_N} -eq 0 ] ; then
     mecho
     mecho -error "No Server's defined to set the Time ..."
     mecho
     anykey
 else
-    if /var/install/bin/ask "Set Time via other NTP Server"
-    then
+    if /var/install/bin/ask "Set Time via other NTP Server" ; then
         mecho
         /etc/init.d/ntp stop
         mecho
@@ -37,18 +35,16 @@ else
         sleep 2
 
         idx=1
-        while [ $idx -le $NTP_SET_SERVER_N ]
-        do
-            eval server='$NTP_SET_SERVER_'$idx
+        while [ ${idx} -le ${NTP_SET_SERVER_N} ] ; do
+            eval server='$NTP_SET_SERVER_'${idx}
 
             mecho -info "Try to set Time via $server ..."
-            /usr/sbin/ntpdate $server
+            /usr/sbin/ntpdate ${server}
 
-            if [ $? -eq 0 ]
-            then
-                idx=$NTP_SET_SERVER_N
+            if [ $? -eq 0 ] ; then
+                idx=${NTP_SET_SERVER_N}
             fi
-            idx=`expr $idx + 1`
+            idx=`expr ${idx} + 1`
         done
 
         sleep 1

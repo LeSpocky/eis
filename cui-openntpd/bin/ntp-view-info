@@ -1,5 +1,5 @@
 #! /bin/sh
-#----------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # /var/install/bin/ntp-view-info - view ntp information
 #
 # Copyright (c) 2001-2009 The Eisfair Team, team(at)eisfair(dot)org
@@ -11,29 +11,28 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#----------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 # read eislib
 . /var/install/include/eislib
 
 clrhome
-if [ -f /etc/eisfair-system ]
-then
-  case `cat /etc/eisfair-system`
+if [ -f /etc/eisfair-system ] ; then
+    case `cat /etc/eisfair-system`
     in
-      eisfair-2 | eisxen-1 | eisxen-2 )
-        /usr/bin/ntpq -c clocklist
-        mecho
-        /usr/bin/ntpq -c peers
-        mecho
-      ;;
-      eisfair-1 )
-        /usr/sbin/ntpq -c clocklist
-        mecho
-        /usr/sbin/ntpq -c peers
-        mecho
-      ;;
-  esac
+        eisfair-2 | eisxen-1 | eisxen-2 )
+            /usr/bin/ntpq -c clocklist
+            mecho
+            /usr/bin/ntpq -c peers
+            mecho
+            ;;
+        eisfair-1 )
+            /usr/sbin/ntpq -c clocklist
+            mecho
+            /usr/sbin/ntpq -c peers
+            mecho
+            ;;
+    esac
 else
     /usr/sbin/ntpq -c clocklist
     mecho

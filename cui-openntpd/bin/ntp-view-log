@@ -1,5 +1,5 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # /var/install/bin/ntp-view-log - view show NTP log
 #
 # Copyright (c) 2003-2004 Albert Steiner <albert.steiner.dw(at)gmx(dot)at> 
@@ -12,23 +12,22 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 # read eislib
 . /var/install/include/eislib
 
 log_dir=/var/log
-log_file=$log_dir/ntp.log
+log_file=${log_dir}/ntp.log
 
 ### view log file ###
 clrhome
 mecho -info "Viewing \"$log_file\""
 mecho
 
-if [ -f $log_file -a -s $log_file ]
-then
+if [ -f ${log_file} -a -s ${log_file} ] ; then
     export LESSCHARSET=latin1
-    /usr/bin/less +G $log_file
+    /usr/bin/less +G ${log_file}
 else
     mecho -warn "Could not find desired log file or file is empty, please try again later!"
 fi
