@@ -721,6 +721,7 @@ setup_root() {
 	{
 	echo "http://dl-5.alpinelinux.org/alpine/v_RELVERS_/main"
 	echo "http://download.eisfair.org/v_RELVERS_/main"
+	echo "http://download.eisfair.org/v_RELVERS_/backports"
 	} > /mnt/etc/apk/repositories
 	unmount_partitions /mnt
 	swapoff -a
