@@ -38,17 +38,17 @@ file_read( int fd, void *buffer, size_t bufsize, int timeout, ssize_t *nread, in
     if( !buffer || timeout < 0 || !nread ) { errno = *errval = EINVAL; return -1; }
 
     if( timeout > 0 ) {
-                fd_set readfds;
-                struct timeval tv;
+        fd_set readfds;
+        struct timeval tv;
 
-                FD_ZERO( &readfds );
-                FD_SET( fd, &readfds );
-                tv.tv_sec = timeout;
-                tv.tv_usec = 0;
+        FD_ZERO( &readfds );
+        FD_SET( fd, &readfds );
+        tv.tv_sec = timeout;
+        tv.tv_usec = 0;
 
-                if( select( fd+1, &readfds, NULL, NULL, &tv ) == -1 ) { *errval = errno; return -1; }
-                if( !FD_ISSET( fd, &readfds ) ) { errno = *errval = ETIMEDOUT; return -1; }
-        }
+        if( select( fd+1, &readfds, NULL, NULL, &tv ) == -1 ) { *errval = errno; return -1; }
+        if( !FD_ISSET( fd, &readfds ) ) { errno = *errval = ETIMEDOUT; return -1; }
+    }
 
     do {
         n_read = read( fd, buffer, bufsize );
@@ -60,7 +60,7 @@ file_read( int fd, void *buffer, size_t bufsize, int timeout, ssize_t *nread, in
 }
 
 
-int 
+int
 file_write( int fd, const void *buffer, size_t buflen, int timeout, ssize_t *nwritten, int *errval ) {
     ssize_t n_written, n_writtenonce;
 
@@ -91,6 +91,7 @@ file_write( int fd, const void *buffer, size_t buflen, int timeout, ssize_t *nwr
     return ( n_writtenonce == -1 ? -1 : 0 );
 }
 
+
 /* ----------------------------------------------------------------------------
  * check file content
  * ----------------------------------------------------------------------------*/
@@ -109,16 +110,16 @@ file_signature_content(const char *fname) {
                   fclose(fp);
                   return 1;
               }
-              break; 
+              break;
           case ' ' :
           case '<' :
               if (strstr(tmp, "moz-signature") != NULL) {
                   fclose(fp);
                   return 1;
               }
-              break; 
+              break;
        }
-    }   
+    }
     fclose(fp);
     return 0;
 }
@@ -137,54 +138,54 @@ file_move(const char *oldfile, const char *newfile)
     off_t offset;
 
     ret = rename(oldfile, newfile);
-	if(ret >= 0) 
-	    return 0;
- 
-	if((ret < 0) && (errno != EXDEV)) {
-		syslog( LOG_ERR, "Error: new file %s", newfile); 	
- 	    return -1;
+    if(ret >= 0)
+        return 0;
+
+    if((ret < 0) && (errno != EXDEV)) {
+        syslog( LOG_ERR, "Error: new file %s", newfile);
+        return -1;
     }
-    
+
     in = open(oldfile, O_RDONLY);
-	if(in < 0) {
-	    syslog( LOG_ERR, "Error: open for read %s", oldfile); 
+    if(in < 0) {
+        syslog( LOG_ERR, "Error: open for read %s", oldfile);
         return -1;
     }
 
     if(fstat(in, &statb) < 0) {
- 	    syslog( LOG_ERR, "Error: old file %s", oldfile);    
+        syslog( LOG_ERR, "Error: old file %s", oldfile);
         close(in);
-		return -1;
+        return -1;
     }
     out = open(newfile, O_WRONLY|O_CREAT, 0600);
-	if(out < 0) {
-	    syslog( LOG_ERR, "Cannot open for write %s", newfile); 	
+    if(out < 0) {
+        syslog( LOG_ERR, "Cannot open for write %s", newfile);
         close(in);
-		return -1;
+        return -1;
     }
-	offset = (off_t)0;
-	ret = sendfile(out, in, &offset, statb.st_size);
-	close(in);
-	if(ret < 0) {
+    offset = (off_t)0;
+    ret = sendfile(out, in, &offset, statb.st_size);
+    close(in);
+    if(ret < 0) {
         close(out);
-		unlink(newfile);
-		fin = fopen(oldfile, "r");
-		if(fin == NULL)
-		    return -1;
+        unlink(newfile);
+        fin = fopen(oldfile, "r");
+        if(fin == NULL)
+            return -1;
         fout = fopen(newfile, "w");
-		if(fout == NULL) {
+        if(fout == NULL) {
             fclose(fin);
-			return -1;
+            return -1;
         }
         while((c = getc(fin)) != EOF)
-		    putc(c, fout);
+            putc(c, fout);
         fclose(fin);
         fclose(fout);
     } else
-	    close(out);
+        close(out);
 
-	syslog( LOG_INFO,"removing %s ", oldfile);
-    
+    syslog( LOG_INFO,"removing %s ", oldfile);
+
     return unlink(oldfile);
 }
 
@@ -194,13 +195,13 @@ file_move(const char *oldfile, const char *newfile)
  * ----------------------------------------------------------------------------*/
 int
 file_save_local(const char *quarantinedir, const char *filename, const char *virus) {
-	int MM, YY, DD;
-	time_t tt;
-	size_t len;
-	const struct tm *tm;    
+    int MM, YY, DD;
+    time_t tt;
+    size_t len;
+    const struct tm *tm;
     char qfilename[2048];
-	char  *ptr;    
-	const mode_t old_umask = umask(0007);
+    char  *ptr;
+    const mode_t old_umask = umask(0007);
 
     tt = time((time_t *)0);
     tm = localtime(&tt);
@@ -208,34 +209,35 @@ file_save_local(const char *quarantinedir, const char *filename, const char *vir
     YY = tm->tm_year - 100;
     DD = tm->tm_mday;
     len = strlen(quarantinedir);
-    
+
     memset(qfilename, '\0', 2048 );
-    
+
     snprintf(qfilename,2047, "%s/%02d%02d%02d", quarantinedir, YY, MM, DD);
     if (( mkdir(qfilename, 0700) == -1 ) && ( errno != EEXIST )) {
-        syslog(LOG_ERR, "Create dir: %s ERROR: %s", qfilename, strerror(errno));     
+        syslog(LOG_ERR, "Create dir: %s ERROR: %s", qfilename, strerror(errno));
         umask(old_umask);
         return -1;
     }
 
     umask(old_umask);
-    snprintf(qfilename, 2047, "%s/%02d%02d%02d/%02d%02d%02d%04d.%s", 
-                      quarantinedir, YY, MM, DD, tm->tm_hour, tm->tm_min, 
+    snprintf(qfilename, 2047, "%s/%02d%02d%02d/%02d%02d%02d%04d.%s",
+                      quarantinedir, YY, MM, DD, tm->tm_hour, tm->tm_min,
                       tm->tm_sec, (1+(rand()%(9999-2))), virus);
     for(ptr = &qfilename[len + 10]; *ptr; ptr++) {
         if(*ptr == '/')
-		    *ptr = '_';
+            *ptr = '_';
         if (isspace((int) *ptr))
             *ptr = '.';
     }
-    syslog( LOG_INFO, "quarantine file: %s", qfilename); 
+    syslog( LOG_INFO, "quarantine file: %s", qfilename);
     if ( file_move(filename, qfilename) == -1 ) {
-        syslog( LOG_ERR, "Cannot move %s to quarantine file: %s", filename, qfilename); 
-        return -1;   
+        syslog( LOG_ERR, "Cannot move %s to quarantine file: %s", filename, qfilename);
+        return -1;
     }
     return 0;
-}      
-     
+}
+
+
 /* ----------------------------------------------------------------------------
  * Removes all dangling white-spaces and EOL chars from the end of a string.
  * Returns total number of chopped-off characters.
@@ -264,7 +266,7 @@ chop ( char* string ) {
     string[strlen(string)-chopped] = '\0';
     return (chopped);
 }
-    
+
 
 /* ----------------------------------------------------------------------------
  * Get the file size
@@ -277,7 +279,7 @@ get_file_size(const char *file_name) {
         return(0);
     return( buf.st_size );
 }
- 
+
 
 /* ----------------------------------------------------------------------------
  * convert string to lower case
@@ -285,10 +287,10 @@ get_file_size(const char *file_name) {
  * ----------------------------------------------------------------------------*/
 void
 strtolower (char *str) {
-	/* check for required data presented */
-	if (!str) 
+    /* check for required data presented */
+    if (!str)
         return;
-	for (; *str; str++) *str = tolower(*str);
+    for (; *str; str++) *str = tolower(*str);
 }
 
 
