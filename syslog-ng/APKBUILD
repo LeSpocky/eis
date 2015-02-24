@@ -14,7 +14,6 @@ install="$pkgname.pre-install $pkgname.post-install $pkgname.pre-deinstall $pkgn
 subpackages=""
 
 source="http://www.balabit.com/downloads/files/syslog-ng/open-source-edition/${pkgver}/source/syslog-ng_${pkgver}.tar.gz
-	timeutils.patch
 	syslog-ng.logrotate
 	syslog-ng.initd
 	syslog-ng-destination.std
@@ -75,7 +74,6 @@ package() {
 }
 
 md5sums="6928e9be3499a2e9ae52ea8aa204b165  syslog-ng_3.6.2.tar.gz
-282d1db25151a87fefe74fad68824e99  timeutils.patch
 8916d55f8213d2746e8c2a6a89c29d6c  syslog-ng.logrotate
 155cc5d701aca534f62ebbf6d35ca7af  syslog-ng.initd
 f0b4a0b530e269c51bc63f5b9d817c9b  syslog-ng-destination.std
@@ -85,7 +83,6 @@ d656d4c58416ac8240fc844986c14f06  syslog-ng-options.std
 5b54d79cb535f20a8524ea70f6f87ffb  syslog-ng-plugins.std
 d1b01c819861945675a6e2fcff8d9a2c  syslog-ng-source.std"
 sha256sums="ef47fada52981e09af570457a5af30f815f5d5b6c2e33754cedd4ca9780d8261  syslog-ng_3.6.2.tar.gz
-cc2dd1e5a26651ebde1068192593abeb303034fb190ced023a35ed808663995d  timeutils.patch
 a886b65863d72476504165e6a6dfe3d2922945d8cb61adb6b8eec73ac35d825e  syslog-ng.logrotate
 37f132d567b214ab7bea49297afdd2bdae60c185909dbac22c3b9578785ef6e3  syslog-ng.initd
 bd3097c1d8ff6754df0d7e470659827ae4d6bf86976badf5aabe4d25504fd572  syslog-ng-destination.std
@@ -95,7 +92,6 @@ df30f0ce37bdf8cc0ac0fcc04800d7d14880bf3a19d01ab96220a325f1ab3943  syslog-ng-log.
 6f052e1cc3523b0d23696b450058e4bfee89cb75eb9039cc405eded79c996aa1  syslog-ng-plugins.std
 0f3ea572b98d21f3afd82d64b17d518d6584b2ea4bfe96df2c1aa9c648890014  syslog-ng-source.std"
 sha512sums="15603b4df2001e1ce7e0019d0dd9a0f4295445e3fd19a527ebf3d49486da7da27fac6c465727ec0354f8f70ca0f671a285ec132f9aa0de62b40f18b44af2a226  syslog-ng_3.6.2.tar.gz
-e45badbf6c6f1fa6bd4f54cb8e0705430ddf824b7ddd0b19efa6dd24651c3b85f96e1d379630f8dac962568592078256610299946b4d3aed4b6e14b813a70c2d  timeutils.patch
 a062d1601f5215f60e2fc40c6ca498d768aa97af3647a9468731123a28fdd67962421b4412bfbe08a1123141b730cb78f102230ab72befec05ba7f398b39e27a  syslog-ng.logrotate
 dfbe16d0e1d5d1e18f0ac24fbd779dee585603d534beede39a87923d263a1ff779085ae0c0b367f627dd6df568dfe523ddc76e2a6b0c2914e3c089ab26449438  syslog-ng.initd
 b51d8b3da9584b6cb5b5c023b5ca1085d8e4c2cfa56f6ed12fe6feb0f33a390b43825aaaf4dd74eb6b7765485fe42f7f21c74380b72de9ed2c7775787ab1e720  syslog-ng-destination.std
