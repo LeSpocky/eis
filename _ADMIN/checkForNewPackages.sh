@@ -5,7 +5,7 @@
 #
 # Creation   :  2013-04-19  starwarsfan
 #
-# Copyright (c) 2013 the eisfair team, team(at)eisfair(dot)org>
+# Copyright (c) 2013-2015 the eisfair team, team(at)eisfair(dot)org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@ cd `dirname $0`
 scriptDir=`pwd`
 scriptName=`basename $0`
 
-javaMinHeap='256M'
-javaMaxHeap='512M'
+javaMinHeap='512M'
+javaMaxHeap='1024M'
 rtc=0
 
 # -----------------------------
@@ -63,28 +63,15 @@ fi
 
 
 # ============================================================================
-# Extract the list of template jobs out of the list of all build jobs
-getTemplateJobs ()
-{
-    local jobsToFind=${templateJobPrefix}${jobNamePrefix}__${templateJobPlaceholder}__
-    jobTemplates=$(java -Xms${javaMinHeap} \
-                        -Xmx${javaMaxHeap} \
-                        -jar ${jenkinsCliJar} \
-                        -s ${jenkinsUrl} \
-                        list-jobs \
-                        --username ${jenkinsUser} \
-                        --password-file ${jenkinsPasswordFile} | grep ${jobsToFind} | tr '\n' ' ')
-}
-
-
-
-# ============================================================================
 # Iterate over all folders on local working copy. In fact every folder
 # represents a package (except folder _ADMIN), so for every folder the
 # corresponding build jobs must exist or will be created.
 iteratePackageFolders ()
 {
     cd ${jobsFolder}
+
+    local tmpCounter=0
+
 	echo "=============================================================================="
     for currentFolder in $(ls -d ${workspaceFolder}/*/ | grep -v "_ADMIN") ; do
         # Cut last '/' and everything beyond
@@ -93,10 +80,17 @@ iteratePackageFolders ()
         currentCheckedPackage=${currentCheckedPackage##*/}
 
         echo "Checking jenkins jobs for package '$currentCheckedPackage'"
-        for currentJobTemplate in ${jobTemplates} ; do
-            # $currentJobTemplate is something like '_eisfair-ng__TEMPLATE__v2.6_x86'
-            createJob "$currentCheckedPackage" "$currentJobTemplate"
+        for currentJobFolder in ${jobFolderList} ; do
+            echo ${currentJobFolder}
+            # $currentJobTemplate is something like 'eisfair-ng/v3.1/testing/x86_64'
+            createJob "$currentCheckedPackage" "$currentJobFolder" ${jobTemplateName}
         done
+
+        # For testing: Only create 3 jobs
+        tmpCounter=$((tmpCounter+1))
+        if [ ${tmpCounter} -gt 3 ] ; then
+            break
+        fi
     done
 	echo "=============================================================================="
 }
@@ -112,17 +106,19 @@ iteratePackageFolders ()
 createJob ()
 {
     local currentPackage=$1
-    local templateJobName=$2
+    local logicalJobFolder=$2
+    local jobTemplateName=$3
+    local physicalJobFolder="$(echo "$logicalJobFolder" | sed "s#/#/jobs/#g")/jobs"
     local currentRtc=0
-    local jobName=${jobNamePrefix}__${currentPackage}__${currentJobTemplate##*__}
-    if [ ! -d ${jobName} -o ! -f ${jobName}/config.xml ] ; then
+
+    if [ ! -d ${physicalJobFolder}/${currentPackage} -o ! -f ${physicalJobFolder}/${currentPackage}/config.xml ] ; then
         # Config file not found, create it
-        echo "Calling jenkins api to create job '$jobName'"
+        echo "Calling jenkins api to create job '${logicalJobFolder}/${currentPackage}'"
         java -Xms${javaMinHeap} \
              -Xmx${javaMaxHeap} \
              -jar ${jenkinsCliJar} \
              -s ${jenkinsUrl} \
-             get-job ${templateJobName} \
+             get-job ${logicalJobFolder}/${jobTemplateName} \
              --username ${jenkinsUser} \
              --password-file ${jenkinsPasswordFile} | \
             sed "s/TEMPLATE/$currentPackage/g" | \
@@ -130,15 +126,15 @@ createJob ()
                  -Xmx${javaMaxHeap} \
                  -jar ${jenkinsCliJar} \
                  -s ${jenkinsUrl} \
-                 create-job ${jobName} \
+                 create-job ${logicalJobFolder}/${currentPackage} \
                  --username ${jenkinsUser} \
                  --password-file ${jenkinsPasswordFile}
         currentRtc=$?
         if [ ${currentRtc} != 0 ] ; then
-            echo "ERROR: Something went wrong during creation of build-job '$jobName'"
+            echo "ERROR: Something went wrong during creation of build-job '${logicalJobFolder}/${jobTemplateName}'"
             rtc=${currentRtc}
         elif ${buildNewJobs} ; then
-            triggerBuild ${jobName}
+            triggerBuild ${logicalJobFolder}/${currentPackage}
         fi
     fi
 }
@@ -153,19 +149,20 @@ createJob ()
 #       as the base for the new job
 triggerBuild ()
 {
-    local jobName=$1
-    if [ -d ${jobName} -a -f ${jobName}/config.xml ] ; then
-        echo "Calling jenkins api to build job '$jobName'"
+    local logicalJobName=$1
+    local physicalJobFolder=$(echo "$logicalJobFolder" | sed "s#/#/jobs/#g")
+    if [ -d ${physicalJobFolder} -a -f ${physicalJobFolder}/config.xml ] ; then
+        echo "Calling jenkins api to build job '$logicalJobName'"
         java -Xms${javaMinHeap} \
              -Xmx${javaMaxHeap} \
              -jar ${jenkinsCliJar} \
              -s ${jenkinsUrl} \
-             build ${jobName} \
+             build ${logicalJobName} \
              --username ${jenkinsUser} \
              --password-file ${jenkinsPasswordFile}
         currentRtc=$?
         if [ ${currentRtc} != 0 ] ; then
-            echo "ERROR: Something went wrong during trigger of build-job '$jobName'"
+            echo "ERROR: Something went wrong during trigger of build-job '$logicalJobName'"
             rtc=${currentRtc}
         fi
     fi
@@ -188,13 +185,22 @@ usage ()
         be created.
 
   Options:
-  -n|--no-build .. Do not build new jobs immediately after their creation.
+  -n|--no-build
+        .. Do not trigger a build of new jobs immediately after their creation.
+  --jfl|--job-folder-list
+        .. Comma separated list of package folders following Jenkins logical structure e. g.
+           'eisfair-ng/v3.1/testing/x86,eisfair-ng/v3.1/testing/x86_64'
+  -t|--job-template-name
+        .. Name of the template job which should be used as base for new jobs.
+           Default: '_TEMPLATE'
 
 EOF
 }
 
 # Set some defaults
 buildNewJobs=true
+jobFolderList='eisfair-ng/v3.1/testing/x86 eisfair-ng/v3.1/testing/x86_64'
+jobTemplateName=_TEMPLATE
 
 while [ $# -ne 0 ]
 do
@@ -209,10 +215,22 @@ do
             # Do not directly build new jobs
             buildNewJobs=false
             ;;
+        --jfl|--job-folder-list)
+            if [ $# -ge 2 ] ; then
+                jobFolderList=$(echo "$2" | sed "s/,/ /g")
+                shift
+            fi
+            ;;
+        -t|--job-template-name)
+            if [ $# -ge 2 ] ; then
+                jobTemplateName=$2
+                shift
+            fi
+            ;;
         * )
-            shift
             ;;
     esac
+    shift
 done
 
 if [ ! -d ${jobsFolder} ] ; then
@@ -227,7 +245,7 @@ cd ${scriptDir}/..
 workspaceFolder=`pwd`
 
 # Now do the job :-)
-getTemplateJobs
+#getTemplateJobs
 iteratePackageFolders
 
 exit ${rtc}

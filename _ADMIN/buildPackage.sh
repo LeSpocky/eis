@@ -8,7 +8,7 @@
 #
 # Creation   :  2013-11-09  starwarsfan
 #
-# Copyright (c) 2013 the eisfair team, team(at)eisfair(dot)org>
+# Copyright (c) 2013-2015 the eisfair team, team(at)eisfair(dot)org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 #exec 2> /tmp/buildPackage-trace$$.txt
 #set -x
 
-branch='main'
 rtc=0
 
 
@@ -39,7 +38,10 @@ usage ()
 
   Optional parameters:
     -j|--job-name <job-name>
-        Set variable JOB_NAME.
+        Set variable JOB_NAME. Value must follow the form
+        'eisfair-ng/<alpine-release>/<stage>/<architecture>/<package>'
+        so i. e. 'eisfair-ng/v3.1/testing/x86_64/bonnie'.
+        Normally it is set by Jenkins as an env var.
 
     -r|--result-folder <result-folder>
         Set variable CI_RESULTFOLDER_EISFAIR_NG.
@@ -67,20 +69,15 @@ checkEnvironment ()
 
 extractVariables ()
 {
-    # Extract package name from <some-text>__<package-name>__<release>_<arch>
-    # Example:
-    # eisfair-ng__cuimenu__edge_x86
-    # eisfair-ng__cuimenu__edge_x86_64
-    # eisfair-ng__cuimenu__v2.6_x86
-    # eisfair-ng__cuimenu__v2.6_x86_64
-    # eisfair-ng__eis-install__edge_x86
-    # eisfair-ng__eis-install__edge_x86_64
-    # eisfair-ng__eis-install__v2.6_x86
-    # eisfair-ng__eis-install__v2.6_x86_64
-    packageName=`echo ${JOB_NAME} | sed "s/\(.*__\)\(.*\)\(__.*\)/\2/g"`
-    releaseArch=`echo ${JOB_NAME} | sed "s/\(.*__.*__\)\(.*\)/\2/g"`
-    alpineRelease=`echo ${releaseArch%%_*}`
-    packageArch=`echo ${releaseArch#*_}`
+    # Extract package name, stage and arch from eisfair-ng/<alpine-release>/<stage>/<architecture>/<package>
+    # Example: JOB_NAME='eisfair-ng/v3.1/testing/x86_64/bonnie'
+    packageName=${JOB_NAME##*\/}
+    packageArch=${JOB_NAME%\/*}
+    packageArch=${packageArch#*\/}
+    packageStage=${packageArch%\/*}
+    alpineRelease=${packageStage%\/*}
+    packageStage=${packageStage#*\/}
+    packageArch=${packageArch##*\/}
 }
 
 
@@ -106,10 +103,10 @@ buildPackage ()
         echo "Copying apk file(s) to repository folder"
         checkDeploymentDestination
         if ls *.apk >/dev/null 2>&1 ; then
-            cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/testing/${packageArch}
+            cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${packageStage}/${packageArch}/
             rtc=$?
         else
-            cp -f ~/packages/${JOB_NAME}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/testing/${packageArch}
+            cp -f ~/packages/${packageName}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${packageStage}/${packageArch}/
             rtc=$?
         fi
     else
@@ -121,9 +118,9 @@ buildPackage ()
 
 checkDeploymentDestination ()
 {
-    if [ ! -d ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/${packageArch} ] ; then
+    if [ ! -d ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${packageStage}/${packageArch} ] ; then
         echo "Repository directory not existing, creating it"
-        mkdir -p ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/${packageArch}
+        mkdir -p ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${packageStage}/${packageArch}
     fi
 }
 
