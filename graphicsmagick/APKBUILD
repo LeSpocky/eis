@@ -8,9 +8,9 @@ url="http://www.graphicsmagick.org/"
 arch="all"
 license="GPL"
 depends=""
-options="libtool"
-makedepends="zlib-dev libpng-dev libjpeg-turbo-dev freetype-dev perl-dev
-	tiff-dev ghostscript-dev libwebp-dev libtool"
+options="libtool !strip"
+makedepends="zlib-dev libpng-dev libjpeg-turbo-dev freetype-dev lcms2-dev xz-dev
+              tiff-dev ghostscript-dev libwebp-dev libtool"
 subpackages="$pkgname-doc $pkgname-dev"
 source="http://sourceforge.net/projects/graphicsmagick/files/graphicsmagick/${pkgver}/GraphicsMagick-${pkgver}.tar.bz2"
 
@@ -35,7 +35,6 @@ build() {
 		--mandir=/usr/share/man \
 		--infodir=/usr/share/info \
 		--docdir=/usr/share/doc/${pkgname} \
-		--enable-shared \
 		--enable-largefile \
 		--with-quantum-depth=8 \
 		--enable-magick-compat \
@@ -43,7 +42,6 @@ build() {
 		--with-gslib \
 		--with-fontpath=/usr/share/fonts \
 		--with-gs-font-dir=/usr/share/fonts/Type1 \
-		--with-modules \
 		$_pic \
 		|| return 1
 	make || return 1
@@ -55,7 +53,7 @@ package() {
 
 	rm -rf ${pkgdir}/usr/share/GraphicsMagick-${pkgver}
 	find "$pkgdir" -name *.la -delete
-	strip -R .note -R .comment $pkgdir/usr/lib/GraphicsMagick-${pkgver}/modules-Q8/coders/*
+	strip -R .note -R .comment ${pkgdir}/usr/bin/gm
 }
 
 md5sums="fcf543de2d74514376cfd0418cc30989  GraphicsMagick-1.3.21.tar.bz2"
