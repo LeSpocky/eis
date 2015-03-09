@@ -10,7 +10,7 @@ license="GPL"
 depends=""
 options="libtool !strip"
 makedepends="zlib-dev libpng-dev libjpeg-turbo-dev freetype-dev lcms2-dev xz-dev
-              tiff-dev ghostscript-dev libwebp-dev libtool"
+              tiff-dev ghostscript-dev libwebp-dev libxml2-dev libtool"
 subpackages="$pkgname-doc $pkgname-dev"
 source="http://sourceforge.net/projects/graphicsmagick/files/graphicsmagick/${pkgver}/GraphicsMagick-${pkgver}.tar.bz2"
 
