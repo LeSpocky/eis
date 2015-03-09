@@ -19,7 +19,7 @@
 pgmname=`basename $0`
 
 ### set file names ###
-ntpConfigfile=/etc/config.d/ntp
+ntpConfigfile=/etc/config.d/openntpd
 ntpDriftfile=/etc/ntp.drift
 ntpLogfile=/var/log/ntp.log
 generate_ntpconf=/etc/ntp.conf
