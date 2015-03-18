@@ -2,8 +2,7 @@
 
 depend()
 {
-	need localmount
-	use consolefont
+	need consolefont
 }
 
 start()
