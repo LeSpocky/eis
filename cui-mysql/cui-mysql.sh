@@ -47,7 +47,11 @@ if [ "$MYSQL_RAM" = "256MB" ]; then
     binlog_cache_size="64K"
     ## total per-thread buffer memory usage: 134400K = 131.25MB
     ## Query Cache - global buffer
-    query_cache_size="8M"
+    query_cache_size="16M"
+    ## Query Cache - maximal size of entry (default 512k) 
+    query_cache_limit="512K"
+    ## Query Cache - minimal size of entry
+    query_cache_min_res_unit="4K"
     ## Connections - multiplier for memory usage via per-thread buffers
     max_connections="60"
     #thread_cache_size - recommend 5% (10%?) of max_connections
@@ -67,19 +71,14 @@ elif [ "$MYSQL_RAM" = "1GB" ]; then
     read_rnd_buffer_size="256K"
     join_buffer_size="256K"
     binlog_cache_size="64K"
-    ## total per-thread buffer memory usage: 134400K = 131.25MB
-    ## Query Cache - global buffer
     query_cache_size="32M"
-    ## Connections - multiplier for memory usage via per-thread buffers
+    query_cache_limit="512K"
+    query_cache_min_res_unit="4K"
     max_connections="100"
-    #thread_cache_size - recommend 5% (10%?) of max_connections
     thread_cache_size="8"
-    ## Table and TMP settings
     tmp_table_size="64M"
     bulk_insert_buffer_size="64M"
-    ## MyISAM Engine - global buffer
     key_buffer_size="16M"
-    ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="128M"
     innodb_log_buffer_size="16M"
 
@@ -89,19 +88,14 @@ elif [ "$MYSQL_RAM" = "2GB" ]; then
     read_rnd_buffer_size="256K"
     join_buffer_size="256K"
     binlog_cache_size="64K"
-    ## total per-thread buffer memory usage: 672000K = 656.25MB
-    ## Query Cache - global buffer
     query_cache_size="64M"
-    ## Connections - multiplier for memory usage via per-thread buffers
+    query_cache_limit="512K"
+    query_cache_min_res_unit="4K"
     max_connections="400"
-    #thread_cache_size - recommend 5% of max_connections
     thread_cache_size="20"
-    ## Table and TMP settings
     tmp_table_size="128M"
     bulk_insert_buffer_size="128M"
-    ## MyISAM Engine - global buffer
     key_buffer_size="16M"
-    ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="768M"
     innodb_log_buffer_size="32M"
 
@@ -111,19 +105,14 @@ elif [ "$MYSQL_RAM" = "4GB" ]; then
     read_rnd_buffer_size="512K"
     join_buffer_size="512K"
     binlog_cache_size="64K"
-    ## total per-thread buffer memory usage: 2368000K = 2.312G
-    ## Query Cache - global buffer
     query_cache_size="128M"
-    ## Connections - multiplier for memory usage via per-thread buffers
-    max_connections="600"
-    #thread_cache_size - recommend 5% of max_connections
+    query_cache_limit="2M"
+    query_cache_min_res_unit="2K"
+    max_connections="500"
     thread_cache_size="30"
-    ## Table and TMP settings
     tmp_table_size="512M"
     bulk_insert_buffer_size="512M"
-    ## MyISAM Engine - global buffer
     key_buffer_size="32M"
-    ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="1G"
     innodb_log_buffer_size="64M"
 
@@ -133,19 +122,14 @@ elif [ "$MYSQL_RAM" = "8GB" ]; then
     read_rnd_buffer_size="512K"
     join_buffer_size="512K"
     binlog_cache_size="64K"
-    ## total per-thread buffer memory usage: 4736000K = 4.625GB
-    ## Query Cache - global buffer
-    query_cache_size="256M"
-    ## Connections - multiplier for memory usage via per-thread buffers
-    max_connections="1000"
-    #thread_cache_size - recommend 5% of max_connections
+    query_cache_size="128M"
+    query_cache_limit="6M"    
+    query_cache_min_res_unit="1K"
+    max_connections="600"
     thread_cache_size="50"
-    ## Table and TMP settings
     tmp_table_size="1G"
     bulk_insert_buffer_size="1G"
-    ## MyISAM Engine - global buffer
     key_buffer_size="64M"
-    ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="4G"
     innodb_log_buffer_size="128M"
 
@@ -155,19 +139,14 @@ elif [ "$MYSQL_RAM" = "16GB" ]; then
     read_rnd_buffer_size="1M"
     join_buffer_size="1M"
     binlog_cache_size="64K"
-    ## total per-thread buffer memory usage: 8832000K = 8.625GB
-    ## Query Cache - global buffer
     query_cache_size="256M"
-    ## Connections - multiplier for memory usage via per-thread buffers
-    max_connections="2000"
-    #thread_cache_size - recommend 5% of max_connections
+    query_cache_limit="8M"
+    query_cache_min_res_unit="2K"
+    max_connections="1000"
     thread_cache_size="100"
-    ## Table and TMP settings
     tmp_table_size="1G"
     bulk_insert_buffer_size="1G"
-    ## MyISAM Engine - global buffer
     key_buffer_size="128M"
-    ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="10G"
     innodb_log_buffer_size="128M"
 
@@ -177,47 +156,41 @@ elif [ "$MYSQL_RAM" = "32GB" ]; then
     read_rnd_buffer_size="1M"
     join_buffer_size="1M"
     binlog_cache_size="64K"
-    ## total per-thread buffer memory usage: 8832000K = 8.625GB
-    ## Query Cache - global buffer
     query_cache_size="256M"
-    ## Connections - multiplier for memory usage via per-thread buffers
-    max_connections="2000"
-    #thread_cache_size - recommend 5% of max_connections
+    query_cache_limit="8M"
+    query_cache_min_res_unit="2K"
+    max_connections="1000"
     thread_cache_size="100"
-    ## Table and TMP settings
     tmp_table_size="1G"
     bulk_insert_buffer_size="1G"
-    ## MyISAM Engine - global buffer
     key_buffer_size="256M"
-    ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="18G"
     innodb_log_buffer_size="128M"
 
 elif [ "$MYSQL_RAM" = "64GB" ]; then
-    ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
     thread_stack="512K"
     sort_buffer_size="2M"
     read_buffer_size="2M"
     read_rnd_buffer_size="2M"
     join_buffer_size="2M"
     binlog_cache_size="128K"
-    ## total per-thread buffer memory usage: 17664000K = 17.250GB
-    ## Query Cache - global buffer
     query_cache_size="256M"
-    ## Connections - multiplier for memory usage via per-thread buffers
+    query_cache_limit="8M"
+    query_cache_min_res_unit="2K"
     max_connections="2000"
-    #thread_cache_size - recommend 5% of max_connections
     thread_cache_size="100"
-    ## Table and TMP settings
     tmp_table_size="1G"
     bulk_insert_buffer_size="1G"
-    ## MyISAM Engine - global buffer
     key_buffer_size="256M"
-    ## InnoDB Plugin Independent Settings
     innodb_buffer_pool_size="38G"
     innodb_log_buffer_size="128M"
 fi
 
+
+[ -z "$MYSQL_MAX_CONNECTIONS"  -o "X$MYSQL_MAX_CONNECTIONS"  = "Xdefault" ] || max_connections="$MYSQL_MAX_CONNECTIONS"
+[ -z "$MYSQL_QCACHE_SIZE"      -o "X$MYSQL_QCACHE_SIZE"      = "Xdefault" ] || query_cache_size="$MYSQL_QCACHE_SIZE"
+[ -z "$MYSQL_QCACHE_ENTRY_MAX" -o "X$MYSQL_QCACHE_ENTRY_MAX" = "Xdefault" ] || query_cache_limit="$MYSQL_QCACHE_ENTRY_MAX"
+[ -z "$MYSQL_QCACHE_ENTRY_MIN" -o "X$MYSQL_QCACHE_ENTRY_MIN" = "Xdefault" ] || query_cache_min_res_unit="$MYSQL_QCACHE_ENTRY_MIN"
 
 # ---- write config file -------------------------------------------------------
 cat > /etc/mysql/my.cnf <<EOF
@@ -269,7 +242,8 @@ ${blg}binlog_cache_size           = $binlog_cache_size
 
 ## Query Cache
 query_cache_size            = $query_cache_size
-query_cache_limit           = 2M     #512K #max query result size to put in cache
+query_cache_limit           = $query_cache_limit
+query_cache_min_res_unit    = $query_cache_min_res_unit
 
 ## Connections
 max_connections             = $max_connections

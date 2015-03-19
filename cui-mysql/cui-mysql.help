@@ -31,6 +31,25 @@ Memory using for mysql server:<br/>
 4GB = 600 connections<br/>
 </help>
 
+<help name="MYSQL_MAX_CONNECTIONS">
+The maximum permitted number of simultaneous client connections.<br/>
+max_connections = 60 ... 1000<br/>
+
+</help>
+
+<help name="MYSQL_QCACHE_SIZE">
+MySQL query_cache_size = ...
+</help>
+
+<help name="MYSQL_QCACHE_ENTRY_MAX">
+MySQL query_cache_limit = ...
+</help>
+
+<help name="MYSQL_QCACHE_ENTRY_MIN">
+MySQL query_cache_min_res_unit = ...
+</help>
+
+
 <help name="MYSQL_LOG_INTERVAL">
 Logrotate interval: daily, weekly, monthly.<br/>
 How often shall logrotate be executed?

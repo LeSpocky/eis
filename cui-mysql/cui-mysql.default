@@ -1,6 +1,6 @@
 #------------------------------------------------------------------------------
 # /etc/config.d/mysql - configuration file for mysql
-# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2007 - 2015 the eisfair team, team(at)eisfair(dot)org
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
@@ -12,6 +12,15 @@ MYSQL_NETWORK="no"                    # enable the TCP/IP external connection
 MYSQL_BIND=""                         # If set, then bind the MySQL port only to
 MYSQL_CONNECT_PORT="3306"             # MySQL remote port, default=3306
 MYSQL_RAM="256MB"                     # Use 256 MB ... 64 GB RAM
+
+#------------------------------------------------------------------------------
+# Optimization settings
+#------------------------------------------------------------------------------
+
+MYSQL_MAX_CONNECTIONS="default"       # max client connections
+MYSQL_QCACHE_SIZE="default"           # query cache size
+MYSQL_QCACHE_ENTRY_MAX="default"      # max size of query cache entry
+MYSQL_QCACHE_ENTRY_MIN="default"      # min size of query cache entry 
 
 MYSQL_LOG_INTERVAL="weekly"
 MYSQL_LOG_MAXCOUNT="4"

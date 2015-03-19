@@ -5,4 +5,6 @@
 <script file="/usr/bin/cui-mysql-backup.sh">Backup all databases</script>
 <script file="/usr/bin/cui-mysql-backup.sh --select">Backup database</script>
 <script file="/usr/bin/cui-mysql-restore.sh --select">Restore database</script>
+<script file="/usr/bin/cui-mysql-restore.sh --select">Restore database</script>
+<script file="/usr/bin/mysqlcheck --all-databases --optimize --auto-repair">Optimize all databases</script>
 <!-- script file="" Edit, remove MySQL user /script -->
