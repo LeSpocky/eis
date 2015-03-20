@@ -1,11 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>This job is called from the Jenkins job &lt;b&gt;_eisfair-ng__releasePackage&lt;/b&gt; to release the given package&lt;br/&gt;&#xd;
-&lt;br/&gt;&#xd;
-Additionally it is possible to start this job directly to release a package just for the platform depicted by&lt;br/&gt;&#xd;
-the suffix on this jobs name. To do so, a list of all packages is provided, from which the package to release &lt;br/&gt;&#xd;
-must be choosen. The choosen package will be released and deployed to the corresponding package repositories.</description>
+  <description>If something goes wrong during mirror sync, this job can be used to trigger an&lt;br/&gt;&#xd;
+eisfair-ng package mirror sync from our build system to the official hosting provider. </description>
   <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>-1</daysToKeep>
     <numToKeep>20</numToKeep>
@@ -16,20 +13,30 @@ must be choosen. The choosen package will be released and deployed to the corres
   <properties>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
-        <com.cwctravel.hudson.plugins.extended__choice__parameter.ExtendedChoiceParameterDefinition plugin="extended-choice-parameter@0.34">
-          <name>PACKAGE_TO_RELEASE</name>
-          <description>Choose package which should be released</description>
-          <quoteValue>false</quoteValue>
-          <visibleItemCount>5</visibleItemCount>
-          <type>PT_SINGLE_SELECT</type>
-          <propertyFile>https://ssl.nettworks.org/ci/view/Alle/job/_eisfair-ng__checkBuildJobs/lastSuccessfulBuild/artifact/_ADMIN/packages.txt</propertyFile>
-          <propertyKey>packages</propertyKey>
-          <multiSelectDelimiter>,</multiSelectDelimiter>
-        </com.cwctravel.hudson.plugins.extended__choice__parameter.ExtendedChoiceParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>SYNC_2_7</name>
+          <description>Trigger sync of all 2.7-x86 packages</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>SYNC_2_7__64</name>
+          <description>Trigger sync of all 2.7-x86_64 packages</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>SYNC_3_x</name>
+          <description>Trigger sync of all 3.1-x86 packages</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>SYNC_3_x__64</name>
+          <description>Trigger sync of all 3.1-x86_64 packages</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.5">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.2">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -48,19 +55,30 @@ must be choosen. The choosen package will be released and deployed to the corres
     <submoduleCfg class="list"/>
     <extensions/>
   </scm>
-  <assignedNode>alpine_edge_x86</assignedNode>
+  <assignedNode>master</assignedNode>
   <canRoam>false</canRoam>
-  <disabled>true</disabled>
+  <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <jdk>java-6-openjdk</jdk>
+  <jdk>java-6-64-openjdk</jdk>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>mv eisfair-ng.buildsettings.txt _ADMIN/settings.txt
-echo &quot;Package to release: $PACKAGE_TO_RELEASE&quot;
-_ADMIN/releasePackage.sh
+      <command>apkRepositoryBaseFolder=/data/ci/results/ci-results-eisfair-ng
+
+if ${SYNC_2_7} ; then
+    touch ${apkRepositoryBaseFolder}/syncTrigger/v2.7__x86
+fi
+if ${SYNC_2_7__64} ; then
+    touch ${apkRepositoryBaseFolder}/syncTrigger/v2.7__x86_64
+fi
+if ${SYNC_3_x} ; then
+    touch ${apkRepositoryBaseFolder}/syncTrigger/v3.1__x86
+fi
+if ${SYNC_3_x__64} ; then
+    touch ${apkRepositoryBaseFolder}/syncTrigger/v3.1__x86_64
+fi
 </command>
     </hudson.tasks.Shell>
   </builders>
@@ -176,9 +194,9 @@ _ADMIN/releasePackage.sh
       <saveOutput>false</saveOutput>
       <disabled>false</disabled>
     </hudson.plugins.emailext.ExtendedEmailPublisher>
-    <hudson.plugins.ircbot.IrcPublisher plugin="ircbot@2.26">
+    <hudson.plugins.ircbot.IrcPublisher plugin="ircbot@2.25">
       <targets>
-        <hudson.plugins.im.GroupChatIMMessageTarget plugin="instant-messaging@1.33">
+        <hudson.plugins.im.GroupChatIMMessageTarget plugin="instant-messaging@1.30">
           <name>#eisfair-ng-ci</name>
           <notificationOnly>true</notificationOnly>
         </hudson.plugins.im.GroupChatIMMessageTarget>
@@ -189,14 +207,14 @@ _ADMIN/releasePackage.sh
       <notifyCulprits>false</notifyCulprits>
       <notifyFixers>false</notifyFixers>
       <notifyUpstreamCommitters>false</notifyUpstreamCommitters>
-      <buildToChatNotifier class="hudson.plugins.im.build_notify.SummaryOnlyBuildToChatNotifier" plugin="instant-messaging@1.33"/>
+      <buildToChatNotifier class="hudson.plugins.im.build_notify.SummaryOnlyBuildToChatNotifier" plugin="instant-messaging@1.30"/>
       <matrixMultiplier>ONLY_CONFIGURATIONS</matrixMultiplier>
       <channels/>
     </hudson.plugins.ircbot.IrcPublisher>
     <hudson.plugins.twitter.TwitterPublisher plugin="twitter@0.7"/>
   </publishers>
   <buildWrappers>
-    <com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.4">
+    <com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.3">
       <includes>eisfair-ng.buildsettings.txt</includes>
       <excludes></excludes>
       <flatten>false</flatten>
@@ -204,6 +222,7 @@ _ADMIN/releasePackage.sh
       <hudsonHomeRelative>false</hudsonHomeRelative>
       <relativeTo>userContent</relativeTo>
     </com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.6"/>
+    <org.jenkinsci.plugins.builduser.BuildUser plugin="build-user-vars-plugin@1.4"/>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.15"/>
   </buildWrappers>
 </project>

@@ -1,11 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>This job is called from the Jenkins job &lt;b&gt;_eisfair-ng__releasePackage&lt;/b&gt; to release the given package&lt;br/&gt;&#xd;
-&lt;br/&gt;&#xd;
-Additionally it is possible to start this job directly to release a package just for the platform depicted by&lt;br/&gt;&#xd;
-the suffix on this jobs name. To do so, a list of all packages is provided, from which the package to release &lt;br/&gt;&#xd;
-must be choosen. The choosen package will be released and deployed to the corresponding package repositories.</description>
+  <description></description>
   <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>-1</daysToKeep>
     <numToKeep>20</numToKeep>
@@ -13,23 +9,8 @@ must be choosen. The choosen package will be released and deployed to the corres
     <artifactNumToKeep>-1</artifactNumToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
-  <properties>
-    <hudson.model.ParametersDefinitionProperty>
-      <parameterDefinitions>
-        <com.cwctravel.hudson.plugins.extended__choice__parameter.ExtendedChoiceParameterDefinition plugin="extended-choice-parameter@0.34">
-          <name>PACKAGE_TO_RELEASE</name>
-          <description>Choose package which should be released</description>
-          <quoteValue>false</quoteValue>
-          <visibleItemCount>5</visibleItemCount>
-          <type>PT_SINGLE_SELECT</type>
-          <propertyFile>https://ssl.nettworks.org/ci/view/Alle/job/_eisfair-ng__checkBuildJobs/lastSuccessfulBuild/artifact/_ADMIN/packages.txt</propertyFile>
-          <propertyKey>packages</propertyKey>
-          <multiSelectDelimiter>,</multiSelectDelimiter>
-        </com.cwctravel.hudson.plugins.extended__choice__parameter.ExtendedChoiceParameterDefinition>
-      </parameterDefinitions>
-    </hudson.model.ParametersDefinitionProperty>
-  </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.5">
+  <properties/>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.4">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -38,7 +19,7 @@ must be choosen. The choosen package will be released and deployed to the corres
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>*/master</name>
+        <name>*/feature/AL-62-job-setup-uberarbeiten</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
@@ -48,23 +29,42 @@ must be choosen. The choosen package will be released and deployed to the corres
     <submoduleCfg class="list"/>
     <extensions/>
   </scm>
-  <assignedNode>alpine_edge_x86</assignedNode>
+  <assignedNode>master</assignedNode>
   <canRoam>false</canRoam>
   <disabled>true</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <jdk>java-6-openjdk</jdk>
-  <triggers/>
+  <jdk>java-6-64-openjdk</jdk>
+  <triggers>
+    <hudson.triggers.SCMTrigger>
+      <spec>H 2 * * *</spec>
+      <ignorePostCommitHooks>false</ignorePostCommitHooks>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>mv eisfair-ng.buildsettings.txt _ADMIN/settings.txt
-echo &quot;Package to release: $PACKAGE_TO_RELEASE&quot;
-_ADMIN/releasePackage.sh
+
+# Comma separated list of job folders
+jobFolderList=&apos;eisfair-ng/v2.7/testing/x86,eisfair-ng/v2.7/testing/x86_64,eisfair-ng/v3.1/testing/x86,eisfair-ng/v3.1/testing/x86_64&apos;
+
+_ADMIN/checkForNewPackages.sh --job-folder-list $jobFolderList
+rtc=$?
+if [ $rtc -eq 0 ] ; then
+    _ADMIN/createPackageList.sh
+fi
 </command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>_ADMIN/packages.txt</artifacts>
+      <allowEmptyArchive>true</allowEmptyArchive>
+      <onlyIfSuccessful>false</onlyIfSuccessful>
+      <fingerprint>false</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+    </hudson.tasks.ArtifactArchiver>
     <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.39">
       <recipientList>$DEFAULT_RECIPIENTS</recipientList>
       <configuredTriggers>
@@ -74,7 +74,7 @@ _ADMIN/releasePackage.sh
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
             <recipientProviders>
-              <hudson.plugins.emailext.plugins.recipients.RequesterRecipientProvider/>
+              <hudson.plugins.emailext.plugins.recipients.DevelopersRecipientProvider/>
               <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
             </recipientProviders>
             <attachmentsPattern></attachmentsPattern>
@@ -90,7 +90,7 @@ _ADMIN/releasePackage.sh
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
             <recipientProviders>
-              <hudson.plugins.emailext.plugins.recipients.RequesterRecipientProvider/>
+              <hudson.plugins.emailext.plugins.recipients.DevelopersRecipientProvider/>
               <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
             </recipientProviders>
             <attachmentsPattern></attachmentsPattern>
@@ -106,7 +106,6 @@ _ADMIN/releasePackage.sh
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
             <recipientProviders>
-              <hudson.plugins.emailext.plugins.recipients.RequesterRecipientProvider/>
               <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
             </recipientProviders>
             <attachmentsPattern></attachmentsPattern>
@@ -122,7 +121,7 @@ _ADMIN/releasePackage.sh
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
             <recipientProviders>
-              <hudson.plugins.emailext.plugins.recipients.RequesterRecipientProvider/>
+              <hudson.plugins.emailext.plugins.recipients.DevelopersRecipientProvider/>
               <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
             </recipientProviders>
             <attachmentsPattern></attachmentsPattern>
@@ -138,7 +137,7 @@ _ADMIN/releasePackage.sh
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
             <recipientProviders>
-              <hudson.plugins.emailext.plugins.recipients.RequesterRecipientProvider/>
+              <hudson.plugins.emailext.plugins.recipients.DevelopersRecipientProvider/>
               <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
             </recipientProviders>
             <attachmentsPattern></attachmentsPattern>
@@ -154,7 +153,7 @@ _ADMIN/releasePackage.sh
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
             <recipientProviders>
-              <hudson.plugins.emailext.plugins.recipients.RequesterRecipientProvider/>
+              <hudson.plugins.emailext.plugins.recipients.DevelopersRecipientProvider/>
               <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
             </recipientProviders>
             <attachmentsPattern></attachmentsPattern>
@@ -176,7 +175,7 @@ _ADMIN/releasePackage.sh
       <saveOutput>false</saveOutput>
       <disabled>false</disabled>
     </hudson.plugins.emailext.ExtendedEmailPublisher>
-    <hudson.plugins.ircbot.IrcPublisher plugin="ircbot@2.26">
+    <hudson.plugins.ircbot.IrcPublisher plugin="ircbot@2.25">
       <targets>
         <hudson.plugins.im.GroupChatIMMessageTarget plugin="instant-messaging@1.33">
           <name>#eisfair-ng-ci</name>
@@ -184,7 +183,7 @@ _ADMIN/releasePackage.sh
         </hudson.plugins.im.GroupChatIMMessageTarget>
       </targets>
       <strategy>ALL</strategy>
-      <notifyOnBuildStart>false</notifyOnBuildStart>
+      <notifyOnBuildStart>true</notifyOnBuildStart>
       <notifySuspects>false</notifySuspects>
       <notifyCulprits>false</notifyCulprits>
       <notifyFixers>false</notifyFixers>
@@ -193,10 +192,9 @@ _ADMIN/releasePackage.sh
       <matrixMultiplier>ONLY_CONFIGURATIONS</matrixMultiplier>
       <channels/>
     </hudson.plugins.ircbot.IrcPublisher>
-    <hudson.plugins.twitter.TwitterPublisher plugin="twitter@0.7"/>
   </publishers>
   <buildWrappers>
-    <com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.4">
+    <com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.3">
       <includes>eisfair-ng.buildsettings.txt</includes>
       <excludes></excludes>
       <flatten>false</flatten>
@@ -204,6 +202,6 @@ _ADMIN/releasePackage.sh
       <hudsonHomeRelative>false</hudsonHomeRelative>
       <relativeTo>userContent</relativeTo>
     </com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.6"/>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.15"/>
   </buildWrappers>
 </project>

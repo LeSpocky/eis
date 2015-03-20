@@ -25,7 +25,7 @@
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.2.5">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.5">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -47,7 +47,7 @@
   <quietPeriod>20</quietPeriod>
   <assignedNode>alpine_v2.7_x86</assignedNode>
   <canRoam>false</canRoam>
-  <disabled>false</disabled>
+  <disabled>true</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <jdk>java-6-openjdk</jdk>
@@ -61,13 +61,13 @@
   <builders>
     <hudson.tasks.Shell>
       <command>sudo apk update
-make clean
+fakeroot make clean
 rm -f *x86.iso*
 rm -rf isotmp.alpine-eisfair-ng
-make PROFILE=alpine-eisfair-ng iso
+fakeroot make PROFILE=alpine-eisfair-ng iso
 rtc=$?
 if [ $rtc = 0 ] ; then
-    make PROFILE=alpine-eisfair-ng sha1
+    fakeroot make PROFILE=alpine-eisfair-ng sha1
     rtc=$?
     if [ $rtc = 0 ] ; then
         eisInstallVersion=$(date +%Y-%m-%d)
@@ -87,7 +87,7 @@ fi</command>
   </builders>
   <publishers>
     <hudson.plugins.jira.JiraIssueUpdater plugin="jira@1.39"/>
-    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.38.2">
+    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.39">
       <recipientList>$DEFAULT_RECIPIENTS</recipientList>
       <configuredTriggers>
         <hudson.plugins.emailext.plugins.trigger.UnstableTrigger>
@@ -193,10 +193,11 @@ fi</command>
       <compressBuildLog>false</compressBuildLog>
       <replyTo>$DEFAULT_RECIPIENTS</replyTo>
       <saveOutput>false</saveOutput>
+      <disabled>false</disabled>
     </hudson.plugins.emailext.ExtendedEmailPublisher>
-    <hudson.plugins.ircbot.IrcPublisher plugin="ircbot@2.25">
+    <hudson.plugins.ircbot.IrcPublisher plugin="ircbot@2.26">
       <targets>
-        <hudson.plugins.im.GroupChatIMMessageTarget plugin="instant-messaging@1.30">
+        <hudson.plugins.im.GroupChatIMMessageTarget plugin="instant-messaging@1.33">
           <name>#eisfair-ng-ci</name>
           <notificationOnly>true</notificationOnly>
         </hudson.plugins.im.GroupChatIMMessageTarget>
@@ -207,12 +208,11 @@ fi</command>
       <notifyCulprits>false</notifyCulprits>
       <notifyFixers>false</notifyFixers>
       <notifyUpstreamCommitters>false</notifyUpstreamCommitters>
-      <buildToChatNotifier class="hudson.plugins.im.build_notify.SummaryOnlyBuildToChatNotifier" plugin="instant-messaging@1.30"/>
+      <buildToChatNotifier class="hudson.plugins.im.build_notify.SummaryOnlyBuildToChatNotifier" plugin="instant-messaging@1.33"/>
       <matrixMultiplier>ONLY_CONFIGURATIONS</matrixMultiplier>
-      <channels/>
     </hudson.plugins.ircbot.IrcPublisher>
   </publishers>
   <buildWrappers>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.14"/>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.6"/>
   </buildWrappers>
 </project>

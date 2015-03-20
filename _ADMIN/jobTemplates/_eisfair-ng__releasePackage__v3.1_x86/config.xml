@@ -48,7 +48,7 @@ must be choosen. The choosen package will be released and deployed to the corres
     <submoduleCfg class="list"/>
     <extensions/>
   </scm>
-  <assignedNode>alpine_edge_x86</assignedNode>
+  <assignedNode>alpine_v3.1_x86</assignedNode>
   <canRoam>false</canRoam>
   <disabled>true</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>

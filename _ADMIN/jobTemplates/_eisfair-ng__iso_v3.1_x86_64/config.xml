@@ -1,31 +1,27 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>This job is called from the Jenkins job &lt;b&gt;_eisfair-ng__releasePackage&lt;/b&gt; to release the given package&lt;br/&gt;&#xd;
-&lt;br/&gt;&#xd;
-Additionally it is possible to start this job directly to release a package just for the platform depicted by&lt;br/&gt;&#xd;
-the suffix on this jobs name. To do so, a list of all packages is provided, from which the package to release &lt;br/&gt;&#xd;
-must be choosen. The choosen package will be released and deployed to the corresponding package repositories.</description>
+  <description>Build job for x86_64 version of eisfair-ng iso image based on alpine release 3.1</description>
   <logRotator class="hudson.tasks.LogRotator">
     <daysToKeep>-1</daysToKeep>
-    <numToKeep>20</numToKeep>
+    <numToKeep>25</numToKeep>
     <artifactDaysToKeep>-1</artifactDaysToKeep>
-    <artifactNumToKeep>-1</artifactNumToKeep>
+    <artifactNumToKeep>5</artifactNumToKeep>
   </logRotator>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
-        <com.cwctravel.hudson.plugins.extended__choice__parameter.ExtendedChoiceParameterDefinition plugin="extended-choice-parameter@0.34">
-          <name>PACKAGE_TO_RELEASE</name>
-          <description>Choose package which should be released</description>
-          <quoteValue>false</quoteValue>
-          <visibleItemCount>5</visibleItemCount>
-          <type>PT_SINGLE_SELECT</type>
-          <propertyFile>https://ssl.nettworks.org/ci/view/Alle/job/_eisfair-ng__checkBuildJobs/lastSuccessfulBuild/artifact/_ADMIN/packages.txt</propertyFile>
-          <propertyKey>packages</propertyKey>
-          <multiSelectDelimiter>,</multiSelectDelimiter>
-        </com.cwctravel.hudson.plugins.extended__choice__parameter.ExtendedChoiceParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>STAGE</name>
+          <description>Destination alpine repository on which the iso should be located</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>testing</string>
+              <string>main</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -33,7 +29,7 @@ must be choosen. The choosen package will be released and deployed to the corres
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <url>ssh://git@nettworks-git:7999/EIS/eis.git</url>
+        <url>ssh://git@nettworks-git:7999/EIS/eis-iso.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -43,28 +39,54 @@ must be choosen. The choosen package will be released and deployed to the corres
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
     <browser class="hudson.plugins.git.browser.FisheyeGitRepositoryBrowser">
-      <url>https://ssl.nettworks.org/repo/browse/eisfair-ng/</url>
+      <url>https://ssl.nettworks.org/repo/browse/eisfair-ng-iso/</url>
     </browser>
     <submoduleCfg class="list"/>
     <extensions/>
   </scm>
-  <assignedNode>alpine_edge_x86</assignedNode>
+  <quietPeriod>20</quietPeriod>
+  <assignedNode>alpine_v3.1_x86-64</assignedNode>
   <canRoam>false</canRoam>
   <disabled>true</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <jdk>java-6-openjdk</jdk>
-  <triggers/>
+  <jdk>java-6-64-openjdk</jdk>
+  <triggers>
+    <hudson.triggers.SCMTrigger>
+      <spec>H/2 * * * *</spec>
+      <ignorePostCommitHooks>false</ignorePostCommitHooks>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>mv eisfair-ng.buildsettings.txt _ADMIN/settings.txt
-echo &quot;Package to release: $PACKAGE_TO_RELEASE&quot;
-_ADMIN/releasePackage.sh
-</command>
+      <command>sudo apk update
+fakeroot make clean
+rm -f *x86_64.iso*
+rm -rf isotmp.alpine-eisfair-ng
+fakeroot make PROFILE=alpine-eisfair-ng iso
+rtc=$?
+if [ $rtc = 0 ] ; then
+    fakeroot make PROFILE=alpine-eisfair-ng sha1
+    rtc=$?
+    if [ $rtc = 0 ] ; then
+        eisInstallVersion=$(date +%Y-%m-%d)
+        mv alpine-eisfair-ng-*-x86_64.iso      alpine-eisfair-ng-${eisInstallVersion}-x86_64.iso
+        mv alpine-eisfair-ng-*-x86_64.iso.sha1 alpine-eisfair-ng-${eisInstallVersion}-x86_64.iso.sha1
+        rm -f ${CI_RESULTFOLDER_EISFAIR_NG}/v3.1/${STAGE}/*x86_64.iso*
+        cp *x86_64.iso* ${CI_RESULTFOLDER_EISFAIR_NG}/v3.1/${STAGE}/
+    else
+        echo &quot;Error during ISO SHA1 calculation!&quot;
+        exit $rtc
+    fi
+else
+    echo &quot;Error during ISO build!&quot;
+    exit $rtc
+fi</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
+    <hudson.plugins.jira.JiraIssueUpdater plugin="jira@1.39"/>
     <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.39">
       <recipientList>$DEFAULT_RECIPIENTS</recipientList>
       <configuredTriggers>
@@ -74,7 +96,7 @@ _ADMIN/releasePackage.sh
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
             <recipientProviders>
-              <hudson.plugins.emailext.plugins.recipients.RequesterRecipientProvider/>
+              <hudson.plugins.emailext.plugins.recipients.DevelopersRecipientProvider/>
               <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
             </recipientProviders>
             <attachmentsPattern></attachmentsPattern>
@@ -90,7 +112,6 @@ _ADMIN/releasePackage.sh
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
             <recipientProviders>
-              <hudson.plugins.emailext.plugins.recipients.RequesterRecipientProvider/>
               <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
             </recipientProviders>
             <attachmentsPattern></attachmentsPattern>
@@ -106,7 +127,6 @@ _ADMIN/releasePackage.sh
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
             <recipientProviders>
-              <hudson.plugins.emailext.plugins.recipients.RequesterRecipientProvider/>
               <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
             </recipientProviders>
             <attachmentsPattern></attachmentsPattern>
@@ -122,7 +142,6 @@ _ADMIN/releasePackage.sh
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
             <recipientProviders>
-              <hudson.plugins.emailext.plugins.recipients.RequesterRecipientProvider/>
               <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
             </recipientProviders>
             <attachmentsPattern></attachmentsPattern>
@@ -138,7 +157,7 @@ _ADMIN/releasePackage.sh
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
             <recipientProviders>
-              <hudson.plugins.emailext.plugins.recipients.RequesterRecipientProvider/>
+              <hudson.plugins.emailext.plugins.recipients.DevelopersRecipientProvider/>
               <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
             </recipientProviders>
             <attachmentsPattern></attachmentsPattern>
@@ -154,7 +173,7 @@ _ADMIN/releasePackage.sh
             <subject>$PROJECT_DEFAULT_SUBJECT</subject>
             <body>$PROJECT_DEFAULT_CONTENT</body>
             <recipientProviders>
-              <hudson.plugins.emailext.plugins.recipients.RequesterRecipientProvider/>
+              <hudson.plugins.emailext.plugins.recipients.DevelopersRecipientProvider/>
               <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
             </recipientProviders>
             <attachmentsPattern></attachmentsPattern>
@@ -172,7 +191,7 @@ _ADMIN/releasePackage.sh
       <presendScript></presendScript>
       <attachBuildLog>false</attachBuildLog>
       <compressBuildLog>false</compressBuildLog>
-      <replyTo></replyTo>
+      <replyTo>$DEFAULT_RECIPIENTS</replyTo>
       <saveOutput>false</saveOutput>
       <disabled>false</disabled>
     </hudson.plugins.emailext.ExtendedEmailPublisher>
@@ -191,19 +210,9 @@ _ADMIN/releasePackage.sh
       <notifyUpstreamCommitters>false</notifyUpstreamCommitters>
       <buildToChatNotifier class="hudson.plugins.im.build_notify.SummaryOnlyBuildToChatNotifier" plugin="instant-messaging@1.33"/>
       <matrixMultiplier>ONLY_CONFIGURATIONS</matrixMultiplier>
-      <channels/>
     </hudson.plugins.ircbot.IrcPublisher>
-    <hudson.plugins.twitter.TwitterPublisher plugin="twitter@0.7"/>
   </publishers>
   <buildWrappers>
-    <com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.4">
-      <includes>eisfair-ng.buildsettings.txt</includes>
-      <excludes></excludes>
-      <flatten>false</flatten>
-      <includeAntExcludes>false</includeAntExcludes>
-      <hudsonHomeRelative>false</hudsonHomeRelative>
-      <relativeTo>userContent</relativeTo>
-    </com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper>
     <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.6"/>
   </buildWrappers>
 </project>

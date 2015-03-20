@@ -1,13 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Mit diesem Job können auf Knopfdruck aus allen main-Package-Repositorien die alten Paketversionen entfernt und die Indexe neu erstellt werden.&#xd;
-Es bleibt somit von jedem Paket jeweils nur die neueste Version im Repository.&#xd;
-&#xd;
-Nach einem Release-Build eines Paketes wird das für das jeweilige Repository automatisch gemacht.</description>
+  <description></description>
   <keepDependencies>false</keepDependencies>
   <properties/>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.4">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.1">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -26,7 +23,7 @@ Nach einem Release-Build eines Paketes wird das für das jeweilige Repository au
     <submoduleCfg class="list"/>
     <extensions/>
   </scm>
-  <assignedNode>alpine_edge_x86</assignedNode>
+  <assignedNode>alpine_v3.1_x86</assignedNode>
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -38,20 +35,8 @@ Nach einem Release-Build eines Paketes wird das für das jeweilige Repository au
     <hudson.tasks.Shell>
       <command>mv eisfair-ng.buildsettings.txt _ADMIN/settings.txt
 
-_ADMIN/cleanupPackageFolder.sh -v edge -b main -a x86 -s 1
-_ADMIN/createRepoIndex.sh -v edge -b main -a x86
-_ADMIN/cleanupPackageFolder.sh -v edge -b main -a x86_64 -s 1
-_ADMIN/createRepoIndex.sh -v edge -b main -a x86_64 
-
-_ADMIN/cleanupPackageFolder.sh -v v3.1 -b main -a x86 -s 1
-_ADMIN/createRepoIndex.sh -v v3.1 -b main -a x86
-_ADMIN/cleanupPackageFolder.sh -v v3.1 -b main -a x86_64 -s 1
-_ADMIN/createRepoIndex.sh -v v3.1 -b main -a x86_64 
-
-_ADMIN/cleanupPackageFolder.sh -v v2.7 -b main -a x86 -s 1
-_ADMIN/createRepoIndex.sh -v v2.7 -b main -a x86
-_ADMIN/cleanupPackageFolder.sh -v v2.7 -b main -a x86_64 -s 1
-_ADMIN/createRepoIndex.sh -v v2.7 -b main -a x86_64 
+_ADMIN/cleanupPackageFolder.sh -v v3.1 -b testing -a x86 -s 1
+_ADMIN/createRepoIndex.sh -v v3.1 -b testing -a x86
 </command>
     </hudson.tasks.Shell>
   </builders>
@@ -65,6 +50,6 @@ _ADMIN/createRepoIndex.sh -v v2.7 -b main -a x86_64
       <hudsonHomeRelative>false</hudsonHomeRelative>
       <relativeTo>userContent</relativeTo>
     </com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.15"/>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.14"/>
   </buildWrappers>
 </project>
