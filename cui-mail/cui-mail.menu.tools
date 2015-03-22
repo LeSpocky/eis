@@ -1,0 +1,19 @@
+<!-- /var/install/menu/setup.services.mail.tools.menu -->
+<!-- Creation:     2005-04-09 jed -->
+<package>mail</package>
+<title>Mail tools administration</title>
+<script file="mail-tools-check-tls-certs">Check TLS certificates</script>
+<script file="mail-tools-check-receiver-address">Check receiver email address</script>
+<script file="mail-tools-check-sender-address">Check sender email address</script>
+<script file="mail-tools-check-rewrite-rules">Check address rewrite rules</script>
+<script file="mail-tools-read-mail">Read email</script>
+<script file="mail-tools-send-mail">Send email</script>
+<script file="mail-tools-fetch-mail">Force mail request</script>
+<script file="mail-tools-fetchall-mail">Force mail request (selective with fetchall set!)</script>
+<script file="mail-tools-run-queue">Force queue run</script>
+<script file="mail-tools-process-queue">Process mail queue</script>
+<doc pre="mail-tools-pre-view-stats" post="mail-tools-post-view-stats" file="/tmp/mainlog.mail">View statistics</doc>
+<doc tail="yes" file="/var/log/fetchmail.log">View fetchmail log file</doc>
+<doc tail="yes" file="/var/spool/exim/log/mainlog">View main log file</doc>
+<doc tail="yes" file="/var/spool/exim/log/rejectlog">View reject log file</doc>
+<doc tail="yes" file="/var/spool/exim/log/paniclog">View panic log file</doc>

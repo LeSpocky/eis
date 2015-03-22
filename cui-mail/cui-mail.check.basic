@@ -1,0 +1,241 @@
+#------------------------------------------------------------------------------
+# /etc/check.d/mail.basic - configuration for mail services on EIS/FAIR
+# Copyright (c) 2001-2014 The Eisfair Team, team(at)eisfair(dot)org
+# Creation:     2003-06-13  jed
+#------------------------------------------------------------------------------
+# Variable                       OPT_VARIABLE            VARIABLE_N                 VALUE
+# debug parameter
++MAIL_DO_DEBUG                   -                       -                          YESNO
++EXISCAN_DO_DEBUG                -                       -                          YESNO
+
+# general settings
+
+START_MAIL                       -                       -                          YESNO
+START_POP3                       START_MAIL              -                          YESNO
+START_IMAP                       START_MAIL              -                          YESNO
+#POP3IMAP_CREATE_MBX              -                       -                          YESNO
+#POP3IMAP_TRANSPORT               -                       -                          MAIL_TRANSPORT
+#POP3IMAP_IDENT_CALLBACKS         -                       -                          YESNO
+
+# pop3/imap: mail users and optional passwords
+
+#MAIL_USER_USE_MAILONLY_PASSWORDS -                      -                          YESNO
+
+#MAIL_USER_N                      -                      -                          NUMERIC
+#MAIL_USER_%_ACTIVE               -                      MAIL_USER_N                YESNO
+#MAIL_USER_%_USER                 -                      MAIL_USER_N                NOBLANK
+#MAIL_USER_%_PASS                 -                      MAIL_USER_N                PASSWD
+
+# imap: shared and public folders
+
+#IMAP_SHARED_PUBLIC_USERGROUP     START_IMAP              -                          MAIL_EGROUP
+#IMAP_SHARED_FOLDER_N             START_IMAP              -                          NUMERIC
+#IMAP_SHARED_FOLDER_%_ACTIVE      START_IMAP              IMAP_SHARED_FOLDER_N       YESNO
+#IMAP_SHARED_FOLDER_%_NAME        START_IMAP              IMAP_SHARED_FOLDER_N       NOBLANK
+#IMAP_SHARED_FOLDER_%_USERGROUP   START_IMAP              IMAP_SHARED_FOLDER_N       MAIL_EGROUP
+#IMAP_PUBLIC_FOLDER_N             START_IMAP              -                          NUMERIC
+#IMAP_PUBLIC_FOLDER_%_ACTIVE      START_IMAP              IMAP_PUBLIC_FOLDER_N       YESNO
+#IMAP_PUBLIC_FOLDER_%_NAME        START_IMAP              IMAP_PUBLIC_FOLDER_N       NOBLANK
+#IMAP_PUBLIC_FOLDER_%_USERGROUP   START_IMAP              IMAP_PUBLIC_FOLDER_N       MAIL_EGROUP
+
+# fetchmail: general settings
+# Variable                       OPT_VARIABLE            VARIABLE_N                 VALUE
+
+START_FETCHMAIL                  START_MAIL              -                          YESNO
+FETCHMAIL_PROTOCOL               START_FETCHMAIL         -                          MAIL_EFETCH_PROTOCOL
+FETCHMAIL_LIMIT                  START_FETCHMAIL         -                          MAIL_SIZE_LIMIT
+FETCHMAIL_WARNINGS               START_FETCHMAIL         -                          NUMERIC
+FETCHMAIL_DAEMON                 START_FETCHMAIL         -                          NUMERIC
+FETCHMAIL_TIMEOUT                START_FETCHMAIL         -                          NUMERIC
+
++FETCHMAIL_BOUNCE_MAIL           START_FETCHMAIL         -                          YESNO
++FETCHMAIL_BOUNCE_SPAM           START_FETCHMAIL         -                          YESNO
++FETCHMAIL_BOUNCE_SOFT           START_FETCHMAIL         -                          YESNO
+
+# fetchmail: accounts
+
+FETCHMAIL_N                      START_FETCHMAIL         -                          NUMERIC
+FETCHMAIL_%_ACTIVE               START_FETCHMAIL         FETCHMAIL_N                YESNO
+FETCHMAIL_%_COMMENT              START_FETCHMAIL         FETCHMAIL_N                NONE
+FETCHMAIL_%_SERVER               START_FETCHMAIL         FETCHMAIL_N                MAIL_FQDN_IPADDR_LOCAL
+FETCHMAIL_%_USER                 START_FETCHMAIL         FETCHMAIL_N                NOBLANK
+FETCHMAIL_%_PASS                 START_FETCHMAIL         FETCHMAIL_N                PASSWD
+FETCHMAIL_%_FORWARD              START_FETCHMAIL         FETCHMAIL_N                ENOBLANK
+#FETCHMAIL_%_SMTPHOST             START_FETCHMAIL         FETCHMAIL_N                MAIL_EFQDN_IPADDR_LOCAL
+#FETCHMAIL_%_IMAP_FOLDER          START_FETCHMAIL         FETCHMAIL_N                MAIL_EFETCH_IFOLDER
+#FETCHMAIL_%_DOMAIN               START_FETCHMAIL         FETCHMAIL_N                YESNO
+#FETCHMAIL_%_ENVELOPE             START_FETCHMAIL         FETCHMAIL_N                YESNO
+#FETCHMAIL_%_ENVELOPE_HEADER      START_FETCHMAIL         FETCHMAIL_N                MAIL_EFETCH_ENVELOPE
+#FETCHMAIL_%_SERVER_AKA_N         START_FETCHMAIL         FETCHMAIL_N                NUMERIC
+#FETCHMAIL_%_SERVER_AKA_%         START_FETCHMAIL         FETCHMAIL_%_SERVER_AKA_N   ENOBLANK
+#FETCHMAIL_%_LOCALDOMAIN_N        START_FETCHMAIL         FETCHMAIL_N                NUMERIC
+#FETCHMAIL_%_LOCALDOMAIN_%        START_FETCHMAIL         FETCHMAIL_%_LOCALDOMAIN_N  EDOMAIN
+#FETCHMAIL_%_PROTOCOL             START_FETCHMAIL         FETCHMAIL_N                MAIL_EFETCH_PROTOCOL
+#FETCHMAIL_%_PORT                 START_FETCHMAIL         FETCHMAIL_N                ENUMERIC
+#FETCHMAIL_%_AUTH_TYPE            START_FETCHMAIL         FETCHMAIL_N                MAIL_EFETCH_AUTH_TYPE
+#FETCHMAIL_%_ACCEPT_BAD_HEADER    START_FETCHMAIL         FETCHMAIL_N                YESNO
+#FETCHMAIL_%_DNS_LOOKUP           START_FETCHMAIL         FETCHMAIL_N                YESNO
+FETCHMAIL_%_KEEP                 START_FETCHMAIL         FETCHMAIL_N                YESNO
+FETCHMAIL_%_FETCHALL             START_FETCHMAIL         FETCHMAIL_N                YESNO
+#FETCHMAIL_%_MSG_LIMIT            START_FETCHMAIL         FETCHMAIL_N                NUMERIC
+#FETCHMAIL_%_SSL_PROTOCOL         START_FETCHMAIL         FETCHMAIL_N                MAIL_SSL_PROTOCOL
+#FETCHMAIL_%_SSL_TRANSPORT        START_FETCHMAIL         FETCHMAIL_N                YESNO
+#FETCHMAIL_%_SSL_FINGERPRINT      START_FETCHMAIL         FETCHMAIL_N                ENOBLANK
+
+# smtp: general settings
+# Variable                       OPT_VARIABLE            VARIABLE_N                 VALUE
+
+START_SMTP                       START_MAIL              -                          YESNO
+SMTP_QUALIFY_DOMAIN              -                       -                          DOMAIN
+SMTP_HOSTNAME                    -                       -                          FQDN
+SMTP_QUEUE_INTERVAL              START_SMTP                 -                       NUMERIC
+SMTP_QUEUE_OUTBOUND_MAIL         START_SMTP                 -                       YESNO
+SMTP_QUEUE_ACCEPT_PER_CONNECTION !SMTP_QUEUE_OUTBOUND_MAIL  -                       MAIL_10_1000
+SMTP_LISTEN_PORT                 START_SMTP              -                          ENOBLANK
+#SMTP_MAIL_TO_UNKNOWN_USERS       START_SMTP              -                          MAIL_HANDLING
+#SMTP_ALLOW_EXIM_FILTERS          START_SMTP              -                          YESNO
+#SMTP_CHECK_RECIPIENTS            START_SMTP              -                          ENUMERIC
+#SMTP_CHECK_SPOOL_SPACE           START_SMTP              -                          ENOBLANK
+#SMTP_CHECK_SPOOL_INODES          START_SMTP              -                          ENUMERIC
+#SMTP_LIMIT                       START_SMTP              -                          MAIL_SIZE_LIMIT
+#SMTP_REMOVE_RECEIPT_REQUEST      START_SMTP              -                          YESNO
+#SMTP_SERVER_TRANSPORT            START_SMTP              -                          MAIL_TRANSPORT
+#SMTP_IDENT_CALLBACKS             START_SMTP              -                          YESNO
+#SMTP_SERVER_TLS_ADVERTISE_HOSTS  START_SMTP              -                          NONE
+#SMTP_SERVER_TLS_VERIFY_HOSTS     START_SMTP              -                          NONE
+#SMTP_SERVER_TLS_TRY_VERIFY_HOSTS START_SMTP              -                          NONE
+#SMTP_SERVER_SSMTP                START_SMTP              -                          YESNO
+#SMTP_SERVER_SSMTP_LISTEN_PORT    START_SMTP              -                          ENOBLANK
+
+# smtp: local domains
+
+SMTP_LOCAL_DOMAIN_N              -                       -                          NUMERIC
+SMTP_LOCAL_DOMAIN_%              -                       SMTP_LOCAL_DOMAIN_N        MAIL_DOMAIN
+
+# smtp: relay to domains
+# Variable                       OPT_VARIABLE            VARIABLE_N                 VALUE
+
+SMTP_RELAY_TO_DOMAIN_N           START_SMTP              -                          NUMERIC
+SMTP_RELAY_TO_DOMAIN_%           START_SMTP              SMTP_RELAY_TO_DOMAIN_N     DOMAIN
+
+# smtp: relay from hosts
+
+SMTP_RELAY_FROM_HOST_N           START_SMTP              -                          NUMERIC
+SMTP_RELAY_FROM_HOST_%           START_SMTP              SMTP_RELAY_FROM_HOST_N     IPADDR_NETWORK
+
+# smtp: server authentication
+
+SMTP_AUTH_TYPE                   START_SMTP              -                          MAIL_AUTH_TYPE_1
+SMTP_AUTH_USER                   START_SMTP              -                          ENOBLANK
+SMTP_AUTH_PASS                   START_SMTP              -                          PASSWD
+
+# smtp: smarthosts
+
+SMTP_SMARTHOST_ONE_FOR_ALL       -                       -                          YESNO
+#SMTP_SMARTHOST_DOMAINS           START_SMTP              -                          MAIL_EDOMAIN_4
+#SMTP_SMARTHOST_ROUTE_TYPE        START_SMTP              -                          MAIL_ROUTE_TYPE
+SMTP_SMARTHOST_N                 -                       -                          NUMERIC
+SMTP_SMARTHOST_%_HOST            -                       SMTP_SMARTHOST_N           MAIL_EFQDN_IPADDR
+SMTP_SMARTHOST_%_AUTH_TYPE       -                       SMTP_SMARTHOST_N           MAIL_AUTH_TYPE_2
+#SMTP_SMARTHOST_%_ADDR            START_SMTP              SMTP_SMARTHOST_N           MAIL_EMAILADDR
+#SMTP_SMARTHOST_%_DOMAIN          START_SMTP              SMTP_SMARTHOST_N           MAIL_EDOMAIN_2
+SMTP_SMARTHOST_%_USER            -                       SMTP_SMARTHOST_N           ENOBLANK
+SMTP_SMARTHOST_%_PASS            -                       SMTP_SMARTHOST_N           PASSWD
+#SMTP_SMARTHOST_%_FORCE_AUTH      -                       SMTP_SMARTHOST_N           YESNO
+#SMTP_SMARTHOST_%_FORCE_TLS       -                       SMTP_SMARTHOST_N           MAIL_FORCE_TLS
+#SMTP_SMARTHOST_%_PORT            -                       SMTP_SMARTHOST_N           ENOBLANK
+
+# smtp: update ignore hosts file
+
+#SMTP_UPDATE_IGNORE_HOSTS                  -                           -             YESNO
+#SMTP_UPDATE_IGNORE_HOSTS_CRON_SCHEDULE    SMTP_UPDATE_IGNORE_HOSTS    -             CRONTAB
+
+# smtp: aliases
+# Variable                       OPT_VARIABLE            VARIABLE_N                 VALUE
+
+#SMTP_ALIASES_N                   START_SMTP              -                          NUMERIC
+#SMTP_ALIASES_%_DOMAIN            START_SMTP              SMTP_ALIASES_N             MAIL_EDOMAIN_1
+#SMTP_ALIASES_%_ALIAS_N           START_SMTP              SMTP_ALIASES_N             NUMERIC
+#SMTP_ALIASES_%_ALIAS_%           START_SMTP              SMTP_ALIASES_%_ALIAS_N     NOTEMPTY
+SMTP_ALIASES_1_ALIAS_N           START_SMTP              -                          NUMERIC
+SMTP_ALIASES_1_ALIAS_%           START_SMTP              SMTP_ALIASES_1_ALIAS_N     NOTEMPTY
+
+# smtp: outgoing addresses
+
+SMTP_OUTGOING_ADDRESSES_N        START_SMTP              -                          NUMERIC
+SMTP_OUTGOING_ADDRESSES_%        START_SMTP              SMTP_OUTGOING_ADDRESSES_N  NOTEMPTY
+
+# smtp: incoming addresses
+
+SMTP_HEADER_REWRITE_N            START_SMTP              -                          NUMERIC
+SMTP_HEADER_REWRITE_%_SOURCE         START_SMTP          SMTP_HEADER_REWRITE_N      NOTEMPTY
+SMTP_HEADER_REWRITE_%_DESTINATION    START_SMTP          SMTP_HEADER_REWRITE_N      NOTEMPTY
+SMTP_HEADER_REWRITE_%_FLAGS          START_SMTP          SMTP_HEADER_REWRITE_N      NOBLANK
+
+# smtp: mailing lists
+
+SMTP_LIST_DOMAIN                 START_SMTP              -                          DOMAIN
+SMTP_LIST_ERRORS                 START_SMTP              -                          MAILADDR
+SMTP_LIST_N                      START_SMTP              -                          NUMERIC
+SMTP_LIST_%_ACTIVE               START_SMTP              SMTP_LIST_N                YESNO
+SMTP_LIST_%_NAME                 START_SMTP              SMTP_LIST_N                NOBLANK
+SMTP_LIST_%_USER_N               START_SMTP              SMTP_LIST_N                NUMERIC
+SMTP_LIST_%_USER_%               START_SMTP              SMTP_LIST_%_USER_N         MAILADDR
+
+# exiscan: virus scanning
+# Variable                       OPT_VARIABLE            VARIABLE_N                 VALUE
+
+START_EXISCAN                    START_MAIL              -                          YESNO
+EXISCAN_CRYPT_SALT               START_EXISCAN           -                          MAIL_AV_SALT
+EXISCAN_ACTION_ON_FAILURE        START_EXISCAN           -                          MAIL_ACTION_ON_FAILURE
+
+EXISCAN_DEMIME_ENABLED           START_EXISCAN           -                          YESNO
+EXISCAN_DEMIME_ACTION            EXISCAN_DEMIME_ENABLED  -                          MAIL_AV_ACTION
+
+EXISCAN_AV_ENABLED               START_EXISCAN           -                          YESNO
+EXISCAN_AV_ACTION                EXISCAN_AV_ENABLED      -                          MAIL_AV_ACTION
+EXISCAN_AV_SUBJECT_TAG           EXISCAN_AV_ENABLED      -                          NONE
+EXISCAN_AV_SCANNER               EXISCAN_AV_ENABLED      -                          MAIL_AV_SCANNER
+EXISCAN_AV_PATH                  EXISCAN_AV_ENABLED      -                          NONE
+EXISCAN_AV_OPTIONS               EXISCAN_AV_ENABLED      -                          NONE
+EXISCAN_AV_TRIGGER               EXISCAN_AV_ENABLED      -                          NONE
+EXISCAN_AV_DESCRIPTION           EXISCAN_AV_ENABLED      -                          NONE
+EXISCAN_AV_SOCKET                EXISCAN_AV_ENABLED      -                          NONE
+EXISCAN_AV_SKIP_AUTHENTICATED    EXISCAN_AV_ENABLED      -                          YESNO
+
+EXISCAN_EXTENSION_ENABLED        START_EXISCAN           -                          YESNO
+EXISCAN_EXTENSION_ACTION         EXISCAN_EXTENSION_ENABLED    -                     MAIL_AV_ACTION
+EXISCAN_EXTENSION_DATA           EXISCAN_EXTENSION_ENABLED    -                     MAIL_AV_EXTENSION
+
+EXISCAN_REGEX_ENABLED            START_EXISCAN           -                          YESNO
+EXISCAN_REGEX_ACTION             EXISCAN_REGEX_ENABLED   -                          MAIL_AV_ACTION
+EXISCAN_REGEX_DATA               EXISCAN_REGEX_ENABLED   -                          NOTEMPTY
+
+EXISCAN_SPAMD_ENABLED            START_EXISCAN           -                          YESNO
+EXISCAN_SPAMD_ACTION             EXISCAN_SPAMD_ENABLED   -                          MAIL_AV_ACTION
+EXISCAN_SPAMD_HEADER_STYLE       EXISCAN_SPAMD_ENABLED   -                          MAIL_SPAM_HEAD_STYLE
+EXISCAN_SPAMD_SUBJECT_TAG        EXISCAN_SPAMD_ENABLED   -                          NONE
+EXISCAN_SPAMD_THRESHOLD          EXISCAN_SPAMD_ENABLED   -                          DOT_NUMERIC
+EXISCAN_SPAMD_ADDRESS            EXISCAN_SPAMD_ENABLED   -                          MAIL_SPAM_ADDR
+EXISCAN_SPAMD_LIMIT              EXISCAN_SPAMD_ENABLED   -                          MAIL_SPAM_SIZE
+EXISCAN_SPAMD_SKIP_AUTHENTICATED EXISCAN_SPAMD_ENABLED   -                          YESNO
+
+# mail: send warning if TLS certificates will become invalid
+# Variable                       OPT_VARIABLE            VARIABLE_N                 VALUE
+
+#MAIL_CERTS_WARNING               -                       -                          YESNO
+#MAIL_CERTS_WARNING_SUBJECT       MAIL_CERTS_WARNING      -                          NOTEMPTY
+#MAIL_CERTS_WARNING_CRON_SCHEDULE MAIL_CERTS_WARNING      -                          CRONTAB
+
+# mail: send exim statistics
+
+#MAIL_STATISTICS_INFOMAIL                  -                           -             YESNO
+#MAIL_STATISTICS_INFOMAIL_SUBJECT          MAIL_STATISTICS_INFOMAIL    -             NOTEMPTY
+#MAIL_STATISTICS_INFOMAIL_CRON_SCHEDULE    MAIL_STATISTICS_INFOMAIL    -             CRONTAB
+
+# mail: log handling
+
+MAIL_LOG_COUNT                   -                       -                          NUMERIC
+MAIL_LOG_INTERVAL                -                       -                          MAIL_LOG_INTERVAL
+
+# end

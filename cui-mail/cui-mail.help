@@ -1,0 +1,2279 @@
+<help name="START_MAIL">
+    Fuer die Aktivierung des Mail-Paketes muss dieser Parameter auf
+    den Wert `yes' gestellt werden. Die Einstellung `no' schaltet
+    das Mail-Paket ab.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: START_MAIL='no'<br/>
+</help>
+
+<help name="START_POP3">
+    Fuer die Aktivierung des POP3-Servers muss dieser Parameter lediglich auf
+    den Wert `yes' gestellt werden. Die Einstellung `no' schaltet den POP3-
+    Server ab.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: START_POP3='yes'<br/>
+</help>
+
+<help name="START_IMAP">
+    Fuer die Aktivierung des IMAP4-Servers muss dieser Parameter lediglich
+    auf den Wert `yes' gestellt werden. Die Einstellung `no' schaltet den
+    IMAP4-Server ab.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: START_IMAP='yes'<br/>
+    <br/>
+    <br/>
+    Die folgenden Parameter sind nur relevant, wenn entweder START_POP3='yes'
+    oder START_IMAP='yes' gesetzt wurden.<br/>
+    <br/>
+</help>
+
+<help name="POP3IMAP_CREATE_MBX">
+    Ueber diesen Parameter wird gesteuert, ob fuer imapd, abweichend vom
+    Standard Mailbox-Format (MBOX), das MBX-Format durch Anlegen entsprechender
+    INBOX-Dateien aktiviert werden soll. Dies hat den Vorteil, dass auch
+    Mehrfachzugriffe auf eine Mailbox moeglich sind. Ein Nachteil ist jedoch,
+    dass das MBX-Locking nicht ueber NFS-Mounts genutzt werden kann.<br/>
+    <br/>
+    Gueltige Werte: yes oder no<br/>
+    <br/>
+    Standardeinstellung: POP3IMAP_CREATE_MBX='yes'<br/>
+</help>
+
+<help name="POP3IMAP_TRANSPORT">
+    Ueber diesen Parameter wird festgelegt, ob als Transport-Protokolle
+    POP3/IMAP (default - unverschluesselt), POP3/IMAP ueber TLS (tls -
+    verschluesselt) oder beides (both) verwendet werden soll. Bei
+    Verwendung von TLS ist sicherzustellen, dass zuvor entsprechende
+    Server-Zertifikate installiert werden.<br/>
+    <br/>
+    Gueltige Werte: default, tls, both<br/>
+    <br/>
+    Standardeinstellung: POP3IMAP_TRANSPORT='default'<br/>
+</help>
+
+<help name="POP3IMAP_IDENT_CALLBACKS">
+    Ueber diesen Parameter wird festgelegt ob der POP3 und IMAP-Deamon einen
+    Ident-Callback durchfuehren soll. Falls der initiale Verbindungsaufbau
+    beim Abruf von Nachrichten relativ lange dauern sollte, kann man diesen
+    Parameter auf 'no' setzen. In diesem Fall werden jedoch keine Meldungen
+    ueber einen erfolgreichen bzw. gescheiterten Verbindungsaufbau mehr in
+    der Systemlogdatei gespeichert.<br/>
+    <br/>
+    Gueltige Werte: yes oder no<br/>
+    <br/>
+    Standardeinstellung: POP3IMAP_IDENT_CALLBACKS='yes'<br/>
+</help>
+
+<help name="MAIL_USER_USE_MAILONLY_PASSWORDS">
+    Ueber diesen Parameter wird gesteuert, ob eine separate Kennwortdatei fuer
+    POP3/IMAP verwendet werden soll. Die Verwendung separater Mail-Kennwoerter
+    verhindert, dass die sonst verwendeten System-Kennwoerter bei Abfrage des
+    lokalen POP3/IMAP-Postfaches unverschluesselt ueber das Netzwerk geschickt
+    werden.<br/>
+    <br/>
+    Gueltige Werte: yes oder no<br/>
+    <br/>
+    Standardeinstellung: MAIL_USER_USE_MAILONLY_PASSWORDS='no'<br/>
+</help>
+
+<help name="MAIL_USER_N">
+    Ueber diesen Parameter wird die Anzahl der POP3/IMAP-Accounts angegeben,
+    die auf diesem Rechner fuer den E-Mail-Abruf eingerichtet werden sollen.<br/>
+    Optional kann hier auch ein separates Mail-Kennwort eingerichtet werden.<br/>
+    (siehe hierzu auch Parameter MAIL_USER_USE_MAILONLY_PASSWORDS)
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: MAIL_USER_N='0'<br/>
+</help>
+
+<help name="MAIL_USER_%_ACTIVE">
+    Wird dieser Parameter auf den Wert `yes' gesetzt, so wird der zugehoerige
+    Datensatz aktiviert, `no' deaktiviert ihn.<br/>
+    <br/>
+    Gueltige Werte: yes oder no<br/>
+    <br/>
+    Beispiel: MAIL_USER_1_ACTIVE='no'<br/>
+</help>
+
+<help name="MAIL_USER_%_USER">
+    Hier muss das auf diesem Rechner eingerichtete Mail-Benutzerkonto und
+    das `optionale' Mail-Kennwort eingegeben werden. (siehe hierzu auch Parameter
+    MAIL_USER_USE_MAILONLY_PASSWORDS)
+    Es ist unbedingt sicherzustellen, dass ein gleichlautendes System-Benutzerkonto
+    existiert. Bei Verwendung eines optionalen Mail-Kennwort sollte sich dieses
+    unbedingt von dem Systemkennwort UNTERSCHEIDEN um ein hoechstes Mass an Sicherheit
+    zu gewaehrleisten!<br/><br/>
+    Achtung: Unbedingt Klein- / Grossschreibung beachten!<br/>
+    Lokale User ueber das eisfair-Setup-Menue einrichten!<br/>
+    <br/>
+    Gueltige Werte: Username bzw. Kennwort<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    MAIL_USER_1_USER='username'<br/>
+    MAIL_USER_1_PASS='secret'<br/>
+    <br/>
+    Hinweis: Will man eine grosse Anzahl von Usern anlegen, so ist es moeglich diese
+    ueber eine csv-Datei der aktuellen Konfigurationsdatei hinzuzufuegen. Hierzu kopiert
+    man eine Datei `pop3imap.csv' in das Verzeichnis /var/spool/exim und ruft das Programm
+    `/var/install/config.d/mail-update.sh import' auf.<br/>
+    <br/>
+    Eine vorhandene User-Liste kann in eine Datei `pop3imap.csv', im Verzeichnis<br/>
+    /var/spool/exim exportiert werden, indem man das Programm `/var/install/config.d/mail-update.sh export'
+    aufruft.<br/>
+    <br/>
+    Die csv-Datei muss wie folgt aufgebaut sein:<br/><br/>
+    #username,password,active<br/>
+    user1,password1,yes<br/>
+    user2,password2,no
+    <br/>
+    <br/>
+    <br/>
+    Ueber die folgenden Parameter lassen sich IMAP-Ordner definieren, die von allen
+    Anwendern gleichzeitig genutzt werden koennen. Dies ist z.B. sinnvoll um allgemeine
+    Nachrichten an zentraler Stelle abzulegen. Shared-Ordner unterscheiden sich von
+    Public-Ordnern nur die die Zugriffsberechtigungen, d.h. auf Public-Ordner koennen
+    auch Anwender zugreifen, die nicht der ueber den Parameter IMAP_SHARED_PUBLIC_USERGROUP
+    festgelegten Benutzergruppe (Standard-Gruppei: 'users'), angehoeren.<br/>
+    Um eine Nachricht in einem solchen Ordner abzulegen, schickt man einfach eine Nachricht
+    an den Ordner und verwendet als Adresse den Namen des Shared- bzw. Public-Ordners.<br/>
+    Will man z.B.  eine Nachricht im Ordner `Family-News' ablegen, so lautet dessen
+    Adresse `Family-News@lokal.lan'.<br/>
+<br/>
+    Anwender die den lokalen Domains angehoeren koennen Nachrichten sowohl an Shared-
+    als auch Public-Ordner schicken, externe Anwender sind nur berechtigt Nachrichten
+    an Public-Ordner zu schicken.<br/>
+</help>
+
+<help name="IMAP_SHARED_PUBLIC_USERGROUP">
+    Ueber diesen Parameter kann die System- Benutzergruppe eingestellt werden, in
+    die die `internen', vom IMAP-Daemon benutzten, User-Accounts  `imapshared'
+    und `imappublic' aufgenommen werden sollen. Wird dieser Parameter leer
+    gelassen, so wird die Standard-Gruppe 'users' verwendet.<br/>
+    <br/>
+    Gueltige Werte: System-Benutzergruppe<br/>
+    <br/>
+    Standardeinstellung: IMAP_SHARED_PUBLIC_USERGROUP=''<br/>
+</help>
+
+<help name="IMAP_SHARED_FOLDER_N">
+    Ueber diesen Parameter wird die Anzahl der IMAP-Shared-Ordner angegeben,
+    die auf diesem Rechner eingerichtet werden sollen. Diese sind ueber den
+    virtuellen Ordner `#shared' aus der IMAP-Anwendung abonnierbar.<br/>
+    Standardmaessig haben alle Mitglieder der ueber IMAP_SHARED_PUBLIC_USERGROUP
+    eingestellten System-Benutzergruppe die Berechtigung in diesem
+    Verzeichnis Ordner anzulegen und schreibend bzw. lesend auf diese zuzugreifen.<br/>
+    (Berechtigungsmaske: Verzeichnis 0770, Ordner 0660)
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: IMAP_SHARED_FOLDER_N='0'<br/>
+</help>
+
+<help name="IMAP_SHARED_FOLDER_%_ACTIVE">
+    Wird dieser Parameter auf den Wert `yes' gesetzt, so wird der zugehoerige
+    Datensatz aktiviert, `no' deaktiviert ihn.<br/>
+    <br/>
+    Gueltige Werte: yes oder no<br/>
+    <br/>
+    Beispiel: IMAP_SHARED_FOLDER_1_ACTIVE='no'<br/>
+</help>
+
+<help name="IMAP_SHARED_FOLDER_%_NAME">
+    Ueber diesen Parameter wird der Name eines IMAP-Shared-Ordner angegeben,
+    der auf diesem Rechner eingerichtet werden soll. Wird vor dem Ordnernamen
+    ein Unterverzeichnis angegeben, so wird dieses gegebenenfalls angelegt.<br/>
+    Es ist darauf zu achten, dass der Name des IMAP-Shared-Ordner einmalig ist.<br/>
+    Es ist nicht moeglich den gleichen Namen fuer IMAP-Shared-Ordner zu verwenden
+    auch wenn diese in anderen Verzeichnissen liegen.<br/>
+    <br/>
+    Gueltige Werte: Ordnername<br/>
+    <br/>
+    Beispiel: IMAP_SHARED_FOLDER_1_NAME='Family-News'<br/>
+</help>
+
+<help name="IMAP_SHARED_FOLDER_%_USERGROUP">
+    Ueber diesen Parameter kann eine individuelle Benutzergruppe eingestellt werden
+    um den Zugriff auf den Ordner weiter einzuschraenken. Wurde ueber den Parameter
+    IMAP_SHARED_PUBLIC_USERGROUP eine Gruppe
+    festgelegt, so fungiert diese als Standardgruppe wenn ueber diesen Parameter
+    keine festgelegt wurde.<br/>
+    <br/>
+    Gueltige Werte: System-Benutzergruppe<br/>
+    <br/>
+    Standardeinstellung: IMAP_SHARED_FOLDER_1_USERGROUP=''<br/>
+</help>
+
+<help name="IMAP_PUBLIC_FOLDER_N">
+    Ueber diesen Parameter wird die Anzahl der IMAP-Public-Ordner angegeben,
+    die auf diesem Rechner eingerichtet werden sollen. Diese sind ueber den
+    virtuellen Ordner `#public' aus der IMAP-Anwendung abonnierbar.<br/>
+    Standardmaessig haben alle Mitglieder der ueber IMAP_SHARED_PUBLIC_USERGROUP
+    eingestellten System-Benutzergruppe und alle anderen Anwender die Berechtigung
+    in diesem Verzeichnis Ordner anzulegen und schreibend bzw. lesend auf diese
+    zuzugreifen. (Berechtigungsmaske: Verzeichnis 0777, Ordner 0666)
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: IMAP_PUBLIC_FOLDER_N='0'<br/>
+</help>
+
+<help name="IMAP_PUBLIC_FOLDER_%_ACTIVE">
+    Wird dieser Parameter auf den Wert `yes' gesetzt, so wird der zugehoerige
+    Datensatz aktiviert, `no' deaktiviert ihn.<br/>
+    <br/>
+    Gueltige Werte: yes oder no<br/>
+    <br/>
+    Beispiel: IMAP_PUBLIC_FOLDER_1_ACTIVE='no'<br/>
+</help>
+
+<help name="IMAP_PUBLIC_FOLDER_%_NAME">
+    Ueber diesen Parameter wird der Name eines IMAP-Public-Ordner angegeben,
+    der auf diesem Rechner eingerichtet werden soll. Wird vor dem Ordnernamen
+    ein Unterverzeichnis angegeben, so wird dieses gegebenenfalls angelegt.<br/>
+    Es ist darauf zu achten, dass der Name des IMAP-Public-Ordner einmalig ist.<br/>
+    Es ist nicht moeglich den gleichen Namen fuer IMAP-Public-Ordner zu verwenden
+    auch wenn diese in anderen Verzeichnissen liegen.<br/>
+    <br/>
+    Gueltige Werte: Ordnername<br/>
+    <br/>
+    Beispiel: IMAP_PUBLIC_FOLDER_1_NAME='Announcments'<br/>
+</help>
+
+<help name="IMAP_PUBLIC_FOLDER_%_USERGROUP">
+    Ueber diesen Parameter kann eine individuelle Benutzergruppe eingestellt werden
+    um den Zugriff auf den Ordner weiter einzuschraenken. Wurde ueber den Parameter
+    IMAP_SHARED_PUBLIC_USERGROUP eine Gruppe
+    festgelegt, so fungiert diese als Standardgruppe wenn ueber diesen Parameter
+    keine festgelegt wurde.<br/>
+    <br/>
+    Gueltige Werte: System-Benutzergruppe<br/>
+    <br/>
+    Standardeinstellung: IMAP_PUBLIC_FOLDER_1_USERGROUP=''<br/>
+    <br/>
+    <br/>
+    <br/>
+    Um der Vollstaendigkeit willen sei erwaehnt, dass es auch moeglich ist Dateien, die
+    per FTP uebertragen wurden, ueber den Mail-Client abzurufen. Einzige Voraussetzung
+    hierfuer ist es, dass sich diese im Home-Verzeichnis des ftp-Users befinden.<br/>
+    Danach kann man die Dateien wie andere IMAP-Ordner abonnieren bzw. herunterladen.<br/>
+    <br/>
+    <br/>
+    <br/>
+    Ueber die Fetchmail-Konfiguration wird eingestellt, ob und welche externe E-Mail-Konten
+    ausgelesen werden sollen. Die E-Mails werden dann auf ein lokales Mail-Konto uebertragen.<br/>
+</help>
+
+<help name="START_FETCHMAIL">
+    Dieser Parameter bestimmt, ob Fetchmail gestartet werden soll oder
+    nicht. Mit `yes' wird Fetchmail aktiviert, mit dem Wert `no' wird
+    dieser Dienst abgeschaltet. In diesem Fall sind die folgenden
+    Konfigurationsparameter irrelevant.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: START_FETCHMAIL='yes'<br/>
+</help>
+
+<help name="FETCHMAIL_PROTOCOL">
+    Verwendetes Protokoll zur Uebertragung der E-Mails, normalerweise `pop3'
+    <br/>
+    Gueltige Werte: imap, pop3, pop2<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_PROTOCOL='pop3'<br/>
+</help>
+
+<help name="FETCHMAIL_LIMIT">
+    Maximale Groesse fuer eine E-Mail in Bytes. Ueberschreitet eine E-Mail die
+    angegebene Groesse, so wird diese E-Mail nicht abgeholt. Wird dieser Parameter
+    auf `0' gesetzt, so wird die Limitueberpruefung deaktiviert (wird nicht empfohlen).<br/>
+    Der vorgegebene Wert entspricht einer Groesse von 4MB. Wird kein Wert angegeben,
+    so werden E-Mails bis zu einer Groesse von 4Mb akzeptiert.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_LIMIT='4096000'<br/>
+</help>
+
+<help name="FETCHMAIL_WARNINGS">
+    Ueber diesen Parameter legt man fest, in welchem Intervall Warnmeldungen
+    ueber `uebergrosse' E-Mails, deren maximale Groesse ueber den Parameter
+    FETCHMAIL_LIMIT eingestellt wird, an den Postmaster geschickt werden sollen.<br/>
+    Eine erste Benachrichtigung wird immer am Ende der Postfachabfrage, in deren
+    Verlauf die uebergrosse Nachricht erkannt wurde, verschickt. Danach werden diese
+    Benachrichtigungen solange unterdrueckt, bis die ueber diesen Parameter
+    eingestellte Zeitspanne verstrichen ist. Um also nach 24 Stunden erneut
+    informiert zu werden setzt man diesen Wert auf 86400 (Sekunden).<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_WARNINGS='86400'<br/>
+</help>
+
+<help name="FETCHMAIL_DAEMON">
+    Dieser Parameter gibt an, wie oft Fetchmail die konfigurierten
+    Mail-Konten abfragen soll. Auch dieses Intervall wird in Sekunden
+    angegeben. Der Wert `1800' bedeutet also ein Intervall von 30
+    Minuten.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_DAEMON='1800'<br/>
+</help>
+
+<help name="FETCHMAIL_TIMEOUT">
+    Dieser Parameter legt fest wie lange auf eine Antwort vom abzurufenden
+    Server gewartet werden soll, bevor ein Abbruch erfolgt. Die Angabe
+    erfolgt in Sekunden.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_TIMEOUT='90'<br/>
+</help>
+
+<help name="FETCHMAIL_BOUNCE_MAIL">
+    Wird dieser Parameter auf den Wert `yes' gesetzt, so werden
+    Fehlermeldungen welche beim Abruf oder der Zustellung einer
+    Nachricht aufgetreten sind an den Absender einer Nachricht
+    geschickt. Wird der Wert dieses Parameters auf `no' gesetzt,
+    so wird statt dessen der Postmaster ueber eventuelle Probleme
+    informiert.<br/>
+    <br/>
+    Gueltige Werte: yes oder no<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_BOUNCE_MAIL='no'<br/>
+</help>
+
+<help name="FETCHMAIL_BOUNCE_SPAM">
+    Wird dieser Parameter auf den Wert `yes' gesetzt, so wird
+    eine als Spam klassifizierte Nachricht an den Absender
+    zurueck geschickt. Da es beim Versand von Spamnachrichten
+    jedoch ueblich ist die Absenderadresse zu faelschen, ist
+    der Wert des Parameters standardmaessig auf `no' gesetzt,
+    wodurch eine Nachricht unwiderruflich vom Server geloescht
+    wird.<br/>
+    <br/>
+    Gueltige Werte: yes oder no<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_BOUNCE_SPAM='no'<br/>
+</help>
+
+<help name="FETCHMAIL_BOUNCE_SOFT">
+    Wird dieser Parameter auf den Wert `yes' gesetzt, so wird
+    bei einem permanenten Zustellfehler eine Nachricht auf dem
+    abgerufenen Server belassen als wenn nur ein temporaerer
+    Fehler aufgetreten waere. Wird der Wert dieses Parameters auf
+    `no' gesetzt, so wird eine Nachricht unwiderruflich vom Server
+    geloescht. Dieser Parameter sollte deshalb nur nach reichlicher
+    Ueberlegung und ausfuehrlichen Tests der Abrufparameter umgestellt
+    werden.<br/>
+    <br/>
+    Gueltige Werte: yes oder no<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_BOUNCE_SOFT='yes'<br/>
+</help>
+
+<help name="FETCHMAIL_N">
+    Anzahl der abzufragenden Mailkonten. Diese werden nun im folgenden
+    konfiguriert. Die folgenden Variablen muessen dann jeweils fuer jedes
+    Mailkonto angegeben werden, also z.B. FETCHMAIL_SERVER_1,
+    FETCHMAIL_SERVER_2 usw.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_N='1'<br/>
+</help>
+
+<help name="FETCHMAIL_%_ACTIVE">
+    Wird dieser Parameter auf den Wert `yes' gesetzt, so wird der zugehoerige
+    Datensatz aktiviert, `no' deaktiviert ihn.<br/>
+    <br/>
+    Gueltige Werte: yes oder no<br/>
+    <br/>
+    Beispiel: FETCHMAIL_1_ACTIVE='no'<br/>
+</help>
+
+<help name="FETCHMAIL_%_COMMENT">
+    Dies ist ein Kommentarfeld, welches die Identifizierung des
+    abzurufenden Servers erleichtern soll.<br/>
+    <br/>
+    Gueltige Werte: beliebiger Text<br/>
+    <br/>
+    Beispiel: FETCHMAIL_1_COMMENT='Dies ist mein Server'<br/>
+</help>
+
+<help name="FETCHMAIL_%_SERVER">
+    Hier wird der x'te POP3-Server angegeben. Bei web.de waere das zum
+    Beispiel mail.web.de.<br/>
+    <br/>
+    Gueltige Werte: Servername<br/>
+    <br/>
+    Beispiel: FETCHMAIL_1_SERVER='mail.domain.com'<br/>
+    <br/>
+    Hinweis: Will man eine grosse Anzahl von Accounts anlegen,
+    so ist es moeglich diese ueber eine csv-Datei der aktuellen
+    Konfigurationsdatei hinzuzufuegen. Hierzu kopiert man eine Datei
+    `fetchmail.csv' in das Verzeichnis /var/spool/exim und ruft das
+    Programm `/var/install/config.d/mail-update.sh import' auf.<br/>
+    <br/>
+    Eine vorhandene User-Liste kann in eine Datei `fetchmail.csv', im Verzeichnis<br/>
+    /var/spool/exim exportiert werden, indem man das Programm `/var/install/config.d/mail-update.sh export'
+    aufruft.<br/>
+    <br/>
+    Die csv-Datei muss wie folgt aufgebaut sein:<br/><br/>
+    #server,active,username,password,forward,smtphost,imap_folder,domain,envelope,server_aka(s),local_domain(s),protocol,port,auth,keep,fetchall,msg_limit,ssl_protocol,ssl_transport,ssl_fingerprint<br/>
+    server1,no,username1,password1,forward-addr1,,,no,no,2:svr-aka1:svr-aka2,0,,port1,,no,yes,10,none,no,<br/>
+    server2,no,username2,password2,forward-addr2,,,no,no,0,2:ldom1:ldom2,,port2,,no,yes,10,none,no,
+</help>
+
+<help name="FETCHMAIL_%_USER">
+    Hier muss das Benutzerkonto zusammen mit dem zugehoerigen Passwort auf
+    dem entfernten POP3-Server eingetragen werden.<br/>
+    <br/>
+    Gueltige Werte: Username bzw. Kennwort<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    FETCHMAIL_1_USER='username'<br/>
+    FETCHMAIL_1_PASS='secret'
+</help>
+
+<help name="FETCHMAIL_%_FORWARD">
+    Diese Konfigurationsvariable gibt die Mailadresse an, wohin
+    die E-Mails fuer dieses Konto weitergeleitet werden sollen. Im
+    allgemeinen ist dieses eine lokale E-Mail-Adresse, so dass der
+    SMTP-Server Exim die E-Mails entgegennehmen wird. In diesem
+    Fall ist dann natuerlich auch START_SMTP='yes' einzustellen,
+    siehe unten.<br/>
+    <br/>
+    Gueltige Werte: vollstaendige E-Mail-Adresse<br/>
+    <br/>
+    Beispiel: FETCHMAIL_1_FORWARD='user@local.lan'<br/>
+</help>
+
+<help name="FETCHMAIL_%_SMTPHOST">
+    Hier kann man den SMTP-Host angeben, an welchen die E-Mails
+    weitergeleitet werden sollen. Soll der lokale SMTP-Server
+    verwendet werden, bleibt diese Variable leer.<br/>
+    <br/>
+    Gueltige Werte: leer bzw. SMTP-Hostname<br/>
+    <br/>
+    Beispiel: FETCHMAIL_1_SMTPHOST=''<br/>
+</help>
+
+<help name="FETCHMAIL_%_IMAP_FOLDER">
+    Wurde der Parameter FETCHMAIL_x_PROTOCOL='imap' gesetzt, so
+    koennen ueber diesen Parameter individuelle IMAP-Ordner angegeben
+    werden die ueber Fetchmail abgerufen werden sollen. Wird der
+    Parameter leer gelassen, so wird nur die Standard-Mailbox
+    'INBOX' abgerufen. Mehrere Ordnernamen muessen durch ein
+    Komma voneinander getrennt eingegeben werden.<br/>
+    <br/>
+    Gueltige Werte: leer bzw. IMAP-Ordner<br/>
+    <br/>
+    Beispiel: FETCHMAIL_1_IMAP_FOLDER=''<br/>
+</help>
+
+<help name="FETCHMAIL_%_DOMAIN">
+    FETCHMAIL_x_DOMAIN bestimmt, ob die E-Mails vom Mailkonto
+    des entfernten POP3-Servers fuer eine komplette Domain verteilt
+    werden sollen.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_DOMAIN='no'<br/>
+</help>
+
+<help name="FETCHMAIL_%_ENVELOPE">
+    Dieser Parameter legt fest, ob bei Verwendung einer Multi-Drop-Mailbox auch
+    die Adressen im Nachrichten-Envelope ueberprueft werden sollen. In Ausnahmefaellen,
+    wenn z.B. der urspruengliche Empfaenger einer Nachricht aus dem eigentlichen
+    Nachrichten-Header nicht mehr ersichtlich ist, kann es sinnvoll sein diesen
+    Parameter auf den Wert 'yes' zu setzen.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_ENVELOPE='no'<br/>
+</help>
+
+<help name="FETCHMAIL_%_ENVELOPE_HEADER">
+    Beim Abruf einer Multi-Drop-Mailbox kann man ueber diesen Parameter festlegen,
+    wie die Eintraege im Nachrichten-Envelope gekennzeichnet sind die die originalen
+    Empfaengeradressen beinhalten. Standardmaessig wird nach einem Eintrag `X-Envelope-To:'
+    gesucht, jedoch kann es sein dass ein Internet-Provider die Angabe eines abweichenden
+    Eintrags notwendig macht.<br/>
+    <br/>
+    Gueltige Werte: gueltiger Envelope-Eintrag<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_ENVELOPE_HEADER=''<br/>
+</help>
+
+<help name="FETCHMAIL_%_SERVER_AKA_N">
+    Dieser Parameter gibt an, wie viele alternative DNS Aliases fuer den Mailserver
+    ueber die Parameter FETCHMAIL_x_SERVER_AKA_y definiert worden sind. Es ist
+    zu beachten, dass dieser und der folgende Parameter nur funktionsfaehig sind,
+    wenn FETCHMAIL_x_DOMAIN='yes' gesetzt wurde.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_SERVER_AKA_N='0'<br/>
+</help>
+
+<help name="FETCHMAIL_%_SERVER_AKA_y">
+    Bei der Abfrage eines Postfaches durchsucht Fetchmail den Nachrichten-Header
+    nach Namen des Mailservers. Definiert man nun ueber diesen Parameter alternative
+    DNS Aliases fuer den Mailservers, so wird die ueberpruefung beschleunigt und die
+    Notwendigkeit von DNS-Anfragen reduziert.<br/>
+    Hinweis: Wird z.B. ein Domain-Suffix `netaxs.com' konfiguriert, so trifft dieser
+    auf alle auf diesen Suffix endenden Hostnamen, wie z.B. `pop3.netaxs.com' oder
+    `mail.netaxs.com' zu.<br/>
+    <br/>
+    Gueltige Werte: Domainname<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_SERVER_AKA_y=''<br/>
+</help>
+
+<help name="FETCHMAIL_%_LOCALDOMAIN_N">
+    Dieser Parameter gibt an, wie viele lokale Domains ueber die Parameter
+    FETCHMAIL_x_LOCALDOMAIN_y definiert
+    worden sind.  Es ist zu beachten, dass dieser und der folgende Parameter
+    nur funktionsfaehig sind, wenn FETCHMAIL_x_DOMAIN='yes' gesetzt wurde.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_LOCALDOMAIN_N='0'<br/>
+</help>
+
+<help name="FETCHMAIL_%_LOCALDOMAIN_y">
+    Bei einem E-Mail-Abruf wird die hier angegebenen Domain dazu genutzt um
+    zu pruefen, ob es sich bei der Empfaenger-Domain in einer E-Mail um eine lokale
+    oder nicht lokale Domain handelt. Nur wenn es zu einer uebereinstimmung
+    kommt wird die E-Mail abgeholt.<br/>
+    <br/>
+    Gueltige Werte: Domainname<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_LOCALDOMAIN_y=''<br/>
+</help>
+
+<help name="FETCHMAIL_%_PROTOCOL">
+    Hier kann das verwendete Protokoll zur uebertragung der E-Mails, abweichend vom
+    Standard-Protokoll, welches ueber den Parameter<br/>
+    FETCHMAIL_PROTOCOL festgelegt wurde, definiert
+    werden. Dieser Parameter muss normalerweise nicht gesetzt werden!<br/>
+    <br/>
+    Gueltige Werte: leer bzw. imap, pop3, pop2<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_PROTOCOL=''<br/>
+</help>
+
+<help name="FETCHMAIL_%_PORT">
+    Hier kann der verwendete IP-Port zur Uebertragung der E-Mails,
+    abweichend vom Standard-Port des gewaehlten Protokolls, definiert
+    werden. Dieser Parameter muss normalerweise nicht gesetzt werden!<br/>
+    <br/>
+    Gueltige Werte: leer bzw. Zahl<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_PORT=''<br/>
+</help>
+
+<help name="FETCHMAIL_%_AUTH_TYPE">
+    Ueber diesen Parameter wird die zu verwendende Authentifizierung
+    eingestellt. Standardmaessig wird `any' verwendet. Dabei wird in
+    folgender Reihenfolge versucht die E-Mails abzurufen: ohne Kennwort -
+    maskiertes Kennwort - klartext Kennwort. Wird beim Aufbau der
+    Verbindung zum Beispiel eine Fehlermeldung `SSL connection failed'
+    angezeigt, so sollte man diesen Parameter auf `password' setzen
+    um die Verwendung von SSL/STLS beim Verbindungsaufbau zu unterbinden.<br/>
+    <br/>
+    Gueltige Werte: leer bzw. any, password<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_AUTH_TYPE=''<br/>
+</help>
+
+<help name="FETCHMAIL_%_ACCEPT_BAD_HEADER">
+    Ueber diesen Parameter wird festgelegt, ob auch Nachrichten mit
+    fehlerhaften E-Mail-Header-Zeilen herunter geladen werden sollen
+    oder nicht.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_ACCEPT_BAD_HEADER='no'<br/>
+</help>
+
+<help name="FETCHMAIL_%_DNS_LOOKUP">
+    Ueber diesen Parameter kann die Namensaufloesung mittels DNS beim
+    Abruf von Multidrop-Mailboxen unterbunden werden.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_DNS_LOOKUP='yes'<br/>
+</help>
+
+<help name="FETCHMAIL_%_KEEP">
+    Mit diesem Konfigurationsparameter stellt man ein, ob die E-Mails nach
+    der Uebertragung auf dem entfernten POP3-Server erhalten bleiben sollen.<br/>
+    Die Einstellung `yes' erhaelt die E-Mails auf dem entfernten Server, mit
+    `no' werden sie nach der Uebertragung geloescht.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_KEEP='no'<br/>
+</help>
+
+<help name="FETCHMAIL_%_FETCHALL">
+    Mit diesem Konfigurationsparameter stellt man ein, ob generell
+    alle E-Mails vom entfernten POP3-Server abgeholt werden sollen,
+    egal ob diese bereits abgerufen wurden.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_FETCHALL='no'<br/>
+</help>
+
+<help name="FETCHMAIL_%_MSG_LIMIT">
+    Ueber diesen Parameter stellt man die maximale Anzahl der Nachrichten
+    ein, die waehrend einer einzelnen Verbindung abgerufen bzw. weitergeleitet
+    werden sollen. Setzt man den Parameter auf den Wert `0' so wird jede
+    Begrenzung aufgehoben.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_MSG_LIMIT='0'<br/>
+</help>
+
+<help name="FETCHMAIL_%_SSL_PROTOCOL">
+    Ueber diesen Parameter bestimmt man, welches SSL Protokoll bei
+    einer Verbindung zum entfernten POP3-Server verwendet werden
+    soll. Wird der Wert 'auto' gesetzt, so wird, basierend auf der
+    Serverantwort, automatisch das sicherste Protokoll gewaehlt.<br/>
+    Viele POP3-Server unterstuetzen z.B. mittlerweile die STLS-Funktion
+    (tls1), welche eine verschluesselte Uebertragung des Kennwortes zulaesst.<br/>
+    <br/>
+    Gueltige Werte: auto, none, ssl3, tls1<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_SSL_PROTOCOL='none'<br/>
+</help>
+
+<help name="FETCHMAIL_%_SSL_TRANSPORT">
+    Mit diesem Konfigurationsparameter aktiviert man die SSL-
+    Protokollunterstuetzung, sodass die komplette Kommunikation zum
+    entfernten POP3-Server verschluesselt ablaeuft. Voraussetzung fuer
+    die Nutzung dieser Funktion ist natuerlich, dass der entfernte
+    Server dies auch unterstuetzt.<br/>
+    Zusaetzlich ist es hierfuer erforderlich, dass man das SSL-
+    Serverzertifikat des entfernten POP3-Servers und das zugehoerige
+    Root-Zertifikat im Verzeichnis /usr/local/ssl/certs ablegt und
+    jeweils mit einem Hash-Wert versieht.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_SSL_TRANSPORT='no'<br/>
+</help>
+
+<help name="FETCHMAIL_%_SSL_FINGERPRINT">
+    Ueber diesen Parameter kann man den SSL-Fingerprint (MD5-Hash)
+    des entfernten POP3-Servers angeben. Bei einem Verbindungsaufbau
+    vergleicht Fetchmail diesen Wert mit dem des POP3-Servers und
+    unterbricht die Verbindung sobald ein Unterschied festgestellt
+    wird. Der Fingerprint muss auf jeden Fall in Grossbuchstaben
+    angegeben werden.<br/>
+    <br/>
+    Gueltige Werte: leer bzw. Text<br/>
+    <br/>
+    Beispiel: FETCHMAIL_1_SSL_FINGERPRINT='E4:20:3C:CB:A3:00:80:C9'<br/>
+    <br/>
+    Standardeinstellung: FETCHMAIL_x_SSL_FINGERPRINT=''<br/>
+    <br/>
+    <br/>
+    <br/>
+    Als SMTP-Server wird Exim eingesetzt. Er nimmt E-Mails ueber das SMTP-Protokoll
+    entgegen und speichert sie entweder auf dem lokalen Server ab, wenn der
+    Empfaenger der E-Mail ein lokaler Benutzer ist, oder leitet sie an einen anderen
+    SMTP-Server, siehe auch Parameter SMTP_SMARTHOST_..., weiter.<br/>
+    <br/>
+    Der Begriff `innen' steht dabei in den folgenden Absaetzen fuer
+    das lokale Netzwerk und deren Rechnern, der Begriff `aussen'
+    steht fuer die `grosse weite Welt' des Internets mit deren SMTP-Servern.<br/>
+    <br/>
+    Um Missbrauch vor Spamming vorzubeugen, ist die Konfiguration des SMTP-Servers
+    mit Bedacht vorzunehmen. E-Mails, die nach `aussen' weitergeleitet werden sollen,
+    sollten auch nur von lokalen Rechnern (`innen') entgegengenommen werden. E-Mails, die
+    von `aussen' kommen, sollten lediglich lokal (`innen') gespeichert werden koennen. Einem
+    Missbrauch als sog. Mail-Relay ist auf jeden Fall vorzubeugen, d.h. das
+    Entgegennehmen einer E-Mail von `aussen' und Weiterleitung nach `aussen' sollte
+    im Normalfall unterbunden werden. Dafuer muss in der Konfiguration eingestellt
+    werden, was `aussen' und was `innen' ist. Eine weitere Moeglichkeit der
+    Absicherung ist ein Authentifizierungszwang. Auch dieser kann ueber die
+    Standard-Konfiguration eingestellt werden.<br/>
+    <br/>
+    Achtung: Fuer jedes lokale Mailkonto muss ein lokaler User ueber das EISFAIR-Setup-Menue
+    eingerichtet werden!<br/>
+    <br/>
+    <br/>
+</help>
+
+<help name="START_SMTP">
+    Hier sind zwei Werte erlaubt: `yes' aktiviert den SMTP-Server, der
+    Wert `no' schaltet ihn ab. Bei der Verwendung von Fetchmail, wo die
+    abgeholten E-Mails lokal gespeichert werden sollen, ist hier auf jeden
+    Fall `yes' einzutragen.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: START_SMTP='yes'<br/>
+</help>
+
+<help name="SMTP_QUALIFY_DOMAIN">
+    Hier wird der Name der Domain angegeben, die bei ausgehenden E-Mails
+    fuer die Absender-Adresse verwendet werden soll, wenn diese nicht
+    bereits eine Domain enthaelt. Dieses kann zum Beispiel der Fall sein,
+    wenn man aus der Shell mit dem Programm `mail' eine E-Mail versendet.<br/>
+    Heisst der lokale Benutzer zum Beispiel `joe', wird die E-Mail mit
+    der Absenderadresse joe@domain.de gesendet, wenn Joe das Programm
+    `mail' aus der Shell aufgerufen hat. Im Normalfall verwendet man
+    jedoch an seinem Arbeits-PC einen E-Mail-Client, welcher bereits
+    die vollstaendige E-Mail-Absender-Adresse angibt. In diesem Fall wird
+    der Wert dieses Konfigurationsparameters ignoriert. Hier sollte
+    unbedingt als Domain ein gueltiger Domain-Name eingetragen werden!<br/>
+    <br/>
+    Gueltige Werte: Domainname<br/>
+    <br/>
+    Beispiel: SMTP_QUALIFY_DOMAIN='domain.de'<br/>
+</help>
+
+<help name="SMTP_HOSTNAME">
+    Der `offizielle' Hostname des EISFAIR-Rechners, inklusiv der
+    zugehoerigen Domain, der beim Versenden von E-Mails nach
+    `aussen' angegeben werden soll.<br/>
+    <br/>
+    Gueltige Werte: vollstaendiger Hostname<br/>
+    <br/>
+    Beispiel: SMTP_HOSTNAME='eis.domain.de'<br/>
+</help>
+
+<help name="SMTP_QUEUE_INTERVAL">
+    Intervall in Minuten, in welchem die Warteschlange (Queue) ueberprueft
+    werden soll. Ein Sende-Auftrag einer E-Mail wird normalerweise sofort
+    vorgenommen. Kann die E-Mail nicht versendet werden, weil beispielsweise
+    der `gegnerische' SMTP-Server nicht erreichbar ist, bleibt die zu
+    sendende E-Mail in der Warteschlange liegen. In regelmaessigen Abstaenden
+    werden dann die Sende-Auftraege nachgeholt. Mit SMTP_QUEUE_INTERVAL
+    kann man das Intervall einstellen. Ein guter Wert ist 30 Minuten.<br/>
+    Ueber den Parameter SMTP_QUEUE_OUTBOUND_MAIL
+    kann die die direkte Auslieferung ausgehender E-Mail verhindert werden.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Beispiel: SMTP_QUEUE_INTERVAL='30'<br/>
+</help>
+
+<help name="SMTP_QUEUE_OUTBOUND_MAIL">
+    Wird dieser Konfigurationsparameter auf den Wert `no' gesetzt, so
+    werden ausgehende E-Mail sofort verschickt und nicht bis zum naechsten
+    manuellen Pruefen der Sende-Warteschlange (runq) zwischenspeichern.<br/>
+    Interne E-Mail wird weiterhin sofort zugestellt. Dies ist hilfreich,
+    wenn man selbst bestimmen will wann E-Mail verschickt werden soll.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: SMTP_QUEUE_OUTBOUND_MAIL='no'<br/>
+</help>
+
+<help name="SMTP_QUEUE_ACCEPT_PER_CONNECTION">
+    Nur wenn der Parameter  SMTP_QUEUE_OUTBOUND_MAIL='no'
+    gesetzt wurde kann ueber diesen Parameter eingestellt werden wie viele
+    Nachrichten waehrend eine SMTP-Session uebertragen werden sollen.<br/>
+    Ein Indiz fuer einen zu gering gewaehlten Wert ist z.B. das gehaeufte
+    Auftreten der Meldung 'no immediate delivery' in den Logdateien.<br/>
+    In diesem Fall sollte man den Parameter auf z.B. auf den Wert '30'
+    setzen.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: SMTP_QUEUE_ACCEPT_PER_CONNECTION='10'<br/>
+</help>
+
+<help name="SMTP_MAIL_TO_UNKNOWN_USERS">
+    Mit diesem Parameter wird festgelegt wie der SMTP-Server auf eingehende
+    E-Mail, die an unbekannte Empfaenger geschickt wurde, reagieren soll.<br/>
+    Wird der Parameter auf `bounce' gesetzt, so wird automatisch eine
+    Antwortnachricht an den Mail-Sender geschickt (Standard).<br/>
+    Wird der Parameter auf `copy' gesetzt, so wird automatisch eine
+    Antwortnachricht an den Mail-Sender und eine Kopie an den Postmaster
+    geschickt.<br/>
+    Wird der Parameter jedoch  auf `forward' gesetzt, so wird keine
+    Nachricht an den Mail-Sender sondern nur eine Nachricht an den
+    Postmaster geschickt.<br/>
+    <br/>
+    Gueltige Werte: bounce, copy, forward<br/>
+    <br/>
+    Standardeinstellung: SMTP_MAIL_TO_UNKNOWN_USERS='bounce'<br/>
+</help>
+
+<help name="SMTP_ALLOW_EXIM_FILTERS">
+    Wird dieser Parameter gesetzt, so interpretiert Exim Eintraege in der .forward-Datei,
+    die mit `#Exim filter' beginnen, als Filter-Befehle. Die Filter-Datei wird mit den
+    Zugriffsrechten des Anwenders ausgefuehrt. Es ist zu beachten, dass durch die Aktivierung
+    dieses Parameters ein Anwender unter Umstaenden Zugriff auf Dateien und Funktionen erhalten
+    kann, die fuer ihn normalerweise gesperrt sind.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: SMTP_ALLOW_EXIM_FILTERS='no'<br/>
+</help>
+
+<help name="SMTP_CHECK_RECIPIENTS">
+    ADVANCED-Modus: ueber diesen Parameter kann festgelegt werden, wie viel Empfaenger pro
+    versendeter Nachricht gleichzeitig addressiert werden koennen. Wird dieser Parameter
+    nicht gesetzt, so wird ein Standardwert von 100 angenommen. Setzt man den Parameter
+    auf den Wert '0', so wird die Ueberpruefung deaktiviert.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: SMTP_CHECK_RECIPIENTS=''<br/>
+</help>
+
+<help name="SMTP_CHECK_SPOOL_SPACE">
+    Ueber diesen Parameter kann festgelegt werden, wie viel Platz mindestens vorhanden sein muss,
+    damit Exim noch E-Mails entgegen nehmen kann. Wird dieser Parameter nicht gesetzt, so wird ein
+    Standardwert von 10Mb angenommen. Setzt man den Parameter auf den Wert '0', so wird die
+    Ueberpruefung deaktiviert.<br/>
+    <br/>
+    Gueltige Werte: Speicherangabe<br/>
+    <br/>
+    Standardeinstellung: SMTP_CHECK_SPOOL_SPACE=''<br/>
+</help>
+
+<help name="SMTP_CHECK_SPOOL_INODES">
+    Ueber diesen Parameter kann festgelegt werden, wie viele freie Verzeichniseintraege (Inodes)
+    mindestens vorhanden sein muessen, damit Exim noch E-Mails entgegen nehmen kann. Wird dieser
+    Parameter nicht gesetzt, so wird ein Standardwert von 100 angenommen. Setzt man den Parameter
+    auf den Wert '0', so wird die Ueberpruefung deaktiviert.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: SMTP_CHECK_SPOOL_INODES=''<br/>
+</help>
+
+<help name="SMTP_LIMIT (ADVANCED-Modus)">
+    Ueber diesen Parameter kann die maximale Groesse fuer eine beim SMTP-Server eingehende
+    Nachricht festgelegt werden. Ueberschreitet eine E-Mail die angegebene Groesse, wird diese E-Mail
+    zurueckgewiesen. Wird dieser Parameter auf `0' gesetzt, so wird die Limitueberpruefung deaktiviert
+    (wird nicht empfohlen). Ein Wert von '10M' setzt ein Limit von 10Mb. Wird kein Wert angegeben,
+    so werden E-Mails bis zu einer Groesse von 50Mb akzeptiert.<br/>
+    <br/>
+    Gueltige Werte: Groessenangabe<br/>
+    <br/>
+    Standardeinstellung: SMTP_LIMIT=''<br/>
+</help>
+
+<help name="SMTP_REMOVE_RECEIPT_REQUEST">
+    Enthaelt eine Nachricht, welche ueber das Internet empfangen wurde, eine Anfrage fuer
+    die Ruecksendung einer Lesebestaetigung, so kann diese durch Setzen dieses Parameters
+    aus der Nachricht entfernt werden. Zur Information des Nachrichtenempfaengers wird dem
+    eigentlichen Nachrichtentext eine Information ueber die Entfernung einer solchen Anfrage
+    vorangestellt.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: SMTP_REMOVE_RECEIPT_REQUEST='no'<br/>
+</help>
+
+<help name="SMTP_SERVER_TRANSPORT">
+    Ueber diesen Parameter wird festgelegt, ob als Transport-Protokoll SMTP (unverschluesselt),
+    SMTP ueber TLS (tls) oder beides (both) verwendet werden soll. Bei Verwendung von TLS
+    ist sicherzustellen, dass zuvor entsprechende Server- Zertifikate installiert werden.<br/>
+    <br/>
+    Gueltige Werte: default, tls, both<br/>
+    <br/>
+    Standardeinstellung: SMTP_SERVER_TRANSPORT='default'<br/>
+</help>
+
+<help name="SMTP_IDENT_CALLBACKS">
+    Ueber diesen Parameter wird festgelegt, ob der Exim-Daemon einen Ident Callback fuer die
+    ueber die Parameter SMTP_RELAY_FROM_HOST_.. definierten
+    Hosts durchfuehren soll. Falls der initiale Verbindungsaufbau beim Abruf von Nachrichten
+    relativ lange dauern sollte, kann man diesen Parameter auf 'no' setzen.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: SMTP_IDENT_CALLBACKS='yes'<br/>
+</help>
+
+<help name="SMTP_SERVER_TLS_ADVERTISE_HOSTS">
+    Ueber diesen Parameter wird angegeben fuer welche Hosts die Verwendung des STARTTLS-Befehls
+    ermoeglicht werden soll. Nur wenn der angegebene Domainfilter mit der Absenderdomain
+    uebereinstimmt wird es einem Mail-Client ermoeglicht eine verschluesselte Verbindung aufzubauen.<br/>
+    Mehrere Eintraege muessen durch ein `:' voneinander getrennt werden.<br/>
+    Dieser Befehl wird nur verwendet, wenn zuvor SMTP_SERVER_TRANSPORT
+    auf `tls' oder `both' gestellt wurde.<br/>
+    Achtung: Diese Parameter sollte nur von erfahrenen Personen genutzt werden, die sich
+    sehr gut mit TLS-Zertifikaten auskennen.<br/>
+    <br/>
+    Gueltige Werte: Domainfilter<br/>
+    <br/>
+    Beispiel: SMTP_SERVER_TLS_ADVERTISE_HOSTS='*domain.de'<br/>
+    <br/>
+    Standardeinstellung: SMTP_SERVER_TLS_ADVERTISE_HOSTS=''<br/>
+</help>
+
+<help name="SMTP_SERVER_TLS_VERIFY_HOSTS">
+    Ueber diesen Parameter wird angegeben welche Hosts sich durch ein eigenes Zertifikat ausweisen
+    muessen. Falls das von einem Mail-Clients uebermittelte Zertifikat nicht mit einem auf dem
+    Server abgelegten Client-Zertifikat uebereinstimmt wird die Nachrichtenuebermittlung abgebrochen.<br/>
+    Dieser Parameter muss mit einem grossen Mass an Sorgfalt gesetzt werden, da es sonst dazu fuehren
+    kann, dass E-Mail von dem eigenen oder auch `externen' SMTP-Servern nicht mehr entgegen genommen
+    wird. Eintraege wie z.B. `*', `localhost' oder `127.0.0.1' sollten also auf jeden Fall
+    unterbleiben. Mehrere Eintraege muessen durch ein `:' voneinander getrennt werden.<br/>
+    Dieser Befehl wird nur verwendet, wenn zuvor SMTP_SERVER_TRANSPORT
+    auf `tls' oder `both' gestellt wurde.<br/>
+    Achtung: Diese Parameter sollte nur von erfahrenen Personen genutzt werden, die sich
+    sehr gut mit TLS-Zertifikaten auskennen.<br/>
+    <br/>
+    Gueltige Werte: Domainfilter<br/>
+    <br/>
+    Beispiel: SMTP_SERVER_TLS_VERIFY_HOSTS='*domain.de'<br/>
+    <br/>
+    Standardeinstellung: SMTP_SERVER_TLS_VERIFY_HOSTS=''<br/>
+</help>
+
+<help name="SMTP_SERVER_TLS_TRY_VERIFY_HOSTS">
+    Ueber diesen Parameter wird angegeben fuer welche Hosts versucht werden soll eine
+    Authentifizierung ueber ein Zertifikat durchzufuehren. Falls das von einem Mail-Clients
+    uebermittelte Zertifikat nicht mit einem auf dem Server abgelegten Client-Zertifikat
+    uebereinstimmt wird trotzdem eine sichere Nachrichtenuebermittlung zugelassen. Eintraege
+    wie z.B. `*', `localhost' oder `127.0.0.1' sollten also auf jeden Fall unterbleiben.<br/>
+    Mehrere Eintraege muessen durch ein `:' voneinander getrennt werden.<br/>
+    Dieser Befehl wird nur verwendet, wenn zuvor SMTP_SERVER_TRANSPORT
+    auf `tls' oder `both' gestellt wurde.<br/>
+    Achtung: Diese Parameter sollte nur von erfahrenen Personen genutzt werden, die sich
+    sehr gut mit TLS-Zertifikaten auskennen.<br/>
+    <br/>
+    Gueltige Werte: Domainfilter<br/>
+    <br/>
+    Beispiel: SMTP_SERVER_TLS_TRY_VERIFY_HOSTS='*domain.de'<br/>
+    <br/>
+    Standardeinstellung: SMTP_SERVER_TRY_TLS_VERIFY_HOSTS=''<br/>
+</help>
+
+<help name="SMTP_SERVER_SSMTP">
+    Ueber diesen Parameter kann die Unterstuetzung fuer das SSMTP-Protokoll aktiviert werden.<br/>
+    Hierzu  muss diese Variable lediglich auf den Wert `yes' gestellt werden. Die Einstellung
+    `no' schaltet den SSMTP-Server ab.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: SMTP_SERVER_SSMTP='no'<br/>
+</help>
+
+<help name="SMTP_SERVER_SSMTP_LISTEN_PORT">
+    Ueber diesen Parameter wird der Port festgelegt, auf dem Exim auf eingehende SSMTP-Verbindungen
+    hoert. Es ist zu beachten, dass fuer den angegebenen Port auch ein Eintrag in der Datei
+    /etc/services existieren sollte. Wird dieser Parameter nicht gesetzt, so wird automatisch
+    'ssmtp' angenommen. Dieser Parameter sollte nur in Ausnahmefaellen veraendert werden!<br/>
+    <br/>
+    Gueltige Werte: Portname bzw. Zahl<br/>
+    <br/>
+    Standardeinstellung: SMTP_SERVER_SSMTP_LISTEN_PORT=''<br/>
+</help>
+
+<help name="SMTP_LOCAL_DOMAIN_x">
+    Ueber diesen Parameter gibt man die Anzahl der lokalen Domains, fuer
+    welche E-Mails zur lokalen Speicherung entgegengenommen werden sollen,
+    an. Es koennen auch Hostnamen angegeben werden. Der Wert `@' ist dabei
+    etwas Besonderes: er steht fuer den offiziellen Hostnamen des
+    EISFAIR-Servers, also den Wert der Variablen SMTP_HOSTNAME. Zusaetzlich
+    sollte der Hostname `localhost' in der Liste erscheinen.<br/>
+    <br/>
+    Gueltige Werte: Zahl bzw. @, Host- und Domainnamen<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    SMTP_LOCAL_DOMAIN_N='3'<br/>
+    SMTP_LOCAL_DOMAIN_1='@'<br/>
+    SMTP_LOCAL_DOMAIN_2='localhost'<br/>
+    SMTP_LOCAL_DOMAIN_3='domain.de'<br/>
+</help>
+
+<help name="SMTP_LISTEN_PORT">
+    Ueber diesen Parameter wird der Port bzw. werden die Ports festgelegt,
+    auf welchen Exim eingehende Verbindungen entgegen nimmt. Wird mehr als
+    ein Port angegeben, so werden die Eintraege durch Doppelpunkte voneinander
+    getrennt. Wird dieser Parameter nicht gesetzt, so nimmt Exim standardmaessig
+    Verbindungen auf den Ports `smtp' (25/tcp) und `submission' (587/tcp) entgegen.<br/>
+    Es ist zu beachten, dass fuer den/die angegebenen Port(s) jeweils ein Eintrag
+    in der Datei /etc/services existieren sollte. Dieser Parameter sollte nur in
+    Ausnahmefaellen veraendert werden!<br/>
+    <br/>
+    Gueltige Werte: ein oder mehrere Portnamen bzw. Zahlen<br/>
+    <br/>
+    Standardeinstellung: SMTP_LISTEN_PORT=''<br/>
+    <br/>
+</help>
+
+<help name="SMTP_RELAY_TO_DOMAIN_x">
+    Hier werden diejenigen Domains angegeben, fuer welche der SMTP-Server
+    ein `eingehendes Relais' sein soll. SMTP_RELAY_TO_DOMAIN_N gibt dabei
+    die Anzahl der Domains an. Diese Domains werden dann in den Variablen
+    SMTP_RELAY_TO_DOMAIN_1, SMTP_RELAY_TO_DOMAIN_2 usw. eingetragen. Im
+    Normalfall ist Relaying nicht notwendig, so dass dieser Wert auf `0'
+    gesetzt werden kann. Soll der eisfair-Server jedoch als MX-Backup oder als
+    Mail-Gateway fuer bestimmte Domains eingesetzt werden, dann koennen
+    diese Domains hier angegeben werden.<br/>
+    <br/>
+    Achtung: Man sollte den SMTP-Server nur im Ausnahmefall als Relais
+    verwenden, weil er sonst fuer Spamming missbraucht werden koennte!<br/>
+    <br/>
+    Gueltige Werte: Zahl bzw. @, Host- und Domainnamen<br/>
+    <br/>
+    Standardeinstellung: SMTP_RELAY_TO_DOMAIN_N='0'<br/>
+    <br/>
+    Beispiel: SMTP_RELAY_TO_DOMAIN_1='domain.de'<br/>
+    <br/>
+    <br/>
+    Um sich vor Spamming zu schuetzen, leitet der SMTP-Server nur dann ausgehende
+    E-Mails an externe, meisstens im Internet befindliche, SMTP-Server weiter, wenn
+    er diese zuvor von Mail-Clients empfaengt die sich in bestimmten Netzen bzw.<br/>
+    auf bestimmten Hosts befinden. Die hierzu benoetigen Konfigrationsangaben koennen
+    im Folgenden eingestellt werden. Ausnahmen oder eine alternative Regelung
+    koennen ueber SMTP_AUTH_TYPE eingestellt werden.<br/>
+    <br/>
+</help>
+
+<help name="SMTP_RELAY_FROM_HOST_x">
+    Ueber die Parameter SMTP_RELAY_FROM_HOST_x werden diejenigen Netze oder
+    Hosts angegeben, von denen ausgehende E-Mails verschickt werden duerfen. Im
+    Allgemeinen ist dies der localhost, also 127.0.0.1 und das interne LAN.<br/>
+    Dabei werden Netze mit in der Notation x.x.x.x/N angegeben. N ist die Anzahl
+    der gesetzten Bits der Netzmaske, z.B. 24. Dies entspricht dann der Netzmaske
+    255.255.255.0.<br/>
+    <br/>
+    Schaltet man zusaetzlich die Authentifizierung (s. SMTP_AUTH_TYPE) ein,
+    koennen auch E-Mails von `aussen' nach `aussen' unter Angabe einer Kennung
+    und eines Passworts verschickt werden.<br/>
+    <br/>
+    Achtung: Man sollte den SMTP-Server nur im Ausnahmefall als Relais
+    verwenden, weil er sonst fuer Spamming missbraucht werden koennte!<br/>
+    <br/>
+    Gueltige Werte: Zahl bzw. IP-Adressen und IP-Netze<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    SMTP_RELAY_FROM_HOST_N='2'               # zwei Eintraege<br/>
+    SMTP_RELAY_FROM_HOST_1='127.0.0.1'       # localhost<br/>
+    SMTP_RELAY_FROM_HOST_2='192.168.6.0/24'  # internes LAN<br/>
+    <br/>
+    <br/>
+    Das Senden von E-Mails ueber den eisfair-SMTP-Server kann prinzipiell mit
+    einer Authentifizierung (Angabe Kennung/Passwort) geschuetzt werden.<br/>
+    Auch wenn ueber<br/>
+    SMTP_RELAY_FROM_HOST_x das Aussenden von E-Mails nur auf
+    bestimmte Netze beschraenkt ist, empfiehlt es sich, zusaetzlich einen
+    Passwort-Schutz zu hinterlegen. Praktisch ist dies auch, wenn man
+    von `aussen' den Mailserver als Relay benutzen moechte.<br/>
+</help>
+
+<help name="SMTP_AUTH_TYPE">
+    Mit dem Parameter SMTP_AUTH_TYPE wird angegeben, ob und wie eine
+    solche Zugangskennung verwendet werden soll.<br/>
+    <br/>
+    Es werden 5 Typen unterschieden:<br/>
+    <br/>
+    +[none]    - Keine Authentifizierung<br/>
+    +[user]    - Kennungen/Passwoerter der eisfair-Benutzer verwenden<br/>
+    +[server]  - Globale Kennung/Passwort verwenden<br/>
+    +[user_light]   - wie 'user', jedoch ohne die explizite<br/>
+    Pruefung der Absenderdomain.<br/>
+    +[server_light] - wie 'server', jedoch ohne die explizite<br/>
+    Pruefung der Absenderdomain.<br/>
+    <br/>
+    Gueltige Werte: none, user, server, user_light, server_light<br/>
+    <br/>
+    Standardeinstellung: SMTP_AUTH_TYPE='user'<br/>
+    <br/>
+    Soll die globale Kennung verwendet werden (Typ `server'), muss
+    hier eine globale Benutzerkennung mit einem zugehoerigen Passwort
+    angegeben werden.<br/>
+    <br/>
+    Fuer jeden anderen Authentifizierungstyp werden diese beiden
+    Parameter ignoriert und koennen daher leer bleiben.<br/>
+    <br/>
+    Gueltige Werte: Username bzw. Kennwort<br/>
+    <br/>
+    Standardeinstellung:<br/>
+    <br/>
+    SMTP_AUTH_USER=''<br/>
+    SMTP_AUTH_PASS=''<br/>
+</help>
+
+<help name="SMTP_AUTH_PASS">
+    Soll die globale Kennung verwendet werden (Typ `server'), muss
+    hier eine globale Benutzerkennung mit einem zugehoerigen Passwort
+    angegeben werden.<br/>
+    <br/>
+    Fuer jeden anderen Authentifizierungstyp werden diese beiden
+    Parameter ignoriert und koennen daher leer bleiben.<br/>
+    <br/>
+    Gueltige Werte: Username bzw. Kennwort<br/>
+    <br/>
+    Standardeinstellung:<br/>
+    <br/>
+    SMTP_AUTH_USER=''<br/>
+    SMTP_AUTH_PASS=''<br/>
+    <br/>
+    <br/>
+    Ausgehende E-Mails werden normalerweise direkt an den Mailserver
+    weitergesendet, welcher fuer die angesprochene Domain als sogenannter
+    Mail-Exchanger (MX) im DNS eingetragen ist. Ist jedoch eisfair
+    ueber eine Dial-Up-Verbindung am Internet angeschlossen, kann es
+    vorkommen, dass bestimmte Mail-Exchanger die Annahme und Weiterleitung
+    der E-Mail verweigern, da im Falle von Dial-Up-Verbindungen die
+    Authentizitaet nicht ueberprueft werden kann.<br/>
+    <br/>
+    Deshalb sollte man bei einer dynamischen IP-Adresse (Waehlverbindung)
+    besser einen sogenannten Smarthost angeben, i.a. den Mailserver
+    des verwendeten Providers.<br/>
+</help>
+
+<help name="SMTP_SMARTHOST_ONE_FOR_ALL">
+    Wird dieser Parameter auf `yes' und der Parameter SMTP_SMARTHOST_N auf `1' gesetzt,
+    so wird jede ausgehende E-Mail ueber ein und den selben Smarthost verschickt. Wird dieser
+    Parameter auf `no' gesetzt, so kann, entwender abhaengig von der Mailadresse des Absenders,
+    oder der Zieldomain ein anderer Smarthost definiert werden.<br/>
+    Siehe hierzu auch SMTP_SMARTHOST_ROUTE_TYPE.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: SMTP_SMARTHOST_ONE_FOR_ALL='yes'<br/>
+</help>
+
+<help name="SMTP_SMARTHOST_DOMAINS">
+    Ueber diesen Parameter koennen Domains definiert werden, fuer die E-Mails ueber einen
+    Smarthost versandt werden sollen. Alle anderen E-Mails werden direkt zugestellt.<br/>
+    Dieser Parameter ist nur in Funktion, wenn zuvor SMTP_SMARTHOST_ONE_FOR_ALL='yes'
+    gesetzt und ein Smarthost ueber SMTP_SMARTHOST_N='1' festgelegt wurde.<br/>
+    <br/>
+    Gueltige Werte: Domainliste<br/>
+    <br/>
+    Standardeinstellung: SMTP_SMARTHOST_DOMAINS=''<br/>
+</help>
+
+<help name="SMTP_SMARTHOST_ROUTE_TYPE">
+    Wurde der Parameter SMTP_SMARTHOST_ONE_FOR_ALL='no'
+    gesetzt und ist die Anzahl der ueber SMTP_SMARTHOST_N
+    definierten Smarthosts groesser 1, dann wird ueber diesen Parameter festgelegt
+    nach welchem Kriterium ein Smarthost gesucht bzw. gefunden werden soll. Zur
+    Auswahl stehen die E-Mail-Absenderadresse eines Anwenders oder die Maildomain
+    an die eine Nachricht geschickt werden kann.<br/>
+    <br/>
+    Gueltige Werte: 'addr' or 'domain'<br/>
+    <br/>
+    Standardeinstellung:  SMTP_SMARTHOST_ROUTE_TYPE='domain'<br/>
+</help>
+
+<help name="SMTP_SMARTHOST_N">
+    Dieser Parameter gibt die Anzahl der konfigurierten Smarthosts an, deren Einstellungen
+    ueber die folgenden Parameter festgelegt werden. Wird dieser Parameter auf den Wert `0'
+    gesetzt, so wird immer der Mail-Exchanger der jeweils angesprochenen Domain in der
+    E-Mail-Adresse verwendet.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: SMTP_SMARTHOST_N='0'<br/>
+</help>
+
+<help name="SMTP_SMARTHOST_%_HOST">
+    Ueber diesen Parameter wird der zu verwendende Smarthost (SMTP-Server) festgelegt.<br/>
+    Optional ist auch die Angabe eines Backup-Smarthost moeglich, welcher dann durch
+    einen Doppelpunkt getrennt, angegeben werden muss.<br/>
+    <br/>
+    Gueltige Werte: vollstaendiger SMTP-Hostname<br/>
+    <br/>
+    Beispiel: SMTP_SMARTHOST_1_HOST='mail.gmx.net'<br/>
+</help>
+
+<help name="SMTP_SMARTHOST_%_PORT">
+    Ueber diesen Parameter wird festgelegt welcher TCP-Port fuer ausgehende Verbindungen
+    genutzt werden soll. Wird der Parameter `uucp' gesetzt, so wird bei installiertem
+    uucp-Paket dieses zum Mailtransfer verwendet. Wird nichts angegeben, so wird 'smtp'
+    verwendet.<br/>
+    <br/>
+    Gueltige Werte: TCP-Portname (smtp, uucp usw.) bzw. Nummer<br/>
+    <br/>
+    Standardeinstellung:  SMTP_SMARTHOST_1_PORT=''<br/>
+</help>
+
+<help name="SMTP_SMARTHOST_%_AUTH_TYPE">
+    Die meisten Mailserver verlangen eine Anmeldung (Authentisierung), z.B.<br/>
+    die Mailserver eines ISPs. Hier kann eingestellt werden, welche Form
+    der Uebertragung gewaehlt werden soll:<br/>
+    <br/>
+    +[none]     - keine besondere Anmeldung<br/>
+    +[md5]      - Anmeldung ueber MD5-verschluesseltes Passwort<br/>
+    +[login]    - Unverschluesselte Uebertragung (meist von MS-Servern<br/>
+    verwendet)
+    +[plain]    - Unverschluesselte Uebertragung: Standard<br/>
+    <br/>
+    Gueltige Werte: none, md5, login, plain<br/>
+    <br/>
+    Der Typ der Authentifizierung kann sehr leicht herausgefunden
+    werden, und zwar fragt man dazu den Mailserver selbst, wie er es
+    denn gerne am liebsten haette. Am Beispiel von GMX sieht das
+    beispielsweise folgendermassen aus:<br/>
+    <br/>
+    <br/>
+    hydra joerg $ telnet mail.gmx.de smtp
+    Trying 213.165.65.60...<br/>
+    Connected to mail.gmx.de.<br/>
+    Escape character is '^]'.<br/>
+    220 mp003-rz3 GMX Mailservices ESMTP
+    EHLO www.microsoft.de
+    250-mp003-rz3 GMX Mailservices
+    250-AUTH=LOGIN CRAM-MD5 PLAIN
+    250-AUTH LOGIN CRAM-MD5 PLAIN
+    250-PIPELINING
+    250 8BITMIME
+    QUIT
+    221 mp003-rz3 GMX Mailservices
+    Connection closed by foreign host.<br/>
+    <br/>
+    <br/>
+    Daraus ist sofort zu ersehen, dass gmx die Methoden 'login',
+    'cram-md5' und 'plain' unterstuetzt, wobei login oder md5 zu
+    favorisieren sind.<br/>
+</help>
+
+<help name="SMTP_SMARTHOST_%_ADDR">
+    Wurde der Parameter SMTP_SMARTHOST_ONE_FOR_ALL='no'
+    gesetzt und ist die Anzahl der ueber SMTP_SMARTHOST_N
+    definierten Smarthosts groesser 1, dann muss ueber diesen Parameter
+    jeweils die E-Mail-Adresse des Absenders konfiguriert werden dessen E-Aail ueber
+    den zugehoerigen Smarthost geschickt werden soll. Wird einmalig nur ein `*'
+    eingetragen, so wird hierdurch ein Default-Eintrag konfiguriert, der verwendet
+    wird wenn kein passender Adresseintrag gefunden wurde.<br/>
+    <br/>
+    Gueltige Werte: E-Aail-Adresse<br/>
+    <br/>
+    Beispiel: SMTP_SMARTHOST_1_ADDR='user@local.lan'<br/>
+    <br/>
+    Standardeinstellung: SMTP_SMARTHOST_1_ADDR=''<br/>
+</help>
+
+<help name="SMTP_SMARTHOST_%_DOMAIN">
+    Ueber diesen Parameter wird die E-Mail-Domain konfiguriert, deren Nachrichten ueber
+    einen dedizierten Smarthost geschickt werden sollen. Wird einmalig nur ein `*'
+    eingetragen, so wird hierdurch ein Default-Eintrag konfiguriert, der verwendet
+    wird wenn keine passende Domain gefunden wurde.<br/>
+    Voraussetzung fuer die Verwendung dieses Parameters ist, dass die Parameter<br/>
+    SMTP_SMARTHOST_ONE_FOR_ALL='no' und<br/>
+    SMTP_SMARTHOST_ROUTE_TYPE='domain'
+    gesetzt und die Anzahl der ueber SMTP_SMARTHOST_N definierten Smarthosts
+    groesser 1 ist.<br/>
+    <br/>
+    Gueltige Werte: Domainname oder `*'<br/>
+    <br/>
+    Beispiel: SMTP_SMARTHOST_1_DOMAIN='local.lan'<br/>
+    <br/>
+    Standardeinstellung: SMTP_SMARTHOST_1_DOMAIN=''<br/>
+</help>
+
+<help name="SMTP_SMARTHOST_%_PASS">
+    Wird eine Anmeldung verlangt bevor E-Mails an den Smarthost uebertragen werden
+    duerfen, so kann ueber diese Parameter die Benutzerkennung und das Passwort
+    festgelegt werden. Bei SMTP_SMARTHOST_x_AUTH_TYPE='none'
+    werden diese Variablen ignoriert.<br/>
+    <br/>
+    Gueltige Werte: Username bzw. Kennwort<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    SMTP_SMARTHOST_1_AUTH_TYPE='md5'<br/>
+    SMTP_SMARTHOST_1_USER='ichbins'<br/>
+    SMTP_SMARTHOST_1_PASS='geheim'<br/>
+</help>
+
+<help name="SMTP_SMARTHOST_%_FORCE_AUTH">
+    Wird dieser Parameter auf `yes' gesetzt, so werden nur nach
+    erfolgreicher Authentifizierung E-Mails zum entfernten SMTP-Server
+    geschickt, ansonsten schlaegt eine Uebermittlung fehl.<br/>
+    Wird der Parameter auf `no' gesetzt, so wird zwar eine
+    Authentifizierung versucht, jedoch fuehrt ein Fehlschlag nicht
+    zum Abbruch der Uebermittlung, da diese dann ohne Authentifizierung
+    erfolgt.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: SMTP_SMARTHOST_1_FORCE_AUTH='no'<br/>
+</help>
+
+<help name="SMTP_SMARTHOST_%_FORCE_TLS">
+    Wenn ein entfernter SMTP-Server angibt TLS zu unterstuetzen
+    (STARTTLS), so wird bei gesetztem Parameter `yes' versucht
+    eine sichere Verbindung zum entfernten SMTP-Server aufzubauen.<br/>
+    Hierzu wird das Server-Zertifikat mit dem lokal gespeicherten
+    Zertifikat verglichen. Bei einer Uebereinstimmung findet eine
+    Uebermittlung von E-Mails zum entfernten SMTP-Server statt,
+    ansonsten wird die Verbindung unterbrochen. Dieser Parameter
+    sollte nur aktiviert werden, wenn man vorher Server- und
+    Root-Zertifikate im Verzeichnis /usr/local/ssl/certs abgelegt
+    hat und zugehoerige Hash-Werte generiert hat.<br/>
+    Wenn ein entfernter SMTP-Server angibt TLS zu unterstuetzen
+    (STARTTLS), so wird bei gesetztem Parameter `no' versucht
+    eine sichere Verbindung zum entfernten SMTP-Server aufzubauen.<br/>
+    Schlaegt der Aufbau einer gesicherten Verbindung fehl, so wird
+    versucht die Uebermittlung von E-Mails ueber eine ungesicherte
+    Verbindung fortzusetzen.<br/>
+    Wenn ein entfernter SMTP-Server angibt TLS zu unterstuetzen
+    (STARTTLS), so wird bei gesetztem Parameter `ignore' nicht
+    versucht eine sichere Verbindung zum entfernten SMTP-Server
+    aufzubauen sondern einzig die Uebermittlung von E-Mails ueber
+    eine ungesicherte Verbindung versucht.<br/>
+    <br/>
+    Gueltige Werte: yes, no, ignore<br/>
+    <br/>
+    Standardeinstellung: SMTP_SMARTHOST_1_FORCE_TLS='no'<br/>
+    <br/>
+    <br/>
+    Es ergeben sich nunmehr fuenf verschiedene Smarthost-Varianten die
+    an Hand von Beispielen im Folgenden kurz beschrieben werden:<br/>
+    <br/>
+    +[1] Es wird kein Smarthost verwendet, alle E-Mails werden direkt zugestellt.<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    SMTP_SMARTHOST_ONE_FOR_ALL='yes'<br/>
+    SMTP_SMARTHOST_DOMAINS=''<br/>
+    SMTP_SMARTHOST_ROUTE_TYPE='domain'<br/>
+<br/>
+    SMTP_SMARTHOST_N='0'
+    <br/>
+    +[2] Es wird ein Smarthost, normalerweise der des ISP, fuer die Zustellung<br/>
+    der E-Mails verwendet.<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    SMTP_SMARTHOST_ONE_FOR_ALL='yes'<br/>
+    SMTP_SMARTHOST_DOMAINS=''<br/>
+    SMTP_SMARTHOST_ROUTE_TYPE='domain'<br/>
+<br/>
+    SMTP_SMARTHOST_N='1'<br/>
+    SMTP_SMARTHOST_1_ADDR=''<br/>
+    SMTP_SMARTHOST_1_DOMAIN=''<br/>
+    SMTP_SMARTHOST_1_AUTH_TYPE='md5'<br/>
+    SMTP_SMARTHOST_1_HOST='mail.epost.de'<br/>
+    SMTP_SMARTHOST_1_USER='userid1'<br/>
+    SMTP_SMARTHOST_1_PASS='passwd1'
+    <br/>
+    +[3] Es wird nur fuer E-Mails an die angegebene Domain ein Smarthost verwendet,<br/>
+    alle anderen E-Mails werden direkt zugestellt.<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    SMTP_SMARTHOST_ONE_FOR_ALL='yes'<br/>
+    SMTP_SMARTHOST_DOMAINS='t-online.de'<br/>
+    SMTP_SMARTHOST_ROUTE_TYPE='domain'<br/>
+<br/>
+    SMTP_SMARTHOST_N='1'<br/>
+    SMTP_SMARTHOST_1_ADDR=''<br/>
+    SMTP_SMARTHOST_1_DOMAIN=''<br/>
+    SMTP_SMARTHOST_1_AUTH_TYPE='md5'<br/>
+    SMTP_SMARTHOST_1_HOST='mail.epost.de'<br/>
+    SMTP_SMARTHOST_1_USER='userid1'<br/>
+    SMTP_SMARTHOST_1_PASS='passwd1'
+    <br/>
+    +[4] Es werden fuer verschiedene Ziel-Domains jeweils unterschiedliche Smarthosts<br/>
+    verwendet.<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    SMTP_SMARTHOST_ONE_FOR_ALL='no'<br/>
+    SMTP_SMARTHOST_DOMAINS=''<br/>
+    SMTP_SMARTHOST_ROUTE_TYPE='domain'<br/>
+<br/>
+    SMTP_SMARTHOST_N='2'<br/>
+    SMTP_SMARTHOST_1_ADDR=''<br/>
+    SMTP_SMARTHOST_1_DOMAIN='aol.com'<br/>
+    SMTP_SMARTHOST_1_AUTH_TYPE='md5'<br/>
+    SMTP_SMARTHOST_1_HOST='mail.epost.de'<br/>
+    SMTP_SMARTHOST_1_USER='userid1'<br/>
+    SMTP_SMARTHOST_1_PASS='passwd1'<br/>
+<br/>
+    SMTP_SMARTHOST_2_ADDR=''<br/>
+    SMTP_SMARTHOST_2_DOMAIN='t-online.de'<br/>
+    SMTP_SMARTHOST_2_AUTH_TYPE='login'<br/>
+    SMTP_SMARTHOST_2_HOST='smtp.gmx.net'<br/>
+    SMTP_SMARTHOST_2_USER='userid2'<br/>
+    SMTP_SMARTHOST_2_PASS='passwd2'<br/>
+    <br/>
+    +[5] Es wird fuer jeden lokalen Mail-Anwender ein eigener Smarthost verwendet.<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    SMTP_SMARTHOST_ONE_FOR_ALL='no'<br/>
+    SMTP_SMARTHOST_DOMAINS=''<br/>
+    SMTP_SMARTHOST_ROUTE_TYPE='addr'<br/>
+<br/>
+    SMTP_SMARTHOST_N='2'<br/>
+    SMTP_SMARTHOST_1_ADDR='user1@local.lan'<br/>
+    SMTP_SMARTHOST_1_DOMAIN=''<br/>
+    SMTP_SMARTHOST_1_AUTH_TYPE='md5'<br/>
+    SMTP_SMARTHOST_1_HOST='mail.epost.de'<br/>
+    SMTP_SMARTHOST_1_USER='userid1'<br/>
+    SMTP_SMARTHOST_1_PASS='passwd1'<br/>
+<br/>
+    SMTP_SMARTHOST_2_ADDR='user2@local.lan'<br/>
+    SMTP_SMARTHOST_2_DOMAIN=''<br/>
+    SMTP_SMARTHOST_2_AUTH_TYPE='login'<br/>
+    SMTP_SMARTHOST_2_HOST='smtp.gmx.net'<br/>
+    SMTP_SMARTHOST_2_USER='userid2'<br/>
+    SMTP_SMARTHOST_2_PASS='passwd2'<br/>
+</help>
+
+<help name="SMTP_UPDATE_IGNORE_HOSTS">
+    Wird dieser Parameter auf 'yes' gesetzt und der Parameter SMTP_SMARTHOST_ONE_FOR_ALL='no'
+    wurde gesetzt, so wird in regelmaessigen Intervallen die Liste der TLD's (top level
+    domains) aktualisiert, fuer die Wildcard-DNS-Eintraege gesetzt wurden. Hierdurch
+    wird verhindert, dass E-Mail an nicht existierende Domains an die jeweiligen
+    Wildcard-DNS-Hosts uebermittelt wird. Zusaetzliche Informationen sind u.a. hier zu finden:<br/>
+    urlhttp://CERT.Uni-Stuttgart.DE/ticker/article.php?mid=1145
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: SMTP_UPDATE_IGNORE_HOSTS='no'<br/>
+</help>
+
+<help name="SMTP_UPDATE_IGNORE_HOSTS_CRON_SCHEDULE">
+    Hier wird festgelegt zu welchem Zeitpunkt bzw. in welchem Intervall eine Ueberpruefung
+    der zu ignorierenden Hosts durchgefuehrt werden soll, die Wildcard-TLDs darstellen.<br/>
+    Diese Funktion ist nur verfuegbar, wenn die Parameter SMTP_UPDATE_IGNORE_HOSTS='yes'
+    gesetzt wurde. Die fuenf Teilparameter haben dabei folgende Bedeutung:<br/>
+    1 - Minuten, 2 - Stunden, 3 - Tag des Monats, 4 - Monat, 5 - Wochentag.<br/>
+    D.h. bei Verwendung der Standardeinstellung wird jeweils am Sonntag um 01:05h
+    die Liste aktualisiert. Wer Naeheres ueber die verwendete Befehlsyntax erfahren moechte,
+    sollte ueber eine Internet-Suchmaschine nach `man' und `crontab' suchen.<br/>
+    <br/>
+    Gueltige Werte: Crontab-spezifischer Parametereintrag<br/>
+    <br/>
+    Standardeinstellung: SMTP_UPDATE_IGNORE_HOSTS_CRON_SCHEDULE='5 1 * * 0'<br/>
+    <br/>
+    <br/>
+    <br/>
+    Ueber Aliases koennen E-Mail-Adressen konfiguriert werden, ueber welche
+    E-Mails lediglich an andere Benutzer oder Benutzergruppen weitergeleitet
+    werden sollen.<br/>
+    <br/>
+    Damit kann ein Benutzer mehrere E-Mail-Adressen haben. Auch kann damit
+    eine Weiterleitung eingestellt werden.<br/>
+</help>
+
+<help name="SMTP_ALIASES_%_DOMAIN">
+    Die Anzahl der E-Mail-Domains fuer die Aliases vergeben werden sollen wird
+    ueber den Parameter SMTP_ALIASES_N festgelegt. Sollte jemand mehrere
+    sogenannte virtuelle Domains hosten und abhaengig von der Domain
+    unterschiedliche Alias-Eintraege fuer z.B. gleichlautende User
+    konfigurieren wollen, so muss dieser Zaehler entsprechend erhoeht und
+    ueber den Parameter SMTP_ALIASES_x_DOMAIN die einzelnen Domains
+    konfiguriert werden.<br/>
+    <br/>
+    Gueltige Werte: Zahl bzw. E-Mail-Domain<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    SMTP_ALIASES_N='2'<br/>
+    SMTP_ALIASES_1_DOMAIN='domain1.de'<br/>
+    ...<br/>
+    # E-Mail an support@domain1.de soll an den lokalen<br/>
+    # User 'werner' weitergeleitet werden.<br/>
+    SMTP_ALIASES_1_ALIAS_2='support:  werner'
+    <br/>
+    SMTP_ALIASES_2_DOMAIN='domain2.de'<br/>
+    ...<br/>
+    # E-Mail an support@domain2.de soll an den lokalen<br/>
+    # User 'hubert' weitergeleitet werden.<br/>
+    SMTP_ALIASES_2_ALIAS_y='support:  hubert'
+</help>
+
+<help name="SMTP_ALIASES_%_ALIAS_y">
+    Die Anzahl der Alias- Eintraege pro Domain wird ueber den Parameter
+    SMTP_ALIASES_x_ALIAS_N angegeben und ueber den Parameter
+    SMTP_ALIASES_x_ALIAS_y wird jeweils der y-ten Alias-Eintrag
+    festgelegt. Angegebene wird die E-Mail-Adresse von einem lokalen
+    oder entfernten Anwender an den die Nachricht weitergeleitet
+    werden soll.<br/>
+    <br/>
+    Format von SMTP_ALIASES_x_ALIAS_x:<br/>
+    <br/>
+    Zieladresse: Weiterleitung,[Weiterleitung[,Weiterleitung ...]]
+    <br/>
+    Es kann also auch ein Verteiler angegeben werden. Dabei sind die
+    einzelnen E-Mail-Adressen oder lokale Benutzer durch ein Komma zu
+    trennen - ohne Blank!<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    <br/>
+    `frank: fm@foo.bar'      # Mails, die an frank@xxx geschickt werden,
+    # werden an die E-Mail-Adresse fm@foo.bar
+    # weitergeleitet.<br/>
+    <br/>
+    `info: chef,fm@foo.bar'  # Mails, die an info@xxx geschickt werden,
+    # werden an den lokalen Benutzer chef und
+    # die entfernte Adresse fm@foo.bar
+    # weitergeleitet.<br/>
+    <br/>
+    <br/>
+    Eine Weiterleitung kann auch wieder ein anderer Alias sein, siehe
+    auch folgendes Beispiel:<br/>
+    <br/>
+    <br/>
+    `frank: fm'              # Mails, die an frank@xxx geschickt werden,
+    # werden an den lokalen Benutzer fm
+    # weitergeleitet.<br/>
+    <br/>
+    `info: chef,frank'       # Mails, die an info@xxx geschickt werden,
+    # werden an die lokalen Benutzer chef und
+    # frank weitergeleitet, wobei frank wiederum
+    # durch den lokalen Benutzer fm ersetzt wird
+    # (s.o.!)
+    <br/>
+    <br/>
+    Es muss auf jeden Fall als erstes ein Alias fuer den root-User
+    konfiguriert werden, sodass vom eisfair-Server generierte E-Mails auch
+    ans Ziel kommen. Im Beispiel werden alle E-Mails fuer den root-User
+    an den lokalen Anwender `frank' weitergeleitet.<br/>
+    <br/>
+    Gueltige Werte: Zahl bzw. Text<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    SMTP_ALIASES_1_ALIAS_N='1'<br/>
+    SMTP_ALIASES_1_ALIAS_1='root: frank'
+    <br/>
+    <br/>
+    <br/>
+    Diese Parameter stehen nur zur Verfuegung, wenn ein Smarthost
+    verwendet wird. Ist dies nicht der Fall werden die vorgenommenen
+    Einstellung ignoriert.<br/>
+    <br/>
+    Verwendet man im lokalen Netz z.B. die Domain `lokaledomain.lan'
+    und moechte alle ausgehende E-Mail ueber den E-Mail-Server seines
+    Providers (Domain: domain.de) versenden, so treten Probleme auf,
+    da die Domain `lokaledomain.lan' ausserhalb des lokalen Netzes
+    nicht bekannt ist. Ein weiteres Problem stellt sich ein, wenn
+    der SMTP-Server des Providers eine Authentifizierung verlangt
+    und hierfuer zwingend die eigene Domain `domain.de' abfragt.<br/>
+</help>
+
+<help name=" SMTP_OUTGOING_ADDRESSES_x">
+    Ueber den Parameter SMTP_OUTGOING_ADDRESSES_N gibt man die Anzahl
+    der ueber die Parameter SMTP_OUTGOING_ADDRESSES_x konfigurierten
+    Adress-Zuordnungen an. Im angegebenen Beispiel wird eine E-Mail,
+    welche als Absenderadresse `fm@lokaledomain.lan' enthaelt mit
+    der extern bekannten Adresse `frank@domain.de' versehen.<br/>
+    <br/>
+    Gueltige Werte: Zahl bzw. Text<br/>
+    <br/>
+    Standardeinstellung: SMTP_OUTGOING_ADDRESSES_N='0'<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    SMTP_OUTGOING_ADDRESSES_N='2'<br/>
+    SMTP_OUTGOING_ADDRESSES_1='fm:    frank@domain.de'<br/>
+    SMTP_OUTGOING_ADDRESSES_2='tm:    tom@domain.de'<br/>
+    <br/>
+    <br/>
+    Werden zum Beispiel in einem LAN mehrere Mail-Hosts hinter
+    einem Firewall betrieben, die mit der `Aussenwelt' ueber einen
+    gemeinsamen Gateway kommunizieren, so muss dieser die Mail-
+    Adressen umschreiben. Denkbar ist auch die Moeglichkeit,
+    dass der Gateway den lokalen Teil der Anwender beim Versenden
+    umschreibt.<br/>
+</help>
+
+<help name="SMTP_HEADER_REWRITE_N">
+    Ueber diesen Parameter wird die Anzahl der konfigurierten
+    Umschreibregeln angegeben.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: SMTP_HEADER_REWRITE_N='0'<br/>
+</help>
+
+<help name="SMTP_HEADER_REWRITE_%_SOURCE">
+    Ueber diesen Parameter wird festgelegt, wann die Umschreibregel
+    greifen soll. Im angegeben Beispiel ist dies der Fall, sobald
+    Eine Adresse von der Domain `*@eiszeit.domain.de' von dem
+    SMTP-Server entgegen genommen wird.<br/>
+    <br/>
+    Gueltige Werte: Text<br/>
+    <br/>
+    Beispiel: SMTP_HEADER_REWRITE_1_SOURCE='*@eiszeit.domain.de'<br/>
+</help>
+
+<help name="SMTP_HEADER_REWRITE_%_DESTINATION">
+    Ueber diesen Parameter wird festgelegt, in was die E-Mail-Adresse
+    umgeschrieben werden soll. Im angegeben Beispiel wird der lokale
+    Teil der Adresse beibehalten und nur der Domain-Anteil in
+    `domain.de' geaendert.<br/>
+    <br/>
+    Gueltige Werte: Text<br/>
+    <br/>
+    Beispiel: SMTP_HEADER_REWRITE_1_DESTINATION='$1@domain.de'<br/>
+</help>
+
+<help name="SMTP_HEADER_REWRITE_%_FLAGS">
+    Ueber diesen Parameter wird festgelegt welche Felder im
+    Nachrichtenumschlag (Envelope) bzw. Nachtrichtenkopf (Header)
+    umgeschrieben werden sollen. Eine Nachrichten ist strukturell
+    wie folgt aufgebaut:<br/>
+    <br/>
+    <br/>
+    +-nicht sichtbar------------------+
+    | Nachrichtenumschlag (Envelope)  |
+    | Felder: E, F, T                 |
+    |                                 |
+    | +-sichtbar--------------------+ |
+    | | Nachrichtenkopf (Header)    | |
+    | | Felder: b, c, f, h, r, s, t | |
+    | |                             | |
+    | | Nachrichttext ...           | |
+    | |                             | |
+    | |                             | |
+    | +-----------------------------+ |
+    +---------------------------------+
+    <br/>
+    <br/>
+    Es kann eine Kombinationen aus den folgenden Kennzeichnern verwendet werden:<br/>
+    <br/>
+    +[E] - alle Felder im E-Mail-Envelope<br/>
+    +[F] - das From-Feld im E-Mail-Envelope<br/>
+    +[T] - das To-Feld im E-Mail-Envelope<br/>
+    +[b] - das Bcc-Feld im E-Mail-Header<br/>
+    +[c] - das Cc-Feld im E-Mail-Header<br/>
+    +[f] - das From-Feld im Header<br/>
+    +[h] - alle Felder im E-Mail-Header<br/>
+    +[r] - das Reply-To-Feld im Header<br/>
+    +[s] - das Sender-Feld im Header<br/>
+    +[t] - das To-Feld im Header<br/>
+    <br/>
+    Im angegebenen Beispiel wird die definierte Regel auf das
+    From-Feld im E-Mail-Envelope und das Sender-Feld im E-Mail-Header
+    angewendet.<br/>
+    <br/>
+    Gueltige Werte: Text<br/>
+    <br/>
+    Beispiel: SMTP_HEADER_REWRITE_1_FLAGS='sF'<br/>
+    <br/>
+    <br/>
+    Mailinglisten bieten die Moeglichkeit, E-Mails an eine ganze Gruppe
+    von Benutzern zu schicken. Der Unterschied zu Aliases ist aber,
+    dass als Reply-Adresse immer die E-Mail-Adresse der Mailingliste
+    eingetragen wird. So kann eine Gruppe innerhalb der Mailingliste
+    ueber ein bestimmtes Thema (das Thema der Gruppe halt) diskutieren.<br/>
+    <br/>
+    <br/>
+</help>
+
+<help name="SMTP_LIST_N">
+    Anzahl der Mailinglisten. Ist diese `0', werden alle folgenden
+    Variablen ignoriert.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: SMTP_LIST_N='0'<br/>
+</help>
+
+<help name="SMTP_LIST_%_NAME">
+    Name der Mailingliste. Dies ist dann auch automatisch die
+    Mailadresse. Anzugeben ist hier nicht die komplette Adresse,
+    sondern lediglich der Teil vor dem `@'-Zeichen. Die Domain
+    (also der Teil hinter dem `@'-Zeichen) wird ueber
+    SMTP_LIST_DOMAIN eingestellt, s.u.<br/>
+    <br/>
+    Gueltige Werte: Text<br/>
+    <br/>
+    Beispiel: SMTP_LIST_1_NAME='eisfair'<br/>
+</help>
+
+<help name="SMTP_LIST_%_ACTIVE">
+    Wird dieser Parameter auf den Wert `yes' gesetzt, so wird der
+    zugehoerige Datensatz aktiviert, `no' deaktiviert ihn.<br/>
+    <br/>
+    Gueltige Werte: yes oder no<br/>
+    <br/>
+    Beispiel: SMTP_LIST_1_ACTIVE='no'<br/>
+</help>
+
+<help name="SMTP_LIST_%_USER_y">
+    Anzahl der User innerhalb einer Liste und die Aufzaehlung
+    der Mitglieder (Members) einer Liste. Hier muessen
+    vollstaendige E-Mail-Adressen eingetragen werden.<br/>
+    <br/>
+    Gueltige Werte: Zahl bzw. Text<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    SMTP_LIST_1_USER_N='2'<br/>
+    SMTP_LIST_1_USER_1='frank@foo.bar'<br/>
+    SMTP_LIST_1_USER_2='joe@bar.foo'<br/>
+</help>
+
+<help name="SMTP_LIST_DOMAIN">
+    Hier ist die Domain einzutragen. Dies ist der Teil hinter
+    dem `@'-Zeichen der Listen-Mailadresse.<br/>
+    <br/>
+    Gueltige Werte: Domainname<br/>
+    <br/>
+    Beispiel: SMTP_LIST_DOMAIN='domain.de'<br/>
+    <br/>
+    Damit waere dann eine gueltige Listen-E-Mail-Adresse
+    eisfair@domain.de.<br/>
+</help>
+
+<help name="SMTP_LIST_ERRORS">
+    E-Mail-Adresse, an welche Fehlermeldungen bzgl. Mailinglisten
+    geschickt werden sollen - wie z.B. unzustellbare E-Mail.<br/>
+    <br/>
+    Gueltige Werte: E-Mailadresse<br/>
+    <br/>
+    Beispiel: SMTP_LIST_ERRORS='joe@foo.bar'<br/>
+    <br/>
+    <br/>
+    Das dem Mail-Paket zu Grunde liegende Programm Exim wurde durch
+    die Zusatzkomponente Exiscan `veredelt'. Hierdurch ist es moeglich
+    die zu verarbeitenden E-Mails direkt auf eventuell vorhandene Viren
+    zu pruefen und entsprechende Schritte einzuleiten. Fuer die Pruefung
+    wird auf ebenfalls zu installierende Dritt-Software zurueckgegriffen.<br/>
+</help>
+
+<help name="START_EXISCAN">
+    Wird dieser Parameter auf `yes' gesetzt, so wird die Ueberpruefung
+    auf E-Mail-Viren aktiviert. Bei gesetztem Wert `no' werden alle
+    Folgeparameter ignoriert.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: START_EXISCAN='no'<br/>
+</help>
+
+<help name="EXISCAN_ACTION_ON_FAILURE">
+    Ueber diesen Parameter legt man fest wie eingehende Nachrichten
+    behandelt werden sollen, wenn nicht auf einen konfigurierten
+    Malware- oder Spam-Scanner zugegriffen werden kann.<br/>
+    <br/>
+    +[defer] - Die E-Mail wird mit einem temporaeren Fehler<br/>
+    (4xx-Fehler) abgewiesen, sodass ein entfernter
+    Mailserver nach einiger Zeit einen erneuten
+    Zustellversuch unternimmt.<br/>
+    <br/>
+    +[drop]  - Die E-Mail wird mit einem permanenten Fehler<br/>
+    (5xx-Fehler) abgewiesen, sodass die Nachricht
+    an den Versender zurueck geschickt wird, ohne
+    dass ein entfernter Mailserver einen erneuten
+    Zustellversuch unternimmt.<br/>
+    <br/>
+    +[pass]  - Die E-Mail wird zugestellt auch wenn nicht auf<br/>
+    einen konfigurierten Malware- oder Spam-Scanner
+    zugegriffen werden kann.<br/>
+    <br/>
+    Gueltige Werte: defer, drop, pass<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_ACTION_ON_FAILURE='defer'<br/>
+    <br/>
+</help>
+
+<help name="EXISCAN_CRYPT_SALT">
+    Exiscan fuegt eine verschluesselte Message-ID in den Nachrichtenkopf ein,
+    wenn diese erfolgreich geprueft wurde. Diese Message-ID dient der Erkennung
+    von `sauberen' Nachrichten und ob diese erneut gesendet oder verzoegert
+    werden sollen. Ueber diesen Parameter wird nun eine zweistellige Zeichenfolge
+    festgelegt, die bei der Generierung der Message-ID einfliesst. Hierdurch
+    wird verhindert, dass eine zuvor von einer fremden Exiscan-Implementierung
+    markierte Nachricht, auf dem eigenen System automatisch als bereits geprueft
+    erkannt wird. Wurde dieser Parameter nicht gesetzt, so wird er spaetestens bei
+    der Generierung einer neuen Mail-Konfiguration durch eine zufaellige Zeichenkette
+    gefuellt, damit Exiscan nicht seinen Dienst einstellt.<br/>
+    <br/>
+    Gueltige Werte: Zeichenkette<br/>
+    <br/>
+    Beispiel: EXISCAN_CRYPT_SALT='dfgdgekrkasar'<br/>
+</help>
+
+<help name="EXISCAN_DEMIME_ENABLED">
+    Wird dieser Parameter auf `yes' gesetzt, so werden alle MIME- und
+    UUENCODE-Container in einer Nachricht fuer eine Ueberpruefung entpackt.<br/>
+    Bei gesetztem Parameter `no' werden alle EXISCAN_DEMIME...-Parameter
+    ignoriert.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_DEMIME_ENABLED='yes'<br/>
+</help>
+
+<help name="EXISCAN_DEMIME_ACTION">
+    Ueber diesen Parameter wird festgelegt wie mit E-Mails verfahren wird bei
+    denen ein falsch formatierter MIME-Container oder andere MIME-Exploits
+    festgestellt wurden. Die folgenden Optionen sind verfuegbar:<br/>
+    <br/>
+    +[reject] - Die E-Mail wird abgewiesen und eine Fehlermeldung<br/>
+    wird generiert. Dies fuehrt dazu, dass Fetchmail
+    einen wiederkehrenden Fehler generiert, weil die
+    infizierte E-Mail nicht vom entfernten POP3-Server
+    abgeholt werden kann.<br/>
+    <br/>
+    +[freeze] - Die E-Mail wird zwar vom entfernten POP3-Server<br/>
+    abgeholt, jedoch nicht dem Empfaenger zugestellt.<br/>
+    Statt dessen wird sie in der Mail-Queue als
+    `freeze' gekennzeichnet, sodass der Mail-
+    Administrator entsprechende Schritte einleiten
+    kann.<br/>
+    <br/>
+    +[discard] - Die E-Mail wird vom entfernten POP3-Server abgeholt<br/>
+    und sofort geloescht.<br/>
+    <br/>
+    +[redirect $address$] - Die E-Mail wird vom entfernten POP3-Server<br/>
+    abgeholt, jedoch wird sie nicht dem
+    Original-Empfaenger zugestellt sondern an
+    die angegebenen Adresse geschickt.<br/>
+    Achtung: Die E-Mail-Adresse muss unbedingt eine Domain enthalten!<br/>
+    <br/>
+    +[pass]       - Die E-Mail wird vom entfernten POP3-Server abgeholt<br/>
+    und dem Empfaenger zugestellt. Zur Kennzeichnung
+    wird im E-Mail-Header ein ``X-''-Eintrag hinzugefuegt.<br/>
+    <br/>
+    Gueltige Werte: reject, freeze, discard, redirect inkl. E-Mail-Adresse, pass<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_DEMIME_ACTION='reject'<br/>
+</help>
+
+<help name="EXISCAN_AV_ENABLED">
+    Wird dieser Parameter auf `yes' gesetzt, so wird zur Ueberpruefung
+    der E-Mails auf ein externes Programm zurueckgegriffen. Bei gesetztem
+    Parameter `no' werden alle EXISCAN_AV...-Parameter ignoriert.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_AV_ENABLED='no'<br/>
+    <br/>
+</help>
+
+<help name="EXISCAN_AV_ACTION">
+    Ueber diesen Parameter wird festgelegt wie mit E-Mails verfahren wird
+    bei denen ein Virus festgestellt wurde. Die moeglichen Optionen wurden
+    ausfuehrlich bei dem Parameter EXISCAN_DEMIME_ACTION
+    beschrieben.<br/>
+    <br/>
+    Gueltige Werte: reject, freeze, discard, redirect incl. E-Mailadresse, pass<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_AV_ACTION='reject'<br/>
+</help>
+
+<help name="EXISCAN_AV_SUBJECT_TAG">
+    Ueber diesen Parameter kann ein Text definiert werden welcher, bei Festellung
+    eines Viruses jeder Betreffzeile vorangestellt wird. Dies ist nur dann sinnvoll,
+    wenn der Parameter EXISCAN_AV_ACTION='pass' gesetzt
+    wurde und der Mail-Reader das Filtern uebernehmen soll. Optional koennen der
+    Virusname (%VN), der Hostname (%HN) und/oder ein Datumsstempel eingefuegt werden.<br/>
+    Hier werden die vom date-Befehl bekannten Parameter unterstuetzt, wie z.B.<br/>
+    [%d.%m.%Y] fuer [14.05.2004].<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    EXISCAN_AV_SUBJECT_TAG='*VIRUS*'<br/>
+    EXISCAN_AV_SUBJECT_TAG='*VIRUS [%d.%m.%Y] Name:%VN*'<br/>
+</help>
+
+<help name="EXISCAN_AV_SCANNER">
+    Ueber diesen Parameter wird eingestellt welche Art Viren-Scanner
+    verwendet wird. Zur Auswahl stehen folgende Optionen:<br/>
+    <br/>
+    +[auto]      - Automatische Konfiguration ueber /var/spool/exim/exiscan-av.cnf Datei<br/>
+    <br/>
+    +[cmdline]   - Standard Kommandozeilen Scanner<br/>
+    <br/>
+    +[sophie]    - sophie AV daemon (urlhttp://www.vanja.com/tools/sophie/)<br/>
+    <br/>
+    +[kavdaemon] - Kapersky AVP Daemon 4.x (urlhttp://www.kapersky.com)<br/>
+    <br/>
+    +[aveserver] - Kapersky AVP Daemon 5.x (urlhttp://www.kapersky.com)<br/>
+    <br/>
+    +[clamd]     - ClamAV scanner daemon (urlhttp://clamav.elektrapro.com)<br/>
+    <br/>
+    +[drweb]     - DrWeb scanner daemon (urlhttp://www.sald.com/)<br/>
+    <br/>
+    +[fsecure]   - F-Secure scanner daemon (urlhttp://www.f-secure.com)<br/>
+    <br/>
+    +[mksd]      - MKS scanner daemon (urlhttp://linux.mks.com.pl/)<br/>
+    <br/>
+    Gueltige Werte: auto, cmdline, sophie, kavdaemon, aveserver, clamd, drweb, fsecure, mksd<br/>
+</help>
+
+<help name="EXISCAN_AV_PATH">
+    Diese Option wird nur fuer den Kommandozeilen Scanner benoetigt.<br/>
+    Es muss der beginbfkomplette Pfad und Nameendbf zum Virus Scanner Programm
+    angegeben werden.<br/>
+    <br/>
+    Gueltige Werte: Pfad- und Programmname<br/>
+    <br/>
+    Beispiel: EXISCAN_AV_PATH='/usr/local/bin/sweep'<br/>
+</help>
+
+<help name="EXISCAN_AV_OPTIONS">
+    Diese Option wird nur fuer den Kommandozeilen Scanner benoetigt.<br/>
+    ueber diesen Parameter legt man die Kommandozeilenparameter
+    fest die an den Viren-Scanner uebergeben werden sollen.<br/>
+    Achtung: Der String muss EIN '%s'-Zeichen enthalten,
+    welches dann durch den Pfad und Dateinamen der zu pruefenden
+    Datei ersetzt wird. Die im Beispiel angegebenen Parameter
+    funktionieren mit Sweep.<br/>
+    <br/>
+    Gueltige Werte: Text incl. `%s'-Zeichen<br/>
+    <br/>
+    Beispiel: EXISCAN_AV_OPTIONS='-all -archive -ss %s'<br/>
+</help>
+
+<help name="EXISCAN_AV_TRIGGER">
+    Diese Option wird nur fuer den Kommandozeilen Scanner benoetigt.<br/>
+    Die vom Viren-Scanner zurueckgegebenen Meldungen werden nach dem
+    hier angegebenen Regexp-Ausdruck durchsucht um zu erkennen wenn
+    ein Virus gefunden wurde. Der im Beispiel angegebene Ausdruck
+    funktionieren mit Sweep.<br/>
+    <br/>
+    Gueltige Werte: Text<br/>
+    <br/>
+    Beispiel: EXISCAN_AV_TRIGGER='found in'<br/>
+</help>
+
+<help name="EXISCAN_AV_DESCRIPTION">
+    Diese Option wird nur fuer den Kommandozeilen Scanner benoetigt.<br/>
+    Die vom Viren-Scanner zurueckgegebenen Meldungen werden nach dem
+    hier angegebenen Regexp-Ausdruck durchsucht um zu erkennen welcher
+    Virus gefunden wurde. Der im Beispiel angegebene Ausdruck
+    funktionieren mit Sweep. Es wird der Ausdruck zwischen zwei
+    Hochkommata ausgewertet `(.*)' .<br/>
+    <br/>
+    Gueltige Werte: Text<br/>
+    <br/>
+    Beispiel: EXISCAN_AV_DESCRIPTION=textbackslash'textbackslash(textbackslash.textbackslash*textbackslash)textbackslash'<br/>
+</help>
+
+<help name="EXISCAN_AV_SOCKET">
+    Diese Option wird nur fuer den entsprechenden Viren-Scanner
+    benoetigt. Sophie, KavDaemon, AveServer, FSecure und ClamAV oeffnen jeweils
+    einen Unix Socket /var/run/sophie, /opt/AVP/AvpCtl, /var/run/aveserver,
+    /var/run/.fsav bzw. /path/to/clamavsocket im Dateisystem.<br/>
+    Es muss sichergestellt, dass ausreichende Zugriffsrechte fuer
+    den Zugriff auf diesen Socket existieren und der User, unter
+    dem die Programme ausgefuehrt werden, auf das Exim-Queue-Verzeichnis
+    zugreifen kann.<br/>
+    <br/>
+    Gueltige Werte: Pfad- und Programmname<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    EXISCAN_AV_SOCKET='/var/run/sophie'<br/>
+    EXISCAN_AV_SOCKET='/opt/AVP/AvpCtl'<br/>
+    EXISCAN_AV_SOCKET='/var/run/aveserve'<br/>
+    EXISCAN_AV_SOCKET='/var/run/.fsav'<br/>
+    EXISCAN_AV_SOCKET='/path/to/clamacvsocket'<br/>
+</help>
+
+<help name="EXISCAN_AV_SKIP_AUTHENTICATED">
+    Ueber diesen Parameter wird festgelegt ob Nachrichten von authentifizierten
+    Anwendern auf Malware geprueft werden sollen oder nicht.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_AV_SKIP_AUTHENTICATED='no'<br/>
+</help>
+
+<help name="EXISCAN_EXTENSION_ENABLE">
+    Wird dieser Parameter auf `yes' gesetzt, so werden alle E-Mails nach
+    Dateien mit bestimmten Dateierweiterungen durchsucht. Diese Dateien
+    werden bei Windows-Betriebssystemen sehr oft fuer die Viren-Verbreitung
+    genutzt. (vbs,pif,bat,exe,com etc.)
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_EXTENSION_ENABLED='no'<br/>
+</help>
+
+<help name="EXISCAN_EXTENSION_ACTION">
+    Ueber diesen Parameter wird festgelegt wie mit E-Mails verfahren wird bei denen die
+    angegebenen Dateierweiterungen festgestellt wurden. Fuer weitere Informationen
+    siehe hierzu auch EXISCAN_DEMIME_ACTION.<br/>
+    <br/>
+    Gueltige Werte: reject, freeze, discard, redirect inkl. E-MailAdresse, pass<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_EXTENSION_ACTION='reject'<br/>
+</help>
+
+<help name="EXISCAN_EXTENSION_DATA">
+    Ueber diesen Parameter wird festgelegt, welchen Dateierweiterungen
+    herausgefiltert werden sollen. Als Trennzeichen wird ein Doppel-
+    punkt verwendet.<br/>
+    <br/>
+    Gueltige Werte: Text<br/>
+    <br/>
+    Beispiel: EXISCAN_EXTENSION_DATA='exe:com:vbs'<br/>
+</help>
+
+<help name="EXISCAN_REGEX_ENABLED">
+    Wird dieser Parameter auf `yes' gesetzt, so werden alle E-Mails nach
+    einem bestimmten Regexp-Ausdruck durchsucht.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_REGEX_ENABLED='no'<br/>
+</help>
+
+<help name="EXISCAN_REGEX_ACTION">
+    Ueber diesen Parameter wird festgelegt wie mit E-Mails verfahren
+    wird bei denen der angegebene Regexp-Ausdruck gefunden wurde.<br/>
+    Die moeglichen Optionen wurden ausfuehrlich bei dem Parameter
+    EXISCAN_DEMIME_ACTION beschrieben.<br/>
+    <br/>
+    Gueltige Werte: reject, freeze, discard, redirect inkl. E-Mail-Adresse, pass<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_REGEXP_ACTION='reject'<br/>
+</help>
+
+<help name="EXISCAN_REGEX_DATA">
+    Ueber diesen Parameter wird festgelegt, nach welchem Regexp-Ausdruck
+    gesucht und gefiltert werden soll. Als Trennzeichen wird ein Doppel-
+    punkt verwendet.<br/>
+    <br/>
+    Gueltige Werte: Text<br/>
+    <br/>
+    Beispiel: EXISCAN_REGEX_DATA='%[Mm]ortage : make money'<br/>
+</help>
+
+<help name="EXISCAN_SPAMD_ENABLED">
+    Wird dieser Parameter auf `yes' gesetzt, so wird die Anti-Spam-
+    Unterstuetzung aktiviert. Voraussetzung ist eine installierte Version
+    von SpamAssassin (urlhttp://www.spamassassin.org)
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_SPAMD_ENABLED='no'<br/>
+</help>
+
+<help name="EXISCAN_SPAMD_ACTION">
+    Ueber diesen Parameter wird festgelegt wie mit E-Mails verfahren
+    wird bei denen der angegebene Spam-Wert ueberschritten wurde.<br/>
+    Die moeglichen Optionen wurden ausfuehrlich bei dem Parameter
+    EXISCAN_DEMIME_ACTION beschrieben.<br/>
+    <br/>
+    Gueltige Werte: reject, freeze, discard, redirect inkl. E-Mail-Adresse, pass<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_SPAMD_ACTION='redirect spam@domain.de'<br/>
+</help>
+
+<help name="EXISCAN_SPAMD_HEADER_STYLE">
+    Ueber diesen Parameter wird festgelegt, wie viel Informationen der
+    Spam-Daemon zum E-Mail-Header hinzufuegen soll. Die folgenden
+    Moeglichkeiten stehen zur Auswahl:<br/>
+    <br/>
+    +[none]   - Es werden keine Informationen zum E-Mail-Header hinzugefuegt.<br/>
+    <br/>
+    +[single] - Es wird der X-Spam-Score-Header hinzugefuegt.<br/>
+    <br/>
+    +[flag]   - Es wird der X-Spam-Score-Header und, wenn der Message-Score-<br/>
+    Schwellwert ueberschritten wurde, der X-Spam-Flag-Header
+    hinzugefuegt.<br/>
+    <br/>
+    +[full]   - Es wird der X-Spam-Score-Header und, wenn der Message-Score-<br/>
+    Schwellwert ueberschritten wurde, der X-Spam-Flag-Header
+    hinzugefuegt. Ausserdem wird ueber den X-Spam-Report-Header
+    der vollstaendige Spam-Assasin-Report als mehrzeiliger
+    Text hinzugefuegt.<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_SPAMD_HEADER_STYLE='single'<br/>
+</help>
+
+<help name="EXISCAN_SPAMD_SUBJECT_TAG">
+    Ueber diesen Parameter kann ein Text definiert werden welcher, bei
+    ueberschreiten des Message-Score-Schwellwertes jeder Betreffzeile
+    vorangestellt wird. Dies ist nur dann sinnvoll, wenn der Parameter
+    EXISCAN_SPAMD_ACTION='pass' gesetzt
+    wurde und der Mail-Reader das Filtern uebernehmen soll. Optional koennen
+    die Spam-Wertung (%SC), der Hostname (%HN) und/oder ein Datumsstempel
+    eingefuegt werden. Hier werden die vom date-Befehl bekannten Parameter
+    unterstuetzt, wie z.B. [%d.%m.%Y] fuer [14.05.2004].<br/>
+    <br/>
+    Beispiel:<br/>
+    <br/>
+    EXISCAN_SPAMD_SUBJECT_TAG='*SPAM*'<br/>
+    EXISCAN_SPAMD_SUBJECT_TAG='*SPAM [%d.%m.%Y] Score:%SC*'<br/>
+</help>
+
+<help name="EXISCAN_SPAMD_THRESHOLD">
+    Ueber diesen Parameter wird festgelegt ab welchem Spam-Wert
+    eine E-Mail als Spam eingestuft wird. Der hier angegebenen
+    Wert sollte mit Bedacht gewaehlt werden, da es sonst zu
+    ungewollten Filterungen kommen kann.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Beispiel: EXISCAN_SPAMD_THRESHOLD='5'<br/>
+</help>
+
+<help name="EXISCAN_SPAMD_ADDRESS">
+    Ueber diesen Parameter werden eine oder mehrere IP-Adressen, jeweils getrennt
+    durch einen Doppelpunkt, und gefolgt von der durch ein Leerzeichen getrennten
+    Port-Nummer angegeben, auf denen ein spamd-Daemon laeuft.<br/>
+    <br/>
+    Gueltige Werte: eine oder mehrere IP-Adressen und eine Portnummer<br/>
+    <br/>
+    Standard-instellung: EXISCAN_SPAMD_ADDRESS='127.0.0.1 783'
+</help>
+
+<help name="EXISCAN_SPAMD_LIMIT">
+    Ueber diesen Parameter kann die maximale Groesse einer Nachrichten
+    angegeben werden, die vom Spam-Daemon geprueft werden soll.<br/>
+    Wird dieser Parameter auf `0' gesetzt oder kein Wert angegeben,
+    so wird die Limitueberpruefung deaktiviert. Der Limitwert kann
+    zusaetzliche eine Einheitenangabe (k-kilo oder m-mega) enthalten,
+    z.B. 80k fuer 80 Kilobyte.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_SPAMD_LIMIT='0'<br/>
+</help>
+
+<help name="EXISCAN_SPAMD_SKIP_AUTHENTICATED">
+    Ueber diesen Parameter wird festgelegt ob Nachrichten von authentifizierten
+    Anwendern auf Spam geprueft werden sollen oder nicht.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: EXISCAN_SPAMD_SKIP_AUTHENTICATED='no'<br/>
+    <br/>
+    <br/>
+</help>
+
+<help name="MAIL_CERTS_WARNING">
+    Ueber diesen Parameter kann der automatisierte Versand einer Warnmail aktiviert
+    werden, wenn ein TLS-Zertifikate kurz vor dem Ablauf steht. Wird der Parameter
+    auf den Wert `no' gesetzt, so wird keine Ueberpruefung durchgefuehrt und keine
+    Warnmail verschickt.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: MAIL_CERTS_WARNING='no'<br/>
+</help>
+
+<help name="MAIL_CERTS_WARNING_SUBJECT">
+    Ueber diesen Parameter wird der Text der Warnmail-Betreffzeile festgelegt.<br/>
+    Optional kann der Hostname (%HN) und/oder ein Datumsstempel eingefuegt werden.<br/>
+    Es werden die vom date-Befehl bekannten Parameter unterstuetzt wie z.B.<br/>
+    [%d.%m.%Y] fuer [14.05.2004].<br/>
+    <br/>
+    Gueltige Werte: Text<br/>
+    <br/>
+    Standardeinstellung: MAIL_CERTS_WARNING_SUBJECT='TLS certificates warning'<br/>
+</help>
+
+<help name="MAIL_CERTS_WARNING_CRON_SCHEDULE">
+    Hier wird festgelegt zu welchem Zeitpunkt bzw. in welchem Intervall eine Ueberpruefung
+    der TLS-Zertifikate durchgefuehrt werden soll. Eine Vorlauf von 20 Tagen ist hierbei
+    fest vorgegeben. Die fuenf Teilparameter haben dabei folgende Bedeutung:<br/>
+    1 - Minuten, 2 - Stunden, 3 - Tag des Monats, 4 - Monat, 5 - Wochentag.<br/>
+    D.h. bei Verwendung der Standardeinstellung wird jeweils am 1. und 16. eines
+    Monats um 01:03h eine Ueberpruefung durchgefuehrt und gegebenenfalls eine Warnmail
+    verschickt. Wer Naeheres ueber die verwendete Befehlsyntax erfahren moechte, sollte
+    ueber eine Internet-Suchmaschine nach `man' und `crontab' suchen.<br/>
+    <br/>
+    Gueltige Werte: Crontab-spezifischer Parametereintrag<br/>
+    <br/>
+    Standardeinstellung: MAIL_CERTS_WARNING_CRON_SCHEDULE='3 1 1,16 * *'<br/>
+    <br/>
+    <br/>
+</help>
+
+<help name="MAIL_STATISTICS_INFOMAIL">
+    Ueber diesen Parameter kann der automatisierte Versand einer E-Mail
+    aktiviert werden, die statistische Informationen ueber den
+    Mailserver enthaelt. Wird der Parameter auf den Wert `no' gesetzt,
+    so wird keine Infomail verschickt.<br/>
+    <br/>
+    Gueltige Werte: yes, no<br/>
+    <br/>
+    Standardeinstellung: MAIL_STATISTICS_INFOMAIL='no'<br/>
+</help>
+
+<help name="MAIL_STATISTICS_INFOMAIL_SUBJECT">
+    Ueber diesen Parameter wird der Text der Infomail-Betreffzeile festgelegt.<br/>
+    Optional kann der Hostname (%HN) und/oder ein Datumsstempel eingefuegt werden.i
+    Es werden die vom date-Befehl bekannten Parameter unterstuetzt wie z.B.<br/>
+    [%d.%m.%Y] fuer [14.05.2004]. Dieser Funktion muss zuvor ueber den Parameter
+    MAIL_STATISTICS_INFOMAIL aktiviert werden.<br/>
+    <br/>
+    Gueltige Werte: Text<br/>
+    <br/>
+    Standardeinstellung: MAIL_STATISTICS_INFOMAIL_SUBJECT='Mail server statistics'<br/>
+</help>
+
+<help name="MAIL_STATISTICS_INFOMAIL_CRON_SCHEDULE">
+    Hier wird festgelegt zu welchem Zeitpunkt bzw. in welchem Intervall
+    Mailserver-Statistiken versandt werden sollen. Ueber den Parameter
+    MAIL_STATISTICS_INFOMAIL muss diese
+    Funktion jedoch zuvor aktiviert werden. Die fuenf Teilparameter haben
+    dabei folgende Bedeutung:<br/>
+    1 - Minuten, 2 - Stunden, 3 - Tag des Monats, 4 - Monat, 5 - Wochentag.<br/>
+    D.h. bei Verwendung der Standardeinstellung wird jeden Samstag um 23:55h
+    eine Infomail verschickt. Wer Naeheres ueber die verwendete Befehlsyntax
+    erfahren moechte, sollte ueber eine Internet-Suchmaschine nach `man' und
+    `crontab' suchen.<br/>
+    <br/>
+    Gueltige Werte: Crontab-spezifischer Parametereintrag<br/>
+    <br/>
+    Standardeinstellung: MAIL_STATISTICS_INFOMAIL_CRON_SCHEDULE='55 23 * * 6'<br/>
+</help>
+
+<help name="MAIL_STATISTICS_INFOMAIL_OPTIONS">
+    Optionaler Parameter: ueber diesen Parameter koennen individuelle Optionen
+    fuer das Programm `Eximstats' festgelegt werden, um den Inhalt der
+    Statistiknachricht zu beeinflussen.<br/>
+    <br/>
+    Gueltige Werte: zulaessige Eximstats-Optionen<br/>
+    <br/>
+    Standardeinstellung: nicht definiert<br/>
+    <br/>
+    <br/>
+    Das Mail-Paket verwendet Logdateien, um Meldungen ueber seinen
+    laufenden Betrieb zu speichern. Um zu verhindern, dass diese
+    Dateien zu gross und unuebersichtlich werden, kann man einstellen
+    wie das System mit den Dateien umgehen soll.<br/>
+    <br/>
+</help>
+
+<help name="MAIL_LOG_COUNT">
+    Ueber diesen Parameter wird eingestellt, wie viele Logdateien
+    vorgehalten werden sollen. Wird dieser Wert ueberschritten, so
+    wird die aelteste Logdatei geloescht.<br/>
+    <br/>
+    Gueltige Werte: Zahl<br/>
+    <br/>
+    Standardeinstellung: MAIL_LOG_COUNT='10'<br/>
+</help>
+
+<help name="MAIL_LOG_INTERVAL">
+    Dieser Parameter bestimmt in welchen Intervallen die Logdateien
+    archiviert werden sollen. Zur Auswahl stehen die Schluesselwoerter
+    `daily' - taeglich, `weekly' - woechentlich und `monthly - monatlich.<br/>
+    <br/>
+    Gueltige Werte: daily, weekly, monthly<br/>
+    <br/>
+    Standardeinstellung: MAIL_LOG_INTERVALL='weekly'<br/>
+    <br/>
+</help>
+
+<!--  The End -->

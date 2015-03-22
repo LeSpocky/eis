@@ -1,0 +1,15 @@
+<!-- /var/install/menu/setup.services.mail.menu -->
+<!-- Creation:     2005-04-09  jed -->
+<package>mail</package>
+<title>Mail Service administration</title>
+<doc file="mail.txt">View documentation</doc>
+<script file="mail-edit-basic">Edit configuration (basic)</script>
+<edit stopstart>Edit configuration (advanced)</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
+<doc file="/var/spool/exim/log/mail-configlog">View configuration log file</doc>
+<init task="status">Show status</init>
+<init task="stop">Stop mail services</init>
+<init task="start">Start mail services</init>
+<script file="mail-toggle-access">Toggle POP3/IMAP access</script>
+<menu file="setup.services.mail.tools.menu">Goto mail tools</menu>
+<menu file="setup.services.mail.modules.menu">Goto mail modules</menu>

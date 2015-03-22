@@ -1,0 +1,4 @@
+<!-- /var/install/menu/setup.services.mail.modules.menu -->
+<!-- Creation:     2005-04-09 jed -->
+<package>mail</package>
+<title>Mail Module administration</title>

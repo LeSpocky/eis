@@ -1,0 +1,135 @@
+#-----------------------------------------------------------------------------
+# /etc/check.d/mail.exp - expressions for check table of configuration params
+# Copyright (c) 2001-2014 The Eisfair Team, team(at)eisfair(dot)org
+# Creation:     30.10.2003  jed
+#-----------------------------------------------------------------------------
+MAIL_10_1000          = '[1-9][0-9]|[1-9][0-9][0-9]|1000'
+                      : 'value not range, only values between 10 and 1000 are allowed.'
+MAIL_USER             = '([-._[:lower:]0-9])+'
+                      : 'no valid user name, because only the following characters
+                         are allowed: a-z, 0-9, ., _ and -'
+MAIL_FOLDER           = '(RE:MAIL_USER)'
+                      : 'no valid folder name, because only the following characters
+                         are allowed: a-z, 0-9, ., _ and -'
+MAIL_GROUP            = '(RE:MAIL_USER)'
+                      : 'no valid group name, because only the following characters
+                         are allowed: a-z, 0-9, ., _ and -'
+MAIL_EGROUP           = '()|(RE:MAIL_USER)'
+                      : 'no valid group name, should be an empty string or cpntain
+                         only the following characters: a-z, 0-9, ., _ and -'
+MAIL_TRANSPORT        = 'default|tls|both'
+                      : 'no valid transport, should be default, tls or both'
+MAIL_SSL_PROTOCOL     = 'auto|none|tls1|ssl3'
+                      : 'no valid ssl protocol, should be auto, none, tls1 or ssl3'
+MAIL_HANDLING         = 'bounce|copy|forward'
+                      : 'no valid mail handling, should be bounce, copy or forward'
+MAIL_AUTH_TYPE_1      = 'none|user|user_light|server|server_light'
+                      : 'no valid authentication type, should be none, user, server,
+                         user_light or server_light'
+MAIL_AUTH_TYPE_2      = 'none|plain|login|md5|msn'
+                      : 'no valid authentication type, should be none, plain,
+                         login, md5 or msn'
+MAIL_DOMAIN           = '\@|(RE:DOMAIN)'
+                      : 'no valid domain specification, should be @ or should
+                         contain a domain'
+MAIL_DOMAIN_2         = '\@|\*(\.[[:alnum:]](-?[[:alnum:]])*)+'
+                      : 'no valid domain specification, should be @ or should
+                         contain a domain mask'
+MAIL_EDOMAIN_1        = '()|(RE:MAIL_DOMAIN)((:(RE:MAIL_DOMAIN))+)?'
+                      : 'no valid domain specification, should be an empty string,
+                         @ or should contain domain(s)'
+MAIL_EDOMAIN_2        = '()|\*|(RE:MAIL_DOMAIN)'
+                      : 'no valid domain specification, should be an empty string,
+                         @, * or should contain a domain(s)'
+MAIL_EDOMAIN_3        = '()|( *)!?( *)(RE:MAIL_DOMAIN)((:( *)!?( *)(RE:MAIL_DOMAIN))+)?'
+                      : 'no valid domain specification, should be an empty string,
+                         @ or should contain a domain(s)'
+MAIL_EDOMAIN_4        = '()|( *)!?( *)(RE:MAIL_DOMAIN)((:( *)!?( *)(RE:MAIL_DOMAIN))+)?|( *)!?( *)(RE:MAIL_DOMAIN_2)((:( *)!?( *)(RE:MAIL_DOMAIN_2))+)?'
+                      : 'no valid domain specification, should be an empty string,
+                         @, contain a valid domain(s) or domain mask.'
+MAIL_FQDN_IPADDR      = '(RE:FQDN)|(RE:IPADDR)'
+                      : 'no valid domain specification, should contain a fully
+                         qualified domain name or ip address'
+MAIL_EFQDN_IPADDR     = '()|(RE:FQDN)|(RE:IPADDR)'
+                      : 'no valid domain specification, should be an empty string,
+                         contain a fully qualified domain name or ip address'
+MAIL_EFQDN_IPADDR_1   = '()|((RE:FQDN)|localhost|(RE:IPADDR))((( *):( *)((RE:FQDN)|localhost|(RE:IPADDR)))+)?'
+                      : 'no valid domain specification, should be an empty string,
+                         or contain one or more fully qualified domain name(s)/ip address(es)
+                         which are seperated by a colon'
+MAIL_FQDN_IPADDR_LOCAL = 'localhost|((RE:FQDN)|(RE:IPADDR))(/(RE:NUMERIC))?'
+                      : 'no valid domain specification, should be localhost, contain
+                         a fully qualified domain name or ip address. A valid port
+                         number can optionally be added  separated by a slash e.g.
+                         host/25'
+MAIL_EFQDN_IPADDR_LOCAL = '()|(RE:MAIL_FQDN_IPADDR_LOCAL)'
+                      : 'no valid domain specification, should be an empty string,
+                         localhost, contain a fully qualified domain name or ip
+                         address. A valid port number can optionally be added separated
+                         by a slash e.g. host/25'
+MAIL_ROUTE_TYPE       = 'addr|sdomain|tdomain|domain'
+                      : 'no valid route type, should be addr, sdomain or tdomain'
+MAIL_LOG_INTERVAL     = 'daily|weekly|monthly'
+                      : 'no valid interval, should be daily, weekly or monthly'
+MAIL_FETCH_AUTH_TYPE  = 'any|password|kerberos_v5|kerberos|kerberos_v4|gssapi|cram-md5|otp|ntlm|ssh'
+                      : 'no valid authentication type, should be any, password,
+                         kerberos_v5, kerberos, kerberos_v4, gssapi, cram-md5,
+                         otp, ntlm or ssh'
+MAIL_EFETCH_AUTH_TYPE = '()|(RE:MAIL_FETCH_AUTH_TYPE)'
+                      : 'no valid authentication type, should be an empty string,
+                         any, password, kerberos_v5, kerberos, kerberos_v4, gssapi,
+                         cram-md5, otp, ntlm, or ssh'
+MAIL_FETCH_ENVELOPE   = '((RE:NUMERIC) +)?([[:alnum:]](-?[[:alnum:]])*):'
+                      : 'no valid envelope entry, only the following characters followed
+                         by a collon are allowed: a-z, A-Z and -.'
+MAIL_EFETCH_ENVELOPE  = '()|(RE:MAIL_FETCH_ENVELOPE)'
+                      : 'no valid envelope entry, only an empty string or the following
+                         characters followed by a collon are allowed a-z, A-Z and -.'
+MAIL_FETCH_PROTOCOL   = 'auto|pop3|apop|kpop|sdps|imap|etrn|odmr'
+                      : 'no valid protocol type, should be auto, pop3, apop,
+                         kpop, sdps, imap, etrn or odmr'
+MAIL_EFETCH_PROTOCOL  = '()|(RE:MAIL_FETCH_PROTOCOL)'
+                      : 'no valid protocol type, should be an empty string, auto,
+                         pop3, apop, kpop, sdps, imap, etrn or odmr'
+MAIL_EFETCH_IFOLDER   = '()|([a-zA-Z0-9&./-]+)( *, *([a-zA-Z0-9&./-]+))*'
+                      : 'no valid imap folder(s) given, should be an empty string or
+                        a comma separated list of imap folders'
+MAIL_ZERO_IPADDR      = '^(0+\.0+\.0+\.0+)'
+                      : 'a zero ip address is not allowed!'
+MAIL_ZERO_NETWORK     = '(RE:MAIL_ZERO_IPADDR)/(RE:MASK)'
+                      : 'a zero network address is not allowed!'
+MAIL_ZERO_IPADDR_NETWORK = '(RE:MAIL_ZERO_IPADDR)|(RE:MAIL_ZERO_NETWORK)'
+                      : 'neither a zero ip address nor a zero network address are allowed'
+MAIL_AV_SALT          = '([a-zA-Z0-9.-]+){6,16}'
+                      : 'no valid salt string, length must not exceed 16 characters
+                         and only the following characters are allowed: a-z, A-Z,
+                         0-9, . and -'
+MAIL_AV_ACTION        = 'pass|reject|discard|freeze|redirect *(RE:MAILADDR)'
+                      : 'no valid action, should be pass, reject, discard, freeze
+                         or "redirect <mail address>"'
+MAIL_AV_SCANNER       = 'auto|cmdline|sophie|kavdaemon|aveserver|clamd|drweb|fsecure|mksd'
+                      : 'no valid scanner type, should be auto, cmdline, sophie, kavdaemon,
+                         aveserver, clamd, drweb, fsecure or mksd'
+MAIL_AV_EXTENSION     = '([a-zA-Z0-9_-]{1,4})((:[a-zA-Z0-9_-]{1,4})+)?'
+                      : 'no valid file extension format, should be a colon separated
+                         list of extension e.g. "exe:com:vbs"'
+MAIL_SPAM_HEAD_STYLE  = 'none|single|flag|full|alwaysfull'
+                      : 'no valid spam header style, should be none, single, flag, full
+                         or alwaysfull'
+MAIL_SPAM_ADDR        = '((RE:IPADDR)|(RE:HOSTNAME))( *: *((RE:IPADDR)|(RE:HOSTNAME))){0,31} *(RE:NUMERIC)'
+                      : 'no valid spam deamon address, should be one or more ip-addresses or
+                         hostnames separated by a collon and followed by a port number e.g.
+                         "127.0.0.1 123"'
+MAIL_SPAM_SIZE        = '(RE:NUMERIC)|(RE:NUMERIC)(k|K|m|M)'
+                      : 'invalid message size given, should be in the format 100, 100k or 10M'
+MAIL_EMAILADDR        = '()|\*|(RE:MAILADDR)'
+                      : 'no valid mail address nor empty, use e.g. "aaaa@bbbb.ccc"
+                         or "*"'
+MAIL_FORCE_TLS        = 'yes|no|ignore'
+                      : 'invalid value, only yes, no or ignore are allowed'
+MAIL_ACTION_ON_FAILURE = 'defer|drop|pass'
+                       : 'invalid value, only defer, drop or pass are allowed'
+MAIL_SIZE_LIMIT       = '()|(RE:NUMERIC)([kKmM])?'
+                      : 'invalid message size given, should be an empty string or a numeric
+                         value, optionally followed by "k" (kilo) or "m" (mega)'
+
