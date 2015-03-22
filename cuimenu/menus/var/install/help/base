@@ -52,11 +52,11 @@ Activate IPv6 network protocol
 Real net device, which is binded to IP_NET_%_NAME.
 </help>
 
-<help nam<help name="IPV4_ROUTE_N">
+<help name="IPV4_ROUTE_N">
 Number of additional routes.
 </help>
 
-<help nam<help name="IPV6_ROUTE_N">
+<help name="IPV6_ROUTE_N">
 Number of additional routes.
 </help>
 
