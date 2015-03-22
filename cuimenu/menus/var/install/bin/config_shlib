@@ -1,7 +1,12 @@
 #!/bin/bash
 #-----------------------------------------------------------------------------
 # /var/install/bin/config_shlib - library for advanced configfile handling
-# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+# Copyright (c) 2001-2015 The Eisfair Team <team@eisfair.org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #-----------------------------------------------------------------------------
 # This library is used by
 #    /var/install/bin/edit

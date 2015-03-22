@@ -2,10 +2,8 @@
 #------------------------------------------------------------------------------
 # /var/install/bin/packages-all.cui.sh - list all packages
 #
-# Creation:     2013-05-01 jv
-# Last update:  $Id: 24072 2013-02-21 09:53:06Z jv $
-#
-# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
+# Creation:     2013-05-01 jens vehlhaber
+# Copyright (c) 2001-2015 The Eisfair Team <team@eisfair.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +35,6 @@ lastsection="?"
 # read packages and transfer them to list
 # $1 --> mainwin window handle
 #----------------------------------------------------------------------------
-
 function load_data()
 {
     local win="$1"
@@ -193,7 +190,6 @@ function uninstall_package()
 # show installed package info
 # $1 --> mainwin window handle
 #----------------------------------------------------------------------------
-
 function show_package_info()
 {
     local win="$1"

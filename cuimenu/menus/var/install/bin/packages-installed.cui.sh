@@ -2,10 +2,8 @@
 #------------------------------------------------------------------------------
 # /var/install/bin/packages-installed.cui.sh - list installed packages
 #
-# Creation:     2013-05-01 jv
-# Last update:  $Id: 24072 2013-02-21 09:53:06Z jv $
-#
-# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
+# Creation:     2013-05-01 jens vehlhaber
+# Copyright (c) 2001-2015 The Eisfair Team <team@eisfair.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -130,7 +128,6 @@ function install_package()
     fi
 }
 
-
 #----------------------------------------------------------------------------
 # uninstall a package
 # $1 --> mainwin window handle
@@ -185,7 +182,6 @@ function uninstall_package()
         fi
     fi
 }
-
 
 #----------------------------------------------------------------------------
 # show installed package info
@@ -339,7 +335,6 @@ function inputdlg_create_hook()
     cui_return 1
 }
 
-
 #============================================================================
 # terminal window callbacks
 #============================================================================
@@ -438,7 +433,6 @@ function menu_changed_hook()
     cui_return 1
 }
 
-
 #============================================================================
 # listview callbacks
 #============================================================================
@@ -454,7 +448,6 @@ function listview_changed_hook()
 {
     cui_return 1
 }
-
 
 #----------------------------------------------------------------------------
 # listview_clicked_hook
