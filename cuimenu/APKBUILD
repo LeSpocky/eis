@@ -2,7 +2,7 @@
 # Maintainer:team@eisfair.org
 pkgname=cuimenu
 pkgver=2.0.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Eisfair CUI base menu"
 url="http://www.eisfair.org"
 arch="noarch"
