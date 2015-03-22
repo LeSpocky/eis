@@ -9,18 +9,19 @@ depend() {
 }
 
 start() {
-	ebegin "Starting XX"
-	start-stop-daemon --start --pidfile /run/XX.pid --exec /usr/sbin/XX -- $XX_OPTS
+	ebegin "Starting IMAP"
+	start-stop-daemon --start --pidfile /run/imapd.pid --exec /usr/sbin/imapd -- $IMAPD_OPTS
 	eend $?
 }
 
 stop () {
-	ebegin "Stopping XX"
-	start-stop-daemon --stop --pidfile /run/fcron.pid --exec /usr/sbin/fcron
+	ebegin "Stopping IMAP"
+	start-stop-daemon --stop --pidfile /run/imapd.pid --exec /usr/sbin/imapd
 	eend $?
 }
 
 update() {
+	# example for update:
 	cd /etc/XX
 	for user in *
 	do
@@ -30,8 +31,8 @@ update() {
 
 reload() {
 	update >/dev/null 2>&1
-	ebegin "Reloading XX"
-	start-stop-daemon --signal HUP --pidfile /run/XX.pid --exec /usr/sbin/XX
+	ebegin "Reloading IMAP"
+	start-stop-daemon --signal HUP --pidfile /run/imapd.pid --exec /usr/sbin/imapd
 	eend $?
 }
 

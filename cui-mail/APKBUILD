@@ -58,16 +58,35 @@ build() {
 
 package() {
 	cd "$_builddir"
-	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/ssmtp || return 1
-	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/ssmtp.exp || return 1
-	install -D -m644 ${srcdir}/${pkgname}.check.ext     ${pkgdir}/etc/check.d/ssmtp.ext || return 1	
-	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/ssmtp || return 1
-	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/ssmtp || return 1
-	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/ssmtp.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/ssmtp-update.sh || return 1
-	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.ssmtp.menu || return 1	
-	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/ssmtp/ssmtp.txt || return 1
-	install -D -m644 ${srcdir}/${pkgname}.txt.toc       ${pkgdir}/usr/share/doc/ssmtp/ssmtp.toc || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/mail || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.basic   ${pkgdir}/etc/check.d/mail.basic || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/mail.exp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.ext     ${pkgdir}/etc/check.d/mail.ext || return 1
+	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/mail || return 1
+	install -D -m644 ${srcdir}/${pkgname}.default.basic ${pkgdir}/etc/default.d/mail.basic || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/mail || return 1
+	install -D -m755 ${srcdir}/${pkgname}.initd         ${pkgdir}/etc/init.d/mail || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/mail.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/mail-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.mail.menu || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/mail/mail.txt || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt.toc       ${pkgdir}/usr/share/doc/mail/mail.toc || return 1
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_ACTION_ON_FAILURE.sh ${pkgdir}/var/install/dialog.d/MAIL_ACTION_ON_FAILURE.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_AUTH_TYPE_1.sh       ${pkgdir}/var/install/dialog.d/MAIL_AUTH_TYPE_1.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_AUTH_TYPE_2.sh       ${pkgdir}/var/install/dialog.d/MAIL_AUTH_TYPE_2.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_AV_SCANNER.sh        ${pkgdir}/var/install/dialog.d/MAIL_AV_SCANNER.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_EFETCH_AUTH_TYPE.sh  ${pkgdir}/var/install/dialog.d/MAIL_EFETCH_AUTH_TYPE.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_EFETCH_PROTOCOL.sh   ${pkgdir}/var/install/dialog.d/MAIL_EFETCH_PROTOCOL.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_EGROUP.sh            ${pkgdir}/var/install/dialog.d/MAIL_EGROUP.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_FETCH_AUTH_TYPE.sh   ${pkgdir}/var/install/dialog.d/MAIL_FETCH_AUTH_TYPE.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_FETCH_PROTOCOL.sh    ${pkgdir}/var/install/dialog.d/MAIL_FETCH_PROTOCOL.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_FORCE_TLS.sh         ${pkgdir}/var/install/dialog.d/MAIL_FORCE_TLS.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_HANDLING.sh          ${pkgdir}/var/install/dialog.d/MAIL_HANDLING.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_LOG_INTERVAL.sh      ${pkgdir}/var/install/dialog.d/MAIL_LOG_INTERVAL.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_ROUTE_TYPE.sh        ${pkgdir}/var/install/dialog.d/MAIL_ROUTE_TYPE.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_SPAM_HEAD_STYLE.sh   ${pkgdir}/var/install/dialog.d/MAIL_SPAM_HEAD_STYLE.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_SSL_PROTOCOL.sh      ${pkgdir}/var/install/dialog.d/MAIL_SSL_PROTOCOL.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_TRANSPORT.sh         ${pkgdir}/var/install/dialog.d/MAIL_TRANSPORT.sh
 }
 
 md5sums="7c6aa94f695c3ee0258f2620270acf44  cui-mail.default
@@ -95,7 +114,7 @@ c7751745c566eb86f040b27fdcfe6a8a  cui-mail.dialog.MAIL_SSL_PROTOCOL.sh
 96689f01693dd8c928713806c5c46d0b  cui-mail.dialog.MAIL_TRANSPORT.sh
 3c9103c32f4cc6cb68dfff9a7167eae8  cui-mail.help
 6e700812e78aadc123ad61d7155f588f  cui-mail.include
-94a8e9fec593d742101b45d95c31817f  cui-mail.initd
+77cb0cdf12a40ea6f595db2fd215590a  cui-mail.initd
 b8b5f175327e93c57ce4d427b27d379e  cui-mail.sh
 221fb2b3c23c4b80299c6c3f4c458b4f  cui-mail-update.sh
 98da705b1e62c3dea748cc9be22dac47  cui-mail.menu
@@ -128,7 +147,7 @@ cc8737e763cfe1839423d70fb93f76dfa5849d7b9f8f7f43280406d238430dc1  cui-mail.dialo
 adcd6ce18b1b65b3d84604fb347885c108736a1b6f132bfa33c4f6d2a248237e  cui-mail.dialog.MAIL_TRANSPORT.sh
 f8e271800eed385c986736fa177c4c4c62c9285ea0cdd48d0f2a0b1e84d0dd37  cui-mail.help
 4d9d6eb7f3fd72b85aaeaf26ba8f575be21beaf0e1f9d930426146ea307d7d62  cui-mail.include
-720a4a817e96d6e64ad3421775bf166d6285b8e52d93cf2451e4ed9ad7ff4a9b  cui-mail.initd
+b759e659103719a69dbca91406dc19ca93daba3d19d68625452c3f77aba5eca0  cui-mail.initd
 f0ac7c94bb746adbb72526d067c5d07f65df3e9d899dfb0fdb71d51678ac7b43  cui-mail.sh
 852e9f9ee17ce09fb278fa3f309f7abb3363cc0a7e8a08dd562b3973cb147c8b  cui-mail-update.sh
 af0a73055f138d8aa931a416f638c3aaa92454e48e5dd45a5f7cf0c02565700e  cui-mail.menu
@@ -161,7 +180,7 @@ cb835a786ded8484595d08efe77b6fcabee3f14669533ba5219e2dd9c431883c022d2169dce0ea3b
 8048498d005bd809752c7d7b4acef5c0cc365b8aa7135279c4fbfa8d639f4e364a81b6348df69c77efac398d6471d5cc3648ec1979f0be5412bb4dcc2a1d318f  cui-mail.dialog.MAIL_TRANSPORT.sh
 7d2f6a6a8a745b4494cdfbfe62bb2426c4c4348ef223448de57f4db3dbf99031140f7756f44d12523866effa365810163430c6f6d083023ae2637df63a59f97e  cui-mail.help
 73bd7c0586b3c4363467769809095974192ea34e9be215fb829dd3f36abe17327245a6bc0217c775b0adde94130b64c62a86c090b5a0c1001029c3b044ee75bb  cui-mail.include
-2562c1ed8085a830f99cdd077e7692b7deaa60b0d3568c8580870d105196f87d4c9c8ed5e201f2826c7245b8d8b326c52892418ff1e2eb71dfe2f264e8bad19d  cui-mail.initd
+4f829dde46df7fbe3a4ea105fb95e10c4fe29438b18c3f6473af0400ee6972a998cdfd7c10148a2b36e03325cc85c5cbb18fb463c036c59d424762b46c2890a2  cui-mail.initd
 269b16b2818aa01c5a5bc2fcaf070e237d80c2fe5eb59d8d47d0757e0e49ff03cc2f3f0e6951236e6b8d2af676ba61fbd50e13a59117f1eb002ddbba91f612f5  cui-mail.sh
 b7cefece49039a90ee95a5511bd9b3555aa641b90cbaa414a875ac28ac9034cfec0b14bd7c54e539e2647348048a26aeed7376b4c25916713bd98959e9263aaa  cui-mail-update.sh
 2ef0605e121a88c4ac626140d03cc1ea2b6689c95ebfb67551890012732086aa043d0d7f27c65efaa7d675cba2aaa2c3813f602927c3529f76f44450863e893d  cui-mail.menu
