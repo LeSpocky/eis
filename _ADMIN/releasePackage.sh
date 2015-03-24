@@ -86,6 +86,7 @@ extractVariables ()
     # eisfair-ng/releasePackage__v2.7_x86_64
     alpineRelease=`echo ${JOB_NAME} | sed "s/\(.*__\)\([^_]*\)\(_\)\(.*\)/\2/g"`
     packageArch=`echo ${JOB_NAME}   | sed "s/\(.*__\)\([^_]*\)\(_\)\(.*\)/\4/g"`
+    echo "Building for Alpine Linux release '$alpineRelease' and architecture '$packageArch'"
 }
 
 
