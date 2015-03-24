@@ -340,10 +340,15 @@ sed -i '/^consolefont=/d' /etc/conf.d/consolefont
 #	echo 'unicodemap="iso01"'
 } >> /etc/conf.d/consolefont
 
-if [ -f /etc/init.d/kbd-mini ]
+[ -f /etc/init.d/kbd-mini ] && rc-update kbd-mini start >/dev/null 2>&1
+rc-update consolefont restart >/dev/null 2>&1
+
+# Set console blank time ESC 9 and VESA powerdown ESC 14
+if [ "0$CONSOLE_BLANK_TIME" -eq 0 ]
 then
-    /etc/init.d/kbd-mini start >/dev/null 2>&1
-    setfont $CONSOLEFONT
+    echo -n -e '\033[9;0]\033[14;0]' >/dev/console
+else
+    echo -n -e "\033[9;${CONSOLE_BLANK_TIME}]\033[14;${CONSOLE_BLANK_TIME}]" >/dev/console
 fi
 
 # force unicode!
