@@ -1,5 +1,5 @@
 <!-- Creation:      2003-03-13  schlotze                                -->
-<!-- Last Update:   $Id: updatedb 24471 2010-06-10 21:14:01Z schlotze $ -->
+
 <help name="UPDATEDB_CRON_USE">
     Hierueber laesst sich steuern, ob updatedb ueber einen cronjob gestartet werden soll.
     <br/>

@@ -1,0 +1,1196 @@
+#----------------------------------------------------------------------------
+# /var/install/include/mail - library for eisfair scripts
+# Copyright (c) 2001-2012 The Eisfair Team, team(at)eisfair(dot)org
+# Creation:     2006-03-29  jed
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#----------------------------------------------------------------------------
+
+_jedlib_passwdfile=/etc/passwd
+_jedlib_date=`/bin/date +%Y-%m-%d`
+_jedlib_time=`/bin/date +%H:%M:%S`
+
+#----------------------------------------------------------------------------
+# interface description
+#----------------------------------------------------------------------------
+#
+# Variables:
+#   configlog_file          This variable needs to contain a valid path
+#                           to the configlog file.
+#
+# Routines:
+#   update_jedlib()         update jedlib function_library
+#
+#   install_config()        install/update package configuration file
+#
+#   write_to_config_log()   writes a message to config log
+#   compress_config_log()   compress config log to given number of configuration logs
+#   display_config_log()    display config log file if it exists
+#
+#   print_short_header()    print a short file header which references to the config file
+#
+#   insert_date()           insert date_stamp into text string
+#   insert_hostname()       insert hostname into text string
+#
+#   trim_spaces()           return string with no spaces
+#
+#   get_accessrights()      get file/directory ownership and access rights
+#   set_accessrights()      set file/directory ownership and access rights
+#
+#   rand_char()             return random character
+#   rand_string()           return random string
+#
+#   shorten_string()        return shortened string
+#
+#   get_last_day_of_month() return date of last day of the month
+#   get_yesterday()         return date of previous day
+#   get_tomorrow()          return date of next day
+#   get_diff_days()         return number of days between two dates
+#
+#   unit_to_numeric()       return pure integer value from value incl. unit (k/m)
+#
+#   abs_path()              return the absolute path to a given file
+#
+# Functions:
+#   is_root()               check if root equivalent user
+#   is_numeric()            check if numeric value
+#   is_date()               check if date value [YYYY-MM-DD]
+#   is_time()               check if time value [HH:MM:SS]
+#
+#   host_exists()           check if host exists
+#----------------------------------------------------------------------------
+
+#============================================================================
+# only include this file once
+#============================================================================
+
+if [ "$_JEDLIB" != "true" ]
+then
+    _JEDLIB='true'
+
+    if [ "$1" = "version" -o "$1" = "-version" -o "$1" = "--version" ]
+    then
+        _jedlib_version=`grep -E "Last Update *:" $0 | sed "s/.*jedlib[-_.a-z0-9]* //g" | cut -d' ' -f1`
+        echo ${_jedlib_version}
+    fi
+
+    #
+    # update_jedlib
+    # -------------
+    #
+    # update shared jedlib library file
+    #
+    # Parameters:      $1    name of package
+    #
+    update_jedlib ()
+    {
+        _uj_srcfile=/var/install/include/jedlib.${1}
+        _uj_destfile=/var/install/include/jedlib
+
+        if [ -f ${_uj_srcfile} ]
+        then
+            # src file exists, go on ...
+            if [ -f ${_uj_destfile} ]
+            then
+                # file exists - check versions
+                _uj_srcver=`/bin/sh ${_uj_srcfile} version`
+                _uj_destver=`/bin/sh ${_uj_destfile} version`
+
+                if [ "${_uj_destver}" != "" ]
+                then
+                    # version number exists - compare version numbers
+                    if [ `echo "${_uj_srcver} > ${_uj_destver}" | bc` -eq 1 ]
+                    then
+                        # update file
+                        echo "updating shared library file (${_uj_destver}->${_uj_srcver}) ..."
+                        mv -v ${_uj_srcfile} ${_uj_destfile}
+                    fi
+                else
+                    # no version number exists - update file
+                    echo "updating shared library file ..."
+                    mv -v ${_uj_srcfile} ${_uj_destfile}
+                fi
+            else
+                # file doesn't exist - update file
+                echo "updating shared library file ..."
+                mv -v ${_uj_srcfile} ${_uj_destfile}
+            fi
+
+            # make sure that the file is world readable
+            chmod 644 ${_uj_destfile}
+
+            # remove copy of shared library file
+            rm -f ${_uj_srcfile}
+        fi
+    }
+
+    #
+    # install_config
+    # --------------
+    #
+    # install/update package configuration file
+    #
+    # Parameters:      $1    name of package
+    #
+    # Output:          0  -  upgrade configuration
+    #                  1  -  new configuration
+    #
+    install_config ()
+    {
+        _ic_modname=${1}
+        _ic_retval=1
+
+        if [ -f /var/run/${_ic_modname}.install ]
+        then
+            # previous version found - upgrading
+            echo "loading previous configuration file ..."
+            /var/install/config.d/${_ic_modname}-update.sh update
+            _ic_retval=0
+        elif [ ! -f /etc/config.d/${_ic_modname} ]
+        then
+            # new installation - parameter check
+            echo "loading initial configuration file ..."
+            cp /etc/default.d/${_ic_modname} /var/run/${_ic_modname}.install
+            /var/install/config.d/${_ic_modname}-update.sh update
+        fi
+
+        rm -f /var/run/${_ic_modname}.install
+
+        return ${_ic_retval}
+    }
+
+    # Generell information about the functions 'write_to_config_log',
+    # 'compress_config_log' and 'display_config_log':
+    #
+    # The function 'write_to_config_log' writes new log messages to
+    #   the file ${configlog_file}.tmp.
+    # The function 'compress_config_log' adds these messages to the
+    #   default logfile ${configlog_file} and then removes the
+    #   ${configlog_file}.tmp file. If new messages have been added
+    #   a marker file ${configlog_file}.newlines will be created.
+    # The function 'display_config_log' displays the content of the
+    #   file ${configlog_file} if also a file ${configlog_file}.newlines
+    #   exists.
+
+    #
+    # write_to_config_log
+    # -------------------
+    #
+    # writes a message to config log
+    #
+    # Parameters:      $1    function
+    #                        --header   print header message
+    #                        --info     print info message (default)
+    #                        --warn     print warning message
+    #                        --error    print error message
+    #                        --ff       followup entry, don't print label
+    #
+    #                  $2    message text, e.g. "This is a log message."
+    #
+
+    write_to_config_log()
+    {
+        _w2cl_label='Info:'
+        _w2cl_fup=0
+        _w2cl_opt=''
+
+        while [ 1 ]
+        do
+            case "$1"
+            in
+                -header|--header) _w2cl_opt='-e'; _w2cl_label="\nDate: `date`\n"; shift;;
+                -info|--info)     _w2cl_label='  Info:';    shift;;
+                -warn|--warn)     _w2cl_label='  Warning:'; shift;;
+                -error|--error)   _w2cl_label='  Error:';   shift;;
+                -ff|--ff)         _w2cl_fup=1; shift;;
+                *)       break;;
+            esac
+        done
+
+        if [ ${_w2cl_fup} -eq 1 ]
+        then
+            _w2cl_label="`echo \"${_w2cl_label}\"|tr 'a-zA-Z' ' '`"
+        fi
+
+        # check if destination directory exists
+        _w2cl_configdir="`dirname ${configlog_file}`/"
+        if [ ! -d ${_w2cl_configdir} ]
+        then
+            # create directory
+            mkdir -p ${_w2cl_configdir}
+        fi
+
+        {
+            if [ "${_w2cl_opt}" = "-e" ]
+            then
+                # force print of date header
+                echo ${_w2cl_opt} "${_w2cl_label} $*"
+            else
+                # print normal entry
+                if [ ! -s ${configlog_file}.tmp ]
+                then
+                    # file doesn't exist or is empty - prefix entry with date header
+                    printf "\nDate: `date`\n\n"
+                fi
+
+                echo ${_w2cl_opt} "${_w2cl_label} $*"
+            fi
+        } >> ${configlog_file}.tmp
+    }
+
+    #
+    # compress_config_log
+    # -------------------
+    #
+    # compress config log to given number of configuration logs
+    #
+    # Parameters:      $1    maximum number of previous config logs
+    #                        default: 5
+    #
+
+    compress_config_log()
+    {
+        _ccl_idxmax=$1
+
+        if [ "${_ccl_idxmax}" = "" ]
+        then
+            # set default number of entries
+            _ccl_idxmax=5
+        elif [ ${_ccl_idxmax} -le 1 ]
+        then
+            # set default number of entries
+            _ccl_idxmax=5
+        fi
+
+        #
+        # remove previous newline marker file
+        #
+        if [ -f ${configlog_file}.newlines ]
+        then
+            rm -f ${configlog_file}.newlines
+        fi
+
+        #
+        # check if previous logfile contains valid log entries
+        # and delete it if no entries are found.
+        #
+        if [ -f ${configlog_file} ]
+        then
+            # file exists - check number of lines after removing
+            # '^Date'-lines and all empty lines and spaces
+            _ccl_isnum=`grep -v "^Date" ${configlog_file} | sed -e 's/^[ \t]*//g' -e 's/[ \t]*$//g' -e '/^$/d' | wc -l`
+
+            if [ ${_ccl_isnum} -eq 0 ]
+            then
+                # delete file if it does not contain log entries
+                rm -f ${configlog_file}
+            fi
+        fi
+
+        #
+        # append new log entries if some entries exist.
+        #
+        if [ -f ${configlog_file}.tmp ]
+        then
+            # file exists - check number of lines after removing
+            # '^Date'-lines and all empty lines and spaces
+            _ccl_isnum=`grep -v "^Date" ${configlog_file}.tmp | sed -e 's/^[ \t]*//g' -e 's/[ \t]*$//g' -e '/^$/d' | wc -l`
+
+            if [ ${_ccl_isnum} -gt 0 ]
+            then
+                # add newly created logfile to default logfile
+                cat ${configlog_file}.tmp >> ${configlog_file}
+
+                # create newline marker file
+                echo "new loglines added" > ${configlog_file}.newlines
+            fi
+
+            rm ${configlog_file}.tmp
+        fi
+
+        #
+        # reduce number of log entries to given limit
+        #
+        if [ -f ${configlog_file} ]
+        then
+            # file exists
+            _ccl_tmpfile=${configlog_file}.$$
+
+            # get number of configuration blocks
+            _ccl_maxnum=`grep -n "^Date" ${configlog_file} | wc -l`
+
+            if [ ${_ccl_maxnum} -gt ${_ccl_idxmax} ]
+            then
+                # more than (_ccl_idxmax - 1) lines found, strip surplus lines
+                _ccl_tmpnum1=`expr ${_ccl_maxnum} - ${_ccl_idxmax} + 1`
+                _ccl_tmpnum2=`grep -n "^Date" ${configlog_file} | sed -n "${_ccl_tmpnum1}p" | cut -d: -f1`
+                _ccl_sedstr=1\,`expr ${_ccl_tmpnum2} - 1`d
+
+                {
+                    echo
+                    sed "${_ccl_sedstr}" ${configlog_file}
+                } > ${_ccl_tmpfile}
+
+                mv ${_ccl_tmpfile} ${configlog_file}
+            fi
+        fi
+    }
+
+    #
+    # display_config_log
+    # ------------------
+    #
+    # display config log file if it exists
+    #
+
+    display_config_log()
+    {
+        color=''
+        frame=''
+
+        if $(grep -qE "^MENU=['\"]/var/install/bin/show-menu['\"]"  /etc/config.d/setup)
+        then
+            color='--nocolor'
+            frame='--noframe'
+        fi
+
+        if [ -f ${configlog_file} -a -f ${configlog_file}.newlines ]
+        then
+            _ask_tmpfile=$(/bin/mktemp -t XXXXXXXXXXXX)
+            sleep 5
+            clrhome
+            mecho --info "Configuration messages appeared, please check configuration"
+            mecho
+            /var/install/bin/ask "Continue" "yes" >${_ask_tmpfile}
+            rc=${?}
+            _answer=$(cat ${_ask_tmpfile})
+            rm -f ${_ask_tmpfile}
+
+            # if ask break, ask returned 255
+            if [ ${rc} = 255 ]
+            then
+                _answer=no
+            fi
+            if [ "${_answer}" = "yes" ]
+            then
+                /var/install/bin/show-doc.cui $color $frame --follow --title ${configlog_file} ${configlog_file}
+            #   /var/install/bin/doc ${configlog_file}
+            else
+                exit 0
+            fi
+            mecho
+        fi
+    }
+
+#============================================================================
+
+    #
+    # print_short_header
+    # ------------------
+    #
+    # print a short file header which references to the config file
+    #
+    # Parameters:      $1    file name
+    #                  $2    program name
+    #                  $3    module name
+    #                  $4    program version
+    #
+
+    print_short_header()
+    {
+        _psh_fname=$1
+        _psh_pname=$2
+        _psh_cname=$3
+        _psh_pver=$4
+
+        if [ $# -eq 3 ]
+        then
+            # 'old' format
+            _psh_cname=${_psh_pname}
+        fi
+
+        # program name
+        _psh_pname=`basename ${_psh_pname}`
+
+        # check version number
+        echo ${_psh_pver} | grep -q "^v"
+
+        if [ $? -ne 0 ]
+        then
+            _psh_pver="v${_psh_pver}"
+        fi
+
+        echo "#------------------------------------------------------------------"
+        echo "# ${_psh_fname} file generated by ${_psh_pname} ${_psh_pver}"
+        echo "#"
+        echo "# Do not edit this file, edit /etc/config.d/${_psh_cname}"
+        echo "# Creation Date: ${_jedlib_date} Time: ${_jedlib_time}"
+        echo "#------------------------------------------------------------------"
+    }
+
+#============================================================================
+
+    #
+    # insert_date
+    # -----------
+    #
+    # insert date_stamp into text string. The position at which the date will be
+    # inserted is being defined by the standard date placeholders.
+    # e.g. %d.%m.%Y
+    #
+    # Parameters:      $1    text string
+    #
+    # Output:          modified text string
+    #
+
+    insert_date()
+    {
+        _id_work_str="$1"
+
+        for _RSTR in d m y Y H M S R c C e F I k l a A b B D g G h j n N p P r s t T u U V w W x X z Z
+        do
+            while [ 1 ]
+            do
+                echo "${_id_work_str}" | grep -E -q "%${_RSTR}[][\(\)\$\%\/ .,_0-9-]|%${_RSTR}$"
+
+                if [ $? -eq 0 ]
+                then
+                    _id_tmp_str1=`expr "${_id_work_str}" : "\(.*\)\%${_RSTR}"`
+                    _id_tmp_str2=`expr "${_id_work_str}" : ".*\%${_RSTR}\(.*\)"`
+                    _id_work_str="${_id_tmp_str1}`date +\"%${_RSTR}\"`${_id_tmp_str2}"
+                else
+                    break
+                fi
+            done
+        done
+
+        echo "${_id_work_str}"
+    }
+
+    #
+    # insert_hostname
+    # ---------------
+    # Insert hostname into text string. The position at which the hostname will be
+    # inserted is being defined by %HN placeholder.
+    #
+    # Parameters:      $1    text string
+    #
+    # Output:          modified text string
+    #
+
+    insert_hostname()
+    {
+        _ih_work_str="$1"
+
+        _RSTR="HN"
+        while [ 1 ]
+        do
+            echo "${_ih_work_str}"|grep -q "%${_RSTR}[][\(\)\$\%\/ .,_0-9-]*"
+
+            if [ $? -eq 0 ]
+            then
+                _ih_tmp_str1=`expr "${_ih_work_str}" : "\(.*\)\%${_RSTR}"`
+                _ih_tmp_str2=`expr "${_ih_work_str}" : ".*\%${_RSTR}\(.*\)"`
+                _ih_work_str="${_ih_tmp_str1}`hostname`${_ih_tmp_str2}"
+            else
+                break
+            fi
+        done
+
+        echo "${_ih_work_str}"
+    }
+
+    #
+    # trim_spaces
+    # -----------
+    # Return string with no spaces
+    #
+    # Parameters:      $1    string to format
+    #                  $2    action: left, right, both [ optional, default: both]
+    #
+    # Output:          string with no leading, no trailing or no leading and no
+    #                  trailing spaces
+    #
+    trim_spaces ()
+    {
+        _ts_str="$1"
+        _ts_action="$2"
+
+        case ${_ts_action} in
+            left|l )
+                echo "${_ts_str}"|sed -e 's/^ *//'
+                ;;
+            right|r )
+                echo "${_ts_str}"|sed -e 's/ *$//'
+                ;;
+            all|a )
+                echo "${_ts_str}"|sed -e 's/ //g'
+                ;;
+            * ) # both | l
+                echo "${_ts_str}"|sed -e 's/^ *//' -e 's/ *$//'
+                ;;
+        esac
+    }
+
+    #
+    # get_accessrights
+    # ----------------
+    # get file/directory ownership and access rights and return as string
+    #
+    # Parameters:      $1    filename/directory
+    #
+    # Output:          string which contains access rights, owner and group
+    #                  in the following format: 'mask:owner:group'
+    #                  e.g. '1666:tim:nogroup'
+    #
+    get_accessrights ()
+    {
+        _gfa_name="$1"
+
+        if [ -f ${_gfa_name} -o -d ${_gfa_name} ]
+        then
+            # read file data
+            # dir : drwx------:5:otto:mailtest:4096:Nov:18:00:16:/home/otto/.imapmail
+            # file: -rw-------:1:otto:mailtest:78892:Oct:15:20:11:/home/otto/.imapmail/INBOX
+            _gfa_str=`ls -ld ${_gfa_name} | tr -s ' ' ':'`
+
+            # change IFS
+            _gfa_oldifs=${IFS}
+            IFS=' '
+
+            # file ownership data, owner, group
+            _gfa_access=`echo ${_gfa_str} | cut -d: -f1`
+            _gfa_owner=`echo ${_gfa_str}  | cut -d: -f3`
+            _gfa_group=`echo ${_gfa_str}  | cut -d: -f4`
+
+            # change IFS
+            IFS=${_gfa_oldifs}
+
+            # extract text strings
+            _gfa_txt2=`echo ${_gfa_access} | cut -c2-4`
+            _gfa_txt3=`echo ${_gfa_access} | cut -c5-7`
+            _gfa_txt4=`echo ${_gfa_access} | cut -c8-10`
+
+            # convert to binary values
+            _gfa_bin2=`echo ${_gfa_txt2} | tr '\-rwxsS' '011110'`
+            _gfa_bin3=`echo ${_gfa_txt3} | tr '\-rwxsS' '011110'`
+            _gfa_bin4=`echo ${_gfa_txt4} | tr '\-rwxtT' '011110'`
+
+            # check if setuid bit has been set
+            _gfa_dec1=0
+            echo "${_gfa_txt2}" | grep -E -q "s|S"
+            if [ $? -eq 0 ]
+            then
+                _gfa_dec1=`expr ${_gfa_dec1} + 4`
+            fi
+
+            # check if setguid bit has been set
+            echo "${_gfa_txt3}" | grep -E -q "s|S"
+            if [ $? -eq 0 ]
+            then
+                _gfa_dec1=`expr ${_gfa_dec1} + 2`
+            fi
+
+            # check if sticky-bit bit has been set
+            echo "${_gfa_txt4}" | grep -E -q "t|T"
+            if [ $? -eq 0 ]
+            then
+                _gfa_dec1=`expr ${_gfa_dec1} + 1`
+            fi
+
+            # convert to decimal values
+            _gfa_dec2=`echo "ibase=2;${_gfa_bin2}" | bc`
+            _gfa_dec3=`echo "ibase=2;${_gfa_bin3}" | bc`
+            _gfa_dec4=`echo "ibase=2;${_gfa_bin4}" | bc`
+
+            # output: ownership data, owner, group
+            echo "${_gfa_dec1}${_gfa_dec2}${_gfa_dec3}${_gfa_dec4}:${_gfa_owner}:${_gfa_group}"
+        fi
+    }
+
+    #
+    # set_accessrights
+    # ----------------
+    # set file/directory ownership and access rights
+    #
+    # Parameters:      $1    filename/directory
+    #                  $2    string which contains access rights, owner and group
+    #                        in the following format: 'mask:owner:group'
+    #
+    set_accessrights ()
+    {
+        _sfa_name="$1"
+        _sfa_data="$2"
+
+        if [ -f ${_sfa_name} -o -d ${_sfa_name} ]
+        then
+            # change IFS
+            _gfa_oldifs=${IFS}
+            IFS=':'
+
+            # file ownership data, owner, group
+            set - ${_sfa_data}
+            _sfa_access="$1"
+            _sfa_owner="$2"
+            _sfa_group="$3"
+
+            # change IFS
+            IFS=${_gfa_oldifs}
+
+            # set access rights
+            if [ "${_sfa_access}" != "" ]
+            then
+                chmod ${_sfa_access} ${_sfa_name}
+            fi
+
+            if [ "${_sfa_owner}" != "" ]
+            then
+                chown ${_sfa_owner}  ${_sfa_name}
+            fi
+
+            if [ "${_sfa_group}" != "" ]
+            then
+                chgrp ${_sfa_group}  ${_sfa_name}
+            fi
+        fi
+    }
+
+    #
+    # rand_char
+    # ---------
+    # return random char
+    #
+    # Output:          string which contains a random char
+    #
+    # eisfair-2: bsdmainutils package need to be installed which contains the 'hexdump'
+    #
+    rand_char ()
+    {
+        # array of allowed characters
+        # first character is a placebo and will never be used
+        _rc_max=64
+        _rc_chars="aabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-"
+        _rc_rand="`hexdump -n 2 -e '/2 "%u"' /dev/urandom`"
+        _rc_nbr=$(( ( ${_rc_rand} % ${_rc_max} ) + 1 ))
+
+        echo "`expr substr "${_rc_chars}" ${_rc_nbr} 1`"
+    }
+
+    #
+    # rand_string
+    # -----------
+    # return random string
+    #
+    # Parameters:      $1    length of string
+    #
+    # Output:          string which contains a random string
+    #
+    rand_string ()
+    {
+        _rs_strlen=${1}
+
+        # create random string
+        _rs_idx=1
+        _rs_randstr=""
+        while [ ${_rs_idx} -le ${_rs_strlen} ]
+        do
+            _rs_randstr="${_rs_randstr}`rand_char`"
+            _rs_idx=`expr ${_rs_idx} + 1`
+        done
+
+        echo "${_rs_randstr}"
+    }
+
+    #
+    # shorten_string
+    # --------------
+    # return shorten string, e.g. "this-is-...long-text"
+    #
+    # Parameters:      $1    input string
+    #                  $2    max. length of string
+    #                  $3    optional: separator string
+    #
+    # Output:          shortend string
+    #
+    shorten_string ()
+    {
+        _ss_instr="${1}"
+        _ss_width=${2}
+        _ss_sepstr="${3}"
+
+        if [ "${_ss_sepstr}" = "" ]
+        then
+            _ss_sepstr="..."
+        fi
+
+        _ss_inlen=`expr length "${_ss_instr}"`
+
+        if [ ${_ss_inlen} -gt ${_ss_width} ]
+        then
+            _ss_seplen=`expr length ${_ss_sepstr}`          # length of separator string
+            _ss_len=`expr ${_ss_width} - ${_ss_seplen}`     # substract length of separator
+            _ss_hlen=`expr ${_ss_len} \/ 2`                 # devide by 2
+            _ss_spos=`expr ${_ss_inlen} - ${_ss_hlen} + 1`  # start position of 2. string
+
+            _ss_outstr="`expr substr "${_ss_instr}" 1 ${_ss_hlen}`${_ss_sepstr}`expr substr "${_ss_instr}" ${_ss_spos} ${_ss_hlen}`"
+        else
+            _ss_outstr="${_ss_instr}"
+        fi
+
+        echo "${_ss_outstr}"
+    }
+
+    #
+    # get_last_day_of_month
+    # ---------------------
+    #
+    # get last day of month
+    #
+    # Parameters:      $1    date string: yyyy-mm[-dd], if no date
+    #                        is given the current date is used
+    #
+    # Output:          date string
+    #
+    get_last_day_of_month()
+    {
+        # get the command line input(day month year)
+        if [ $# -ne 1 ]
+        then
+            # use current date
+            _ld_year=`date +'%Y'`
+            _ld_month=`date +'%m'`
+        else
+            _ld_year=`echo ${1} |cut -d- -f1`
+            _ld_month=`echo ${1}|cut -d- -f2`
+        fi
+
+        _ld_lastday=`cal ${_ld_month} ${_ld_year} | awk 'NF != 0{ last = $0 }; END{ print last }' |  awk '{ print $NF }'`
+
+        # print formated date
+        date -d "${_ld_year}-${_ld_month}-${_ld_lastday}" +'%Y-%m-%d'
+    }
+
+    # get_yesterday
+    # -------------
+    #
+    # get previous day of of given date
+    #
+    # Parameters:      $1    date string: yyyy-mm-dd, if no date
+    #                        is given the current date will be used
+    #
+    # Output:          date string
+    #
+    get_yesterday()
+    {
+        # get the command line input(day month year)
+        if [ $# -ne 1 ]
+        then
+            # use current date
+            _gy_year=`date +'%Y'`
+            _gy_month=`date +'%m'`
+            _gy_day=`date +'%d'`
+        else
+            _gy_year=`echo ${1} |cut -d- -f1`
+            _gy_month=`echo ${1}|cut -d- -f2`
+            _gy_day=`echo ${1}  |cut -d- -f3`
+        fi
+
+        if [ ${_gy_day} -eq 1 ]
+        then
+            # get last day of previous month
+            if [ ${_gy_month} -eq 1 ]
+            then
+                # last month of previous year
+                _gy_prev_year=`expr ${_gy_year} - 1`
+                _gy_date=`get_last_day_of_month "${_gy_prev_year}-12-01"`
+            else
+                # previous month
+                _gy_prev_month=`expr ${_gy_month} - 1`
+                _gy_date=`get_last_day_of_month "${_gy_year}-${_gy_prev_month}-01"`
+            fi
+        else
+            _gy_date="${_gy_year}-${_gy_month}-`expr ${_gy_day} - 1`"
+        fi
+
+        # print formated date
+        date -d "${_gy_date}" +'%Y-%m-%d'
+    }
+
+    #
+    # get_tomorrow
+    # ------------
+    #
+    # get next day of of given date
+    #
+    # Parameters:      $1    date string: yyyy-mm-dd, if no date
+    #                        is given the current date will be used
+    #
+    # Output:          date string
+    #
+    get_tomorrow()
+    {
+        # get the command line input(day month year)
+        if [ $# -ne 1 ]
+        then
+            # use current date
+            _gt_year=`date +'%Y'`
+            _gt_month=`date +'%m'`
+            _gt_day=`date +'%d'`
+        else
+            _gt_year=`echo ${1} |cut -d- -f1`
+            _gt_month=`echo ${1}|cut -d- -f2`
+            _gt_day=`echo ${1}  |cut -d- -f3`
+        fi
+
+        # get last day of the month use cal command, discard blank lines,
+        # take last field of last line, first awk command is used to get
+        # the last useful line of the calendar cmd, second awk command is
+        # used to get the last field of this last useful line, NF is no.
+        # of fields, $NF is value of last field
+        _gt_lastday=`cal ${_gt_month} ${_gt_year} | awk 'NF != 0{ last = $0 }; END{ print last }' |  awk '{ print $NF }'`
+
+        # if it is the last day of the month
+        if [ ${_gt_day} -eq ${_gt_lastday} ]
+        then
+            # make the day as 01
+            _gt_day=01
+
+            # if it is the last month of the year
+            if [ ${_gt_month} -eq 12 ]
+            then
+                # make the month as 01
+                _gt_month=01
+
+                # increment the year by one
+                _gt_year=`expr ${_gt_year} + 1`
+            else
+                # increment the month by one
+                _gt_month=`expr ${_gt_month} + 1`
+            fi
+        else
+            # increment the day by one
+            _gt_day=`expr ${_gt_day} + 1`
+        fi
+
+        # print formated date
+        date -d "${_gt_year}-${_gt_month}-${_gt_day}" +'%Y-%m-%d'
+    }
+
+    # get_diff_days
+    # -------------
+    #
+    # get number of days between two dates
+    #
+    # Parameters:      $1    date string: yyyy-mm-dd, if no date
+    #                        is given 0 will be returned
+    #                  $2    date string: yyyy-mm-dd, if no date
+    #                        is given the current date will be used
+    #
+    # Output:          date string
+    #
+    get_diff_days ()
+    {
+        # get the command line input(day month year)
+        if [ $# -ge 1 ]
+        then
+            _gdd_date_val1=`date +'%s' -d "${1}"`
+
+            if [ $# -ge 2 ]
+            then
+                _gdd_date_val2=`date +'%s' -d "${2}"`
+            else
+                # use current date
+                _gdd_date_val2=`date +'%s'`
+            fi
+
+            if [ ${_gdd_date_val2} -gt ${_gdd_date_val1} ]
+            then
+                # date2 greater than date1
+                _gdd_diff_secs=`expr ${_gdd_date_val2} - ${_gdd_date_val1}`
+            elif [ ${_gdd_date_val1} -lt ${_gdd_date_val2} ]
+            then
+                # date2 less than date1
+                _gdd_diff_secs=`expr ${_gdd_date_val1} - ${_gdd_date_val2}`
+            else
+                # date2 equal date1
+                _gdd_diff_secs=0
+            fi
+
+            if [ ${_gdd_diff_secs} -gt 0 ]
+            then
+                # devide by number of seconds per day
+                _gdd_diff_days=`expr ${_gdd_diff_secs} \/ 86400`
+            else
+                _gdd_diff_days=0
+            fi
+        else
+            # invalid number of parameters given
+            _gdd_diff_days=-1
+        fi
+
+        echo "${_gdd_diff_days}"
+    }
+
+    #
+    # unit_to_numeric
+    # ---------------
+    #
+    # convert integer value including unit to a pure integer value
+    #
+    # Parameters:      $1    value incl. unit
+    #
+    # Output:          pure integer value
+    #
+    unit_to_numeric ()
+    {
+        _u2n_value=`echo ${1} | sed -e 's/[kKrmrMtT]//g' -e 's/,/\./g'`
+        _u2n_unit=`echo ${1} | sed 's/[0-9.,]//g'`
+
+        case ${_u2n_unit} in
+            k|K)
+                # kilobyte given - *1024
+                # 1. calculate, 2. round, 3. take integer
+                _u2n_ret=`bc <<< "${_u2n_value} * 1024 + 0.5" | sed 's/[.,].*$//'`
+                ;;
+            m|M)
+                # megabyte given - *1024*1024
+                # 1. calculate, 2. round, 3. take integer
+                _u2n_ret=`bc <<< "${_u2n_value} * 1048576 + 0.5" | sed 's/[.,].*$//'`
+                ;;
+        t|T)
+                # terabyte given - *1024*1024*1024
+                # 1. calculate, 2. round, 3. take integer
+                _u2n_ret=`bc <<< "${_u2n_value} * 1099511627776 + 0.5" | sed 's/[.,].*$//'`
+                ;;
+            *)
+                # return original value
+                _u2n_ret=${1}
+                ;;
+        esac
+
+        echo ${_u2n_ret}
+    }
+
+    # abs_path
+    # --------
+    #
+    # return absolute path to a file
+    #
+    # Parameters:      $1    path of file
+    #
+    # Output:          absolute path of file
+    #
+    abs_path ()
+    {
+        cd "$(dirname "$1")"
+        printf "$(pwd)/$(basename "$1")\n"
+        cd "${OLDPWD}"
+    }
+
+#============================================================================
+
+    #
+    # is_root
+    # -------
+    #
+    # check if root equivalent user
+    #
+    # Parameters:      $1    username
+    #
+    # Output:          0 - yes, root user
+    #                  1 - no
+    #
+    is_root ()
+    {
+        _ir_user_name="$1"
+        _ir_ret=1
+
+        # read uid
+        _ir_user_uid=`grep "^${_ir_user_name}:" ${_jedlib_passwdfile} | cut -d: -f3`
+
+        if [ ${_ir_user_uid} -eq 0 ]
+        then
+            # equivalent root user
+            _ir_ret=0
+        fi
+
+        return ${_ir_ret}
+    }
+
+    #
+    # is_numeric
+    # ----------
+    #
+    # check if numeric value
+    #
+    # Parameters:      $1    value
+    #
+    # Output:          0 - yes, numeric value
+    #                  1 - no, no numeric value
+    #
+    is_numeric ()
+    {
+        if [ "$1" = "" ]
+        then
+            # empty string
+            return 1
+        else
+            echo "$1"|grep -q '^[0-9]*$'
+        fi
+    }
+
+    #
+    # is_date
+    # -------
+    #
+    # check if date value
+    #
+    # Parameters:      $1 - date string [yyyy-mm-dd]
+    #
+    # Output:          0     - ok
+    #                  bit-1 - invalid year
+    #                  bit-2 - invalid month
+    #                  bit-3 - invalid day
+    #
+    is_date ()
+    {
+        _id_yy=`echo ${1} | cut -d- -f1`
+        _id_mm=`echo ${1} | cut -d- -f2`
+        _id_dd=`echo ${1} | cut -d- -f3`
+
+        _id_yy_ok=1
+        if [ "${_id_yy}" != "" ]
+        then
+            if is_numeric ${_id_yy}
+            then
+                if [ ${_id_yy} -ge 2007 -a ${_id_yy} -le 2200 ]
+                then
+                    _id_yy_ok=0
+                fi
+            fi
+        fi
+
+        _id_mm_ok=2
+        if [ "${_id_mm}" != "" ]
+        then
+            if is_numeric ${_id_mm}
+            then
+                if [ ${_id_mm} -ge 1 -a ${_id_mm} -le 12 ]
+                then
+                    _id_mm_ok=0
+                fi
+            fi
+        fi
+
+        _id_dd_ok=4
+        if [ "${_id_dd}" != "" ]
+        then
+            if is_numeric ${_id_dd}
+            then
+                if [ ${_id_dd} -ge 1 -a ${_id_dd} -le 31 ]
+                then
+                    _id_dd_ok=0
+                fi
+            fi
+        fi
+
+        _id_ret=`expr ${_id_yy_ok} + ${_id_mm_ok} + ${_id_dd_ok}`
+
+        return ${_id_ret}
+    }
+
+    #
+    # is_time
+    # -------
+    #
+    # check if time value
+    #
+    # Parameters:      $1 - time string [HH:MM:SS]
+    #
+    # Output:          0     - ok
+    #                  bit-1 - invalid hour
+    #                  bit-2 - invalid minute
+    #                  bit-3 - invalid second
+    #
+    is_time ()
+    {
+        _it_hh=`echo ${1} | cut -d: -f1`
+        _it_mm=`echo ${1} | cut -d: -f2`
+        _it_ss=`echo ${1} | cut -d: -f3`
+
+        _it_hh_ok=1
+        if [ "${_it_hh}" != "" ]
+        then
+            if is_numeric ${_it_hh}
+            then
+                if [ ${_it_hh} -ge 0 -a ${_it_hh} -le 24 ]
+                then
+                    _it_hh_ok=0
+                fi
+            fi
+        fi
+
+        _it_mm_ok=1
+        if [ "${_it_mm}" != "" ]
+        then
+            if is_numeric ${_it_mm}
+            then
+                if [ ${_it_mm} -ge 0 -a ${_it_mm} -le 59 ]
+                then
+                    _it_mm_ok=0
+                fi
+            fi
+        fi
+
+        _it_ss_ok=1
+        if [ "${_it_ss}" != "" ]
+        then
+            if is_numeric ${_it_ss}
+            then
+                if [ ${_it_ss} -ge 0 -a ${_it_ss} -le 60 ]
+                then
+                    _it_ss_ok=0
+                fi
+            fi
+        fi
+
+        _it_ret=`expr ${_it_hh_ok} + ${_it_mm_ok} + ${_it_ss_ok}`
+
+        return ${_it_ret}
+    }
+
+    #
+    # host_exists
+    # -----------
+    #
+    # Parameters:      $1 - url
+    #
+    # Output:          0  - host exists
+    #                  1  - host doesn't exist
+    #
+    host_exists ()
+    {
+        _he_retval=1
+        _he_urlstr="${1}"
+
+        # check if dnsip program exists
+        type dnsip >/dev/null 2>/dev/null
+
+        if [ $? -eq 0 ]
+        then
+            _he_srvname="`echo "${_he_urlstr}" | sed -e 's#^.*[http|ftp].*://##' -e 's#/.*$##'`"
+            _he_ipaddr=`dnsip ${_he_srvname}`
+
+            if [ "${_he_ipaddr}" != "" ]
+            then
+                # host found
+                _he_retval=0
+            fi
+        fi
+
+        return ${_he_retval}
+    }
+fi

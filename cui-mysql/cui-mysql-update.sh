@@ -1,7 +1,7 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # Eisfair configuration parameter update script
-# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2007 - 2015 the eisfair team, team(at)eisfair(dot)org
 #----------------------------------------------------------------------------
 
 # name of the current package
@@ -29,20 +29,22 @@ packages_name=mysql
 
     printgroup "General settings"
 
-    printvar "START_MYSQL"          "Start mysql service yes or no"
+    printvar "START_MYSQL"            "Start mysql service yes or no"
+    printvar "MYSQL_NETWORK"          "enable the TCP/IP external connection"
+    printvar "MYSQL_BIND"             "If set, then bind the MySQL port only to ip-address."
+    printvar "MYSQL_CONNECT_PORT"     "MySQL remote port, default=3306"
+    printvar "MYSQL_RAM"              "Use 256 MB ... 64 GB RAM"
 
-    printvar "MYSQL_NETWORK"        "enable the TCP/IP external connection"
+    printgroup "Optimization settings"
 
-    printvar "MYSQL_BIND"           "If set, then bind the MySQL port only to ip-address."
-
-    printvar "MYSQL_CONNECT_PORT"   "MySQL remote port, default=3306"
-
-    printvar "MYSQL_RAM"            "Use 256 MB ... 64 GB RAM"
-
-    printvar "MYSQL_LOG_INTERVAL"   "logrotate interval"
-
-    printvar "MYSQL_LOG_MAXCOUNT"   "max count of logfiles"
-
+    printvar "MYSQL_MAX_CONNECTIONS"  "max client connections"
+    printvar "MYSQL_QCACHE_SIZE"      "query cache size"
+    printvar "MYSQL_QCACHE_ENTRY_MAX" "max size of query cache entry"
+    printvar "MYSQL_QCACHE_ENTRY_MIN" "min size of query cache entry"
+    echo ""
+    printvar "MYSQL_LOG_INTERVAL"     "logrotate interval"
+    printvar "MYSQL_LOG_MAXCOUNT"     "max count of logfiles"
+    echo ""
     printvar "MYSQL_BACKUP_CRON_SCHEDULE" "start time for database backup"
 
 ) > /etc/config.d/${packages_name}

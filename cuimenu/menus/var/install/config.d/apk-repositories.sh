@@ -1,8 +1,13 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/config.d/apk-repositories.sh - apply configuration 
-# Copyright (c) 2001-2014 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2015 the eisfair team, team(at)eisfair(dot)org
 # Creation:     2013-05-03 starwarsfan
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #----------------------------------------------------------------------------
 
 package_name=apk-repositories

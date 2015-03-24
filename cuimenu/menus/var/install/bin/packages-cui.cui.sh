@@ -2,10 +2,8 @@
 #------------------------------------------------------------------------------
 # /var/install/bin/packages-cui.cui.sh - list cui-* packages
 #
-# Creation:     2013-05-01 jv
-# Last update:  $Id: 24072 2013-02-21 09:53:06Z jv $
-#
-# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
+# Creation:     2013-05-01 jens vehlhaber
+# Copyright (c) 2001-2015 The Eisfair Team <team@eisfair.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -117,7 +115,6 @@ function install_package()
         fi
     fi
 }
-
 
 #----------------------------------------------------------------------------
 # uninstall a package
@@ -534,7 +531,6 @@ function listview_clicked_hook()
     cui_return 1
 }
 
-
 #----------------------------------------------------------------------------
 #  listview_postkey_hook (catch ENTER key)
 #    $p2 --> window handle of main window
@@ -594,7 +590,6 @@ function mainwin_create_hook()
 
     cui_return 1
 }
-
 
 #----------------------------------------------------------------------------
 # mainwin_init_hook (load data)

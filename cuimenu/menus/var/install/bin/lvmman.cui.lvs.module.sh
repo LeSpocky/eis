@@ -3,7 +3,7 @@
 # /var/install/bin/lvmman.cui.lvs.module.sh - lvs module for eisfair lvm mananger
 #
 # Creation:     2014-05-04 Jens Vehlhaber jens@eisfair.org
-# Copyright (c) 2001-2014 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2015 The Eisfair Team <team@eisfair.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

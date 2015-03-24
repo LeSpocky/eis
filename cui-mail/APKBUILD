@@ -1,0 +1,190 @@
+# Contributor: 
+# Maintainer: 
+pkgname=cui-mail
+pkgver=0.1.0
+pkgrel=0
+pkgdesc="CUI setup for ISC Dynamic Host Configuration Protocol (DHCP)"
+url="http://www.eisfair.org"
+arch="noarch"
+license="GPL"
+depends="imap"
+depends_dev=""
+makedepends="$depends_dev"
+install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.post-deinstall"
+subpackages=""
+source="${pkgname}.default
+		${pkgname}.check
+		${pkgname}.check.basic
+		${pkgname}.check.exp
+		${pkgname}.check.ext
+		${pkgname}.default
+		${pkgname}.default.basic
+		${pkgname}.dialog.MAIL_ACTION_ON_FAILURE.sh
+		${pkgname}.dialog.MAIL_AUTH_TYPE_1.sh
+		${pkgname}.dialog.MAIL_AUTH_TYPE_2.sh
+		${pkgname}.dialog.MAIL_AV_SCANNER.sh
+		${pkgname}.dialog.MAIL_EFETCH_AUTH_TYPE.sh
+		${pkgname}.dialog.MAIL_EFETCH_PROTOCOL.sh
+		${pkgname}.dialog.MAIL_EGROUP.sh
+		${pkgname}.dialog.MAIL_FETCH_AUTH_TYPE.sh
+		${pkgname}.dialog.MAIL_FETCH_PROTOCOL.sh
+		${pkgname}.dialog.MAIL_FORCE_TLS.sh
+		${pkgname}.dialog.MAIL_HANDLING.sh
+		${pkgname}.dialog.MAIL_LOG_INTERVAL.sh
+		${pkgname}.dialog.MAIL_ROUTE_TYPE.sh
+		${pkgname}.dialog.MAIL_SPAM_HEAD_STYLE.sh
+		${pkgname}.dialog.MAIL_SSL_PROTOCOL.sh
+		${pkgname}.dialog.MAIL_TRANSPORT.sh
+		${pkgname}.help
+		${pkgname}.include
+		${pkgname}.initd
+		${pkgname}.sh
+		${pkgname}-update.sh
+		${pkgname}.menu
+		${pkgname}.menu.modules
+		${pkgname}.menu.tools
+		${pkgname}.txt
+		${pkgname}.txt.toc
+"
+
+_builddir=
+prepare() {
+	cd "$_builddir"
+}
+
+build() {
+	cd "$_builddir"
+}
+
+package() {
+	cd "$_builddir"
+	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/mail || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.basic   ${pkgdir}/etc/check.d/mail.basic || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/mail.exp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.ext     ${pkgdir}/etc/check.d/mail.ext || return 1
+	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/mail || return 1
+	install -D -m644 ${srcdir}/${pkgname}.default.basic ${pkgdir}/etc/default.d/mail.basic || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/mail || return 1
+	install -D -m755 ${srcdir}/${pkgname}.initd         ${pkgdir}/etc/init.d/mail || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/mail.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/mail-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.mail.menu || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/mail/mail.txt || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt.toc       ${pkgdir}/usr/share/doc/mail/mail.toc || return 1
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_ACTION_ON_FAILURE.sh ${pkgdir}/var/install/dialog.d/MAIL_ACTION_ON_FAILURE.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_AUTH_TYPE_1.sh       ${pkgdir}/var/install/dialog.d/MAIL_AUTH_TYPE_1.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_AUTH_TYPE_2.sh       ${pkgdir}/var/install/dialog.d/MAIL_AUTH_TYPE_2.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_AV_SCANNER.sh        ${pkgdir}/var/install/dialog.d/MAIL_AV_SCANNER.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_EFETCH_AUTH_TYPE.sh  ${pkgdir}/var/install/dialog.d/MAIL_EFETCH_AUTH_TYPE.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_EFETCH_PROTOCOL.sh   ${pkgdir}/var/install/dialog.d/MAIL_EFETCH_PROTOCOL.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_EGROUP.sh            ${pkgdir}/var/install/dialog.d/MAIL_EGROUP.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_FETCH_AUTH_TYPE.sh   ${pkgdir}/var/install/dialog.d/MAIL_FETCH_AUTH_TYPE.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_FETCH_PROTOCOL.sh    ${pkgdir}/var/install/dialog.d/MAIL_FETCH_PROTOCOL.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_FORCE_TLS.sh         ${pkgdir}/var/install/dialog.d/MAIL_FORCE_TLS.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_HANDLING.sh          ${pkgdir}/var/install/dialog.d/MAIL_HANDLING.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_LOG_INTERVAL.sh      ${pkgdir}/var/install/dialog.d/MAIL_LOG_INTERVAL.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_ROUTE_TYPE.sh        ${pkgdir}/var/install/dialog.d/MAIL_ROUTE_TYPE.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_SPAM_HEAD_STYLE.sh   ${pkgdir}/var/install/dialog.d/MAIL_SPAM_HEAD_STYLE.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_SSL_PROTOCOL.sh      ${pkgdir}/var/install/dialog.d/MAIL_SSL_PROTOCOL.sh
+	install -D -m755 ${srcdir}/${pkgname}.dialog.MAIL_TRANSPORT.sh         ${pkgdir}/var/install/dialog.d/MAIL_TRANSPORT.sh
+}
+
+md5sums="7c6aa94f695c3ee0258f2620270acf44  cui-mail.default
+29ab448261c7d367c103ac29bac38330  cui-mail.check
+142bb492b4af49e70700f2230d4b0a23  cui-mail.check.basic
+d4a562cee662eebfcdfa6ed9da441e49  cui-mail.check.exp
+2c6cb5a4e538e6412fa9a41234610285  cui-mail.check.ext
+7c6aa94f695c3ee0258f2620270acf44  cui-mail.default
+167be814daf5e558cb2678021220197f  cui-mail.default.basic
+28c758dcb7272e6bea7412770519bf37  cui-mail.dialog.MAIL_ACTION_ON_FAILURE.sh
+da708394c1d3677d54763eae005bddd6  cui-mail.dialog.MAIL_AUTH_TYPE_1.sh
+df15d6590493f9de6ee7613b35d6c75b  cui-mail.dialog.MAIL_AUTH_TYPE_2.sh
+9127f10a41b181882a96d34b65408f92  cui-mail.dialog.MAIL_AV_SCANNER.sh
+99f538bfb80b3c3b21b9a90b76e776b8  cui-mail.dialog.MAIL_EFETCH_AUTH_TYPE.sh
+43738485691bac958bec643e99cb3c43  cui-mail.dialog.MAIL_EFETCH_PROTOCOL.sh
+93c262f77d1ddeccaec1d1627224e984  cui-mail.dialog.MAIL_EGROUP.sh
+318a59c4386ff7d7299124969a0e2676  cui-mail.dialog.MAIL_FETCH_AUTH_TYPE.sh
+1f25a5b385857d200c187abd8be06b07  cui-mail.dialog.MAIL_FETCH_PROTOCOL.sh
+e1b9ec8131c367b9cb43af44816817b5  cui-mail.dialog.MAIL_FORCE_TLS.sh
+55caaa733a6bf33609962fe717b6bfd8  cui-mail.dialog.MAIL_HANDLING.sh
+29f07a2711afcc14e67d7b49dfb740ee  cui-mail.dialog.MAIL_LOG_INTERVAL.sh
+9cc7b304a7748725973618a1d0e55293  cui-mail.dialog.MAIL_ROUTE_TYPE.sh
+aa54b696c8b76de5ebff1d5252c985f1  cui-mail.dialog.MAIL_SPAM_HEAD_STYLE.sh
+c7751745c566eb86f040b27fdcfe6a8a  cui-mail.dialog.MAIL_SSL_PROTOCOL.sh
+96689f01693dd8c928713806c5c46d0b  cui-mail.dialog.MAIL_TRANSPORT.sh
+3c9103c32f4cc6cb68dfff9a7167eae8  cui-mail.help
+6e700812e78aadc123ad61d7155f588f  cui-mail.include
+77cb0cdf12a40ea6f595db2fd215590a  cui-mail.initd
+b8b5f175327e93c57ce4d427b27d379e  cui-mail.sh
+221fb2b3c23c4b80299c6c3f4c458b4f  cui-mail-update.sh
+98da705b1e62c3dea748cc9be22dac47  cui-mail.menu
+09377ccb3b688f1f000438ac3d07b756  cui-mail.menu.modules
+2b3fb92aed9bcdad905fa05ad5c74bf2  cui-mail.menu.tools
+26c4e307c5d2ef656bd7ab24c22bfc56  cui-mail.txt
+3070f5de1756128f072f1ce4cdd4d5fe  cui-mail.txt.toc"
+sha256sums="e4a833527aece7fc421c4943a057f0b68813571778e030d841595910199074a9  cui-mail.default
+c2e357fb938e2d285e9d752905a3c6c23f53465c3f4031588fc7f80f90b7e60f  cui-mail.check
+c71d72c5d890e4d2996464244ad0421e60ff05c84be4f277410f49f4223dc4f8  cui-mail.check.basic
+3c4abf7aa00a3519f71b8832a998d261bb64cdb4b69f6c86be4fa6440b7bc30b  cui-mail.check.exp
+1f5c6908d9299fcdd59b94b6acdd1cf02f751e08dbe5047cbbaf79cd372df546  cui-mail.check.ext
+e4a833527aece7fc421c4943a057f0b68813571778e030d841595910199074a9  cui-mail.default
+d13ce87fdf71e0cd5c86ef51b5051eba76945f794a2ede8f4d285eaa4d220af9  cui-mail.default.basic
+c4f2aabe180082e4bb68165078c627a33339fee2bcc4def91a082f1916761e1d  cui-mail.dialog.MAIL_ACTION_ON_FAILURE.sh
+11ee6e0922cc2af3bb91869913248810393242d4061fbb6c5c0e2dcb7c289a8e  cui-mail.dialog.MAIL_AUTH_TYPE_1.sh
+af03d447ba06f3465292dc6d65f32c62a64a0940e42770e3f8b6455afa5fe9e9  cui-mail.dialog.MAIL_AUTH_TYPE_2.sh
+06e054370c2330439dfb49a2a6c8707198592adc8cf44cacdecf03a239b2e3cc  cui-mail.dialog.MAIL_AV_SCANNER.sh
+992e288e4d0d442293b080e89e318302f42a6eaf2363b9396f7f4cc367351af8  cui-mail.dialog.MAIL_EFETCH_AUTH_TYPE.sh
+529c73c27b3d4fffe8b452357c6f806a22f7005b0e059769ff3cdfe70e82709f  cui-mail.dialog.MAIL_EFETCH_PROTOCOL.sh
+3a6bdf4af38cff79f4b3f635bef41772649f1840824de147afd1350ec44f9d42  cui-mail.dialog.MAIL_EGROUP.sh
+68198fda3df2cd619927f3c615f52863a8c28ff21e90181828f6b9389bcd9839  cui-mail.dialog.MAIL_FETCH_AUTH_TYPE.sh
+a97e2aa0b3342de999068b14dabdcf0b7e732e466882f76336f4cb94f6d22521  cui-mail.dialog.MAIL_FETCH_PROTOCOL.sh
+4978766ee0afbd5c953026bad30e0fbea09d680f04375e2d5c4083ea98cbf600  cui-mail.dialog.MAIL_FORCE_TLS.sh
+54a2d82aed54c071cee23554e81dc8fa03aee6214b589fd1ebbef7b576a3a83e  cui-mail.dialog.MAIL_HANDLING.sh
+cc8737e763cfe1839423d70fb93f76dfa5849d7b9f8f7f43280406d238430dc1  cui-mail.dialog.MAIL_LOG_INTERVAL.sh
+882a883203bd12edf4d74fa9d810fe672982ce849a0fab5141203a1c54191192  cui-mail.dialog.MAIL_ROUTE_TYPE.sh
+5415e120a206a96d04a9dd817ee8059090be06d2ff0b3cefcba453c77c2245d5  cui-mail.dialog.MAIL_SPAM_HEAD_STYLE.sh
+9f70d159233ad2780592f08b6940c188f94448379c871e86da8a404ca4379379  cui-mail.dialog.MAIL_SSL_PROTOCOL.sh
+adcd6ce18b1b65b3d84604fb347885c108736a1b6f132bfa33c4f6d2a248237e  cui-mail.dialog.MAIL_TRANSPORT.sh
+f8e271800eed385c986736fa177c4c4c62c9285ea0cdd48d0f2a0b1e84d0dd37  cui-mail.help
+4d9d6eb7f3fd72b85aaeaf26ba8f575be21beaf0e1f9d930426146ea307d7d62  cui-mail.include
+b759e659103719a69dbca91406dc19ca93daba3d19d68625452c3f77aba5eca0  cui-mail.initd
+f0ac7c94bb746adbb72526d067c5d07f65df3e9d899dfb0fdb71d51678ac7b43  cui-mail.sh
+852e9f9ee17ce09fb278fa3f309f7abb3363cc0a7e8a08dd562b3973cb147c8b  cui-mail-update.sh
+af0a73055f138d8aa931a416f638c3aaa92454e48e5dd45a5f7cf0c02565700e  cui-mail.menu
+8db4118af1eaafcf12aa2febe3801c45ec8afefeb6e3bbef7ae98f961c8ecca3  cui-mail.menu.modules
+d10dac129557aa740bcaa0fda5d228fdc2f823a42ab73d9854edc0f374627bd2  cui-mail.menu.tools
+229c52a7300a1441a241868e5919e71a9247376b7b537e7643c59a763a89cb64  cui-mail.txt
+0a269e1724939bd3b79013f403719feb8d14cd6f0d70446d3342ae3d89d12fbc  cui-mail.txt.toc"
+sha512sums="286c4bdd0ac45bed3ab27d7e1f6787a40669f78bb475c7dc5088d2105a00ffc66d416573751669bdc5e025f56972565320311761f94183885c7c87d8e538efec  cui-mail.default
+ebd89cda4802256e8cc6c9bb03243c87215566032bfefd95215fedf71c661d12d77f467bea031c85fcf0c56df3c0646d309f88a10b01f760fa5c024fea287565  cui-mail.check
+e1824aed8baec1b2a1326ee2a489a2ba78aec7748d7e0256e07a7720f59c9fcc03ec538df28b1c5cbae94504a4fb75607c4c47e797f745aec8ebd82e096da7f6  cui-mail.check.basic
+c528d0e76aef05df5a777f72997e392a4b4e0e2cd365918a8348812a7c4b66b66471876cdc60cadc8350f3488e94fe63f4aa1ad42650bdb6cdac08b1261bd39a  cui-mail.check.exp
+f1bfdb83c77931a05f937480395a780732c12bced19ad1a8679a4dca4e0016257bb85ae52df488b26422d65405f4bcfc77bad317023b34a1e857e5e248354d12  cui-mail.check.ext
+286c4bdd0ac45bed3ab27d7e1f6787a40669f78bb475c7dc5088d2105a00ffc66d416573751669bdc5e025f56972565320311761f94183885c7c87d8e538efec  cui-mail.default
+781f2de84090349d15babfbb40545788c11f337d6c65a6f22ff519c1678e242f1aca30bc7f38fca0aab3bb6f0aecfb4bbb5ba41a7b5f028db19e0723b8f60b9a  cui-mail.default.basic
+cab6b875cdaa16ba18f6eb16b52eb2d0068566fb18fa7eabda128a0b02707b2858484a845b584ce3c488724595e6e25581077eafecf2d68a85b2620fbeb8cf0b  cui-mail.dialog.MAIL_ACTION_ON_FAILURE.sh
+74154d3bf6e402776c20764fb85e854416440b21c95d8bf695b4cc314bba3af66523f190c51182295507e552291f0829c3f19e0bdf5a2ac21c0f8b9054da084a  cui-mail.dialog.MAIL_AUTH_TYPE_1.sh
+8d4c9d0311a4bee8db7871906c1a84a2276d15e52933aadee4dc104027bd19ac02f1c255ba0320d31d0b171a73534ce3cf3b0c7a938d4452143ef94b825583fa  cui-mail.dialog.MAIL_AUTH_TYPE_2.sh
+3143760caaa7d80adb96d02a84d508abc5109f8fb42c1389cbaacb1fecd56fa88302eba325ee45b80102962edccd6b40e5fc92394e9e96cc4cc7bdecd82ec8e3  cui-mail.dialog.MAIL_AV_SCANNER.sh
+ce51b99f935a3719cf35979f9fde33aabdedead50c915aed4070cfe51ff9510233b194607633dfa40b8ad31a402bd7d660035e427eea5971d76ccce515d673fd  cui-mail.dialog.MAIL_EFETCH_AUTH_TYPE.sh
+c94cecfa8484423066f91a4a72f5a31b336b3c5d46e57dacf34d144fa6bec83de72d34f4132aaec7aed19e2b7d57c6b81eaa4ee3b57b65690d5204768a98317c  cui-mail.dialog.MAIL_EFETCH_PROTOCOL.sh
+e96804f51acd07e4cf32b72dc4765e2e20e834563bee3c10f5a56dee63c0a697751ececf5b9f13a0728335bc82635cabf6234832956dbeaa66f09593d6f202fa  cui-mail.dialog.MAIL_EGROUP.sh
+a014d65fef4991f0d1f26dfde2f0e434681c8a1148183a45cbcef8bade20ab8ee74d7c7709f89393e3a88f88719837181e0dfc9150cd7e6e1174e421daaab4e5  cui-mail.dialog.MAIL_FETCH_AUTH_TYPE.sh
+767c1f6b55bc709050ef9373c784a6c393325b6f6a9a895acf1df801bc35effa102c6f56750acb14ed785738a94d3293f261af62607f6d8a377ebf8a6db3a2b4  cui-mail.dialog.MAIL_FETCH_PROTOCOL.sh
+563dfbaf62327df4e3cb0b3adfdda450d179da02479258c7f22411587c01aa5cffbed7dbc8f2b0f2bec47fc40b2eda8c29989e3f35083b3851057ea3d09d590c  cui-mail.dialog.MAIL_FORCE_TLS.sh
+8222f503fd4f6aabc9af193495e9d80fef2cf768ac74aaa903d5f2e182cfbb662b35f5bd72d2b4bb8885d2de07d99bd989bc2c5f654f8a11f338ba3cdeb0aca5  cui-mail.dialog.MAIL_HANDLING.sh
+a10d73677d3fa6d5bdeb742d5978ba01901a019835d969fab4419ea7af56d1842cd02c73ea8412d09b6f4167169b275de761b66040957e66b9a3fc4a24734da0  cui-mail.dialog.MAIL_LOG_INTERVAL.sh
+52add6709c92d0df1f7e815ddd784d7a4495f54be9dad9210ec7d5f5c944dc74629daad3b8e197e70cd148061123991bbece7bf1a81ca62035e949b5b581cada  cui-mail.dialog.MAIL_ROUTE_TYPE.sh
+6452e483f7597a4210fcb8d3df25fd524713ce0719e09e1e344e058a391a957c8ec9496b57f084d66f6c7ab92a37b546247ff1546d4abec852cfdf8883f0955e  cui-mail.dialog.MAIL_SPAM_HEAD_STYLE.sh
+cb835a786ded8484595d08efe77b6fcabee3f14669533ba5219e2dd9c431883c022d2169dce0ea3b44b84873513a5bf74260f8c775ff9fe4297e465e5f8ae0e3  cui-mail.dialog.MAIL_SSL_PROTOCOL.sh
+8048498d005bd809752c7d7b4acef5c0cc365b8aa7135279c4fbfa8d639f4e364a81b6348df69c77efac398d6471d5cc3648ec1979f0be5412bb4dcc2a1d318f  cui-mail.dialog.MAIL_TRANSPORT.sh
+7d2f6a6a8a745b4494cdfbfe62bb2426c4c4348ef223448de57f4db3dbf99031140f7756f44d12523866effa365810163430c6f6d083023ae2637df63a59f97e  cui-mail.help
+73bd7c0586b3c4363467769809095974192ea34e9be215fb829dd3f36abe17327245a6bc0217c775b0adde94130b64c62a86c090b5a0c1001029c3b044ee75bb  cui-mail.include
+4f829dde46df7fbe3a4ea105fb95e10c4fe29438b18c3f6473af0400ee6972a998cdfd7c10148a2b36e03325cc85c5cbb18fb463c036c59d424762b46c2890a2  cui-mail.initd
+269b16b2818aa01c5a5bc2fcaf070e237d80c2fe5eb59d8d47d0757e0e49ff03cc2f3f0e6951236e6b8d2af676ba61fbd50e13a59117f1eb002ddbba91f612f5  cui-mail.sh
+b7cefece49039a90ee95a5511bd9b3555aa641b90cbaa414a875ac28ac9034cfec0b14bd7c54e539e2647348048a26aeed7376b4c25916713bd98959e9263aaa  cui-mail-update.sh
+2ef0605e121a88c4ac626140d03cc1ea2b6689c95ebfb67551890012732086aa043d0d7f27c65efaa7d675cba2aaa2c3813f602927c3529f76f44450863e893d  cui-mail.menu
+31b28f87492b5a4ea14a6e72aae2323d1ad49deabc07902e5ccca54e9dc1dc958b256f6b09a06a34aa4d2f57ac14669580beb06967485fd4ed585d6e131e5b1d  cui-mail.menu.modules
+80c2b889113ff60152fc8679632c40efd16ca53b18a66ebc612fcd42347e307e7e72a44d0d2821c7d58dafbab1fd3f2f6c4c9ee5ca42537873c9437224a66a94  cui-mail.menu.tools
+f4b5c9c551126bca6365375106ab2f887afcd852363d48491d2e95334a0f7c548ec575b2cff1e04780c931a613e102abab139d06303d6b3d0d0bcbda7dc711bb  cui-mail.txt
+4be1491d8974367277ffe6814572a78fff5230e04be1a87f2b565c83254703a65883ce244be28f36184c82125dab681cd2d432331b0c0b6327611436c80c8ea0  cui-mail.txt.toc"

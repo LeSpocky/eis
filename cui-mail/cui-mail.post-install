@@ -1,0 +1,5 @@
+#!/bin/sh
+/var/install/bin/add-menu setup.services.menu setup.services.mail.menu "Mail Service"
+[ -e /etc/config.d/mail ]       || cp -f /etc/default.d/mail /etc/config.d/
+[ -e /etc/config.d/mail.basic ] || cp -f /etc/default.d/mail.basic /etc/config.d/
+exit 0

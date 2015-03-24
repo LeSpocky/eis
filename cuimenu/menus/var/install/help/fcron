@@ -1,5 +1,4 @@
 <!-- Creation:     12.06.2005  jv -->
-<!-- Last Update:  $Id: cron 24471 2010-06-10 21:14:01Z schlotze $ -->
 
 <help name="START_FCRON">
 Start the cron daemon 'yes' or 'no'<br/>

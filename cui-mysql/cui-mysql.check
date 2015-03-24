@@ -4,6 +4,10 @@ MYSQL_NETWORK                          START_MYSQL                   -          
 MYSQL_BIND                             MYSQL_NETWORK                 -                            EIPADDRESSES
 MYSQL_CONNECT_PORT                     MYSQL_NETWORK                 -                            PORT
 MYSQL_RAM                              START_MYSQL                   -                            MYSQL_RAM
+MYSQL_MAX_CONNECTIONS                  START_MYSQL                   -                            MYSQL_MAXCONN
+MYSQL_QCACHE_SIZE                      START_MYSQL                   -                            MYSQL_QCSIZE
+MYSQL_QCACHE_ENTRY_MAX                 START_MYSQL                   -                            MYSQL_QCMAX
+MYSQL_QCACHE_ENTRY_MIN                 START_MYSQL                   -                            MYSQL_QCMIN
 MYSQL_LOG_INTERVAL                     START_MYSQL                   -                            LOG_INTERVAL
 MYSQL_LOG_MAXCOUNT                     START_MYSQL                   -                            NUMERIC
 MYSQL_BACKUP_CRON_SCHEDULE             START_MYSQL                   -                            CRONTAB

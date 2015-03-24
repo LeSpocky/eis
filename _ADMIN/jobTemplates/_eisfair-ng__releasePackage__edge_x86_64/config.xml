@@ -22,15 +22,14 @@ must be choosen. The choosen package will be released and deployed to the corres
           <quoteValue>false</quoteValue>
           <visibleItemCount>5</visibleItemCount>
           <type>PT_SINGLE_SELECT</type>
-          <propertyFile>https://ssl.nettworks.org/ci/view/eisfair-ng/job/_eisfair-ng__checkBuildJobs/lastSuccessfulBuild/artifact/_ADMIN/packages.txt</propertyFile>
+          <propertyFile>https://ssl.nettworks.org/ci/view/Alle/job/_eisfair-ng__checkBuildJobs/lastSuccessfulBuild/artifact/_ADMIN/packages.txt</propertyFile>
           <propertyKey>packages</propertyKey>
           <multiSelectDelimiter>,</multiSelectDelimiter>
         </com.cwctravel.hudson.plugins.extended__choice__parameter.ExtendedChoiceParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
-    <hudson.plugins.disk__usage.DiskUsageProperty plugin="disk-usage@0.23"/>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.2.2">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.5">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -66,7 +65,7 @@ _ADMIN/releasePackage.sh
     </hudson.tasks.Shell>
   </builders>
   <publishers>
-    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.38.1">
+    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.39">
       <recipientList>$DEFAULT_RECIPIENTS</recipientList>
       <configuredTriggers>
         <hudson.plugins.emailext.plugins.trigger.UnstableTrigger>
@@ -175,10 +174,11 @@ _ADMIN/releasePackage.sh
       <compressBuildLog>false</compressBuildLog>
       <replyTo></replyTo>
       <saveOutput>false</saveOutput>
+      <disabled>false</disabled>
     </hudson.plugins.emailext.ExtendedEmailPublisher>
-    <hudson.plugins.ircbot.IrcPublisher plugin="ircbot@2.25">
+    <hudson.plugins.ircbot.IrcPublisher plugin="ircbot@2.26">
       <targets>
-        <hudson.plugins.im.GroupChatIMMessageTarget plugin="instant-messaging@1.29">
+        <hudson.plugins.im.GroupChatIMMessageTarget plugin="instant-messaging@1.33">
           <name>#eisfair-ng-ci</name>
           <notificationOnly>true</notificationOnly>
         </hudson.plugins.im.GroupChatIMMessageTarget>
@@ -189,14 +189,14 @@ _ADMIN/releasePackage.sh
       <notifyCulprits>false</notifyCulprits>
       <notifyFixers>false</notifyFixers>
       <notifyUpstreamCommitters>false</notifyUpstreamCommitters>
-      <buildToChatNotifier class="hudson.plugins.im.build_notify.SummaryOnlyBuildToChatNotifier" plugin="instant-messaging@1.29"/>
+      <buildToChatNotifier class="hudson.plugins.im.build_notify.SummaryOnlyBuildToChatNotifier" plugin="instant-messaging@1.33"/>
       <matrixMultiplier>ONLY_CONFIGURATIONS</matrixMultiplier>
       <channels/>
     </hudson.plugins.ircbot.IrcPublisher>
     <hudson.plugins.twitter.TwitterPublisher plugin="twitter@0.7"/>
   </publishers>
   <buildWrappers>
-    <com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.3">
+    <com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper plugin="copy-to-slave@1.4.4">
       <includes>eisfair-ng.buildsettings.txt</includes>
       <excludes></excludes>
       <flatten>false</flatten>
@@ -204,6 +204,6 @@ _ADMIN/releasePackage.sh
       <hudsonHomeRelative>false</hudsonHomeRelative>
       <relativeTo>userContent</relativeTo>
     </com.michelin.cio.hudson.plugins.copytoslave.CopyToSlaveBuildWrapper>
-    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.5.13"/>
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.6"/>
   </buildWrappers>
 </project>

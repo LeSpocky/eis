@@ -1,0 +1,276 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/mail - configuration for mail services on EIS/FAIR
+# Copyright (c) 2002 Frank Meyer <frank(at)eisfair(dot)org>
+# Creation:     2002-04-28  fm
+#------------------------------------------------------------------------------
+
+START_MAIL='no'                         # enable mail package: yes or no
+
+#------------------------------------------------------------------------------
+# pop3: general settings
+#------------------------------------------------------------------------------
+
+START_POP3='no'                         # start POP3 server: yes or no
+START_IMAP='no'                         # start IMAP server: yes or no
+
+#------------------------------------------------------------------------------
+# fetchmail: general settings
+#------------------------------------------------------------------------------
+
+START_FETCHMAIL='no'                    # start FETCHMAIL client: yes or no
+
+FETCHMAIL_PROTOCOL='POP3'               # protocol to use, normally pop3
+FETCHMAIL_LIMIT='4096000'               # mail size limit. Default: 4 megabytes
+FETCHMAIL_WARNINGS='86400'              # send warnings once a day (in seconds)
+FETCHMAIL_DAEMON='1800'                 # check every 30 minutes (in seconds)
+FETCHMAIL_TIMEOUT='90'                  # wait for server reply (in seconds)
+
+#------------------------------------------------------------------------------
+# fetchmail: accounts
+#------------------------------------------------------------------------------
+
+FETCHMAIL_N='0'                         # number of accounts to fetch
+FETCHMAIL_1_ACTIVE='no'                 # 1. activate fetchmail entry: yes or no
+FETCHMAIL_1_COMMENT='my first server'   #    optional comment to identify entry
+FETCHMAIL_1_SERVER='mail.domain.de'     #    mail server to poll
+FETCHMAIL_1_USER='username'             #    username and
+FETCHMAIL_1_PASS='secret'               #    password for this server
+FETCHMAIL_1_FORWARD='user@local.lan'    #    local account to forward to
+FETCHMAIL_1_KEEP='no'                   #    if yes mail is left on the server
+FETCHMAIL_1_FETCHALL='no'               #    if yes all mail is fetched from the server
+
+#------------------------------------------------------------------------------
+# smtp: general settings
+#------------------------------------------------------------------------------
+
+START_SMTP='no'                        # start SMTP server: yes or no
+
+SMTP_QUALIFY_DOMAIN='domain.de'        # domain to be added to all unqualified
+                                       # addresses
+SMTP_HOSTNAME='eis.domain.de'          # canonical hostname of eisfair server
+SMTP_QUEUE_INTERVAL='30'               # queueing interval in minutes, usually 30
+SMTP_QUEUE_OUTBOUND_MAIL='no'          # set to yes if you are using a dialup ISP
+                                       # and you want to queue outbound mail until
+                                       # next queue run which must be initiated
+                                       # manually or cron-job
+SMTP_QUEUE_ACCEPT_PER_CONNECTION='10'  # msg number to accept in one smtp session
+SMTP_LISTEN_PORT=''                    # port on which Exim is listening for
+                                       # inbound traffic, default is 'smtp'
+
+#------------------------------------------------------------------------------
+# smtp: local domains
+#------------------------------------------------------------------------------
+
+SMTP_LOCAL_DOMAIN_N='3'                # number of local domains
+SMTP_LOCAL_DOMAIN_1='@'                # 1. local domain, @ means SMTP_HOSTNAME
+SMTP_LOCAL_DOMAIN_2='localhost'        # 2. local domain
+SMTP_LOCAL_DOMAIN_3='domain.de'        # 3. local domain
+
+#------------------------------------------------------------------------------
+# smtp: relay to domains
+#
+# Optional:
+#   The folllowing setting specify domains for which your host is an incoming
+#   relay. If you are not doing any relaying, you should leave the list empty.
+#   However, if your host is an MX backup or gateway of some kind for some
+#   domains, you must set SMTP_RELAY_TO_DOMAIN_x to match those domains.
+#------------------------------------------------------------------------------
+
+SMTP_RELAY_TO_DOMAIN_N='0'             # domains for which we are incoming relay
+SMTP_RELAY_TO_DOMAIN_1='domain.de'
+
+#------------------------------------------------------------------------------
+# smtp: relay from hosts
+#
+# The following settings specify hosts that can use your host as an
+# outgoing relay to any other host on the Internet. Such a setting
+# commonly refers to a complete local network as well as the localhost.
+#------------------------------------------------------------------------------
+
+SMTP_RELAY_FROM_HOST_N='2'             # hosts/nets from we accept outgoing mails
+SMTP_RELAY_FROM_HOST_1='127.0.0.1'
+SMTP_RELAY_FROM_HOST_2='192.168.6.0/24'
+
+#------------------------------------------------------------------------------
+# smtp: server authentication
+#
+# Optional:
+#   Set the type of server authentication.
+#   none   - no authentication
+#   user   - each user authenticates himself by his username/password
+#   server - all users authenticate themself by sending a global user/pass
+#------------------------------------------------------------------------------
+
+SMTP_AUTH_TYPE='user'                  # authentication: none, user, server,
+                                       # user_light or server_light
+SMTP_AUTH_USER=''                      # if server: global username, else empty
+SMTP_AUTH_PASS=''                      # if server: global password, else empty
+
+#------------------------------------------------------------------------------
+# smtp: smarthosts
+#
+# Optional:
+#   Send all outgoing messages to a smarthost (e.g. mail server of your isp).
+#------------------------------------------------------------------------------
+
+SMTP_SMARTHOST_ONE_FOR_ALL='yes'       # use one smarthost for all accounts:
+                                       # if 'yes', the first entry will be read
+                                       # if 'no', user specific entries will be used
+
+SMTP_SMARTHOST_N='0'                   # number of smarthost entries
+SMTP_SMARTHOST_1_HOST=''               # 1. smart host to send mail to, e.g. mail.gmx.net
+SMTP_SMARTHOST_1_AUTH_TYPE='none'      #    'none', 'plain', 'login', 'md5' or 'msn'
+SMTP_SMARTHOST_1_USER=''               #    if authentication required: username
+SMTP_SMARTHOST_1_PASS=''               #    if authentication required: password
+
+#------------------------------------------------------------------------------
+# smtp: aliases
+#
+# Here you can specify aliases
+#
+# General format:
+#   SMTP_ALIASES_x_ALIAS_y='name: user1[,user2,...]
+#
+# Example:
+#   SMTP_ALIASES_N='2'
+#   ...
+#   SMTP_ALIASES_2_DOMAIN='2nd.local.lan'
+#   SMTP_ALIASES_2_ALIAS_N='1'
+#   SMTP_ALIASES_2_ALIAS_1='frank: fm,foo@otherwhere.com'
+#
+# Mails to frank@domain.de will be delivered to local user fm and to
+# user foo@otherwhere.com.
+#------------------------------------------------------------------------------
+
+SMTP_ALIASES_1_ALIAS_N='1'             #    number of aliases
+SMTP_ALIASES_1_ALIAS_1='root:   fm'    #    1. alias must be for user 'root'!
+
+#------------------------------------------------------------------------------
+# smtp: outgoing addresses
+#
+# Here you can specify an address translation table which is only available
+# if SMTP_SMARTHOST_N has been set to a value greater than 0.
+#
+# General format:
+#   SMTP_OUTGOING_ADDRESSES_x='name: email address'
+#
+# Example:
+#   SMTP_OUTGOING_ADDRESSES_1='fm: frank@domain.de'
+#
+#   Mail from local user 'fm' will be delivered by using sender address
+#   'frank@domain.de'.
+#------------------------------------------------------------------------------
+
+SMTP_OUTGOING_ADDRESSES_N='0'
+SMTP_OUTGOING_ADDRESSES_1='fm:    frank@domain.de'
+
+#------------------------------------------------------------------------------
+# smtp: incoming addresses
+#
+# Example:
+#   SMTP_HEADER_REWRITE_1_SOURCE='*@home.lan'
+#   SMTP_HEADER_REWRITE_1_DESTINATION='$1@domain.de'
+#   SMTP_HEADER_REWRITE_1_FLAGS='sF'
+#
+#   The envelope from address and the sender of an incoming smtp mail from
+#   user 'frank@home.lan' will be rewritten to 'frank@domain.de'
+#------------------------------------------------------------------------------
+
+SMTP_HEADER_REWRITE_N='0'                             # number of rewrite rules
+SMTP_HEADER_REWRITE_1_SOURCE='*@home.lan'             # 1. search mask
+SMTP_HEADER_REWRITE_1_DESTINATION='valid@domain.de'   #    replace string
+SMTP_HEADER_REWRITE_1_FLAGS='sF'                      #    what to rewrite
+
+#------------------------------------------------------------------------------
+# smtp: mailing lists
+#
+# Here you can specify simple mailing lists
+#
+# Explanation of example below:
+#
+# A mail to 'eisfair@domain.de' will be delivered to all members in the list.
+# The reply address will be changed to 'eisfair@domain.de'!
+#------------------------------------------------------------------------------
+
+SMTP_LIST_DOMAIN='home.lan'                # domain part of mailing list addrs
+SMTP_LIST_ERRORS='frank@home.lan'          # send errors to this address
+
+SMTP_LIST_N='0'                            # number of mailing lists, change here!
+SMTP_LIST_1_ACTIVE='no'                    # 1. activate list: yes or no
+SMTP_LIST_1_NAME='eisfair'                 #    name of list
+SMTP_LIST_1_USER_N='2'                     #    number of list members
+SMTP_LIST_1_USER_1='frank@home.lan'        #    1. member
+SMTP_LIST_1_USER_2='tom@home.lan'          #    2. member
+#------------------------------------------------------------------------------
+SMTP_LIST_2_ACTIVE='no'                    # 2. activate list: yes or no
+SMTP_LIST_2_NAME='fli4l'                   #    name of list
+SMTP_LIST_2_USER_N='2'                     #    number of list members
+SMTP_LIST_2_USER_1='frank@home.lan'        #    1. member
+SMTP_LIST_2_USER_2='joe@home.lan'          #    2. member
+
+#------------------------------------------------------------------------------
+# exiscan: virus scanning
+#
+# Here you can specify an additinal antivirus scanner Please make sure
+# that you have installed a antivirus software prior you enable these feature.
+#------------------------------------------------------------------------------
+
+START_EXISCAN='no'                         # start EXISCAN: yes or no
+
+EXISCAN_ACTION_ON_FAILURE='defer'          # defer, drop or ignore scanner failures
+EXISCAN_CRYPT_SALT=''                      # crypt salt - `must' be set to a unique
+                                           # character string!
+EXISCAN_DEMIME_ENABLED='yes'               # unpack mime containers: yes or no
+EXISCAN_DEMIME_ACTION='pass'               # action on mime exploiis: pass, reject,
+                                           # discard, freeze, redirect <address>
+EXISCAN_AV_ENABLED='no'                    # use viruscanner: yes or no
+EXISCAN_AV_ACTION='reject'                 # action on virus: pass, reject, discard,
+                                           # freeze, redirect <address>
+EXISCAN_AV_SUBJECT_TAG='*VIRUS*'           # mark subject with tag, only usefull if
+                                           # EXISCAN_AV_ACTION has been set to 'pass'
+EXISCAN_AV_SCANNER='auto'                  # scanner: auto, cmdline, sophie, kavdaemon,
+                                           # aveserver, clamd, drweb, fsecure, mksd
+EXISCAN_AV_PATH=''                         # path to antivirus scanner
+EXISCAN_AV_OPTIONS=''                      # cmdline option for scanner incl. '%s'
+EXISCAN_AV_TRIGGER=''                      # regexp string if virus has been found
+EXISCAN_AV_DESCRIPTION=""                  # grep virus name from regexp description
+EXISCAN_AV_SOCKET=''                       # socket for sophie, kavdaemon, clamav ...
+EXISCAN_AV_SKIP_AUTHENTICATED='no'         # skip scan for authenticated users
+
+EXISCAN_EXTENSION_ENABLED='no'             # use extension checking: yes or no
+EXISCAN_EXTENSION_ACTION='reject'          # action on extension: pass, reject, discard,
+                                           # freeze, redirect <address>
+EXISCAN_EXTENSION_DATA='exe:com:vbs'       # filter 'exe', 'com' and 'vbs' extensions
+
+EXISCAN_REGEX_ENABLED='no'                 # use regex checking: yes or no
+EXISCAN_REGEX_ACTION='reject'              # action on regex: pass, reject, discard,
+                                           # freeze, redirect <address>
+EXISCAN_REGEX_DATA='[Mm]ortage : make money' # filter '[Mm]ortage' and 'make money' strings
+
+EXISCAN_SPAMD_ENABLED='no'                 # use spamd checking: yes or no
+EXISCAN_SPAMD_ACTION='redirect spam@home.lan' # action on spamd: pass, reject, discard,
+                                           # freeze, redirect <address>
+EXISCAN_SPAMD_HEADER_STYLE='flag'          # type of X-header: none, single, flag, full
+EXISCAN_SPAMD_SUBJECT_TAG='*SPAM*'         # mark subject with tag, only usefull if
+                                           # EXISCAN_SPAMD_ACTION has been set to 'pass'
+EXISCAN_SPAMD_THRESHOLD='5.0'              # spamd score threshold
+EXISCAN_SPAMD_ADDRESS='127.0.0.1 783'      # address on which spamd is listening
+EXISCAN_SPAMD_LIMIT='100k'                 # mail size limit, default: no limit
+EXISCAN_SPAMD_SKIP_AUTHENTICATED='no'      # skip scan for authenticated users
+
+#------------------------------------------------------------------------------
+# mail: log handling
+#
+# Here you can specify how many logs should be saved and in with interval.
+#
+# Example:
+#   MAIL_LOG_COUNT='10' - save the last 10 log files
+#   MAIL_LOG_INTERVAL='daily' - save one log file per day
+#------------------------------------------------------------------------------
+
+MAIL_LOG_COUNT='10'                        # number of log files to save
+MAIL_LOG_INTERVAL='weekly'                 # interval: daily, weekly, monthly
+
+#------------------------------------------------------------------------------
+# End
+#------------------------------------------------------------------------------

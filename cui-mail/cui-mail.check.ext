@@ -1,0 +1,57 @@
+#-----------------------------------------------------------------------------
+# /etc/check.d/mail.ext - post script for check table of configuration params
+# Copyright (c) 2001-2015 The Eisfair Team, team(at)eisfair(dot)org
+# Creation:     2003-10-30  jed
+#-----------------------------------------------------------------------------
+
+# make sure that no zero address has been entered
+foreach address in SMTP_RELAY_FROM_HOST_%
+do
+    if ( address =~ "(RE:MAIL_ZERO_IPADDR_NETWORK)" )
+    then
+        # %address - name of variable, $address - value of variable
+        error "%address='$address' - neither a zero ip address nor a zero network are allowed!"
+    fi
+done
+
+if ( start_exiscan == "yes" )
+then
+    if ( exiscan_av_enabled == "yes" && exiscan_av_scanner != "auto" )
+    then
+        # manuell mode - read default configuration
+        if ( ! exiscan_av_scanner =~ "(RE:MAIL_AV_SCANNER)" )
+        then
+            error "EXISCAN_AV_SCANNER: no valid scanner type, should be auto, cmdline, sophie, kavdaemon, aveserver, clamd, drweb, fsecure or mksd."
+        fi
+
+        if ( ! exiscan_av_path =~ "(RE:ABS_PATH)" )
+        then
+            error "EXISCAN_AV_PATH: no valid absolute path (must start with a slash and only numbers, letters, '-' and '_' divided by '/' are allowed)."
+        fi
+
+        if ( ! exiscan_av_options =~ "(RE:NOTEMPTY)" )
+        then
+            error "EXISCAN_AV_OPTIONS: may not be empty."
+        fi
+
+        if ( ! exiscan_av_trigger =~ "(RE:NOTEMPTY)" )
+        then
+            error "EXISCAN_AV_TRIGGER: may not be empty."
+        fi
+
+        if ( ! exiscan_av_description =~ "(RE:NOTEMPTY)" )
+        then
+            error "EXISCAN_AV_DESCRIPTION: may not be empty."
+        fi
+
+        if ( ! exiscan_av_socket =~ "(RE:NOTEMPTY)" )
+        then
+            error "EXISCAN_AV_SOCKET: may not be empty."
+        fi
+    fi
+
+    if ( exiscan_spamd_enabled == "yes" && exiscan_spamd_header_style == "none" && exiscan_spamd_subject_tag == "" )
+    then
+        error "EXISCAN_SPAMD_HEADER_STYLE has been set to 'none' and EXISCAN_SPAMD_SUBJECT_TAG has been set to an empty string at the same time. Please change at least one of the parameters."
+    fi
+fi

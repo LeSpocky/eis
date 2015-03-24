@@ -1,7 +1,12 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
 # /var/install/bin/del-menu - delete menu
-# Copyright (c) 2001-2013 The Eisfair Team <team@eisfair.org>
+# Copyright (c) 2001-2015 The Eisfair Team <team@eisfair.org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #-----------------------------------------------------------------------------
 # del-menu menu-file sub-menu-file
 # del-menu menu-file script-file

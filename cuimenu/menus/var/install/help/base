@@ -1,5 +1,4 @@
-<!-- Creation:     10.04.2005  dv -->
-<!-- Last Update:  $Id: base 30791 2012-05-17 12:23:33Z sk $ -->
+<!-- Creation: 10.04.2005  dv -->
 
 <help name="HOSTNAME">
 This specifies the name of your machine. <br/><br/>
@@ -14,47 +13,62 @@ Number of local networks connected to your machine.
 Other device name than ethX (optional).
 </help>
 
-<help name="IP_NET_%_STATIC_IP">
-Use DHCP or static address for ethX (optional).
+<help name="IP_NET_%_IPV4_ACTIVE">
+Activate IPv4 network protocol
 </help>
 
-<help name="IP_NET_%_IPADDR">
+<help name="IP_NET_%_IPV4_STATIC_IP">
+Use DHCP or static address for ethX).
+</help>
+
+<help name="IP_NET_%_IPV4_IPADDR">
 IP address of your n'th ethernet card. <br/>
 <br/>
-Example: 192.168.0.1
+Example: 192.168.0.11
 </help>
 
-
-<help name="IP_NET_%_NETMASK">
+<help name="IP_NET_%_IPV4_NETMASK">
 Netmask of your LAN.<br/>
 <br/>
 Example: 255.255.255.0
 </help>
 
-<help name="IP_NET_%_GATEWAY">
+<help name="IP_NET_%_IPV4_GATEWAY">
 Your default gateway. A default gateway is the machine that routes network traffic from
 and to other networks. Very often this is the router connected to the internet.<br/>
 <br/>
-Examples: fli4l router ...
+Examples: 192.168.0.1
 </help>
 
-<help name="IP_NET_%_POINTOPOINT">
+<help name="IP_NET_%_IPV4_POINTOPOINT">
 Set your default gateway as point-to-point link.
+</help>
+
+<help name="IP_NET_%_IPV6_ACTIVE">
+Activate IPv6 network protocol
 </help>
 
 <help name="IP_NET_%_BIND_DEV">
 Real net device, which is binded to IP_NET_%_NAME.
 </help>
 
-<help name="IP_ROUTE_N">
+<help name="IPV4_ROUTE_N">
 Number of additional routes.
 </help>
 
-<help name="IP_ROUTE_%">
+<help name="IPV6_ROUTE_N">
+Number of additional routes.
+</help>
+
+<help name="IPV4_ROUTE_%">
 Additional route: network netmask gateway <br/>
 <br/>
 Example: "192.168.7.0 255.255.255.0 192.168.6.99"  routes all network traffic related to
 network "192.168.7.0/24" to the gateway machine "192.168.6.99"
+</help>
+
+<help name="IPV6_ROUTE_%">
+Additional route: network netmask gateway <br/>
 </help>
 
 <help name="DOMAIN_NAME">

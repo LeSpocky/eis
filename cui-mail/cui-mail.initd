@@ -1,0 +1,1352 @@
+#!/sbin/runscript
+
+extra_started_commands="reload"
+extra_commands="update"
+
+depend() {
+	need localmount
+	use logger
+}
+
+start() {
+	ebegin "Starting IMAP"
+	start-stop-daemon --start --pidfile /run/imapd.pid --exec /usr/sbin/imapd -- $IMAPD_OPTS
+	eend $?
+}
+
+stop () {
+	ebegin "Stopping IMAP"
+	start-stop-daemon --stop --pidfile /run/imapd.pid --exec /usr/sbin/imapd
+	eend $?
+}
+
+update() {
+	# example for update:
+	cd /etc/XX
+	for user in *
+	do
+		[ -d /etc/XX/${user} ] && cat /etc/XX/${user}/* 2>/dev/null | XX -u ${user} -
+	done
+}
+
+reload() {
+	update >/dev/null 2>&1
+	ebegin "Reloading IMAP"
+	start-stop-daemon --signal HUP --pidfile /run/imapd.pid --exec /usr/sbin/imapd
+	eend $?
+}
+
+
+#-----------------------------------------------------------------------------#
+# Copyright (c) 2001-2015 The Eisfair Team, team(at)eisfair(dot)org
+#
+# Creation:     2002-04-28  fm
+# Last Update:  $Id: mail 36592 2015-01-13 19:32:38Z jed $
+#
+# Usage:        mail [--debug|--quiet|--raw] start|stop|status
+#               mail [--debug|--quiet|--raw] restart [exim|fetchmail]
+#               mail [--debug|--quiet|--raw] reload  [exim|fetchmail]
+#               mail [--quiet] wake
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#------------------------------------------------------------------------------
+
+# read eislib
+. /var/install/include/eislib
+
+exim_binpath=/usr/local/exim/bin
+exim_spoolpath=/var/spool/exim
+exim_pidfile=${exim_spoolpath}/exim-daemon.pid
+exim_ssmtp_pidfile=${exim_spoolpath}/exim-ssmtp-daemon.pid
+fetch_pidfile=/home/exim/.fetchmail.pid
+fetch_logfile=/var/log/fetchmail.log
+xinet_imapfile=/etc/xinetd.d/imap
+xinet_pop3file=/etc/xinetd.d/pop3
+
+lockfile=/etc/nologin
+
+#exec 2>/tmp/mail-start-trace-$$.log
+#set -x
+
+. /etc/config.d/mail
+
+#------------------------------------------------------------------------------
+# check PID file
+# input: $1 - daemon name to look for
+#        $2 - path and name of PID file
+#------------------------------------------------------------------------------
+check_pid_file ()
+{
+    PROCNAME="${1}"
+    PIDFILE="${2}"
+
+    if [ -e ${PIDFILE} -a -f ${PIDFILE} ]
+    then
+        # PID file found!
+        DELFLAG=1
+
+        # get current PID
+        PIDNUM=`cat ${PIDFILE} | tr -s '\n' ' ' | cut -d' ' -f1`
+
+        # check existing PIDs
+        PIDLIST=`ps -fC ${PROCNAME} | tr -s ' ' ':' | cut -d: -f2 | grep -v 'PID'`
+
+        for PNBR in ${PIDLIST}
+        do
+            if [ "${PNBR}" = "${PIDNUM}" ]
+            then
+                # PID found
+                DELFLAG=0
+                break
+            fi
+        done
+
+        if [ ${DELFLAG} -eq 1 ]
+        then
+            # delete outdated PID file
+            rm -f ${PIDFILE}
+        fi
+    fi
+}
+
+#------------------------------------------------------------------------------
+# check SMTP port
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+check_smtp_port ()
+{
+    qflag=$1
+    msgstr="Warning: The SMTP deamon has been configured to listen on a non-standard port '$SMTP_LISTEN_PORT'."
+
+    if [ "$SMTP_LISTEN_PORT" != "" -a "$SMTP_LISTEN_PORT" != "smtp" -a "$SMTP_LISTEN_PORT" != "25" ]
+    then
+        if [ "$qflag" != "-raw" ]
+        then
+            mecho --warn "$msgstr"
+        else
+            echo "$msgstr"
+        fi
+        mecho
+    fi
+}
+
+#------------------------------------------------------------------------------
+# check SSMTP port
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+check_ssmtp_port ()
+{
+    qflag=$1
+    msgstr="Warning: The SSMTP deamon has been configured to listen on a non-standard port '$SMTP_SERVER_SSMTP_LISTEN_PORT'."
+
+    if [ "$SMTP_SERVER_SSMTP_LISTEN_PORT" != "" -a "$SMTP_SERVER_SSMTP_LISTEN_PORT" != "ssmtp" -a \
+       "$SMTP_SERVER_SSMTP_LISTEN_PORT" != "smtps" -a "$SMTP_SERVER_SSMTP_LISTEN_PORT" != "465" ]
+    then
+        if [ "$qflag" != "-raw" ]
+        then
+            mecho --warn "$msgstr"
+        else
+            echo "$msgstr"
+        fi
+        mecho
+    fi
+}
+
+#------------------------------------------------------------------------------
+# check for active Fetchmail configurations
+#------------------------------------------------------------------------------
+check_fm_active ()
+{
+    ret=1
+
+    if [ "${START_FETCHMAIL}" = "yes" -a ${FETCHMAIL_N} -gt 0 ]
+    then
+        idx=1
+        while [ ${idx} -le ${FETCHMAIL_N} ]
+        do
+            eval active='$FETCHMAIL_'${idx}'_ACTIVE'
+
+            if [ "${active}" = "yes" ]
+            then
+                # active configuration set found
+                ret=0
+                break
+            fi
+
+            idx=`expr ${idx} + 1`
+        done
+    fi
+
+    return ${ret}
+}
+
+#------------------------------------------------------------------------------
+# start Exim daemon (SMTP)
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+start_exim_smtp ()
+{
+    qflag=$1
+
+    # SMTP
+    if [ ! -e $exim_pidfile ]
+    then
+        # JED / 05.03.2004 -  modified because of new queue-file-option
+        queue_run="-q${SMTP_QUEUE_INTERVAL}m"
+
+        if [ $mail_debug -eq 1 ]
+        then
+            mecho --warn "starting SMTP server in DEBUG mode ..."
+            $exim_binpath/exim -d -bd $queue_run -om
+        else
+            if [ "$qflag" != "-quiet" ]
+            then
+                if [ "$qflag" != "-raw" ]
+                then
+                    mecho "starting SMTP server ..."
+                else
+                    echo "starting SMTP server ..."
+                fi
+
+                check_smtp_port $qflag
+            fi
+
+            $exim_binpath/exim -bd $queue_run -om
+        fi
+    else
+        if [ "$qflag" != "-quiet" ]
+        then
+            if [ "$qflag" != "-raw" ]
+            then
+                mecho --info "SMTP server is already running!"
+            else
+                echo "SMTP server is already running!"
+            fi
+        fi
+    fi
+}
+
+#------------------------------------------------------------------------------
+# start Exim daemon (SSMTP)
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+start_exim_ssmtp ()
+{
+    qflag=$1
+
+    # SSMTP - remember that SSMTP is an obsolete protocol!
+    if [ ! -e $exim_ssmtp_pidfile ]
+    then
+        if [ "$SMTP_SERVER_SSMTP_LISTEN_PORT" = "" ]
+        then
+            SMTP_SERVER_SSMTP_LISTEN_PORT="ssmtp"
+        fi
+
+        if [ $mail_debug -eq 2 ]
+        then
+            mecho --info "starting SSMTP server in DEBUG mode ..."
+            $exim_binpath/exim -d -bd -oX $SMTP_SERVER_SSMTP_LISTEN_PORT -tls-on-connect -oP $exim_ssmtp_pidfile
+        else
+            if [ "$qflag" != "-quiet" ]
+            then
+                if [ "$qflag" != "-raw" ]
+                then
+                    mecho "starting SSMTP server ..."
+                else
+                    echo "starting SSMTP server ..."
+                fi
+
+                check_ssmtp_port $qflag
+            fi
+
+            $exim_binpath/exim -bd -oX $SMTP_SERVER_SSMTP_LISTEN_PORT -tls-on-connect -oP $exim_ssmtp_pidfile
+        fi
+    else
+        if [ "$qflag" != "-quiet" ]
+        then
+            if [ "$qflag" != "-raw" ]
+            then
+                mecho --info "SSMTP server is already running!"
+            else
+                echo "SSMTP server is already running!"
+            fi
+        fi
+    fi
+}
+
+#------------------------------------------------------------------------------
+# start Exim daemon(s)
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+start_exim ()
+{
+    qflag=$1
+
+    if [ "$START_SMTP" = "yes" ]
+    then
+        if [ "$MAIL_DO_DEBUG" = "yes" ]
+        then
+            # do debug
+            mail_debug=1
+            if [ "$SMTP_SERVER_SSMTP" = "yes" ]
+            then
+                while [ 1 ]
+                do
+                    a=''
+                    mecho -n "Do you want to debug the (1) SMTP daemon, (2) SSMTP deamon or (d)isable debugging (1,2,d)? "
+                    read a
+
+                    case $a
+                    in
+                        1 ) # debug SMTP daemon
+                           mail_debug=1
+                           break
+                           ;;
+                        2 ) # debug SSMTP daemon
+                           mail_debug=2
+                           break
+                           ;;
+                        d ) # disable debugging
+                           mail_debug=0
+                           break
+                           ;;
+                        * )
+                           mecho --warn "Please answer '1', '2' or 'd'!"
+                           ;;
+                    esac
+                done
+            fi
+        else
+            # no debug
+            mail_debug=0
+        fi
+
+        case $mail_debug in
+            0 | 2 ) # no debug or SSMTP debug
+                check_pid_file exim ${exim_pidfile}
+                start_exim_smtp $qflag
+
+                # SSMTP
+                if [ "$SMTP_SERVER_SSMTP" = "yes" ]
+                then
+                    check_pid_file exim ${exim_ssmtp_pidfile}
+                    start_exim_ssmtp $qflag
+                fi
+                ;;
+            1 ) # SMTP debug
+                if [ "$SMTP_SERVER_SSMTP" = "yes" ]
+                then
+                    check_pid_file exim ${exim_ssmtp_pidfile}
+                    start_exim_ssmtp $qflag
+                fi
+
+                # SMTP
+                check_pid_file exim ${exim_pidfile}
+                start_exim_smtp $qflag
+        esac
+    fi
+}
+
+#------------------------------------------------------------------------------
+# stop Exim daemon(s)
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+stop_exim ()
+{
+    qflag=$1
+
+    # SSMTP
+    check_pid_file exim ${exim_ssmtp_pidfile}
+
+    if [ -e $exim_ssmtp_pidfile ]
+    then
+        if [ "$qflag" != "-quiet" ]
+        then
+            if [ "$qflag" != "-raw" ]
+            then
+                mecho "shutting down SSMTP server ..."
+            else
+                echo "shutting down SSMTP server ..."
+            fi
+        fi
+
+        kill `cat $exim_ssmtp_pidfile` 2> /dev/null > /dev/null
+    else
+        if [ "$qflag" != "-quiet" ]
+        then
+            mecho "SSMTP server is not running"
+        fi
+    fi
+
+    # SMTP
+    check_pid_file exim ${exim_pidfile}
+
+    if [ -e $exim_pidfile ]
+    then
+        if [ "$qflag" != "-quiet" ]
+        then
+            if [ "$qflag" != "-raw" ]
+            then
+                mecho "shutting down SMTP server ..."
+            else
+                echo "shutting down SMTP server ..."
+            fi
+        fi
+
+        kill `cat $exim_pidfile` 2> /dev/null > /dev/null
+    else
+        if [ "$qflag" != "-quiet" ]
+        then
+            mecho "SMTP server is not running"
+        fi
+    fi
+}
+
+#------------------------------------------------------------------------------
+# status of Exim daemon(s)
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+status_exim ()
+{
+    qflag=$1
+
+    # SMTP
+    check_pid_file exim ${exim_pidfile}
+
+    if [ -e $exim_pidfile ]
+    then
+        mecho -n "SMTP server is "
+
+        if [ "$qflag" != "-raw" ]
+        then
+            mecho --info "running"
+        else
+            echo "running"
+        fi
+    else
+        if [ "$START_SMTP" = "yes" ]
+        then
+            mecho -n "SMTP server is "
+
+            if [ "$qflag" != "-raw" ]
+            then
+                mecho --warn "not running"
+            else
+                echo "not running"
+            fi
+        else
+            mecho -n "SMTP server is currently "
+            if [ "$qflag" != "-raw" ]
+            then
+                mecho --info "disabled"
+            else
+                echo "disabled"
+            fi
+        fi  # if [ "$START_SMTP" = "yes" ]
+    fi  # if [ ! -e $exim_pidfile ]
+
+    # SSMTP
+    check_pid_file exim ${exim_ssmtp_pidfile}
+
+    if [ -e $exim_ssmtp_pidfile ]
+    then
+        mecho -n "SSMTP server is "
+
+        if [ "$qflag" != "-raw" ]
+        then
+            mecho --info "running"
+        else
+            echo "running"
+        fi
+    else
+        if [ "$START_SMTP" = "yes" -a "$SMTP_SERVER_SSMTP" = "yes" ]
+        then
+            mecho -n "SSMTP server is "
+
+            if [ "$qflag" != "-raw" ]
+            then
+                mecho --warn "not running"
+            else
+                echo "not running"
+            fi
+        else
+            mecho -n "SSMTP server is currently "
+
+            if [ "$qflag" != "-raw" ]
+            then
+                mecho --info "disabled"
+            else
+                echo "disabled"
+            fi
+        fi  # if [ "$START_SMTP" = "yes" ]
+    fi  # if [ ! -e $exim_ssmtp_pidfile ]
+}
+
+#------------------------------------------------------------------------------
+# reload Exim daemon(s)
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+reload_exim ()
+{
+    qflag=$1
+
+    if [ "$qflag" != "-quiet" ]
+    then
+        if [ "$qflag" != "-raw" ]
+        then
+            mecho --info "reloading exim configuration ..."
+        else
+            echo "reloading exim configuration ..."
+        fi
+    fi
+
+    if [ -e $exim_pidfile ]
+    then
+        kill -1 `cat $exim_pidfile 2>/dev/null` 2>/dev/null
+    fi
+
+    if [ -e $exim_ssmtp_pidfile ]
+    then
+        kill -1 `cat $exim_ssmtp_pidfile 2>/dev/null` 2>/dev/null
+    fi
+}
+
+#------------------------------------------------------------------------------
+# start Fetchmail daemon
+# $1 - quiet flag (-quiet|-raw) / $1/$2 - -fetchconf fetchmail-config
+#------------------------------------------------------------------------------
+start_fetchmail ()
+{
+    fflag=0
+    qflag=''
+    cfile=''
+
+    while [ 1 ]
+    do
+        case "$1" in
+            -quiet|-raw)
+                qflag=$1
+                shift
+                ;;
+            -fetchconf)
+                fflag=1
+                cfile=$2
+                shift; shift
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    if [ "${cfile}" = "" ]
+    then
+        # set default configuration file
+        cfile=/etc/fetchmail.conf
+    fi
+
+    check_fm_active
+
+    if [ $? -eq 0 -o ${fflag} -eq 1 ]
+    then
+        check_pid_file fetchmail ${fetch_pidfile}
+
+        if [ ! -e $fetch_pidfile ]
+        then
+            if [ ! -f ${fetch_logfile} ]
+            then
+                # create empty logfile
+                touch ${fetch_logfile}
+            fi
+
+            # change access rights
+            chmod 0640    ${fetch_logfile}
+            chown exim    ${fetch_logfile}
+            chgrp trusted ${fetch_logfile}
+
+            if [ "$MAIL_DO_DEBUG" = "yes" ]
+            then
+                mecho --info "starting fetchmail daemon in DEBUG mode ..."
+                su exim -s /bin/sh -c "export LANG=C;/usr/local/bin/fetchmail -f ${cfile} -v -v -v"
+            else
+                if [ "$qflag" != "-quiet" ]
+                then
+                    if [ "$qflag" != "-raw" ]
+                    then
+                        mecho --info "starting fetchmail daemon ..."
+                    else
+                        echo "starting fetchmail daemon ..."
+                    fi
+                fi
+
+                # FM v6.3 - redirect error messages to /dev/null to prevent
+                # fetchmail from displaying 'WARNING: Running as root is
+                # discouraged.' message at startup.
+
+                su exim -s /bin/sh -c "export LANG=C;/usr/local/bin/fetchmail -f ${cfile}"
+            fi
+        else
+            if [ "$qflag" != "-quiet" ]
+            then
+                if [ "$qflag" != "-raw" ]
+                then
+                    mecho --info "fetchmail daemon is already running!"
+                else
+                    echo "fetchmail daemon is already running!"
+                fi
+            fi
+        fi
+    else
+        if [ "$qflag" != "-quiet" ]
+        then
+            mecho "fetchmail daemon has been deactivated!"
+        fi
+    fi
+}
+
+#------------------------------------------------------------------------------
+# stop Fetchmail daemon
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+stop_fetchmail ()
+{
+    qflag=$1
+
+    check_pid_file fetchmail ${fetch_pidfile}
+
+    if [ -e $fetch_pidfile ]
+    then
+        if [ "$qflag" != "-quiet" ]
+        then
+            if [ "$qflag" != "-raw" ]
+            then
+                mecho "shutting down fetchmail daemon ..."
+            else
+                echo "shutting down fetchmail daemon ..."
+            fi
+        fi
+
+        # get current PID
+        PIDNUM=`cat $fetch_pidfile | tr -s '\n' ' ' | cut -d' ' -f1`
+
+        kill $PIDNUM 2> /dev/null > /dev/null
+    else
+        if [ "$qflag" != "-quiet" ]
+        then
+            mecho "fetchmail daemon is not running"
+        fi
+    fi
+}
+
+#------------------------------------------------------------------------------
+# status of Fetchmail daemon
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+status_fetchmail ()
+{
+    qflag=$1
+
+    killall -0 fetchmail 2>/dev/null  # -0 is only a check
+
+    if [ $? -eq 0 ]
+    then
+        mecho -n "fetchmail daemon is "
+
+        if [ "$qflag" != "-raw" ]
+        then
+            mecho --info "running"
+        else
+            echo "running"
+        fi
+    else
+        if check_fm_active
+        then
+            mecho -n "fetchmail daemon is "
+
+            if [ "$qflag" != "-raw" ]
+            then
+                mecho --warn "not running"
+            else
+                echo "not running"
+            fi
+        else
+            mecho -n "fetchmail daemon is currently "
+
+            if [ "$qflag" != "-raw" ]
+            then
+                mecho --info "disabled"
+            else
+                echo "disabled"
+            fi
+        fi
+    fi
+}
+
+#------------------------------------------------------------------------------
+# wake-up fetchmail daemon
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+wake_fetchmail ()
+{
+    qflag=${1}
+
+    if [ "${qflag}" != "-quiet" ]
+    then
+        mecho "wake-up fetchmail daemon ..."
+    fi
+
+    su exim -s /usr/local/bin/fetchmail 2> /dev/null > /dev/null
+}
+
+#------------------------------------------------------------------------------
+# activate pop3 service
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+start_pop3 ()
+{
+    qflag=$1
+
+    if [ "${START_MAIL}" = "yes" -a "${START_POP3}" = "yes" ]
+    then
+        if [ -f ${xinet_pop3file} ]
+        then
+            grep -q 'disable[ \t]*=[ \t]yes' ${xinet_pop3file}
+
+            if [ $? -eq 0 ]
+            then
+                # currently disabled - enable it
+                if [ "${qflag}" != "-raw" ]
+                then
+                    mecho "enabling pop3 daemon ..."
+                else
+                    echo "enabling pop3 daemon ..."
+                fi
+
+                tmpfile=`mktemp -p /tmp`
+                sed 's/disable[ \t]*=[ \t]yes/disable = no/g' ${xinet_pop3file} > ${tmpfile}
+                cp ${tmpfile} ${xinet_pop3file}
+                rm -f ${tmpfile}
+
+                # relad xinetd configuration
+                killall -1 xinetd
+
+                if [ $? -ne 0 ]
+                then
+                    if [ "${qflag}" != "-raw" ]
+                    then
+                        mecho --error "pop3 daemon needs xinetd which is not running."
+                    else
+                        echo "pop3 daemon needs xinetd which is not running."
+                    fi
+                fi
+            else
+                if [ "${qflag}" != "-quiet" ]
+                then
+                    if [ "${qflag}" != "-raw" ]
+                    then
+                        mecho --info "pop3 deamon is already active!"
+                    else
+                        echo "pop3 deamon is already active!"
+                    fi
+                fi
+            fi    # if [ $? -eq 0 ]
+        fi    # if [ -f ${xinet_pop3file} ]
+    fi    # if [ "${START_MAIL}" = "yes" -a "${START_POP3}" = "yes" ]
+
+}
+
+#------------------------------------------------------------------------------
+# deactivate pop3 service
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+stop_pop3 ()
+{
+    qflag=$1
+
+    if [ -f ${xinet_pop3file} ]
+    then
+        grep -q 'disable[ \t]*=[ \t]no' ${xinet_pop3file}
+
+        if [ $? -eq 0 ]
+        then
+            # currently enabled - disable it
+            if [ "${qflag}" != "-raw" ]
+            then
+                mecho "disabling pop3 daemon ..."
+            else
+                echo "disabling pop3 daemon ..."
+            fi
+
+            tmpfile=`mktemp -p /tmp`
+            sed 's/disable[ \t]*=[ \t]no/disable = yes/g' ${xinet_pop3file} > ${tmpfile}
+            cp ${tmpfile} ${xinet_pop3file}
+            rm -f ${tmpfile}
+
+            # reload xinetd configuration
+            killall -1 xinetd
+
+            if [ $? -ne 0 ]
+            then
+                if [ "${qflag}" != "-raw" ]
+                then
+                    mecho --error "pop3 daemon needs xinetd which is not running."
+                else
+                    echo "pop3 daemon needs xinetd which is not running."
+                fi
+            fi
+        fi    # if [ $? -eq 0 ]
+    fi
+}
+
+#------------------------------------------------------------------------------
+# status of POP3 daemon
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+status_pop3 ()
+{
+    qflag=$1
+
+    killall -0 xinetd 2>/dev/null  # -0 is only a check
+
+    if [ $? -eq 0 ]
+    then
+        grep 'disable[ \t]*=[ \t]no' /etc/xinetd.d/pop3 >/dev/null 2>&1
+
+        if [ $? -eq 0 ]
+        then
+            mecho -n "pop3 daemon is active - access: "
+
+            if [ "${qflag}" != "-raw" ]
+            then
+                if [ -f ${lockfile} ]
+                then
+                    mecho --warn "disabled"
+                else
+                    mecho --info "enabled"
+                fi
+            else
+                if [ -f ${lockfile} ]
+                then
+                    echo "disabled"
+                else
+                    echo "enabled"
+                fi
+            fi
+        else
+            mecho -n "pop3 daemon is "
+
+            if [ "${START_POP3}" = "yes" ]
+            then
+                mflag='--warn'
+            else
+                mflag='--info'
+            fi
+
+            if [ "${qflag}" != "-raw" ]
+            then
+                mecho ${mflag} "disabled"
+            else
+                echo "disabled"
+            fi
+        fi
+    else
+        if [ "${qflag}" != "-raw" ]
+        then
+            mecho --error "pop3 daemon is not active, because xinetd is not running."
+        else
+            echo "pop3 daemon is not active, because xinetd is not running."
+        fi
+    fi
+}
+
+#------------------------------------------------------------------------------
+# activate imap service
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+start_imap ()
+{
+    qflag=$1
+
+    if [ "${START_MAIL}" = "yes" -a "${START_IMAP}" = "yes" ]
+    then
+        if [ -f ${xinet_imapfile} ]
+        then
+            grep -q 'disable[ \t]*=[ \t]yes' ${xinet_imapfile}
+
+            if [ $? -eq 0 ]
+            then
+                # currently disabled - enable it
+                if [ "$qflag" != "-raw" ]
+                then
+                    mecho "enabling imap4 daemon ..."
+                else
+                    echo "enabling imap4 daemon ..."
+                fi
+
+                tmpfile=`mktemp -p /tmp`
+                sed 's/disable[ \t]*=[ \t]yes/disable = no/g' ${xinet_imapfile} > ${tmpfile}
+                cp ${tmpfile} ${xinet_imapfile}
+                rm -f ${tmpfile}
+
+                # relad xinetd configuration
+                killall -1 xinetd
+
+                if [ $? -ne 0 ]
+                then
+                    if [ "${qflag}" != "-raw" ]
+                    then
+                        mecho --error "imap4 daemon needs xinetd which is not running."
+                    else
+                        echo "imap4 daemon needs xinetd which is not running."
+                    fi
+                fi
+            else
+                if [ "${qflag}" != "-quiet" ]
+                then
+                    if [ "${qflag}" != "-raw" ]
+                    then
+                        mecho --info "imap deamon is already active!"
+                    else
+                        echo "imap deamon is already active!"
+                    fi
+                fi
+            fi    # if [ $? -eq 0 ]
+        fi    # if [ -f ${xinet_imapfile} ]
+    fi    # if [ "${START_MAIL}" = "yes" -a "${START_IMAP}" = "yes" ]
+}
+
+#------------------------------------------------------------------------------
+# deactivate imap service
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+stop_imap ()
+{
+    qflag=$1
+
+    if [ -f ${xinet_imapfile} ]
+    then
+        grep -q 'disable[ \t]*=[ \t]no' ${xinet_imapfile}
+
+        if [ $? -eq 0 ]
+        then
+            # currently enabled - disable it
+            if [ "${qflag}" != "-raw" ]
+            then
+                mecho "disabling imap daemon ..."
+            else
+                echo "disabling imap daemon ..."
+            fi
+
+            tmpfile=`mktemp -p /tmp`
+            sed 's/disable[ \t]*=[ \t]no/disable = yes/g' ${xinet_imapfile} > ${tmpfile}
+            cp ${tmpfile} ${xinet_imapfile}
+            rm -f ${tmpfile}
+
+            # reload xinetd configuration
+            killall -1 xinetd
+
+            if [ $? -ne 0 ]
+            then
+                if [ "${qflag}" != "-raw" ]
+                then
+                    mecho --error "imap daemon needs xinetd which is not running."
+                else
+                    echo "imap daemon needs xinetd which is not running."
+                fi
+            fi
+        fi    # if [ $? -eq 0 ]
+    fi
+}
+
+#------------------------------------------------------------------------------
+# status of IMAP daemon
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+status_imap ()
+{
+    qflag=$1
+
+    killall -0 xinetd 2>/dev/null  # -0 is only a check
+
+    if [ $? -eq 0 ]
+    then
+        grep 'disable[ \t]*=[ \t]no' /etc/xinetd.d/imap >/dev/null 2>&1
+
+        if [ $? -eq 0 ]
+        then
+            mecho -n "imap4 daemon is active - access: "
+
+            if [ "${qflag}" != "-raw" ]
+            then
+                if [ -f ${lockfile} ]
+                then
+                    mecho --warn "disabled"
+                else
+                    mecho --info "enabled"
+                fi
+            else
+                if [ -f ${lockfile} ]
+                then
+                    echo "disabled"
+                else
+                    echo "enabled"
+                fi
+            fi
+        else
+            mecho -n "imap4 daemon is "
+
+            if [ "${START_IMAP}" = "yes" ]
+            then
+                mflag='--warn'
+            else
+                mflag='--info'
+            fi
+
+            if [ "${qflag}" != "-raw" ]
+            then
+                mecho ${mflag} "disabled"
+            else
+                echo "disabled"
+            fi
+        fi
+    else
+        if [ "${qflag}" != "-raw" ]
+        then
+            mecho --error "imap4 daemon is not active, because xinetd is not running."
+        else
+            echo "imap4 daemon is not active, because xinetd is not running."
+        fi
+    fi
+}
+
+#------------------------------------------------------------------------------
+# set status of external 'flistatus' package
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+set_flistatus ()
+{
+    # function added to support the flistatus-package from Damian Philipp
+    # check if flistatus is active
+    qflag=$1
+
+    if [ -f /var/run/fli4l.status ]
+    then
+        # read status information
+        . /var/run/fli4l.status
+
+        if [ "$FLISTATUS_ONLINE" = "offline" ]
+        then
+            # FLI4L router is offline
+          # JED / 05.03.2004 -  modified because of new queue-file-option
+          # SMTP_QUEUE_OUTBOUND_MAIL='yes'     # queue outgoing mail
+            START_FETCHMAIL='no'               # don't check external mailboxes
+
+            if [ "$qflag" != "-quiet" ]
+            then
+                mecho -n "flistatus mode: "
+
+                if [ "$qflag" != "-raw" ]
+                then
+                    mecho --error "'offline'"
+                else
+                    echo "'offline'"
+                fi
+            fi
+        else
+            # FLI4L router is online
+            if [ "$qflag" != "-quiet" ]
+            then
+                mecho -n "flistatus mode: "
+
+                if [ "$qflag" != "-raw" ]
+                then
+                    mecho --error "'online'"
+                else
+                    echo "'online'"
+                fi
+            fi
+        fi
+    fi
+}
+
+#------------------------------------------------------------------------------
+# show status of external 'flistatus' package
+# $1 - quiet flag (-quiet|-raw)
+#------------------------------------------------------------------------------
+status_flistatus ()
+{
+    # function added to support the flistatus-package from Damian Philipp
+    # check if flistatus is active
+
+    qflag=$1
+
+    if [ -f /var/run/fli4l.status ]
+    then
+        # read status information
+        . /var/run/fli4l.status
+
+        mecho -n "flistatus mode: "
+
+        if [ "$FLISTATUS_ONLINE" = "offline" ]
+        then
+            # FLI4L router is offline
+            if [ "$qflag" != "-raw" ]
+            then
+                mecho --info "'offline'"
+            else
+                echo "'offline'"
+            fi
+        else
+            # FLI4L router is online
+            if [ "$qflag" != "-raw" ]
+            then
+                mecho --info "'online'"
+            else
+                echo "'online'"
+            fi
+        fi
+    fi
+}
+
+#------------------------------------------------------------------------------
+# show help
+#------------------------------------------------------------------------------
+print_help()
+{
+    mecho "Usage: $0 [-debug|-quiet|-raw] start|stop|restart|wake [exim|fetchmail|imap|pop3|pop3imap]|wake|reload [exim|fetchmail]"
+}
+
+#==============================================================================
+# main
+#==============================================================================
+
+if [ $# -eq 0 ]
+then
+    # show help
+    print_help
+    exit 1
+else
+    # get parameters
+    debug=''
+    quiet=''
+    fetchconf=''
+
+    while [ 1 ]
+    do
+        case "$1" in
+            -debug|--debug)
+                # debug mode
+                debug='-debug'
+                shift
+                ;;
+            -fetchconf)
+                fetchconf="-fetchconf $2"
+                shift; shift
+                ;;
+            -raw|--raw)
+                # raw output
+                quiet='-raw'
+                shift
+                ;;
+            -quiet|--quiet)
+                # suppress output
+                quiet='-quiet'
+                shift
+                ;;
+            '-help'|'--help'|'-?'|'/?')
+                # show help
+                print_help
+                exit 1
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    # check if 'old' command line syntax has been used
+    if [ "${debug}" = "" -a "$2" = "quiet" ]
+    then
+        quiet='-quiet'
+    fi
+
+    # check if debug mode should be enabled
+    if [ "${debug}" = '-debug' ]
+    then
+        # force debug mode
+        MAIL_DO_DEBUG='yes'
+    fi
+
+    cmd=$1
+    prog=$2
+
+    case ${cmd} in
+        start|forcestart)
+            if [ "${cmd}" = 'forcestart' ]
+            then
+                # force start of package
+                START_MAIL='yes'
+            fi
+
+            if [ "${START_MAIL}" = "yes" ]
+            then
+                case "${prog}" in
+                    fetch|fetchmail)
+                        start_fetchmail ${quiet} ${fetchconf}
+                        ;;
+                    exim|smtp)
+                        start_exim ${quiet}
+                        ;;
+                    imap)
+                        start_imap ${quiet}
+                        ;;
+                    pop3)
+                        start_pop3 ${quiet}
+                        ;;
+                    pop3imap)
+                        start_pop3 ${quiet}
+                        start_imap ${quiet}
+                        ;;
+                    *)
+                        set_flistatus ${quiet}
+
+                        start_exim ${quiet}
+                        sleep 2
+                        start_fetchmail ${quiet}
+
+                        start_pop3 ${quiet}
+                        start_imap ${quiet}
+                        ;;
+                esac
+            fi
+            ;;
+
+        stop)
+            case "${prog}" in
+                fetch|fetchmail)
+                    stop_fetchmail ${quiet}
+                    ;;
+                exim|smtp)
+                    stop_exim ${quiet}
+                    ;;
+                    imap)
+                        stop_imap ${quiet}
+                        ;;
+                    pop3)
+                        stop_pop3 ${quiet}
+                        ;;
+                    pop3imap)
+                        stop_imap ${quiet}
+                        stop_pop3 ${quiet}
+                        ;;
+                *)
+                    stop_imap ${quiet}
+                    stop_pop3 ${quiet}
+
+                    stop_fetchmail ${quiet}
+                    sleep 2
+                    stop_exim ${quiet}
+                    ;;
+            esac
+            ;;
+
+        status)
+            status_flistatus ${quiet}
+
+            status_fetchmail ${quiet}
+            status_exim ${quiet}
+            status_pop3 ${quiet}
+            status_imap ${quiet}
+            ;;
+
+        restart)
+            case "${prog}" in
+                exim|smtp)
+                    stop_exim ${quiet}
+
+                    if [ "${START_MAIL}" = "yes" ]
+                    then
+                        sleep 2
+                        start_exim ${quiet}
+                    fi
+                    ;;
+                fetch|fetchmail)
+                    stop_fetchmail ${quiet}
+
+                    if [ "$START_MAIL" = "yes" ]
+                    then
+                        sleep 3
+                        start_fetchmail ${quiet}
+                    fi
+                    ;;
+                imap)
+                    ;;
+                pop3)
+                    ;;
+                pop3imap)
+                    ;;
+                *)
+                    # stop
+                    stop_exim ${quiet}
+                    sleep 2
+                    stop_fetchmail ${quiet}
+                    sleep 5
+
+                    # start
+                    if [ "$START_MAIL" = "yes" ]
+                    then
+                        set_flistatus ${quiet}
+
+                        start_fetchmail ${quiet}
+                        sleep 2
+                        start_exim ${quiet}
+                    fi
+                    ;;
+            esac
+            ;;
+
+        reload)
+            case "$prog" in
+                exim|smtp)
+                    reload_exim ${quiet}
+                    ;;
+                fetch|fetchmail)
+                    stop_fetchmail ${quiet}
+
+                    if [ "$START_MAIL" = "yes" ]
+                    then
+                        sleep 3
+                        start_fetchmail ${quiet}
+                    fi
+                    ;;
+                imap)
+                    ;;
+                pop3)
+                    ;;
+                pop3imap)
+                    ;;
+                *)
+                    reload_exim ${quiet}
+                    stop_fetchmail ${quiet}
+
+                    if [ "$START_MAIL" = "yes" ]
+                    then
+                        start_fetchmail ${quiet}
+                    fi
+                    ;;
+            esac
+            ;;
+
+        wake)
+            wake_fetchmail ${quiet}
+            ;;
+
+        *)
+            print_help
+            exit 1
+            ;;
+    esac
+fi

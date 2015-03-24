@@ -1,0 +1,205 @@
+<!-- mail.tex - table of content -->
+<!-- creation date: 2014-10-29 -->
+<index title="Das Mail-Paket">
+    <entry line="9" level="1">Die Einleitung</entry>
+    <entry line="24" level="1">Die Funktionen</entry>
+    <entry line="45" level="1">Die Voraussetzungen</entry>
+    <entry line="54" level="1">Die Installation</entry>
+    <entry line="67" level="1">Das Menue im Setup-Programm</entry>
+    <entry line="115" level="1">Die Aenderung der Konfiguration</entry>
+    <entry line="131" level="1">Die Konfigurationsdatei</entry>
+    <entry line="137" level="1">Die Parameter</entry>
+    <entry line="139" level="2">Die POP3-/IMAP-Server</entry>
+    <entry line="145" level="3">START_MAIL</entry>
+    <entry line="154" level="3">START_POP3</entry>
+    <entry line="163" level="3">START_IMAP</entry>
+    <entry line="175" level="3">POP3IMAP_CREATE_MBX (ADVANCED-Modus)</entry>
+    <entry line="187" level="3">POP3IMAP_TRANSPORT (ADVANCED-Modus)</entry>
+    <entry line="199" level="3">POP3IMAP_IDENT_CALLBACKS (ADVANCED-Modus)</entry>
+    <entry line="212" level="3">MAIL_USER_USE_MAILONLY_PASSWORDS (ADVANCED-Modus)</entry>
+    <entry line="224" level="3">MAIL_USER_N (ADVANCED-Modus)</entry>
+    <entry line="235" level="4">MAIL_USER_x_ACTIVE (ADVANCED-Modus)</entry>
+    <entry line="243" level="4">MAIL_USER_x_USER / MAIL_USER_x_PASS (ADVANCED-Modus)</entry>
+    <entry line="277" level="2">Die IMAP-Shared-/Public-Ordner</entry>
+    <entry line="296" level="3">IMAP_SHARED_PUBLIC_USERGROUP (ADVANCED-Modus)</entry>
+    <entry line="307" level="3">IMAP_SHARED_FOLDER_N (ADVANCED-Modus)</entry>
+    <entry line="322" level="4">IMAP_SHARED_FOLDER_x_ACTIVE (ADVANCED-Modus)</entry>
+    <entry line="330" level="4">IMAP_SHARED_FOLDER_x_NAME (ADVANCED-Modus)</entry>
+    <entry line="343" level="4">IMAP_SHARED_FOLDER_x_USERGROUP (ADVANCED-Modus)</entry>
+    <entry line="355" level="3">IMAP_PUBLIC_FOLDER_N (ADVANCED-Modus)</entry>
+    <entry line="370" level="4">IMAP_PUBLIC_FOLDER_x_ACTIVE (ADVANCED-Modus)</entry>
+    <entry line="378" level="4">IMAP_PUBLIC_FOLDER_x_NAME (ADVANCED-Modus)</entry>
+    <entry line="391" level="4">IMAP_PUBLIC_FOLDER_x_USERGROUP (ADVANCED-Modus)</entry>
+    <entry line="403" level="2">Der IMAP-FTP-Ordner</entry>
+    <entry line="411" level="2">Postfaecher abrufen (Fetchmail)</entry>
+    <entry line="417" level="3">START_FETCHMAIL</entry>
+    <entry line="427" level="3">FETCHMAIL_PROTOCOL</entry>
+    <entry line="435" level="3">FETCHMAIL_LIMIT</entry>
+    <entry line="448" level="3">FETCHMAIL_WARNINGS</entry>
+    <entry line="464" level="3">FETCHMAIL_DAEMON</entry>
+    <entry line="474" level="3">FETCHMAIL_TIMEOUT</entry>
+    <entry line="483" level="3">FETCHMAIL_BOUNCE_MAIL (optionaler Parameter)</entry>
+    <entry line="495" level="3">FETCHMAIL_BOUNCE_SPAM (optionaler Parameter)</entry>
+    <entry line="507" level="3">FETCHMAIL_BOUNCE_SOFT (optionaler Parameter)</entry>
+    <entry line="521" level="3">FETCHMAIL_N</entry>
+    <entry line="531" level="4">FETCHMAIL_x_ACTIVE</entry>
+    <entry line="539" level="4">FETCHMAIL_x_COMMENT</entry>
+    <entry line="547" level="4">FETCHMAIL_x_SERVER</entry>
+    <entry line="576" level="4">FETCHMAIL_x_USER / FETCHMAIL_x_PASS</entry>
+    <entry line="587" level="4">FETCHMAIL_x_FORWARD</entry>
+    <entry line="599" level="4">FETCHMAIL_x_SMTPHOST (ADVANCED-Modus)</entry>
+    <entry line="608" level="4">FETCHMAIL_x_IMAP_FOLDER (ADVANCED-Modus)</entry>
+    <entry line="620" level="4">FETCHMAIL_x_DOMAIN (ADVANCED-Modus)</entry>
+    <entry line="629" level="4">FETCHMAIL_x_ENVELOPE (ADVANCED-Modus)</entry>
+    <entry line="641" level="4">FETCHMAIL_x_ENVELOPE_HEADER (ADVANCED-Modus)</entry>
+    <entry line="654" level="4">FETCHMAIL_x_SERVER_AKA_N (ADVANCED-Modus)</entry>
+    <entry line="665" level="4">FETCHMAIL_x_SERVER_AKA_y (ADVANCED-Modus)</entry>
+    <entry line="679" level="4">FETCHMAIL_x_LOCALDOMAIN_N (ADVANCED-Modus)</entry>
+    <entry line="690" level="4">FETCHMAIL_x_LOCALDOMAIN_y (ADVANCED-Modus)</entry>
+    <entry line="701" level="4">FETCHMAIL_x_PROTOCOL (ADVANCED-Modus)</entry>
+    <entry line="711" level="4">FETCHMAIL_x_PORT (ADVANCED-Modus)</entry>
+    <entry line="721" level="4">FETCHMAIL_x_AUTH_TYPE (ADVANCED-Modus)</entry>
+    <entry line="735" level="4">FETCHMAIL_x_ACCEPT_BAD_HEADER (ADVANCED-Modus)</entry>
+    <entry line="744" level="4">FETCHMAIL_x_DNS_LOOKUP</entry>
+    <entry line="752" level="4">FETCHMAIL_x_KEEP</entry>
+    <entry line="763" level="4">FETCHMAIL_x_FETCHALL</entry>
+    <entry line="772" level="4">FETCHMAIL_x_MSG_LIMIT (ADVANCED-Modus)</entry>
+    <entry line="782" level="4">FETCHMAIL_x_SSL_PROTOCOL (ADVANCED-Modus)</entry>
+    <entry line="795" level="4">FETCHMAIL_x_SSL_TRANSPORT (ADVANCED-Modus)</entry>
+    <entry line="810" level="4">FETCHMAIL_x_SSL_FINGERPRINT (ADVANCED-Modus)</entry>
+    <entry line="824" level="2">Der SMTP-Server (Exim)</entry>
+    <entry line="853" level="2">Die Grundeinstellungen</entry>
+    <entry line="855" level="3">START_SMTP</entry>
+    <entry line="865" level="3">SMTP_QUALIFY_DOMAIN</entry>
+    <entry line="884" level="3">SMTP_HOSTNAME</entry>
+    <entry line="893" level="3">SMTP_QUEUE_INTERVAL</entry>
+    <entry line="910" level="3">SMTP_QUEUE_OUTBOUND_MAIL</entry>
+    <entry line="922" level="3">SMTP_QUEUE_ACCEPT_PER_CONNECTION</entry>
+    <entry line="935" level="3">SMTP_MAIL_TO_UNKNOWN_USERS (ADVANCED-Modus)</entry>
+    <entry line="950" level="3">SMTP_ALLOW_EXIM_FILTERS (ADVANCED-Modus)</entry>
+    <entry line="963" level="3">SMTP_CHECK_RECIPIENTS</entry>
+    <entry line="975" level="3">SMTP_CHECK_SPOOL_SPACE (ADVANCED-Modus)</entry>
+    <entry line="986" level="3">SMTP_CHECK_SPOOL_INODES (ADVANCED-Modus)</entry>
+    <entry line="998" level="3">SMTP_LIMIT</entry>
+    <entry line="1012" level="3">SMTP_REMOVE_RECEIPT_REQUEST (ADVANCED-Modus)</entry>
+    <entry line="1025" level="3">SMTP_SERVER_TRANSPORT (ADVANCED-Modus)</entry>
+    <entry line="1036" level="3">SMTP_IDENT_CALLBACKS (ADVANCED-Modus)</entry>
+    <entry line="1048" level="3">SMTP_SERVER_TLS_ADVERTISE_HOSTS (ADVANCED-Modus)</entry>
+    <entry line="1067" level="3">SMTP_SERVER_TLS_VERIFY_HOSTS (ADVANCED-Modus)</entry>
+    <entry line="1091" level="3">SMTP_SERVER_TLS_TRY_VERIFY_HOSTS (ADVANCED-Modus)</entry>
+    <entry line="1113" level="3">SMTP_SERVER_SSMTP</entry>
+    <entry line="1123" level="3">SMTP_SERVER_SSMTP_LISTEN_PORT</entry>
+    <entry line="1135" level="4">SMTP_LOCAL_DOMAIN_N /SMTP_LOCAL_DOMAIN_x</entry>
+    <entry line="1153" level="3">SMTP_LISTEN_PORT</entry>
+    <entry line="1169" level="2">Eingehende E-Mail</entry>
+    <entry line="1171" level="4">SMTP_RELAY_TO_DOMAIN_N / SMTP_RELAY_TO_DOMAIN_x</entry>
+    <entry line="1193" level="2">Ausgehende E-Mail</entry>
+    <entry line="1203" level="4">SMTP_RELAY_FROM_HOST_N / SMTP_RELAY_FROM_HOST_x</entry>
+    <entry line="1229" level="2">Ausgehende E-Mail - Authentifizierung</entry>
+    <entry line="1239" level="3">SMTP_AUTH_TYPE</entry>
+    <entry line="1266" level="3">SMTP_AUTH_USER / SMTP_AUTH_PASS</entry>
+    <entry line="1281" level="2">Ausgehende E-Mail - Smarthost</entry>
+    <entry line="1295" level="3">SMTP_SMARTHOST_ONE_FOR_ALL</entry>
+    <entry line="1308" level="3">SMTP_SMARTHOST_DOMAINS (ADVANCED-Modus)</entry>
+    <entry line="1320" level="3">SMTP_SMARTHOST_ROUTE_TYPE (ADVANCED-Modus)</entry>
+    <entry line="1333" level="3">SMTP_SMARTHOST_N</entry>
+    <entry line="1344" level="4">SMTP_SMARTHOST_x_HOST</entry>
+    <entry line="1354" level="4">SMTP_SMARTHOST_x_PORT (ADVANCED-Modus)</entry>
+    <entry line="1365" level="4">SMTP_SMARTHOST_x_AUTH_TYPE</entry>
+    <entry line="1410" level="4">SMTP_SMARTHOST_x_ADDR (ADVANCED-Modus)</entry>
+    <entry line="1426" level="4">SMTP_SMARTHOST_x_DOMAIN (ADVANCED-Modus)</entry>
+    <entry line="1445" level="4">SMTP_SMARTHOST_x_USER / SMTP_SMARTHOST_x_PASS</entry>
+    <entry line="1460" level="4">SMTP_SMARTHOST_x_FORCE_AUTH (ADVANCED-Modus)</entry>
+    <entry line="1473" level="4">SMTP_SMARTHOST_x_FORCE_TLS (ADVANCED-Modus)</entry>
+    <entry line="1580" level="3">SMTP_UPDATE_IGNORE_HOSTS (ADVANCED-Modus)</entry>
+    <entry line="1595" level="3">SMTP_UPDATE_IGNORE_HOSTS_CRON_SCHEDULE (ADVANCED-Modus)</entry>
+    <entry line="1614" level="2">Die Aliasnamen</entry>
+    <entry line="1623" level="4">SMTP_ALIASES_N / SMTP_ALIASES_x_DOMAIN (ADVANCED-Modus)</entry>
+    <entry line="1649" level="4">SMTP_ALIASES_x_ALIAS_N / SMTP_ALIASES_x_ALIAS_y</entry>
+    <entry line="1702" level="2">Das Umschreiben des E-Mail-Kopfes bei Verwendung von Smarthost</entry>
+    <entry line="1716" level="4">SMTP_OUTGOING_ADDRESSES_N / SMTP_OUTGOING_ADDRESSES_x</entry>
+    <entry line="1734" level="2">Das Umschreiben von E-Mail-Koepfen bei Verwendung von Sub-Domains</entry>
+    <entry line="1742" level="3">SMTP_HEADER_REWRITE_N</entry>
+    <entry line="1750" level="4">SMTP_HEADER_REWRITE_x_SOURCE</entry>
+    <entry line="1760" level="4">SMTP_HEADER_REWRITE_x_DESTINATION</entry>
+    <entry line="1770" level="4">SMTP_HEADER_REWRITE_x_FLAGS</entry>
+    <entry line="1831" level="2">Die Mailinglisten</entry>
+    <entry line="1839" level="3">SMTP_LIST_N</entry>
+    <entry line="1847" level="4">SMTP_LIST_x_NAME</entry>
+    <entry line="1858" level="4">SMTP_LIST_x_ACTIVE</entry>
+    <entry line="1866" level="4">SMTP_LIST_x_USER_N / SMTP_LIST_x_USER_y</entry>
+    <entry line="1879" level="3">SMTP_LIST_DOMAIN</entry>
+    <entry line="1890" level="3">SMTP_LIST_ERRORS</entry>
+    <entry line="1898" level="2">Die Filterfunktionen (Virus/Spam/Regex/Erweiterungen)</entry>
+    <entry line="1906" level="3">START_EXISCAN</entry>
+    <entry line="1915" level="3">EXISCAN_ACTION_ON_FAILURE</entry>
+    <entry line="1941" level="3">EXISCAN_CRYPT_SALT</entry>
+    <entry line="1959" level="3">EXISCAN_DEMIME_ENABLED</entry>
+    <entry line="1969" level="3">EXISCAN_DEMIME_ACTION</entry>
+    <entry line="2009" level="3">EXISCAN_AV_ENABLED</entry>
+    <entry line="2019" level="3">EXISCAN_AV_ACTION</entry>
+    <entry line="2030" level="3">EXISCAN_AV_SUBJECT_TAG</entry>
+    <entry line="2045" level="3">EXISCAN_AV_SCANNER</entry>
+    <entry line="2081" level="3">EXISCAN_AV_PATH</entry>
+    <entry line="2090" level="3">EXISCAN_AV_OPTIONS</entry>
+    <entry line="2102" level="3">EXISCAN_AV_TRIGGER</entry>
+    <entry line="2113" level="3">EXISCAN_AV_DESCRIPTION</entry>
+    <entry line="2125" level="3">EXISCAN_AV_SOCKET</entry>
+    <entry line="2146" level="3">EXISCAN_AV_SKIP_AUTHENTICATED</entry>
+    <entry line="2155" level="3">EXISCAN_EXTENSION_ENABLE</entry>
+    <entry line="2165" level="3">EXISCAN_EXTENSION_ACTION</entry>
+    <entry line="2176" level="3">EXISCAN_EXTENSION_DATA</entry>
+    <entry line="2185" level="3">EXISCAN_REGEX_ENABLED</entry>
+    <entry line="2193" level="3">EXISCAN_REGEX_ACTION</entry>
+    <entry line="2204" level="3">EXISCAN_REGEX_DATA</entry>
+    <entry line="2213" level="3">EXISCAN_SPAMD_ENABLED</entry>
+    <entry line="2222" level="3">EXISCAN_SPAMD_ACTION</entry>
+    <entry line="2234" level="3">EXISCAN_SPAMD_HEADER_STYLE</entry>
+    <entry line="2260" level="3">EXISCAN_SPAMD_SUBJECT_TAG</entry>
+    <entry line="2276" level="3">EXISCAN_SPAMD_THRESHOLD</entry>
+    <entry line="2286" level="3">EXISCAN_SPAMD_ADDRESS</entry>
+    <entry line="2297" level="3">EXISCAN_SPAMD_LIMIT</entry>
+    <entry line="2309" level="3">EXISCAN_SPAMD_SKIP_AUTHENTICATED</entry>
+    <entry line="2318" level="2">Die Zertifikat-benachrichtigung</entry>
+    <entry line="2320" level="3">MAIL_CERTS_WARNING (ADVANCED-Modus)</entry>
+    <entry line="2331" level="3">MAIL_CERTS_WARNING_SUBJECT (ADVANCED-Modus)</entry>
+    <entry line="2343" level="3">MAIL_CERTS_WARNING_CRON_SCHEDULE (ADVANCED-Modus)</entry>
+    <entry line="2362" level="2">Die Statistiknachricht</entry>
+    <entry line="2364" level="3">MAIL_STATISTICS_INFOMAIL (ADVANCED-Modus)</entry>
+    <entry line="2374" level="3">MAIL_STATISTICS_INFOMAIL_SUBJECT (ADVANCED-Modus)</entry>
+    <entry line="2387" level="3">MAIL_STATISTICS_INFOMAIL_CRON_SCHEDULE (ADVANCED-Modus)</entry>
+    <entry line="2405" level="3">MAIL_STATISTICS_INFOMAIL_OPTIONS (ADVANCED-Modus)</entry>
+    <entry line="2414" level="2">Die Logdateien</entry>
+    <entry line="2421" level="3">MAIL_LOG_COUNT</entry>
+    <entry line="2430" level="3">MAIL_LOG_INTERVAL</entry>
+    <entry line="2440" level="1">Die Abwesenheitsmeldung</entry>
+    <entry line="2446" level="2">Abwesenheit beginnen</entry>
+    <entry line="2496" level="2">Abwesenheit beenden</entry>
+    <entry line="2513" level="2">Abwesenheit - Benachrichtigungsliste anzeigen</entry>
+    <entry line="2523" level="1">Das Weiterleiten von E-Mail</entry>
+    <entry line="2529" level="2">Weiterleitung aktivieren</entry>
+    <entry line="2546" level="2">Weiterleitung aufheben</entry>
+    <entry line="2556" level="1">Die Antivirus-Parameter konfigurieren</entry>
+    <entry line="2585" level="1">Die Problemanalyse</entry>
+    <entry line="2587" level="2">Debug-Ausgaben aktivieren</entry>
+    <entry line="2603" level="2">Debug-Ausgaben deaktivieren</entry>
+    <entry line="2608" level="2">Liste von SMTP-Fehlernummern</entry>
+    <entry line="2656" level="1">Verschiedenes</entry>
+    <entry line="2658" level="2">DynDNS-Provider</entry>
+    <entry line="2664" level="2">E-Mail-zu-Fax-Schnittstelle</entry>
+    <entry line="2676" level="2">E-Mail-Backup</entry>
+    <entry line="2681" level="2">E-Mail-Disclaimer</entry>
+    <entry line="2702" level="2">E-Mail-Filter</entry>
+    <entry line="2710" level="2">FAQs</entry>
+    <entry line="2715" level="2">Fehlender Datumsstempel</entry>
+    <entry line="2731" level="2">Fehlende Message-ID</entry>
+    <entry line="2746" level="2">HowTos</entry>
+    <entry line="2751" level="2">Individuelle Kennwortdateien (ADVANCED-Modus)</entry>
+    <entry line="2766" level="2">IMAP-Ordner und Verzeichnisse</entry>
+    <entry line="2783" level="2">Open-Relay-Test</entry>
+    <entry line="2791" level="2">RPA-Protokoll</entry>
+    <entry line="2805" level="2">Send-Only-Konfiguration</entry>
+    <entry line="2811" level="2">SMTP-nach-POP</entry>
+    <entry line="2821" level="2">Spam-Nachrichten automatisch loeschen</entry>
+    <entry line="2833" level="2">Virus-Benachrichtigung</entry>
+</index>

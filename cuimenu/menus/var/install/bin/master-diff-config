@@ -1,7 +1,12 @@
 #!/bin/bash
 #-----------------------------------------------------------------------------
 # master-diff-config - master file for config file camparison
-# Copyright (c) 2001-2014 The Eisfair Team <team@eisfair.org>
+# Copyright (c) 2001-2015 The Eisfair Team <team@eisfair.org>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #-----------------------------------------------------------------------------
 
 # include techo only for better performance
@@ -304,10 +309,7 @@ if [ $l_source != '-' -a $r_source != '-' ] ; then
    strip_file ${r_source} $right
 
    if ! file_differ; then
-       if /var/install/bin/ask.cui "The two files are different. Show differencies?"
-       then
-	       show_detail
-       fi
+       show_detail
    else
        /var/install/bin/ask.cui --inf "The files are identical."   
    fi
