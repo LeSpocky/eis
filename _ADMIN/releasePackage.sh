@@ -80,13 +80,12 @@ extractVariables ()
 {
     # Extract package name from <some-text>__<package-name>__<release>_<arch>
     # Example:
-    # eisfair-ng__releasePackage__edge_x86
-    # eisfair-ng__releasePackage__edge_x86_64
-    # eisfair-ng__releasePackage__v2.7_x86
-    # eisfair-ng__releasePackage__v2.7_x86_64
-    releaseArch=`echo ${JOB_NAME} | sed "s/\(.*__.*__\)\(.*\)/\2/g"`
-    alpineRelease=`echo ${releaseArch%%_*}`
-    packageArch=`echo ${releaseArch#*_}`
+    # eisfair-ng/releasePackage__edge_x86
+    # eisfair-ng/releasePackage__edge_x86_64
+    # eisfair-ng/releasePackage__v2.7_x86
+    # eisfair-ng/releasePackage__v2.7_x86_64
+    alpineRelease=`echo ${JOB_NAME} | sed "s/\(.*__\)\([^_]*\)\(_\)\(.*\)/\2/g"`
+    packageArch=`echo ${JOB_NAME}   | sed "s/\(.*__\)\([^_]*\)\(_\)\(.*\)/\4/g"`
 }
 
 
