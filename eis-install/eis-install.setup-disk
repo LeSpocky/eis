@@ -328,8 +328,8 @@ EOF
 
 	local apkflags="--initdb --update-cache --clean-protected"
 	# local pkgs=$(cat "$mnt"/etc/apk/world "$mnt"/var/lib/apk/world 2>/dev/null)
-  [ -n "$USE_RAID" ] && raidpkg="mdadm"
-  pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libeventlog libcui fcron syslog-ng logrotate cuimenu-bin cuimenu syslinux"
+	[ -n "$USE_RAID" ] && raidpkg="mdadm"
+	pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libeventlog libcui fcron syslog-ng logrotate cuimenu-bin cuimenu syslinux"
 
 	if [ "$(rc --sys)" = "XEN0" ]; then
 		pkgs="$pkgs xen-hypervisor"
@@ -477,8 +477,8 @@ setup_partitions() {
 
 	echo "Initializing partitions on $diskdev..."
 
-  # jv: dd not required?  
-  #dd if=/dev/zero of=${diskdev} bs=1k count=1 1>/dev/null 2>&1
+	# jv: dd not required?  
+	#dd if=/dev/zero of=${diskdev} bs=1k count=1 1>/dev/null 2>&1
 	# new disks does not have an DOS signature in sector 0
 	# this makes sfdisk complain. We can workaround this by letting
 	# fdisk create that DOS signature, by just do a "w", a write.
@@ -735,13 +735,13 @@ setup_root() {
 
 	setup_mdadm_conf
 	install_mounted_root "$SYSROOT" || return 1
-  # insert eisfair-ng configuration:
-  setup_keymap
+	# insert eisfair-ng configuration:
+	setup_keymap
 	setup_network
 	setup_timezone
 	rc_update sshd default
 	# change to bash login
-  #sed -i -e 's/\/ash$/\/bash/' /mnt/etc/passwd
+	#sed -i -e 's/\/ash$/\/bash/' /mnt/etc/passwd
 	sed -i -e 's/^#\/bin\/bash/\/bin\/bash/' "$SYSROOT"/etc/shells
 	# set root password
 	chroot "$SYSROOT" /bin/bash -c "/bin/echo \"root:${PPASSWORD}\" | /usr/sbin/chpasswd 2>&1" 
@@ -761,7 +761,7 @@ setup_root() {
 	echo "http://download.eisfair.org/v_RELVERS_/main"
 	echo "http://download.eisfair.org/v_RELVERS_/backports"
 	} > "$SYSROOT"/etc/apk/repositories
-  # end eisfair-ng configuration  
+	# end eisfair-ng configuration  
 	unmount_partitions "$SYSROOT"
 	swapoff -a
 
@@ -1108,10 +1108,10 @@ if [ $# -gt 0 ]; then
 		fi
 		diskdevs="$diskdevs /dev/${j//!//}"
 	done
-  # only sys fpr DISK_MODE
-  DISK_MODE="sys"
+	# only sys fpr DISK_MODE
+	DISK_MODE="sys"
 else
-  echo "Missing disk!
+	echo "Missing disk!"
 	DISK_MODE="none"
 fi
 
