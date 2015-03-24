@@ -1,6 +1,6 @@
 #!/bin/bash
 # Creation:     2013-05-27 jv <jens@eisfair.org>
-# Copyright (c) 2000-2013 The eisfair Team <team@eisfair.org>
+# Copyright (c) 2000-2015 The eisfair Team <team@eisfair.org>
 #-------------------------------------------------------------------------------
 # ToDo: LVM option for /data or/and /
 #       correct timezone select
@@ -81,7 +81,7 @@ while true ; do
             --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
             --default-item "$n_item" \
             --title " Server configuration "  --clear \
-            --menu "Base setup" 21 50 14 \
+            --menu "Base setup" 22 50 15 \
              0 "Shell login" "Return to login" \
              1 "Select disc" "Select disc for installation." \
              2 "Adjust partition size" "Adjust the size of swap/root partition." \
@@ -93,15 +93,16 @@ while true ; do
              8 "DNS Server" "DNS Server." \
              9 "Hostname" "System Hostname."\
             10 "Domain" "DNS Domain name." \
-            11 "Root password" "Set password for user root" \
-            12 "Start installation" "Start installation" \
-            13 "Reboot server" "Reboot server after installation" 3>&1 1>&2 2>&3 3>&-)
+            11 "Root password" "Set password for user root." \
+            12 "Start installation" "Start installation." \
+            13 "Reboot server" "Reboot server after installation." \
+            14 "Show logfile" "Show installation logfile." 3>&1 1>&2 2>&3 3>&-)
     else
         n_item=$(dialog --no-shadow --no-cancel --item-help \
             --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
             --default-item "$n_item" \
             --title "Server configuration"  --clear \
-            --menu "Base setup" 21 50 14 \
+            --menu "Base setup" 22 50 15 \
              0 "Shell login" "Return to login" \
              1 "Select disc" "Select disc for installation." \
              2 "Adjust partition size" "Adjust the size of swap/root partition." \
@@ -109,9 +110,10 @@ while true ; do
              4 "Use DHCP for network" "Automatic IP-address of first network interface." \
              9 "Hostname" "System Hostname."\
             10 "Domain" "DNS Domain name." \
-            11 "Root password" "Set password for user root" \
-            12 "Start installation" "Start installation" \
-            13 "Reboot server" "Reboot server after installation" 3>&1 1>&2 2>&3 3>&-)
+            11 "Root password" "Set password for user root." \
+            12 "Start installation" "Start installation." \
+            13 "Reboot server" "Reboot server after installation." \
+            14 "Show logfile" "Show installation logfile." 3>&1 1>&2 2>&3 3>&-)
     fi
 
     case ${n_item} in
@@ -161,7 +163,7 @@ while true ; do
                     --title "Adjust size of swap Partition"  --clear \
                     --inputbox "Size in MB:" 10 45 "$PSWAPSIZE" 3>&1 1>&2 2>&3 3>&-)
                 if [ "$?" -eq 0 ] ; then
-                    PPSWAPSIZE="$new"
+                    PSWAPSIZE="$new"
                     getNextMenuItem
                 fi
             fi
@@ -220,6 +222,11 @@ while true ; do
                 if [ "$?" -eq 0 ] ; then
                     if isValidIp $new ; then
                         PIPADDRESS="$new"
+                        case "$PIPADDRESS" in
+                            172.*) PNETMASK="255.255.0.0" ;;
+                            10.*) PNETMASK="255.0.0.0" ;;
+                        esac
+                        PGATEWAY=`echo "$PIPADDRESS" | sed -r "s/^([0-9]{1,3}\.)([0-9]{1,3}\.)([0-9]{1,3}\.)([0-9]{1,3})/\1\2\31/"`
                         getNextMenuItem
                         break
                     else
@@ -262,7 +269,7 @@ while true ; do
                 if [ "$?" -eq 0 ] ; then
                     if isValidIp $new ; then
                         PGATEWAY="$new"
-                        [ -z "$PDNSSERVER" ] && PDNSSERVER="$new"
+                        [ -z "$PDNSSERVER" ] && PDNSSERVER="$PGATEWAY"
                         getNextMenuItem
                         break
                     else
@@ -394,11 +401,19 @@ while true ; do
             fi
             ;;
         13)
+            ### Reboot server ##################################################
             echo "1" > /reboot
             clear 
             break
             ;;
+        14)
+            ### Show installation log file #####################################
+            dialog --no-shadow \
+              --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
+              --textbox /tmp/fdisk.log 22 80
+            ;;    
         0)
+            ### Switch to console ##############################################
             break
             ;;
     esac
