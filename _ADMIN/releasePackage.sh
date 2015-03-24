@@ -38,15 +38,20 @@ usage ()
   Usage:
   ${0} [options]
         This script releases the package which is given by the environment
-        variable PACKAGE_TO_RELEASE. The package could be set using options
-        described below. Otherwise the script will fail.
+        variable PACKAGE_TO_RELEASE or the corresponding cmdline option.
+        Additionally the env var JOB_NAME must be set (or given via cmdline
+        option) to determine base Alpine release and architecture. See
+        description below. If both not given, the script will fail.
         Script should be executed out of repository root.
 
   Optional parameters:
     -p|--package-name <package-name>
         The package which should be released.
     -j|--job-name <job-name>
-        Set variable JOB_NAME.
+        Set variable JOB_NAME. Value must be set using the following schema:
+        '<some-text>__<alpine-release>_<architecture>', e. g.:
+        - releasePackage__v2.7_x86
+        - releasePackage__v3.1_x86_64
     -b|--branch <branch>
         The branch to be used on the repository. Default value: 'main'
     -s <amount>
@@ -80,13 +85,13 @@ extractVariables ()
 {
     # Extract package name from <some-text>__<package-name>__<release>_<arch>
     # Example:
-    # eisfair-ng__releasePackage__edge_x86
-    # eisfair-ng__releasePackage__edge_x86_64
-    # eisfair-ng__releasePackage__v2.7_x86
-    # eisfair-ng__releasePackage__v2.7_x86_64
-    releaseArch=`echo ${JOB_NAME} | sed "s/\(.*__.*__\)\(.*\)/\2/g"`
-    alpineRelease=`echo ${releaseArch%%_*}`
-    packageArch=`echo ${releaseArch#*_}`
+    # eisfair-ng/releasePackage__edge_x86
+    # eisfair-ng/releasePackage__edge_x86_64
+    # eisfair-ng/releasePackage__v2.7_x86
+    # eisfair-ng/releasePackage__v2.7_x86_64
+    alpineRelease=`echo ${JOB_NAME} | sed "s/\(.*__\)\([^_]*\)\(_\)\(.*\)/\2/g"`
+    packageArch=`echo ${JOB_NAME}   | sed "s/\(.*__\)\([^_]*\)\(_\)\(.*\)/\4/g"`
+    echo "Building for Alpine Linux release '$alpineRelease' and architecture '$packageArch'"
 }
 
 
@@ -115,7 +120,7 @@ releasePackage ()
             cp -f *.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/${packageArch}
             rtc=$?
         else
-            cp -f ~/packages/${JOB_NAME}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/${packageArch}
+            cp -f ~/packages/${PACKAGE_TO_RELEASE}/${packageArch}/*.apk ${CI_RESULTFOLDER_EISFAIR_NG}/${alpineRelease}/${branch}/${packageArch}
             rtc=$?
         fi
         if [ "${rtc}" != 0 ] ; then
