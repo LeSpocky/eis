@@ -8,7 +8,7 @@
 
 
 isValidIp() {
-    if echo $1 | egrep -qs '\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b' ; then
+    if echo "$1" | egrep -qs '\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b' ; then
         return 0
     else
         return 1
@@ -17,11 +17,51 @@ isValidIp() {
 
 
 countDisks() {
-    if [ $# -gt 1 ] ; then 
+    if [ $# -gt 1 ] ; then
         return 0
     else
         return 1
     fi
+}
+
+
+show_disk_info() {
+    local disk="$1"
+    local size=0
+    size=$(awk '{gb = ($1 * 512)/1000000000; printf "%.1f_GB\n", gb}' /sys/block/$disk/size 2>/dev/null)
+    echo "/dev/$disk $size on"
+}
+
+
+is_available_disk() {
+    local p="$1"
+    # check if its a "root" block device and not a partition
+    [ -e /sys/block/$p ] || return 1
+    # check so it does not have mounted partitions
+    has_mounted_part $p && return 1
+    # check so its not an md device
+    [ -e /sys/block/$p/md ] && return 1
+    return 0
+}
+
+
+has_mounted_part() {
+    local p=""
+    local sysfsdev="$1"
+    # parse /proc/mounts for mounted devices
+    for p in $(awk '$1 ~ /^\/dev\// {gsub("/dev/", "", $1); gsub("/", "!", $1); print $1}' /proc/mounts); do
+        [ "$p" = "$sysfsdev" ] && return 0
+        [ -e /sys/block/$sysfsdev/$p ] && return 0
+    done
+    return 1
+}
+
+
+find_disks() {
+    local p=""
+    for p in $(awk '$1 ~ /[0-9]+/ {print $4}' /proc/partitions); do
+        is_available_disk $p  && show_disk_info "$p"
+    done
 }
 
 
@@ -119,11 +159,7 @@ while true ; do
     case ${n_item} in
         1)
             ### Select drive ######################################################
-            if [ `fdisk -l | grep "^Disk /.*:" | wc -l` = '1' ] ; then
-                drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 on/p')
-            else
-                drivelist=$(fdisk -l | sed -n 's/^Disk \(\/dev\/[^:]*\): \([^, ]*\) \([MGTB]*\).*$/\1 \2_\3 off/p')
-            fi
+            drivelist=$(find_disks)
             if [ -z "$drivelist" ] ; then
                 dialog --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" --title "" \
                     --msgbox " No drive found!\n Please try again." 6 30
