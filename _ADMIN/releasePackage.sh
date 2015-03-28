@@ -6,7 +6,7 @@
 #
 # Creation   :  2013-11-13  starwarsfan
 #
-# Copyright (c) 2013 the eisfair team, team(at)eisfair(dot)org>
+# Copyright (c) 2013-2015 the eisfair team, team(at)eisfair(dot)org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
