@@ -131,12 +131,12 @@ createJob ()
                  --password-file ${jenkinsPasswordFile}
         rtc=$?
         if [ ${rtc} != 0 ] ; then
-            echo "ERROR: Something went wrong during creation of build-job '${logicalJobFolder}/${jobTemplateName}'"
+            echo "ERROR: Something went wrong during creation of build-job '${logicalJobFolder}/${currentPackage}'"
         else
             enableJob ${logicalJobFolder}/${currentPackage}
             rtc=$?
             if [ ${rtc} != 0 ] ; then
-                echo "ERROR: Something went wrong during creation of build-job '${logicalJobFolder}/${jobTemplateName}'"
+                echo "ERROR: Something went wrong during creation of build-job '${logicalJobFolder}/${currentPackage}'"
             elif ${buildNewJobs} ; then
                 triggerBuild ${logicalJobFolder}/${currentPackage}
             fi
