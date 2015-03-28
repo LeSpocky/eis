@@ -7,7 +7,7 @@
 # Creation:     2008-03-22 starwarsfan
 # Last update:  $Id: PHPMYADMIN_GET_AUTH_METHOD_CUI.sh 21582 2009-10-17 09:17:35Z alex $
 #
-# Copyright (c) 2001-2009 The eisfair Team, <team(at)eisfair(dot)org>
+# Copyright (c) 2001-2015 The eisfair Team, <team(at)eisfair(dot)org>
 # Maintained by Y. Schumann <yves(at)eisfair(dot)org>
 #
 # This program is free software; you can redistribute it and/or modify
