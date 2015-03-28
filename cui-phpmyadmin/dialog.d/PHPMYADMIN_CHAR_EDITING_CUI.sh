@@ -1,5 +1,5 @@
 #!/bin/bash
-#------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # /var/install/dialog.d/PHPMYADMIN_CHAR_EDITING_CUI.sh - script dialog for ece
 #
 # Creation:     2008-02-24 starwarsfan
@@ -12,7 +12,7 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 . /var/install/include/cuilib
 . /var/install/include/ecelib
