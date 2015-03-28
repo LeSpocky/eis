@@ -5,7 +5,7 @@
 # Creation:     2013-05-08 tb
 #
 # Copyright (c) 2002-2013 Thomas Bork, tom(at)eisfair(dot)net
-# Copyright (c) 2014 the eisfair team <team@eisfair.org>
+# Copyright (c) 2014-2015 the eisfair team <team@eisfair.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
