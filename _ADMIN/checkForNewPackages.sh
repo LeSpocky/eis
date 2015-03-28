@@ -109,7 +109,7 @@ createJob ()
     local logicalJobFolder=$2
     local jobTemplateName=$3
     local physicalJobFolder="$(echo "$logicalJobFolder" | sed "s#/#/jobs/#g")/jobs"
-    local currentRtc=0
+    local rtc=0
 
     if [ ! -d ${physicalJobFolder}/${currentPackage} -o ! -f ${physicalJobFolder}/${currentPackage}/config.xml ] ; then
         # Config file not found, create it
@@ -129,12 +129,17 @@ createJob ()
                  create-job ${logicalJobFolder}/${currentPackage} \
                  --username ${jenkinsUser} \
                  --password-file ${jenkinsPasswordFile}
-        currentRtc=$?
-        if [ ${currentRtc} != 0 ] ; then
+        rtc=$?
+        if [ ${rtc} != 0 ] ; then
             echo "ERROR: Something went wrong during creation of build-job '${logicalJobFolder}/${jobTemplateName}'"
-            rtc=${currentRtc}
-        elif ${buildNewJobs} ; then
-            triggerBuild ${logicalJobFolder}/${currentPackage}
+        else
+            enableJob ${logicalJobFolder}/${currentPackage}
+            rtc=$?
+            if [ ${rtc} != 0 ] ; then
+                echo "ERROR: Something went wrong during creation of build-job '${logicalJobFolder}/${jobTemplateName}'"
+            elif ${buildNewJobs} ; then
+                triggerBuild ${logicalJobFolder}/${currentPackage}
+            fi
         fi
     fi
 }
@@ -142,15 +147,42 @@ createJob ()
 
 
 # ============================================================================
-# Create new jenkins job using the jenkins-cli
+# New jenkins job is disabled, so it must be enabled to be usable
 #
-# $1 .. Package name
-# $3 .. Name of the template-job which should be used
-#       as the base for the new job
+# $1 .. Job name
+enableJob ()
+{
+    local logicalJobName=$1
+    local physicalJobFolder=$(echo "$logicalJobFolder" | sed "s#/#/jobs/#g")
+    local rtc=0
+    if [ -d ${physicalJobFolder} -a -f ${physicalJobFolder}/config.xml ] ; then
+        echo "Calling jenkins api to enable job '$logicalJobName'"
+        java -Xms${javaMinHeap} \
+             -Xmx${javaMaxHeap} \
+             -jar ${jenkinsCliJar} \
+             -s ${jenkinsUrl} \
+             enable-job ${logicalJobName} \
+             --username ${jenkinsUser} \
+             --password-file ${jenkinsPasswordFile}
+        rtc=$?
+        if [ ${rtc} != 0 ] ; then
+            echo "ERROR: Something went wrong during enabling build-job '$logicalJobName'"
+        fi
+    fi
+    return ${rtc}
+}
+
+
+
+# ============================================================================
+# Start new jenkins job using the jenkins-cli
+#
+# $1 .. Job name
 triggerBuild ()
 {
     local logicalJobName=$1
     local physicalJobFolder=$(echo "$logicalJobFolder" | sed "s#/#/jobs/#g")
+    local rtc=0
     if [ -d ${physicalJobFolder} -a -f ${physicalJobFolder}/config.xml ] ; then
         echo "Calling jenkins api to build job '$logicalJobName'"
         java -Xms${javaMinHeap} \
@@ -160,12 +192,12 @@ triggerBuild ()
              build ${logicalJobName} \
              --username ${jenkinsUser} \
              --password-file ${jenkinsPasswordFile}
-        currentRtc=$?
-        if [ ${currentRtc} != 0 ] ; then
+        rtc=$?
+        if [ ${rtc} != 0 ] ; then
             echo "ERROR: Something went wrong during trigger of build-job '$logicalJobName'"
-            rtc=${currentRtc}
         fi
     fi
+    return ${rtc}
 }
 
 
