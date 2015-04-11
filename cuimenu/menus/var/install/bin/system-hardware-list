@@ -8,7 +8,9 @@
 if [ -e /sys/class/thermal/thermal_zone0/temp ] 
 then
     {
-    echo -n "Temperature; "
+    cat /proc/cpuinfo
+    echo ""
+    echo -n "Temperature     : "
     awk '{printf "%3.1f°C\n", $1/1000}' /sys/class/thermal/thermal_zone0/temp
     } > /var/log/hwlist
 else
