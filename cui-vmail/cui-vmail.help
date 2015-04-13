@@ -21,7 +21,7 @@ Default: VMAIL_SQL_USER='vmailprovider'<br/>
 </help>
 
 <help name="VMAIL_SQL_PASS">
-MySQL connet user password.<br/>
+MySQL connect user password.<br/>
 <br/>
 </help>
 

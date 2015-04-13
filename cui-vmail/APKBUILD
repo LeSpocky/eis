@@ -2,13 +2,13 @@
 # Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
 pkgname=cui-vmail
 pkgver=1.0.1
-pkgrel=5
+pkgrel=6
 pkgdesc="CUI setup for postfix/dovecot with virtual mail user"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
 alpinerelease=`awk -F \. {'print $1$2'} /etc/alpine-release`
-if [ "$alpinerelease" -gt 30 ] 
+if [ "$alpinerelease" -gt 30 ]
 then
   depends="cuimenu libcui-addonmysql postfix postfix-mysql postfix-pcre pfqueue smc-milter-new dovecot dovecot-mysql dovecot-sample-config dovecot-pigeonhole-plugin mysql2sieve mysql2fetchmail fetchmail ca-certificates greyfix"
 else
@@ -136,7 +136,7 @@ package() {
 md5sums="ba2a21db672b536c817b40425cd54bae  cui-vmail.default
 37690bfb2aabd7c855960a7aff806440  cui-vmail.check
 799fcc22d4d84afc443346b11b680924  cui-vmail.check.exp
-b5d0212776d85b0e9c46d5b4a8ec8c87  cui-vmail.help
+8849a65e4d3550c49179888740263376  cui-vmail.help
 d757821de9672c09893cff1ed1e009c7  cui-vmail.init
 f697babf3ad3dd85cea29dcb17484092  cui-vmail.postfixchroot
 6cbbb7bd2154b34bb6eba7bee6b3c01d  cui-vmail.sh
@@ -183,7 +183,7 @@ c0ce858b710a3cb244daaad346276dfb  cui-vmail.sqlview.sql
 sha256sums="70211aa439a516da72c2e0dc4eec75b5c924cfb48f63ec9d1969a3039a0274f7  cui-vmail.default
 acab8b18ca9a2fc5a2804eae260a4725fcf0a47c4bb0d5545b537eee1c8c8dc1  cui-vmail.check
 163dd7716a0510a9692d41304898f6cc134d0be8dd5772772592f08421d5ecea  cui-vmail.check.exp
-9d4daac99c7d403d903c106ef036600f6cb059deb34817bdf9295ee1ae0e9726  cui-vmail.help
+198a4ccaf975f665d5585304fc24fa732d3b7e016eacdca9b3fc48f33f575578  cui-vmail.help
 5e6bf5736a8113143a65d57a17d30c51a6c546cd870ee794a26f56ef77690283  cui-vmail.init
 bc8fc4284c713625f1e1ecf771663eab03c486114d8d16eaa941e117c58de4a2  cui-vmail.postfixchroot
 cee87f63a71a427132445acae6e5bcb80fa01c0e8d491a63f3ddb2271bcfdd86  cui-vmail.sh
@@ -230,7 +230,7 @@ c8219282222432e5a633344d945970282ddc80e2bb4dd0c8f6795f007623004a  cui-vmail.sqlu
 sha512sums="77f09c13f552c0a81b443fe7358f6f92eaf0a59b7f29ee9e852d5f89ed36e249f451ebac6508e74b331cf1fad8aa410ea83ec4fa77aeb640d35e98477ad9ad2e  cui-vmail.default
 398bf216484c7992f3dcaceeed733c1ba3434f7917b29feb5f1f5a518dba9050e57dacf5d6dd7537138fd2a6fbc4082f70d6a995d4d881a76fb533ad743d35cf  cui-vmail.check
 3a871a2831cde3ec4098b64a7e651cfeae99f8050ed97947a8157e8bd3c0952458ffeba3efbb7b68961e0194fa7ece20762bd9edc528218c022005afa2caeb57  cui-vmail.check.exp
-294a26fd4a5386cc3b90a3ee2e484d06efd1b34c5906c85ba39bdef5df0e0dc0f3ee3446209d33b1ea2be7bf145a40e08fab95c94216fab5bb9286b13047f500  cui-vmail.help
+a42852b1e04e97000f61753e16ddfb53226123f0302c170bb6f1e41c8d1904c7b98ba1c54950d3eaada3c7225ddd706369564a58d0ce19179fc4f0428fdc1313  cui-vmail.help
 b8ba0aebd9f54b645528cf375a1e84e06f473dd8dfed5dcf71355be06115aae0a28e1523eaf6a624cffffe02e47d994fd4c713af5f7f857a6c56a4d1175e9e6c  cui-vmail.init
 235c04be4512b1c70521686940114177893a43737ee7a41ce32a8f56907428286465fef105afaee12718b522ec0a1205ca281f4f8d9099a324ac88ea10a46734  cui-vmail.postfixchroot
 f9b4fa618481ad886b5ef9a8b4e9bb214f22dbfb295af68e0f6ef5709dfe1ebcf842c5d02f0b1a5f3385839632b9d908f32edb426cf85b11002df1142a545621  cui-vmail.sh
