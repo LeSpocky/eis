@@ -5,16 +5,16 @@
 #-----------------------------------------------------------------------------
 
 # dmidecode not work on ARM system
-if [ -e /sys/class/thermal/thermal_zone0/temp ] 
+if [ -e /sys/class/thermal/thermal_zone0/temp ]
 then
     {
     cat /proc/cpuinfo
     echo ""
     echo -n "Temperature     : "
-    awk '{printf "%3.1f°C\n", $1/1000}' /sys/class/thermal/thermal_zone0/temp
+    awk '{printf "%3.1f C\n", $1/1000}' /sys/class/thermal/thermal_zone0/temp
     } > /var/log/hwlist
 else
-    /usr/sbin/dmidecode -q >> /var/log/hwlist & 
+    /usr/sbin/dmidecode -q >> /var/log/hwlist &
 fi
 /var/install/bin/show-doc.cui -f /var/log/hwlist
 exit 0
