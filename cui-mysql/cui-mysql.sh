@@ -28,13 +28,34 @@ if [ "$MYSQL_NETWORK" = "yes" ] ; then
 fi
 
 # ---- count cpu cores ---------------------------------------------------------
-ncpu=$(grep -c processor /proc/cpuinfo)
-[ -z "$ncpu" ] && ncpu=1
-ncpu=$(( $ncpu * 2 ))
+#ncpu=$(grep -c processor /proc/cpuinfo)
+#[ -z "$ncpu" ] && ncpu=1
+#ncpu=$(( $ncpu * 2 ))
 
-# ---- set to 32/64Bit ---------------------------------------------------------
+# ---- set to 32/64Bit/ARM -----------------------------------------------------
 xarch=$(cat /etc/apk/arch)
-[ "$xarch" = "x86_64" ] && thread_stack="256K" || thread_stack="192K"
+case "$xarch" in
+    "x86_64")
+       thread_stack="256K"
+       innodb_data_file_path="ibdata1:128M;ibdata2:10M:autoextend"
+       innodb_log_file_size="64M" 
+       ;;
+    "x86")
+       thread_stack="192K"
+       innodb_data_file_path="ibdata1:64M;ibdata2:10M:autoextend"
+       innodb_log_file_size="32M"        
+       ;;
+    "armhf")
+       thread_stack="192K"
+       innodb_data_file_path="ibdata1:10M;ibdata2:10M:autoextend"
+       innodb_log_file_size="5M"
+       ;;   
+    *)
+       thread_stack="192K"
+       innodb_data_file_path="ibdata1:64M;ibdata2:10M:autoextend"
+       innodb_log_file_size="32M"       
+       ;;
+esac
 
 # ---- set options for xx GB RAM -----------------------------------------------
 blg="" # activate binlog
@@ -195,7 +216,7 @@ fi
 # ---- write config file -------------------------------------------------------
 cat > /etc/mysql/my.cnf <<EOF
 [mysqld_safe]
-nice                        = -2
+nice                        = 0
 #syslog
 #syslog-tag=mysqld
 
@@ -266,7 +287,6 @@ table_open_cache            = 1024	#5.5.x <default: 64>
 table_definition_cache      = 1024
 
 ## Thread settings
-thread_concurrency          = $ncpu  #recommend 2x CPU cores
 thread_cache_size           = $thread_cache_size   #recommend 5% of max_connections
 
 ## Replication
@@ -324,8 +344,8 @@ myisam-recover-options      = BACKUP #repair mode, recommend BACKUP
 
 ## InnoDB Plugin Independent Settings
 innodb_data_home_dir        = /var/lib/mysql
-innodb_data_file_path       = ibdata1:128M;ibdata2:10M:autoextend
-innodb_log_file_size        = 64M 
+innodb_data_file_path       = $innodb_data_file_path
+innodb_log_file_size        = $innodb_log_file_size 
 innodb_log_files_in_group   = 2
 innodb_buffer_pool_size     = $innodb_buffer_pool_size
 innodb_additional_mem_pool_size = 4M  #global buffer
@@ -335,7 +355,7 @@ innodb_flush_log_at_trx_commit = 2  #2/0 = perf, 1 = ACID
 innodb_table_locks          = 0     #preserve table locks
 innodb_log_buffer_size      = $innodb_log_buffer_size
 innodb_lock_wait_timeout    = 60
-innodb_thread_concurrency   = $ncpu  #recommend 2x core quantity
+#innodb_thread_concurrency   = $ncpu  
 innodb_commit_concurrency   = 4    #recommend 4x num disks
 #innodb_flush_method        = O_DIRECT   #O_DIRECT = local/DAS, O_DSYNC = SAN/iSCSI
 innodb_support_xa           = 0          #recommend 0, disable xa to negate extra disk flush
@@ -363,6 +383,11 @@ EOF
 
 
 chmod 0644 /etc/mysql/my.cnf
+
+#-------------------------------------------------------------------------------
+# force autosetup on init-script
+#-------------------------------------------------------------------------------
+echo 'AUTO_SETUP="yes"' > /etc/conf.d/mysql
 
 #-------------------------------------------------------------------------------
 # setup logrotate
