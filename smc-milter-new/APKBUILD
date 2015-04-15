@@ -41,8 +41,8 @@ package() {
 }
 
 md5sums="f7f8db564530e1b58a5c68476a9eee19  smc-milter-new.initd
-6ebc0e6260579eeb42ffafce43a46e76  smc-milter-new.confd"
+cf7a22359a59db3fb1128a28878d145e  smc-milter-new.confd"
 sha256sums="aeed7b65396f0f4588392e363feb566a2a7c4d4b43dcb013afa72419c8560289  smc-milter-new.initd
-b0ccae47293930df405ddeae6e56a798d17dff2c1601e7601ffbd6c354609a13  smc-milter-new.confd"
+0e612214279ba46b8409a5c5df2fc78c8f3950385800f5da86bc40ef50e7c84b  smc-milter-new.confd"
 sha512sums="3294c8019180b7e63fd788989cc2f38a91bb4c875152a5bc467e235104563f27c49aa92e4c47a5896b8630c23a70ba6a7ccced3edb152eb465c730325b96d0ea  smc-milter-new.initd
-6e60c807aa926b35560a12c4dba8c43e46f3e36a81c7b62062d54c47d56a9de1b3eb09510b074bf535f06e68ef4d90fcd8bff5a3cc633153078d0dad2732c223  smc-milter-new.confd"
+6a2b2316f240ba2019cea5b97fb35f0c362c3f5a3b1c6c71dd185cdb5c9fea3581c2c74a8a6c5144f5972bea70d64cb65c0f88e917f0002ae1ed5cd1a38b70c1  smc-milter-new.confd"

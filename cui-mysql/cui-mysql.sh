@@ -240,18 +240,19 @@ skip-name-resolve
 
 ## Logging
 datadir                     = /var/lib/mysql
-relay_log                   = mysql-relay-bin
-relay_log_index             = mysql-relay-index
 #log                        = mysql-gen.log
 log_error                   = mysql-error.log
 log_warnings
-${blg}log_bin                     = mysql-bin
 slow-query-log
 slow-query-log-file         = mysql-slow.log
-#log_queries_not_using_indexes
+#log-queries-not-using-indexes       #to show all queries without index
 long_query_time             = 10    #default: 10
+${blg}relay_log                   = mysql-relay-bin
+${blg}relay_log_index             = mysql-relay-index
+${blg}log_bin                     = mysql-bin
 ${blg}max_binlog_size             = 256M  #max size for binlog before rolling
 ${blg}expire_logs_days            = 4     #binlog files older than this will be purged
+${blg}binlog_cache_size           = $binlog_cache_size
 
 ## Per-Thread Buffers * (max_connections) = total per-thread mem usage
 thread_stack                = $thread_stack  #default: 32bit: 192K, 64bit: 256K
@@ -259,7 +260,6 @@ sort_buffer_size            = $sort_buffer_size
 read_buffer_size            = $read_buffer_size
 read_rnd_buffer_size        = $read_rnd_buffer_size
 join_buffer_size            = $join_buffer_size
-${blg}binlog_cache_size           = $binlog_cache_size
 
 ## Query Cache
 query_cache_size            = $query_cache_size

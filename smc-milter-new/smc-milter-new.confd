@@ -15,7 +15,6 @@ dbname                  vmaildata
 dbtable                 view_signature
 dbuser                  vmailprovider
 dbpass                  ******
-dbquery                 "SELECT signature FROM view_signature WHERE email ="
 optremove               text/x-vcard
 avmail                  mailadmin@eisfair.home
 quarantinedir           /var/spool/postfix/quarantine
