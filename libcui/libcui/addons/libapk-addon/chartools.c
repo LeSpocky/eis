@@ -16,8 +16,9 @@
 #include "chartools.h"
 #include <stdlib.h>
 #include <string.h>
-
+#ifndef SIZE_MAX
 #define SIZE_MAX 64535
+#endif
 
 int ModuleMbStrLen(const char* str)
 {

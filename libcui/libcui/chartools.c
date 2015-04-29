@@ -4,7 +4,9 @@
 
 static const char *pStdCodec = "UTF-8";
 
+#ifndef SIZE_MAX
 #define SIZE_MAX 64535
+#endif
 
 int MbStrLen(const char* str)
 {

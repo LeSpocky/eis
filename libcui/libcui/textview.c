@@ -26,8 +26,9 @@
 
 /* local constants */
 #define TABWIDTH 8
-
+#ifndef SIZE_MAX
 #define SIZE_MAX 64535
+#endif
 
 typedef struct TEXTLINEStruct
 {

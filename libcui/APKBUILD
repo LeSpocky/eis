@@ -1,14 +1,20 @@
 # Contributor: eisfair team team@eisfair.org
 # Maintainer: daniel@eisfair.org, jens@eisfair.org
 pkgname=libcui
-pkgver=2.0.0
-pkgrel=8
+pkgver=2.0.1
+pkgrel=0
 pkgdesc="Eisfair CUI basis libs"
 url="http://www.eisfair.org"
 arch="all"
 license="GPL"
 depends=""
-depends_dev="coreutils ncurses-dev ncurses-widec-libs libiconv-dev flex openssl-dev mysql-dev postgresql-dev"
+_alpinerelease=`awk -F \. {'print $1$2'} /etc/alpine-release`
+if [ "$_alpinerelease" -gt 31 ]
+then
+  depends_dev="coreutils ncurses-dev ncurses-widec-libs flex openssl-dev mariadb-dev postgresql-dev"
+else
+  depends_dev="coreutils ncurses-dev ncurses-widec-libs libiconv-dev flex openssl-dev mysql-dev postgresql-dev"
+fi
 makedepends="$depends_dev"
 install=""
 subpackages="$pkgname-dev $pkgname-addonmysql $pkgname-addonpgsql $pkgname-addonpwdfile"

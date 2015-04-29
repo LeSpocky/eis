@@ -47,9 +47,9 @@
 #define PIPE_STDERR     1
 
 #define BUFSIZE         128
-
-#define SIZE_MAX        64535
-
+#ifndef SIZE_MAX
+#define SIZE_MAX 64535
+#endif
 
 typedef struct
 {

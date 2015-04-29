@@ -97,7 +97,7 @@ test.cui: $(C_OBJECTS)
 
 libcui.so.$(CUI_VERSION): $(C_CUI_OBJECTS)
 	@echo "linking $@ ..."
-	@$(CC) -shared -Wl,-soname,libcui.so.2 -o $@ $^ -l$(CURSESLIB) -liconv
+	@$(CC) -shared -Wl,-soname,libcui.so.2 -o $@ $^ -l$(CURSESLIB) #-liconv
 
 libcui.a: $(C_CUI_OBJECTS)
 	@rm -f $@
