@@ -1,8 +1,8 @@
 # Contributor: eisfair team team@eisfair.org
 # Maintainer: daniel@eisfair.org, jens@eisfair.org
 pkgname=libcui
-pkgver=2.0.1
-pkgrel=0
+pkgver=2.0.0
+pkgrel=9
 pkgdesc="Eisfair CUI basis libs"
 url="http://www.eisfair.org"
 arch="all"
