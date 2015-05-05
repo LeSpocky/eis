@@ -1,4 +1,4 @@
-#!/sbin/openrc-run
+#!/sbin/runscript
 
 extra_started_commands="reload"
 extra_commands="update"
