@@ -22,13 +22,13 @@ SED             = @SED@
 
 # compile options
 CFLAGS          = -Wall -Wextra -Wstrict-prototypes
-CFLAGS         += -D_XOPEN_SOURCE_EXTENDED 
+CFLAGS         += -D_XOPEN_SOURCE_EXTENDED
 CFLAGS         += -D_GNU_SOURCE
 CFLAGS         += @DEFS@
 DBGFLAGS        = -g
 
 # linker
-LDFLAGS         = -lcui -lcui-util -ldl -liconv
+LDFLAGS         = -lcui -lcui-util -ldl
 LDFLAGS        += @CURSES_LIB@
 
 # definitions
@@ -114,7 +114,7 @@ install: $(REL_DIR)/$(TARGET)
 	@cp $(REL_DIR)/$(TARGET) $(DESTDIR)/$(INSTALLDIR)
 	@strip $(DESTDIR)/$(INSTALLDIR)/$(TARGET)
 
-# uninstall	
+# uninstall
 uninstall:
 	@echo "uninstalling $(TARGET)..."
 	@rm -f $(DESTDIR)/$(INSTALLDIR)/$(TARGET)

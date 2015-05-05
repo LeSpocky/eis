@@ -19,8 +19,9 @@ CC   = gcc
 FLEX = flex
 
 # compile options
-CFLAGS      =  -Wall -Wextra -Wstrict-prototypes -g 
-CFLAGS     += -D_XOPEN_SOURCE_EXTENDED 
+CFLAGS      =  -Wall -Wextra -Wstrict-prototypes 
+#-g
+CFLAGS     += -D_XOPEN_SOURCE_EXTENDED
 CFLAGS     += -D_GNU_SOURCE
 CFLAGS     += -std=c99
 
@@ -91,7 +92,7 @@ $(OUTPUT_STATIC): $(C_OBJECTS)
 	@$(FLEX) -P$* -o$*.c $*.l
 
 # install and uninstall
-install: $(OUTPUT_SHARED) 
+install: $(OUTPUT_SHARED)
 	@echo "installing $(OUTPUT_SHARED)..."
 	@mkdir -p $(DESTDIR)/var/install/bin
 	@strip -R .note -R .comment $(OUTPUT_SHARED)

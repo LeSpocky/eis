@@ -86,18 +86,18 @@ C_CUI_SCRIPT_OBJECTS += stub.o
 
 # compile targets
 all:  libcui.so.$(CUI_VERSION) libcui.a \
-      libcui-util.so.$(CUI_VERSION) libcui-util.a \
-      libcui-script.so.$(CUI_VERSION) libcui-script.a
+	libcui-util.so.$(CUI_VERSION) libcui-util.a \
+	libcui-script.so.$(CUI_VERSION) libcui-script.a
 
 test: test.cui
 
 test.cui: $(C_OBJECTS)
 	@echo "linking $@ ..."
-	@$(CC) -o $@ $^ -lcui -lcui-util
+	@$(CC) -o $@ $^ -L./ -lcui -lcui-util
 
 libcui.so.$(CUI_VERSION): $(C_CUI_OBJECTS)
 	@echo "linking $@ ..."
-	@$(CC) -shared -Wl,-soname,libcui.so.2 -o $@ $^ -l$(CURSESLIB) #-liconv
+	@$(CC) -shared -Wl,-soname,libcui.so.2 -o $@ $^ -l$(CURSESLIB)
 
 libcui.a: $(C_CUI_OBJECTS)
 	@rm -f $@

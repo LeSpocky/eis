@@ -19,8 +19,8 @@ CC   = gcc
 FLEX = flex
 
 # compile options
-CFLAGS     =  -Wall -Wextra -Wstrict-prototypes -g 
-CFLAGS    += -D_XOPEN_SOURCE_EXTENDED 
+CFLAGS     =  -Wall -Wextra -Wstrict-prototypes -g
+CFLAGS    += -D_XOPEN_SOURCE_EXTENDED
 CFLAGS    += -D_GNU_SOURCE
 CFLAGS    += -std=c99
 
@@ -31,8 +31,8 @@ LDFLAGS_SHARED    += -lcui-script
 LDFLAGS_SHARED    += -ldl
 LDFLAGS_SHARED    += -lncursesw
 
-LDFLAGS_STATIC     = /usr/lib/libcui-script.a 
-LDFLAGS_STATIC    += /usr/lib/libcui-util.a 
+LDFLAGS_STATIC     = /usr/lib/libcui-script.a
+LDFLAGS_STATIC    += /usr/lib/libcui-util.a
 LDFLAGS_STATIC    += /usr/lib/libcui.a
 LDFLAGS_STATIC    += -ldl
 LDFLAGS_STATIC    += -lncursesw
@@ -79,7 +79,7 @@ $(OUTPUT_STATIC): $(C_OBJECTS)
 	@rm -f $*.d.tmp
 
 # install and uninstall
-install: $(OUTPUT_SHARED) 
+install: $(OUTPUT_SHARED)
 	@echo "installing $(OUTPUT_SHARED)..."
 	@mkdir -p $(DESTDIR)/var/install/bin
 	@strip -R .note -R .comment $(OUTPUT_SHARED)

@@ -19,13 +19,13 @@ CC   = gcc
 FLEX = flex
 
 # unicode support
-CFLAGS     = -D_ATFILE_SOURCE -Wall -Wstrict-prototypes -g 
-CFLAGS    += -D_XOPEN_SOURCE_EXTENDED 
+CFLAGS     = -D_ATFILE_SOURCE -Wall -Wstrict-prototypes -g
+CFLAGS    += -D_XOPEN_SOURCE_EXTENDED
 CFLAGS    += -D_UNICODE -D_GNU_SOURCE
 CURSESLIB  = ncursesw
 
 # additional library flags
-CLIBFLAGS = -fPIC 
+CLIBFLAGS = -fPIC
 
 # linker
 LDFLAGS     = -L../../ -lcui -lcui-util -lcui-script -lncursesw -lcrypto -lz
