@@ -19,8 +19,7 @@ CC   = gcc
 FLEX = flex
 
 # compile options
-CFLAGS      =  -Wall -Wextra -Wstrict-prototypes 
-#-g
+CFLAGS      =  -Wall -Wextra -Wstrict-prototypes -g
 CFLAGS     += -D_XOPEN_SOURCE_EXTENDED
 CFLAGS     += -D_GNU_SOURCE
 CFLAGS     += -std=c99
