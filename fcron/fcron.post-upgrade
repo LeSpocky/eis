@@ -1,3 +1,2 @@
 #!/bin/sh
-
-/etc/init.d/fcron start
+rc-service -q fcron start
