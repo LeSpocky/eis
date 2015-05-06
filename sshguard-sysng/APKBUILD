@@ -1,9 +1,9 @@
 # Contributor: Jens Vehlhaber jv <jens@eisfair.org>
 # Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
 pkgname=sshguard-sysng
-pkgver=1.6
-pkgrel=2
-pkgdesc="Log monitor that blocks with iptables on bad behaviour - for syslog-ng with postfix support"
+pkgver=1.6.0
+pkgrel=3
+pkgdesc="Log monitor that blocks with iptables on bad behaviour - for syslog-ng"
 url="http://www.sshguard.net/"
 arch="all"
 license="BSD"
@@ -12,13 +12,12 @@ depends_dev=""
 makedepends="$depends_dev flex bison"
 install="$pkgname.post-install $pkgname.pre-deinstall $pkgname.post-deinstall"
 subpackages="$pkgname-doc"
-source="http://download.eisfair.org/src/sshguard-$pkgver.tar.bz2
+source="http://downloads.sourceforge.net/project/sshguard/sshguard/${pkgver}/sshguard-${pkgver}.tar.gz
 	sshguard.initd
 	sshguard.destination
 	sshguard.filter
 	sshguard.log
 	sshguard.whitelist
-	postfix.patch
 	dovecot.patch
 	"
 
@@ -26,7 +25,6 @@ _builddir="$srcdir"/sshguard-$pkgver
 prepare() {
 	local i
 	cd "$_builddir"
-	update_config_sub || return 1
 	for i in $source; do
 		case $i in
 		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
@@ -59,27 +57,24 @@ package() {
 		"$pkgdir"/etc/sshguard/whitelist || return 1
 }
 
-md5sums="ea8ced8eb52e33b785533472336f8d87  sshguard-1.6.tar.bz2
+md5sums="16da5bd93489b255c4a0033a2038e91c  sshguard-1.6.0.tar.gz
 a8b9ee8a1c8ba27d76b1a7fcf4a4acdc  sshguard.initd
 c26efbd761df9dd57f7fbb00ccbb80fa  sshguard.destination
 a71bec6490c6fb5188efc26908419e2c  sshguard.filter
 213d849e842561e8406716a5eb07bae4  sshguard.log
 f7c64f834056ad6926116aac14693d8e  sshguard.whitelist
-a41836a1a57f6b6b2c5abb234d02e963  postfix.patch
 0cd8ea68143a7b19100a34f000b077fe  dovecot.patch"
-sha256sums="c843bef1f08b66d5c29c1423ee1e9bed4145a076dcbb47300fa1f58c71f35bf8  sshguard-1.6.tar.bz2
+sha256sums="06bd54e2a74701a6db15cb51e535119edea107ee6c6eb2f19eb6f81387464816  sshguard-1.6.0.tar.gz
 51350e10ca085ba1cc1068fa8d03ce10d5f5c09753f769b32aa08e5dea824b60  sshguard.initd
 444ec40ebd38185e37f3100e2a0cbf7f8dfe075ef66bf6f213de08a4aa888cb3  sshguard.destination
 80ebbab31244c0f9eb163baded982e948161215eade507915e04ca0d0595d7a4  sshguard.filter
 98ec14fc3327e54bfbff8687881a9f8c84deecd8f7b073ce9d38f5190ef464d8  sshguard.log
 d9434f83f8b3a071fb3db1e10a24ada20c4672af67f5ac729f8f0a9d28871c04  sshguard.whitelist
-2ba49e6dbec90a8209610d0c6d728e791b20c7c56661bb6680a0f61b335f2312  postfix.patch
 8b650aada5aa22044011eef325cd256bd225092e69fca554c2cba7dcc594794e  dovecot.patch"
-sha512sums="7cf530dd9c55436cd6717800c416ac01bb54b3fbb39712b43ccc8685adb9977f4f6e2f06eafe283dee0d87eb43187a8fce588e249cca4388ad682406ee7e97d5  sshguard-1.6.tar.bz2
+sha512sums="844fd5f79a861de66c24472967c115fea1b0ebf245e57ff059b696c7b56d76e109a2ab058f3e2e956f2c63aa7c5747908a20801c13dd9626f6c5f1f4fe5dfa55  sshguard-1.6.0.tar.gz
 4e5ee3e3ebabb367157008d8d7495a7967b29ccefdd97a04f99b991a9a0af9947ce32f4c28d99e7b04f1cdf40df66561b57fd808ce23709889f65ca5a32a5c81  sshguard.initd
 6fc923efc58e322b62fc8d74bb0dc778dcca416726a422265dc9bdebb2c1f3dc2d795f781efa50a24015d46333ead29f9e576c21af308bba8867a3d681dd6c28  sshguard.destination
 e00708544d9261ff0c2c3c2aec80d252e2c1424320653ce5b408832657c5841717c426c5b19cfe4b06f8b6d2fabbbea39b3783fbaadfce4a23351193964e8940  sshguard.filter
 e7baf450ba5d16884ee66349a4a14aac3e3b8e06f977f785c2142f1897b47431a35d8398f37c6d19b78eaf89ccc635f3e3ea7a3f1fdcaf0c73655e685320fb1b  sshguard.log
 2ba4b249bb38c8715d0c78e15fd4fc70e3b3b71f10ba63b220d538ae48baae2a0581e36fa7fc13b5a62142db7ec76889a28e93b2c2e7912128e0cb0a9d16b5ba  sshguard.whitelist
-2f6597255df0f8bc1b3bfbb2c8b4d207d0eb56efed6f6fc490503cadded0092de75e46e132bbcc68c386dcb91f0fc0d4589f07b09e43fd9672a49d6bc8f26362  postfix.patch
 0e3bab4662c7099d8145923095cfadbd094430e71a8f7efe93a2e290714a9c3f8a8adcc2549e4d983882df415de6c39150f65ea62027f425400c53d5e8cfc154  dovecot.patch"
