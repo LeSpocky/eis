@@ -1,3 +1,2 @@
 #!/bin/sh
-
-/etc/init.d/fcron stop
+rc-service -q fcron stop
