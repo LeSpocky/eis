@@ -1,0 +1,13 @@
+--- a/include/sm/config.h
++++ b/include/sm/config.h
+@@ -40,9 +40,7 @@
+ **  Configuration macros that specify how __P is defined.
+ */
+ 
+-# ifndef SM_CONF_SYS_CDEFS_H
+-#  define SM_CONF_SYS_CDEFS_H		0
+-# endif /* ! SM_CONF_SYS_CDEFS_H */
++# undef SM_CONF_SYS_CDEFS_H
+ 
+ /*
+ **  SM_CONF_STDDEF_H is 1 if <stddef.h> exists

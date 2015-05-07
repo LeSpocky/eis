@@ -2,28 +2,38 @@
 # Maintainer: jens vehlhaber <jens@eisfair.org>
 pkgname=libmilter-dev
 pkgver=8.14.8
-pkgrel=1
+pkgrel=2
 pkgdesc="Libmilter"
 url="http://www.sendmail.org/"
 arch="all"
 license="GPLv2"
 depends=""
 depends_dev="m4"
-makedepends="$depends_dev"
+makedepends="$depends_dev linux-headers"
 install=""
 subpackages=""
 source="ftp://ftp.sendmail.org/pub/sendmail/sendmail.${pkgver}.tar.gz
+	remove-cdef.patch
 	libmilter.m4"
 
-_builddir="${srcdir}/sendmail-${pkgver}/libmilter"
+_builddir="${srcdir}/sendmail-${pkgver}"
 
 prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+	case $i in
+	    *.patch) msg $i;  patch -p1 -i "$srcdir"/${i} || return 1;;
+	esac
+	done
+
 	# From http://www.j-chkmail.org/wiki/doku.php/doc/installation/start#libmilter
 	cp -f ${srcdir}/libmilter.m4 ${srcdir}/sendmail-${pkgver}/devtools/Site/site.config.m4
+	
 }
 
 build() {
-	cd "$_builddir"
+	cd "$_builddir/libmilter"
 	./Build
 }
 
@@ -34,8 +44,11 @@ package() {
 }
 
 md5sums="73bfc621c75dbdd3d719e54685d92577  sendmail.8.14.8.tar.gz
+f0c11d831e0c1c3623b6e8fa915914b6  remove-cdef.patch
 725ec864179d934da170edc821938e16  libmilter.m4"
 sha256sums="02eb69125fc19890fa922496a5230ebb32faedc8da670d8500a8ff37e4fcb0fe  sendmail.8.14.8.tar.gz
+a226ca5380960c7160ee1decf29e7b806fb9e710394d87d888cea98031ee10cd  remove-cdef.patch
 8903f490e816b41a93aa783e26b02ebbb9189c4cbeec50f4ae77b14a192152d5  libmilter.m4"
 sha512sums="16cda9ff2af325e661d2be0008bed27e170cfe75aeab2b0a56e5579046309509bed4415494dbfb831cc723ab3ffab03dcef2748c16bb0b8f7fe9b4891467b425  sendmail.8.14.8.tar.gz
+de72eae68c48c1ae8d6f2528a09f097c562a4b2689c5ff5a86ce2e756853cdacc41696dd5822c6fb96779e8c87f8c83607320d522045da479fcc4b493f484576  remove-cdef.patch
 2af17028b953c6290554683b1dfc681f9c2e9b311ff1546adce40a6d9654af6646e5d187746f41de7dce87b3169a31046027f1848fa64ab82f57818429a29db1  libmilter.m4"
