@@ -1,19 +1,20 @@
 # Contributor: jv <jens@eisfair.org>
 # Maintainer: jv <jens@eisfair.org>
 pkgname=pfqueue
-pkgver=0.5.6
-pkgrel=1
+pkgver=0.5.7
+pkgrel=0
 pkgdesc="pfqueue MTA queues control tool"
-url="http://pfqueue.sourceforge.ne"
+url="http://pfqueue.sourceforge.net"
 arch="all"
 license="GNU"
 depends=""
-depends_dev="ncurses-dev"
+depends_dev="ncurses-dev libxml2-dev"
 makedepends="$depends_dev"
 install=""
 subpackages="$pkgname-libs $pkgname-doc"
-source="http://downloads.sourceforge.net/project/pfqueue/pfqueue/0.5.6/pfqueue-0.5.6.tar.gz
+source="http://download.eisfair.org/src/${pkgname}-${pkgver}.tar.gz
 	"
+	#http://downloads.sourceforge.net/project/pfqueue/pfqueue/${pkgver}/${pkgname}-${pkgver}.tar.gz
 
 _builddir="$srcdir/${pkgname}-$pkgver"
 
@@ -31,7 +32,6 @@ prepare() {
 build() {
 	cd ${_builddir}
 	./configure --prefix=/usr || return 1
-	sleep 1
 	make -j1 || return 1
 }
 
@@ -44,6 +44,6 @@ package() {
 }
 
 
-md5sums="ff3fbcc39b39112f123b93df579998b8  pfqueue-0.5.6.tar.gz"
-sha256sums="efedc8ea73ea09cf3edfbdbb6bf3fb0678017818fd0c1816abd9360120c59a41  pfqueue-0.5.6.tar.gz"
-sha512sums="1bb622bba6d72ff98ee862d794854debcebabeff24cb6f06cecb06513f453cbb09f0cb8e5fa4c26bfde03aadbc5e803692279427021ccda10749a6c5a326bfb9  pfqueue-0.5.6.tar.gz"
+md5sums="7d262c0ddfa176c06a75382d854f3062  pfqueue-0.5.7.tar.gz"
+sha256sums="89afcec657becdce48ed232414f3d2c261d9438809f2b5b07a0e3089bd709e8d  pfqueue-0.5.7.tar.gz"
+sha512sums="7375c82b9a774d65d34c4ede036f23306b0a2c1cc4a5412f7b0b77197aa128392ff70993983e18016fb689cc7e65364d29f5cefa7da688b60dad618447d66acd  pfqueue-0.5.7.tar.gz"
