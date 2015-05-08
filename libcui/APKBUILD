@@ -86,7 +86,7 @@ dev(){
 
 addonmysql(){
 	pkgdesc="CUI lib addon for MySQL database"
-	depends="libcui>=$pkgver mysql-libs"
+	depends="libcui>=$pkgver"
 	cd ${_builddir}/addons/libmysql-addon
 	make -j1 -s DESTDIR=${subpkgdir} install || return 1
 }
