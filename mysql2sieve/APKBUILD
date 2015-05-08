@@ -8,7 +8,6 @@ url="http://www.eisfair.org"
 arch="all"
 license="GPLv2"
 depends=""
-
 _alpinerelease=`awk -F \. {'print $1$2'} /etc/alpine-release`
 if [ "$_alpinerelease" -gt 31 ]
 then
