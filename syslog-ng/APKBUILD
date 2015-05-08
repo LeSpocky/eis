@@ -8,7 +8,14 @@ url="http://www.balabit.com"
 arch="all"
 license="GPLv2"
 depends=""
-depends_dev="glib-dev eventlog-dev pcre-dev"
+_alpinerelease=`awk -F \. {'print $1$2'} /etc/alpine-release`
+if [ "$_alpinerelease" -gt 31 ]
+then
+  depends_dev="glib-dev eventlog-dev pcre-dev"
+else
+  depends_dev="glib-dev libeventlog-dev pcre-dev"
+fi
+
 makedepends="$depends_dev"
 install="$pkgname.pre-install $pkgname.post-install $pkgname.pre-deinstall $pkgname.pre-upgrade $pkgname.post-upgrade"
 subpackages=""
