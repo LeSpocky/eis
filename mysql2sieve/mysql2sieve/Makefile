@@ -21,8 +21,8 @@ CCFLAGS = -Wall -g
 # Debug + Profiling
 # CCFLAGS = -Wall -g -pg
 
-LDFLAGS_SHARED = -lmysqlclient -liconv
-
+LDFLAGS_SHARED = -lmysqlclient 
+#-liconv
 
 all: mysql2sieve
 

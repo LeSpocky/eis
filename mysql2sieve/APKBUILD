@@ -8,7 +8,14 @@ url="http://www.eisfair.org"
 arch="all"
 license="GPLv2"
 depends=""
-depends_dev="mysql-dev libiconv-dev"
+
+_alpinerelease=`awk -F \. {'print $1$2'} /etc/alpine-release`
+if [ "$_alpinerelease" -gt 31 ]
+then
+  depends_dev="mariadb-dev"
+else
+  depends_dev="libiconv-dev mysql-dev"
+fi
 makedepends="$depends_dev"
 install=""
 subpackages=""
