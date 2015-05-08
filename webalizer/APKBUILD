@@ -2,7 +2,7 @@
 # Maintainer:
 pkgname=webalizer
 pkgver=2.23
-pkgrel=1
+pkgrel=2
 pkgdesc="Webalizer"
 url="http://www.webalizer.org/"
 arch="all"
@@ -13,10 +13,10 @@ makedepends="$depends_dev"
 install=""
 subpackages="$pkgname-doc"
 source="
-	ftp://ftp.mrunix.net/pub/webalizer/webalizer-2.23-05-src.tgz
+	ftp://ftp.mrunix.net/pub/webalizer/webalizer-2.23-08-src.tgz
 	${pkgname}-run"
 
-_builddir="${srcdir}/${pkgname}-${pkgver}-05"
+_builddir="${srcdir}/${pkgname}-${pkgver}-08"
 
 prepare() {
 	local i
@@ -50,9 +50,9 @@ package() {
 		"$pkgdir"/usr/bin/${pkgname}-run || return 1
 }
 
-md5sums="304338cf3b1e9389123380d5f7d88d58  webalizer-2.23-05-src.tgz
+md5sums="00f1f18bd5ed462ea43bf98d867e7966  webalizer-2.23-08-src.tgz
 88381ec057afad46b7051062352c6b66  webalizer-run"
-sha256sums="420cbb515df87a39d17d6810bdf4968d82b4ba6d90c2e0a9ce23d864c2896f6f  webalizer-2.23-05-src.tgz
+sha256sums="edaddb5aa41cc4a081a1500e3fa96615d4b41bc12086bcedf9938018ce79ed8d  webalizer-2.23-08-src.tgz
 9e41f4988df1a5d1ff90044a2d4d784161da548f12543638f11799d1b7acb070  webalizer-run"
-sha512sums="91a70e62d889b395820135a9a4fd74ab29290bbb0c984d0d9c9cac2963648f2eaa31c52829060c9ad0ece10ce7f4c528f91ee8fe660b1b1251224f8c786d1461  webalizer-2.23-05-src.tgz
+sha512sums="219cae51d2e938e2d9327ce52c9c814e7436c821b05cb528dc88f548bdfbd7a6ad69c235b078d6af194c3a1d38029fde7dde9e8b81ad6fd93c236ca76a49811b  webalizer-2.23-08-src.tgz
 e1a9a060890997ebcb173de5f9add821088d50af3fcd7af26bc9c43f1f9c62df02a79a7d2688e002dec3f3df4403e4a980a23e3ff813c832df3121d65c70222d  webalizer-run"
