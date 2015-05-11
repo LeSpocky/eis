@@ -75,7 +75,7 @@ createRepoIndex ()
     cd ${signingWorkDir}
 
     # Setup version for the new index file
-    CRTIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+    CRTIMESTAMP=$(date +"%Y%m%d-%H%M%S")
 
     # See http://wiki.alpinelinux.org/wiki/Apkindex_format
     apk index -f -o APKINDEX.unsigned.tar.gz -d "v${CRTIMESTAMP}-$apkRepoQualifier" ${repoPath}/*.apk
