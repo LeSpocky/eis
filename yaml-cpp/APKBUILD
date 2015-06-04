@@ -1,0 +1,43 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
+pkgname=yaml-cpp
+pkgver=0.5.1
+pkgrel=0
+pkgdesc="A YAML parser and emitter in C++"
+url="https://github.com/jbeder/yaml-cpp"
+arch="all"
+license="MIT License"
+depends=""
+depends_dev="boost-dev"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+source="https://yaml-cpp.googlecode.com/files/yaml-cpp-${pkgver}.tar.gz"
+
+_builddir="$srcdir"/yaml-cpp-${pkgver}
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	mkdir -p ${_builddir}/build
+	cd ${_builddir}/build
+	cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr ..
+	make || return 1
+}
+
+package() {
+	cd ${_builddir}/build
+	make DESTDIR="$pkgdir" install || return 1
+}
+
+md5sums="0fa47a5ed8fedefab766592785c85ee7  yaml-cpp-0.5.1.tar.gz"
+sha256sums="3e7c9052b43d987d41819a203d97fc45de4eed3ec67e0fdb14265c3d11046f06  yaml-cpp-0.5.1.tar.gz"
+sha512sums="3c6928684d603815c016d663af36be94507f2cccf167d6d8d7cd7dea3ea5f73ec88d62952a2b5d11796e40132857afcbbacd9eafd688f2dc11d0c339caf2e013  yaml-cpp-0.5.1.tar.gz"
