@@ -11,7 +11,7 @@ depends=""
 depends_dev="boost-dev"
 makedepends="$depends_dev"
 install=""
-subpackages=""
+subpackages="$pkgname-dev"
 source="https://yaml-cpp.googlecode.com/files/yaml-cpp-${pkgver}.tar.gz"
 
 _builddir="$srcdir"/yaml-cpp-${pkgver}
