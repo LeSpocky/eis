@@ -1,7 +1,7 @@
 # Contributor: jv <jens@eisfair.org>
 # Maintainer: jv <jens@eisfair.org>
 pkgname=firebird
-pkgver=2.5.3
+pkgver=2.5.4
 pkgrel=0
 pkgdesc="SQL SuperServer, based on InterBase 6.0 code"
 url="http://www.firebirdsql.org"
@@ -12,14 +12,14 @@ depends_dev="icu-dev ncurses-dev libedit-dev"
 makedepends="$depends_dev"
 install="$pkgname.pre-install $pkgname.post-install"
 subpackages="$pkgname-libs $pkgname-doc"
-source="http://sourceforge.net/projects/firebird/files/firebird/${pkgver}-Release/Firebird-2.5.3.26778-0.tar.bz2
+source="http://sourceforge.net/projects/firebird/files/firebird/${pkgver}-Release/Firebird-2.5.4.26856-0.tar.bz2
 	firebird-buildflags.patch
 	firebird-collation.patch
 	firebird-rwlock.patch
 	firebird-libio.patch
 	firebird.initd"
 
-_builddir="$srcdir/Firebird-2.5.3.26778-0"
+_builddir="$srcdir/Firebird-2.5.4.26856-0"
 
 prepare() {
 	local i
@@ -139,21 +139,21 @@ doc() {
 	cp -f ${_builddir}/doc/sql.extensions/* ${subpkgdir}/usr/share/doc/firebird/
 }
 
-md5sums="5feff765e11a5fb0ec17c71e155bb974  Firebird-2.5.3.26778-0.tar.bz2
+md5sums="7a17ec9889424b98baa29e001a054434  Firebird-2.5.4.26856-0.tar.bz2
 8ae04a3d9246631182de2f5ea44702c5  firebird-buildflags.patch
 79a265e6777c28f13b8f022addcd13cd  firebird-collation.patch
 b43b1fd41cd8f8e23647a47589462380  firebird-rwlock.patch
 67fa113626a6de63b40e1ed1ddf4c015  firebird-libio.patch
-c4d109cd2c92b44b6d786286636ea425  firebird.initd"
-sha256sums="d4c561185e5df1c24b9c19d335d178b82d03bd15bab4963d2bc374eb75d41c4b  Firebird-2.5.3.26778-0.tar.bz2
+dc0879f6142cc59bbcd30ea3883c013c  firebird.initd"
+sha256sums="4e775dcf218640d3af507a816aef0060f52a295b9ee5f66ec66f0b0564da18d3  Firebird-2.5.4.26856-0.tar.bz2
 58b116d91f79c1496eead2e82e95eee1f6993fe802502c8fdb7a1d77e2d48f3b  firebird-buildflags.patch
 290246a48b7b6a7cb567510fc79fc02a6a216ad44e125f486133e1392404ce0c  firebird-collation.patch
 ddc2e65fa99c7ffec3a1b4a7f63cd7f9a3320f56becf2896e498f5a8a1eb1657  firebird-rwlock.patch
 6db251469a135b62d70bc7aa135d3cbae09db4cbf1d407b2a7e5bfc853307755  firebird-libio.patch
-f863f1a1b1e2aff361043501dafd335de894adda50afe474e38fc7409022aa59  firebird.initd"
-sha512sums="4d2e97791bdb8445ceff6686cffb2f78e315591e1f8b5d355d8006003218d78212c788bb29b1e3323235c6d63f19d82ad30cfddd94267d9079d4963ddf88b185  Firebird-2.5.3.26778-0.tar.bz2
+495ec5195700529ce859ae3f7e0179eb2412f8001d695c0dcbc5e6658b202db7  firebird.initd"
+sha512sums="2513362e9b31f4b1229186ae6b0099ad80c908548e2f2102a3bb1cc9c0e9c1bd200d0e48915fe65241efcf5e86457cde3304e56f28acdda14edd230cdb2a76a8  Firebird-2.5.4.26856-0.tar.bz2
 1b7e63c928908f0d74c3059e9a7df84f6bc1fbd0e799e574becfee6828272ada16b48b5efda0b19e3c83290b96a97801128359c3079e5653778b28d5693cba3d  firebird-buildflags.patch
 91a03d3dff36d1a846eac7da54d66e95bfe21e430fcf349691f6ed525d6e3876604fbe23ea0a4cb099dfe9cd1235ae58a8fe60c543fcc4265b7a96631266ef7e  firebird-collation.patch
 a47f8955875cdb0a7cc84497663ff2f68524dfcf7c583d1a0b8f3c42e26a6a8c7a2ea66b54ad6a5f7cecfa70e993509bb2c518683b3217446a9c3ca5ff5770b0  firebird-rwlock.patch
 d77e3a64a13d5d5c5daa4b05727d57419fa07a342609668a0d9fac54fb3b5118574b2beaad4d79c9dc009a64d59e28cb263ff1d28c0b8139fa39199b656f6b4c  firebird-libio.patch
-0d40cc314573eabbd20caa9554b6cb711301f589dddb3f9faddc76fd2b28fafac34bb8099f607d9745e9cf3cadba7958f0c21f0bb81330f19fb5e9cb687773a1  firebird.initd"
+c76f26b68e858f2971031372a3d1b2a160ed97bb62609dda0a1ae605e91577bb55675c343b7af14c00f9b3fc6b4a760883ba8a65a55d1fa7e55965eac43e070b  firebird.initd"

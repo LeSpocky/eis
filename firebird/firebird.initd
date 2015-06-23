@@ -1,4 +1,4 @@
-#!/sbin/runscript
+#!/sbin/openrc-run
 # firebird init.d file for alpine linux.
 
 FBUSER=firebird
