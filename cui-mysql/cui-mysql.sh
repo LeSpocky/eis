@@ -24,7 +24,7 @@ chown mysql /var/lib/mysql_backup
 bindaddr="bind-address                = 127.0.0.1"
 if [ "$MYSQL_NETWORK" = "yes" ] ; then
     bindaddr="#bind-address               = 127.0.0.1"
-    [ -n "$MYSQL_BIND_IP_ADDRESS" ] && bindaddr="bind-address                = $MYSQL_BIND_IP_ADDRESS"
+    [ -n "$MYSQL_BIND" ] && bindaddr="bind-address                = $MYSQL_BIND"
 fi
 
 # ---- count cpu cores ---------------------------------------------------------
