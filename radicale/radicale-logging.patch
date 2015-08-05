@@ -1,0 +1,9 @@
+--- a/logging
++++ b/logging
+@@ -45,7 +45,7 @@
+ [handler_file]
+ # File handler
+ class = FileHandler
+-args = ('/var/log/radicale',)
++args = ('/var/log/radicale/radicale.log',)
+ formatter = full

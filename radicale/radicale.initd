@@ -3,7 +3,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-PIDFILE=/var/run/radicale.pid
+PIDFILE=/run/radicale.pid
 
 depend() {
     use net

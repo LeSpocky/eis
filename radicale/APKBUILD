@@ -15,6 +15,7 @@ subpackages=""
 source="
 	https://pypi.python.org/packages/source/R/Radicale/Radicale-0.10.tar.gz
 	$pkgname-config.patch
+	radicale-logging.patch
 	$pkgname.initd"
 
 _builddir="${srcdir}/Radicale-${pkgver}"
@@ -24,7 +25,7 @@ prepare() {
 	cd "$_builddir"
 	for i in $source; do
 		case $i in
-#		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
 		esac
 	done
 }
@@ -50,11 +51,14 @@ package() {
 }
 
 md5sums="32655d8893962956ead0ad690cca6044  Radicale-0.10.tar.gz
-75f1c82979bfb5706de6a1319b775f78  radicale-config.patch
-60c54f69f377c52b201e22c36a185ee8  radicale.initd"
+3f10ea6c471512c8f41636ad2d16bba2  radicale-config.patch
+127c02a70fe952c137cb4a48201fd386  radicale-logging.patch
+f66a7b246b5fcb722bbe468cce6db990  radicale.initd"
 sha256sums="0c6522f5751685fc159524ed7acee811ccb9a582db2adb6bbb4da99ce0103d64  Radicale-0.10.tar.gz
-fd051e3191ebb4195ee7494cd00849147a7520c37ea5745465509de943f8b821  radicale-config.patch
-1f3a6586a3ab9c9abc561b6ce663942908a5ad359848cb244a1850a4268139eb  radicale.initd"
+c8ed99d5b9d033b8d070421f239ad45a487922c114250ef2dda4ac9b95341213  radicale-config.patch
+5c9be6cf1d8b37c327858b1bf5493bbbf985a67d15e0d081f4c9e8659a269a7d  radicale-logging.patch
+1a2edd47385feb433a877731c7479bd48aa5763f9b5a16574d18e9e6bf40c474  radicale.initd"
 sha512sums="d223df0277e43081c9d5a95f30fb5ad5f852b24fc9493b089e36d82ee45ce1549b68e28bf8bdd12352bc3f087babc8f3b6d4e3fce87980e6ca5e3e75f4ace820  Radicale-0.10.tar.gz
-63a4236ddd02564829ad36df38f71a9a6030aaf96355c453d1afa55620bb4c3115d877a5d9a7a945e5f769af8abde8a0d5e3d34b286cf948281dc8a3de59f6f4  radicale-config.patch
-f460b4935754a3a4fa0eaec36a61013f10db857bf381c2ff6ad7a31782c17a5242867e7ee8f4583883455033be4e6087249f941dee17826593fffe3a4a13926e  radicale.initd"
+f455e859c2af0bc71e823d325633b0e4e37ca49dd1c492afa4fbaecfc2b2172e6feb8c5299e89bf3ad1d416dfecacdde943f512a60e757a6077313ea5508676f  radicale-config.patch
+5fa6700020f4cf1751889f8eed7e722862f87927f0687537220887eadec612ba26d8a2707583af7e91f2d06e76d1c40d1c7eb2a02e4459f4cc33f8f7059bcc87  radicale-logging.patch
+35708cfbfd1f387886884d21fc6bf08c14fb6eab2865e6ac5c23e0108ecec2153925327fd837832a67536d64d15ff3f06c043cdef7b60f92d161e4573a076977  radicale.initd"
