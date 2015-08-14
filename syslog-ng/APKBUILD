@@ -11,9 +11,9 @@ depends=""
 _alpinerelease=`awk -F \. {'print $1$2'} /etc/alpine-release`
 if [ "$_alpinerelease" -gt 31 ]
 then
-  depends_dev="glib-dev eventlog-dev pcre-dev"
+  depends_dev="glib-dev eventlog-dev pcre-dev openssl-dev"
 else
-  depends_dev="glib-dev libeventlog-dev pcre-dev"
+  depends_dev="glib-dev libeventlog-dev pcre-dev openssl-dev"
 fi
 
 makedepends="$depends_dev"
@@ -49,6 +49,7 @@ build() {
 	--sysconfdir=/etc/syslog-ng \
 	--localstatedir=/run \
 	--enable-ipv6 \
+	--enable-ssl \
 	--disable-sql \
 	--disable-mongodb \
 	--disable-json \
