@@ -331,7 +331,7 @@ EOF
 	local apkflags="--initdb --update-cache --clean-protected"
 	# local pkgs=$(cat "$mnt"/etc/apk/world "$mnt"/var/lib/apk/world 2>/dev/null)
 	[ -n "$USE_RAID" ] && raidpkg="mdadm"
-	pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libeventlog libcui fcron syslog-ng logrotate cuimenu-bin cuimenu syslinux"
+	pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libcui fcron syslog-ng logrotate cuimenu-bin cuimenu syslinux"
 
 	if [ "$(rc --sys)" = "XEN0" ]; then
 		pkgs="$pkgs xen-hypervisor"
