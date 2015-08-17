@@ -1,9 +1,32 @@
 --- a/logging
 +++ b/logging
-@@ -45,7 +45,7 @@
+@@ -30,7 +30,9 @@
+ [logger_root]
+ # Root logger
+ level = DEBUG
+-handlers = console,file
++handlers = file
++# Enable the following instead if you also want console logging
++#handlers = console,file
+ 
+ 
+ # Handlers
+@@ -38,7 +40,7 @@
+ [handler_console]
+ # Console handler
+ class = StreamHandler
+-level = INFO
++level = DEBUG
+ args = (sys.stdout,)
+ formatter = simple
+ 
+@@ -45,7 +45,8 @@
  [handler_file]
  # File handler
  class = FileHandler
 -args = ('/var/log/radicale',)
 +args = ('/var/log/radicale/radicale.log',)
++level = INFO
  formatter = full
+ 
+ 

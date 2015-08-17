@@ -10,10 +10,16 @@ depend() {
     need localmount
 }
 
+
+start_pre() {
+    checkpath --directory /var/log/radicale --owner daemon
+    checkpath --directory /var/lib/radicale --owner daemon
+}
+
 start() {
     ebegin "Starting radicale"
         start-stop-daemon --start --quiet --background \
-        --pidfile ${PIDFILE} --make-pidfile \
+        --pidfile ${PIDFILE} --make-pidfile --user daemon \
         --exec /usr/bin/radicale -- --foreground
     eend $?
 }
