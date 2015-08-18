@@ -157,8 +157,9 @@ EOF
 # Set time zone
 #----------------------------------------------------------------------------
 case "$TIME_ZONE" in
+	utc|UTC)     TIME_ZONE="UTC" ;;
 	met|cet|CET) TIME_ZONE="CET" ;;
-	gmt*|GMT*) TIME_ZONE="CET-1CEST,M3.5.0,M10.5.0/3" ;;
+	gmt*|GMT*)   TIME_ZONE="CET-1CEST,M3.5.0,M10.5.0/3" ;;
 esac
 echo "$TIME_ZONE" > /etc/TZ
 
@@ -328,20 +329,21 @@ then
     echo "KEYMAP=/etc/keymap/${KEYMAP}.bmap.gz" >> /etc/conf.d/keymaps
     zcat /etc/keymap/${KEYMAP}.bmap.gz | loadkmap
 fi
+if [ -e /lib/kbd/consolefonts ]
+then
+    # remove old values
+    sed -i '/^consolefont=/d' /etc/conf.d/consolefont
+    #sed -i '/^consoletranslation=/d' /etc/conf.d/consolefont
+    #sed -i '/^unicodemap=/d' /etc/conf.d/consolefont
 
-# remove old values
-sed -i '/^consolefont=/d' /etc/conf.d/consolefont
-#sed -i '/^consoletranslation=/d' /etc/conf.d/consolefont
-#sed -i '/^unicodemap=/d' /etc/conf.d/consolefont
-
-{
+    {
 	echo "consolefont=\"$CONSOLEFONT\""
-#	echo 'consoletranslation="8859-1_to_uni"'
-#	echo 'unicodemap="iso01"'
-} >> /etc/conf.d/consolefont
-
+    #	echo 'consoletranslation="8859-1_to_uni"'
+    #	echo 'unicodemap="iso01"'
+    } >> /etc/conf.d/consolefont
+    /sbin/rc-service -q consolefont restart >/dev/null 2>&1
+fi
 [ -f /etc/init.d/kbd-mini ] && /sbin/rc-service -q kbd-mini start >/dev/null 2>&1
-/sbin/rc-service -q consolefont restart >/dev/null 2>&1
 
 # Set console blank time ESC 9 and VESA powerdown ESC 14
 if [ "0$CONSOLE_BLANK_TIME" -eq 0 ]

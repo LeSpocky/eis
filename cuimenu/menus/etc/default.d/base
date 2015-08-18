@@ -51,13 +51,13 @@ DNS_SERVER='192.168.6.1 2001:db8:1:f101::1' # your dns server, e.g. fli4l router
 # Time zone
 #------------------------------------------------------------------------------
 
-TIME_ZONE='CET'                        # time zone, use 'CET' or 'GMT'
+TIME_ZONE='UTC'                     # time zone, use 'UTC', 'CET' or 'GMT'...
 
 #------------------------------------------------------------------------------
 # Syslog service
 #------------------------------------------------------------------------------
 
-START_SYSLOG='yes'                          # start syslog: yes or no
+START_SYSLOG='yes'                  # start syslog: yes or no
 
 SYSLOG_AUTH_INTERVAL='weekly'
 SYSLOG_AUTH_MAXCOUNT='4'
@@ -97,7 +97,7 @@ SYSLOG_DEST_2_MAXCOUNT='2'
 # Keymapping
 #------------------------------------------------------------------------------
 
-KEYMAP='de-latin1-nodeadkeys'              # load german keymap
+KEYMAP='de-latin1-nodeadkeys'          # load german keymap
 
 #------------------------------------------------------------------------------
 # Console setup
