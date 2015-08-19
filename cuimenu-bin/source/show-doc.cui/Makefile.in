@@ -30,6 +30,9 @@ DBGFLAGS        = -g
 # linker
 LDFLAGS         = -lcui -lcui-util -ldl
 LDFLAGS        += @CURSES_LIB@
+ifeq ($(shell test -e /usr/lib/libiconv.so ; echo $$?),0)
+  LDFLAGS      += -liconv
+endif
 
 # definitions
 TARGET		= @PACKAGE_NAME@
