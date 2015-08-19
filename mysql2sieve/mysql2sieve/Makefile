@@ -21,8 +21,10 @@ CCFLAGS = -Wall -g
 # Debug + Profiling
 # CCFLAGS = -Wall -g -pg
 
-LDFLAGS_SHARED = -lmysqlclient 
-#-liconv
+LDFLAGS_SHARED = -lmysqlclient
+ifeq ($(shell test -e /usr/lib/libiconv.so ; echo $$?),0)
+    LDFLAGS_SHARED  += -liconv
+endif
 
 all: mysql2sieve
 
