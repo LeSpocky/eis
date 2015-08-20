@@ -11,7 +11,7 @@ depends=""
 depends_dev=""
 makedepends="$depends_dev"
 install=""
-source="http://inatech.eu/inadyn/inadyn.v${pkgver}.zip"
+source="http://download.eisfair.org/src/${pkgname}.v${pkgver}.zip"
 
 _builddir="$srcdir/${pkgname}-$pkgver"
 
