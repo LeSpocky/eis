@@ -14,8 +14,6 @@ install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgna
 subpackages=""
 source="${pkgname}.default
 		${pkgname}.check
-		${pkgname}.check.exp
-		${pkgname}.check.ext
 		${pkgname}.help
 		${pkgname}.sh
 		${pkgname}-update.sh
@@ -35,16 +33,14 @@ build() {
 
 package() {
 	cd "$_builddir"
-	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/ssmtp || return 1
-	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/ssmtp.exp || return 1
-	install -D -m644 ${srcdir}/${pkgname}.check.ext     ${pkgdir}/etc/check.d/ssmtp.ext || return 1	
-	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/ssmtp || return 1
-	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/ssmtp || return 1
-	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/ssmtp.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/ssmtp-update.sh || return 1
-	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.ssmtp.menu || return 1	
-	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/ssmtp/ssmtp.txt || return 1
-	install -D -m644 ${srcdir}/${pkgname}.txt.toc       ${pkgdir}/usr/share/doc/ssmtp/ssmtp.toc || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/dhcp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/dhcp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/dhcp || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/dhcp.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/dhcp-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.dhcp.menu || return 1	
+	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/dhcp/dhcp.txt || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt.toc       ${pkgdir}/usr/share/doc/dhcp/dhcp.toc || return 1
 }
 
 md5sums="
