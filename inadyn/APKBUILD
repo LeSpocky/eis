@@ -36,6 +36,6 @@ package() {
 	install -D -m755 ${_builddir}/bin/linux/inadyn  ${pkgdir}/usr/bin/${pkgname} || return 1
 }
 
-md5sums="d394ed5ab7a9313992bdc62c412cb369  inadyn.v1.96.2.zip"
-sha256sums="cabaf79a467918dbdafa84792c963047692cd91283a808981736f78c95751650  inadyn.v1.96.2.zip"
-sha512sums="d4e591271b9f2d7996b117d474894e44a615df17bba491a2be6494163b8d8bf0c705f1aa597fd9b846dd383b07d084e32a3ca0c003c1ef04ae6d335e29aaa014  inadyn.v1.96.2.zip"
+md5sums="702a127f13b96eee38d60c6f30b20efa  inadyn.v1.96.2.zip"
+sha256sums="981f29d12415637c8e3ad747c204a599ddb900360d04a9b4c351d54db3d2321c  inadyn.v1.96.2.zip"
+sha512sums="4315785a6bdb325ae2dc2b787ff9c9f72006ffb41eaad18fd30f971cff4694aae7721893bc85501f9ab0cf274ea93dcaa3df870e1410ee306b32e1c6aec0e08e  inadyn.v1.96.2.zip"
