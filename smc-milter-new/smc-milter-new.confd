@@ -18,5 +18,5 @@ dbpass                  ******
 optremove               text/x-vcard
 avmail                  mailadmin@eisfair.home
 quarantinedir           /var/spool/postfix/quarantine
-debuglevel              0
+debuglevel              1
 #debuglevel             0...4  (4 = not remove /var/tmp/* files)
