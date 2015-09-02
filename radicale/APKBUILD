@@ -12,14 +12,15 @@ depends_dev="python"
 makedepends="$depends_dev"
 install=""
 subpackages=""
-source="
-	https://pypi.python.org/packages/source/R/Radicale/Radicale-0.10.tar.gz
+source="https://pypi.python.org/packages/source/R/Radicale/Radicale-0.10.tar.gz
 	$pkgname-config.patch
 	radicale-logging.patch
 	$pkgname.initd
-  $pkgname.logrotate"
+	$pkgname.logrotate"
 
+#https://github.com/Kozea/Radicale/archive/master.zip
 _builddir="${srcdir}/Radicale-${pkgver}"
+#_builddir="${srcdir}/Radicale-master"
 
 prepare() {
 	local i
