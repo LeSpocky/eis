@@ -2,7 +2,7 @@
 # Maintainer: jens@eisfair.org
 pkgname=fcron
 pkgver=3.2.0
-pkgrel=0
+pkgrel=1
 pkgdesc="cron scheduler"
 url="http://fcron.free.fr"
 arch="all"
