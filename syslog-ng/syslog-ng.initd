@@ -37,20 +37,20 @@ reload() {
 
 grep_syslog_conf_entries() {
 	local section="$1" FN filelist timezone
-	grep -v '^#' /etc/syslog-ng/syslog-ng-${section}.std
 	filelist=$(find /etc/syslog-ng/ -maxdepth 1 -type f -name "syslog-ng-${section}.*" | grep -Ev ".backup|.std|~")
 	timezone=$(find /etc/zoneinfo -type f -print0 | sed "s#/etc/zoneinfo/##g")
-	if [ "$timezone" = "UTC" ] 
+	if [ "$timezone" = "UTC" ]
 	then
 	    timezone=""
-        else
+	else
 	    timezone="time_zone(\"$timezone\")"
-        fi
+	fi
+	grep -v '^#' /etc/syslog-ng/syslog-ng-${section}.std | sed "s#_TZ_#${timezone}#g"
 	if [ $? -eq 0 ]
 	then
 		for FN in ${filelist}
 		do
-			grep -v '^#' $FN | sed "s/_TZ_/$timezone/g"
+			grep -v '^#' $FN | sed "s#_TZ_#${timezone}#g"
 		done
 	fi
 }
@@ -82,3 +82,4 @@ update() {
 	cp -p $f_tmp $fname
 	rm -f $f_tmp
 }
+
