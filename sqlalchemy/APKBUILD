@@ -1,6 +1,6 @@
 # Contributor: Jens Vehlhaber jv <jens@eisfair.org>
 # Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
-pkgname=SQLAlchemy
+pkgname=sqlalchemy
 pkgver=1.0.8
 pkgrel=0
 pkgdesc="SQLAlchemy -  Python Database Abstraction Library"
@@ -12,10 +12,10 @@ depends_dev="python py-setuptools python-dev"
 makedepends="$depends_dev"
 install=""
 subpackages=""
-source="https://pypi.python.org/packages/source/S/SQLAlchemy/$pkgname-$pkgver.tar.gz
+source="https://pypi.python.org/packages/source/S/SQLAlchemy/SQLAlchemy-$pkgver.tar.gz
 	"
 	
-_builddir="${srcdir}/$pkgname-$pkgver"
+_builddir="${srcdir}/SQLAlchemy-$pkgver"
 
 prepare() {
 	local i
