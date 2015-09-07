@@ -5,10 +5,10 @@ pkgver=1.0.8
 pkgrel=0
 pkgdesc="SQLAlchemy -  Python Database Abstraction Library"
 url="https://pypi.python.org/pypi/SQLAlchemy"
-arch="noarch"
+arch="all"
 license="GPL"
 depends="python"
-depends_dev="python py-setuptools"
+depends_dev="python py-setuptools python-dev"
 makedepends="$depends_dev"
 install=""
 subpackages=""
@@ -29,7 +29,7 @@ prepare() {
 
 build() {
 	cd "$_builddir"
-	#grep -r -l '#!/usr/bin/env python' * | xargs sed -i "s|#!/usr/bin/env python|#!/usr/bin/python|"
+	grep -r -l '<Python.h>' lib/sqlalchemy/cextension | xargs sed -i "s|<Python.h>|\"python2.7/Python.h\"|"
 	python ./setup.py build
 }
 
