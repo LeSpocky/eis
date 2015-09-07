@@ -1,0 +1,43 @@
+# Contributor: Jens Vehlhaber jv <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
+pkgname=SQLAlchemy
+pkgver=1.0.8
+pkgrel=0
+pkgdesc="SQLAlchemy -  Python Database Abstraction Library"
+url="https://pypi.python.org/pypi/SQLAlchemy"
+arch="noarch"
+license="GPL"
+depends="python"
+depends_dev="python py-setuptools"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+source="https://pypi.python.org/packages/source/S/SQLAlchemy/$pkgname-$pkgver.tar.gz
+	"
+	
+_builddir="${srcdir}/$pkgname-$pkgver"
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+	#grep -r -l '#!/usr/bin/env python' * | xargs sed -i "s|#!/usr/bin/env python|#!/usr/bin/python|"
+	python ./setup.py build
+}
+
+package() {
+	cd "$_builddir"
+	python ./setup.py install --root="$pkgdir"
+}
+
+md5sums="7cfd005be63945c96a78c67764ac3a85  SQLAlchemy-1.0.8.tar.gz"
+sha256sums="950c79c0abf9e9f99c43c627c51d40d14a946810a90c35e7cd827bfd0bffe46f  SQLAlchemy-1.0.8.tar.gz"
+sha512sums="921f847a20548095cb1f41fe6147b393110e08f8f3ff0aee6081e7811e7c15b3c03583afd41ddf5aacdc1dde090c0512afb94c7cc33d9c27135a5525ed121e74  SQLAlchemy-1.0.8.tar.gz"
