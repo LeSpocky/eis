@@ -1,0 +1,43 @@
+# Contributor: Jens Vehlhaber jv <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
+pkgname=pymysql
+pkgver=0.6.6
+pkgrel=0
+pkgdesc="PyMySQL - pure-Python MySQL client library"
+url="https://pypi.python.org/pypi/PyMySQL"
+arch="noarch"
+license="GPL"
+depends="python"
+depends_dev="python py-setuptools"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+source="https://pypi.python.org/packages/source/P/PyMySQL/PyMySQL-$pkgver.tar.gz
+	"
+	
+_builddir="${srcdir}/PyMySQL-$pkgver"
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+#	grep -r -l '<Python.h>' lib/sqlalchemy/cextension | xargs sed -i "s|<Python.h>|\"python2.7/Python.h\"|"
+	python ./setup.py build
+}
+
+package() {
+	cd "$_builddir"
+	python ./setup.py install --root="$pkgdir"
+}
+
+md5sums="a3968a6bf6672fa93ca931ab2ef46024  PyMySQL-0.6.6.tar.gz"
+sha256sums="c18e62ca481c5ada6c7bee1b81fc003d6ceae932c878db384cd36808010b3774  PyMySQL-0.6.6.tar.gz"
+sha512sums="fd9880a02ba045d99f5476d4f367930ecc357803e2efb088926104cd773eecb0742210ec7b92006d26f538313977f2b438a03b786539879aa02ff19a1cce0be8  PyMySQL-0.6.6.tar.gz"
