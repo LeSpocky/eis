@@ -1,10 +1,9 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
 # /var/install/config.d/cui-lcd4linux-update.sh - paramater update script
-#
 # Creation   : 2010-08-18 Y. Schumann
-# Copyright (c) 2001-2014 The eisfair Team, <team(at)eisfair(dot)org>
-#
+# Copyright (c) 2001-2015 The eisfair Team, <team(at)eisfair(dot)org>
+# Distributed under the terms of the GNU General Public License v2
 # ----------------------------------------------------------------------------
 
 #exec 2> `pwd`/cui-lcd4linux-update-trace$$.log
