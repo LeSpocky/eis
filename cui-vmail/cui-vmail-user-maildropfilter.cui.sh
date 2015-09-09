@@ -625,8 +625,8 @@ function maildrops_create_dialog()
     maildropdlg_flag8="0"
     maildropdlg_flags="0"
     maildropdlg_position="50"
-    maildropdlg_datestart="1970-01-01"
-    maildropdlg_dateend="1970-01-01"
+    maildropdlg_datestart="1970-01-01 01:00:00"
+    maildropdlg_dateend="1970-01-01 01:00:00"
     maildropdlg_active="1"
 
     cui_window_new "$win" 0 0 46 20 $[$CWS_POPUP + $CWS_BORDER + $CWS_CENTERED] && dlg="$p2"

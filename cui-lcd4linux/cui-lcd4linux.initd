@@ -3,17 +3,15 @@
 # Creation: 2014-01-01 starwarsfan; The eisfair Team, <team(at)eisfair(dot)org>
 # Distributed under the terms of the GNU General Public License v2
 
+PIDFILE=/run/lcd4linux.pid
+DAEMON=/usr/bin/lcd4linux
 
 activeConfigurationLink='/etc/lcd4linux.conf'
 nativeMainConfiguration='/etc/lcd4linux/lcd4linux.main.conf'
 nativeShutdownConfiguration='/etc/lcd4linux/lcd4linux.shutdown.conf'
 
 # Include config
-. /etc/config.d/cui-lcd4linux
-
-PIDFILE=/run/lcd4linux.pid
-DAEMON=/usr/bin/lcd4linux
-
+[ -f /etc/config.d/cui-lcd4linux ] && . /etc/config.d/cui-lcd4linux
 
 do_insmod_once () {
     grep "^$1 " /proc/modules >/dev/null
@@ -24,7 +22,7 @@ do_insmod_once () {
 
 start() {
     if [ "$START_LCD" == 'yes' ] ; then
-        echo "Starting lcd4linux..."
+        ebegin "Starting lcd4linux"
         if [ "$LCD_USE_SHUTDOWN_LAYOUT" == 'yes' ] ; then
             # Determine current runlevel. Next step should be done only
             # on runlevel != 'shutdown' to activate default configuration
@@ -38,18 +36,19 @@ start() {
 
         if [ "$LCD_DRIVER" == 'Curses' ] ; then
             /usr/bin/lcd4linux -F >${LCD_PORT} &
+            eend $? "Failed to start lcd4linux"
         else
-            case ${LCD_PORT} in
-                /dev/parport0|/dev/parport1|/dev/parport2|/dev/parport3|/dev/parport4|/dev/parport5|/dev/parport6|/dev/parport7|/dev/parport8|/dev/parport9)
+            case "${LCD_PORT}" in
+                /dev/parport[0-9])
                     do_insmod_once parport
                     do_insmod_once parport_pc
                     do_insmod_once ppdev;;
             esac
             /usr/bin/lcd4linux
+            eend $? "Failed to start lcd4linux"
         fi
-        sleep 1
     else
-        echo "lcd4linux is deactivated. Use 'setup' to configure/activate it!"
+        ewarn "lcd4linux is deactivated. Use 'setup' to configure/activate it!"
     fi
 }
 
@@ -69,7 +68,8 @@ stop() {
         fi
     fi
     if [ -e ${PIDFILE} ] ; then
-        echo "Stopping lcd4linux"
+        ebegin "Stopping lcd4linux"
         kill `cat ${PIDFILE} 2>/dev/null` 2>/dev/null
+        eend $?
     fi
 }
