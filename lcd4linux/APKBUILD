@@ -12,7 +12,8 @@ depends_dev="libusb-compat-dev subversion libtool automake autoconf gettext-dev 
 makedepends="$depends_dev"
 install=""
 source="http://download.eisfair.org/src/${pkgname}-trunk-1200.zip
-	plugin_i2c_sensors.c.patch"
+	plugin_i2c_sensors.c.patch
+	"
 
 _builddir="$srcdir/trunk"
 
@@ -29,12 +30,18 @@ prepare() {
 build() {
 	cd "$_builddir"
 	./bootstrap
+	#exclude not supported driver
+	case "$CARCH" in
+	    arm*) drivers="all,!RouterBoard,!TeakLCM" ;;
+	    x86) drivers="all,!TeakLCM" ;;
+	    x86_64) drivers="all,!TeakLCM" ;;
+	esac
 	./configure \
 	    --prefix=/usr \
 	    --sysconfdir=/etc/lcd4linux \
 	    --without-x \
 	    --without-python \
-	    --with-drivers='all,!TeakLCM' || return 1
+	    --with-drivers="$drivers" || return 1
 	make || return 1
 }
 
