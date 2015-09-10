@@ -1,7 +1,7 @@
 # Contributor: starwarsfan <yves@eisfair.org>
 # Maintainer:
 pkgname=lcd4linux
-pkgver=0.12.0
+pkgver=0.12.1
 pkgrel=0
 pkgdesc="LCD4Linux"
 url="http://ssl.bulix.org/projects/lcd4linux/"
@@ -11,9 +11,9 @@ depends=""
 depends_dev="libusb-compat-dev libtool automake autoconf gettext-dev linux-headers"
 makedepends="$depends_dev"
 install=""
-source="http://download.eisfair.org/src/${pkgname}-trunk-1200.zip
+source="http://download.eisfair.org/src/${pkgname}-trunk-1201.tar.gz
 	plugin_i2c_sensors.c.patch
-	"
+	lcd4linux-pid.patch"
 
 _builddir="$srcdir/trunk"
 
@@ -29,12 +29,13 @@ prepare() {
 
 build() {
 	cd "$_builddir"
+	echo "#define SVN_VERSION \"20150910\"" > svn_version.h
 	./bootstrap
 	#exclude not supported driver
 	case "$CARCH" in
-	    arm*) drivers="all,!RouterBoard,!TeakLCM" ;;
-	    x86) drivers="all,!TeakLCM" ;;
-	    x86_64) drivers="all,!TeakLCM" ;;
+	    arm*) drivers="all,!RouterBoard" ;;
+	    x86) drivers="all" ;;
+	    x86_64) drivers="all" ;;
 	esac
 	./configure \
 	    --prefix=/usr \
@@ -52,9 +53,12 @@ package() {
 		 ${pkgdir}/etc/${pkgname}/lcd4linux.conf.sample || return 1
 }
 
-md5sums="697f225ef271a370bab2b8f8375a76df  lcd4linux-trunk-1200.zip
-07515690b392eeb44374aaff977194e8  plugin_i2c_sensors.c.patch"
-sha256sums="a22e4fb0df70dbc8224edeebaf5402b69a8eca1e658da7573b1331f124a63396  lcd4linux-trunk-1200.zip
-1a6a9e68be0ae91ab366b319cfbcc1a1fea4ae837984f3575cd9152349e57713  plugin_i2c_sensors.c.patch"
-sha512sums="dc4f4a9df499dd5d0bb3619653968791e5a425861cdf34f1d082e45e6eeec4e452d0a453e60ec67b67c321cb1c2aad1541237e37ea7a39a0fa59c841be3144bb  lcd4linux-trunk-1200.zip
-e0a9ac5692d08ebbd3c513f95ef47ac0b04af4a13a44d97407cd921c96e538b6875f0c7756411f1ce2787df6aa18370e9e7e80fc55958f14a22fce2736177359  plugin_i2c_sensors.c.patch"
+md5sums="6407ff7bc736c87090b0c621429ec13d  lcd4linux-trunk-1201.tar.gz
+07515690b392eeb44374aaff977194e8  plugin_i2c_sensors.c.patch
+d90016287c0da6ae83eb5c5b895f0236  lcd4linux-pid.patch"
+sha256sums="3e06fb83b06f6f6591df82f7d6bab8302073a081fb8fd63b79eda2e93dbe91e9  lcd4linux-trunk-1201.tar.gz
+1a6a9e68be0ae91ab366b319cfbcc1a1fea4ae837984f3575cd9152349e57713  plugin_i2c_sensors.c.patch
+56d9e93f3f4c8e8909927da982dc1e0d4a7132e83a55fa55f745bd4d337429f0  lcd4linux-pid.patch"
+sha512sums="968494a34754ce3d478f0734318dc9e9d27af3fa6df1ef81d0b8f3eb4ccd18eca00e9cda95c4a5880a90666d1faba74d1df5131a6c3c47904ad0b7c0aa9ad8be  lcd4linux-trunk-1201.tar.gz
+e0a9ac5692d08ebbd3c513f95ef47ac0b04af4a13a44d97407cd921c96e538b6875f0c7756411f1ce2787df6aa18370e9e7e80fc55958f14a22fce2736177359  plugin_i2c_sensors.c.patch
+10729d4884068bbbda01d78e008811f2154c099895757de27dc30fa475bc2d7236024fd1495a6ff4a13c77ea6e7e1ceaf28177d79f784028d49c431378c679df  lcd4linux-pid.patch"
