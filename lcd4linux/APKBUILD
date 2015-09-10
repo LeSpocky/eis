@@ -8,7 +8,7 @@ url="http://ssl.bulix.org/projects/lcd4linux/"
 arch="all"
 license="GPL"
 depends=""
-depends_dev="libusb-compat-dev subversion libtool automake autoconf gettext-dev linux-headers"
+depends_dev="libusb-compat-dev libtool automake autoconf gettext-dev linux-headers"
 makedepends="$depends_dev"
 install=""
 source="http://download.eisfair.org/src/${pkgname}-trunk-1200.zip
@@ -38,7 +38,6 @@ build() {
 	esac
 	./configure \
 	    --prefix=/usr \
-	    --sysconfdir=/etc/lcd4linux \
 	    --without-x \
 	    --without-python \
 	    --with-drivers="$drivers" || return 1
