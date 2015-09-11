@@ -1,17 +1,5 @@
-<!--
-# ----------------------------------------------------------------------------
-# /var/install/help/cui-lcd4linux-widgets - helptexts for package lcd
-#
-# Creation   : 2010-10-03 Y. Schumann
-#
-# Copyright (c) 2001-2010 The eisfair Team, <team(at)eisfair(dot)org>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-# ----------------------------------------------------------------------------
--->
+<!-- /var/install/help/cui-lcd4linux-widgets - helptexts for package lcd4linux  -->
+<!-- Copyright (c) 2001-2015 The eisfair Team, <team(at)eisfair(dot)org> -->
 
 <help name="START_LCD">
 Fuer die Aktivierung der Widgetkonfiguration muss diese Variable lediglich auf

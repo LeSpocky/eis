@@ -2,15 +2,9 @@
 # ----------------------------------------------------------------------------
 # /usr/local/bin/cui-lcd4linux-hd.sh - Helper script to show some information
 #                                      for requested partition.
-#
 # Creation:    2005-01-28 nico
-#
-# Copyright (c) 2001-2014 The eisfair Team, <team(at)eisfair(dot)org>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# Copyright (c) 2001-2015 The eisfair Team, <team(at)eisfair(dot)org>
+# Distributed under the terms of the GNU General Public License v2
 # ----------------------------------------------------------------------------
 
 #exec 2> /tmp/cui-lcd4linux-hd-trace$$.log
