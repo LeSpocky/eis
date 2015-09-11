@@ -1,0 +1,43 @@
+# Contributor: Jens Vehlhaber jv <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
+pkgname=py-rpigpio
+pkgver=0.5.11
+pkgrel=0
+pkgdesc="GPIO on a Raspberry Pi"
+url="https://pypi.python.org/pypi/RPi.GPIO"
+arch="noarch"
+license="GPL"
+depends="python"
+depends_dev="python py-setuptools"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+source="https://pypi.python.org/packages/source/R/RPi.GPIO/RPi.GPIO-$pkgver.tar.gz
+	"
+	
+_builddir="${srcdir}/RPi.GPIO-$pkgver"
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+	grep -r -l '\"Python.h\"' source | xargs sed -i "s|\"Python.h\"|\"/usr/include/python2.7/Python.h\"|"
+	python ./setup.py build
+}
+
+package() {
+	cd "$_builddir"
+	python ./setup.py install --root="$pkgdir"
+}
+
+md5sums="9dc3dab6ce2b7ccb833a866efb392821  RPi.GPIO-0.5.11.tar.gz"
+sha256sums="8d6f02da7f90e24512ad80ee4ccf34ef33687c88c47326f100cf7ac4d7ae4bf3  RPi.GPIO-0.5.11.tar.gz"
+sha512sums="0d1dabb281c1b38b5089cb98fd1334a88bfefdf848cc80326bb88efec8da9a0602959afc0d7d4e8b9279d3b2c2b33b39242296e6460e456fa20562c2447b11a1  RPi.GPIO-0.5.11.tar.gz"
