@@ -582,10 +582,9 @@ if [ "${START_LCD}" == 'yes' -a "${START_LCD_WIDGET}" == 'yes' ] ; then
     ln -s ${nativeMainConfiguration} ${activeConfigurationLink}
     addCronjob
     cleanup
-    rc-service --quiet fcron start
 else
     rm -rf ${crontabFile}
-    rc-service --quiet fcron reload
 fi
+rc-service --quiet fcron reload
 
 exit 0
