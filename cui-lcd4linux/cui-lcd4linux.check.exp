@@ -1,0 +1,45 @@
+#------------------------------------------------------------------------------
+# /etc/check.d/cui-lcd4linux.exp - eischk exp file for cui-lcd4linux
+# Copyright (c) 2001-2015 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
+
+
+LCD_DRIVER_CUI    = '(RE:NOTEMPTY)'
+                  : 'You must choose one of the lcd drivers (and separate the display model by : if available)'
+
+LCD_CONTRAST_CUI  = '(RE:NUMERIC)'
+                  : 'Not a numeric value'
+
+LCD_BACKLIGHT_CUI = '(RE:NUMERIC)'
+                  : 'Not a numeric value'
+
+LCD_COLS_CUI      = '(RE:NUMERIC)'
+                  : 'Not a numeric value'
+
+LCD_ROWS_CUI      = '(RE:NUMERIC)'
+                  : 'Not a numeric value'
+
+LCDSERPORT        = '/dev/ttyS[0-9]'
+                  : 'Not a valid serial port, e.g. /dev/ttyS0'
+
+LCDPARPORT        = '/dev/parport[0-9]'
+                  : 'Not a valid parport, e.g. /dev/parport0'
+
+LCDTTYPORT        = '/dev/tty[0-9]'
+                  : 'Not a valid terminal, e.g. /dev/tty3'
+
+LCDPORT           ='(RE:LCDSERPORT)|(RE:LCDPARPORT)|(RE:LCDTTYPORT)|/dev/usb|'
+                  : 'Not a valid port'
+
+LCD_WIRING_CUI    = 'fli4l|winamp'
+                  : 'Not a valid wiring schema - must be fli4l or winamp'
+
+LCD_SPEED_CUI     = '---|1200|2400|4800|9600|19200|38400|115200'
+                  : 'Not a valid speed, possible values are 1200, 2400, 4800, 9600, 19200, 38400 or 115200'
+
+LCD_WIDGET_CUI    = '(RE:NOTEMPTY)'
+                  : 'One of the configured widgets must be choosen!'
+
+LCDFQDN           = '(RE:FQDN)|localhost'
+                  : 'Fully qualified domain name'
+

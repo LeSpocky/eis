@@ -6,10 +6,6 @@
 # Distributed under the terms of the GNU General Public License v2
 # ----------------------------------------------------------------------------
 
-# Include libs, helpers a.s.o.
-. /var/install/include/eislib
-. /var/install/include/configlib
-
 # Set variables
 mainPackageName=cui-lcd4linux
 packageName=cui-lcd4linux-widgets

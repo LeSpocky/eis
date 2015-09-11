@@ -1,0 +1,55 @@
+#------------------------------------------------------------------------------
+# /etc/check.d/cui-lcd4linux - eischk file for cui-lcd4linux
+# Copyright (c) 2001-2015 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
+
+# Variable                      OPT_VARIABLE       VARIABLE_N              VALUE
+START_LCD                       -                  -                       YESNO
+LCD_TYPE                        START_LCD          -                       LCD_DRIVER_CUI
+LCD_PORT                        START_LCD          -                       LCDPORT
+LCD_WIRING                      START_LCD          -                       LCD_WIRING_CUI
+LCD_SPEED                       START_LCD          -                       LCD_SPEED_CUI
+LCD_CONTRAST                    START_LCD          -                       LCD_CONTRAST_CUI
+LCD_BACKLIGHT                   START_LCD          -                       LCD_BACKLIGHT_CUI
+LCD_COLS                        START_LCD          -                       LCD_COLS_CUI
+LCD_ROWS                        START_LCD          -                       LCD_ROWS_CUI
+
+LCD_LAYOUT_N                    START_LCD                       -                        NUMERIC
+LCD_LAYOUT_%_NAME               START_LCD                       LCD_LAYOUT_N             NOTEMPTY
+LCD_LAYOUT_%_ACTIVE             START_LCD                       LCD_LAYOUT_N             YESNO
+LCD_LAYOUT_%_ELEMENT_N          LCD_LAYOUT_%_ACTIVE             LCD_LAYOUT_N             NUMERIC
+LCD_LAYOUT_%_ELEMENT_%_NAME     LCD_LAYOUT_%_ACTIVE             LCD_LAYOUT_%_ELEMENT_N   LCD_WIDGET_CUI
+LCD_LAYOUT_%_ELEMENT_%_ACTIVE   LCD_LAYOUT_%_ACTIVE             LCD_LAYOUT_%_ELEMENT_N   YESNO
+LCD_LAYOUT_%_ELEMENT_%_ROW      LCD_LAYOUT_%_ELEMENT_%_ACTIVE   LCD_LAYOUT_%_ELEMENT_N   NUMERIC
+LCD_LAYOUT_%_ELEMENT_%_COL      LCD_LAYOUT_%_ELEMENT_%_ACTIVE   LCD_LAYOUT_%_ELEMENT_N   NUMERIC
+
+LCD_LAYOUT_CYCLE                START_LCD                       -                        YESNO
+LCD_LAYOUT_CYCLE_TIME           LCD_LAYOUT_CYCLE                -                        NOTEMPTY
+
+LCD_USE_SHUTDOWN_LAYOUT         START_LCD                       -                        YESNO
+#LCD_DEFAULT_SHUTDOWN_LAYOUT     LCD_USE_SHUTDOWN_LAYOUT         -                        YESNO
+
+LCD_UPDATE_TEXT                 START_LCD          -                       NUMERIC
+LCD_UPDATE_BAR                  START_LCD          -                       NUMERIC
+LCD_UPDATE_ICON                 START_LCD          -                       NUMERIC
+
+LCD_IMOND                       START_LCD          -                       YESNO
+LCD_IMOND_HOST                  LCD_IMOND          -                       LCDFQDN
+LCD_IMOND_PORT                  LCD_IMOND          -                       PORT
+LCD_IMOND_PASS                  LCD_IMOND          -                       NONE
+
+LCD_TELMOND                     START_LCD          -                       YESNO
+LCD_TELMOND_HOST                LCD_IMOND          -                       LCDFQDN
+LCD_TELMOND_PORT                LCD_IMOND          -                       PORT
+LCD_TELMOND_PHONEBOOK           LCD_IMOND          -                       E_ABS_PATH
+
+LCD_MPD                         START_LCD          -                       YESNO
+LCD_MPD_HOST                    LCD_MPD            -                       LCDFQDN
+LCD_MPD_PORT                    LCD_MPD            -                       PORT
+
+LCD_POP3_N                      START_LCD          -                       NUMERIC
+LCD_POP3_%_SERVER               START_LCD          LCD_POP3_N              FQDN
+LCD_POP3_%_USER                 START_LCD          LCD_POP3_N              NOTEMPTY
+LCD_POP3_%_PASS                 START_LCD          LCD_POP3_N              NOTEMPTY
+LCD_POP3_%_PORT                 START_LCD          LCD_POP3_N              PORT
+

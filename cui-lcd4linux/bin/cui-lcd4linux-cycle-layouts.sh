@@ -1,15 +1,9 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
 # /var/install/bin/cui-lcd4linux-cycle-layouts.sh - Cycle through all configured layouts
-#
 # Creation:     2010-01-09 Y. Schumann
-#
-# Copyright (c) 2001-2014 The eisfair Team, <team(at)eisfair(dot)org>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# Copyright (c) 2001-2015 The eisfair Team, <team(at)eisfair(dot)org>
+# Distributed under the terms of the GNU General Public License v2
 # ----------------------------------------------------------------------------
 
 exec 2> /tmp/cui-lcd4linux-cycle-layouts-trace$$.log
@@ -31,7 +25,6 @@ else
     currentActiveLayout=1
     echo "$currentActiveLayout" > $currentLayoutFile
 fi
-
 
 
 # ----------------------------------------------------------------------------
@@ -80,7 +73,6 @@ cycleLayout () {
         idx=$((idx+1))
     done
 }
-
 
 
 # ============================================================================

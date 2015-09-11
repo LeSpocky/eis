@@ -1,25 +1,12 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# /var/install/dialog.d/LCD_DRIVER_CUI.sh - script dialog for ece
-#
-# Creation:     2010-09-26 starwarsfan
-#
-# Copyright (c) 2001-2014 The eisfair Team, <team(at)eisfair(dot)org>
-# Maintained by Y. Schumann <yves(at)eisfair(dot)org>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# Copyright (c) 2001-2015 The eisfair Team, <team(at)eisfair(dot)org>
+# Distributed under the terms of the GNU General Public License v2
 # ----------------------------------------------------------------------------
-
 . /var/install/include/cuilib
 . /var/install/include/ecelib
 
-
-# ----------------------------------------------------------------------------
 # All known selections and subselections
-# ----------------------------------------------------------------------------
 amountOfEntries=46
 
 driverName[0]='ASTUSB'
@@ -116,8 +103,6 @@ drivers[43]=''
 drivers[44]=''
 drivers[45]='BA63 BA66'
 
-
-
 # ----------------------------------------------------------------------------
 # Control constants
 # ----------------------------------------------------------------------------
@@ -127,8 +112,6 @@ IDC_LISTBOX__DISPLAYTYPE='12'
 IDC_LISTBOX__DISPLAYMODEL='13'
 IDC_BUTOK='100'
 IDC_BUTCANCEL='100'
-
-
 
 # ----------------------------------------------------------------------------
 #  ok_button_clicked
@@ -161,8 +144,6 @@ function ok_button_clicked() {
     cui_return 1
 }
 
-
-
 # ----------------------------------------------------------------------------
 # Update the return value $value with the coosen entry out of the list of
 # selectable models given with $1.
@@ -182,8 +163,6 @@ function getChoosenModel () {
     done
 }
 
-
-
 # ----------------------------------------------------------------------------
 # cancel_button_clicked
 #         $p2 --> dialog window handle
@@ -199,8 +178,6 @@ function cancel_button_clicked() {
     cui_return 1
 }
 
-
-
 # ----------------------------------------------------------------------------
 # listbox_changed
 #         $p2 --> dialog window handle
@@ -213,13 +190,9 @@ function listbox_changed() {
 
     cui_listbox_getsel "$list"
     index="$p2"
-
     updateListboxContent ${dlg} ${IDC_LISTBOX__DISPLAYMODEL} "${drivers[index]}"
-
     cui_return 1
 }
-
-
 
 # ----------------------------------------------------------------------------
 # Clear the listbox given with param $2 on control element $1 and fill it with
@@ -238,8 +211,6 @@ function updateListboxContent () {
         cui_listbox_add   "$ctrl" "$currentListboxElement"
     done
 }
-
-
 
 # ----------------------------------------------------------------------------
 # dlg_setup_hook
@@ -304,8 +275,6 @@ function dlg_setup_hook() {
     cui_return 1
 }
 
-
-
 # ----------------------------------------------------------------------------
 # exec_dialog
 # ece --> request to create and execute dialog
@@ -331,8 +300,6 @@ function exec_dialog() {
     cui_return "$res"
 }
 
-
-
 # ----------------------------------------------------------------------------
 # init() routine (makes it executable under shellrun.cui too)
 # ----------------------------------------------------------------------------
@@ -340,17 +307,11 @@ function init() {
     exec_dialog ${p2}
 }
 
-
-
 # ----------------------------------------------------------------------------
 # main routine
 # ----------------------------------------------------------------------------
-
 cui_init
 cui_run
 
-# ----------------------------------------------------------------------------
 # end
-# ----------------------------------------------------------------------------
-
 exit 0
