@@ -1,7 +1,7 @@
 # Contributor: starwarsfan <yves@eisfair.org>
 # Maintainer:
 pkgname=inadyn
-pkgver=1.96.2
+pkgver=1.99.15
 pkgrel=0
 pkgdesc="Dynamic DNS client"
 url="http://inatech.eu/inadyn/readme.html"
@@ -11,7 +11,7 @@ depends=""
 depends_dev=""
 makedepends="$depends_dev"
 install=""
-source="http://download.eisfair.org/src/${pkgname}.v${pkgver}.zip"
+source="ftp://troglobit.com/inadyn/inadyn-${pkgver}.tar.xz"
 
 _builddir="$srcdir/${pkgname}-$pkgver"
 
@@ -36,6 +36,6 @@ package() {
 	install -D -m755 ${_builddir}/bin/linux/inadyn  ${pkgdir}/usr/bin/${pkgname} || return 1
 }
 
-md5sums="702a127f13b96eee38d60c6f30b20efa  inadyn.v1.96.2.zip"
-sha256sums="981f29d12415637c8e3ad747c204a599ddb900360d04a9b4c351d54db3d2321c  inadyn.v1.96.2.zip"
-sha512sums="4315785a6bdb325ae2dc2b787ff9c9f72006ffb41eaad18fd30f971cff4694aae7721893bc85501f9ab0cf274ea93dcaa3df870e1410ee306b32e1c6aec0e08e  inadyn.v1.96.2.zip"
+md5sums="670bd0d43ebd828f6353e732ac625946  inadyn-1.99.15.tar.xz"
+sha256sums="b54ed82653e9bd6624e579433907aecfd3e83bdab9ed0b3c21d6817c799ac715  inadyn-1.99.15.tar.xz"
+sha512sums="b22844e27b6c28e4d4b59f7884ff0f9063715904a66d30998b8d9eba78f268cb1469c9581d0d110ecea587117f2d54a483f2fbc2a02391c8797c30ae426d3f41  inadyn-1.99.15.tar.xz"
