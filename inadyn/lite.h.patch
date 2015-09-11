@@ -1,0 +1,11 @@
+--- inadyn-1.99.15/libite/lite.patch.h
++++ inadyn-1.99.15/libite/lite.h
+@@ -25,7 +25,7 @@
+ #ifndef FINIT_LITE_H_
+ #define FINIT_LITE_H_
+ 
+-#include <error.h>
++#include "error.h"
+ #include <stdio.h>
+ #include <stdint.h>    /* uint8_t, uint16_t, uint32_t, INT32_MAX, etc. */
+ #include <string.h>
