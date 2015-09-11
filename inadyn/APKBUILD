@@ -8,10 +8,13 @@ url="http://inatech.eu/inadyn/readme.html"
 arch="all"
 license="GPL"
 depends=""
-depends_dev=""
+depends_dev="linux-headers"
 makedepends="$depends_dev"
 install=""
-source="ftp://troglobit.com/inadyn/inadyn-${pkgver}.tar.xz"
+source="ftp://troglobit.com/inadyn/inadyn-${pkgver}.tar.xz
+	lite.h.patch
+	error.h
+	"
 
 _builddir="$srcdir/${pkgname}-$pkgver"
 
@@ -24,6 +27,9 @@ prepare() {
 		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
 		esac
 	done
+	
+	# install our error.h
+	cp "$srcdir"/error.h "$srcdir"/inadyn-1.99.15/libite/error.h || return 1
 }
 
 build() {
@@ -37,6 +43,12 @@ package() {
 	install -D -m755 ${_builddir}/bin/linux/inadyn  ${pkgdir}/usr/bin/${pkgname} || return 1
 }
 
-md5sums="670bd0d43ebd828f6353e732ac625946  inadyn-1.99.15.tar.xz"
-sha256sums="b54ed82653e9bd6624e579433907aecfd3e83bdab9ed0b3c21d6817c799ac715  inadyn-1.99.15.tar.xz"
-sha512sums="b22844e27b6c28e4d4b59f7884ff0f9063715904a66d30998b8d9eba78f268cb1469c9581d0d110ecea587117f2d54a483f2fbc2a02391c8797c30ae426d3f41  inadyn-1.99.15.tar.xz"
+md5sums="670bd0d43ebd828f6353e732ac625946  inadyn-1.99.15.tar.xz
+c70f75c7956c3051416875f604b3201a  lite.h.patch
+1a5b152db18674deec07ab7c6209267a  error.h"
+sha256sums="b54ed82653e9bd6624e579433907aecfd3e83bdab9ed0b3c21d6817c799ac715  inadyn-1.99.15.tar.xz
+2c6326e932fce20a1c9071ad0835e3bb88637761c2f94492f4f04a3ffdbde667  lite.h.patch
+0124ef103407469af4ea19884e2ed7e4546f08b58c129e1e8ef36569831f4b36  error.h"
+sha512sums="b22844e27b6c28e4d4b59f7884ff0f9063715904a66d30998b8d9eba78f268cb1469c9581d0d110ecea587117f2d54a483f2fbc2a02391c8797c30ae426d3f41  inadyn-1.99.15.tar.xz
+707f85a6594a7d1454139227061bfc8e64c26202c94c2ddd3fc20e0597b79568435a3d6f1f0c6b84c67d62a0b92830c8e6eed0ba458c6c4bf5fb6e38b8e14bf3  lite.h.patch
+c66f6b0d8c8b8d285c740bdbe7130dee272ac01cd5e73b35a58cedf1a77fe8d9e062631b804fb58014d8eb9861c8f28aed07bc022ef31662bcc61b5c85a21752  error.h"
