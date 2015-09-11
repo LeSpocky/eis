@@ -28,6 +28,7 @@ prepare() {
 
 build() {
 	cd "$_builddir"
+	./configure --enable-openssl
 	make || return 1
 }
 
