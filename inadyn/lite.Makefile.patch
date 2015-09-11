@@ -1,0 +1,11 @@
+--- inadyn-1.99.15/libite/Makefile.orig
++++ inadyn-1.99.15/libite/Makefile
+@@ -69,7 +69,7 @@
+ TARGET      = $(STATICLIB) $(SOLIB)
+ 
+ # Default install paths
+-prefix     ?= /usr/local
++prefix     ?= /usr
+ libdir     ?= $(prefix)/lib
+ datadir    ?= $(prefix)/share/doc/$(LIBNAME)
+ incdir     ?= $(prefix)/include
