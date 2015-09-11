@@ -1,14 +1,16 @@
 --- inadyn-1.99.15/libite/Makefile
 +++ inadyn-1.99.15/libite/Makefile.foo
-@@ -33,7 +33,7 @@
+@@ -33,8 +33,8 @@
  CC         ?= $(CROSS)gcc
  AR         ?= $(CROSS)ar
  STRIP      ?= $(CROSS)strip
 -INSTALL    := install --backup=off
+-STRIPINST  := $(INSTALL) -s --strip-program=$(CROSS)strip -m 0755
 +INSTALL    := install
- STRIPINST  := $(INSTALL) -s --strip-program=$(CROSS)strip -m 0755
++STRIPINST  := $(INSTALL) -s -m 0755
  
  CFLAGS     += -fPIC
+ CFLAGS     += -Os
 @@ -69,7 +69,7 @@
  TARGET      = $(STATICLIB) $(SOLIB)
  
