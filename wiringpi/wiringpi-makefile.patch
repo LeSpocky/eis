@@ -1,0 +1,14 @@
+--- a/wiringPi/Makefile
++++ b/wiringPi/Makefile
+@@ -108,9 +108,8 @@
+ 	@install -m 0644 $(HEADERS)					$(DESTDIR)$(PREFIX)/include
+ 	@echo "[Install Dynamic Lib]"
+ 	@install -m 0755 -d						$(DESTDIR)$(PREFIX)/lib
+-	@install -m 0755 libwiringPi.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPi.so.$(VERSION)
+-	@ln -sf $(DESTDIR)$(PREFIX)/lib/libwiringPi.so.$(VERSION)	$(DESTDIR)/lib/libwiringPi.so
+-	@ldconfig
++	@install -m 0644 libwiringPi.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPi.so.$(VERSION)
++	@ln -sf $(DESTDIR)$(PREFIX)/lib/libwiringPi.so.$(VERSION)	$(DESTDIR)$(PREFIX)/lib/libwiringPi.so
+ 
+ .PHONY:	install-static
+ install-static:	$(STATIC)

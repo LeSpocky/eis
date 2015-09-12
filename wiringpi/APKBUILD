@@ -1,0 +1,66 @@
+# Contributor: jv <jens@eisfair.org>
+# Maintainer: jv <jens@eisfair.org>
+pkgname=wiringpi
+pkgver=2.25
+pkgrel=0
+pkgdesc="WiringPi"
+url="http://wiringpi.com/"
+arch="armhf"
+license="GNU"
+depends=""
+depends_dev="linux-headers"
+makedepends="$depends_dev"
+install=""
+subpackages="$pkgname-dev $pkgname-libs"
+source="http://download.eisfair.org/src/${pkgname}-${pkgver}.tar.gz
+	wiringpi-ioctl.patch
+	wiringpi-makefile.patch
+	wiringpidev-makefile.patch"
+
+_builddir="$srcdir/${pkgname}"
+
+prepare() {
+	local i
+	cd ${_builddir}
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i ${srcdir}/$i || return 1;;
+		esac
+	done
+	sleep 1
+}
+
+build() {
+	cd ${_builddir}/wiringPi
+	make -j5 || return 1
+	ln -sf libwiringPi.so.$pkgver libwiringPi.so
+	cd ${_builddir}/devLib
+	make -j5 INCLUDE="-I. -I../wiringPi" || return 1
+	ln -sf libwiringPiDev.so.$pkgver libwiringPiDev.so
+	cd ${_builddir}/gpio
+	make -j5 INCLUDE="-I. -I../wiringPi -I../devLib" LDFLAGS="-L../wiringPi -L../devLib" || return 1
+}
+
+package() {
+	cd ${_builddir}/wiringPi
+	make -j1 DESTDIR="$pkgdir" PREFIX="/usr" install || return 1
+	cd ${_builddir}/devLib
+	sed -i "s|@ldconfig||g" Makefile
+	make -j1 DESTDIR="$pkgdir" PREFIX="/usr" install || return 1
+	cd ${_builddir}/gpio
+	install -D -m755 gpio ${pkgdir}/usr/bin/gpio || return 1
+}
+
+
+md5sums="fbc1da4e6138b4da4e33919ad8bad8af  wiringpi-2.25.tar.gz
+9a3b2bb4a5fc82e688d295ed88950303  wiringpi-ioctl.patch
+b47186ed00e15c741f2a1008e537e8ba  wiringpi-makefile.patch
+812fa3805b8fa34b108519fe143ea402  wiringpidev-makefile.patch"
+sha256sums="6f89a3456c0844f016c0bc8d3f75aa7307cdfbe8c34d895acfe6e3d21b6e4b64  wiringpi-2.25.tar.gz
+57da121de528cb017813b57052f3720691c5962efd7dbc340b04ffdb188226ec  wiringpi-ioctl.patch
+98874e8085c3ac690c34a0caca7da82adbe9cfd1a7e19ed79e51774b72207001  wiringpi-makefile.patch
+9f34352aeb129a886baca8da44a7aa108c4111804a424d0f98bf8ef36041e93f  wiringpidev-makefile.patch"
+sha512sums="ae23ea0189582f6ffd8594e4e0b7648a9f99d5a35929a9307bfbed90842e3cb10a84bf831eb486eda5604aee35cbcc740c03a04ee586f7de787a649a68b3e793  wiringpi-2.25.tar.gz
+d4364fd881f8a979364d6f421146603668c9d4123d2ebf4e8dc5bea044804eb1182b4c55edd8b7d6e7e45d8ef4164ecdf374b7bcb5cf5f43f94e01276de5478b  wiringpi-ioctl.patch
+41223d4efceb106a6acd59c4063a85ce6c587a5416f6def895a71afee6503a76fd8d2a3cd9ae97ac727158e675792ac6512004c77446cacd0416f8ff1a8692f6  wiringpi-makefile.patch
+f9e10bba73ed37d0a094d5e34ac84500a7df485901ee95bb10b4a9d9f03d95636b16d97935d30498247e14a06ec0cd21ac25ceb6fd4e1e06f173a8554ae9835e  wiringpidev-makefile.patch"
