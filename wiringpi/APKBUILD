@@ -51,6 +51,18 @@ package() {
 	install -D -m755 gpio ${pkgdir}/usr/bin/gpio || return 1
 }
 
+libs() {
+	pkgdesc="Libraries for wiringPi"
+	mkdir -p "$subpkgdir"/usr
+	mv "$pkgdir"/usr/lib "$subpkgdir"/usr/
+}
+
+dev() {
+	pkgdesc="Header for wiringPi"
+	depends="wiringpi-libs"
+	mkdir -p "$subpkgdir"/usr
+	mv "$pkgdir"/usr/include "$subpkgdir"/usr/ || return 1
+}
 
 md5sums="fbc1da4e6138b4da4e33919ad8bad8af  wiringpi-2.25.tar.gz
 9a3b2bb4a5fc82e688d295ed88950303  wiringpi-ioctl.patch
