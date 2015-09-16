@@ -1,0 +1,42 @@
+# Contributor: Jens Vehlhaber jv <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
+pkgname=py-pifacecommon
+pkgver=4.2.1
+pkgrel=0
+pkgdesc="Common functions for interacting with PiFace products"
+url="http://pifacecad.readthedocs.org/"
+arch="noarch"
+license="GPL"
+depends="python"
+depends_dev="python-dev py-setuptools"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+source="$pkgname-$pkgver.tar.gz::https://github.com/piface/pifacecommon/archive/v${pkgver}.tar.gz
+	"
+_builddir="${srcdir}/pifacecommon-$pkgver"
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+	#grep -r -l '<Python.h>' source | xargs sed -i "s|<Python.h>|\"python2.7/Python.h\"|"
+	#python ./setup.py build
+}
+
+package() {
+	cd "$_builddir"
+	python ./setup.py install --root="$pkgdir"
+}
+
+md5sums="e8a538128a90773f576439457f886418  py-pifacecommon-4.2.1.tar.gz"
+sha256sums="4bbf540ee0de6985662b7d5dc5eb121e94ea9fbb471a0aac4741498172c59954  py-pifacecommon-4.2.1.tar.gz"
+sha512sums="ccd22bcd2c2d5532ebabcd039bba91bccfcdbc3d46ad60f8c97029a4c015faa5889c79a61d44a5748e7c4025d6c12b0aaeadb237b0b1f5e4ca249fd823f610ee  py-pifacecommon-4.2.1.tar.gz"
