@@ -1,0 +1,46 @@
+# Contributor: Jens Vehlhaber jv <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
+pkgname=py-pifacecad
+pkgver=2.0.8
+pkgrel=0
+pkgdesc="PiFace Control and Display Python module with examples"
+url="http://pifacecad.readthedocs.org/"
+arch="noarch"
+license="GPL"
+depends="python"
+depends_dev="python-dev py-setuptools"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+source="$pkgname-$pkgver.tar.gz::https://github.com/piface/pifacecad/archive/v${pkgver}.tar.gz
+	"
+
+_builddir="${srcdir}/pifacecad-$pkgver"
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in $source; do
+		case $i in
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+	#grep -r -l '<Python.h>' source | xargs sed -i "s|<Python.h>|\"python2.7/Python.h\"|"
+	#python ./setup.py build
+}
+
+package() {
+	cd "$_builddir"
+	python ./setup.py install --root="$pkgdir"
+	mkdir -p $pkgdir/usr/share/doc/python-pifacecad
+	mv -f $_builddir/examples $pkgdir/usr/share/doc/python-pifacecad/
+	mv -f $_builddir/bin $pkgdir/usr/share/doc/python-pifacecad/
+}
+
+md5sums="f69516aec3ce164b780fe1ebfb475bce  py-pifacecad-2.0.8.tar.gz"
+sha256sums="08cfcd06b1bf0b6c81b534f5c40a408b59c1a7117c74ef444b013b7777d431b0  py-pifacecad-2.0.8.tar.gz"
+sha512sums="4e920857f4249055c106f526e809a2a95040c3de5d8853d929bf7d36ff0bd4d8727477f10c6f52c0198254cb42f484d8dc0f02c880d28722cd7852613b50ac87  py-pifacecad-2.0.8.tar.gz"

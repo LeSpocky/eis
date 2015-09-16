@@ -43,8 +43,8 @@ package() {
 }
 
 dev() {
-	pkgdesc="Header for libmcp23s17"
-	depends="libmcp23s17"
+	pkgdesc="Header and static lib for MCP23S17 port expander"
+	#depends="libmcp23s17" 
 	mkdir -p ${subpkgdir}/usr/lib
 	mkdir -p ${subpkgdir}/usr/include
 	cd ${_builddir}
