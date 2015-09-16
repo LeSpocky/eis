@@ -1,0 +1,59 @@
+# Contributor: jens vehlhaber <jens@eisfair.org>
+# Maintainer: jens vehlhaber <jens@eisfair.org>
+pkgname=libmcp23s17
+pkgver=0.3.3
+pkgrel=0
+pkgdesc="A simple C library for accessing an MCP23S17 port expander."
+url="http://pifacecad.readthedocs.org/"
+arch="armhf"
+license="GPLv2"
+depends=""
+depends_dev="m4"
+makedepends="$depends_dev linux-headers"
+install=""
+subpackages="$pkgname-dev"
+source="http://download.eisfair.org/src/libmcp23s17_$pkgver.tar.gz
+	mcp23s17-ioctl.patch"
+
+_builddir="${srcdir}/${pkgname}"
+
+prepare() {
+	local i
+	cd ${_builddir}
+	for i in $source; do
+	    case $i in
+		*.patch) msg $i;  patch -p1 -i "$srcdir"/${i} || return 1;;
+	    esac
+	done
+}
+
+build() {
+	cd ${_builddir}
+	make
+	make LIBRARY="shared"
+}
+
+package() {
+	mkdir -p ${pkgdir}/usr/include
+	mkdir -p ${pkgdir}/usr/lib
+	cd ${_builddir}
+	make DESTDIR="${pkgdir}/usr" LIBRARY="shared" install
+	chmod 0644 ${pkgdir}/usr/lib/*
+	rm -rf ${pkgdir}/usr/include 
+}
+
+dev() {
+	pkgdesc="Header for libmcp23s17"
+	depends="libmcp23s17"
+	mkdir -p ${subpkgdir}/usr/lib
+	mkdir -p ${subpkgdir}/usr/include
+	cd ${_builddir}
+	make DESTDIR="${subpkgdir}/usr" install
+}
+
+md5sums="07eac410ec0329e269f3fe04b78108a0  libmcp23s17_0.3.3.tar.gz
+3faad583be1c111956e43fe582112702  mcp23s17-ioctl.patch"
+sha256sums="5a2e457dae7aea09a0125992cfca72e9f90d4bc10970453bfa344adaac6fa486  libmcp23s17_0.3.3.tar.gz
+163477ecb39519df9401d360a369e1865e6ee280529b43007165a419731b635f  mcp23s17-ioctl.patch"
+sha512sums="7d1a927a124afbf34ae6ab9b5e166a4b2964f47240b2cd07fc1cbcdf558a0f845b4af8a881d7daab666d3a68ccd9d062c28fa7224907ea060a2bf2ae52d623ee  libmcp23s17_0.3.3.tar.gz
+5d26ea131655902f31087c9950f7c05c73f165f84a1d34fc5f0371022b71e745972c7b92deff07ce2b7bcb55e3ac153f9828ae258c77c75ce07a2122d4722ebc  mcp23s17-ioctl.patch"
