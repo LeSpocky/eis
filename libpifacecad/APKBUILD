@@ -1,0 +1,72 @@
+# Contributor: jens vehlhaber <jens@eisfair.org>
+# Maintainer: jens vehlhaber <jens@eisfair.org>
+pkgname=libpifacecad
+pkgver=0.2.1
+pkgrel=0
+pkgdesc="library for accessing PiFace Control and Display"
+url="http://pifacecad.readthedocs.org/"
+arch="armhf"
+license="GPLv2"
+depends=""
+depends_dev="m4"
+makedepends="$depends_dev linux-headers libmcp23s17-dev argp-standalone"
+install=""
+subpackages="$pkgname-dev pifacecad"
+source="http://download.eisfair.org/src/libpifacecad_$pkgver.tar.gz
+	cursor-position.patch
+	libargp.patch"
+
+_builddir="${srcdir}/${pkgname}"
+
+prepare() {
+	local i
+	cd ${_builddir}
+	for i in $source; do
+	    case $i in
+		*.patch) msg $i;  patch -p1 -i "$srcdir"/${i} || return 1;;
+	    esac
+	done
+}
+
+build() {
+	cd ${_builddir}
+	make
+	make LIBRARY="shared"
+}
+
+package() {
+	mkdir -p ${pkgdir}/usr/lib
+	cd ${_builddir}
+	cp *.so ${pkgdir}/usr/lib/
+	chmod 0644 ${pkgdir}/usr/lib/*
+}
+
+dev() {
+	pkgdesc="Static library for accessing PiFace Control and Display"
+	mkdir -p ${subpkgdir}/usr/lib
+	mkdir -p ${subpkgdir}/usr/include
+	cd ${_builddir}
+	cp *.a ${subpkgdir}/usr/lib/
+	cp src/*.h ${subpkgdir}/usr/include/
+}
+
+
+pifacecad() {
+        pkgdesc="Tool for direct accessing PiFace Control and Display"
+	mkdir -p ${subpkgdir}/usr/bin
+        cd ${_builddir}
+        rm *.so
+	make pifacecad
+	cp pifacecad ${subpkgdir}/usr/bin/
+	strip -R.note -R.comment ${subpkgdir}/usr/bin/pifacecad
+}
+
+md5sums="e7172a918ece53c3513bc7269722cdbd  libpifacecad_0.2.1.tar.gz
+d7db6b1cfa13221750547bb3f028b752  cursor-position.patch
+752bee76c503d5437bec655e29553d9e  libargp.patch"
+sha256sums="db40e16c92412e726f248ab0531c9f440a44fc59745bf677cd21f6959083372a  libpifacecad_0.2.1.tar.gz
+43dc683ce60f1bec892fcf7c3636d96d94d0ad0a638fa7b6548f060d4abefde5  cursor-position.patch
+71d550a2372d034a270b7be4fc88c32db92f338d831bd564f97e0e6898f51e06  libargp.patch"
+sha512sums="582bd1b2a4c634ab23fd0703ab2ca97ca704e96fee15fea1380f9a87f4d887c77329b17db6097e5e82cac7a52cff757a22becd6ebbf2ec8f3127bc596be02db7  libpifacecad_0.2.1.tar.gz
+b0c9549324a89dc0aa83cbfe03b79547cc2f585400977cbc782aedf24f4db195e8c1f49f5f15c9b98602f3b1e4c69b8ea4826f4b01add019fc609988b37e8c61  cursor-position.patch
+43b14c602065d8af6667e302804773de2145641f0fd80e0e16f728996679883f8edc1a376c1ba4cc1107d97953da93f4b723a3a4938f86e96a19ca37b5d80ea5  libargp.patch"
