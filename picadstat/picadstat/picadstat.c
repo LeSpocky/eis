@@ -394,15 +394,9 @@ int main(int argc, char* argv[]) {
         umask (0);
         for (i = sysconf (_SC_OPEN_MAX); i > 0; i--)
             close (i); 
-        if (open("/dev/null",O_RDONLY) == -1) {
-            perror("failed to reopen stdin while daemonising\n");
-        } 
-        if (open("/dev/null",O_WRONLY) == -1) {
-            perror("failed to reopen stdout while daemonising\n");
-        }
-        if (open("/dev/null",O_RDWR) == -1) {
-            perror("failed to reopen stderr while daemonising\n");
-        } 
+        i = open("/dev/null", O_RDWR); //Open STDIN 
+        dup(i);                        //STDOUT 
+        dup(i);                        //STDERR
         openlog("picadstat", LOG_PID | LOG_PERROR | LOG_NDELAY, LOG_DAEMON);
         create_pid_file();
         return pifacecad_service();
