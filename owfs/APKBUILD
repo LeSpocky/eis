@@ -8,12 +8,12 @@ url="http://www.owfs.org"
 arch="all"
 license="GPLv2"
 depends=""
-depends_dev="linux-headers fuse-dev automake autoconf" # libusb-dev"
+depends_dev="linux-headers fuse-dev automake autoconf libusb-dev"
 makedepends="$depends_dev"
 install=""
 subpackages="$pkgname-doc $pkgname-dev"
 source="http://downloads.sourceforge.net/project/owfs/owfs/$pkgver/owfs-$pkgver.tar.gz
-	"
+	libusb.patch"
 
 _builddir="$srcdir"/owfs-$pkgver
 prepare() {
@@ -29,12 +29,12 @@ prepare() {
 build() {
 	cd "$_builddir"
 	export CPPFLAGS="-I/usr/include/libusb-1.0"
-	autoconf
+	./bootstrap
 	./configure \
 	        --prefix=/usr \
                 --libexecdir=/usr/lib \
-                --disable-parport \
-                --disable-owtcl \
+                --enable-usb \
+                --enable-owfs \
                 --disable-libow-perl \
                 --disable-owphp \
                 --disable-owpython \
@@ -48,6 +48,9 @@ package() {
 	make DESTDIR="$pkgdir" install || return 1
 }
 
-md5sums="3d8919af078ae8c9171e5713a1789195  owfs-3.1p0.tar.gz"
-sha256sums="62fca1b3e908cd4515c9eb499bf2b05020bbbea4a5b73611ddc6f205adec7a54  owfs-3.1p0.tar.gz"
-sha512sums="fc00e9d55be1cfd419df9f39c0aa3517f9c21a2ff4133d9feffc8e737bfa194eb4acba0a0fec65134cb86c8640c5341db638a74674e973025f203a989ca678ba  owfs-3.1p0.tar.gz"
+md5sums="3d8919af078ae8c9171e5713a1789195  owfs-3.1p0.tar.gz
+4f0c9604045fbd338ba65a43d5301ff3  libusb.patch"
+sha256sums="62fca1b3e908cd4515c9eb499bf2b05020bbbea4a5b73611ddc6f205adec7a54  owfs-3.1p0.tar.gz
+5b93b1fe9978622c83d8590a206a3276480f1fa0299a7bceff57c4ba0ea4930e  libusb.patch"
+sha512sums="fc00e9d55be1cfd419df9f39c0aa3517f9c21a2ff4133d9feffc8e737bfa194eb4acba0a0fec65134cb86c8640c5341db638a74674e973025f203a989ca678ba  owfs-3.1p0.tar.gz
+0133a5a20cc37876dc8601bf395b5d8589b401864cc7d2d3df9264f2205dd829f63840e8297b43f138d03fd8be06f26f0424e3e7897cbb9474cbc7d986cb2516  libusb.patch"

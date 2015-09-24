@@ -1,0 +1,133 @@
+--- owfs-3.1p0_org/module/owlib/src/c/Makefile.am	2015-02-23 03:46:11.000000000 +0000
++++ owfs-3.1p0_rpi/module/owlib/src/c/Makefile.am	2015-04-04 20:34:14.000000000 +0000
+@@ -253,6 +253,7 @@
+ 	${LIBUSB_CFLAGS} \
+ 	${PIC_FLAGS}
+ 
++LDADD =  ${LIBUSB_LIBS} ${PTHREAD_LIBS} ${LD_EXTRALIBS} ${OSLIBS}
+ 
+ #if HAVE_CYGWIN
+ #NOWINE=1
+--- owfs-3.1p0_org/module/owlib/src/c/Makefile.in	2015-03-15 01:38:31.000000000 +0000
++++ owfs-3.1p0_rpi/module/owlib/src/c/Makefile.in	2015-04-04 20:34:41.000000000 +0000
+@@ -760,6 +760,7 @@
+ 	${LIBUSB_CFLAGS} \
+ 	${PIC_FLAGS}
+ 
++LDADD =  ${LIBUSB_LIBS} ${PTHREAD_LIBS} ${LD_EXTRALIBS} ${OSLIBS}
+ all: all-am
+ 
+ .SUFFIXES:
+--- owfs-3.1p0_org/module/owshell/src/c/Makefile.am	2015-01-11 01:31:32.000000000 +0000
++++ owfs-3.1p0_rpi/module/owshell/src/c/Makefile.am	2015-04-04 18:11:47.000000000 +0000
+@@ -41,7 +41,9 @@
+ 	-Wcast-align \
+ 	-Wstrict-prototypes \
+ 	-Wredundant-decls \
+-	${EXTRACFLAGS}
++	${EXTRACFLAGS} \
++	${LIBUSB_CFLAGS} \
++	${PTHREAD_CFLAGS}
+ 
+-LDADD = ${LD_EXTRALIBS} ${OSLIBS}
++LDADD =  ${LIBUSB_LIBS} ${PTHREAD_LIBS} ${LD_EXTRALIBS} ${OSLIBS}
+ 
+--- owfs-3.1p0_org/module/owshell/src/c/Makefile.in	2015-03-15 01:38:32.000000000 +0000
++++ owfs-3.1p0_rpi/module/owshell/src/c/Makefile.in	2015-04-04 18:12:34.000000000 +0000
+@@ -498,9 +498,11 @@
+ 	-Wcast-align \
+ 	-Wstrict-prototypes \
+ 	-Wredundant-decls \
+-	${EXTRACFLAGS}
++	${EXTRACFLAGS} \
++	${LIBUSB_CFLAGS} \
++	${PTHREAD_CFLAGS}
+ 
+-LDADD = ${LD_EXTRALIBS} ${OSLIBS}
++LDADD =  ${LIBUSB_LIBS} ${PTHREAD_LIBS} ${LD_EXTRALIBS} ${OSLIBS}
+ all: all-am
+ 
+ .SUFFIXES:
+--- owfs-3.1p0_org/module/owtcl/Makefile.am	2015-01-11 01:31:32.000000000 +0000
++++ owfs-3.1p0_rpi/module/owtcl/Makefile.am	2015-04-04 21:50:28.000000000 +0000
+@@ -40,6 +40,7 @@
+ 	-Wstrict-prototypes \
+ 	-Wredundant-decls \
+ 	${EXTRACFLAGS} \
++	${LIBUSB_CLFAGS} \
+ 	${PTHREAD_CFLAGS} \
+ 	$(TCL_DEFS) \
+ 	$(TCL_SHLIB_CFLAGS) \
+--- owfs-3.1p0_org/module/owtcl/Makefile.in	2015-03-15 01:38:32.000000000 +0000
++++ owfs-3.1p0_rpi/module/owtcl/Makefile.in	2015-04-04 21:51:04.000000000 +0000
+@@ -491,6 +491,7 @@
+ 	-Wstrict-prototypes \
+ 	-Wredundant-decls \
+ 	${EXTRACFLAGS} \
++	${LIBUSB_CFLAGS} \
+ 	${PTHREAD_CFLAGS} \
+ 	$(TCL_DEFS) \
+ 	$(TCL_SHLIB_CFLAGS) \
+--- owfs-3.1p0_org/module/swig/perl5/OW/Makefile.linux.in	2015-01-11 01:31:32.000000000 +0000
++++ owfs-3.1p0_rpi/module/swig/perl5/OW/Makefile.linux.in	2015-04-05 12:19:11.000000000 +0000
+@@ -9,7 +9,7 @@
+     'VERSION'	=>	q[@VERSION@],
+ # Avoid compilation problem for Fedora Core 1 and Slackware 10.2
+     'DEFINE'    =>	q[@PTHREAD_CFLAGS@ -D_FILE_OFFSET_BITS=64 -DSKIP_SEARCH_H @DEFS@],
+-    'INC'       =>	q[-I../../../../src/include -I../../../owlib/src/include @CPPFLAGS@],
++    'INC'       =>	q[-I../../../../src/include -I../../../owlib/src/include -I/usr/include/libusb-1.0 @CPPFLAGS@],
+ # Default value for LDDLFLAGS is $Config{lddlflags}="-shared -L/usr/local/lib"
+ # but we want rpath to be @libdir@ or @exec_prefix@/lib
+     'LDDLFLAGS' =>      q[-shared -L../../../owlib/src/c/.libs -Wl,-rpath=@prefix@/lib],
+--- owfs-3.1p0_org/module/swig/perl5/OW/Makefile.osx.in	2015-01-11 01:31:32.000000000 +0000
++++ owfs-3.1p0_rpi/module/swig/perl5/OW/Makefile.osx.in	2015-04-05 12:18:59.000000000 +0000
+@@ -9,7 +9,7 @@
+     'VERSION'	=>	q[@VERSION@],
+ # Avoid compilation problem for Fedora Core 1 and Slackware 10.2
+     'DEFINE'    =>	q[@PTHREAD_CFLAGS@ -D_FILE_OFFSET_BITS=64 -DSKIP_SEARCH_H @DEFS@],
+-    'INC'       =>	q[-I../../../../src/include -I../../../owlib/src/include @CPPFLAGS@],
++    'INC'       =>	q[-I../../../../src/include -I../../../owlib/src/include -I/usr/include/libusb-1.0 @CPPFLAGS@],
+ # Default value for LDDLFLAGS is $Config{lddlflags}="-shared -L/usr/local/lib"
+ # but we want rpath to be @libdir@ or @exec_prefix@/lib
+     'LDDLFLAGS' =>      q[-bundle -flat_namespace -undefined suppress -Wl,-L../../../owlib/src/c/.libs],
+--- owfs-3.1p0_org/module/swig/php/Makefile.am	2015-01-11 01:31:32.000000000 +0000
++++ owfs-3.1p0_rpi/module/swig/php/Makefile.am	2015-04-04 21:36:44.000000000 +0000
+@@ -22,10 +22,11 @@
+ 	-I$(top_srcdir)/src/include \
+ 	-I$(top_srcdir)/module/owlib/src/include \
+ 	${EXTRACFLAGS} \
++	${LIBUSB_CFLAGS} \
+ 	${PTHREAD_CFLAGS} \
+ 	@PHPINC@
+ 
+-LDADD = -L../../owlib/src/c -low ${PTHREAD_LIBS} ${LD_EXTRALIBS} ${OSLIBS}
++LDADD = -L../../owlib/src/c -low ${LIBUSB_LIBS} ${PTHREAD_LIBS} ${LD_EXTRALIBS} ${OSLIBS}
+ 
+ nodist_libowphp_la_SOURCES = ow_wrap.c php_OW.h
+ 
+--- owfs-3.1p0_org/module/swig/php/Makefile.in	2015-03-15 01:38:32.000000000 +0000
++++ owfs-3.1p0_rpi/module/swig/php/Makefile.in	2015-04-04 21:37:34.000000000 +0000
+@@ -474,10 +474,11 @@
+ 	-I$(top_srcdir)/src/include \
+ 	-I$(top_srcdir)/module/owlib/src/include \
+ 	${EXTRACFLAGS} \
++	${LIBUSB_CFLAGS} \
+ 	${PTHREAD_CFLAGS} \
+ 	@PHPINC@
+ 
+-LDADD = -L../../owlib/src/c -low ${PTHREAD_LIBS} ${LD_EXTRALIBS} ${OSLIBS}
++LDADD = -L../../owlib/src/c -low ${PTHREAD_LIBS} §{LIBUSB_LIBS} ${LD_EXTRALIBS} ${OSLIBS}
+ nodist_libowphp_la_SOURCES = ow_wrap.c php_OW.h
+ all: all-am
+ 
+--- a/module/owlib/src/include/ow_usb_cycle.h
++++ b/module/owlib/src/include/ow_usb_cycle.h
+@@ -55,7 +55,7 @@
+ 
+ #if OW_USB
+ #include <sys/types.h> // Mac needs this before <usb.h> according to Peter Peter Radcliffe's work
+-#include <usb.h>
++#include <libusb.h>
+ 
+ /* All the rest of the code sees is the DS9490_detect routine and the iroutine structure */
+ 
