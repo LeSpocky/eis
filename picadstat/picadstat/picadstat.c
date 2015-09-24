@@ -1,6 +1,6 @@
 /* ========================================================================== */
 /*   picadstat.c                                                              */
-/*   system status for PiFaceCaD LCD Display                                  */
+/*   system status for PiFaceCaD Display                                      */
 /*   (c) 2015 Jens Vehlhaber                                                  */
 /*   Description                                                              */
 /* ========================================================================== */
@@ -97,24 +97,6 @@ int pifacecad_service(void) {
     uint8_t  aleft[]={0x0,0x2,0x6,0xe,0x6,0x2,0x0,0x0};
     uint8_t aright[]={0x0,0x8,0xc,0xe,0xc,0x8,0x0,0x0};
 
-    #ifndef LCDDEBUG
-    //enable interrupts for buttons
-    if (mcp23s17_enable_interrupts() == -1)
-        syslog(LOG_CRIT, "Could not enable interrupts.\n");
-    //call init_epoll    
-    mcp23s17_wait_for_interrupt(1);
-    //init display
-    int mcp23s17_fd = pifacecad_open();
-    pifacecad_lcd_autoscroll_off();
-    pifacecad_lcd_cursor_off();
-    pifacecad_lcd_blink_off();
-    pifacecad_lcd_store_custom_bitmap(0, thermo);
-    pifacecad_lcd_store_custom_bitmap(1, degree);
-    pifacecad_lcd_store_custom_bitmap(2, memory);
-    pifacecad_lcd_store_custom_bitmap(3, aleft);
-    pifacecad_lcd_store_custom_bitmap(4, aright);
-    #endif
-
     //Handle for file being parsed from /proc
     FILE *stat;
 
@@ -147,7 +129,30 @@ int pifacecad_service(void) {
     //flag so that main loop knows when to shut down after catching a signal
     int run = 1;
 
+    #ifndef LCDDEBUG
+    //enable interrupts for buttons
+    if (mcp23s17_enable_interrupts() == -1) {
+        syslog(LOG_CRIT, "Could not enable interrupts.\n");
+    } else {
+        //call init_epoll  
+        mcp23s17_wait_for_interrupt(1);
+    }
+    //init display
+    int mcp23s17_fd = pifacecad_open();
+    pifacecad_lcd_autoscroll_off();
+    pifacecad_lcd_cursor_off();
+    pifacecad_lcd_blink_off();
+    pifacecad_lcd_store_custom_bitmap(0, thermo);
+    pifacecad_lcd_store_custom_bitmap(1, degree);
+    pifacecad_lcd_store_custom_bitmap(2, memory);
+    pifacecad_lcd_store_custom_bitmap(3, aleft);
+    pifacecad_lcd_store_custom_bitmap(4, aright);
+    #endif
+
+
     syslog( LOG_NOTICE, "Daemon started ...\n");
+
+
     //loop until we're done
     while ( run ) {
 
@@ -190,7 +195,7 @@ int pifacecad_service(void) {
             break;
           case 2:
             // show version
-            pifacecad_lcd_write("Alpine ");
+            pifacecad_lcd_write("eis-ng ");
             if ( stat = fopen("/etc/alpine-release", "r") ) {
                fgets(out, 8, stat);
                fclose(stat);
@@ -303,7 +308,7 @@ int pifacecad_service(void) {
               nView = 9;
               nLight = 1;
               break;
-              //default:
+            //default:
                 //printf("\nInputs: 0x%x\n", input);
             }
             usleep(250000);
