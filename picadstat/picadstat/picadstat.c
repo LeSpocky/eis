@@ -1,8 +1,8 @@
 /* ========================================================================== */
 /*   picadstat.c                                                              */
-/*   system status for PiFaceCaD Display                                      */
+/*   system status for PiFaceCaD LCD display with control buttons             */
 /*   (c) 2015 Jens Vehlhaber                                                  */
-/*   Description                                                              */
+/*   Distributed under the terms of the GNU General Public License v2         */
 /* ========================================================================== */
 
 #include <stdio.h>
@@ -137,6 +137,7 @@ int pifacecad_service(void) {
     } else {
         //call init_epoll  
         mcp23s17_wait_for_interrupt(1);
+        usleep(10000);        
     }
     //init display
     int mcp23s17_fd = pifacecad_open();
