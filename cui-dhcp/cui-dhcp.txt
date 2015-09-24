@@ -1,0 +1,14 @@
+
+
+                                Das DHCP-Paket
+
+
+                                 Die Parameter
+
+   START_DHCP
+          Wird der Wert dieses Parameters auf 'yes' gesetzt, so wird das
+          Paket aktiviert; der Wert 'no' deaktiviert es.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: START_DHCP='yes'

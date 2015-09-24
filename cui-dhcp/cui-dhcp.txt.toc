@@ -1,0 +1,6 @@
+<!-- dhcp.tex - table of content -->
+<!-- creation date: 2015-08-22 -->
+<index title="Das DHCP-Paket">
+    <entry line="5" level="1">Die Einleitung</entry>
+    <entry line="13" level="1">Die Funktionen</entry>
+</index>

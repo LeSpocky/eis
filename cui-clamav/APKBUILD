@@ -52,7 +52,7 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.txt.toc       ${pkgdir}/usr/share/doc/${_pname}/${_pname}.toc || return 1
 }
 
-md5sums="20b0de086346cc82e3afe01478ea2052  cui-clamav.initd
+md5sums="1ca6346be99c34328d186b0cf2629960  cui-clamav.initd
 99abfd3df088ab7c021fcd08f8f275e3  cui-clamav.default
 a7458a7ad8053a5d1b471edaca56e846  cui-clamav.check
 4b6585732ee80082cb21dccd6f17dc9a  cui-clamav.check.exp
@@ -64,7 +64,7 @@ d1729a6ee42d585ceb6a0fb855fde105  cui-clamav.help
 003c0b4d0efcac8cff355aa61ceba26a  cui-clamav.menu
 3372b6467e047b71365ae2f3801fef38  cui-clamav.txt
 92f20f3ef8fbf2f09af39eb288c190a5  cui-clamav.txt.toc"
-sha256sums="5d88df51f918de1f9688669df92a0a5ef4a22d03aea600b33a5788371fa0bda0  cui-clamav.initd
+sha256sums="3a8543cbddc3fe4b7461a96f6ee7e81e9113caedacd54512ba0da7cfbdf59a6c  cui-clamav.initd
 120edb9a5bee0bc099b7fa016d46a476214d777d11576b3cbe628baee7579f06  cui-clamav.default
 27602abfd514df82fcb7573b0daf1a630bc5425803992300a389960a680051d7  cui-clamav.check
 450bafd988319cfc90db315c717fb0255f0e07a2202b81e6ff7ad876f3022d04  cui-clamav.check.exp
@@ -76,7 +76,7 @@ e7b9ba77e8fcfc48e4b59043f0b204ec73e0cc12bc8708f0f8bba4b3d02ab0cc  cui-clamav.sh
 852cac7a3fa5ffd6e39d4a9d4b5e253175f23d3ff617d66831a84b29d1b989b6  cui-clamav.menu
 af91c71b2a86850736605995506cb4471536a49ce35578dccba541121aca12e1  cui-clamav.txt
 fca134c310e9eeb77d09b660f9f2a37292b0b5931d90c13de4699e8d94aed849  cui-clamav.txt.toc"
-sha512sums="b9530ccc15061946c7ad0af8a07d702b2bd492d87cef71d37fda54d061c1f19f6bac443113269a62ca7be65766374d17be94cb8a9b3525245534a6706651502e  cui-clamav.initd
+sha512sums="d06d96e6d52b1a8e834dd94818ca2d5113e29d96aae674607be0a5e767b1277813c9beda10031ed90e5baddca4338a0d352b9bb22072e47f525affef0a6491eb  cui-clamav.initd
 5fee3352d71c8f32dfac190feffbf3d874327795290f4ecbacdd8c43b3a3c925f24cd3acb03033732990aa94463eb4a8190914ff4f59d08b0b2e405ca720f456  cui-clamav.default
 0051ee57e6aa78d55d5f37c0434f6558e048fea36bf16de898190f008c5872d923c13d1ad66b95cb1fea943e8f81cea6f5a33ddf8f1ea85221780b44c43d870b  cui-clamav.check
 58bda952d2e645d278e086b3078e900cabf6821c2080070bc00dc28fe545c23ce9a779a38b0ba8e616a9223b500e1bbe5f4046e5ffac260d0e1770f3522846c6  cui-clamav.check.exp

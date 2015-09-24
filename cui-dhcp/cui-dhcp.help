@@ -1,0 +1,11 @@
+<!-- Creation:     2015-08-22 jv  -->
+
+<help name="START_DHCP">
+    Fuer die Aktivierung des 'DHCP' Server muss diese Variable<br/>
+    lediglich auf den Wert 'yes' gestellt werden. Die Einstellung<br/>
+    'no' schaltet 'DHCP' ab.<br/>
+<br/>
+    Gueltige Werte: yes, no<br/>
+<br/>
+    Standard-Einstellung: START_DHCP='yes'<br/>
+</help>

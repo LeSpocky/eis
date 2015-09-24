@@ -2,7 +2,7 @@
 # Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
 pkgname=smc-milter-new
 pkgver=1.0.1
-pkgrel=0
+pkgrel=1
 pkgdesc="Virus scanner milter for postfix"
 url="http://www.eisfair.org"
 arch="all"
@@ -47,9 +47,9 @@ package() {
 		"$pkgdir"/etc/smc-milter-new/$pkgname.conf || return 1
 }
 
-md5sums="f7f8db564530e1b58a5c68476a9eee19  smc-milter-new.initd
-cf7a22359a59db3fb1128a28878d145e  smc-milter-new.confd"
-sha256sums="aeed7b65396f0f4588392e363feb566a2a7c4d4b43dcb013afa72419c8560289  smc-milter-new.initd
-0e612214279ba46b8409a5c5df2fc78c8f3950385800f5da86bc40ef50e7c84b  smc-milter-new.confd"
-sha512sums="3294c8019180b7e63fd788989cc2f38a91bb4c875152a5bc467e235104563f27c49aa92e4c47a5896b8630c23a70ba6a7ccced3edb152eb465c730325b96d0ea  smc-milter-new.initd
-6a2b2316f240ba2019cea5b97fb35f0c362c3f5a3b1c6c71dd185cdb5c9fea3581c2c74a8a6c5144f5972bea70d64cb65c0f88e917f0002ae1ed5cd1a38b70c1  smc-milter-new.confd"
+md5sums="bb44847376e9a48a7728756c6652a34c  smc-milter-new.initd
+03d8b426db5ff534de9b110a041b7ba8  smc-milter-new.confd"
+sha256sums="10db87c4aad054feba4a2b91b31f5af1d0161b866e1966f9608e85699646f8a2  smc-milter-new.initd
+004041e18693bd3cffc94e2cd53149883c1006f6e0a76a90ae1b15224d37e813  smc-milter-new.confd"
+sha512sums="7ce7e9b7fd97fef9fb212948aedde61a93d91e75e144e6fc9fcb3ff264ba0f170b15ee055b66a8170101593b89e2d39072c653e0dbb97d7318f4313f6b06ac2a  smc-milter-new.initd
+ef1a487ec79974bbc4bf0669466bc6d9ca76928cbf5ad3963862d6f30c25cdf06083b713cb2f3bdddb1a0dba7358c7f0f765ce547706ed92e5433c547a465f12  smc-milter-new.confd"

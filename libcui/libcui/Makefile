@@ -31,6 +31,11 @@ CURSESLIB       = ncursesw
 # additional library flags
 CLIBFLAGS       = -fPIC
 
+# additional linker flags
+LDFLAGS         =
+ifeq ($(shell test -e /usr/lib/libiconv.so ; echo $$?),0)
+  LDFLAGS      += -liconv
+endif
 
 # ----------------------------------------------------------------------
 # Objetcs build from C code
@@ -97,7 +102,7 @@ test.cui: $(C_OBJECTS)
 
 libcui.so.$(CUI_VERSION): $(C_CUI_OBJECTS)
 	@echo "linking $@ ..."
-	@$(CC) -shared -Wl,-soname,libcui.so.2 -o $@ $^ -l$(CURSESLIB)
+	@$(CC) -shared -Wl,-soname,libcui.so.2 -o $@ $^ -l$(CURSESLIB) $(LDFLAGS)
 
 libcui.a: $(C_CUI_OBJECTS)
 	@rm -f $@
@@ -174,4 +179,3 @@ clean :
 	@rm -f *.d
 	@rm -f *.so.*
 	@rm -f *.cui
-

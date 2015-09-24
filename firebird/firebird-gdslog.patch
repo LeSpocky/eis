@@ -1,0 +1,11 @@
+--- a/src/intl/ld.cpp
++++ b/src/intl/ld.cpp
+@@ -39,7 +39,7 @@
+ 
+ // Commented out to make Linux version work because it is inaccessiable on all
+ // known platforms. Nickolay Samofatov, 10 Sept 2002
+-// void gds__log(UCHAR*, ...);
++void gds__log(UCHAR*, ...);
+ 
+ 
+ #define	EXTERN_texttype(name)	INTL_BOOL name (texttype*, charset*, const ASCII*, const ASCII*, USHORT, const UCHAR*, ULONG, const ASCII*)

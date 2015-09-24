@@ -86,9 +86,8 @@ Example: "127.0.0.1" the DNS-Server runs on this eisfair server.
 </help>
 
 <help name="TIME_ZONE">
-Time zone, use "CET" or "GMT"
+Time zone, use "UTC", "CET", "GMT" ...
 </help>
-
 
 <help name="START_SYSLOG">
 Shall syslog-deamon be started? "yes" or "no".<br/>
@@ -111,7 +110,6 @@ Force reload syslog-deamon on rotate the logfile.<br/>
 Default "yes"
 </help>
 
-
 <help name="SYSLOG_AUTH_INTERVAL">
 Logrotate interval: daily, weekly, monthly.<br/>
 How often shall logrotate be executed?
@@ -127,7 +125,6 @@ on the system by logrotate, before they are outdated and removed.
 Force reload syslog-deamon on rotate the logfile.
 </help>
 
-
 <help name="SYSLOG_MAIL_INTERVAL">
 Logrotate interval: daily, weekly, monthly.<br/>
 How often shall logrotate be executed?
@@ -142,7 +139,6 @@ on the system by logrotate, before they are outdated and removed.
 <help name="SYSLOG_MAIL_RELOAD">
 Force reload syslog-deamon on rotate the logfile.
 </help>
-
 
 <help name="SYSLOG_KERNEL_INTERVAL">
 Logrotate interval: daily, weekly, monthly.<br/>
@@ -163,7 +159,6 @@ Force reload syslog-deamon on rotate the logfile.
 <help name="SYSLOG_SOURCE_UDP">
 Activate external UDP-Port for connect this syslog server? "yes" or "no"
 </help>
-
 
 <help name="SYSLOG_DEST_N">
 Number or destinations for syslog messages.
@@ -216,7 +211,6 @@ Screen blanking timeout.<br/>
 Monitor remains on, but the screen is cleared to range:<br/>
 0-60 min (0==never)
 </help>
-
 
 <help name="POWEROFF">
 Shall the system be switched off automatically after shutdown? "yes" or "no".

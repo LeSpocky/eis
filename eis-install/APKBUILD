@@ -2,7 +2,7 @@
 # Maintainer: jv <jens@eisfair.org>
 pkgname=eis-install
 pkgver=1.0.0
-pkgrel=4
+pkgrel=5
 pkgdesc="eisfair-ng installer"
 url="http://www.eisfair.org"
 arch="noarch"
@@ -39,12 +39,12 @@ package() {
 	sed -i -e "s/_RELVERS_/${alpinerelease}/g" ${pkgdir}/bin/$pkgname.setup-disk
 }
 
-md5sums="a98734dee80911e7a4340ab5b3898a9c  eis-install.initd
+md5sums="f35bbc1925adef5c52be35b3fff4a113  eis-install.initd
 6af9949d15a050b2238f86865886303d  eis-install.sh
-5ca979350b2c623ae16ee91f1225fbd6  eis-install.setup-disk"
-sha256sums="b4fbfc83c5beaeed746c4e42bf9698d3529a123ffd36bc2a2de8faf3daab2495  eis-install.initd
+b010aa60c8d04a9a6fe8dec0a64a0739  eis-install.setup-disk"
+sha256sums="233897dc346393c0422bc6a30653c3bb64498590170a3a5995163bf3d718b258  eis-install.initd
 4a8a2129d9ff15cb24ec5b1878655ca511607670c12d3e2a423d5f2035ed9966  eis-install.sh
-680871f70edc87c922abec30b1ef9977bea95050a72f7dd517bf755297779f08  eis-install.setup-disk"
-sha512sums="81cfd80aa85adda7948cf40c6b093521a5bf33e87c12c9338a346d31455e6ca5e166aef8647c9d4a40d06e4c4ecb64da386cc81b422338c469f986cc6503656c  eis-install.initd
+b0f55040dd12cdf64da90b35a373b7e698014d6c93f03fe7181d1d9effd7e859  eis-install.setup-disk"
+sha512sums="9a0d6864be8a422c8b7f9c39eb9a45f38199cab630c3302048305899eea4f65be56727820433c1e64d04715f523dfda85aac2fdc599687935759a0d5f6b2c060  eis-install.initd
 54337dfcd989e99cba9ce27ccf96a678edbef0d43c78706b9ef03c4ee1178cb19dded322fd69142de2691bb6b8682f3f2e12a9840948c246a8f1e54995dff3a8  eis-install.sh
-db7150a158f66dfe58111f3e82df03c00ec53423a228dc3dc703f0d2460b3d4c7a0b9f3629fa3276308178e2cc9ccf62c94c067ecbc160363bb2bbafcb60a6fb  eis-install.setup-disk"
+48f97f4061839671dfae951a2a92fa5a17f1e68f2cc4cf96c30176e03ab1e77582a29ed7ec3bb7b384d4887e6786ae61ab45d008ad464b558ca925dcfd1f60bc  eis-install.setup-disk"

@@ -1,0 +1,7 @@
+<!-- /var/install/menu/setup.service.dhcp.menu -->
+<!-- Creation:     2015-08-22 -->
+<package>dhcp</package>
+<title>FTP-Backup administration</title>
+<doc file="ftpbackup.txt">View documentation</doc>
+<edit>Edit configuration</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>

@@ -1,4 +1,4 @@
-#!/sbin/runscript
+#!/sbin/openrc-run
 # Copyright 1999-2007 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
@@ -36,14 +36,17 @@ reload() {
 }
 
 grep_syslog_conf_entries() {
-	local section="$1" FN filelist
-	grep -v '^#' /etc/syslog-ng/syslog-ng-${section}.std
+	local section="$1" FN filelist timezone
 	filelist=$(find /etc/syslog-ng/ -maxdepth 1 -type f -name "syslog-ng-${section}.*" | grep -Ev ".backup|.std|~")
+	timezone=$(find /etc/zoneinfo -type f -print0 | sed "s#/etc/zoneinfo/##g")
+	[ "$timezone" = "UTC" ] && timezone=""
+	[ -n "$timezone" ] && timezone="time_zone(\"$timezone\")"
+	grep -v '^#' /etc/syslog-ng/syslog-ng-${section}.std | sed "s#_TZ_#${timezone}#g"
 	if [ $? -eq 0 ]
 	then
 		for FN in ${filelist}
 		do
-			grep -v '^#' $FN
+			grep -v '^#' $FN | sed "s#_TZ_#${timezone}#g"
 		done
 	fi
 }
@@ -75,3 +78,4 @@ update() {
 	cp -p $f_tmp $fname
 	rm -f $f_tmp
 }
+

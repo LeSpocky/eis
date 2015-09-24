@@ -1,0 +1,18 @@
+#------------------------------------------------------------------------------
+# /etc/check.d/cui-lcd4linux-widgets.exp - eischk exp file for cui-lcd4linux-widgets
+# Copyright (c) 2001-2015 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
+
+
+LCD_ALIGN_CUI     = 'Left|Center|Right|Marquee'
+                  : 'Not a valid alignment, possible values: Left, Center, Right or Marquee'
+
+LCD_DIRECTION_CUI = 'North|East|South|West'
+                  : 'Bar direction, possible values: North, East, South or West'
+
+LCD_STYLE_CUI     = '|Hollow'
+                  : 'Bar style, possible values are empty or Hollow'
+
+LCDICON           = '(\.|\*|\+|\|)*'
+                  : 'Not a valid definition for a row of an icon'
+

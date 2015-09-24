@@ -1,0 +1,38 @@
+# Contributor: Jens Vehlhaber jv <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
+pkgname=picadstat
+pkgver=0.1.0
+pkgrel=0
+pkgdesc="System status for PiFaceCaD LCD display on Raspberry Pi (CPU frequency, temp, usage, IP-address...)"
+url="http://www.eisfair.org"
+arch="armhf"
+license="GPLv2"
+depends=""
+depends_dev="linux-headers libpifacecad-dev libmcp23s17-dev"
+makedepends="$depends_dev"
+install=""
+subpackages=""
+source="$pkgname.initd"
+
+_builddir="$srcdir/$pkgname"
+
+prepare() {
+	cp -r  ${startdir}/picadstat "$srcdir/"
+}
+
+build() {
+	cd "$_builddir"
+	make -j1 -s || return 1
+}
+
+package() {
+	cd "$_builddir"
+	install -D -m755 "$srcdir"/$pkgname.initd \
+	        ${pkgdir}/etc/init.d/$pkgname || return 1
+	install -m755 -D "$_builddir"/$pkgname \
+		${pkgdir}/usr/sbin/$pkgname || return 1
+}
+
+md5sums="db97d4c8d5c3f8074e5a32a3761c8fda  picadstat.initd"
+sha256sums="b3118394033b636d8cd10f7144742b425d165665309d77db7009496882f1702c  picadstat.initd"
+sha512sums="d14b67df2db4fe9a71f4cacc8755e5afc1afc039fe9f3013164c6b28418b8e0aae1808732321e112dbe2bc52608e3942c17dff32c067e29e59efb2c5658f1720  picadstat.initd"

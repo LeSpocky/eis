@@ -64,15 +64,12 @@ createInadynConfiguration()
                 custom)
                     inadyn_system='custom@dyndns.org'
                     ;;
-                zoneedit)
-                    inadyn_system='default@zoneedit.com'
-                    ;;
-                no-ip)
-                    inadyn_system='default@no-ip.com'
-                    ;;
-                changeip)
+                changeip.org)
                     inadyn_system='custom@http_svr_basic_auth'
                     inadyn_ip_server_name='ip.changeip.com'
+                    ;;
+                *)
+                    inadyn_system='default@${$inadyn_system_type}'
                     ;;
             esac
 

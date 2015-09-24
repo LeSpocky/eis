@@ -1,0 +1,11 @@
+--- a/src/pifacecad.c
++++ b/src/pifacecad.c
+@@ -126,7 +126,7 @@
+ 
+ uint8_t pifacecad_lcd_write(const char * message)
+ {
+-    pifacecad_lcd_send_command(LCD_SETDDRAMADDR | cur_address);
++//  pifacecad_lcd_send_command(LCD_SETDDRAMADDR | cur_address);
+ 
+     // for each character in the message
+     while (*message) {

@@ -94,10 +94,10 @@ activateUploadedPackages ()
                 exit ${rtc}
             fi
         else
-            echo "No uploaded packages found"
+            echo "No uploaded packages found on folder '$sourcePath'"
         fi
     else
-        echo "Package source folder not existing!"
+        echo "Package source folder '$sourcePath' not existing!"
         exit 1
     fi
 }

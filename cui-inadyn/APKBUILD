@@ -2,7 +2,7 @@
 # Maintainer: starwarsfan <yves@eisfair.org>
 pkgname=cui-inadyn
 pkgver=1.0.0
-pkgrel=0
+pkgrel=1
 pkgdesc="CUI Setup for inadyn dynamic dns client"
 url="http://www.eisfair.org"
 arch="noarch"
@@ -50,24 +50,24 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.help                           ${pkgdir}/var/install/help/${pkgname} || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.cui-inadyn.menu ${pkgdir}/var/install/menu/setup.services.cui-inadyn.menu || return 1
 }
-md5sums="03ba5ca1d2eba509c2356fa163e557a0  cui-inadyn.help
+md5sums="e8b9003eca6c1456c3c2ef3577177e48  cui-inadyn.help
 877fa38c5c62385710bed48bb14969d6  cui-inadyn.initd
 0e4e58b3466fc97bd06de3eec48777ba  cui-inadyn.setup.services.cui-inadyn.menu
-302abb0887cd453e74c7bbcfdbfcdda6  cui-inadyn.sh
-d868c2d198b6e099a40eabe5d2cfbf81  cui-inadyn.txt
+eaf1c51d1410df0dd944647eb749b196  cui-inadyn.sh
+d09bc656dc64df5ded208f299056f166  cui-inadyn.txt
 c54d4925e289aea2a2220aa1c9971547  cui-inadyn-status-mail.sh
 3f852b2efd7ba7bebc0c8958b59cf357  cui-inadyn-update.sh"
-sha256sums="f239ec3ef4342b0c7cbcc358d9a91a33a7b77a357d45aa8c8895cb8b6e689ec1  cui-inadyn.help
+sha256sums="086bdc7cbe6f9c79195b36559380148cb135700046025cf475bbc7350e90d5a3  cui-inadyn.help
 85257e3a33346843ccaaef83fde41ba74778117a0385657d93d66c9d962190a2  cui-inadyn.initd
 93906e19534ecd6e67b5c1fd84de8bf2c80c3882dff0abc48d3088fbade8b840  cui-inadyn.setup.services.cui-inadyn.menu
-c951a82d95a7759ba564ba26fac9edb7dab8e47c8df67b1f981e9bb89fcbcb7d  cui-inadyn.sh
-7e4bdb53b13d38691cf12c21b975242ff2d29718b1c91063965afcba2664cd59  cui-inadyn.txt
+6abeff46264a7a7c15a1625a99ac69002c8ed014ca25de256ba67465fe931b3e  cui-inadyn.sh
+fa8cfe45a0d31256cc4f65210bc83a34aa680e23e98100bf5f9ab16fa36fe151  cui-inadyn.txt
 ed1e792de9e78dbb0d508dadad06a218e667f263c688ac6b8f1a24958caa5c3a  cui-inadyn-status-mail.sh
 8a3b92633575c9277e94480dbbbd2f3d8b0477aa45ecc8453ea78909f5bb6827  cui-inadyn-update.sh"
-sha512sums="7dfb41bcb6b8dd4f898b721f5e94a4aa47bca863c7347ae0dad7bf2b3510e985c6cb61964d520c5e64a3e4f06246b26af113d2b5015297e03ef80d3a9958a255  cui-inadyn.help
+sha512sums="6f47c749416cfdcac9ce8fd80be8d2e68b9e5c633144aca4aadc8db65627ccbfb3c58fc037f68d170a02e57d178638d5a63b026a4e6d1a73f2d17da025f3da0c  cui-inadyn.help
 733e36b32936f8f4157cbe78cdbe3ba181f2223c7acbb00e92e422a4f998559ecdcb14c582851236e4560d5837b2b68004832bfced7c5c70e01993e4dbb09eaf  cui-inadyn.initd
 8f303ec6fa48297b6faa586474b06553c25e05ecae70d96b38077a8efbf817bad21ff10002bd6664f9bd3dee016dfd558ed0498687ad5bf6e9c1438908781057  cui-inadyn.setup.services.cui-inadyn.menu
-dc9a22e5dc7dc4188d1a5a6fd0215dc98d85362811b6d3908c768ebff51e8700d0c388f2ddeb347996860430aff87281776747b7f36eb0f839f4d93790d88e89  cui-inadyn.sh
-e6fafdbdd02b4c10ad69ef504df68641a4c47ead2dcfc4435bd4101b6ba33b84fd5c8b5388dd60bd98db64741124479992980221528b76b32373c28d75c56a59  cui-inadyn.txt
+10c75db9a1b84ebd4166d1e0261463a350c586bbacb2e476f34d5e05b8d37cf5fdad411fb85ac3cdb536d88656079b3b575875c6fe377d129becbfb221294882  cui-inadyn.sh
+0e913cfa52231308921b9e6007895c8f5b714147f73cfe5e0bde0aa1c493ff2b10e8ce1947e485144d169a2415e5556dabd5b81ea2c44a62c7f47d32e28ec9d9  cui-inadyn.txt
 335050ac08cf3d8ac1375bd3238ae33b967bc18953a7a360e66ff4c7f220f82fb9cee939dcfae1ae4baa716e44d419f395ba6ece2ba6265cb26a88830e4249dc  cui-inadyn-status-mail.sh
 21375341a57a2a40390ef3870bebe569b1cbce2be24a01d9a8efd414d43930128cc1ea7e8949406e0bfb5b85448af25b6049db8f3e470f1ee8cd64eeef1407e1  cui-inadyn-update.sh"

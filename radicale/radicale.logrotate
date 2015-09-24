@@ -1,0 +1,12 @@
+/var/log/radicale/*.log {
+    daily
+    missingok
+    rotate 60
+    notifempty
+    create 0644
+    sharedscripts
+    delaycompress
+    postrotate
+        /sbin/rc-service --quiet radicale reload > /dev/null 2>/dev/null || true
+    endscript
+}

@@ -9,10 +9,36 @@ gegebenenfalls. Dadurch kann erreicht werden, dass der Server immer unter den
 konfigurierten Alias-Namen erreichbar ist.
 
 - Unterstuetzt werden die folgenden DynDNS Anbieter:
-  * dyndns.org (in allen drei Versionen: dynamic, static, custom)
-  * freedns.afraid.org (bisher nicht auf eisfair umgesetzt)
-  * zoneedit.com
-  * no-ip.com
+  	* dyndns.org (in allen drei Versionen: dynamic, static, custom)
+	* <http://www.dyndns.org>
+	* <http://freedns.afraid.org>
+	* <http://www.zoneedit.com>
+	* <http://www.no-ip.com>
+	* <http://www.easydns.com>
+	* <http://www.tzo.com>
+	* <http://www.3322.org>
+	* <http://www.dnsomatic.com>
+	* <http://www.tunnelbroker.net>
+	* <http://dns.he.net/>
+	* <http://www.dynsip.org>
+	* <http://www.sitelutions.com>
+	* <http://www.dnsexit.com>
+	* <http://www.changeip.com>
+	* <http://www.zerigo.com>
+	* <http://www.dhis.org>
+	* <https://nsupdate.info>
+	* <http://duckdns.org>
+	* <https://www.loopia.com>
+	* <https://www.namecheap.com>
+	* <https://domains.google.com>
+	* <https://www.ovh.com>
+	* <https://www.dtdns.com>
+	* <http://giradns.com>
+	* <https://www.duiadns.net>
+  Achtung: Da nicht bei jedem Anbieter ein Account vorhanden ist, sind die
+  meissten Anbieter ungetestet und werden hier so aufgelistet, wie es die
+  Inadyn-Doku angibt. Bei konkreten Problemen bitte einen entsprechenden
+  Bugreport unter http://bugs.eisfair.org/ aufmachen.
 - Verwaltet mehrere Aliases / Host-Namen derselben IP-Adresse
 - Funktioniert auch hinter einem NAT Router
 - Unterstuetzt http-Zugriff ueber einen Proxy (bisher nicht auf eisfair umgesetzt)

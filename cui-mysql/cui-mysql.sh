@@ -13,7 +13,7 @@
 #-------------------------------------------------------------------------------
 # setup defaults
 #-------------------------------------------------------------------------------
-[ -e /var/lib/mysql/mysql ] || rc-service --quiet mysql setup
+[ -e /var/lib/mysql/mysql ] || rc-service --quiet _DBNAME_ setup
 mkdir -p    /var/lib/mysql_backup
 chmod 0750  /var/lib/mysql_backup
 chown mysql /var/lib/mysql_backup
@@ -24,7 +24,7 @@ chown mysql /var/lib/mysql_backup
 bindaddr="bind-address                = 127.0.0.1"
 if [ "$MYSQL_NETWORK" = "yes" ] ; then
     bindaddr="#bind-address               = 127.0.0.1"
-    [ -n "$MYSQL_BIND_IP_ADDRESS" ] && bindaddr="bind-address                = $MYSQL_BIND_IP_ADDRESS"
+    [ -n "$MYSQL_BIND" ] && bindaddr="bind-address                = $MYSQL_BIND"
 fi
 
 # ---- count cpu cores ---------------------------------------------------------
@@ -387,7 +387,7 @@ chmod 0644 /etc/mysql/my.cnf
 #-------------------------------------------------------------------------------
 # force autosetup on init-script
 #-------------------------------------------------------------------------------
-echo 'AUTO_SETUP="yes"' > /etc/conf.d/mysql
+echo 'AUTO_SETUP="yes"' > /etc/conf.d/_DBNAME_
 
 #-------------------------------------------------------------------------------
 # setup logrotate
@@ -401,7 +401,7 @@ cat > /etc/logrotate.d/mysql <<EOF
     sharedscripts
     delaycompress
     postrotate
-        /sbin/rc-service --quiet mysql restart > /dev/null 2>/dev/null || true
+        /sbin/rc-service --quiet _DBNAME_ restart > /dev/null 2>/dev/null || true
     endscript
 }
 EOF
@@ -416,5 +416,20 @@ EOF
 #-------------------------------------------------------------------------------
 echo "$MYSQL_BACKUP_CRON_SCHEDULE /usr/bin/cui-mysql-backup.sh" > /etc/cron/root/mysql
 /sbin/rc-service --quiet fcron reload
+
+#-------------------------------------------------------------------------------
+# Mariadb start stop setup (different init script name)
+#-------------------------------------------------------------------------------
+if [ "_DBNAME_" = "mariadb" ] ; then
+    if [ "$START_MYSQL" = "yes" ] ; then
+        # restart package
+        /sbin/rc-service -i -q mariadb restart
+        /sbin/rc-update -q add mariadb default >/dev/null 2>&1
+    else
+        # stop package
+        /sbin/rc-service -i -q mariadb stop
+        /sbin/rc-update -q del mariadb
+    fi
+fi
 
 exit 0

@@ -1,0 +1,107 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/cui-lcd4linux - configuration file for cui-lcd4linux
+# Copyright (c) 2001-2015 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# LCD configuration
+#------------------------------------------------------------------------------
+
+START_LCD='no'                        # Use: yes or no
+
+#------------------------------------------------------------------------------
+# Display
+#------------------------------------------------------------------------------
+
+LCD_TYPE='LCD2USB'                    # <type>:<model>
+LCD_WIRING='fli4l'                    # HD44780 compatible: fli4l or winamp
+LCD_PORT='/dev/parport0'              # LCD Device (e.g. /dev/parport0)
+LCD_SPEED='---'                       # Serial port speed: 1200, 2400, 9600 or
+                                      # 19200
+LCD_CONTRAST='230'                    # Display contrast
+                                      # - Matrix Orbital: 0 to 255       dftl: 160
+                                      # - CrystalFontz: 0 to 255
+LCD_BACKLIGHT='80'                    # Backlight CrystalFontz display: 0 to
+                                      # 100
+                                      #  Cwlinux display: 0 to 8
+LCD_COLS='20'                         # no. of lcd columns (16,20,32,40) dflt:
+                                      # 20
+LCD_ROWS='4'                          # no. of lcd physical rows (1,2,4) dflt:
+                                      #  4
+
+#------------------------------------------------------------------------------
+# Layout
+#------------------------------------------------------------------------------
+
+LCD_LAYOUT_N='1'                      # Amount of layouts to configure
+LCD_LAYOUT_1_NAME='layout1'           # Name of current layout
+LCD_LAYOUT_1_ACTIVE='no'              # Is current layout active or not
+LCD_LAYOUT_1_ELEMENT_N='2'            # Amount of elements (widgets) on this
+                                      # layout
+LCD_LAYOUT_1_ELEMENT_1_NAME=''        # Type and name of widget to use like
+                                      # Text:Foo
+LCD_LAYOUT_1_ELEMENT_1_ACTIVE='no'    # Is current widget active on this layout
+                                      # or not
+LCD_LAYOUT_1_ELEMENT_1_ROW=''         # Row where current widget should be
+                                      # displayed
+LCD_LAYOUT_1_ELEMENT_1_COL=''         # Column where current widget should be
+                                      # displayed
+LCD_LAYOUT_1_ELEMENT_2_NAME=''        # Type and name of widget to use like
+                                      # Text:Foo
+LCD_LAYOUT_1_ELEMENT_2_ACTIVE=''      # Is current widget active on this layout
+                                      # or not
+LCD_LAYOUT_1_ELEMENT_2_ROW=''         # Row where current widget should be
+                                      # displayed
+LCD_LAYOUT_1_ELEMENT_2_COL=''         # Column where current widget should be
+                                      # displayed
+LCD_LAYOUT_CYCLE='no'                 # Cycle through configured and active
+                                      # layouts
+LCD_LAYOUT_CYCLE_TIME='1'             # How long should a layout been displayed
+                                      # before switching to the next one
+
+#------------------------------------------------------------------------------
+# Server shutdown handling
+#------------------------------------------------------------------------------
+
+LCD_USE_SHUTDOWN_LAYOUT='yes'         # Activate special layout for server
+                                      # shutdown
+
+#------------------------------------------------------------------------------
+# Imond/Telmond/Mpd-Plugin
+#------------------------------------------------------------------------------
+
+LCD_IMOND='no'                        # Monitor imond
+LCD_IMOND_HOST='localhost'            # Host, where imond is running
+LCD_IMOND_PORT='5000'                 # Port, on which imond is running
+LCD_IMOND_PASS=''                     # If IMOND_PASS is set and imond is not
+                                      # running on local machine, you need to
+                                      # specify the password here
+LCD_TELMOND='no'                      # Monitor telmond
+LCD_TELMOND_HOST='localhost'          # Host, where telmond is running
+LCD_TELMOND_PORT='5001'               # Port, on which telmond is running
+LCD_TELMOND_PHONEBOOK='/etc/phonebook'
+                                      # Phonebook to show names instead
+                                      # of numbers
+LCD_MPD='no'                          # Monitor mpd
+LCD_MPD_HOST='localhost'              # Host on which mpd is running
+LCD_MPD_PORT='6600'                   # Port, on which mpd is runnig
+
+#------------------------------------------------------------------------------
+# POP3-Plugin
+#------------------------------------------------------------------------------
+
+LCD_POP3_N='0'                        # Number of pop3-accounts to poll
+
+#------------------------------------------------------------------------------
+# Variables
+#------------------------------------------------------------------------------
+
+LCD_UPDATE_TEXT='1000'                # time in milliseconds between text
+                                      # updates
+LCD_UPDATE_BAR='1000'                 # time in milliseconds between bar
+                                      # updates
+LCD_UPDATE_ICON='1000'                # animation interval (msec)
+
+#------------------------------------------------------------------------------
+# End
+#------------------------------------------------------------------------------

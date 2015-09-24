@@ -2,7 +2,7 @@
 # Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
 pkgname=radicale
 pkgver=0.10
-pkgrel=0
+pkgrel=1
 pkgdesc="Radicale caldav and carddav server"
 url="http://www.radicale.org/"
 arch="noarch"
@@ -12,19 +12,22 @@ depends_dev="python"
 makedepends="$depends_dev"
 install=""
 subpackages=""
-source="
-	https://pypi.python.org/packages/source/R/Radicale/Radicale-0.10.tar.gz
+source="https://pypi.python.org/packages/source/R/Radicale/Radicale-0.10.tar.gz
 	$pkgname-config.patch
-	$pkgname.initd"
+	radicale-logging.patch
+	$pkgname.initd
+	$pkgname.logrotate"
 
+#https://github.com/Kozea/Radicale/archive/master.zip
 _builddir="${srcdir}/Radicale-${pkgver}"
+#_builddir="${srcdir}/Radicale-master"
 
 prepare() {
 	local i
 	cd "$_builddir"
 	for i in $source; do
 		case $i in
-#		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
+		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
 		esac
 	done
 }
@@ -39,6 +42,8 @@ package() {
 	mkdir -p ${pkgdir}/etc/${pkgname}
 	mkdir -p ${pkgdir}/var/log/radicale
 	mkdir -p ${pkgdir}/var/lib/radicale
+	chown daemon ${pkgdir}/var/log/radicale
+	chown daemon ${pkgdir}/var/lib/radicale  
 	cd "$_builddir"
 	./setup.py install -O1 --root="$pkgdir"
 	install -m 0644 ${_builddir}/config \
@@ -47,14 +52,22 @@ package() {
 		${pkgdir}/etc/${pkgname}/logging || return 1
 	install -m755 -D "$srcdir"/${pkgname}.initd \
 		"$pkgdir"/etc/init.d/${pkgname} || return 1
+	install -m644 -D "$srcdir"/${pkgname}.logrotate \
+		"$pkgdir"/etc/logrotate.d/${pkgname} || return 1
 }
 
 md5sums="32655d8893962956ead0ad690cca6044  Radicale-0.10.tar.gz
-75f1c82979bfb5706de6a1319b775f78  radicale-config.patch
-60c54f69f377c52b201e22c36a185ee8  radicale.initd"
+3f10ea6c471512c8f41636ad2d16bba2  radicale-config.patch
+9691ee8cc3c9c102bc0392878f780dcd  radicale-logging.patch
+e2bc0e769574597aa3fcb7779e8544a5  radicale.initd
+a89e932c83e552a7952e2eeaa198cb3d  radicale.logrotate"
 sha256sums="0c6522f5751685fc159524ed7acee811ccb9a582db2adb6bbb4da99ce0103d64  Radicale-0.10.tar.gz
-fd051e3191ebb4195ee7494cd00849147a7520c37ea5745465509de943f8b821  radicale-config.patch
-1f3a6586a3ab9c9abc561b6ce663942908a5ad359848cb244a1850a4268139eb  radicale.initd"
+c8ed99d5b9d033b8d070421f239ad45a487922c114250ef2dda4ac9b95341213  radicale-config.patch
+5478995f9b907520d332b79ef0a084654dc35b18b4856a039115be7dc8461939  radicale-logging.patch
+6b0355034d9db49792aa7f00fc5498ada7a8b87f3db83903887c69eb6736dc3b  radicale.initd
+0cbe76d3ae9c20c981e4fa3320dac332ba87d100be2285f1e6adf060ae621fd2  radicale.logrotate"
 sha512sums="d223df0277e43081c9d5a95f30fb5ad5f852b24fc9493b089e36d82ee45ce1549b68e28bf8bdd12352bc3f087babc8f3b6d4e3fce87980e6ca5e3e75f4ace820  Radicale-0.10.tar.gz
-63a4236ddd02564829ad36df38f71a9a6030aaf96355c453d1afa55620bb4c3115d877a5d9a7a945e5f769af8abde8a0d5e3d34b286cf948281dc8a3de59f6f4  radicale-config.patch
-f460b4935754a3a4fa0eaec36a61013f10db857bf381c2ff6ad7a31782c17a5242867e7ee8f4583883455033be4e6087249f941dee17826593fffe3a4a13926e  radicale.initd"
+f455e859c2af0bc71e823d325633b0e4e37ca49dd1c492afa4fbaecfc2b2172e6feb8c5299e89bf3ad1d416dfecacdde943f512a60e757a6077313ea5508676f  radicale-config.patch
+f7f943ceb80e9bbcc04be6e3873f2bbf25bf19e19c4a1122f674ae369704d5174e9694a9bf22597f2d4dc48e562a5a04d439e5acc3468c9c2ac55a332882afa8  radicale-logging.patch
+9220afeddcadb9bfe41a940b9ad0f5c47ff4e3188885a19c95b4a37cb0314238868b27d443982801fb751988a9df212f1134254225c232eb8177a3a03dd52bc1  radicale.initd
+ae40acd86b3e66e143cae26733bdf4f07abb34f6e564eb55e2e6a2cdbacb6969692a3585ec14b97c4414ed1acde0141d2d1ae4df106a21a278a1e36b19c47836  radicale.logrotate"

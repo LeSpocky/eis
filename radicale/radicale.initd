@@ -1,19 +1,25 @@
-#!/sbin/runscript
+#!/sbin/openrc-run
 # Copyright 1999-2011 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-PIDFILE=/var/run/radicale.pid
+PIDFILE=/run/radicale.pid
 
 depend() {
     use net
     need localmount
 }
 
+
+start_pre() {
+    checkpath --directory /var/log/radicale --owner daemon
+    checkpath --directory /var/lib/radicale --owner daemon
+}
+
 start() {
     ebegin "Starting radicale"
         start-stop-daemon --start --quiet --background \
-        --pidfile ${PIDFILE} --make-pidfile \
+        --pidfile ${PIDFILE} --make-pidfile --user daemon \
         --exec /usr/bin/radicale -- --foreground
     eend $?
 }

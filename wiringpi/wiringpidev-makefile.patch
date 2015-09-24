@@ -1,0 +1,14 @@
+--- a/devLib/Makefile
++++ b/devLib/Makefile
+@@ -84,9 +84,8 @@
+ 	@install -m 0644 $(HEADERS)					$(DESTDIR)$(PREFIX)/include
+ 	@echo "[Install Dynamic Lib]"
+ 	@install -m 0755 -d						$(DESTDIR)$(PREFIX)/lib
+-	@install -m 0755 libwiringPiDev.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPiDev.so.$(VERSION)
+-	@ln -sf $(DESTDIR)$(PREFIX)/lib/libwiringPiDev.so.$(VERSION)	$(DESTDIR)/lib/libwiringPiDev.so
+-	@ldconfig
++	@install -m 0644 libwiringPiDev.so.$(VERSION)			$(DESTDIR)$(PREFIX)/lib/libwiringPiDev.so.$(VERSION)
++	@ln -s libwiringPiDev.so.$(VERSION)				 $(DESTDIR)$(PREFIX)/lib/libwiringPiDev.so
+ 
+ .PHONY:	install-static
+ install-static:	$(STATIC)

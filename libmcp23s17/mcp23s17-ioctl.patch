@@ -1,0 +1,10 @@
+--- a/src/mcp23s17.c
++++ b/src/mcp23s17.c
+@@ -8,6 +8,7 @@
+ #include <sys/types.h>
+ #include <sys/ioctl.h>
+ #include <linux/spi/spidev.h>
++#include <asm-generic/ioctl.h>
+ #include "mcp23s17.h"
+ 
+ 

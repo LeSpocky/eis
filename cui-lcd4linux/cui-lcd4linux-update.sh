@@ -1,10 +1,9 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
 # /var/install/config.d/cui-lcd4linux-update.sh - paramater update script
-#
 # Creation   : 2010-08-18 Y. Schumann
-# Copyright (c) 2001-2014 The eisfair Team, <team(at)eisfair(dot)org>
-#
+# Copyright (c) 2001-2015 The eisfair Team, <team(at)eisfair(dot)org>
+# Distributed under the terms of the GNU General Public License v2
 # ----------------------------------------------------------------------------
 
 #exec 2> `pwd`/cui-lcd4linux-update-trace$$.log
@@ -200,143 +199,17 @@ makeConfigFile() {
 
     } > ${internal_conf_file}
     # Set rights
-    chmod 0600 ${internal_conf_file}
+    chmod 0644 ${internal_conf_file}
     chown root ${internal_conf_file}
 }
 
 # ----------------------------------------------------------------------------
-# Create the check.d file
-makeCheckFile() {
-    printgpl --check ${packageName} >/etc/check.d/${packageName}
-    cat >> /etc/check.d/${packageName} <<EOFG
-# Variable                      OPT_VARIABLE       VARIABLE_N              VALUE
-START_LCD                       -                  -                       YESNO
-LCD_TYPE                        START_LCD          -                       LCD_DRIVER_CUI
-LCD_PORT                        START_LCD          -                       LCDPORT
-LCD_WIRING                      START_LCD          -                       LCD_WIRING_CUI
-LCD_SPEED                       START_LCD          -                       LCD_SPEED_CUI
-LCD_CONTRAST                    START_LCD          -                       LCD_CONTRAST_CUI
-LCD_BACKLIGHT                   START_LCD          -                       LCD_BACKLIGHT_CUI
-LCD_COLS                        START_LCD          -                       LCD_COLS_CUI
-LCD_ROWS                        START_LCD          -                       LCD_ROWS_CUI
-
-LCD_LAYOUT_N                    START_LCD                       -                        NUMERIC
-LCD_LAYOUT_%_NAME               START_LCD                       LCD_LAYOUT_N             NOTEMPTY
-LCD_LAYOUT_%_ACTIVE             START_LCD                       LCD_LAYOUT_N             YESNO
-LCD_LAYOUT_%_ELEMENT_N          LCD_LAYOUT_%_ACTIVE             LCD_LAYOUT_N             NUMERIC
-LCD_LAYOUT_%_ELEMENT_%_NAME     LCD_LAYOUT_%_ACTIVE             LCD_LAYOUT_%_ELEMENT_N   LCD_WIDGET_CUI
-LCD_LAYOUT_%_ELEMENT_%_ACTIVE   LCD_LAYOUT_%_ACTIVE             LCD_LAYOUT_%_ELEMENT_N   YESNO
-LCD_LAYOUT_%_ELEMENT_%_ROW      LCD_LAYOUT_%_ELEMENT_%_ACTIVE   LCD_LAYOUT_%_ELEMENT_N   NUMERIC
-LCD_LAYOUT_%_ELEMENT_%_COL      LCD_LAYOUT_%_ELEMENT_%_ACTIVE   LCD_LAYOUT_%_ELEMENT_N   NUMERIC
-
-LCD_LAYOUT_CYCLE                START_LCD                       -                        YESNO
-LCD_LAYOUT_CYCLE_TIME           LCD_LAYOUT_CYCLE                -                        NOTEMPTY
-
-LCD_USE_SHUTDOWN_LAYOUT         START_LCD                       -                        YESNO
-#LCD_DEFAULT_SHUTDOWN_LAYOUT     LCD_USE_SHUTDOWN_LAYOUT         -                        YESNO
-
-LCD_UPDATE_TEXT                 START_LCD          -                       NUMERIC
-LCD_UPDATE_BAR                  START_LCD          -                       NUMERIC
-LCD_UPDATE_ICON                 START_LCD          -                       NUMERIC
-
-LCD_IMOND                       START_LCD          -                       YESNO
-LCD_IMOND_HOST                  LCD_IMOND          -                       LCDFQDN
-LCD_IMOND_PORT                  LCD_IMOND          -                       PORT
-LCD_IMOND_PASS                  LCD_IMOND          -                       NONE
-
-LCD_TELMOND                     START_LCD          -                       YESNO
-LCD_TELMOND_HOST                LCD_IMOND          -                       LCDFQDN
-LCD_TELMOND_PORT                LCD_IMOND          -                       PORT
-LCD_TELMOND_PHONEBOOK           LCD_IMOND          -                       E_ABS_PATH
-
-LCD_MPD                         START_LCD          -                       YESNO
-LCD_MPD_HOST                    LCD_MPD            -                       LCDFQDN
-LCD_MPD_PORT                    LCD_MPD            -                       PORT
-
-LCD_POP3_N                      START_LCD          -                       NUMERIC
-LCD_POP3_%_SERVER               START_LCD          LCD_POP3_N              FQDN
-LCD_POP3_%_USER                 START_LCD          LCD_POP3_N              NOTEMPTY
-LCD_POP3_%_PASS                 START_LCD          LCD_POP3_N              NOTEMPTY
-LCD_POP3_%_PORT                 START_LCD          LCD_POP3_N              PORT
-
-EOFG
-
-    # Set rights for check.d file
-    chmod 0600 /etc/check.d/${packageName}
-    chown root /etc/check.d/${packageName}
-
-    printgpl --check_exp ${packageName} >/etc/check.d/${packageName}.exp
-    cat >> /etc/check.d/${packageName}.exp <<EOFG
-
-LCD_DRIVER_CUI    = '(RE:NOTEMPTY)'
-                  : 'You must choose one of the lcd drivers (and separate the display model by : if available)'
-
-LCD_CONTRAST_CUI  = '(RE:NUMERIC)'
-                  : 'Not a numeric value'
-
-LCD_BACKLIGHT_CUI = '(RE:NUMERIC)'
-                  : 'Not a numeric value'
-
-LCD_COLS_CUI      = '(RE:NUMERIC)'
-                  : 'Not a numeric value'
-
-LCD_ROWS_CUI      = '(RE:NUMERIC)'
-                  : 'Not a numeric value'
-
-LCDSERPORT        = '/dev/ttyS[0-9]'
-                  : 'Not a valid serial port, e.g. /dev/ttyS0'
-
-LCDPARPORT        = '/dev/parport[0-9]'
-                  : 'Not a valid parport, e.g. /dev/parport0'
-
-LCDTTYPORT        = '/dev/tty[0-9]'
-                  : 'Not a valid terminal, e.g. /dev/tty3'
-
-LCDPORT           ='(RE:LCDSERPORT)|(RE:LCDPARPORT)|(RE:LCDTTYPORT)|/dev/usb|'
-                  : 'Not a valid port'
-
-LCD_WIRING_CUI    = 'fli4l|winamp'
-                  : 'Not a valid wiring schema - must be fli4l or winamp'
-
-LCD_SPEED_CUI     = '---|1200|2400|4800|9600|19200|38400|115200'
-                  : 'Not a valid speed, possible values are 1200, 2400, 4800, 9600, 19200, 38400 or 115200'
-
-LCD_WIDGET_CUI    = '(RE:NOTEMPTY)'
-                  : 'One of the configured widgets must be choosen!'
-
-LCDFQDN           = '(RE:FQDN)|localhost'
-                  : 'Fully qualified domain name'
-
-EOFG
-
-    # Set rights for check.exp file
-    chmod 0600 /etc/check.d/${packageName}.exp
-    chown root /etc/check.d/${packageName}.exp
-
-#    printgpl --check_ext ${packageName} >/etc/check.d/${packageName}.ext
-#    cat >> /etc/check.d/${packageName}.ext <<EOFG
-
-
-#EOFG
-
-    # Set rights for check.ext file
-#    chmod 0600 /etc/check.d/${packageName}.ext
-#    chown root /etc/check.d/${packageName}.ext
-}
-
-
-# ----------------------------------------------------------------------------
 # Main
-# Write default config file
-makeConfigFile /etc/default.d/${packageName}
 
 # Update values from old version
 updateVariables
 
 # Write new config file
 makeConfigFile /etc/config.d/${packageName}
-
-# Write check.d file
-makeCheckFile
 
 exit 0

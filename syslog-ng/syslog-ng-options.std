@@ -37,3 +37,6 @@
 #log_msg_size(2048);
 # Disable statistic log messages.
   stats_freq(0);
+#musl syslog ignored time-zone
+  send-time-zone("UTC");
+  recv-time-zone("UTC");

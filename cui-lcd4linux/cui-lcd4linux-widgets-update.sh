@@ -1,10 +1,9 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
 # /var/install/config.d/cui-lcd4linux-update.sh - paramater update script
-#
 # Creation:    2010-10-03 Y. Schumann
-# Copyright (c) 2001-2014 The eisfair Team, <team(at)eisfair(dot)org>
-#
+# Copyright (c) 2001-2015 The eisfair Team, <team(at)eisfair(dot)org>
+# Distributed under the terms of the GNU General Public License v2
 # ----------------------------------------------------------------------------
 
 #exec 2> `pwd`/cui-lcd4linux-widgets-update-trace$$.log
@@ -17,7 +16,6 @@
 packageName=cui-lcd4linux-widgets
 mainPackageName=cui-lcd4linux
 modifiedSomething=false
-
 
 # ----------------------------------------------------------------------------
 # Set the default values for configuration
@@ -792,111 +790,21 @@ makeConfigFile() {
     } >> ${internal_conf_file}
 
     # Set rights
-    chmod 0600 ${internal_conf_file}
+    chmod 0644 ${internal_conf_file}
     chown root ${internal_conf_file}
 }
 
-# ----------------------------------------------------------------------------
-# Create the check.d file
-# ----------------------------------------------------------------------------
-makeCheckFile()
-{
-    printgpl --check ${packageName} >/etc/check.d/${packageName}
-    cat >> /etc/check.d/${packageName} <<EOFG
-# Variable                      OPT_VARIABLE               VARIABLE_N              VALUE
-START_LCD_WIDGET                -                          -                       YESNO
-
-LCD_WIDGET_TEXT_N               START_LCD_WIDGET           -                       NUMERIC
-LCD_WIDGET_TEXT_%_NAME          START_LCD_WIDGET           LCD_WIDGET_TEXT_N       NOTEMPTY
-LCD_WIDGET_TEXT_%_ACTIVE        START_LCD_WIDGET           LCD_WIDGET_TEXT_N       YESNO
-LCD_WIDGET_TEXT_%_PREFIX        LCD_WIDGET_TEXT_%_ACTIVE   LCD_WIDGET_TEXT_N       NONE
-LCD_WIDGET_TEXT_%_EXP           LCD_WIDGET_TEXT_%_ACTIVE   LCD_WIDGET_TEXT_N       NOTEMPTY
-LCD_WIDGET_TEXT_%_POSTFIX       LCD_WIDGET_TEXT_%_ACTIVE   LCD_WIDGET_TEXT_N       NONE
-LCD_WIDGET_TEXT_%_WIDTH         LCD_WIDGET_TEXT_%_ACTIVE   LCD_WIDGET_TEXT_N       NUMERIC
-LCD_WIDGET_TEXT_%_ALIGN         LCD_WIDGET_TEXT_%_ACTIVE   LCD_WIDGET_TEXT_N       LCD_ALIGN_CUI
-LCD_WIDGET_TEXT_%_PRECISION     LCD_WIDGET_TEXT_%_ACTIVE   LCD_WIDGET_TEXT_N       ENUMERIC
-LCD_WIDGET_TEXT_%_SPEED         LCD_WIDGET_TEXT_%_ACTIVE   LCD_WIDGET_TEXT_N       ENUMERIC
-LCD_WIDGET_TEXT_%_UPDATE        LCD_WIDGET_TEXT_%_ACTIVE   LCD_WIDGET_TEXT_N       ENUMERIC
-
-LCD_WIDGET_BAR_N                START_LCD_WIDGET           -                       NUMERIC
-LCD_WIDGET_BAR_%_NAME           START_LCD_WIDGET           LCD_WIDGET_BAR_N        NOTEMPTY
-LCD_WIDGET_BAR_%_ACTIVE         START_LCD_WIDGET           LCD_WIDGET_BAR_N        YESNO
-LCD_WIDGET_BAR_%_EXP            LCD_WIDGET_BAR_%_ACTIVE    LCD_WIDGET_BAR_N        NOTEMPTY
-LCD_WIDGET_BAR_%_EXP2           LCD_WIDGET_BAR_%_ACTIVE    LCD_WIDGET_BAR_N        NONE
-LCD_WIDGET_BAR_%_LENGTH         LCD_WIDGET_BAR_%_ACTIVE    LCD_WIDGET_BAR_N        NUMERIC
-LCD_WIDGET_BAR_%_MIN            LCD_WIDGET_BAR_%_ACTIVE    LCD_WIDGET_BAR_N        ENUMERIC
-LCD_WIDGET_BAR_%_MAX            LCD_WIDGET_BAR_%_ACTIVE    LCD_WIDGET_BAR_N        ENUMERIC
-LCD_WIDGET_BAR_%_DIRECTION      LCD_WIDGET_BAR_%_ACTIVE    LCD_WIDGET_BAR_N        LCD_DIRECTION_CUI
-LCD_WIDGET_BAR_%_STYLE          LCD_WIDGET_BAR_%_ACTIVE    LCD_WIDGET_BAR_N        LCD_STYLE_CUI
-LCD_WIDGET_BAR_%_UPDATE         LCD_WIDGET_BAR_%_ACTIVE    LCD_WIDGET_BAR_N        ENUMERIC
-
-LCD_WIDGET_ICON_N               START_LCD_WIDGET           -                       NUMERIC
-LCD_WIDGET_ICON_%_NAME          START_LCD_WIDGET           LCD_WIDGET_ICON_N       NOTEMPTY
-LCD_WIDGET_ICON_%_ACTIVE        START_LCD_WIDGET           LCD_WIDGET_ICON_N       YESNO
-LCD_WIDGET_ICON_%_ROW1          LCD_WIDGET_ICON_%_ACTIVE   LCD_WIDGET_ICON_N       LCDICON
-LCD_WIDGET_ICON_%_ROW2          LCD_WIDGET_ICON_%_ACTIVE   LCD_WIDGET_ICON_N       LCDICON
-LCD_WIDGET_ICON_%_ROW3          LCD_WIDGET_ICON_%_ACTIVE   LCD_WIDGET_ICON_N       LCDICON
-LCD_WIDGET_ICON_%_ROW4          LCD_WIDGET_ICON_%_ACTIVE   LCD_WIDGET_ICON_N       LCDICON
-LCD_WIDGET_ICON_%_ROW5          LCD_WIDGET_ICON_%_ACTIVE   LCD_WIDGET_ICON_N       LCDICON
-LCD_WIDGET_ICON_%_ROW6          LCD_WIDGET_ICON_%_ACTIVE   LCD_WIDGET_ICON_N       LCDICON
-LCD_WIDGET_ICON_%_ROW7          LCD_WIDGET_ICON_%_ACTIVE   LCD_WIDGET_ICON_N       LCDICON
-LCD_WIDGET_ICON_%_ROW8          LCD_WIDGET_ICON_%_ACTIVE   LCD_WIDGET_ICON_N       LCDICON
-LCD_WIDGET_ICON_%_VISIBLE       LCD_WIDGET_ICON_%_ACTIVE   LCD_WIDGET_ICON_N       NONE
-LCD_WIDGET_ICON_%_SPEED         LCD_WIDGET_ICON_%_ACTIVE   LCD_WIDGET_ICON_N       ENUMERIC
-
-EOFG
-
-    # Set rights for check.d file
-    chmod 0600 /etc/check.d/${packageName}
-    chown root /etc/check.d/${packageName}
-
-    printgpl --check_exp ${packageName} >/etc/check.d/${packageName}.exp
-    cat >> /etc/check.d/${packageName}.exp <<EOFG
-
-LCD_ALIGN_CUI     = 'Left|Center|Right|Marquee'
-                  : 'Not a valid alignment, possible values: Left, Center, Right or Marquee'
-
-LCD_DIRECTION_CUI = 'North|East|South|West'
-                  : 'Bar direction, possible values: North, East, South or West'
-
-LCD_STYLE_CUI     = '|Hollow'
-                  : 'Bar style, possible values are empty or Hollow'
-
-LCDICON           = '(\.|\*|\+|\|)*'
-                  : 'Not a valid definition for a row of an icon'
-
-EOFG
-
-    # Set rights for check.exp file
-    chmod 0600 /etc/check.d/${packageName}.exp
-    chown root /etc/check.d/${packageName}.exp
-
-#    printgpl --check_ext ${packageName} '2010-10-03' 'Yves Schumann' >/etc/check.d/${packageName}.ext
-#    cat >> /etc/check.d/${packageName}.ext <<EOFG
-
-
-#EOFG
-
-    # Set rights for check.ext file
-#    chmod 0600 /etc/check.d/${packageName}.ext
-#    chown root /etc/check.d/${packageName}.ext
-}
 
 
 
 # ----------------------------------------------------------------------------
 # Main
 # ----------------------------------------------------------------------------
-# Write default config file
-makeConfigFile /etc/default.d/${packageName}
 
 # Update values from old version
 updateVariables
 
 # Write new config file
 makeConfigFile /etc/config.d/${packageName}
-
-# Write check.d file
-makeCheckFile
 
 exit 0

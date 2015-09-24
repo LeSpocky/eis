@@ -1,0 +1,18 @@
+#!/sbin/openrc-run
+# Distributed under the terms of the GNU General Public License v2
+
+depend() {
+	need net
+}
+
+start() {
+	ebegin "Starting picadstst LCD"
+	start-stop-daemon --start --quiet --exec /usr/sbin/picadstat --pidfile /run/picadstat.pid
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping picadstst LCD"
+	start-stop-daemon --stop --quiet --pidfile /run/picadstat.pid --exec /usr/sbin/picadstat
+	eend $?
+}

@@ -1,40 +1,21 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
-# /var/install/dialog.d/LCD_WIDGET_CUI.sh - script dialog for ece
-#
-# Creation:     2010-10-03 starwarsfan
-#
-# Copyright (c) 2001-2014 The eisfair Team, <team(at)eisfair(dot)org>
-# Maintained by Y. Schumann <yves(at)eisfair(dot)org>
-#
-# This program is free software; you can r${CWS_NONE}te it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
+# Copyright (c) 2001-2015 The eisfair Team, <team(at)eisfair(dot)org>
+# Distributed under the terms of the GNU General Public License v2
 # ----------------------------------------------------------------------------
-
 . /var/install/include/cuilib
 . /var/install/include/ecelib
 
-
-# ----------------------------------------------------------------------------
 # All known selections and subselections
-# ----------------------------------------------------------------------------
 widgetTypes='Text Bar Icon'
 
-
-
-# ----------------------------------------------------------------------------
 # Control constants
-# ----------------------------------------------------------------------------
 IDC_LABEL__WIDGETTYPE='10'
 IDC_LABEL__WIDGETNAME='11'
 IDC_LISTBOX__WIDGETTYPE='12'
 IDC_LISTBOX__WIDGETNAME='13'
 IDC_BUTOK='100'
 IDC_BUTCANCEL='100'
-
-
 
 # ----------------------------------------------------------------------------
 #  ok_button_clicked
@@ -83,8 +64,6 @@ function ok_button_clicked()
     cui_return 1
 }
 
-
-
 # ----------------------------------------------------------------------------
 # Update the return value $value with the coosen entry out of the list of
 # selectable models given with $1.
@@ -105,8 +84,6 @@ function getChoosenModel ()
     done
 }
 
-
-
 # ----------------------------------------------------------------------------
 # cancel_button_clicked
 #         $p2 --> dialog window handle
@@ -122,8 +99,6 @@ function cancel_button_clicked()
     cui_window_close "$p2" "$IDCANCEL"
     cui_return 1
 }
-
-
 
 # ----------------------------------------------------------------------------
 # listbox_changed
@@ -150,11 +125,8 @@ function listbox_changed()
         updateListboxContent ${dlg} ${IDC_LISTBOX__WIDGETNAME} "$iconWidgets"
         ;;
     esac
-
     cui_return 1
 }
-
-
 
 # ----------------------------------------------------------------------------
 # Clear the listbox given with param $2 on control element $1 and fill it with
@@ -174,8 +146,6 @@ function updateListboxContent ()
         cui_listbox_add   "$ctrl" "$currentListboxElement"
     done
 }
-
-
 
 # ----------------------------------------------------------------------------
 # dlg_setup_hook
@@ -273,11 +243,8 @@ function dlg_setup_hook()
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "${dlg}" cancel_button_clicked
         cui_window_create     "$ctrl"
     fi
-
     cui_return 1
 }
-
-
 
 # ----------------------------------------------------------------------------
 # exec_dialog
@@ -285,7 +252,6 @@ function dlg_setup_hook()
 #         $p2 --> main window handle
 #         $p3 --> name of config variable
 # ----------------------------------------------------------------------------
-
 function exec_dialog()
 {
     local win="$p2"
@@ -302,11 +268,8 @@ function exec_dialog()
         res="$p2"
         cui_window_destroy        "$dlgwin"
     fi
-
     cui_return "$res"
 }
-
-
 
 # ----------------------------------------------------------------------------
 # init() routine (makes it executable under shellrun.cui too)
@@ -316,17 +279,11 @@ function init()
     exec_dialog $p2
 }
 
-
-
 # ----------------------------------------------------------------------------
 # main routine
 # ----------------------------------------------------------------------------
-
 cui_init
 cui_run
 
-# ----------------------------------------------------------------------------
 # end
-# ----------------------------------------------------------------------------
-
 exit 0

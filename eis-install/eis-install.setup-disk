@@ -240,6 +240,14 @@ install_mounted_root() {
 	# check if our root is on raid so we can feed mkinitfs and
 	# update-exlinux.conf with the proper kernel module params
 	for dev in $rootdev $pvs; do
+
+		# check if we need hardware raid drivers
+		case $dev in
+		/dev/cciss/*)
+			initfs_features="${initfs_features% raid} raid"
+			;;
+		esac
+
 		[ -e "/sys/block/${dev#/dev/}/md" ] || continue
 
 		local md=${dev#/dev/}
@@ -251,12 +259,6 @@ install_mounted_root() {
 		esac
 	done
 
-	# check if we need hardware raid drivers
-	case $rootdev in
-		/dev/cciss/*)
-			initfs_features="${initfs_features% raid} raid"
-			;;
-	esac
 
 	if [ -n "$VERBOSE" ]; then
 		echo "Root device:     $rootdev"
@@ -329,7 +331,7 @@ EOF
 	local apkflags="--initdb --update-cache --clean-protected"
 	# local pkgs=$(cat "$mnt"/etc/apk/world "$mnt"/var/lib/apk/world 2>/dev/null)
 	[ -n "$USE_RAID" ] && raidpkg="mdadm"
-	pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libeventlog libcui fcron syslog-ng logrotate cuimenu-bin cuimenu syslinux"
+	pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libcui fcron syslog-ng logrotate cuimenu-bin cuimenu syslinux"
 
 	if [ "$(rc --sys)" = "XEN0" ]; then
 		pkgs="$pkgs xen-hypervisor"
@@ -447,7 +449,9 @@ init_progs() {
 	case $ROOTFS in
 	ext*) fstools=e2fsprogs; mkfs_args="-q";;
 	xfs) fstools=xfsprogs; mkfs_args="-q";;
-	btrfs) fstools=btrs-progs; mkfs_args="";;
+  # we need load btrfs module early to avoid the error message:
+	# 'failed to open /dev/btrfs-control'
+	btrfs) fstools=btrfs-progs; mkfs_args=""; modprobe btrfs;;
 	esac
 	apk add --quiet sfdisk e2fsprogs lvm2 $raidpkg syslinux $fstools $@
 }
@@ -488,7 +492,7 @@ setup_partitions() {
 	# fix the MBR while here so extlinux can boot
 	cat "$MBR" > $diskdev
 
-	local start=0
+	local start=1M
 	local line=
 	# create new partitions
 	(
@@ -496,7 +500,7 @@ setup_partitions() {
 			echo "$start,$line"
 			start=
 		done
-	) | sfdisk -q -L -uM $diskdev >/dev/null || return 1
+	) | sfdisk --quiet $diskdev >/dev/null || return 1
 
 	# create device nodes if not exist
 	mdev -s
@@ -511,7 +515,7 @@ find_boot_partition() {
 # this is not marked as bootable and is type 8e
 find_lvm_partition() {
 	local type=8e
-	sfdisk -d $1 | grep -v bootable | awk "/Id=$type/ {print \$1}"
+	sfdisk -d $1 | grep -v bootable | awk "/(Id|type)=$type/ {print \$1}"
 }
 
 # set up optional raid and create filesystem on boot device.
@@ -549,7 +553,7 @@ find_nth_non_boot_parts() {
 	shift
 	for disk in $@; do
 		sfdisk -d $disk | grep -v bootable \
-			| awk "/Id=$id/ { i++; if (i==$idx) print \$1 }"
+			| awk "/(Id|type)=$id/ { i++; if (i==$idx) print \$1 }"
 	done
 }
 
@@ -675,7 +679,7 @@ data_only_disk_install_lvm() {
 	fi
 
 	for diskdev in "$@"; do
-		setup_partitions $diskdev "$size,$part_type" || return 1
+		setup_partitions $diskdev "${size}${size:+M},$part_type" || return 1
 	done
 
 	setup_lvm_volume_group $vgname $@ || return 1
@@ -705,8 +709,8 @@ data_only_disk_install() {
 
 	for diskdev in "$@"; do
 		setup_partitions $diskdev \
-			"$SWAP_SIZE,$swap_part_type" \
-			"$size,$var_part_type" || return 1
+			"${SWAP_SIZE}M,$swap_part_type" \
+			"${size}${size:+M},$var_part_type" || return 1
 	done
 
 	if [ "$USE_RAID" ]; then
@@ -787,8 +791,8 @@ native_disk_install_lvm() {
 	fi
 	for diskdev in "$@"; do
 		setup_partitions $diskdev \
-			"$boot_size,$boot_part_type,*" \
-			"$lvm_size,$lvm_part_type" || return 1
+			"${boot_size}M,$boot_part_type,*" \
+			"${lvm_size}${lvm_size:+M},$lvm_part_type" || return 1
 	done
 
 	# will find BOOT_DEV for us
@@ -819,9 +823,9 @@ native_disk_install() {
 	fi
 	for diskdev in "$@"; do
 		setup_partitions $diskdev \
-			"$boot_size,$boot_part_type,*" \
-			"$swap_size,$swap_part_type" \
-			"$root_size,$root_part_type" \
+			"${boot_size}M,$boot_part_type,*" \
+			"${swap_size}M,$swap_part_type" \
+			"${root_size}${root_size:+M},$root_part_type" \
 			|| return 1
 	done
 
@@ -857,7 +861,7 @@ __EOF__
 diskmode_help() {
 	cat <<__EOF__
 
-You can select between 'sys' or 'data'.
+You can select between 'sys', 'data', 'lvm', 'lvmsys' or 'lvmdata'.
 
 sys:
   This mode is a traditional disk install. The following partitions will be
@@ -1012,6 +1016,8 @@ mode than 2 disks, then use raid level 5 instead of raid level 1.
 
 options:
  -h  Show this help
+ -m  Use disk for MODE without asking, where MODE is either 'data' or 'sys'
+ -o  Restore system from given apkovl file
  -d  Use DHCP Client
  -D  Domain name
  -e  Keyboard variant
@@ -1023,7 +1029,6 @@ options:
  -k  Use kernelflavor instead of $KERNEL_FLAVOR
  -L  Use LVM to manage partitions
  -N  Netmask
- -o  Restore system from given apkovl file
  -P  root password
  -q  Exit quietly if no disks are found
  -r  Enable software raid1 with single disk
@@ -1126,13 +1131,21 @@ if [ -n "$diskdevs" ] && [ -z "$DISK_MODE" ]; then
 	fi
 
 	while true; do
-		echo "The following $disk_is_or_disks_are selected:"
+		echo "The following $disk_is_or_disks_are selected${USE_LVM:+ (with LVM)}:"
 		show_disk_info $diskdevs
-		echon "How would you like to use $it_them? ('sys', 'data' or '?' for help) [?] "
+		local _lvm=${USE_LVM:-", 'lvm'"}
+		echon "How would you like to use $it_them? ('sys', 'data'${_lvm#_lvm} or '?' for help) [?] "
 		default_read answer '?'
 		case "$answer" in
 		'?') diskmode_help;;
 		sys|data) break;;
+		lvm) USE_LVM="_lvm" ;;
+		nolvm) USE_LVM="";;
+		lvmsys|lvmdata)
+			answer=${answer#lvm}
+			USE_LVM="_lvm"
+			break
+			;;
 		esac
 	done
 	DISK_MODE="$answer"

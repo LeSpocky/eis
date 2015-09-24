@@ -2,7 +2,7 @@
 # Maintainer: starwarsfan <yves@eisfair.org>
 pkgname=cui-lcd4linux
 pkgver=1.0.0
-pkgrel=1
+pkgrel=3
 pkgdesc="CUI Setup for lcd4linux"
 url="http://www.eisfair.org"
 arch="noarch"
@@ -12,13 +12,21 @@ depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.post-install $pkgname.post-deinstall"
 subpackages=""
-source="${pkgname}.initd
+source="${pkgname}.check 
+        ${pkgname}.check.exp
+        ${pkgname}-widgets.check
+        ${pkgname}-widgets.check.exp
+        ${pkgname}.default
+        ${pkgname}-widgets.default
+        ${pkgname}.initd
         ${pkgname}.sh
         ${pkgname}.txt
+        ${pkgname}.menu
+        ${pkgname}.acfh.menu
         ${pkgname}-update.sh
         ${pkgname}-widgets.sh
         ${pkgname}-widgets-update.sh
-"
+        "
 
 _builddir=
 prepare() {
@@ -37,6 +45,21 @@ build() {
 
 package() {
 	cd "$_builddir"
+	install -D -m644 ${srcdir}/${pkgname}.check             ${pkgdir}/etc/check.d/${pkgname} || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.exp         ${pkgdir}/etc/check.d/${pkgname}.exp || return 1  
+	install -D -m644 ${srcdir}/${pkgname}-widgets.check     ${pkgdir}/etc/check.d/${pkgname}-widgets || return 1
+	install -D -m644 ${srcdir}/${pkgname}-widgets.check.exp ${pkgdir}/etc/check.d/${pkgname}-widgets.exp || return 1  
+	install -D -m644 ${srcdir}/${pkgname}.default           ${pkgdir}/etc/default.d/${pkgname} || return 1
+	install -D -m644 ${srcdir}/${pkgname}-widgets.default   ${pkgdir}/etc/default.d/${pkgname}-widgets || return 1
+	install -D -m755 ${srcdir}/${pkgname}.initd             ${pkgdir}/etc/init.d/${pkgname} || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt               ${pkgdir}/usr/share/doc/${pkgname}/${pkgname}.txt || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh                ${pkgdir}/var/install/config.d/${pkgname}.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh         ${pkgdir}/var/install/config.d/${pkgname}-update.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-widgets.sh        ${pkgdir}/var/install/config.d/${pkgname}-widgets.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-widgets-update.sh ${pkgdir}/var/install/config.d/${pkgname}-widgets-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.menu              ${pkgdir}/var/install/menu/setup.services.${pkgname}.menu || return   
+	install -D -m644 ${srcdir}/${pkgname}.acfh.menu         ${pkgdir}/var/install/menu/setup.services.${pkgname}.acfh.menu || return   
+  
 	cd ${startdir}/bin
 	for currentHelperScript in `ls` ; do
 		install -D -m755 ${currentHelperScript} ${pkgdir}/var/install/bin/${currentHelperScript} || return 1
@@ -51,34 +74,47 @@ package() {
 	for currentHelpFile in `ls` ; do
 		install -D -m644 ${currentHelpFile} ${pkgdir}/var/install/help/${currentHelpFile%.help} || return 1
 	done
-	cd -
-	cd ${startdir}/menu
-	for currentMenu in `ls` ; do
-		install -D -m644 ${currentMenu} ${pkgdir}/var/install/menu/${currentMenu} || return 1
-	done
-	cd -
-	install -D -m755 ${srcdir}/${pkgname}.initd               ${pkgdir}/etc/init.d/${pkgname} || return 1
-	install -D -m644 ${srcdir}/${pkgname}.txt                 ${pkgdir}/usr/share/doc/${pkgname}/${pkgname}.txt || return 1
-	install -D -m755 ${srcdir}/${pkgname}.sh                  ${pkgdir}/var/install/config.d/${pkgname}.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-update.sh           ${pkgdir}/var/install/config.d/${pkgname}-update.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-widgets.sh          ${pkgdir}/var/install/config.d/${pkgname}-widgets.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-widgets-update.sh   ${pkgdir}/var/install/config.d/${pkgname}-widgets-update.sh || return 1
 }
-md5sums="b14e4cf727040b0d5bb3ccafb4f366a1  cui-lcd4linux.initd
-81804579a1cc97f2489ec8f6165f651a  cui-lcd4linux.sh
+
+md5sums="8a1192dfc8aaf72eb89291408e760764  cui-lcd4linux.check
+e9baf206b01e50e4b8bf83c1ca418a00  cui-lcd4linux.check.exp
+51b955d7c687e020473c5c716a02a19a  cui-lcd4linux-widgets.check
+d6d8e1dd373b4439c5ed9f973001b9ba  cui-lcd4linux-widgets.check.exp
+a98c07556a1d5fb1a4cbb0db1e6cf8d9  cui-lcd4linux.default
+b250efebfd7bc9748897856dad79e6a7  cui-lcd4linux-widgets.default
+f397748db3bf1b656fd4f4840d13fbd9  cui-lcd4linux.initd
+b00ef216326ab36116f5cbb92886c78b  cui-lcd4linux.sh
 8448465550039f390f46fb962eadaeb4  cui-lcd4linux.txt
-53979c1815033c76297b60b46b49fa60  cui-lcd4linux-update.sh
-8a163bef031a9803adf6845fc2ec9a99  cui-lcd4linux-widgets.sh
-bf77e1d487ddb024638d2a35174079b7  cui-lcd4linux-widgets-update.sh"
-sha256sums="5ef800b4d2619fc0f01a0421c928ef2ad78a1a1745a5d22ea27dfdab837f6158  cui-lcd4linux.initd
-f90573793809463f90772ae41d07db4dceec0e41437367be3ee9d5c098ea45f0  cui-lcd4linux.sh
+74178e62bee2ba4a6e7422accf5d56fe  cui-lcd4linux.menu
+5b547e4c7276c12dea5d16004fa1f4a7  cui-lcd4linux.acfh.menu
+0cef23365acfc05c0a1bc4bf3a6f4d03  cui-lcd4linux-update.sh
+dabbb57fec1137483dc54f5521263e60  cui-lcd4linux-widgets.sh
+70982ff263b60955582d830d6bd6886b  cui-lcd4linux-widgets-update.sh"
+sha256sums="6fd7a386aed968757f6b616e6d985540d7858d0519013ca4444fa3d43a92c05f  cui-lcd4linux.check
+76c6b3b017394a4ebdb728c6cf079f1390fe02d39a824a54bbc527855ba5f1d0  cui-lcd4linux.check.exp
+a361b211e1c931e8f1634a24d67a32b6862cd9e9a65acf2191098ecacee357e5  cui-lcd4linux-widgets.check
+1ed7969cf8fb72ce639deb84f02e3ec48b8b90e9f9284a6db5c5560224de6936  cui-lcd4linux-widgets.check.exp
+62aaf9ab716d9160d578e64c417bd795620e97bfc694ef74c8000c1eeb8186e0  cui-lcd4linux.default
+939779455ec96504aec67816ca40302bef48425dff55644b3632429a3509903a  cui-lcd4linux-widgets.default
+9e0eccfb2b8cce95e114dcfb02db39af1651b5140e3e6450ca42154e874b7f61  cui-lcd4linux.initd
+08039ae34de7b3d99d8b6a689af127ec387b75fcb7534fdeac4ae60a56d8f240  cui-lcd4linux.sh
 15b34f05e693643c191fb1275a15a826dc92d656b90a124ad683fe1859e75bd3  cui-lcd4linux.txt
-daba547d69aeb0e1c2a9745d6034fdc441d231d0086edd4302966d28dbd79919  cui-lcd4linux-update.sh
-658f466d65a2d60cf9258a698ca036eb05cf51c7cc80114b04a7608dc1e8e09a  cui-lcd4linux-widgets.sh
-47ffd20e4aef2c7f70073b3c22ca7f9269def4b128ca362b36d15855abf51592  cui-lcd4linux-widgets-update.sh"
-sha512sums="2ed7bfbb834bd180e37e4d2120b117c143e7369e1e0f8b02ab8900d1bf03234db9dd80e370e63a52e2f365bab2c90abf92bcbdb01d2da858e784b09623ba27a3  cui-lcd4linux.initd
-a4c9769ed356eac5ac19ef376589928bedd609964c45045655beb62754631aff43603a1f4244ca8052e91e076e4325bfbf6411d5714f4201b426ce077cbf0c7f  cui-lcd4linux.sh
+8c22d09c620691f05d5b56eaf8f4060cad33486097f5f8bbbb9a7297b93f2fdb  cui-lcd4linux.menu
+3d3c08faf96554786de266abaa6cc66769457d76c54aaa29be016cb3c429a781  cui-lcd4linux.acfh.menu
+a9af6caf0708ebf7571829a1e365852297ac0cd75b7d9f8e95cbe6ea3068a827  cui-lcd4linux-update.sh
+8bbdbe2db15e20277a1a2bd9f665e9a5832a316cee297cc83b3e04faca96c6ff  cui-lcd4linux-widgets.sh
+dbd613d2aa01a11ee0093abf2fecde31494e2a9dcc2181b86921b3000a4d3315  cui-lcd4linux-widgets-update.sh"
+sha512sums="90421edab0e5c0eeb2651de3b4c0af8307cbab1c41b7b5258bf4ac255dc5b66d4981a3bc3d238505443f28f6e35d7464e6115448e00202ccb98d31c0e6db5ea9  cui-lcd4linux.check
+694ad2610676370710a071c2f9161c43e31014d0a90a95e4b3215f0174762e5ab2e35481821ac5bdfad831bfa399688d5736bd685f0bf0b7307288ad3f219f29  cui-lcd4linux.check.exp
+84b081cabd6f3da04e4955043a657d4ba340d782a7a1a426793b0006d50c29925db3b0300686bfec4a458172a51e2e65e74b745b8b5ee9347181fb800e992ccd  cui-lcd4linux-widgets.check
+d7b1eadcf89886098a39d463db2a8da54f4f8bbb229acf2907255a6f28a040c326230735253ea69f01ebae19ce4d27629488c253eade567974c91ee32e71b7ff  cui-lcd4linux-widgets.check.exp
+f3297c8ead23ce438ab923847f8ef23996f3c7658817a65207c8607a0b9edd927a16d7a078c0a5d2d6a4326f5a5e7be10a81624d6564b6359eb2d71148ba75b1  cui-lcd4linux.default
+8618472f210bd4fbbf276dfecddcc5ff3af081a1b46b6161eac9094fb171dbb27205752f50bf340346507ca54d82757f4a3418ab5289e3b05782b29f34c44a39  cui-lcd4linux-widgets.default
+6d8330f4edbaa65af89153399c693d72635127d86f8eef0d5d151fc8086e7b758d870f350b47601b2ae6a966f5b62a07a1a9cb8b76cdff750ff35382634436cd  cui-lcd4linux.initd
+cdc15c6ee4a1ba69b0568e33d053bd68d75de2218df02e7ed3a64bd9fa0db63ff24eb2f5b65d2a679f9a749ae66e59d580dab08e9ae60b7c73b22c33fa0b3189  cui-lcd4linux.sh
 9c19afb154204dafd2e1c20cd120f7798781042cd6979e2e8ef93e0b9704dc8f81dfbacaf0e6022ece2ff98d95063158eb8a4d0e8ae4ee9cfc95dc389d2dcd59  cui-lcd4linux.txt
-82f65fbbccfe5a052e30d5182691e9c8c878787f4c783a9c57e1ad6e6af109c2617d342a2f69d811d7f48b7fb64d9af530346e652d7e1c31de19f443afa68bfe  cui-lcd4linux-update.sh
-8aeed972da5fb379154c92bc2e64c17b0010bb7be013f3b07a6945c31c5f7caed9db3f6a614ac2b582ac88814410629d71210140916815791bc1024e900db44b  cui-lcd4linux-widgets.sh
-ceb8350cb3ef1f31eb6cd5340c83f9e2db8a112aaa4b767b5efa20687a96e98d4306de622954dfab6abe2eef0d0401705d672d19c4afe0c00d4bd4e8f704be26  cui-lcd4linux-widgets-update.sh"
+b8a4272827759b7dc319f074abc5ddb25c8b1e66b845413e80480e8e87f2e9de5a729e271ea02b0e22e109dec7e22846dbbbb0e259dea569e3693d0a1489a280  cui-lcd4linux.menu
+866bf83a64884e651d173bfdc30d4229907609f0b163e0dbe15695debc5140f35ec83901f15a2d8d0455e4739599449ba25058a80480faeb8024e25350ac075b  cui-lcd4linux.acfh.menu
+669365dde4fe7c3444a7d64cdf97b4e49be80cdb89b3185d50092a8a9c3afd97b658b2f6f6435d965a7582dc20f41a07c60bfef86007757b2b2490e117746a33  cui-lcd4linux-update.sh
+6414d1b6e43e60bdd0ccb99646f967b89b4f063b4bad7567d3b4ec9fd022b2393ba656aba04cb358c88cce9777874a35041475405ef38574632c1263e45985a2  cui-lcd4linux-widgets.sh
+5127334671bdc15c454851c92053e4724d20fb9f9a9ab821310d199150b56f1e057e2d0b89681843fbe71a776a11a78c2498fdcc37e9cd32c9e89ed41e4b5399  cui-lcd4linux-widgets-update.sh"

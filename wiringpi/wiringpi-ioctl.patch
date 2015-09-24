@@ -1,0 +1,10 @@
+--- a/wiringPi/wiringPiSPI.c
++++ b/wiringPi/wiringPiSPI.c
+@@ -29,6 +29,7 @@
+ #include <string.h>
+ #include <sys/ioctl.h>
+ #include <linux/spi/spidev.h>
++#include <asm-generic/ioctl.h>
+ 
+ #include "wiringPi.h"
+ 

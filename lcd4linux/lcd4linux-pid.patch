@@ -1,0 +1,11 @@
+--- a/lcd4linux.c
++++ b/lcd4linux.c
+@@ -57,7 +57,7 @@
+ #include <dmalloc.h>
+ #endif
+ 
+-#define PIDFILE "/var/run/lcd4linux.pid"
++#define PIDFILE "/run/lcd4linux.pid"
+ 
+ static char *release = "LCD4Linux " VERSION "-" SVN_VERSION;
+ static char *copyright =
