@@ -25,6 +25,7 @@
 
 /*#define LCDDEBUG 1 */
 
+const char *pidfile = "/run/picadstat.pid";
 
 /* ========================================================================== */
 // read current CPU frequency
@@ -324,14 +325,45 @@ int pifacecad_service(void) {
     pifacecad_lcd_backlight_off();
     pifacecad_close();
     #endif
-
-    syslog( LOG_NOTICE, "closed.\n");
     closelog();
-
     return 0;
 }
 
+/* ========================================================================== */
+void termination_handler() {
+    syslog(LOG_INFO, "Daemon exiting");
+    unlink(pidfile);
+    mcp23s17_disable_interrupts();
+    pifacecad_lcd_clear();
+    pifacecad_lcd_backlight_off();
+    pifacecad_close();     
+    closelog();
+    exit(0);
+}
 
+/* ========================================================================== */
+void create_pid_file(void) {
+    int fp;
+    char str[10];
+
+    fp = open(pidfile, O_RDWR|O_CREAT, 0600);
+    if (fp == -1 ) {
+        syslog(LOG_INFO, "Could not open PID lock file %s, exiting", pidfile);
+        exit(EXIT_FAILURE);
+    }
+    //try to lock file
+    if (lockf(fp, F_TLOCK, 0) == -1) {
+        syslog(LOG_INFO, "Could not lock PID lock file %s, exiting", pidfile);
+        exit(EXIT_FAILURE);
+    }
+    //get and format PID
+    sprintf(str,"%d\n", getpid() );
+    //write pid to lockfile 
+    write(fp, str, strlen(str));
+    close(fp);
+}
+
+/* ========================================================================== */
 int main(int argc, char* argv[]) {
     pid_t pid;
     int i;
@@ -351,7 +383,11 @@ int main(int argc, char* argv[]) {
         /* child process, should not return */
         if (setsid() < 0) 
             exit (EXIT_FAILURE);
-        signal(SIGHUP, SIG_IGN);   
+
+        signal(SIGTERM, termination_handler);
+        signal(SIGINT,  termination_handler);
+        signal(SIGHUP,  termination_handler);
+          
         if ((pid = fork ()) != 0)
             exit (EXIT_FAILURE); 
         chdir ("/"); 
@@ -366,8 +402,9 @@ int main(int argc, char* argv[]) {
         }
         if (open("/dev/null",O_RDWR) == -1) {
             perror("failed to reopen stderr while daemonising\n");
-        }       
+        } 
         openlog("picadstat", LOG_PID | LOG_PERROR | LOG_NDELAY, LOG_DAEMON);
+        create_pid_file();
         return pifacecad_service();
     }
 }
