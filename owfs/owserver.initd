@@ -1,0 +1,35 @@
+#!/sbin/openrc-run
+# Distributed under the terms of the GNU General Public License, v2 or later
+
+PROGRAM=owserver
+PIDFILE=${PIDFILE:-/run/owfs/${PROGRAM}.pid}
+OWUID=${OWUID:-owfs}
+OWGID=${OWGID:-owfs}
+
+depend() {
+	need net
+	use logger
+}
+
+[ -f /etc/owfs.conf ] && CONFFILE="-c /etc/owfs.conf"
+
+start_pre() {
+	checkpath --directory /run/owfs --owner ${OWUID}
+}
+
+start() {
+	ebegin "Starting 1-Wire TCP Server"
+	start-stop-daemon --start --exec /usr/bin/${PROGRAM} \
+		--pidfile ${PIDFILE} -c ${OWUID}:${OWGID} -- \
+		--pid_file ${PIDFILE} \
+		--background --error_print 1 \
+    ${OWSERVER_OPTS:---nozero -p 127.0.0.1:4304} ${CONFFILE}
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping 1-Wire TCP Server"
+	start-stop-daemon --stop --exec /usr/bin/${PROGRAM} \
+		--pidfile ${PIDFILE} -u ${OWUID}
+	eend $?
+}
