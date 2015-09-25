@@ -1,7 +1,7 @@
 # Contributor: jv <jens@eisfair.org>
 # Maintainer: jv <jens@eisfair.org>
 pkgname=linux-pam-pwdfile
-pkgver=0.99
+pkgver=1.0
 pkgrel=0
 pkgdesc="pluggable authentication modules for authenticate users with flat text username:password files."
 url="http://cpbotha.net/software/pam_pwdfile/"
@@ -12,13 +12,10 @@ depends_dev="linux-pam-dev openssl-dev"
 makedepends="$depends_dev"
 install=""
 subpackages=""
-source="http://cpbotha.net/files/pam_pwdfile/pam_pwdfile-${pkgver}.tar.gz
-	Makefile
-	patch1.patch
-	patch2.patch
+source="$pkgname-$pkgver.tar.gz::https://github.com/tiwe-de/libpam-pwdfile/archive/v${pkgver}.tar.gz
 	"
 
-_builddir="$srcdir/pam_pwdfile-${pkgver}"
+_builddir="$srcdir/libpam-pwdfile-${pkgver}"
 
 prepare() {
 	local i
@@ -32,23 +29,14 @@ prepare() {
 
 build() {
 	cd "$_builddir"
-	make -f ../Makefile || return 1
+	make || return 1
 }
 
 package() {
 	cd "$_builddir"
-	make -f ../Makefile DESTDIR="$pkgdir" install || return 1
+	make DESTDIR="$pkgdir" install || return 1
 }
 
-md5sums="a05b41f0bd1c0de16bec8aad6b1b30a9  pam_pwdfile-0.99.tar.gz
-86a2c08f47a8905cb78a5fedd0432322  Makefile
-b82027a02d005e1ba533863d1a8aa82e  patch1.patch
-7a2ce476ffee13bde87f85b012e7537d  patch2.patch"
-sha256sums="973420f203976ac98508bb253b33a23d189cfbaf72143670964470e84085688e  pam_pwdfile-0.99.tar.gz
-91725ded94f630c4b617fd1e4808088424f5a332df7e3323836f63f3a2bb8c01  Makefile
-dc6979d1662413a4081dd573b8f2cc4ecf73220bb55df63d8ed11a4b90cc27b3  patch1.patch
-2efb10cb19ed3ed1929836cf0cd0d64a9e096ada7335f2fbb8a05e0fd129841a  patch2.patch"
-sha512sums="2a2a4ac37e76bb521beb5bd7c8344819c1909a3d939d91b91f6dd85acf8d7ad2760f0a5cd47eb38c45f877fd1be8aee419c199f5e2d8af70dad3be55a595cb0f  pam_pwdfile-0.99.tar.gz
-9a349e36847c5a53e96736113e277bd84c8b803922bab0aa4d97d62ed71ff3e808800227b54707976e631980283a7a5fddb1f68196ad16a8791076a7a6c8dd78  Makefile
-cb9457a9a688beaf24d303b9a2bc5b8d880797df7fd8f988d00abf19f87b5313ac37436afdd00a29f1a64e92ffc5309efe6d35910c9b4eeabe47b5ce6a16ced7  patch1.patch
-ea8f1b123c9af500b337e460ec43905637dc2630e74e4ff6216dad13bbbbd36e981e66d36b13541e19407ebb46b95777b845d8811b646820c2b903536024cf9f  patch2.patch"
+md5sums="1546a57bfe50800175f7cbc88ade4a15  linux-pam-pwdfile-1.0.tar.gz"
+sha256sums="5b8db1397cff9cadfd1bb96f53c134b787ab0e6a0fbedb71040541d340313ba2  linux-pam-pwdfile-1.0.tar.gz"
+sha512sums="269b0fc27bd42a95f6e6c3e7461f157ef28cefc0ad7028e2b6412ea8ed9e115bf39da052932ee272a1831f6f8c50157c9e30c4ef7e2a4ce0289c289c6a04fdfb  linux-pam-pwdfile-1.0.tar.gz"
