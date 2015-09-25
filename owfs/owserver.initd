@@ -11,8 +11,6 @@ depend() {
 	use logger
 }
 
-[ -f /etc/owfs.conf ] && CONFFILE="-c /etc/owfs.conf"
-
 start_pre() {
 	checkpath --directory /run/owfs --owner ${OWUID}
 }
@@ -23,7 +21,7 @@ start() {
 		--pidfile ${PIDFILE} -c ${OWUID}:${OWGID} -- \
 		--pid_file ${PIDFILE} \
 		--background --error_print 1 \
-    ${OWSERVER_OPTS:---nozero -p 127.0.0.1:4304} ${CONFFILE}
+    ${OWSERVER_OPTS:---nozero -p 127.0.0.1:4304}
 	eend $?
 }
 

@@ -120,14 +120,3 @@
  nodist_libowphp_la_SOURCES = ow_wrap.c php_OW.h
  all: all-am
  
---- a/module/owlib/src/include/ow_usb_cycle.h
-+++ b/module/owlib/src/include/ow_usb_cycle.h
-@@ -55,7 +55,7 @@
- 
- #if OW_USB
- #include <sys/types.h> // Mac needs this before <usb.h> according to Peter Peter Radcliffe's work
--#include <usb.h>
-+#include <libusb.h>
- 
- /* All the rest of the code sees is the DS9490_detect routine and the iroutine structure */
- 

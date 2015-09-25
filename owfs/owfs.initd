@@ -11,8 +11,6 @@ depend() {
 	use logger owserver
 }
 
-[ -f /etc/owfs.conf ] && CONFFILE="-c /etc/owfs.conf"
-
 start_pre() {
 	checkpath --directory /run/owfs --owner ${OWUID}
 }
@@ -24,7 +22,7 @@ start() {
 		--pidfile ${PIDFILE} -c ${OWUID}:${OWGID} -- \
 		--pid_file ${PIDFILE} \
 		--background --error_print 1 \
-		${OWFS_OPTS:--m /var/lib/owfs/mnt --allow_other -s 127.0.0.1:4304} ${CONFFILE}
+		${OWFS_OPTS:--m /var/lib/owfs/mnt --allow_other -s 127.0.0.1:4304}
 	eend $?
 }
 

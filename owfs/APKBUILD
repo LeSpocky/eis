@@ -8,7 +8,7 @@ url="http://www.owfs.org"
 arch="all"
 license="GPLv2"
 depends=""
-depends_dev="linux-headers fuse-dev automake autoconf libtool libusb-dev"
+depends_dev="linux-headers fuse-dev automake autoconf libtool libusb-dev libusb-compat-dev avahi-dev"
 makedepends="$depends_dev"
 install=""
 subpackages="$pkgname-doc $pkgname-dev"
@@ -32,7 +32,6 @@ prepare() {
 
 build() {
 	cd "$_builddir"
-	export CPPFLAGS="-I/usr/include/libusb-1.0"
 	./bootstrap
 	./configure \
 	        --prefix=/usr \
@@ -42,8 +41,8 @@ build() {
                 --disable-libow-perl \
                 --disable-owphp \
                 --disable-owpython \
-                --disable-swig \
-                --disable-zero  || return 1
+                --disable-swig || return 1 #\
+#                --disable-zero || return 1
 	make || return 1
 }
 
@@ -59,17 +58,17 @@ package() {
 }
 
 md5sums="3d8919af078ae8c9171e5713a1789195  owfs-3.1p0.tar.gz
-4f0c9604045fbd338ba65a43d5301ff3  libusb.patch
-808e67d60a64cf48c2cf6160fc01e83a  owfs.initd
-d38c150a3c9b0e7a3656885203ddf6d9  owserver.initd
-f24e8c6c1c43843b76761a3f35ef5851  owhttpd.initd"
+d1bfe7af1a8b69c74278e15aaeaa2ec8  libusb.patch
+885f468d996faa9af17354440a07ba9d  owfs.initd
+756d0254a39eaab72c569842c526138f  owserver.initd
+db72646ceb5d87c7c71f6bff5fceebf1  owhttpd.initd"
 sha256sums="62fca1b3e908cd4515c9eb499bf2b05020bbbea4a5b73611ddc6f205adec7a54  owfs-3.1p0.tar.gz
-5b93b1fe9978622c83d8590a206a3276480f1fa0299a7bceff57c4ba0ea4930e  libusb.patch
-d4d5bdfcde37a5dd9eb716e07aae52481a7a1341eba6ca11d885180e7d644425  owfs.initd
-d4f91ba603fcc708ef5058bdcd586f5fdc507ffe2aa171fa3c7a67936108902f  owserver.initd
-a7cd07afdd180888d38973f24c3f4042dfbb75dc259a3ee3515ce21dd71ed0db  owhttpd.initd"
+4a067d784ea6725dfaff27739e2078a5fcfb23e82def6376bfe3085574f44bda  libusb.patch
+c740e88e23f772bdb6c7dd1d40710cd8efeb5f2aa256b4463e5fbc027f2a60ad  owfs.initd
+0ab04c6b8f648cac4f9bfdb54f7c909e01efa898d98bae2a0720f3c6be33ab08  owserver.initd
+21171628c219a217dba090e4b263837039c104d4129ea3c05e62b173c8872d80  owhttpd.initd"
 sha512sums="fc00e9d55be1cfd419df9f39c0aa3517f9c21a2ff4133d9feffc8e737bfa194eb4acba0a0fec65134cb86c8640c5341db638a74674e973025f203a989ca678ba  owfs-3.1p0.tar.gz
-0133a5a20cc37876dc8601bf395b5d8589b401864cc7d2d3df9264f2205dd829f63840e8297b43f138d03fd8be06f26f0424e3e7897cbb9474cbc7d986cb2516  libusb.patch
-e60c188bbbfc5063a07e59e1edfb9f52418cfd47b28fdc08bd9ffdd36c60a038fbb162a2f0513c25214f139c336dcfd20771a1b5666638ed6cb26a6caf151ed0  owfs.initd
-d0570b5d7201e74cc62872a1f51bbdc033af8669480b321349c3aa4d9f88206ac897a6cf97aed9a878691f4f138638308147f667c8595b3a557ff48423f9dc63  owserver.initd
-827b7b77fb7b21686069f81e692f3170247df10a12be5d1c9b74c931eb6904cbe3c8b51da6ec4ff474c77d09a6eb257cb7c5a168bc9dea2bc96d9fe497058579  owhttpd.initd"
+e5932a0caf5c79967182a73465e1f0bfe21de4e4e1298fbca7bdbc5ad2bd53f0ba880cfa2b2a8b2c09463f00724af3d0874308bfcb554691a76b761ad420b122  libusb.patch
+2ad4370ac28d4a5acdc4e69fde08c96bf37d26547c11f85c92611d3538ed342b48a0f28c4833d28389c85d6bfd3c79e514b3106144ff44c5cf4a8a54325178d9  owfs.initd
+0ceb92ffdc361307c4aa008976b84bac3081eb7700b5630d6c0d401f246643f4d4e8096d3fb37a88b4416ddfccc5d8f4b17bec52662c939c70d0a3b0a41bccbe  owserver.initd
+a48dd97e2b43db18d525c07a91f525814438ebe3431289fd84c3229bf825ebec81b291c653c2a34d5fdae4527d6da65c74f9426423c2a203422afd1b3f7ce207  owhttpd.initd"
