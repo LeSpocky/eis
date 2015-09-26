@@ -19,7 +19,7 @@ start() {
 	ebegin "Starting 1-Wire HTTP Daemon"
 	start-stop-daemon --start --exec /usr/bin/${PROGRAM} \
 		--pidfile ${PIDFILE} --user ${OWUID} --group ${OWGID} -- \
-		${OWHTTPD_OPTS:- -s 127.0.0.1:4304}
+		${OWHTTPD_OPTS:--s 127.0.0.1:4304}
 	eend $?
 }
 

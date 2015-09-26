@@ -20,7 +20,7 @@ start() {
 	/sbin/modprobe -q fuse
 	start-stop-daemon --start --exec /usr/bin/${PROGRAM} \
 		--pidfile ${PIDFILE} --user ${OWUID} --group ${OWGID} -- \
-		${OWFS_OPTS:- -m /var/lib/owfs/mnt --allow_other -s 127.0.0.1:4304}
+		${OWFS_OPTS:--m /var/lib/owfs/mnt --allow_other -s 127.0.0.1:4304}
 	eend $?
 }
 

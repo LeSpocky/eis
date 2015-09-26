@@ -19,7 +19,7 @@ start() {
 	ebegin "Starting 1-Wire TCP Server"
 	start-stop-daemon --start --exec /usr/bin/${PROGRAM} \
 		--pidfile ${PIDFILE} --user ${OWUID} --group ${OWGID} -- \
-		${OWSERVER_OPTS:- --device=/dev/ttyUSB0 -p 127.0.0.1:4304}
+		${OWSERVER_OPTS:---device=/dev/ttyUSB0 -p 127.0.0.1:4304}
 	eend $?
 }
 
