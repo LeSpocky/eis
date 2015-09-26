@@ -19,16 +19,14 @@ start_pre() {
 start() {
 	ebegin "Starting 1-Wire HTTP Daemon"
 	start-stop-daemon --start --exec /usr/bin/${PROGRAM} \
-		--pidfile ${PIDFILE} -c ${OWUID}:${OWGID} -- \
-		--pid_file ${PIDFILE} \
-		--background --error_print 1 \
-		${OWHTTPD_OPTS:---nozero -p 127.0.0.1:4380 -s 127.0.0.1:4304}
+		--pidfile ${PIDFILE} --user ${OWUID} --group ${OWGID} -- \
+		${OWHTTPD_OPTS:- -s 127.0.0.1:4304}
 	eend $?
 }
 
 stop() {
 	ebegin "Stopping 1-Wire HTTP Daemon"
 	start-stop-daemon --stop --exec /usr/bin/${PROGRAM} \
-		--pidfile ${PIDFILE} -u ${OWUID}
+		--pidfile ${PIDFILE} --user ${OWUID}
 	eend $?
 }

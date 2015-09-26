@@ -19,16 +19,14 @@ start() {
 	ebegin "One Wire file system"
 	/sbin/modprobe -q fuse
 	start-stop-daemon --start --exec /usr/bin/${PROGRAM} \
-		--pidfile ${PIDFILE} -c ${OWUID}:${OWGID} -- \
-		--pid_file ${PIDFILE} \
-		--background --error_print 1 \
-		${OWFS_OPTS:--m /var/lib/owfs/mnt --allow_other -s 127.0.0.1:4304}
+		--pidfile ${PIDFILE} --user ${OWUID} --group ${OWGID} -- \
+		${OWFS_OPTS:- -m /var/lib/owfs/mnt --allow_other -s 127.0.0.1:4304}
 	eend $?
 }
 
 stop() {
 	ebegin "Stopping ${PROGRAM}"
 	start-stop-daemon --stop --exec /usr/bin/${PROGRAM} \
-		--pidfile ${PIDFILE} -u ${OWUID}
+		--pidfile ${PIDFILE} --user ${OWUID}
 	eend $?
 }
