@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License, v2 or later
 
 PROGRAM=owserver
-PIDFILE=${PIDFILE:-/run/owfs/${PROGRAM}.pid}
+PIDFILE=${PIDFILE:-/run/owfs/owserver.pid}
 OWUID=${OWUID:-owfs}
 OWGID=${OWGID:-owfs}
 
@@ -26,6 +26,6 @@ start() {
 stop() {
 	ebegin "Stopping 1-Wire TCP Server"
 	start-stop-daemon --stop --exec /usr/bin/${PROGRAM} \
-		--pidfile ${PIDFILE} -user ${OWUID}
+		--pidfile ${PIDFILE} --user ${OWUID}
 	eend $?
 }

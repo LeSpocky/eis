@@ -1,9 +1,8 @@
 #!/sbin/openrc-run
 # Distributed under the terms of the GNU General Public License, v2 or later
 
-}
 PROGRAM=owhttpd
-PIDFILE=${PIDFILE:-/run/owfs/${PROGRAM}.pid}
+PIDFILE=${PIDFILE:-/run/owfs/owhttpd.pid}
 OWUID=${OWUID:-owfs}
 OWGID=${OWGID:-owfs}
 

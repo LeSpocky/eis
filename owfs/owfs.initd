@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License, v2 or later
 
 PROGRAM=owfs
-PIDFILE=${PIDFILE:-/run/owfs/${PROGRAM}.pid}
+PIDFILE=${PIDFILE:-/run/owfs/owfs.pid}
 OWUID=${OWUID:-owfs}
 OWGID=${OWGID:-owfs}
 
