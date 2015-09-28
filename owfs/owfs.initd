@@ -14,10 +14,14 @@ depend() {
 start_pre() {
 	checkpath --directory /run/owfs --owner ${OWUID} >/dev/null
 	checkpath --directory /var/lib/owfs /var/lib/owfs/mnt --owner ${OWUID} >/dev/null
+	if ! grep "^user_allow_other" /etc/fuse.conf >/dev/null 2>&1
+	then
+		echo "user_allow_other" >>  /etc/fuse.conf
+	fi
 }
 
 start() {
-	ebegin "One Wire file system"
+	ebegin "Starting One Wire file system"
 	/sbin/modprobe -q fuse
 	start-stop-daemon --start --exec /usr/bin/${PROGRAM} \
 		--pidfile ${PIDFILE} --user ${OWUID} --group ${OWGID} -- \
@@ -26,7 +30,7 @@ start() {
 }
 
 stop() {
-	ebegin "One Wire file system"
+	ebegin "Stopping One Wire file system"
 	start-stop-daemon --stop --retry=TERM/1/KILL/1 --exec /usr/bin/${PROGRAM} \
 	--pidfile ${PIDFILE}
 	eend $?
