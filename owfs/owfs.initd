@@ -12,7 +12,8 @@ depend() {
 }
 
 start_pre() {
-	checkpath --directory /run/owfs --owner ${OWUID}
+	checkpath --directory /run/owfs --owner ${OWUID} >/dev/null
+	checkpath --directory /var/lib/owfs /var/lib/owfs/mnt --owner ${OWUID} >/dev/null
 }
 
 start() {
@@ -20,13 +21,14 @@ start() {
 	/sbin/modprobe -q fuse
 	start-stop-daemon --start --exec /usr/bin/${PROGRAM} \
 		--pidfile ${PIDFILE} --user ${OWUID} --group ${OWGID} -- \
-		${OWFS_OPTS:--m /var/lib/owfs/mnt --allow_other -s 127.0.0.1:4304}
+		${OWFS_OPTS:---pid-file=$PIDFILE -m /var/lib/owfs/mnt --allow_other -s 127.0.0.1:4304}
 	eend $?
 }
 
 stop() {
-	ebegin "Stopping ${PROGRAM}"
-	start-stop-daemon --stop --exec /usr/bin/${PROGRAM} \
-		--pidfile ${PIDFILE} --user ${OWUID}
+	ebegin "One Wire file system"
+	start-stop-daemon --stop --retry=TERM/1/KILL/1 --exec /usr/bin/${PROGRAM} \
+	--pidfile ${PIDFILE}
 	eend $?
+	umount /var/lib/owfs/mnt >/dev/null 2>&1
 }
