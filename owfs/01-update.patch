@@ -1,0 +1,5195 @@
+--- owfs-3.1p0/module/owfs/src/c/fuse_line.c
++++ owfs-3.1p0x/module/owfs/src/c/fuse_line.c
+@@ -92,16 +92,19 @@
+ char *Fuse_arg(char *opt_arg, char *entryname)
+ {
+ 	char *ret = NULL;
+-	int len = strlen(opt_arg);
+-	if (len < 3 || opt_arg[0] != '"' || opt_arg[len - 1] != '"') {
++	static regex_t rx_farg ;
++	struct ow_regmatch orm ;
++	
++	orm.number = 1 ;
++	
++	ow_regcomp( &rx_farg, "^\".+\"$", 0 ) ;
++	
++	if ( ow_regexec( &rx_farg, opt_arg, &orm ) != 0 ) {
+ 		fprintf(stderr, "Put the %s value in quotes. \"%s\"", entryname, opt_arg);
+ 		return NULL;
+ 	}
+-	ret = owstrdup(&opt_arg[1]);	// start after first quote
+-	if (ret == NULL) {
+-		fprintf(stderr, "Insufficient memory to store %s options: %s", entryname, opt_arg);
+-		return NULL;
+-	}
+-	ret[len - 2] = '\0';		// pare off trailing quote
++	ret = owstrdup(orm.match[1]);	// start after first quote
++	ow_regexec_free( &orm ) ;
++	
+ 	return ret;
+ }
+--- owfs-3.1p0/module/owfs/src/c/owfs.c
++++ owfs-3.1p0x/module/owfs/src/c/owfs.c
+@@ -128,7 +128,11 @@
+ 
+ 	// Unmount just in case
+ 	// No checks -- can fail without consequences
++#ifdef __FreeBSD__
++	unmount( Outbound_Control.head->name, 0) ;
++#else
+ 	umount( Outbound_Control.head->name ) ;
++#endif
+ 
+ 	Fuse_parse(fuse_mnt_opt, &fuse_options);
+ 	LEVEL_DEBUG("fuse_mnt_opt=[%s]", fuse_mnt_opt);
+--- owfs-3.1p0/module/owhttpd/src/c/owhttpd_escape.c
++++ owfs-3.1p0x/module/owhttpd/src/c/owhttpd_escape.c
+@@ -1,5 +1,4 @@
+ /*
+-$Id$
+  * http.c for owhttpd (1-wire web server)
+  * By Paul Alfille 2003, using libow
+  * offshoot of the owfs ( 1wire file system )
+--- owfs-3.1p0/module/owhttpd/src/c/owhttpd_handler.c
++++ owfs-3.1p0x/module/owhttpd/src/c/owhttpd_handler.c
+@@ -6,7 +6,7 @@
+  * GPL license ( Gnu Public Lincense )
+  *
+  * Based on chttpd. copyright(c) 0x7d0 greg olszewski <noop@nwonknu.org>
+- *
++ *		
+  */
+  
+ #include "owhttpd.h"
+@@ -70,7 +70,7 @@
+ 		SAFESTRING(up.cmd), SAFESTRING(up.file), SAFESTRING(up.request), SAFESTRING(up.value), SAFESTRING(up.version)
+ 		);
+ 
+-		oc->base_url = owstrdup( up.file ) ;
++		oc->base_url = owstrdup( up.file==NULL ? "" : up.file ) ;
+ 
+ 		if ( BAD( GetHostURL(oc) ) ) {
+ 			// No command line in request
+@@ -548,42 +548,29 @@
+ {
+ 	FILE * out = oc->out ;
+ 	char * line = NULL ;
+-	char * pline ;
++	static regex_t rx_host ;
++	struct ow_regmatch orm ;
++	
++	orm.number = 1 ;	
++	
++	ow_regcomp( &rx_host, "host *: *([^ ]+) *\r", REG_ICASE ) ;
++
+ 	do {
+ 		size_t s ;
++
+ 		if ( getline( &line, &s, out ) < 0 ) {
+ 			free( line ) ;
+ 			LEVEL_DEBUG("Couldn't find Host: line in HTTP header") ;
+ 			return gbBAD ;
+ 		}
+-		if ( s < 5 ) {
+-			continue ; // too short for Host:
++		LEVEL_DEBUG("Test line <%s>",line ) ;
++		if ( ow_regexec( &rx_host, line, &orm ) != 0 ) {
++			LEVEL_DEBUG("No match <%s>",line) ;
++			continue ;
+ 		}
+-		for ( pline = line ; *pline != '\0' ; ++pline ) {
+-			if ( pline[0] != ' ' ) {
+-				if ( strncasecmp( pline, "host", 4 ) == 0 ) {
+-					// Found host
+-					strsep( &pline, ":" ) ; // look for ':'
+-					if ( pline == NULL ) {
+-						LEVEL_DEBUG("No : in Host HTTP line") ;
+-						free(line) ;
+-						return gbBAD ;
+-					}
+-					for ( ; *pline==' ' ; ++pline ) {
+-						continue ;
+-					}
+-					oc->host = owstrdup(strsep( &pline, " \r\n" )) ;
+-					LEVEL_DEBUG("Found host <%s>",oc->host) ;
+-					free(line) ;
+-					return gbGOOD ;				
+-				} else {
+-					continue ;
+-				}
+-			}
+-		}
++		oc->host = owstrdup( orm.match[1] ) ;
++		ow_regexec_free( &orm ) ;
++		free(line) ;
++		return gbGOOD ;				
+ 	} while (1) ;
+ }
+-
+-
+-				
+-	
+--- owfs-3.1p0/module/owhttpd/src/c/owhttpd_read.c
++++ owfs-3.1p0x/module/owhttpd/src/c/owhttpd_read.c
+@@ -134,15 +134,17 @@
+ 
+ static void Extension( struct OutputControl * oc, const struct parsedname * pn )
+ {
++	static regex_t rx_extension ;
+ 	FILE * out = oc->out ;
+ 	const char * file = FS_DirName(pn);
+-	char * file_copy = owstrdup(file) ;
+-	char * extension = file_copy ;
++	struct ow_regmatch orm ;
++	orm.number = 0 ;
+ 	
+-	file_copy = strsep( &extension, "." ) ;
+-	
+-	fprintf(out, "<CODE><FORM METHOD='GET' ACTION='http://%s%s'><INPUT NAME='EXTENSION' TYPE='TEXT' SIZE='30' VALUE='%s.' ID='EXTENSION'><INPUT TYPE='SUBMIT' VALUE='EXTENSION'></FORM>", oc->host, oc->base_url, file_copy);
+-	owfree(file_copy) ;
++	ow_regcomp( &rx_extension, "\.", 0 ) ;
++	if ( ow_regexec( &rx_extension, file, &orm ) == 0 ) {
++		fprintf(out, "<CODE><FORM METHOD='GET' ACTION='http://%s%s'><INPUT NAME='EXTENSION' TYPE='TEXT' SIZE='30' VALUE='%s.' ID='EXTENSION'><INPUT TYPE='SUBMIT' VALUE='EXTENSION'></FORM>", oc->host, oc->base_url, orm.pre[0] );
++		ow_regexec_free( &orm ) ;
++	}
+ }
+ 
+ /* Device entry -- table line for a filetype */
+@@ -174,12 +176,12 @@
+ 	case ft_bitfield:
+ 		if (pn->extension >= 0) {
+ 			switch (OWQ_buffer(owq)[0]) {
+-			case '0':
+-				fprintf(out, "NO  (0)");
+-				break;
+-			case '1':
+-				fprintf(out, "YES (1)");
+-				break;
++				case '0':
++					fprintf(out, "NO  (0)");
++					break;
++				case '1':
++					fprintf(out, "YES (1)");
++					break;
+ 			}
+ 			break;
+ 		}
+@@ -302,25 +304,24 @@
+ 	struct parsedname * pn = PN(owq) ;
+ 	const char *file = FS_DirName(pn);
+ 	
+-fprintf(stderr,"XXXXXXX Showing %s (%s) Extension %d\n",pn->path,file,pn->extension); 
+ 	switch (pn->selected_filetype->format) {
+-	case ft_binary:
+-		fprintf(out,
+-				"<CODE><FORM METHOD='GET' ACTION='http://%s%s'><TEXTAREA NAME='%s' COLS='64' ROWS='%-d'></TEXTAREA><INPUT TYPE='SUBMIT' VALUE='CHANGE'></FORM></CODE>",oc->host, oc->base_url, 
+-				file, (int) (OWQ_size(owq) >> 5));
+-		Upload(oc,pn) ;
+-		break;
+-	case ft_yesno:
+-	case ft_bitfield:
+-		if (pn->extension >= 0) {
++		case ft_binary:
+ 			fprintf(out,
+-					"<FORM METHOD='GET' ACTION='http://%s%s'><INPUT TYPE='SUBMIT' NAME='%s' VALUE='ON'><INPUT TYPE='SUBMIT' NAME='%s' VALUE='OFF'></FORM>", oc->host, oc->base_url, file, file);
++					"<CODE><FORM METHOD='GET' ACTION='http://%s%s'><TEXTAREA NAME='%s' COLS='64' ROWS='%-d'></TEXTAREA><INPUT TYPE='SUBMIT' VALUE='CHANGE'></FORM></CODE>",oc->host, oc->base_url, 
++					file, (int) (OWQ_size(owq) >> 5));
++			Upload(oc,pn) ;
+ 			break;
+-		}
+-		// fall through
+-	default:
+-		fprintf(out, "<FORM METHOD='GET' ACTION='http://%s%s'><INPUT TYPE='TEXT' NAME='%s'><INPUT TYPE='SUBMIT' VALUE='CHANGE'></FORM>", oc->host, oc->base_url, file);
+-		break;
++		case ft_yesno:
++		case ft_bitfield:
++			if (pn->extension >= 0) {
++				fprintf(out,
++						"<FORM METHOD='GET' ACTION='http://%s%s'><INPUT TYPE='SUBMIT' NAME='%s' VALUE='ON'><INPUT TYPE='SUBMIT' NAME='%s' VALUE='OFF'></FORM>", oc->host, oc->base_url, file, file);
++				break;
++			}
++			// fall through
++		default:
++			fprintf(out, "<FORM METHOD='GET' ACTION='http://%s%s'><INPUT TYPE='TEXT' NAME='%s'><INPUT TYPE='SUBMIT' VALUE='CHANGE'></FORM>", oc->host, oc->base_url, file);
++			break;
+ 	}
+ }
+ 
+--- owfs-3.1p0/module/owlib/src/c/Makefile.am
++++ owfs-3.1p0x/module/owlib/src/c/Makefile.am
+@@ -153,6 +153,7 @@
+                ow_read_external.c \
+                ow_read_telnet.c   \
+                ow_reconnect.c     \
++               ow_regex.c         \
+                ow_remote_alias.c  \
+                ow_reset.c         \
+                ow_return_code.c   \
+--- owfs-3.1p0/module/owlib/src/c/globals.c
++++ owfs-3.1p0x/module/owlib/src/c/globals.c
+@@ -51,7 +51,6 @@
+ 	.fatal_debug = 1,
+ 	.fatal_debug_file = NULL,
+ 
+-	.concurrent_connections = 10,
+ 	.readonly = 0,
+ 	.max_clients = 250,
+ 
+@@ -80,9 +79,6 @@
+ 	.timeout_persistent_high = 3600,
+ 	.clients_persistent_low = 10,
+ 	.clients_persistent_high = 20,
+-
+-	.usb_scan_interval = DEFAULT_USB_SCAN_INTERVAL,
+-	.enet_scan_interval = DEFAULT_ENET_SCAN_INTERVAL,
+ 
+ 	.pingcrazy = 0,
+ 	.no_dirall = 0,
+--- owfs-3.1p0/module/owlib/src/c/ow_2408.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_2408.c
+@@ -8,6 +8,8 @@
+     1wire/iButton system from Dallas Semiconductor
+ */
+ 
++// regex
++
+ /* General Device File format:
+     This device file corresponds to a specific 1wire/iButton chip type
+     ( or a closely related family of chips )
+--- owfs-3.1p0/module/owlib/src/c/ow_2433.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_2433.c
+@@ -1,5 +1,4 @@
+ /*
+-$Id$
+     OWFS -- One-Wire filesystem
+     OWHTTPD -- One-Wire Web Server
+     Written 2003 Paul H Alfille
+--- /dev/null
++++ owfs-3.1p0x/module/owlib/src/c/ow_2810.c
+@@ -0,0 +1,416 @@
++/*
++    OWFS -- One-Wire filesystem
++    OWHTTPD -- One-Wire Web Server
++    Written 2003 Paul H Alfille
++    email: paul.alfille@gmail.com
++    Released under the GPL
++    See the header file: ow.h for full attribution
++    1wire/iButton system from Dallas Semiconductor
++*/
++
++/* General Device File format:
++    This device file corresponds to a specific 1wire/iButton chip type
++    ( or a closely related family of chips )
++
++    The connection to the larger program is through the "device" data structure,
++      which must be declared in the acompanying header file.
++
++    The device structure holds the
++      family code,
++      name,
++      device type (chip, interface or pseudo)
++      number of properties,
++      list of property structures, called "filetype".
++
++    Each filetype structure holds the
++      name,
++      estimated length (in bytes),
++      aggregate structure pointer,
++      data format,
++      read function,
++      write funtion,
++      generic data pointer
++
++    The aggregate structure, is present for properties that several members
++    (e.g. pages of memory or entries in a temperature log. It holds:
++      number of elements
++      whether the members are lettered or numbered
++      whether the elements are stored together and split, or separately and joined
++*/
++
++/* Note the DS28E10 has some interesting issues.
++ * The datasheet is not freely available, you have to request it.
++ * On request, and with specific mention that this was OWFS support, I received the datasheet on 10/6/2010.
++ * Each page has an "MAXIM CONFIDENTIAL DISTRIBUTE ONLY UNDER NDA" notice, which I have never signed
++ * I requested clarification on 10/7/2010 and have recieved no response as of 11/28/2010
++ * 50 days seems long enough, so I'm supporting the chip, albeit with no specifics of function except the code
++ * */
++
++#include <config.h>
++#include "owfs_config.h"
++#include "ow_2810.h"
++
++/* ------- Prototypes ----------- */
++
++/* DS28E10 authenticator */
++READ_FUNCTION(FS_r_mem);
++WRITE_FUNCTION(FS_w_mem);
++READ_FUNCTION(FS_r_page);
++WRITE_FUNCTION(FS_w_page);
++READ_FUNCTION(FS_ver);
++READ_FUNCTION(FS_r_pwd);
++WRITE_FUNCTION(FS_w_pwd);
++WRITE_FUNCTION(FS_set);
++WRITE_FUNCTION(FS_use);
++
++/* ------- Structures ----------- */
++
++static struct aggregate A28E10 = { 7, ag_numbers, ag_separate, };
++static struct filetype DS28E10[] = {
++	F_STANDARD,
++	{"memory", 36, NON_AGGREGATE, ft_binary, fc_link, FS_r_mem, FS_w_mem, VISIBLE, NO_FILETYPE_DATA, },
++	{"user", PROPERTY_LENGTH_SUBDIR, NON_AGGREGATE, ft_subdir, fc_subdir, NO_READ_FUNCTION, NO_WRITE_FUNCTION, VISIBLE, NO_FILETYPE_DATA, },
++	{"user/page", 4, &A28E10, ft_binary, fc_page, FS_r_page, FS_w_page, VISIBLE, NO_FILETYPE_DATA, },
++	{"user/protect", 1, &A28E10, ft_yesno, fc_page, FS_r_page, FS_w_page, VISIBLE, NO_FILETYPE_DATA, },
++
++	{"version", PROPERTY_LENGTH_UNSIGNED, NON_AGGREGATE, ft_unsigned, fc_stable, FS_ver, NO_WRITE_FUNCTION, VISIBLE, NO_FILETYPE_DATA, },
++
++	{"set_password", PROPERTY_LENGTH_SUBDIR, NON_AGGREGATE, ft_subdir, fc_subdir, NO_READ_FUNCTION, NO_WRITE_FUNCTION, VISIBLE, NO_FILETYPE_DATA, },
++	{"set_password/read", 8, NON_AGGREGATE, ft_binary, fc_stable, NO_READ_FUNCTION, FS_set, VISIBLE, {.i=_ds1977_full}, },
++	{"set_password/full", 8, NON_AGGREGATE, ft_binary, fc_stable, NO_READ_FUNCTION, FS_set, VISIBLE, {.i=_ds1977_read}, },
++	{"set_password/enabled", PROPERTY_LENGTH_YESNO, NON_AGGREGATE, ft_yesno, fc_stable, FS_r_pwd, FS_w_pwd, VISIBLE, NO_FILETYPE_DATA, },
++
++	{"use_password", PROPERTY_LENGTH_SUBDIR, NON_AGGREGATE, ft_subdir, fc_subdir, NO_READ_FUNCTION, NO_WRITE_FUNCTION, VISIBLE, NO_FILETYPE_DATA, },
++	{"use_password/read", 8, NON_AGGREGATE, ft_binary, fc_stable, NO_READ_FUNCTION, FS_use, VISIBLE, {.i=_ds1977_full}, },
++	{"use_password/full", 8, NON_AGGREGATE, ft_binary, fc_stable, NO_READ_FUNCTION, FS_use, VISIBLE, {.i=_ds1977_read}, },
++};
++
++DeviceEntryExtended(44, DS28E10, DEV_resume | DEV_ovdr, NO_GENERIC_READ, NO_GENERIC_WRITE);
++
++#define _1W_WRITE_MEMORY 0x55
++#define _1W_WRITE_SECRET 0x5A
++#define _1W_WRITE_CHALLENGE 0x0F
++#define _1W_READ_AUTHENTICATED_PAGE 0xA5
++#define _1W_ANONYMOUS_READ_AUTHENTICATED_PAGE 0xCC
++#define _1W_READ_MEMORY 0xF0
++#define _DS28E10_TPP 100 // msec to program
++
++/* Persistent storage */
++Make_SlaveSpecificTag(REA, fc_persistent);
++Make_SlaveSpecificTag(FUL, fc_persistent);
++
++/* ------- Functions ------------ */
++
++/* DS2423 */
++static GOOD_OR_BAD OW_w_mem( BYTE * data, size_t size, off_t offset, struct parsedname *pn) ;
++static GOOD_OR_BAD OW_r_mem(BYTE * data, size_t size, off_t offset, struct parsedname *pn);
++static GOOD_OR_BAD OW_version(UINT * u, struct parsedname *pn);
++static GOOD_OR_BAD OW_verify(BYTE * pwd, off_t offset, struct parsedname *pn);
++static GOOD_OR_BAD OW_r_mem_with_password( BYTE * pwd, BYTE * data, size_t size, off_t offset, struct parsedname *pn) ;
++
++static GOOD_OR_BAD OW_w_secret( const BYTE * secret, struct parsedname *pn) ;
++static GOOD_OR_BAD validate_user_address( off_t offset ) ;
++static GOOD_OR_BAD validate_rw_address( off_t offset ) ;
++static GOOD_OR_BAD OW_w_page( const BYTE * data, off_t offset, struct parsedname *pn) ;
++static GOOD_OR_BAD OW_w_challenge( const BYTE * challenge, BYTE * response, struct parsedname *pn) ;
++
++/* 1977 password */
++static ZERO_OR_ERROR FS_r_page(struct one_wire_query *owq)
++{
++	size_t pagesize = 64;
++	return COMMON_offset_process( FS_r_mem, owq, OWQ_pn(owq).extension*pagesize) ;
++}
++
++static ZERO_OR_ERROR FS_w_page(struct one_wire_query *owq)
++{
++	size_t pagesize = 64;
++	return COMMON_offset_process( FS_w_mem, owq, OWQ_pn(owq).extension*pagesize) ;
++}
++
++static ZERO_OR_ERROR FS_r_mem(struct one_wire_query *owq)
++{
++	size_t pagesize = 64;
++	return GB_to_Z_OR_E(COMMON_readwrite_paged(owq, 0, pagesize, OW_r_mem)) ;
++}
++
++static ZERO_OR_ERROR FS_w_mem(struct one_wire_query *owq)
++{
++	size_t pagesize = 64;
++	return GB_to_Z_OR_E(COMMON_readwrite_paged(owq, 0, pagesize, OW_w_mem)) ;
++}
++
++static ZERO_OR_ERROR FS_ver(struct one_wire_query *owq)
++{
++	return GB_to_Z_OR_E( OW_version(&OWQ_U(owq), PN(owq)) );
++}
++
++static ZERO_OR_ERROR FS_r_pwd(struct one_wire_query *owq)
++{
++	BYTE p;
++	RETURN_ERROR_IF_BAD( OW_r_mem(&p, 1, _ds1977_pwd_loc[_ds1977_control], PN(owq)) ) ;
++	OWQ_Y(owq) = (p == _DS1977_PASSWORD_OK);
++	return 0;
++}
++
++static ZERO_OR_ERROR FS_w_pwd(struct one_wire_query *owq)
++{
++	BYTE p = OWQ_Y(owq) ? 0x00 : _DS1977_PASSWORD_OK;
++	return GB_to_Z_OR_E( OW_w_mem(&p, 1, _ds1977_pwd_loc[_ds1977_control], PN(owq)) );
++}
++
++static ZERO_OR_ERROR FS_set(struct one_wire_query *owq)
++{
++	struct parsedname * pn = PN(owq) ;
++	if (OWQ_size(owq) < 8) {
++		return -ERANGE;
++	}
++
++	/* Write */
++	RETURN_ERROR_IF_BAD( OW_w_mem((BYTE *) OWQ_buffer(owq), 8, _ds1977_pwd_loc[pn->selected_filetype->data.i],pn) ) ;
++
++	/* Verify */
++	RETURN_ERROR_IF_BAD(OW_verify((BYTE *) OWQ_buffer(owq), _ds1977_pwd_loc[pn->selected_filetype->data.i], pn) ) ;
++	
++	switch ( pn->selected_filetype->data.i) {
++		case _ds1977_full:
++			Cache_Add_SlaveSpecific((BYTE *) OWQ_buffer(owq), 8, SlaveSpecificTag(FUL) , pn) ;
++			break ;
++		case _ds1977_read:
++		default:
++			Cache_Add_SlaveSpecific((BYTE *) OWQ_buffer(owq), 8, SlaveSpecificTag(REA) , pn) ;
++			break ;
++	}
++	return FS_use(owq);
++#else
++	return 0 ;
++}
++
++static ZERO_OR_ERROR FS_use(struct one_wire_query *owq)
++{
++	struct parsedname * pn = PN(owq) ;
++	if (OWQ_size(owq) < 8) {
++		return -ERANGE;
++	}
++
++	switch ( pn->selected_filetype->data.i) {
++		case _ds1977_full:
++			return Cache_Add_SlaveSpecific((BYTE *) OWQ_buffer(owq), 8, SlaveSpecificTag(FUL) , pn)==0 ? 0 : -EINVAL ;
++		case _ds1977_read:
++			return Cache_Add_SlaveSpecific((BYTE *) OWQ_buffer(owq), 8, SlaveSpecificTag(REA) , pn)==0 ? 0 : -EINVAL ;
++	}
++	return -EINVAL;
++}
++
++static GOOD_OR_BAD OW_r_mem(BYTE * data, size_t size, off_t offset, struct parsedname *pn)
++{
++	BYTE pwd[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
++
++	if ( GOOD( Cache_Get_SlaveSpecific((void *) pwd, sizeof(pwd), SlaveSpecificTag(REA), pn)) ) {
++		RETURN_GOOD_IF_GOOD( OW_r_mem_with_password( pwd, data,size,offset,pn) ) ;
++	}
++	if ( GOOD( Cache_Get_SlaveSpecific((void *) pwd, sizeof(pwd), SlaveSpecificTag(FUL), pn)) ) {
++		RETURN_GOOD_IF_GOOD( OW_r_mem_with_password( pwd, data,size,offset,pn) ) ;
++	}
++	return OW_r_mem_with_password(pwd, data, size, offset, pn);
++}
++
++static GOOD_OR_BAD OW_version(UINT * u, struct parsedname *pn)
++{
++	BYTE p[] = { _1W_READ_VERSION, 0x00, 0x00 };
++	struct transaction_log t[] = {
++		TRXN_START,
++		TRXN_MODIFY(p,p,3),
++		TRXN_COMPARE(&p[1],&p[2],1),
++		TRXN_END,
++	} ;
++	
++	RETURN_BAD_IF_BAD( BUS_transaction(t,pn) ) ;
++	u[0] = p[1];
++	return gbGOOD;
++}
++
++static GOOD_OR_BAD OW_w_mem( BYTE * data, size_t size, off_t offset, struct parsedname *pn)
++{
++	BYTE p[1 + 2 + 1+ 64 + 2] = { _1W_WRITE_SCRATCHPAD, LOW_HIGH_ADDRESS(offset), };
++	BYTE passwd[8] ; // altered
++	size_t rest = 64 - (offset & 0x3F);
++	BYTE post[1] ;
++	struct transaction_log t_nocrc[] = {
++		TRXN_START,
++		TRXN_WRITE(p,3+size),
++		TRXN_END,
++	};
++	struct transaction_log t_crc[] = {
++		TRXN_START,
++		TRXN_WR_CRC16(p,3+size,0),
++		TRXN_END,
++	};
++	struct transaction_log t_read[] = {
++		TRXN_START,
++		TRXN_WR_CRC16(p,1,3+rest),
++		TRXN_COMPARE(&p[4],data,size),
++		TRXN_END,
++	};
++	struct transaction_log t_copy[] = {
++		TRXN_START,
++		TRXN_WRITE(p,4),
++		TRXN_MODIFY(passwd,passwd, 8-1),
++		TRXN_POWER(&passwd[7],10), // 10ms
++		TRXN_READ1(post),
++		TRXN_END,
++	};
++
++	// set up transfer
++	if ( size>rest ) {
++		return gbBAD ;
++	}
++	memcpy(&p[3],data,size) ;
++	
++	// Write to scratchpad (possibly with CRC16)
++	if ( size==rest ) {
++		RETURN_BAD_IF_BAD( BUS_transaction( t_crc, pn ) ) ;
++	} else {
++		RETURN_BAD_IF_BAD( BUS_transaction( t_nocrc, pn ) ) ;
++	}
++	
++	// Read back from scratch pad to prime next step and confirm data
++	/* Note that we tacitly shift the data one byte down for the E/S byte */
++	p[0] = _1W_READ_SCRATCHPAD ;
++	RETURN_BAD_IF_BAD( BUS_transaction( t_read, pn ) ) ;
++
++	// Copy scratchpad to memory
++	if ( BAD( Cache_Get_SlaveSpecific((void *) passwd, 8, SlaveSpecificTag(FUL), pn)) ) {	/* Full passwd */
++		memset( passwd, 0xFF, 8 ) ;
++	}
++	p[0] = _1W_COPY_SCRATCHPAD_WITH_PASSWORD ;
++	RETURN_BAD_IF_BAD( BUS_transaction( t_copy, pn ) ) ;
++	return (post[0]==0xFF) ? gbBAD : gbGOOD ;
++}
++
++static GOOD_OR_BAD OW_r_mem_with_password( BYTE * pwd, BYTE * data, size_t size, off_t offset, struct parsedname *pn)
++{
++	BYTE p[1 + 2 + 64 + 2] = { _1W_READ_MEMORY_WITH_PASSWORD, LOW_HIGH_ADDRESS(offset), };
++	BYTE passwd[8] ; // altered
++	size_t rest = 64 - (offset & 0x3F);
++	struct transaction_log t[] = {
++		TRXN_START,
++		TRXN_WRITE(p,3),
++		TRXN_MODIFY(passwd,passwd, 8-1),
++		TRXN_POWER(&passwd[7],5), // 5ms
++		TRXN_READ(&p[3],rest+2),
++		{ p, NULL, 3+rest+2, trxn_crc16, },
++		TRXN_END,
++	};
++
++	// set up transfer
++	if ( size>rest ) {
++		return gbBAD ;
++	}
++	memcpy(passwd,pwd,8) ;
++	RETURN_BAD_IF_BAD( BUS_transaction(t,pn) ) ;
++
++	memcpy(data,&p[3],size) ;
++	return gbGOOD ;
++}
++
++static GOOD_OR_BAD OW_verify(BYTE * pwd, off_t offset, struct parsedname *pn)
++{
++	BYTE p[1 + 2] = { _1W_READ_MEMORY_WITH_PASSWORD, LOW_HIGH_ADDRESS(offset), };
++	BYTE passwd[8] ; // altered
++	BYTE post[1] ;
++	struct transaction_log t[] = {
++		TRXN_START,
++		TRXN_WRITE(p,3),
++		TRXN_MODIFY(passwd,passwd, 8-1),
++		TRXN_POWER(&passwd[7],5), // 5ms
++		TRXN_READ1(post),
++		TRXN_END,
++	};
++
++	memcpy(passwd,pwd,8) ;
++	RETURN_BAD_IF_BAD( BUS_transaction(t,pn) ) ;
++
++	return post[0]==0xFF ? gbBAD : gbGOOD ;
++}
++
++static GOOD_OR_BAD validate_user_address( off_t offset )
++{
++	// addresses of the data page starts
++	switch ( offset ) {
++		case 0x0000:
++		case 0x0004:
++		case 0x0008:
++		case 0c000C:
++		case 0x0010:
++		case 0x0014:
++		case 0x0018:
++		case 0x001C:
++			return gbGOOD ;
++		default:
++			return gbBAD ;
++	}
++}
++
++static GOOD_OR_BAD validate_rw_address( off_t offset )
++{
++	// the addresses that can be used for read or write
++
++	RETURN_GOOD_IF_GOOD( validate_user_address(offset) ) ; // data pages
++	if ( 0x001C <= offset && offset <= 0x0022 ) { // configuration area
++		return gbGOOD ;
++	}
++	return gbBAD ;
++} 
++
++static GOOD_OR_BAD OW_w_secret( const BYTE * secret, struct parsedname *pn)
++{
++	BYTE p[1 + 8 + 2 ] = { _1W_WRITE_SECRET, };
++	BYTE w0[1] = { 0x00 } ;
++	BYTE w4[1] = { 0x00 } ;
++	BYTE w8[1] = { 0x00 } ;
++	struct transaction_log t[] = {
++		TRXN_START,
++		TRXN_WR_CRC16(p,1+8,0),
++		TRXN_POWER(w0,_DS28E10_TPP),
++		TRXN_POWER(w4,_DS28E10_TPP),
++		TRXN_WRITE1(w8),
++		TRXN_END,
++	};
++
++	memcpy(secret, &p[1], 8) ;
++	return BUS_transaction(t,pn) ;
++}
++
++static GOOD_OR_BAD OW_w_page( const BYTE * data, off_t offset, struct parsedname *pn)
++{
++	// 4 bytes only
++	BYTE p[1 + 2 + 4 + 2 ] = { _1W_WRITE_MEMORY, LOW_HIGH_ADDRESS(offset), };
++	BYTE w0[1] = { 0x00 } ;
++	BYTE w4[1] = { 0x00 } ;
++	struct transaction_log t[] = {
++		TRXN_START,
++		TRXN_WR_CRC16(p,1+2+4,0),
++		TRXN_POWER(w0,_DS28E10_TPP),
++		TRXN_WRITE1(w4),
++		TRXN_END,
++	};
++
++	RETURN_BAD_IF_BAD( validate_address(offset) ) ;
++	memcpy(data, &p[3], 4) ;
++	return BUS_transaction(t,pn) ;
++}
++
++static GOOD_OR_BAD OW_w_challenge( const BYTE * challenge, BYTE * response, struct parsedname *pn)
++{
++	BYTE p[1 + 8 + 2 ] = { _1W_WRITE_CHALLENGE, };
++	struct transaction_log t[] = {
++		TRXN_START,
++		TRXN_WRITE1(p),
++		TRXN_WRITE(challenge,12),
++		TRXN_READ(response,12),
++		TRXN_END,
++	};
++
++	return BUS_transaction(t,pn) ;
++}
++
+--- owfs-3.1p0/module/owlib/src/c/ow_arg.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_arg.c
+@@ -8,6 +8,8 @@
+     1wire/iButton system from Dallas Semiconductor
+ */
+ 
++// regex
++
+ /* ow_opt -- owlib specific command line options processing */
+ 
+ #include <config.h>
+@@ -16,24 +18,31 @@
+ #include "ow_connection.h"
+ #include "ow_usb_msg.h" // for DS9490_port_setup
+ 
+-enum arg_address { arg_addr_device, arg_addr_null, arg_addr_ip, arg_addr_colon, arg_addr_number, arg_addr_other } ;
++enum arg_address { arg_addr_device, arg_addr_null, arg_addr_ip, arg_addr_colon, arg_addr_number, arg_addr_other, arg_addr_error, } ;
+ 
+ static enum arg_address ArgType( const char * arg )
+ {
++	static regex_t rx_dev ;
++	static regex_t rx_num ;
++	static regex_t rx_ip ;
++	static regex_t rx_col ;
++	
++	// compile regex expressions
++	ow_regcomp( &rx_dev, "/", REG_NOSUB ) ;
++	ow_regcomp( &rx_num, "^[:digit:]+$", REG_NOSUB ) ;
++	ow_regcomp( &rx_ip, "[:digit:]{1,3}\\.[:digit:]{1,3}\\.[:digit:]{1,3}\\.[:digit:]{1,3}", REG_NOSUB ) ;
++	ow_regcomp( &rx_col, ":", REG_NOSUB ) ;
++
+ 	if ( arg == NULL ) {
+ 		return arg_addr_null ;
+-	} else if ( strchr( arg, '/' ) ) {
+-		return arg_addr_device ;
+-	} else if ( strchr( arg, ':' ) ) {
++	} else if ( ow_regexec( &rx_ip, arg, NULL ) == 0 ) {
++		return arg_addr_ip ;
++	} else if ( ow_regexec( &rx_col, arg, NULL ) == 0 ) {
+ 		return arg_addr_colon ;
+-	} else if ( strspn( arg, "0123456789" ) == strlen(arg) ) {
++	} else if ( ow_regexec( &rx_dev, arg, NULL ) == 0 ) {
++		return arg_addr_device ;
++	} else if ( ow_regexec( &rx_num, arg, NULL ) == 0 ) {
+ 		return arg_addr_number ;
+-	} else if ( strchr(                     arg,                      '.' )
+-		&&  strchr( strchr(                 arg,               '.' ), '.' )
+-		&&  strchr( strchr( strchr(         arg,        '.' ), '.' ), '.' )
+-		&&  strchr( strchr( strchr( strchr( arg, '.' ), '.' ), '.' ), '.' )
+-		) {
+-		return arg_addr_ip ;
+ 	}
+ 	return arg_addr_other ;
+ }
+@@ -55,6 +64,7 @@
+ {
+ 	switch( ArgType(arg) ) {
+ 		case arg_addr_null:
++		case arg_addr_error:
+ 			LEVEL_DEFAULT("Error with device. Specify a serial port, or a serial-over-telnet network address");
+ 			return gbBAD ;
+ 		case arg_addr_device:
+@@ -371,33 +381,6 @@
+ 	return gbGOOD;
+ }
+ 
+-GOOD_OR_BAD ARG_USB_monitor(const char *arg)
+-{
+-#if OW_USB
+-	if ( Globals.luc != NULL ) {
+-		struct port_in * pin = NewPort( NULL ) ;
+-		struct connection_in * in ;
+-		if ( pin == NULL ) {
+-			return gbBAD;
+-		}
+-		in = pin->first ;
+-		if (in == NO_CONNECTION) {
+-			return gbBAD;
+-		}
+-		arg_data(arg,pin) ;
+-		pin->busmode = bus_usb_monitor;
+-		return gbGOOD;
+-	} else {
+-		LEVEL_DEFAULT("USB library could not be initialized -- cannot proceed") ;
+-		return gbBAD ;
+-	}
+-#else
+-	(void) arg ;
+-	fprintf(stderr, "OWFS is compiled without USB support.\n");
+-	return gbBAD;
+-#endif
+-}
+-
+ GOOD_OR_BAD ARG_Browse(void)
+ {
+ 	struct port_in * pin = NewPort( NULL ) ;
+@@ -571,3 +554,4 @@
+ 	pin->type = ct_telnet ; // network
+ 	return gbGOOD;
+ }
++
+--- owfs-3.1p0/module/owlib/src/c/ow_dir.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_dir.c
+@@ -8,6 +8,8 @@
+     1wire/iButton system from Dallas Semiconductor
+ */
+ 
++// regex
++
+ #include <config.h>
+ #include "owfs_config.h"
+ #include "ow_devices.h"
+--- /dev/null
++++ owfs-3.1p0x/module/owlib/src/c/ow_ds9123O.c
+@@ -0,0 +1,124 @@
++/*
++$Id$
++    OWFS -- One-Wire filesystem
++    OWHTTPD -- One-Wire Web Server
++    Written 2003 Paul H Alfille
++    email: paul.alfille@gmail.com
++    Released under the GPL
++    See the header file: ow.h for full attribution
++    1wire/iButton system from Dallas Semiconductor
++*/
++
++#include <config.h>
++#include "owfs_config.h"
++#include "ow.h"
++#include "ow_counters.h"
++#include "ow_connection.h"
++
++/* DS9123O support
++   PIC (Actually PICBrick) based
++   PIC16C745
++
++   Actually the adapter supports several protocols, including 1-wire, 2-wire, 3-wire, SPI...
++   but we only support 1-wire
++
++   USB 1.1 based, using HID interface
++
++   ENDPOINT 1, 8-byte commands
++   simple commands: reset, in/out 1bit, 1byte, ...
++*/
++
++
++/* All the rest of the program sees is the DS9123O_detect and the entry in iroutines */
++
++#define	OneBit	0xFF
++#define ZeroBit 0xC0
++
++/*'*********************************************
++'Available One Wire PICBrick Dispatch Commands
++ *'*********************************************/
++
++#define DS9123O_VendorID     0x04FA
++#define DS9123O_ProductID    0x9123
++
++#define DS9123O_owreset     0x10
++#define DS9123O_owresetskip     0x11
++#define DS9123O_owtx8     0x12
++#define DS9123O_owrx8     0x13
++#define DS9123O_owpacketread     0x14
++#define DS9123O_owpacketwrite     0x15
++#define DS9123O_owread8bytes     0x16
++#define DS9123O_owdqhi     0x17
++#define DS9123O_owdqlow     0x18
++#define DS9123O_owreadbit     0x19
++#define DS9123O_owwritebit     0x1A
++#define DS9123O_owtx8turbo     0x1B
++#define DS9123O_owrx8turbo     0x1C
++#define DS9123O_owtx1turbo     0x1D
++#define DS9123O_owrx1turbo     0x1E
++#define DS9123O_owresetturbo     0x1F
++#define DS9123O_owpacketreadturbo     0x80
++#define DS9123O_owpacketwriteturbo     0x81
++#define DS9123O_owread8bytesturbo     0x82
++#define DS9123O_owtx1rx2     0x83
++#define DS9123O_owrx2     0x84
++#define DS9123O_owtx1rx2turbo     0x85
++#define DS9123O_owrx2turbo     0x86
++
++/* Calls from visual basic program:
++DS9123OwithOther.frm:4730:            WriteToPIC doowtx8turbo, Command, doportblongpulselow, PinMask, 4, 1, nullcmd, nullcmd
++DS9123OwithOther.frm:4732:            WriteToPIC doowtx8, Command, doportblongpulselow, PinMask, 4, 1, nullcmd, nullcmd
++DS9123OwithOther.frm:4750:            WriteToPIC doowtx8turbo, data, nullcmd, nullcmd, _
++DS9123OwithOther.frm:4753:            WriteToPIC doowtx8, data, nullcmd, nullcmd, _
++DS9123OwithOther.frm:4783:'            OutputReportData(0) = doowpacketwriteturbo
++DS9123OwithOther.frm:4785:'            OutputReportData(0) = doowpacketwrite
++DS9123OwithOther.frm:4798:            WriteToPIC doowpacketwriteturbo, BytesToWrite, DataToPic(0), DataToPic(1), _
++DS9123OwithOther.frm:4801:            WriteToPIC doowpacketwrite, BytesToWrite, DataToPic(0), DataToPic(1), _
++DS9123OwithOther.frm:4841:'            OutputReportData(0) = doowpacketwriteturbo
++DS9123OwithOther.frm:4843:'            OutputReportData(0) = doowpacketwrite
++DS9123OwithOther.frm:4857:            WriteToPIC doowpacketwriteturbo, BytesToWrite, DataToPic(0), DataToPic(1), _
++DS9123OwithOther.frm:4860:            WriteToPIC doowpacketwrite, BytesToWrite, DataToPic(0), DataToPic(1), _
++DS9123OwithOther.frm:4886:            WriteToPIC doowtx1turbo, Bit, nullcmd, nullcmd, _
++DS9123OwithOther.frm:4889:            WriteToPIC doowwritebit, Bit, nullcmd, nullcmd, _
++DS9123OwithOther.frm:4908:            WriteToPIC doowdqhi, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:4911:            WriteToPIC doowdqlow, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:4965:                    OutputReportData(I) = doowread8bytesturbo
++DS9123OwithOther.frm:4967:                    OutputReportData(I) = doowread8bytes
++DS9123OwithOther.frm:4988:                WriteToPIC doowpacketread, CByte(bytestoread), nullcmd, nullcmd, _
++DS9123OwithOther.frm:4991:                WriteToPIC doowpacketreadturbo, CByte(bytestoread), nullcmd, nullcmd, _
++DS9123OwithOther.frm:5016:            WriteToPIC doowrx1turbo, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:5019:            WriteToPIC doowreadbit, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:5041:            WriteToPIC doowrx2turbo, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:5044:            WriteToPIC doowrx2, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:5074:            WriteToPIC doowtx1rx2turbo, Bit, nullcmd, nullcmd, _
++DS9123OwithOther.frm:5077:            WriteToPIC doowtx1rx2, Bit, nullcmd, nullcmd, _
++DS9123OwithOther.frm:5103:            WriteToPIC doowrx8turbo, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:5106:            WriteToPIC doowrx8, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:5126:            WriteToPIC doowresetturbo, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:5129:            WriteToPIC doowreset, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:5154:            WriteToPIC doowresetturbo, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:5157:            WriteToPIC doowreset, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:5174:            WriteToPIC doowresetturbo, doowtx8turbo, &HCC, nullcmd, _
++DS9123OwithOther.frm:5177:            WriteToPIC doowresetskip, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:5202:            WriteToPIC doowresetturbo, doowtx8turbo, Command, nullcmd, _
++DS9123OwithOther.frm:5205:            WriteToPIC doowreset, doowtx8, Command, nullcmd, _
++DS9123OwithOther.frm:5230:            WriteToPIC doowresetturbo, doowtx8turbo, &HCC, doowtx8turbo, _
++DS9123OwithOther.frm:5233:            WriteToPIC doowresetskip, doowtx8, Command, nullcmd, _
++DS9123OwithOther.frm:7087:            WriteToPIC doowrx8turbo, nullcmd, nullcmd, nullcmd, _
++DS9123OwithOther.frm:7090:            WriteToPIC doowrx8, nullcmd, nullcmd, nullcmd, _
++*/
++
++
++/* _detect is a bit of a misnomer, no detection is actually done */
++/* Note, devfd alread allocated */
++/* Note, terminal settings already saved */
++ZERO_OR_ERROR DS9123O_detect(struct port_in *pin)
++{
++	struct connection_in * in = pin->first ;
++
++	if (pin->init_data == NULL) {
++		return gbBAD;
++	}
++
++	return -ENOTSUP;
++}
+--- owfs-3.1p0/module/owlib/src/c/ow_ds9490.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_ds9490.c
+@@ -243,11 +243,24 @@
+ 			}
+ 			break ;
+ 		case 2:
+-			if ( ap.first.type != address_numeric || ap.second.type != address_numeric ) {
+-				LEVEL_DEFAULT("USB address <%s:%s> not in number:number format",ap.first.alpha,ap.second.alpha) ;
+-				gbResult = gbBAD ;
+-			} else {
+-				gbResult = DS9490_detect_specific_adapter( ap.first.number, ap.second.number, in ) ;
++			switch( ap.first.type ) {
++				case address_all:
++				case address_asterix:
++					LEVEL_DEBUG("Look for all USB adapters");
++					gbResult = DS9490_detect_all_adapters(pin) ;
++					break ;
++				case address_numeric:
++					LEVEL_DEBUG("Look for USB adapter number %d:%d",ap.first.number,ap.second.number);
++					gbResult = DS9490_detect_specific_adapter( ap.first.number, ap.second.number, in ) ;
++					break ;
++				case address_scan:
++					// completely change personality!
++					gbResult = USB_monitor_detect(pin) ;
++					break ;
++				default:
++					LEVEL_DEFAULT("USB address <%s:%s> not in number:number format",ap.first.alpha,ap.second.alpha) ;
++					gbResult = gbBAD ;
++					break ;
+ 			}
+ 			break ;
+ 	}
+--- owfs-3.1p0/module/owlib/src/c/ow_eeef.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_eeef.c
+@@ -31,6 +31,7 @@
+ READ_FUNCTION(FS_r_channels);
+ WRITE_FUNCTION(FS_w_channels);
+ READ_FUNCTION(FS_short);
++READ_FUNCTION(FS_r_multitemp) ;
+ 
+ READ_FUNCTION(FS_r_variable);
+ WRITE_FUNCTION(FS_w_variable);
+@@ -40,6 +41,7 @@
+ static enum e_visibility VISIBLE_EF_HUB( const struct parsedname * pn ) ;
+ static enum e_visibility VISIBLE_EF_BAROMETER( const struct parsedname * pn ) ;
+ static enum e_visibility VISIBLE_EF_HUMIDITY( const struct parsedname * pn ) ;
++static enum e_visibility VISIBLE_EF_MULTITEMP( const struct parsedname * pn ) ;
+ 
+ enum e_EF_type {
+ 	eft_UVI = 1,
+@@ -49,6 +51,7 @@
+ 	eft_HUB = 5,
+ 	eft_BAR = 6,
+ 	eft_HUM = 7,
++	eft_TMP = 9,
+ } ;
+ 
+ enum e_cal_type {
+@@ -119,6 +122,9 @@
+ #define _EEEF_GET_TC_HUMIDITY_OFFSET 0x24
+ #define _EEEF_SET_TC_HUMIDITY_OFFSET 0xA4
+ 
++#define _EEEF_GET_TEMPERATURE_IN_C 0x21
++#define _EEEF_GET_TEMPERATURE_IN_F 0x22
++
+ struct location_pair {
+ 	BYTE read ;
+ 	BYTE write ;
+@@ -282,6 +288,7 @@
+ 
+ static struct aggregate AMOIST = { 4, ag_numbers, ag_aggregate, };
+ static struct aggregate AHUB = { 4, ag_numbers, ag_aggregate, };
++static struct aggregate ATMP = { 6, ag_numbers, ag_aggregate, };
+ static struct filetype HobbyBoards_EF[] = {
+ 	F_STANDARD_NO_TYPE,
+ 	{"version", _EEEF_version_length, NON_AGGREGATE, ft_ascii, fc_link, FS_version, NO_WRITE_FUNCTION, VISIBLE, NO_FILETYPE_DATA, },
+@@ -322,6 +329,15 @@
+ 	{"barometer/pressure_altitude", PROPERTY_LENGTH_INTEGER, NON_AGGREGATE, ft_integer, fc_volatile, FS_r_variable, NO_WRITE_FUNCTION, VISIBLE_EF_BAROMETER, {.v=&lp_pressurealtitude,}, } ,
+ 	{"barometer/altitude", PROPERTY_LENGTH_INTEGER, NON_AGGREGATE, ft_integer, fc_volatile, FS_r_variable, FS_w_variable, VISIBLE_EF_BAROMETER, {.v=&lp_altitude,}, } ,
+ 	
++	{"multitemp", PROPERTY_LENGTH_SUBDIR, NON_AGGREGATE, ft_subdir, fc_subdir, NO_READ_FUNCTION, NO_WRITE_FUNCTION, VISIBLE_EF_MULTITEMP, NO_FILETYPE_DATA, },
++	{"multitemp/polling_frequency", PROPERTY_LENGTH_UNSIGNED, NON_AGGREGATE, ft_unsigned, fc_stable, FS_r_variable, FS_w_variable, VISIBLE_EF_MULTITEMP, {.v=&lp_polling, }, } ,
++	{"multitemp/polling_available", PROPERTY_LENGTH_UNSIGNED, NON_AGGREGATE, ft_unsigned, fc_stable, FS_r_variable, NO_WRITE_FUNCTION, VISIBLE_EF_MULTITEMP, {.v=&lp_available_polling, }, } ,
++	{"multitemp/location", _EEEF_LOCATION_LENGTH, NON_AGGREGATE, ft_ascii, fc_stable, FS_r_variable, FS_w_variable, VISIBLE_EF_MULTITEMP, {.v=&lp_location,}, } ,
++	{"multitemp/config", PROPERTY_LENGTH_UNSIGNED, NON_AGGREGATE, ft_unsigned, fc_stable, FS_r_variable, NO_WRITE_FUNCTION, VISIBLE_EF_MULTITEMP, {.v=&lp_config, }, } ,
++	{"multitemp/reboot", PROPERTY_LENGTH_YESNO, NON_AGGREGATE, ft_yesno, fc_stable, NO_READ_FUNCTION, FS_w_variable, VISIBLE_EF_MULTITEMP, {.v=&lp_reboot,}, } ,
++	{"multitemp/reset", PROPERTY_LENGTH_YESNO, NON_AGGREGATE, ft_yesno, fc_stable, NO_READ_FUNCTION, FS_w_variable, VISIBLE_EF_MULTITEMP, {.v=&lp_factory,}, } ,
++	{"multitemp/temperature", PROPERTY_LENGTH_TEMP, &ATMP, ft_temperature, fc_volatile, FS_r_multitemp, NO_WRITE_FUNCTION, VISIBLE_EF_MULTITEMP, NO_FILETYPE_DATA, } ,
++	
+ 	{"hub", PROPERTY_LENGTH_SUBDIR, NON_AGGREGATE, ft_subdir, fc_subdir, NO_READ_FUNCTION, NO_WRITE_FUNCTION, VISIBLE_EF_HUB, NO_FILETYPE_DATA, },
+ 	{"hub/config", PROPERTY_LENGTH_UNSIGNED, NON_AGGREGATE, ft_unsigned, fc_volatile, FS_r_hub_config, FS_w_hub_config, INVISIBLE, NO_FILETYPE_DATA, },
+ 	{"hub/branch", PROPERTY_LENGTH_BITFIELD, &AHUB, ft_bitfield, fc_stable, FS_r_channels, FS_w_channels, VISIBLE_EF_HUB, NO_FILETYPE_DATA, },
+@@ -406,6 +422,16 @@
+ 	}
+ }
+ 
++static enum e_visibility VISIBLE_EF_MULTITEMP( const struct parsedname * pn )
++{
++	switch ( VISIBLE_EF(pn) ) {
++		case eft_TMP:
++			return visible_now ;
++		default:
++			return visible_not_now ;
++	}
++}
++
+ /* ------- Functions ------------ */
+ 
+ /* prototypes */
+@@ -460,6 +486,8 @@
+             return OWQ_format_output_offset_and_size_z("HB_SNIFFER", owq) ;
+         case eft_HUB:
+             return OWQ_format_output_offset_and_size_z("HB_HUB", owq) ;
++        case eft_TMP:
++            return OWQ_format_output_offset_and_size_z("HB_MULTITEMP", owq) ;
+         default:
+             return FS_type(owq);
+     }
+@@ -475,6 +503,23 @@
+ 	OWQ_array_I(owq, 1) = (uint8_t) w[1] ;
+ 	OWQ_array_I(owq, 2) = (uint8_t) w[2] ;
+ 	OWQ_array_I(owq, 3) = (uint8_t) w[3] ;
++
++	return 0 ;
++}
++
++static ZERO_OR_ERROR FS_r_multitemp(struct one_wire_query *owq)
++{
++	int bytes = 6 * 2 ; // 6 2-byte words, little endian in deci-degrees
++	BYTE t[bytes] ;
++	
++	RETURN_ERROR_IF_BAD( OW_read( _EEEF_GET_TEMPERATURE_IN_C, t, bytes, PN(owq) ) ) ;
++
++	OWQ_array_F(owq, 0) = ( (_FLOAT) (UT_int16( &t[ 0] )) ) / 10. ;
++	OWQ_array_F(owq, 1) = ( (_FLOAT) (UT_int16( &t[ 2] )) ) / 10. ;
++	OWQ_array_F(owq, 2) = ( (_FLOAT) (UT_int16( &t[ 4] )) ) / 10. ;
++	OWQ_array_F(owq, 3) = ( (_FLOAT) (UT_int16( &t[ 6] )) ) / 10. ;
++	OWQ_array_F(owq, 4) = ( (_FLOAT) (UT_int16( &t[ 8] )) ) / 10. ;
++	OWQ_array_F(owq, 5) = ( (_FLOAT) (UT_int16( &t[10] )) ) / 10. ;
+ 
+ 	return 0 ;
+ }
+--- owfs-3.1p0/module/owlib/src/c/ow_enet_monitor.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_enet_monitor.c
+@@ -12,7 +12,6 @@
+ #include "owfs_config.h"
+ #include "ow.h"
+ #include "ow_connection.h"
+-#include "ow_usb_msg.h"
+ 
+ static void ENET_monitor_close(struct connection_in *in);
+ static GOOD_OR_BAD ENET_monitor_in_use(const struct port_in * pin) ;
+@@ -28,27 +27,28 @@
+ 	
+ 	/* init_data has form "scan" or "scan:15" (15 seconds) */
+ 	Parse_Address( pin->init_data, &ap ) ;
++	in->master.enet_monitor.enet_scan_interval = DEFAULT_ENET_SCAN_INTERVAL ;
+ 	switch ( ap.entries ) {
+ 		case 0:
+-			Globals.enet_scan_interval = DEFAULT_ENET_SCAN_INTERVAL ;
++			in->master.enet_monitor.enet_scan_interval = DEFAULT_ENET_SCAN_INTERVAL ;
+ 			break ;
+ 		case 1:
+ 			switch( ap.first.type ) {
+ 				case address_numeric:
+-					Globals.enet_scan_interval = ap.first.number ;
++					in->master.enet_monitor.enet_scan_interval = ap.first.number ;
+ 					break ;
+ 				default:
+-					Globals.enet_scan_interval = DEFAULT_ENET_SCAN_INTERVAL ;
++					in->master.enet_monitor.enet_scan_interval = DEFAULT_ENET_SCAN_INTERVAL ;
+ 					break ;
+ 			}
+ 			break ;
+ 		case 2:
+ 			switch( ap.second.type ) {
+ 				case address_numeric:
+-					Globals.enet_scan_interval = ap.second.number ;
++					in->master.enet_monitor.enet_scan_interval = ap.second.number ;
+ 					break ;
+ 				default:
+-					Globals.enet_scan_interval = DEFAULT_ENET_SCAN_INTERVAL ;
++					in->master.enet_monitor.enet_scan_interval = DEFAULT_ENET_SCAN_INTERVAL ;
+ 					break ;
+ 			}
+ 			break ;
+@@ -131,7 +131,7 @@
+ 	
+ 	do {
+ 		fd_set readset;
+-		struct timeval tv = { Globals.enet_scan_interval, 0, };
++		struct timeval tv = { in->master.enet_monitor.enet_scan_interval, 0, };
+ 		
+ 		/* Initialize readset */
+ 		FD_ZERO(&readset);
+--- owfs-3.1p0/module/owlib/src/c/ow_get.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_get.c
+@@ -1,5 +1,4 @@
+ /*
+-$Id$
+     OWFS -- One-Wire filesystem
+     OWHTTPD -- One-Wire Web Server
+     Written 2003 Paul H Alfille
+@@ -9,6 +8,8 @@
+ 	1wire/iButton system from Dallas Semiconductor
+ */
+ 
++// regex
++
+ /* ow_interate.c */
+ /* routines to split reads and writes if longer than page */
+ 
+@@ -37,13 +38,15 @@
+ 	}
+ }
+ 
+-static void getdir( struct charblob * cb, struct one_wire_query * owq ) 
+-{  
+-	if ( FS_dir( getdircallback, cb, PN(owq) ) != 0 ) {
++static int getdir( struct charblob * cb, struct one_wire_query * owq ) 
++{
++	int ret = 0;
++	if ( (ret = FS_dir( getdircallback, cb, PN(owq) )) != 0 ) {
+ 		CharblobClear( cb ) ;
+ 	} else if ( CharblobLength(cb) == 0 ) {
+ 		CharblobAddChar( '\0', cb) ;
+ 	}
++	return ret;
+ }
+ 
+ static char * copy_buffer( char * data, int size )
+@@ -82,19 +85,42 @@
+ 		return -ENOENT;
+ 	}
+ 
+-	if ( IsDir( PN(owq) ) ) { /* A directory of some kind */
++	// Check for known type.
++	if ( (PN(owq)->selected_filetype) != NO_FILETYPE ) { 
++		// local owlib knows the type. 
++		if ( IsDir( PN(owq) ) ) { /* A directory of some kind */
++			struct charblob cb ;
++			CharblobInit(&cb) ;
++			getdir( &cb, owq ) ;
++			size = CharblobLength(&cb) ;
++			*return_buffer = copy_buffer( CharblobData(&cb), size ) ;
++			CharblobClear(&cb) ;
++		} else { /* A regular file  -- so read */
++			if ( GOOD(OWQ_allocate_read_buffer(owq)) ) { // make the space in the buffer
++				size = FS_read_postparse(owq) ;
++				*return_buffer = copy_buffer( OWQ_buffer(owq), size ) ;
++			}
++		}
++	} else {
++		// local owlib doesn't know the type.
+ 		struct charblob cb ;
+ 		CharblobInit(&cb) ;
+-		getdir( &cb, owq ) ;
+-		size = CharblobLength(&cb) ;
+-		*return_buffer = copy_buffer( CharblobData(&cb), size ) ;
+-		CharblobClear( &cb ) ;
+-	} else { /* A regular file  -- so read */
+-		if ( GOOD(OWQ_allocate_read_buffer(owq)) ) { // make the space in the buffer
+-			size = FS_read_postparse(owq) ;
+-			*return_buffer = copy_buffer( OWQ_buffer(owq), size ) ;
++
++		// Try directory first.
++		if (getdir( &cb, owq ) != -ENOTDIR) {
++			// Is a directory.
++			size = CharblobLength(&cb) ;
++			*return_buffer = copy_buffer( CharblobData(&cb), size ) ;
++		} else {
++			// Is not a directory. Try file.
++			if ( GOOD(OWQ_allocate_read_buffer(owq)) ) { // make the space in the buffer
++				size = FS_read_postparse(owq) ;
++				*return_buffer = copy_buffer( OWQ_buffer(owq), size ) ;
++			}
+ 		}
+-	}
++		CharblobClear(&cb) ;
++	}	
++
+ 	// the buffer is allocated by getdir or getval
+ 	OWQ_destroy(owq);
+ 
+--- owfs-3.1p0/module/owlib/src/c/ow_ha7e.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_ha7e.c
+@@ -8,6 +8,8 @@
+ 	1wire/iButton system from Dallas Semiconductor
+ */
+ 
++// regex
++
+ #include <config.h>
+ #include "owfs_config.h"
+ #include "ow.h"
+--- owfs-3.1p0/module/owlib/src/c/ow_help.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_help.c
+@@ -170,7 +170,6 @@
+ 	"\n"
+ 	" owserver (OWFS server)\n"
+ 	"  -p --port [ip:]port   TCP address and port number for access\n"
+-	"  --max_connections     [%3d] Nr of allowed concurrent connections\n"
+ 	"\n"
+ 	" Development tests (owserver only)\n"
+ 	"  --pingcrazy      Add lots of keep-alive messages to the owserver protocol\n"
+@@ -184,7 +183,6 @@
+ 	"  --zero                Announce service via zeroconf\n"
+ 	"  --announce name       Name for service given in zeroconf broadcast\n"
+ 	"  --nozero              Don't announce service via zeroconf\n" "\n"
+-	, Globals.concurrent_connections
+ 	);
+ }
+ 
+@@ -221,7 +219,7 @@
+ 	"  -u    --USB     DS9490R or PuceBaboon bus master\n"
+ 	"  -uall --USB=all Find and use all DS9490-type bus masters\n"
+ 	"  -u3:4 --USB=3:4 Specific USB location (bus 3, device 4)\n"
+-	"  -uscan --USB_scan=n Keep looking for new USB adapters (every n seconds; default 10)\n"
++	"  -uscan --USB=scan[:n] Keep looking for new USB adapters (every n seconds; default 10)\n"
+ 	"  -d /dev/ttyUSB0 ECLO USB bus master\n"
+ 	"  --link /dev/ttyUSB0 Link-USB\n"
+ 	"  --masterhub=/dev/ttyUSB0 Link-USB\n"
+--- owfs-3.1p0/module/owlib/src/c/ow_interface.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_interface.c
+@@ -61,6 +61,10 @@
+ READ_FUNCTION(FS_r_PBM_features);
+ READ_FUNCTION(FS_w_PBM_activationcode);
+ 
++/* Link AUX functions */
++READ_FUNCTION(FS_w_LINK_aux);
++READ_FUNCTION(FS_r_LINK_aux);
++
+ static enum e_visibility VISIBLE_DS2482( const struct parsedname * pn )
+ {
+ 	switch ( get_busmode(pn->selected_connection) ) {
+@@ -93,6 +97,16 @@
+ 	}
+ }
+ 
++static enum e_visibility VISIBLE_LINK( const struct parsedname * pn )
++{
++	switch ( get_busmode(pn->selected_connection) ) {
++		case bus_link:
++			return visible_now ;
++		default:
++			return visible_not_now ;
++	}
++}
++
+ static enum e_visibility VISIBLE_HA5( const struct parsedname * pn )
+ {
+ 	switch ( get_busmode(pn->selected_connection) ) {
+@@ -169,6 +183,11 @@
+ 	{"serial/baudrate", PROPERTY_LENGTH_UNSIGNED, NON_AGGREGATE, ft_unsigned, fc_static, FS_r_baud, FS_w_baud, VISIBLE_DS2480B, NO_FILETYPE_DATA, },
+ 	{"serial/flexible_timing", PROPERTY_LENGTH_YESNO, NON_AGGREGATE, ft_yesno, fc_static, FS_r_yesno, FS_w_yesno, VISIBLE_DS2480B, {.s=offsetof(struct connection_in,flex),}, },
+ 
++	/* Link/LinkUSB AUX line control */
++	{"link", PROPERTY_LENGTH_SUBDIR, NON_AGGREGATE, ft_subdir, fc_subdir, NO_READ_FUNCTION, NO_WRITE_FUNCTION, VISIBLE_LINK, NO_FILETYPE_DATA, },
++	{"link/auxctrl", PROPERTY_LENGTH_YESNO, NON_AGGREGATE, ft_yesno, fc_stable, NO_READ_FUNCTION, FS_w_LINK_aux, VISIBLE_LINK, NO_FILETYPE_DATA, },
++	{"link/auxsense", PROPERTY_LENGTH_YESNO, NON_AGGREGATE, ft_yesno, fc_volatile, FS_r_LINK_aux, NO_WRITE_FUNCTION, VISIBLE_LINK, NO_FILETYPE_DATA, },
++
+ 	{"ha5", PROPERTY_LENGTH_SUBDIR, NON_AGGREGATE, ft_subdir, fc_subdir, NO_READ_FUNCTION, NO_WRITE_FUNCTION, VISIBLE_HA5, NO_FILETYPE_DATA, },
+ 	{"ha5/checksum", PROPERTY_LENGTH_YESNO, NON_AGGREGATE, ft_yesno, fc_static, FS_r_yesno, FS_w_yesno, VISIBLE_HA5, {.s=offsetof(struct connection_in,master.ha5.checksum), }, },
+ 	{"ha5/channel", 1, NON_AGGREGATE, ft_ascii, fc_static, FS_r_channel, NO_WRITE_FUNCTION, VISIBLE_HA5, NO_FILETYPE_DATA, },
+@@ -513,6 +532,30 @@
+ 	
+ 	return 0 ;
+ }
++
++/* Link/LinkUSB Aux line control */
++
++// from ow_link.c
++GOOD_OR_BAD LINK_aux_write(int level, struct connection_in * in) ;
++GOOD_OR_BAD LINK_aux_read(int *level_out, struct connection_in * in) ;
++
++static ZERO_OR_ERROR FS_r_LINK_aux(struct one_wire_query *owq)
++{
++	struct connection_in * in = PN(owq)->selected_connection ;
++	int level;
++	RETURN_ERROR_IF_BAD(LINK_aux_read(&level, in));
++
++	OWQ_Y(owq) = level;
++	return OWQ_parse_output(owq);
++}
++
++static ZERO_OR_ERROR FS_w_LINK_aux(struct one_wire_query *owq)
++{
++	struct connection_in * in = PN(owq)->selected_connection ;
++	int level = OWQ_Y(owq) ;
++	return GB_to_Z_OR_E(LINK_aux_write(level, in));
++}
++
+ 
+ #ifdef DEBUG_DS2490
+ static ZERO_OR_ERROR FS_r_ds2490status(struct one_wire_query *owq)
+--- owfs-3.1p0/module/owlib/src/c/ow_lib_stop.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_lib_stop.c
+@@ -25,6 +25,9 @@
+ 	FreeInAll();
+ 	LEVEL_CALL("Closing output devices");
+ 	FreeOutAll();
++	LEVEL_CALL("Clearing compiled expressions");
++	ow_regdestroy() ;
++
+ 
+ 	/* Have to reset more internal variables, and this should be fixed
+ 	 * by setting optind = 0 and call getopt()
+--- owfs-3.1p0/module/owlib/src/c/ow_link.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_link.c
+@@ -749,6 +749,37 @@
+ 	return gbGOOD;
+ }
+ 
++/* Control The Link AUX port, an extra physical line which
++ * can be set high, low or HiZ by means of reading line state */
++GOOD_OR_BAD LINK_aux_write(int level, struct connection_in * in) {
++	BYTE out[1];
++	if(level) {
++		// Set the Auxiliary line to the HIGH (default) level and low impedance.
++		out[0] = 'd';
++	}
++	else
++	{
++		// Set the Auxiliary line to the LOW level and low impedance.
++		out[0] = 'z';
++	}
++	RETURN_BAD_IF_BAD(LINK_write(out, 1, in)) ;
++	// These commands does not generate any response
++
++	return gbGOOD;
++}
++
++GOOD_OR_BAD LINK_aux_read(int *level_out, struct connection_in * in) {
++	BYTE buf[1+in->CRLF_size] ;
++
++	// Set the Auxiliary line to high impedance and report the current intended input level.
++	RETURN_BAD_IF_BAD(LINK_write(LINK_string("&"), 1, in)) ;
++	RETURN_BAD_IF_BAD(LINK_readback_data(buf, 1, in)) ;
++
++	*level_out = (buf[0]=='0') ? 0 : 1 ;
++	return gbGOOD;
++}
++
++
+ static void LINK_close(struct connection_in *in)
+ {
+ 	// the standard COM_free routine cleans up the connection
+--- owfs-3.1p0/module/owlib/src/c/ow_opt.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_opt.c
+@@ -111,10 +111,6 @@
+ 	{"error-level", required_argument, NO_LINKED_VAR, e_error_level},
+ 	{"errorlevel", required_argument, NO_LINKED_VAR, e_error_level},
+ 	{"debug", no_argument, NO_LINKED_VAR, e_debug},
+-	{"concurrent_connections", required_argument, NO_LINKED_VAR, e_concurrent_connections},
+-	{"concurrent-connections", required_argument, NO_LINKED_VAR, e_concurrent_connections},
+-	{"max-connections", required_argument, NO_LINKED_VAR, e_concurrent_connections},
+-	{"max_connections", required_argument, NO_LINKED_VAR, e_concurrent_connections},
+ 	{"cache_size", required_argument, NO_LINKED_VAR, e_cache_size},	/* max cache size */
+ 	{"cache-size", required_argument, NO_LINKED_VAR, e_cache_size},	/* max cache size */
+ 	{"cachesize", required_argument, NO_LINKED_VAR, e_cache_size},	/* max cache size */
+@@ -201,8 +197,6 @@
+ 	{"USB_flextime", no_argument, &Globals.usb_flextime, 1},
+ 	{"usb_regulartime", no_argument, &Globals.usb_flextime, 0},
+ 	{"USB_regulartime", no_argument, &Globals.usb_flextime, 0},
+-	{"usb_scan", optional_argument, NO_LINKED_VAR, e_usb_monitor,},
+-	{"USB_scan", optional_argument, NO_LINKED_VAR, e_usb_monitor,},
+ 	{"serial_flex", no_argument, &Globals.serial_flextime, 1},
+ 	{"serial_flextime", no_argument, &Globals.serial_flextime, 1},
+ 	{"serial_regulartime", no_argument, &Globals.serial_flextime, 0},
+@@ -750,10 +744,6 @@
+ 		Globals.error_level = 9 ;
+ 		Globals.error_level_restore = 9 ;
+ 		break ;
+-	case e_concurrent_connections:
+-		RETURN_BAD_IF_BAD(OW_parsevalue_I(&arg_to_integer, arg)) ;
+-		Globals.concurrent_connections = (int) arg_to_integer;
+-		break;
+ 	case e_cache_size:
+ 		RETURN_BAD_IF_BAD(OW_parsevalue_I(&arg_to_integer, arg)) ;
+ 		Globals.cache_size = (size_t) arg_to_integer;
+@@ -830,8 +820,6 @@
+ 		return ARG_DS1WM(arg);
+ 	case e_k1wm:
+ 		return ARG_K1WM(arg);
+-	case e_usb_monitor:
+-		return ARG_USB_monitor(arg);
+ 	case e_browse:
+ 		return ARG_Browse();
+ 	case e_announce:
+--- owfs-3.1p0/module/owlib/src/c/ow_parse_address.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_parse_address.c
+@@ -1,5 +1,4 @@
+ /*
+-$Id$
+     OWFS -- One-Wire filesystem
+     OWHTTPD -- One-Wire Web Server
+     Written 2003 Paul H Alfille
+@@ -20,39 +19,45 @@
+ 
+ static void Parse_Single_Address( struct address_entry * ae )
+ {
+-	int q1,q2,q3,q4 ;
++	static regex_t rx_pa_none ;
++	static regex_t rx_pa_all ;
++	static regex_t rx_pa_scan ;
++	static regex_t rx_pa_star ;
++	static regex_t rx_pa_quad ;
++	static regex_t rx_pa_num ;
++		
++	ow_regcomp( &rx_pa_none, "^$", REG_NOSUB ) ;
++	ow_regcomp( &rx_pa_all, "^all$", REG_NOSUB | REG_ICASE ) ;
++	ow_regcomp( &rx_pa_scan, "^scan$", REG_NOSUB | REG_ICASE ) ;
++	ow_regcomp( &rx_pa_star, "^\\*$", REG_NOSUB ) ;
++	ow_regcomp( &rx_pa_quad, "^[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}\\.[[:digit:]]{1,3}$", REG_NOSUB ) ;
++	ow_regcomp( &rx_pa_num, "^-?[[:digit:]]+$", REG_NOSUB ) ;
++
+ 	if ( ae->alpha == NULL  ) {
+ 		// null entry
+ 		ae->type = address_none ;
+-	} else if ( ae->alpha[0] == '\0' ) {
+-		// blank entry (actually no trim or whitespace)
++	} else if ( ow_regexec( &rx_pa_none, ae->alpha, NULL ) == 0 ) {
+ 		ae->type = address_none ;
+-	} else if ( strncasecmp( ae->alpha, "all", 3 ) == 0 ) {
++		LEVEL_DEBUG("None <%s>",ae->alpha);
++	} else if ( ow_regexec( &rx_pa_all, ae->alpha, NULL ) == 0 ) {
+ 		ae->type = address_all ;
+-	} else if ( strncasecmp( ae->alpha, "scan", 4 ) == 0 ) {
++		LEVEL_DEBUG("All <%s>",ae->alpha);
++	} else if ( ow_regexec( &rx_pa_scan, ae->alpha, NULL ) == 0 ) {
+ 		ae->type = address_scan ;
+-	} else if ( strncasecmp( ae->alpha, "*", 1 ) == 0 ) {
++		LEVEL_DEBUG("Scan <%s>",ae->alpha);
++	} else if ( ow_regexec( &rx_pa_star, ae->alpha, NULL ) == 0 ) {
+ 		ae->type = address_asterix ;
++		LEVEL_DEBUG("Star <%s>",ae->alpha);
++	} else if ( ow_regexec( &rx_pa_quad, ae->alpha, NULL ) == 0 ) {
++		ae->type = address_dottedquad ;
++		LEVEL_DEBUG("IP <%s>",ae->alpha);
++	} else if ( ow_regexec( &rx_pa_num, ae->alpha, NULL ) == 0 ) {
++		ae->type = address_numeric ;
++		ae->number = atoi(ae->alpha ) ;
++		LEVEL_DEBUG("Num <%s> %d",ae->alpha,ae->number);
+ 	} else {
+-		switch( sscanf( ae->alpha, "%i.%i.%i.%i", &q1, &q2, &q3, &q4 ) ) {
+-		case 4:
+-			ae->type = address_dottedquad ;
+-			ae->number = q1 ;
+-			break ;
+-		case 3:
+-		case 2:
+-			ae->number = q1 ;
+-			ae->type = address_alpha ;
+-			break ;
+-		case 1:
+-			ae->type = address_numeric ;
+-			ae->number = q1 ;
+-			break ;
+-		case 0:
+-		default:
+-			ae->type = address_alpha ;
+-			break ;
+-		}
++		ae->type = address_alpha ;
++		LEVEL_DEBUG("Text <%s>",ae->alpha);
+ 	}
+ }
+ 
+@@ -62,8 +67,14 @@
+ */
+ void Parse_Address( char * address, struct address_pair * ap )
+ {
+-	char * colon ;
+-	char * colon2 ;
++	static regex_t rx_pa_one ;
++	static regex_t rx_pa_two ;
++	static regex_t rx_pa_three ;
++	struct ow_regmatch orm ;
++	
++	ow_regcomp( &rx_pa_one, "^ *([^ ]+)[ \r]*$", 0 ) ;
++	ow_regcomp( &rx_pa_two, "^ *([^ ]+) *: *([^ ]+)[ \r]*$", 0 ) ;
++	ow_regcomp( &rx_pa_three, "^ *([^ ]+) *: *([^ ]+) *: *([^ ]+)[ \r]*$", 0 ) ;
+ 
+ 	// Set up address structure into previously allocated structure
+ 	if ( ap == NULL ) {
+@@ -79,46 +90,50 @@
+ 
+ 	// copy the text string
+ 	// All entries will point into this text copy
++	// Note that this is a maximum length, paring off spaces and colon will make room for extra \0
+ 	ap->first.alpha = owstrdup(address) ;
+ 	if ( ap->first.alpha == NULL ) {
+ 		return ;
+ 	}
+ 
+-	colon = strchr( ap->first.alpha, ':' ) ;
+-
+-	if ( colon != NULL ) { // 1st colon exists
+-		// Colon exists, second entry, so add a null at colon to separate the string.
+-		*colon = '\0' ;
+-		// second part starts after colon position
+-		ap->second.alpha = colon + 1 ; // part of first.alpha
++	// test out the various matches
++	orm.number = 3 ;
++	if ( ow_regexec( &rx_pa_three, address, &orm ) == 0 ) {
++		ap->entries = 3 ;
++	} else {
++		orm.number = 2 ;
++		if ( ow_regexec( &rx_pa_two, address, &orm ) == 0 ) {
++			ap->entries = 2 ;
++		} else {
++			orm.number = 1 ;
++			if ( ow_regexec( &rx_pa_one, address, &orm ) == 0 ) {
++				ap->entries = 1 ;
++			} else {
++				return ;
++			}
++		}
+ 	}
++			
++	// Now copy and parse
++	strcpy( ap->first.alpha, orm.match[1] ) ;
+ 	Parse_Single_Address( &(ap->first) ) ;
++	LEVEL_DEBUG("First <%s>",ap->first.alpha);
+ 
+-	if ( colon == NULL ) {
+-		// no colon, so only one entry
+-		ap->entries = 1 ;
+-		return ;
+-	}
+-	
+-	colon2 = strchr( ap->second.alpha, ':' ) ;
++	if ( ap->entries > 1 ) {
++		ap->second.alpha = ap->first.alpha + strlen(ap->first.alpha) + 1 ;
++		strcpy( ap->second.alpha, orm.match[2] ) ;
++		LEVEL_DEBUG("Second <%s>",ap->second.alpha);
++		Parse_Single_Address( &(ap->second) ) ;
+ 
+-	if ( colon2 != NULL ) { // 2nd colon exists
+-		// Colon exists, third entry, so add a null at colon to separate the string.
+-		*colon2 = '\0' ;
+-		// third part starts after colon position
+-		ap->third.alpha = colon2 + 1 ; // still part of first.alpha
++		if ( ap->entries > 2 ) {
++			ap->third.alpha = ap->second.alpha + strlen(ap->second.alpha) + 1 ;
++			strcpy( ap->third.alpha, orm.match[3] ) ;
++			LEVEL_DEBUG("Third <%s>",ap->third.alpha);
++			Parse_Single_Address( &(ap->third) ) ;
++		}
+ 	}
+-	Parse_Single_Address( &(ap->second) ) ;
+-
+-	if ( colon2 == NULL ) {
+-		// no colon2, so only two entries
+-		ap->entries = 2 ;
+-		return ;
+-	}
+ 	
+-	// third part starts after colon2 position
+-	ap->entries = 3 ;
+-	Parse_Single_Address( &(ap->third) ) ;
++	ow_regexec_free( &orm ) ;	
+ }
+ 
+ void Free_Address( struct address_pair * ap )
+--- owfs-3.1p0/module/owlib/src/c/ow_parse_sn.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_parse_sn.c
+@@ -8,52 +8,47 @@
+     1wire/iButton system from Dallas Semiconductor
+ */
+ 
++// regex
++
+ #include <config.h>
+ #include "owfs_config.h"
+ #include "ow.h"
+ 
++
+ /* Fill get serikal number from a character string */ 
+ enum parse_serialnumber Parse_SerialNumber(char *sn_char, BYTE * sn)
+ {
+-	ASCII ID[14];
+-	int i;
+-
+-	memset( sn, 0, SERIAL_NUMBER_SIZE ) ;
++	static regex_t rx_sn_parse ;
++	struct ow_regmatch orm ;
++	
++	ow_regcomp( &rx_sn_parse, "^([[:xdigit:]]{2})\\.?([[:xdigit:]]{12})\\.?([[:xdigit:]]{2}){0,1}$", 0 ) ;
++	orm.number = 3 ;
++	
+ 	if ( sn_char == NULL ) {
+ 		return sn_null ;
+ 	}
+ 
+-	for (i = 0; i < 14; ++i, ++sn_char) {	/* get ID number */
+-		if (*sn_char == '.') { // ignore dots
+-			++sn_char;
+-		}
+-		if (isxdigit(*sn_char)) {
+-			ID[i] = *sn_char;
+-		} else {
+-			return sn_not_sn; // non-hex
+-		}
++	if ( ow_regexec( &rx_sn_parse, sn_char, &orm ) != 0 ) {
++		return sn_not_sn ;
+ 	}
+-	sn[0] = string2num(&ID[0]);
+-	sn[1] = string2num(&ID[2]);
+-	sn[2] = string2num(&ID[4]);
+-	sn[3] = string2num(&ID[6]);
+-	sn[4] = string2num(&ID[8]);
+-	sn[5] = string2num(&ID[10]);
+-	sn[6] = string2num(&ID[12]);
++		
++	sn[0] = string2num(orm.match[1]);
++	sn[1] = string2num(&orm.match[2][0]);
++	sn[2] = string2num(&orm.match[2][2]);
++	sn[3] = string2num(&orm.match[2][4]);
++	sn[4] = string2num(&orm.match[2][6]);
++	sn[5] = string2num(&orm.match[2][8]);
++	sn[6] = string2num(&orm.match[2][10]);
+ 	sn[7] = CRC8compute(sn, SERIAL_NUMBER_SIZE-1, 0);
+-	if (*sn_char == '.') {
+-		++sn_char;
+-	}
+-	// Check CRC8 if given
+-	if (isxdigit(sn_char[0]) && isxdigit(sn_char[1])) {
+-		char crc[2];
+-		num2string(crc, sn[SERIAL_NUMBER_SIZE-1]);
+-		if (strncasecmp(crc, sn_char, 2)) {
++	if (orm.match[3] != NULL) {
++		// CRC given
++		if ( string2num(orm.match[3]) != sn[7] ) {
++			ow_regexec_free( &orm ) ;
+ 			return sn_invalid;
+ 		}
+-		sn_char += 2 ;
+ 	}
+-	return ( *sn_char == '\0' ) ? sn_valid : sn_not_sn ;
++	ow_regexec_free( &orm ) ;
++	return sn_valid ;
+ }
+ 
+ // returns number of valid bytes in serial number
+--- owfs-3.1p0/module/owlib/src/c/ow_parseinput.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_parseinput.c
+@@ -78,6 +78,12 @@
+ 			return FS_input_array_with_commas(owq);
+ 		}
+ 	default:
++		// Sort out locally unknown filetype.
++		if (OWQ_pn(owq).selected_filetype == NO_FILETYPE) {
++			return FS_input_ascii(owq);
++		}
++
++		// Switch by known filetype.
+ 		switch (OWQ_pn(owq).selected_filetype->format) {
+ 		case ft_integer:
+ 			return FS_input_integer(owq);
+--- owfs-3.1p0/module/owlib/src/c/ow_parsename.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_parsename.c
+@@ -8,6 +8,8 @@
+     1wire/iButton system from Dallas Semiconductor
+ */
+ 
++// regex
++
+ #include <config.h>
+ #include "owfs_config.h"
+ #include "ow_devices.h"
+@@ -39,7 +41,7 @@
+ static enum parse_enum Parse_RealDeviceSN(enum parse_pass remote_status, struct parsedname *pn);
+ static enum parse_enum Parse_NonRealDevice(char *filename, struct parsedname *pn);
+ static enum parse_enum Parse_External_Device( char *filename, struct parsedname *pn) ;
+-static enum parse_enum Parse_Bus(char *pathnow, struct parsedname *pn);
++static enum parse_enum Parse_Bus( INDEX_OR_ERROR bus_number, struct parsedname *pn);
+ static enum parse_enum Parse_Alias(char *filename, enum parse_pass remote_status, struct parsedname *pn);
+ static enum parse_enum Parse_Alias_Known( char *filename, enum parse_pass remote_status, struct parsedname *pn);
+ static void ReplaceAliasInPath( char * filename, struct parsedname * pn);
+@@ -339,41 +341,68 @@
+ // Early parsing -- only bus entries, uncached and text may have preceeded
+ static enum parse_enum Parse_Unspecified(char *pathnow, enum parse_pass remote_status, struct parsedname *pn)
+ {
+-	if (strncasecmp(pathnow, "bus.", 4) == 0) {
+-		return Parse_Bus(pathnow, pn);
++	static regex_t rx_bus ;
++	static regex_t rx_set ;
++	static regex_t rx_sta ;
++	static regex_t rx_str ;
++	static regex_t rx_sys ;
++	static regex_t rx_int ;
++	static regex_t rx_tex ;
++	static regex_t rx_jso ;
++	static regex_t rx_unc ;
++	static regex_t rx_una ;
++	
++	struct ow_regmatch orm ;
++	orm.number = 1 ; // for bus
++	
++	ow_regcomp( &rx_bus, "^bus\\.([[:digit:]]+)/?", REG_ICASE ) ;
++	ow_regcomp( &rx_set, "^settings/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_sta, "^statistics/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_str, "^structure/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_sys, "^system/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_int, "^interface/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_tex, "^text/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_jso, "^json/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_unc, "^uncached/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_una, "^unaliased/?", REG_ICASE | REG_NOSUB ) ;
++	
++	if ( ow_regexec( &rx_bus, pathnow, &orm ) == 0) {
++		INDEX_OR_ERROR bus_number = (INDEX_OR_ERROR) atoi(orm.match[1]) ;
++		ow_regexec_free( &orm ) ;
++		return Parse_Bus( bus_number, pn);
+ 
+-	} else if (strcasecmp(pathnow, "settings") == 0) {
++	} else if (ow_regexec( &rx_set, pathnow, NULL ) == 0) {
+ 		return set_type( ePN_settings, pn ) ;
+ 
+-	} else if (strcasecmp(pathnow, "statistics") == 0) {
++	} else if (ow_regexec( &rx_sta, pathnow, NULL ) == 0) {
+ 		return set_type( ePN_statistics, pn ) ;
+ 
+-	} else if (strcasecmp(pathnow, "structure") == 0) {
++	} else if (ow_regexec( &rx_str, pathnow, NULL ) == 0) {
+ 		return set_type( ePN_structure, pn ) ;
+ 
+-	} else if (strcasecmp(pathnow, "system") == 0) {
++	} else if (ow_regexec( &rx_sys, pathnow, NULL ) == 0) {
+ 		return set_type( ePN_system, pn ) ;
+ 
+-	} else if (strcasecmp(pathnow, "interface") == 0) {
++	} else if (ow_regexec( &rx_int, pathnow, NULL ) == 0) {
+ 		if (!SpecifiedBus(pn)) {
+ 			return parse_error;
+ 		}
+ 		pn->type = ePN_interface;
+ 		return parse_nonreal;
+ 
+-	} else if (strcasecmp(pathnow, "text") == 0) {
++	} else if (ow_regexec( &rx_tex, pathnow, NULL ) == 0) {
+ 		pn->state |= ePS_text;
+ 		return parse_first;
+ 
+-	} else if (strcasecmp(pathnow, "json") == 0) {
++	} else if (ow_regexec( &rx_jso, pathnow, NULL ) == 0) {
+ 		pn->state |= ePS_json;
+ 		return parse_first;
+ 
+-	} else if (strcasecmp(pathnow, "uncached") == 0) {
++	} else if (ow_regexec( &rx_unc, pathnow, NULL ) == 0) {
+ 		pn->state |= ePS_uncached;
+ 		return parse_first;
+ 
+-	} else if (strcasecmp(pathnow, "unaliased") == 0) {
++	} else if (ow_regexec( &rx_una, pathnow, NULL ) == 0) {
+ 		pn->state |= ePS_unaliased;
+ 		return parse_first;
+ 
+@@ -385,7 +414,11 @@
+ 
+ static enum parse_enum Parse_Branch(char *pathnow, enum parse_pass remote_status, struct parsedname *pn)
+ {
+-	if (strcasecmp(pathnow, "alarm") == 0) {
++	static regex_t rx_ala ;
++	
++	ow_regcomp( &rx_ala, "^alarm\?", REG_ICASE | REG_NOSUB ) ;
++	
++	if (ow_regexec( &rx_ala, pathnow, NULL ) == 0) {
+ 		pn->state |= ePS_alarm;
+ 		pn->type = ePN_real;
+ 		return parse_real;
+@@ -395,27 +428,41 @@
+ 
+ static enum parse_enum Parse_Real(char *pathnow, enum parse_pass remote_status, struct parsedname *pn)
+ {
+-	if (strcasecmp(pathnow, "simultaneous") == 0) {
++	static regex_t rx_sim ;
++	static regex_t rx_the ;
++	static regex_t rx_tex ;
++	static regex_t rx_jso ;
++	static regex_t rx_unc ;
++	static regex_t rx_una ;
++	
++	ow_regcomp( &rx_sim, "^simultaneous/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_the, "^thermostat/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_tex, "^text/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_jso, "^json/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_unc, "^uncached/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_una, "^unaliased/?", REG_ICASE | REG_NOSUB ) ;
++	
++	if (ow_regexec( &rx_sim, pathnow, NULL ) == 0) {
+ 		pn->selected_device = DeviceSimultaneous;
+ 		return parse_prop;
+ 
+-	} else if (strcasecmp(pathnow, "text") == 0) {
++	} else if (ow_regexec( &rx_tex, pathnow, NULL ) == 0) {
+ 		pn->state |= ePS_text;
+ 		return parse_real;
+ 
+-	} else if (strcasecmp(pathnow, "json") == 0) {
++	} else if (ow_regexec( &rx_jso, pathnow, NULL ) == 0) {
+ 		pn->state |= ePS_json;
+ 		return parse_real;
+ 
+-	} else if (strcasecmp(pathnow, "thermostat") == 0) {
++	} else if (ow_regexec( &rx_the, pathnow, NULL ) == 0) {
+ 		pn->selected_device = DeviceThermostat;
+ 		return parse_prop;
+ 
+-	} else if (strcasecmp(pathnow, "uncached") == 0) {
++	} else if (ow_regexec( &rx_unc, pathnow, NULL ) == 0) {
+ 		pn->state |= ePS_uncached;
+ 		return parse_real;
+ 
+-	} else if (strcasecmp(pathnow, "unaliased") == 0) {
++	} else if (ow_regexec( &rx_una, pathnow, NULL ) == 0) {
+ 		pn->state |= ePS_unaliased;
+ 		return parse_real;
+ 
+@@ -426,19 +473,29 @@
+ 
+ static enum parse_enum Parse_NonReal(char *pathnow, struct parsedname *pn)
+ {
+-	if (strcasecmp(pathnow, "text") == 0) {
++	static regex_t rx_tex ;
++	static regex_t rx_jso ;
++	static regex_t rx_unc ;
++	static regex_t rx_una ;
++	
++	ow_regcomp( &rx_tex, "^text/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_jso, "^json/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_unc, "^uncached/?", REG_ICASE | REG_NOSUB ) ;
++	ow_regcomp( &rx_una, "^unaliased/?", REG_ICASE | REG_NOSUB ) ;
++
++	if (ow_regexec( &rx_tex, pathnow, NULL )  == 0) {
+ 		pn->state |= ePS_text;
+ 		return parse_nonreal;
+ 
+-	} else if (strcasecmp(pathnow, "json") == 0) {
++	} else if (ow_regexec( &rx_jso, pathnow, NULL )  == 0) {
+ 		pn->state |= ePS_json;
+ 		return parse_nonreal;
+ 
+-	} else if (strcasecmp(pathnow, "uncached") == 0) {
++	} else if (ow_regexec( &rx_unc, pathnow, NULL )  == 0) {
+ 		pn->state |= ePS_uncached;
+ 		return parse_nonreal;
+ 
+-	} else if (strcasecmp(pathnow, "unaliased") == 0) {
++	} else if (ow_regexec( &rx_una, pathnow, NULL )  == 0) {
+ 		pn->state |= ePS_unaliased;
+ 		return parse_nonreal;
+ 
+@@ -450,16 +507,15 @@
+ }
+ 
+ /* We've reached a /bus.n entry */
+-static enum parse_enum Parse_Bus(char *pathnow, struct parsedname *pn)
++static enum parse_enum Parse_Bus( INDEX_OR_ERROR bus_number, struct parsedname *pn)
+ {
+-	char *found;
+-	INDEX_OR_ERROR bus_number;
+-	/* Processing for bus.X directories -- eventually will make this more generic */
+-	if ( !isdigit( (int) pathnow[4] ) ) {
+-		return parse_error;
+-	}
++	static regex_t rx_p_bus ;
++	struct ow_regmatch orm ;
++	
++	ow_regcomp( &rx_p_bus, "^/bus\\.[[:digit:]]+/?", REG_ICASE ) ;
++	orm.number = 0 ;
+ 
+-	bus_number = atoi(&pathnow[4]);
++	/* Processing for bus.X directories -- eventually will make this more generic */
+ 	if ( INDEX_NOT_VALID(bus_number) ) {
+ 		return parse_error;
+ 	}
+@@ -489,18 +545,16 @@
+ 	}
+ 
+ 	/* Create the path without the "bus.x" part in pn->path_to_server */
+-	if ( (found = strstr(pn->path, "/bus.")) ) {
+-		int length = found - pn->path;
+-		if ((found = strchr(found + 1, '/'))) {	// more after bus
+-			strcpy(&(pn->path_to_server[length]), found);	// copy rest
+-		} else {
+-			pn->path_to_server[length] = '\0';	// add final null
+-		}
++	if ( ow_regexec( &rx_p_bus, pn->path, &orm ) == 0 ) {
++		strcpy( pn->path_to_server, orm.pre[0] ) ;
++		strcat( pn->path_to_server, "/" ) ;
++		strcat( pn->path_to_server, orm.post[0] ) ;
++		ow_regexec_free( &orm ) ;
+ 	}
+ 	return parse_first;
+ }
+ 
+-// search path for this exact mathing path segment
++// search path for this exact matching path segment
+ static char * find_segment_in_path( char * segment, char * path )
+ {
+ 	int segment_length = strlen(segment) ;
+@@ -530,7 +584,7 @@
+ static void ReplaceAliasInPath( char * filename, struct parsedname * pn)
+ {
+ 	int alias_len = strlen(filename) ;
+-
++	
+ 	// check total length
+ 	if ( strlen(pn->path_to_server) + 14 - alias_len <= PATH_MAX ) {
+ 		// find the alias
+@@ -664,9 +718,6 @@
+ 
+ 
+ /* Parse Name (non-device name) part of string */
+-/* Return -ENOENT if not a valid name
+-   return 0 if good
+-*/
+ static enum parse_enum Parse_NonRealDevice(char *filename, struct parsedname *pn)
+ {
+ 	//printf("Parse_NonRealDevice: [%s] [%s]\n", filename, pn->path);
+@@ -677,97 +728,128 @@
+ 
+ static enum parse_enum Parse_Property(char *filename, struct parsedname *pn)
+ {
+-	char *dot = filename;
++	struct device * pdev = pn->selected_device ;
++	struct filetype * ft ;
++	
++	static regex_t rx_extension ;
++	static regex_t rx_all ;
++	static regex_t rx_byte ;
++	static regex_t rx_number ;
++	static regex_t rx_letter ;
++	int extension_given ;
+ 
++	struct ow_regmatch orm ;
++	orm.number = 0 ;
++	
++	ow_regcomp( &rx_extension, "\\.", 0 ) ; 
++	ow_regcomp( &rx_all, "\\.all$", REG_ICASE ) ; 
++	ow_regcomp( &rx_byte, "\\.byte$", REG_ICASE ) ; 
++	ow_regcomp( &rx_number, "\\.[[:digit:]]+$", 0 ) ; 
++	ow_regcomp( &rx_letter, "\\.[[:alpha:]]$", REG_ICASE ) ; 
++	
+ 	//printf("FilePart: %s %s\n", filename, pn->path);
+ 
+ 	// Special case for remote device. Use distant data
+-	if ( pn->selected_device == &RemoteDevice ) {
+-		// remote device, no known sn, can't handle a property
+-		return parse_error ;
++	if ( pdev == &RemoteDevice ) {
++		// remote device, no known sn, handle property in server.
++		return parse_done ;
+ 	}
+ 
+ 	// separate filename.dot
+-	filename = strsep(&dot, ".");
+-	//printf("FP name=%s, dot=%s\n", filename, dot);
+-
+-	/* Match to known filetypes for this device */
+-	pn->selected_filetype =
+-		 bsearch(filename, pn->selected_device->filetype_array,
+-				 (size_t) pn->selected_device->count_of_filetypes, sizeof(struct filetype), filetype_cmp) ;
+-				 
+-	if ( pn->selected_filetype == NO_FILETYPE ) {
++//	filename = strsep(&dot, ".");
++	if ( ow_regexec( &rx_extension, filename, &orm ) == 0 ) {
++		// extension given
++		extension_given = 1 ;
++		ft =
++			 bsearch(orm.pre[0], pdev->filetype_array,
++					 (size_t) pdev->count_of_filetypes, sizeof(struct filetype), filetype_cmp) ;
++		ow_regexec_free( &orm ) ;
++	} else {
++		// no extension given
++		extension_given = 0 ;
++		ft =
++			 bsearch(filename, pdev->filetype_array,
++					 (size_t) pdev->count_of_filetypes, sizeof(struct filetype), filetype_cmp) ;
++	}
++	
++	pn->selected_filetype = ft ;			 
++	if (ft == NO_FILETYPE ) {
+ 		LEVEL_DEBUG("Unknown property for this device %s",SAFESTRING(filename) ) ;
+ 		return parse_error;			/* filetype not found */
+ 	}
+ 		
+ 	//printf("FP known filetype %s\n",pn->selected_filetype->name) ;
+ 	/* Filetype found, now process extension */
+-	if (dot == NULL || dot[0] == '\0') {	/* no extension */
+-		if (pn->selected_filetype->ag != NON_AGGREGATE) {
++	if (extension_given==0) {	/* no extension */
++		if (ft->ag != NON_AGGREGATE) {
+ 			return parse_error;	/* aggregate filetypes need an extension */
+ 		}
+ 		pn->extension = 0;	/* default when no aggregate */
+ 
+ 	// Non-aggregate cannot have an extension
+-	} else if (pn->selected_filetype->ag == NON_AGGREGATE) {
++	} else if (ft->ag == NON_AGGREGATE) {
+ 		return parse_error;	/* An extension not allowed when non-aggregate */
+ 
+ 	// Sparse uses the extension verbatim (text or number)
+-	} else if (pn->selected_filetype->ag->combined==ag_sparse)  { /* Sparse */
+-		if (pn->selected_filetype->ag->letters == ag_letters) {	/* text string */
++	} else if (ft->ag->combined==ag_sparse)  { /* Sparse */
++		if (ft->ag->letters == ag_letters) {	/* text string */
+ 			pn->extension = 0;	/* text extension, not number */
+-			pn->sparse_name = owstrdup(dot) ;
++			ow_regexec( &rx_extension, filename, &orm ) ; // don't need to test -- already succesful
++			pn->sparse_name = owstrdup(orm.post[0]) ;
++			ow_regexec_free( &orm ) ;
+ 			LEVEL_DEBUG("Sparse alpha extension found: <%s>",pn->sparse_name);
+ 		} else {			/* Numbers */
+-			char *p;
+-			//printf("FP numbers\n") ;
+-			pn->extension = strtol(dot, &p, 0);	/* Number conversion */
+-			if ((p == dot) || ((pn->extension == 0) && (errno == -EINVAL))) {
+-				LEVEL_DEBUG("Sparse numeric extension bad: <%s>",dot);
+-				return parse_error;	/* Bad number */
++			if ( ow_regexec( &rx_number, filename, &orm ) == 0 ) { 
++				pn->extension = atoi( &orm.match[0][1] );	/* Number conversion */
++				ow_regexec_free( &orm ) ;
++				LEVEL_DEBUG("Sparse numeric extension found: <%ld>",(long int) pn->extension);
++			} else {
++				LEVEL_DEBUG("Non numeric extension for %s",filename ) ;
++				return parse_error ;
+ 			}
+-			LEVEL_DEBUG("Sparse numeric extension found: <%ld>",(long int) pn->extension);
+ 		}
+ 
+ 	// Non-sparse "ALL"
+-	} else if (strcasecmp(dot, "ALL") == 0) {
++	} else if (ow_regexec( &rx_all, filename, NULL ) == 0) {
+ 		//printf("FP ALL\n");
+ 		pn->extension = EXTENSION_ALL;	/* ALL */
+ 	
+ 	// Non-sparse "BYTE"
+-	} else if (pn->selected_filetype->format == ft_bitfield && strcasecmp(dot, "BYTE") == 0) {
++	} else if (ft->format == ft_bitfield && ow_regexec( &rx_byte, filename, NULL) == 0) {
+ 		pn->extension = EXTENSION_BYTE;	/* BYTE */
+ 		//printf("FP BYTE\n") ;
+ 
+ 	// Non-sparse extension -- interpret and check bounds
+ 	} else {				/* specific extension */
+-		if (pn->selected_filetype->ag->letters == ag_letters) {	/* Letters */
++		if (ft->ag->letters == ag_letters) {	/* Letters */
+ 			//printf("FP letters\n") ;
+-			if ( (strlen(dot) != 1) || !isupper( (int) dot[0] ) ) {
++			if ( ow_regexec( &rx_letter, filename, &orm ) == 0 ) {
++				pn->extension = toupper(orm.match[0][1]) - 'A';	/* Letter extension */
++				ow_regexec_free( &orm ) ;
++			} else {
+ 				return parse_error;
+ 			}
+-			pn->extension = dot[0] - 'A';	/* Letter extension */
+ 		} else {			/* Numbers */
+-			char *p;
+-			//printf("FP numbers\n") ;
+-			pn->extension = strtol(dot, &p, 0);	/* Number conversion */
+-			if ((p == dot) || ((pn->extension == 0) && (errno == -EINVAL))) {
+-				return parse_error;	/* Bad number */
++			if ( ow_regexec( &rx_number, filename, &orm ) == 0 ) { 
++				pn->extension = atoi( &orm.match[0][1] );	/* Number conversion */
++				ow_regexec_free( &orm ) ;
++			} else {
++				return parse_error;
+ 			}
+ 		}
+ 		//printf("FP ext=%d nr_elements=%d\n", pn->extension, pn->selected_filetype->ag->elements) ;
+ 		/* Now check range */
+ 		if ((pn->extension < 0)
+-			|| (pn->extension >= pn->selected_filetype->ag->elements)) {
++			|| (pn->extension >= ft->ag->elements)) {
+ 			//printf("FP Extension out of range %d %d %s\n", pn->extension, pn->selected_filetype->ag->elements, pn->path);
++			LEVEL_DEBUG("Extension %d out of range",pn->extension ) ;
+ 			return parse_error;	/* Extension out of range */
+ 		}
+ 		//printf("FP in range\n") ;
+ 	}
+ 
+ 	//printf("FP Good\n") ;
+-	switch (pn->selected_filetype->format) {
++	switch (ft->format) {
+ 	case ft_directory:		// aux or main
+ 		if ( pn->type == ePN_structure ) {
+ 			// special case, structure for aux and main
+@@ -786,7 +868,7 @@
+ 		return parse_branch;
+ 	case ft_subdir:
+ 		//printf("PN %s is a subdirectory\n", filename);
+-		pn->subdir = pn->selected_filetype;
++		pn->subdir = ft;
+ 		pn->selected_filetype = NO_FILETYPE;
+ 		return parse_subprop;
+ 	default:
+--- owfs-3.1p0/module/owlib/src/c/ow_presence.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_presence.c
+@@ -1,5 +1,4 @@
+ /*
+-$Id$
+     OWFS -- One-Wire filesystem
+     OWHTTPD -- One-Wire Web Server
+     Written 2003 Paul H Alfille
+@@ -209,6 +208,12 @@
+ 
+ 	if (NotRealDir(pn) || pn->selected_device == DeviceSimultaneous || pn->selected_device == DeviceThermostat) {
+ 		OWQ_Y(owq) = 1;
++	} else if ( IsUncachedDir(pn) ) {
++		struct transaction_log t[] = {
++			TRXN_NVERIFY,
++			TRXN_END,
++		};
++		OWQ_Y(owq) = BAD(BUS_transaction(t, pn)) ? 0 : 1;
+ 	} else if ( pn->selected_connection->iroutines.flags & ADAP_FLAG_presence_from_dirblob ) {
+ 		OWQ_Y(owq) = GOOD( PresenceFromDirblob(pn) ) ;
+ 	} else if ( pn->selected_connection->iroutines.flags & ADAP_FLAG_sham ) {
+--- owfs-3.1p0/module/owlib/src/c/ow_read.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_read.c
+@@ -68,11 +68,6 @@
+ 	struct parsedname *pn = PN(owq);
+ 	SIZE_OR_ERROR read_or_error;
+ 
+-	// ServerRead jumps in here, perhaps with non-file entry
+-	if (pn->selected_device == NO_DEVICE || pn->selected_filetype == NO_FILETYPE) {
+-		return -EISDIR;
+-	}
+-
+ 	/* Normal read. Try three times */
+ 	LEVEL_DEBUG("%s", pn->path);
+ 	STATLOCK;
+@@ -83,7 +78,12 @@
+ 	/* First try */
+ 	STAT_ADD1(read_tries[0]);
+ 
+-	read_or_error = (pn->type == ePN_real) ? FS_read_real(owq) : FS_r_virtual(owq);
++	// ServerRead jumps in here, perhaps with non-file entry
++	if (pn->selected_device == NO_DEVICE || pn->selected_filetype == NO_FILETYPE) {
++		read_or_error = FS_r_given_bus(owq);
++	} else {
++		read_or_error = (pn->type == ePN_real) ? FS_read_real(owq) : FS_r_virtual(owq);
++	}
+ 
+ 	STATLOCK;
+ 	if (read_or_error >= 0) {
+@@ -365,8 +365,10 @@
+ 			case adapter_mock:
+ 				/* Special case for "mock" adapter */
+ 				if ( GOOD( OWQ_Cache_Get(owq)) ) {	// cached
++					LEVEL_DEBUG("Mock value in cache");
+ 					return 0;
+ 				}
++				LEVEL_DEBUG("Mock value NOT in cache");
+ 				return FS_read_fake(owq);
+ 			default:
+ 				break ;
+--- owfs-3.1p0/module/owlib/src/c/ow_read_telnet.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_read_telnet.c
+@@ -7,6 +7,7 @@
+ 	See the header file: ow.h for full attribution
+ 	1wire/iButton system from Dallas Semiconductor
+ */
++// regex
+ 
+ #include <config.h>
+ #include "owfs_config.h"
+--- /dev/null
++++ owfs-3.1p0x/module/owlib/src/c/ow_regex.c
+@@ -0,0 +1,219 @@
++/*
++    OWFS -- One-Wire filesystem
++    OWHTTPD -- One-Wire Web Server
++    Written 2003 Paul H Alfille
++	email: paul.alfille@gmail.com
++	Released under the GPL
++	See the header file: ow.h for full attribution
++	1wire/iButton system from Dallas Semiconductor
++*/
++
++
++/* ow_interate.c */
++/* routines to split reads and writes if longer than page */
++
++#include <config.h>
++#include "owfs_config.h"
++#include "ow.h"
++
++// tree to hold pointers to compiled regex expressions to cache compilation and free
++void * regex_tree = NULL ;
++
++enum e_regcomp_test { e_regcomp_exists, e_regcomp_new, e_regcomp_error, } ;
++
++struct s_regex {
++	regex_t * reg ;
++} ;
++
++static int reg_compare( const void * a, const void *b)
++{
++	const struct s_regex * pa = (const struct s_regex *) a ;
++	const struct s_regex * pb = (const struct s_regex *) b ;
++
++	return (int) (pa->reg - pb->reg) ;
++}
++
++// Add a reg comp to tree if doesn't already exist
++static enum e_regcomp_test regcomp_test( regex_t * reg )
++{
++	struct s_regex * pnode = owmalloc( sizeof( struct s_regex ) ) ;
++	struct s_regex * found ;
++	void * result ;
++
++	if ( pnode == NULL ) {
++		LEVEL_DEBUG("memory exhuasted") ;
++		return e_regcomp_error ;
++	}
++	
++	pnode->reg = reg ;
++	result = tsearch( (void *) pnode, &regex_tree, reg_compare ) ;
++	found = *(struct s_regex **) result ;
++	if ( found == pnode ) {
++		// new entry
++		return e_regcomp_new ;
++	}
++	// existing entry
++	owfree( pnode ) ;
++	return e_regcomp_exists ;
++}
++
++// Compile a regex
++// Actually only compile if needed, check first if it's already
++// cached in the regex tree
++void ow_regcomp( regex_t * reg, const char * regex, int cflags )
++{
++	switch ( regcomp_test( reg ) ) {
++		case e_regcomp_error:
++			return ;
++		case e_regcomp_exists:
++			return ;
++		case e_regcomp_new:
++		{
++			int reg_res = regcomp( reg, regex, cflags | REG_EXTENDED ) ;
++			if ( reg_res == 0 ) {
++				LEVEL_DEBUG("Reg Ex expression <%s> compiled to %p",regex,reg) ;
++			} else {
++				char e[101];
++				regerror( reg_res, reg, e, 100 ) ;
++				LEVEL_DEBUG("Problem compiling reg expression <%s>: %s",regex, e ) ;
++			}
++		}
++	}
++}
++// free a regex node (cached compiled action)
++void ow_regfree( regex_t * reg )
++{
++	struct s_regex node = { reg, } ;
++	void * result = tdelete( (void *) (&node), &regex_tree, reg_compare ) ;
++
++	if ( result != NULL ) {
++		regfree( reg ) ;
++	} else {
++		LEVEL_DEBUG( "attempt to free an uncompiled regex" ) ;
++	}
++}
++
++#if 0
++// Debugging to show tree contents
++static void regexaction(const void *t, const VISIT which, const int depth)
++{
++	(void) depth;
++	switch (which) {
++	case leaf:
++	case postorder:
++		LEVEL_DEBUG("Regex compiled pointer %p",(*(const struct s_regex * const *) t)->reg ) ;
++	default:
++		break;
++	}
++}
++#endif
++
++static void regexkillaction(const void *t, const VISIT which, const int depth)
++{
++	(void) depth;
++	switch (which) {
++	case leaf:
++	case postorder:
++		LEVEL_DEBUG("Regex Free %p",(*(const struct s_regex * const *) t)->reg ) ;
++		regfree((*(const struct s_regex * const *) t)->reg ) ;
++	default:
++		break;
++	}
++}
++
++void ow_regdestroy( void )
++{
++	// twalk( regex_tree, regexaction ) ;
++	twalk( regex_tree, regexkillaction ) ;
++	SAFETDESTROY( regex_tree, owfree_func ) ;
++	LEVEL_DEBUG("Regex destroy done") ;
++	regex_tree = NULL ;
++}
++
++// wrapper for regcomp
++// pmatch rm_so abd rm_eo handled internally
++// allocates (with owcalloc) and fills match_strings
++// Can be nmatch==0 and matched_strings==NULL for just a test with no return  
++int ow_regexec( const regex_t * rex, const char * string, struct ow_regmatch * orm )
++{
++	if ( orm == NULL ) {
++		// special case -- no matches saved
++		if ( regexec( rex, string, 0, NULL, 0 ) != 0 ) {
++			return -1 ;
++		}
++		return 0 ;
++	} else {
++		// case with saved matches
++		int i ;
++		int number = orm->number ;
++		int len = strlen( string ) ;
++		
++		regmatch_t pmatch[ number + 2 ] ;
++		// try the regexec on the string 
++		if ( regexec( rex, string, number+1, pmatch, 0 ) != 0 ) {
++			LEVEL_DEBUG("Not found");
++			return -1 ;
++		}
++		
++		// allocate space for the array of matches -- pointer array first
++		orm->pre = owcalloc( sizeof( char * ) , 3*(number+1) ) ;
++		if ( orm->pre == NULL ) {
++			LEVEL_DEBUG("Memory allocation error");
++			return -1 ;
++		}
++		orm->match = orm->pre + number+1 ;
++		orm->post = orm->match + number+1 ;
++		
++		for ( i=0 ; i < number+1 ; ++i ) {
++			// Note last index is kept null
++			orm->pre[i] = NULL ;
++			orm->match[i] = NULL ;
++			orm->post[i] = NULL ;
++		}
++
++		// not actual string array -- allocated as a buffer with space for pre,match and post
++		// only need to allocat once per matched number
++		for ( i=0 ; i < number+1 ; ++i ) {
++			int s = pmatch[i].rm_so ;
++			int e = pmatch[i].rm_eo ;
++			if ( s != -1 && e != -1 ) {
++				int l = e - s   ;
++				// each buffer is only slightly longer than original string (since contains string plus some EOS nulls
++				orm->pre[i] = owmalloc( len + 3 ) ;
++				if ( orm->pre[i] == NULL ) {
++					LEVEL_DEBUG("Memory problem") ;
++					ow_regexec_free( orm )  ;
++					return -1 ;
++				}
++				// pre at start
++				memset( orm->pre[i], 0 , len+3 ) ; 
++
++				memcpy( orm->pre[i], string, s ) ;
++
++				// match next
++				orm->match[i] = orm->pre[i] + s + 1 ;
++				memcpy( orm->match[i], &string[s], l ) ;
++
++				// then post
++				orm->post[i] = orm->match[i] + l + 1 ;
++				memcpy( orm->post[i], &string[e], len-e+1 ) ;
++
++				LEVEL_DEBUG("%d: %d->%d found <%s><%s><%s>",i,s,e,orm->pre[i],orm->match[i],orm->post[i]) ;
++			}
++		}
++		return 0 ;
++	}
++}		
++
++void ow_regexec_free( struct ow_regmatch * orm )
++{
++	if ( orm != NULL ) {
++		int i ;
++		for ( i = 0 ; i < orm->number + 1 ; ++ i ) {
++			if ( orm->pre[i] != NULL ) {
++				owfree( orm->pre[i] ) ;
++			}
++		}
++		owfree( orm->pre ) ;
++	}
++}
+--- owfs-3.1p0/module/owlib/src/c/ow_reset.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_reset.c
+@@ -20,6 +20,12 @@
+ 	struct connection_in * in = pn->selected_connection ;
+ 	STAT_ADD1_BUS(e_bus_resets, in);
+ 
++	// External adapter has no reset routine at all, so sort it out here.
++	if ((in->iroutines.reset) == NO_RESET_ROUTINE) {
++		return BUS_RESET_OK ;
++	}
++
++	// Switch by result of adapter reset routine.
+ 	switch ( (in->iroutines.reset) (pn) ) {
+ 	case BUS_RESET_OK:
+ 		in->reconnect_state = reconnect_ok;	// Flag as good!
+--- owfs-3.1p0/module/owlib/src/c/ow_rwlock.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_rwlock.c
+@@ -25,7 +25,6 @@
+ 	int semrc;
+ 	semrc = pthread_rwlock_init(rwlock, NULL);
+ 	if(semrc != 0) {
+-		if ( 
+ 		LOCK_DEBUG("semrc=%d [%s] RWLOCK INIT", semrc, strerror(errno));
+ 		debug_crash();
+ 	}
+--- owfs-3.1p0/module/owlib/src/c/ow_server_message.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_server_message.c
+@@ -69,7 +69,7 @@
+ 	sm.offset = OWQ_offset(owq);
+ 
+ 	// Alias should show local understanding except if bus.x specified
+-	if ( pn_file_entry->selected_filetype->format == ft_alias && ! SpecifiedRemoteBus(pn_file_entry) ) {
++	if ( (pn_file_entry->selected_filetype != NULL) && (pn_file_entry->selected_filetype->format == ft_alias && ! SpecifiedRemoteBus(pn_file_entry) )) {
+ 		ignore_result = FS_r_alias( owq ) ;
+ 		return OWQ_length(owq) ;
+ 	}
+--- /dev/null
++++ owfs-3.1p0x/module/owlib/src/c/ow_size.c
+@@ -0,0 +1,105 @@
++/*
++    OWFS -- One-Wire filesystem
++    OWHTTPD -- One-Wire Web Server
++    Written 2003 Paul H Alfille
++    email: palfille@earthlink.net
++    Released under the GPL
++    See the header file: ow.h for full attribution
++    1wire/iButton system from Dallas Semiconductor
++*/
++
++#include <config.h>
++#include "owfs_config.h"
++#include "ow_devices.h"
++
++static int FS_size_seek( struct connection_in * in, const struct parsedname * pn ) ;
++
++/* path is the path which "pn" parses */
++/* FS_size produces the "invariant" portion of the directory, passing on to
++   FS_size_seek the variable part */
++int FS_size( const char *path ) {
++    struct parsedname pn ;
++    int r ;
++
++    //printf("FS_size: pid=%ld path=%s\n", pthread_self(), path);
++    LEVEL_CALL("SIZE path=%s\n", SAFESTRING(path));
++
++    if ( FS_ParsedName( path , &pn ) != 0 ) {
++        return -ENOENT;
++    } else if ( pn.dev==NULL || pn.ft == NULL ) {
++        r = -EISDIR ;
++    } else {
++        //printf("FS_size: pn->state=pn_bus=%c pn->bus_nr=%d\n", pn.state&pn_bus?'Y':'N', pn.bus_nr);
++        //printf("FS_size: pn->path=%s pn->path_busless=%s\n", pn.path, pn.path_busless);
++        //printf("FS_size: pid=%ld call postparse pn->type=%d\n", pthread_self(), pn.type);
++        r = FS_size_postparse( &pn ) ;
++    }
++    FS_ParsedName_destroy(&pn) ;
++    return r ;
++}
++
++int FS_size_postparse( const struct parsedname * pn ) {
++    int ret = 0 ;
++    struct parsedname pn2 ;
++
++    if ( pn == NULL || pn->in==NULL ) return -ENODEV ;
++
++    /* Make a copy (shallow) of pn to modify for directory entries */
++    memcpy( &pn2, pn , sizeof( struct parsedname ) ) ; /*shallow copy */
++
++    //printf("FS_size_postparse pn->path=%s\n", pn->path);
++
++    /* Those are stolen from FullFileLength just to avoid ServerSize()
++     * beeing called */
++    if (( pn2.type == pn_structure ) ||
++        ( pn2.ft && ((pn2.ft->format==ft_directory ) ||
++        ( pn2.ft->format==ft_subdir ) ||
++        ( pn2.ft->format==ft_bitfield &&  pn2.extension==-2 )))) {
++      return FullFileLength(pn) ;
++    }
++
++    if ( (pn->type != pn_real )   /* stat, sys or set dir */
++	 && (pn2.state & pn_bus) && (get_busmode(pn2.in) == bus_remote) ) {
++      //printf("FS_size_postparse call ServerSize pn2.path=%s\n", pn2.path);
++      ret = ServerSize(pn2.path, &pn2) ;
++    } else {
++      ret = FullFileLength( &pn2 ) ;
++    }
++    return ret ;
++}
++
++
++/* path is the path which "pn" parses */
++/* FS_size_remote is the entry into FS_size_seek from ServerSize */
++int FS_size_remote( const struct parsedname * pn ) {
++    int ret = 0 ;
++    struct parsedname pn2 ;
++    
++    if ( pn == NULL || pn->in==NULL ) return -ENODEV ;
++    
++    //printf("FS_size_remote pid=%ld path=%s\n",pthread_self(), pn->path);
++
++    /* Make a copy (shallow) of pn to modify for directory entries */
++    memcpy( &pn2, pn , sizeof( struct parsedname ) ) ; /*shallow copy */
++
++    /* Those are stolen from FullFileLength just to avoid ServerSize()
++     * beeing called */
++    if (( pn2.type == pn_structure ) ||
++        ( pn2.ft && ((pn2.ft->format==ft_directory ) ||
++        ( pn2.ft->format==ft_subdir ) ||
++        ( pn2.ft->format==ft_bitfield &&  pn2.extension==-2 )))) {
++      return FullFileLength(pn) ;
++    }
++
++    //printf("FS_size_remote pn2.type=%d pn2.state=%d busmode(pn2.in)=%d\n", pn2.type, pn2.state, get_busmode(pn2.in));
++
++    if ( (pn2.type != pn_real )   /* stat, sys or set dir */
++	 && ( (pn2.state & pn_bus) && (get_busmode(pn2.in) == bus_remote) )) {
++      //printf("FS_size_remote call ServerSize pn2.path=%s\n", pn2.path);
++      ret = ServerSize(pn2.path, &pn2) ;
++    } else {
++      ret = FullFileLength( &pn2 ) ;
++    }
++    //printf("FS_size_remote ret=%d\n", ret);
++    return ret ;
++}
+--- owfs-3.1p0/module/owlib/src/c/ow_usb_monitor.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_usb_monitor.c
+@@ -35,25 +35,25 @@
+ 
+ 	switch ( ap.entries ) {
+ 		case 0:
+-			Globals.usb_scan_interval = DEFAULT_USB_SCAN_INTERVAL ;
++			in->master.usb_monitor.usb_scan_interval = DEFAULT_USB_SCAN_INTERVAL ;
+ 			break ;
+ 		case 1:
+ 			switch( ap.first.type ) {
+ 				case address_numeric:
+-					Globals.usb_scan_interval = ap.first.number ;
++					in->master.usb_monitor.usb_scan_interval = ap.first.number ;
+ 					break ;
+ 				default:
+-					Globals.usb_scan_interval = DEFAULT_USB_SCAN_INTERVAL ;
++					in->master.usb_monitor.usb_scan_interval = DEFAULT_USB_SCAN_INTERVAL ;
+ 					break ;
+ 			}
+ 			break ;
+ 		case 2:
+ 			switch( ap.second.type ) {
+ 				case address_numeric:
+-					Globals.usb_scan_interval = ap.second.number ;
++					in->master.usb_monitor.usb_scan_interval = ap.second.number ;
+ 					break ;
+ 				default:
+-					Globals.usb_scan_interval = DEFAULT_USB_SCAN_INTERVAL ;
++					in->master.usb_monitor.usb_scan_interval = DEFAULT_USB_SCAN_INTERVAL ;
+ 					break ;
+ 			}
+ 			break ;
+@@ -137,7 +137,7 @@
+ 	
+ 	do {
+ 		fd_set readset;
+-		struct timeval tv = { Globals.usb_scan_interval, 0, };
++		struct timeval tv = { in->master.usb_monitor.usb_scan_interval, 0, };
+ 		
+ 		/* Initialize readset */
+ 		FD_ZERO(&readset);
+--- owfs-3.1p0/module/owlib/src/c/ow_write.c
++++ owfs-3.1p0x/module/owlib/src/c/ow_write.c
+@@ -91,7 +91,7 @@
+ 		return -EROFS;			// read-only invokation
+ 	}
+ 
+-	if (IsDir(pn)) {
++	if (IsDir(pn) && !(BusIsServer(pn->selected_connection))) {
+ 		LEVEL_DEBUG("Attempt to write to a directory.");
+ 		return -EISDIR;			// not a file
+ 	}
+@@ -193,7 +193,7 @@
+ 		return -ENODEV ;
+ 	}
+ 
+-	if ( ft->write == FS_w_alias ) {
++	if ( (ft != NO_FILETYPE) && (ft->write == FS_w_alias) ) {
+ 		// Special check for alias
+ 		// it's ok for fake and tester and mock as well
+ 		// so do this before the fake test
+--- owfs-3.1p0/module/owlib/src/include/Makefile.am
++++ owfs-3.1p0x/module/owlib/src/include/Makefile.am
+@@ -93,7 +93,9 @@
+         ow_port_in.h       \
+         ow_pressure.h      \
+         ow_programs.h      \
++        ow_regex.h         \
+         ow_reset.h         \
++        ow_regex.h         \
+         ow_return_code.h   \
+         ow_settings.h      \
+         ow_search.h        \
+--- /dev/null
++++ owfs-3.1p0x/module/owlib/src/include/libusb.h
+@@ -0,0 +1,1998 @@
++/*
++ * Public libusb header file
++ * Copyright © 2001 Johannes Erdfelt <johannes@erdfelt.com>
++ * Copyright © 2007-2008 Daniel Drake <dsd@gentoo.org>
++ * Copyright © 2012 Pete Batard <pete@akeo.ie>
++ * Copyright © 2012 Nathan Hjelm <hjelmn@cs.unm.edu>
++ * For more information, please visit: http://libusb.info
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#ifndef LIBUSB_H
++#define LIBUSB_H
++
++#ifdef _MSC_VER
++/* on MS environments, the inline keyword is available in C++ only */
++#if !defined(__cplusplus)
++#define inline __inline
++#endif
++/* ssize_t is also not available (copy/paste from MinGW) */
++#ifndef _SSIZE_T_DEFINED
++#define _SSIZE_T_DEFINED
++#undef ssize_t
++#ifdef _WIN64
++  typedef __int64 ssize_t;
++#else
++  typedef int ssize_t;
++#endif /* _WIN64 */
++#endif /* _SSIZE_T_DEFINED */
++#endif /* _MSC_VER */
++
++/* stdint.h is not available on older MSVC */
++#if defined(_MSC_VER) && (_MSC_VER < 1600) && (!defined(_STDINT)) && (!defined(_STDINT_H))
++typedef unsigned __int8   uint8_t;
++typedef unsigned __int16  uint16_t;
++typedef unsigned __int32  uint32_t;
++#else
++#include <stdint.h>
++#endif
++
++#if !defined(_WIN32_WCE)
++#include <sys/types.h>
++#endif
++
++#if defined(__linux) || defined(__APPLE__) || defined(__CYGWIN__)
++#include <sys/time.h>
++#endif
++
++#include <time.h>
++#include <limits.h>
++
++/* 'interface' might be defined as a macro on Windows, so we need to
++ * undefine it so as not to break the current libusb API, because
++ * libusb_config_descriptor has an 'interface' member
++ * As this can be problematic if you include windows.h after libusb.h
++ * in your sources, we force windows.h to be included first. */
++#if defined(_WIN32) || defined(__CYGWIN__) || defined(_WIN32_WCE)
++#include <windows.h>
++#if defined(interface)
++#undef interface
++#endif
++#if !defined(__CYGWIN__)
++#include <winsock.h>
++#endif
++#endif
++
++#if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
++#define LIBUSB_DEPRECATED_FOR(f) \
++  __attribute__((deprecated("Use " #f " instead")))
++#else
++#define LIBUSB_DEPRECATED_FOR(f)
++#endif /* __GNUC__ */
++
++/** \def LIBUSB_CALL
++ * \ingroup misc
++ * libusb's Windows calling convention.
++ *
++ * Under Windows, the selection of available compilers and configurations
++ * means that, unlike other platforms, there is not <em>one true calling
++ * convention</em> (calling convention: the manner in which parameters are
++ * passed to funcions in the generated assembly code).
++ *
++ * Matching the Windows API itself, libusb uses the WINAPI convention (which
++ * translates to the <tt>stdcall</tt> convention) and guarantees that the
++ * library is compiled in this way. The public header file also includes
++ * appropriate annotations so that your own software will use the right
++ * convention, even if another convention is being used by default within
++ * your codebase.
++ *
++ * The one consideration that you must apply in your software is to mark
++ * all functions which you use as libusb callbacks with this LIBUSB_CALL
++ * annotation, so that they too get compiled for the correct calling
++ * convention.
++ *
++ * On non-Windows operating systems, this macro is defined as nothing. This
++ * means that you can apply it to your code without worrying about
++ * cross-platform compatibility.
++ */
++/* LIBUSB_CALL must be defined on both definition and declaration of libusb
++ * functions. You'd think that declaration would be enough, but cygwin will
++ * complain about conflicting types unless both are marked this way.
++ * The placement of this macro is important too; it must appear after the
++ * return type, before the function name. See internal documentation for
++ * API_EXPORTED.
++ */
++#if defined(_WIN32) || defined(__CYGWIN__) || defined(_WIN32_WCE)
++#define LIBUSB_CALL WINAPI
++#else
++#define LIBUSB_CALL
++#endif
++
++/** \def LIBUSB_API_VERSION
++ * \ingroup misc
++ * libusb's API version.
++ *
++ * Since version 1.0.13, to help with feature detection, libusb defines
++ * a LIBUSB_API_VERSION macro that gets increased every time there is a
++ * significant change to the API, such as the introduction of a new call,
++ * the definition of a new macro/enum member, or any other element that
++ * libusb applications may want to detect at compilation time.
++ *
++ * The macro is typically used in an application as follows:
++ * \code
++ * #if defined(LIBUSB_API_VERSION) && (LIBUSB_API_VERSION >= 0x01001234)
++ * // Use one of the newer features from the libusb API
++ * #endif
++ * \endcode
++ *
++ * Another feature of LIBUSB_API_VERSION is that it can be used to detect
++ * whether you are compiling against the libusb or the libusb library.
++ *
++ * Internally, LIBUSB_API_VERSION is defined as follows:
++ * (libusb major << 24) | (libusb minor << 16) | (16 bit incremental)
++ */
++#define LIBUSB_API_VERSION 0x01000103
++
++/* The following is kept for compatibility, but will be deprecated in the future */
++#define LIBUSBX_API_VERSION LIBUSB_API_VERSION
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++/**
++ * \ingroup misc
++ * Convert a 16-bit value from host-endian to little-endian format. On
++ * little endian systems, this function does nothing. On big endian systems,
++ * the bytes are swapped.
++ * \param x the host-endian value to convert
++ * \returns the value in little-endian byte order
++ */
++static inline uint16_t libusb_cpu_to_le16(const uint16_t x)
++{
++	union {
++		uint8_t  b8[2];
++		uint16_t b16;
++	} _tmp;
++	_tmp.b8[1] = (uint8_t) (x >> 8);
++	_tmp.b8[0] = (uint8_t) (x & 0xff);
++	return _tmp.b16;
++}
++
++/** \def libusb_le16_to_cpu
++ * \ingroup misc
++ * Convert a 16-bit value from little-endian to host-endian format. On
++ * little endian systems, this function does nothing. On big endian systems,
++ * the bytes are swapped.
++ * \param x the little-endian value to convert
++ * \returns the value in host-endian byte order
++ */
++#define libusb_le16_to_cpu libusb_cpu_to_le16
++
++/* standard USB stuff */
++
++/** \ingroup desc
++ * Device and/or Interface Class codes */
++enum libusb_class_code {
++	/** In the context of a \ref libusb_device_descriptor "device descriptor",
++	 * this bDeviceClass value indicates that each interface specifies its
++	 * own class information and all interfaces operate independently.
++	 */
++	LIBUSB_CLASS_PER_INTERFACE = 0,
++
++	/** Audio class */
++	LIBUSB_CLASS_AUDIO = 1,
++
++	/** Communications class */
++	LIBUSB_CLASS_COMM = 2,
++
++	/** Human Interface Device class */
++	LIBUSB_CLASS_HID = 3,
++
++	/** Physical */
++	LIBUSB_CLASS_PHYSICAL = 5,
++
++	/** Printer class */
++	LIBUSB_CLASS_PRINTER = 7,
++
++	/** Image class */
++	LIBUSB_CLASS_PTP = 6, /* legacy name from libusb-0.1 usb.h */
++	LIBUSB_CLASS_IMAGE = 6,
++
++	/** Mass storage class */
++	LIBUSB_CLASS_MASS_STORAGE = 8,
++
++	/** Hub class */
++	LIBUSB_CLASS_HUB = 9,
++
++	/** Data class */
++	LIBUSB_CLASS_DATA = 10,
++
++	/** Smart Card */
++	LIBUSB_CLASS_SMART_CARD = 0x0b,
++
++	/** Content Security */
++	LIBUSB_CLASS_CONTENT_SECURITY = 0x0d,
++
++	/** Video */
++	LIBUSB_CLASS_VIDEO = 0x0e,
++
++	/** Personal Healthcare */
++	LIBUSB_CLASS_PERSONAL_HEALTHCARE = 0x0f,
++
++	/** Diagnostic Device */
++	LIBUSB_CLASS_DIAGNOSTIC_DEVICE = 0xdc,
++
++	/** Wireless class */
++	LIBUSB_CLASS_WIRELESS = 0xe0,
++
++	/** Application class */
++	LIBUSB_CLASS_APPLICATION = 0xfe,
++
++	/** Class is vendor-specific */
++	LIBUSB_CLASS_VENDOR_SPEC = 0xff
++};
++
++/** \ingroup desc
++ * Descriptor types as defined by the USB specification. */
++enum libusb_descriptor_type {
++	/** Device descriptor. See libusb_device_descriptor. */
++	LIBUSB_DT_DEVICE = 0x01,
++
++	/** Configuration descriptor. See libusb_config_descriptor. */
++	LIBUSB_DT_CONFIG = 0x02,
++
++	/** String descriptor */
++	LIBUSB_DT_STRING = 0x03,
++
++	/** Interface descriptor. See libusb_interface_descriptor. */
++	LIBUSB_DT_INTERFACE = 0x04,
++
++	/** Endpoint descriptor. See libusb_endpoint_descriptor. */
++	LIBUSB_DT_ENDPOINT = 0x05,
++
++	/** BOS descriptor */
++	LIBUSB_DT_BOS = 0x0f,
++
++	/** Device Capability descriptor */
++	LIBUSB_DT_DEVICE_CAPABILITY = 0x10,
++
++	/** HID descriptor */
++	LIBUSB_DT_HID = 0x21,
++
++	/** HID report descriptor */
++	LIBUSB_DT_REPORT = 0x22,
++
++	/** Physical descriptor */
++	LIBUSB_DT_PHYSICAL = 0x23,
++
++	/** Hub descriptor */
++	LIBUSB_DT_HUB = 0x29,
++
++	/** SuperSpeed Hub descriptor */
++	LIBUSB_DT_SUPERSPEED_HUB = 0x2a,
++
++	/** SuperSpeed Endpoint Companion descriptor */
++	LIBUSB_DT_SS_ENDPOINT_COMPANION = 0x30
++};
++
++/* Descriptor sizes per descriptor type */
++#define LIBUSB_DT_DEVICE_SIZE			18
++#define LIBUSB_DT_CONFIG_SIZE			9
++#define LIBUSB_DT_INTERFACE_SIZE		9
++#define LIBUSB_DT_ENDPOINT_SIZE			7
++#define LIBUSB_DT_ENDPOINT_AUDIO_SIZE		9	/* Audio extension */
++#define LIBUSB_DT_HUB_NONVAR_SIZE		7
++#define LIBUSB_DT_SS_ENDPOINT_COMPANION_SIZE	6
++#define LIBUSB_DT_BOS_SIZE			5
++#define LIBUSB_DT_DEVICE_CAPABILITY_SIZE	3
++
++/* BOS descriptor sizes */
++#define LIBUSB_BT_USB_2_0_EXTENSION_SIZE	7
++#define LIBUSB_BT_SS_USB_DEVICE_CAPABILITY_SIZE	10
++#define LIBUSB_BT_CONTAINER_ID_SIZE		20
++
++/* We unwrap the BOS => define its max size */
++#define LIBUSB_DT_BOS_MAX_SIZE		((LIBUSB_DT_BOS_SIZE)     +\
++					(LIBUSB_BT_USB_2_0_EXTENSION_SIZE)       +\
++					(LIBUSB_BT_SS_USB_DEVICE_CAPABILITY_SIZE) +\
++					(LIBUSB_BT_CONTAINER_ID_SIZE))
++
++#define LIBUSB_ENDPOINT_ADDRESS_MASK	0x0f    /* in bEndpointAddress */
++#define LIBUSB_ENDPOINT_DIR_MASK		0x80
++
++/** \ingroup desc
++ * Endpoint direction. Values for bit 7 of the
++ * \ref libusb_endpoint_descriptor::bEndpointAddress "endpoint address" scheme.
++ */
++enum libusb_endpoint_direction {
++	/** In: device-to-host */
++	LIBUSB_ENDPOINT_IN = 0x80,
++
++	/** Out: host-to-device */
++	LIBUSB_ENDPOINT_OUT = 0x00
++};
++
++#define LIBUSB_TRANSFER_TYPE_MASK			0x03    /* in bmAttributes */
++
++/** \ingroup desc
++ * Endpoint transfer type. Values for bits 0:1 of the
++ * \ref libusb_endpoint_descriptor::bmAttributes "endpoint attributes" field.
++ */
++enum libusb_transfer_type {
++	/** Control endpoint */
++	LIBUSB_TRANSFER_TYPE_CONTROL = 0,
++
++	/** Isochronous endpoint */
++	LIBUSB_TRANSFER_TYPE_ISOCHRONOUS = 1,
++
++	/** Bulk endpoint */
++	LIBUSB_TRANSFER_TYPE_BULK = 2,
++
++	/** Interrupt endpoint */
++	LIBUSB_TRANSFER_TYPE_INTERRUPT = 3,
++
++	/** Stream endpoint */
++	LIBUSB_TRANSFER_TYPE_BULK_STREAM = 4,
++};
++
++/** \ingroup misc
++ * Standard requests, as defined in table 9-5 of the USB 3.0 specifications */
++enum libusb_standard_request {
++	/** Request status of the specific recipient */
++	LIBUSB_REQUEST_GET_STATUS = 0x00,
++
++	/** Clear or disable a specific feature */
++	LIBUSB_REQUEST_CLEAR_FEATURE = 0x01,
++
++	/* 0x02 is reserved */
++
++	/** Set or enable a specific feature */
++	LIBUSB_REQUEST_SET_FEATURE = 0x03,
++
++	/* 0x04 is reserved */
++
++	/** Set device address for all future accesses */
++	LIBUSB_REQUEST_SET_ADDRESS = 0x05,
++
++	/** Get the specified descriptor */
++	LIBUSB_REQUEST_GET_DESCRIPTOR = 0x06,
++
++	/** Used to update existing descriptors or add new descriptors */
++	LIBUSB_REQUEST_SET_DESCRIPTOR = 0x07,
++
++	/** Get the current device configuration value */
++	LIBUSB_REQUEST_GET_CONFIGURATION = 0x08,
++
++	/** Set device configuration */
++	LIBUSB_REQUEST_SET_CONFIGURATION = 0x09,
++
++	/** Return the selected alternate setting for the specified interface */
++	LIBUSB_REQUEST_GET_INTERFACE = 0x0A,
++
++	/** Select an alternate interface for the specified interface */
++	LIBUSB_REQUEST_SET_INTERFACE = 0x0B,
++
++	/** Set then report an endpoint's synchronization frame */
++	LIBUSB_REQUEST_SYNCH_FRAME = 0x0C,
++
++	/** Sets both the U1 and U2 Exit Latency */
++	LIBUSB_REQUEST_SET_SEL = 0x30,
++
++	/** Delay from the time a host transmits a packet to the time it is
++	  * received by the device. */
++	LIBUSB_SET_ISOCH_DELAY = 0x31,
++};
++
++/** \ingroup misc
++ * Request type bits of the
++ * \ref libusb_control_setup::bmRequestType "bmRequestType" field in control
++ * transfers. */
++enum libusb_request_type {
++	/** Standard */
++	LIBUSB_REQUEST_TYPE_STANDARD = (0x00 << 5),
++
++	/** Class */
++	LIBUSB_REQUEST_TYPE_CLASS = (0x01 << 5),
++
++	/** Vendor */
++	LIBUSB_REQUEST_TYPE_VENDOR = (0x02 << 5),
++
++	/** Reserved */
++	LIBUSB_REQUEST_TYPE_RESERVED = (0x03 << 5)
++};
++
++/** \ingroup misc
++ * Recipient bits of the
++ * \ref libusb_control_setup::bmRequestType "bmRequestType" field in control
++ * transfers. Values 4 through 31 are reserved. */
++enum libusb_request_recipient {
++	/** Device */
++	LIBUSB_RECIPIENT_DEVICE = 0x00,
++
++	/** Interface */
++	LIBUSB_RECIPIENT_INTERFACE = 0x01,
++
++	/** Endpoint */
++	LIBUSB_RECIPIENT_ENDPOINT = 0x02,
++
++	/** Other */
++	LIBUSB_RECIPIENT_OTHER = 0x03,
++};
++
++#define LIBUSB_ISO_SYNC_TYPE_MASK		0x0C
++
++/** \ingroup desc
++ * Synchronization type for isochronous endpoints. Values for bits 2:3 of the
++ * \ref libusb_endpoint_descriptor::bmAttributes "bmAttributes" field in
++ * libusb_endpoint_descriptor.
++ */
++enum libusb_iso_sync_type {
++	/** No synchronization */
++	LIBUSB_ISO_SYNC_TYPE_NONE = 0,
++
++	/** Asynchronous */
++	LIBUSB_ISO_SYNC_TYPE_ASYNC = 1,
++
++	/** Adaptive */
++	LIBUSB_ISO_SYNC_TYPE_ADAPTIVE = 2,
++
++	/** Synchronous */
++	LIBUSB_ISO_SYNC_TYPE_SYNC = 3
++};
++
++#define LIBUSB_ISO_USAGE_TYPE_MASK 0x30
++
++/** \ingroup desc
++ * Usage type for isochronous endpoints. Values for bits 4:5 of the
++ * \ref libusb_endpoint_descriptor::bmAttributes "bmAttributes" field in
++ * libusb_endpoint_descriptor.
++ */
++enum libusb_iso_usage_type {
++	/** Data endpoint */
++	LIBUSB_ISO_USAGE_TYPE_DATA = 0,
++
++	/** Feedback endpoint */
++	LIBUSB_ISO_USAGE_TYPE_FEEDBACK = 1,
++
++	/** Implicit feedback Data endpoint */
++	LIBUSB_ISO_USAGE_TYPE_IMPLICIT = 2,
++};
++
++/** \ingroup desc
++ * A structure representing the standard USB device descriptor. This
++ * descriptor is documented in section 9.6.1 of the USB 3.0 specification.
++ * All multiple-byte fields are represented in host-endian format.
++ */
++struct libusb_device_descriptor {
++	/** Size of this descriptor (in bytes) */
++	uint8_t  bLength;
++
++	/** Descriptor type. Will have value
++	 * \ref libusb_descriptor_type::LIBUSB_DT_DEVICE LIBUSB_DT_DEVICE in this
++	 * context. */
++	uint8_t  bDescriptorType;
++
++	/** USB specification release number in binary-coded decimal. A value of
++	 * 0x0200 indicates USB 2.0, 0x0110 indicates USB 1.1, etc. */
++	uint16_t bcdUSB;
++
++	/** USB-IF class code for the device. See \ref libusb_class_code. */
++	uint8_t  bDeviceClass;
++
++	/** USB-IF subclass code for the device, qualified by the bDeviceClass
++	 * value */
++	uint8_t  bDeviceSubClass;
++
++	/** USB-IF protocol code for the device, qualified by the bDeviceClass and
++	 * bDeviceSubClass values */
++	uint8_t  bDeviceProtocol;
++
++	/** Maximum packet size for endpoint 0 */
++	uint8_t  bMaxPacketSize0;
++
++	/** USB-IF vendor ID */
++	uint16_t idVendor;
++
++	/** USB-IF product ID */
++	uint16_t idProduct;
++
++	/** Device release number in binary-coded decimal */
++	uint16_t bcdDevice;
++
++	/** Index of string descriptor describing manufacturer */
++	uint8_t  iManufacturer;
++
++	/** Index of string descriptor describing product */
++	uint8_t  iProduct;
++
++	/** Index of string descriptor containing device serial number */
++	uint8_t  iSerialNumber;
++
++	/** Number of possible configurations */
++	uint8_t  bNumConfigurations;
++};
++
++/** \ingroup desc
++ * A structure representing the standard USB endpoint descriptor. This
++ * descriptor is documented in section 9.6.6 of the USB 3.0 specification.
++ * All multiple-byte fields are represented in host-endian format.
++ */
++struct libusb_endpoint_descriptor {
++	/** Size of this descriptor (in bytes) */
++	uint8_t  bLength;
++
++	/** Descriptor type. Will have value
++	 * \ref libusb_descriptor_type::LIBUSB_DT_ENDPOINT LIBUSB_DT_ENDPOINT in
++	 * this context. */
++	uint8_t  bDescriptorType;
++
++	/** The address of the endpoint described by this descriptor. Bits 0:3 are
++	 * the endpoint number. Bits 4:6 are reserved. Bit 7 indicates direction,
++	 * see \ref libusb_endpoint_direction.
++	 */
++	uint8_t  bEndpointAddress;
++
++	/** Attributes which apply to the endpoint when it is configured using
++	 * the bConfigurationValue. Bits 0:1 determine the transfer type and
++	 * correspond to \ref libusb_transfer_type. Bits 2:3 are only used for
++	 * isochronous endpoints and correspond to \ref libusb_iso_sync_type.
++	 * Bits 4:5 are also only used for isochronous endpoints and correspond to
++	 * \ref libusb_iso_usage_type. Bits 6:7 are reserved.
++	 */
++	uint8_t  bmAttributes;
++
++	/** Maximum packet size this endpoint is capable of sending/receiving. */
++	uint16_t wMaxPacketSize;
++
++	/** Interval for polling endpoint for data transfers. */
++	uint8_t  bInterval;
++
++	/** For audio devices only: the rate at which synchronization feedback
++	 * is provided. */
++	uint8_t  bRefresh;
++
++	/** For audio devices only: the address if the synch endpoint */
++	uint8_t  bSynchAddress;
++
++	/** Extra descriptors. If libusb encounters unknown endpoint descriptors,
++	 * it will store them here, should you wish to parse them. */
++	const unsigned char *extra;
++
++	/** Length of the extra descriptors, in bytes. */
++	int extra_length;
++};
++
++/** \ingroup desc
++ * A structure representing the standard USB interface descriptor. This
++ * descriptor is documented in section 9.6.5 of the USB 3.0 specification.
++ * All multiple-byte fields are represented in host-endian format.
++ */
++struct libusb_interface_descriptor {
++	/** Size of this descriptor (in bytes) */
++	uint8_t  bLength;
++
++	/** Descriptor type. Will have value
++	 * \ref libusb_descriptor_type::LIBUSB_DT_INTERFACE LIBUSB_DT_INTERFACE
++	 * in this context. */
++	uint8_t  bDescriptorType;
++
++	/** Number of this interface */
++	uint8_t  bInterfaceNumber;
++
++	/** Value used to select this alternate setting for this interface */
++	uint8_t  bAlternateSetting;
++
++	/** Number of endpoints used by this interface (excluding the control
++	 * endpoint). */
++	uint8_t  bNumEndpoints;
++
++	/** USB-IF class code for this interface. See \ref libusb_class_code. */
++	uint8_t  bInterfaceClass;
++
++	/** USB-IF subclass code for this interface, qualified by the
++	 * bInterfaceClass value */
++	uint8_t  bInterfaceSubClass;
++
++	/** USB-IF protocol code for this interface, qualified by the
++	 * bInterfaceClass and bInterfaceSubClass values */
++	uint8_t  bInterfaceProtocol;
++
++	/** Index of string descriptor describing this interface */
++	uint8_t  iInterface;
++
++	/** Array of endpoint descriptors. This length of this array is determined
++	 * by the bNumEndpoints field. */
++	const struct libusb_endpoint_descriptor *endpoint;
++
++	/** Extra descriptors. If libusb encounters unknown interface descriptors,
++	 * it will store them here, should you wish to parse them. */
++	const unsigned char *extra;
++
++	/** Length of the extra descriptors, in bytes. */
++	int extra_length;
++};
++
++/** \ingroup desc
++ * A collection of alternate settings for a particular USB interface.
++ */
++struct libusb_interface {
++	/** Array of interface descriptors. The length of this array is determined
++	 * by the num_altsetting field. */
++	const struct libusb_interface_descriptor *altsetting;
++
++	/** The number of alternate settings that belong to this interface */
++	int num_altsetting;
++};
++
++/** \ingroup desc
++ * A structure representing the standard USB configuration descriptor. This
++ * descriptor is documented in section 9.6.3 of the USB 3.0 specification.
++ * All multiple-byte fields are represented in host-endian format.
++ */
++struct libusb_config_descriptor {
++	/** Size of this descriptor (in bytes) */
++	uint8_t  bLength;
++
++	/** Descriptor type. Will have value
++	 * \ref libusb_descriptor_type::LIBUSB_DT_CONFIG LIBUSB_DT_CONFIG
++	 * in this context. */
++	uint8_t  bDescriptorType;
++
++	/** Total length of data returned for this configuration */
++	uint16_t wTotalLength;
++
++	/** Number of interfaces supported by this configuration */
++	uint8_t  bNumInterfaces;
++
++	/** Identifier value for this configuration */
++	uint8_t  bConfigurationValue;
++
++	/** Index of string descriptor describing this configuration */
++	uint8_t  iConfiguration;
++
++	/** Configuration characteristics */
++	uint8_t  bmAttributes;
++
++	/** Maximum power consumption of the USB device from this bus in this
++	 * configuration when the device is fully opreation. Expressed in units
++	 * of 2 mA. */
++	uint8_t  MaxPower;
++
++	/** Array of interfaces supported by this configuration. The length of
++	 * this array is determined by the bNumInterfaces field. */
++	const struct libusb_interface *interface;
++
++	/** Extra descriptors. If libusb encounters unknown configuration
++	 * descriptors, it will store them here, should you wish to parse them. */
++	const unsigned char *extra;
++
++	/** Length of the extra descriptors, in bytes. */
++	int extra_length;
++};
++
++/** \ingroup desc
++ * A structure representing the superspeed endpoint companion
++ * descriptor. This descriptor is documented in section 9.6.7 of
++ * the USB 3.0 specification. All multiple-byte fields are represented in
++ * host-endian format.
++ */
++struct libusb_ss_endpoint_companion_descriptor {
++
++	/** Size of this descriptor (in bytes) */
++	uint8_t  bLength;
++
++	/** Descriptor type. Will have value
++	 * \ref libusb_descriptor_type::LIBUSB_DT_SS_ENDPOINT_COMPANION in
++	 * this context. */
++	uint8_t  bDescriptorType;
++
++
++	/** The maximum number of packets the endpoint can send or
++	 *  recieve as part of a burst. */
++	uint8_t  bMaxBurst;
++
++	/** In bulk EP:	bits 4:0 represents the	maximum	number of
++	 *  streams the	EP supports. In	isochronous EP:	bits 1:0
++	 *  represents the Mult	- a zero based value that determines
++	 *  the	maximum	number of packets within a service interval  */
++	uint8_t  bmAttributes;
++
++	/** The	total number of bytes this EP will transfer every
++	 *  service interval. valid only for periodic EPs. */
++	uint16_t wBytesPerInterval;
++};
++
++/** \ingroup desc
++ * A generic representation of a BOS Device Capability descriptor. It is
++ * advised to check bDevCapabilityType and call the matching
++ * libusb_get_*_descriptor function to get a structure fully matching the type.
++ */
++struct libusb_bos_dev_capability_descriptor {
++	/** Size of this descriptor (in bytes) */
++	uint8_t bLength;
++	/** Descriptor type. Will have value
++	 * \ref libusb_descriptor_type::LIBUSB_DT_DEVICE_CAPABILITY
++	 * LIBUSB_DT_DEVICE_CAPABILITY in this context. */
++	uint8_t bDescriptorType;
++	/** Device Capability type */
++	uint8_t bDevCapabilityType;
++	/** Device Capability data (bLength - 3 bytes) */
++	uint8_t dev_capability_data
++#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
++	[] /* valid C99 code */
++#else
++	[0] /* non-standard, but usually working code */
++#endif
++	;
++};
++
++/** \ingroup desc
++ * A structure representing the Binary Device Object Store (BOS) descriptor.
++ * This descriptor is documented in section 9.6.2 of the USB 3.0 specification.
++ * All multiple-byte fields are represented in host-endian format.
++ */
++struct libusb_bos_descriptor {
++	/** Size of this descriptor (in bytes) */
++	uint8_t  bLength;
++
++	/** Descriptor type. Will have value
++	 * \ref libusb_descriptor_type::LIBUSB_DT_BOS LIBUSB_DT_BOS
++	 * in this context. */
++	uint8_t  bDescriptorType;
++
++	/** Length of this descriptor and all of its sub descriptors */
++	uint16_t wTotalLength;
++
++	/** The number of separate device capability descriptors in
++	 * the BOS */
++	uint8_t  bNumDeviceCaps;
++
++	/** bNumDeviceCap Device Capability Descriptors */
++	struct libusb_bos_dev_capability_descriptor *dev_capability
++#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
++	[] /* valid C99 code */
++#else
++	[0] /* non-standard, but usually working code */
++#endif
++	;
++};
++
++/** \ingroup desc
++ * A structure representing the USB 2.0 Extension descriptor
++ * This descriptor is documented in section 9.6.2.1 of the USB 3.0 specification.
++ * All multiple-byte fields are represented in host-endian format.
++ */
++struct libusb_usb_2_0_extension_descriptor {
++	/** Size of this descriptor (in bytes) */
++	uint8_t  bLength;
++
++	/** Descriptor type. Will have value
++	 * \ref libusb_descriptor_type::LIBUSB_DT_DEVICE_CAPABILITY
++	 * LIBUSB_DT_DEVICE_CAPABILITY in this context. */
++	uint8_t  bDescriptorType;
++
++	/** Capability type. Will have value
++	 * \ref libusb_capability_type::LIBUSB_BT_USB_2_0_EXTENSION
++	 * LIBUSB_BT_USB_2_0_EXTENSION in this context. */
++	uint8_t  bDevCapabilityType;
++
++	/** Bitmap encoding of supported device level features.
++	 * A value of one in a bit location indicates a feature is
++	 * supported; a value of zero indicates it is not supported.
++	 * See \ref libusb_usb_2_0_extension_attributes. */
++	uint32_t  bmAttributes;
++};
++
++/** \ingroup desc
++ * A structure representing the SuperSpeed USB Device Capability descriptor
++ * This descriptor is documented in section 9.6.2.2 of the USB 3.0 specification.
++ * All multiple-byte fields are represented in host-endian format.
++ */
++struct libusb_ss_usb_device_capability_descriptor {
++	/** Size of this descriptor (in bytes) */
++	uint8_t  bLength;
++
++	/** Descriptor type. Will have value
++	 * \ref libusb_descriptor_type::LIBUSB_DT_DEVICE_CAPABILITY
++	 * LIBUSB_DT_DEVICE_CAPABILITY in this context. */
++	uint8_t  bDescriptorType;
++
++	/** Capability type. Will have value
++	 * \ref libusb_capability_type::LIBUSB_BT_SS_USB_DEVICE_CAPABILITY
++	 * LIBUSB_BT_SS_USB_DEVICE_CAPABILITY in this context. */
++	uint8_t  bDevCapabilityType;
++
++	/** Bitmap encoding of supported device level features.
++	 * A value of one in a bit location indicates a feature is
++	 * supported; a value of zero indicates it is not supported.
++	 * See \ref libusb_ss_usb_device_capability_attributes. */
++	uint8_t  bmAttributes;
++
++	/** Bitmap encoding of the speed supported by this device when
++	 * operating in SuperSpeed mode. See \ref libusb_supported_speed. */
++	uint16_t wSpeedSupported;
++
++	/** The lowest speed at which all the functionality supported
++	 * by the device is available to the user. For example if the
++	 * device supports all its functionality when connected at
++	 * full speed and above then it sets this value to 1. */
++	uint8_t  bFunctionalitySupport;
++
++	/** U1 Device Exit Latency. */
++	uint8_t  bU1DevExitLat;
++
++	/** U2 Device Exit Latency. */
++	uint16_t bU2DevExitLat;
++};
++
++/** \ingroup desc
++ * A structure representing the Container ID descriptor.
++ * This descriptor is documented in section 9.6.2.3 of the USB 3.0 specification.
++ * All multiple-byte fields, except UUIDs, are represented in host-endian format.
++ */
++struct libusb_container_id_descriptor {
++	/** Size of this descriptor (in bytes) */
++	uint8_t  bLength;
++
++	/** Descriptor type. Will have value
++	 * \ref libusb_descriptor_type::LIBUSB_DT_DEVICE_CAPABILITY
++	 * LIBUSB_DT_DEVICE_CAPABILITY in this context. */
++	uint8_t  bDescriptorType;
++
++	/** Capability type. Will have value
++	 * \ref libusb_capability_type::LIBUSB_BT_CONTAINER_ID
++	 * LIBUSB_BT_CONTAINER_ID in this context. */
++	uint8_t  bDevCapabilityType;
++
++	/** Reserved field */
++	uint8_t bReserved;
++
++	/** 128 bit UUID */
++	uint8_t  ContainerID[16];
++};
++
++/** \ingroup asyncio
++ * Setup packet for control transfers. */
++struct libusb_control_setup {
++	/** Request type. Bits 0:4 determine recipient, see
++	 * \ref libusb_request_recipient. Bits 5:6 determine type, see
++	 * \ref libusb_request_type. Bit 7 determines data transfer direction, see
++	 * \ref libusb_endpoint_direction.
++	 */
++	uint8_t  bmRequestType;
++
++	/** Request. If the type bits of bmRequestType are equal to
++	 * \ref libusb_request_type::LIBUSB_REQUEST_TYPE_STANDARD
++	 * "LIBUSB_REQUEST_TYPE_STANDARD" then this field refers to
++	 * \ref libusb_standard_request. For other cases, use of this field is
++	 * application-specific. */
++	uint8_t  bRequest;
++
++	/** Value. Varies according to request */
++	uint16_t wValue;
++
++	/** Index. Varies according to request, typically used to pass an index
++	 * or offset */
++	uint16_t wIndex;
++
++	/** Number of bytes to transfer */
++	uint16_t wLength;
++};
++
++#define LIBUSB_CONTROL_SETUP_SIZE (sizeof(struct libusb_control_setup))
++
++/* libusb */
++
++struct libusb_context;
++struct libusb_device;
++struct libusb_device_handle;
++struct libusb_hotplug_callback;
++
++/** \ingroup lib
++ * Structure providing the version of the libusb runtime
++ */
++struct libusb_version {
++	/** Library major version. */
++	const uint16_t major;
++
++	/** Library minor version. */
++	const uint16_t minor;
++
++	/** Library micro version. */
++	const uint16_t micro;
++
++	/** Library nano version. */
++	const uint16_t nano;
++
++	/** Library release candidate suffix string, e.g. "-rc4". */
++	const char *rc;
++
++	/** For ABI compatibility only. */
++	const char* describe;
++};
++
++/** \ingroup lib
++ * Structure representing a libusb session. The concept of individual libusb
++ * sessions allows for your program to use two libraries (or dynamically
++ * load two modules) which both independently use libusb. This will prevent
++ * interference between the individual libusb users - for example
++ * libusb_set_debug() will not affect the other user of the library, and
++ * libusb_exit() will not destroy resources that the other user is still
++ * using.
++ *
++ * Sessions are created by libusb_init() and destroyed through libusb_exit().
++ * If your application is guaranteed to only ever include a single libusb
++ * user (i.e. you), you do not have to worry about contexts: pass NULL in
++ * every function call where a context is required. The default context
++ * will be used.
++ *
++ * For more information, see \ref contexts.
++ */
++typedef struct libusb_context libusb_context;
++
++/** \ingroup dev
++ * Structure representing a USB device detected on the system. This is an
++ * opaque type for which you are only ever provided with a pointer, usually
++ * originating from libusb_get_device_list().
++ *
++ * Certain operations can be performed on a device, but in order to do any
++ * I/O you will have to first obtain a device handle using libusb_open().
++ *
++ * Devices are reference counted with libusb_ref_device() and
++ * libusb_unref_device(), and are freed when the reference count reaches 0.
++ * New devices presented by libusb_get_device_list() have a reference count of
++ * 1, and libusb_free_device_list() can optionally decrease the reference count
++ * on all devices in the list. libusb_open() adds another reference which is
++ * later destroyed by libusb_close().
++ */
++typedef struct libusb_device libusb_device;
++
++
++/** \ingroup dev
++ * Structure representing a handle on a USB device. This is an opaque type for
++ * which you are only ever provided with a pointer, usually originating from
++ * libusb_open().
++ *
++ * A device handle is used to perform I/O and other operations. When finished
++ * with a device handle, you should call libusb_close().
++ */
++typedef struct libusb_device_handle libusb_device_handle;
++
++/** \ingroup dev
++ * Speed codes. Indicates the speed at which the device is operating.
++ */
++enum libusb_speed {
++	/** The OS doesn't report or know the device speed. */
++	LIBUSB_SPEED_UNKNOWN = 0,
++
++	/** The device is operating at low speed (1.5MBit/s). */
++	LIBUSB_SPEED_LOW = 1,
++
++	/** The device is operating at full speed (12MBit/s). */
++	LIBUSB_SPEED_FULL = 2,
++
++	/** The device is operating at high speed (480MBit/s). */
++	LIBUSB_SPEED_HIGH = 3,
++
++	/** The device is operating at super speed (5000MBit/s). */
++	LIBUSB_SPEED_SUPER = 4,
++};
++
++/** \ingroup dev
++ * Supported speeds (wSpeedSupported) bitfield. Indicates what
++ * speeds the device supports.
++ */
++enum libusb_supported_speed {
++	/** Low speed operation supported (1.5MBit/s). */
++	LIBUSB_LOW_SPEED_OPERATION   = 1,
++
++	/** Full speed operation supported (12MBit/s). */
++	LIBUSB_FULL_SPEED_OPERATION  = 2,
++
++	/** High speed operation supported (480MBit/s). */
++	LIBUSB_HIGH_SPEED_OPERATION  = 4,
++
++	/** Superspeed operation supported (5000MBit/s). */
++	LIBUSB_SUPER_SPEED_OPERATION = 8,
++};
++
++/** \ingroup dev
++ * Masks for the bits of the
++ * \ref libusb_usb_2_0_extension_descriptor::bmAttributes "bmAttributes" field
++ * of the USB 2.0 Extension descriptor.
++ */
++enum libusb_usb_2_0_extension_attributes {
++	/** Supports Link Power Management (LPM) */
++	LIBUSB_BM_LPM_SUPPORT = 2,
++};
++
++/** \ingroup dev
++ * Masks for the bits of the
++ * \ref libusb_ss_usb_device_capability_descriptor::bmAttributes "bmAttributes" field
++ * field of the SuperSpeed USB Device Capability descriptor.
++ */
++enum libusb_ss_usb_device_capability_attributes {
++	/** Supports Latency Tolerance Messages (LTM) */
++	LIBUSB_BM_LTM_SUPPORT = 2,
++};
++
++/** \ingroup dev
++ * USB capability types
++ */
++enum libusb_bos_type {
++	/** Wireless USB device capability */
++	LIBUSB_BT_WIRELESS_USB_DEVICE_CAPABILITY	= 1,
++
++	/** USB 2.0 extensions */
++	LIBUSB_BT_USB_2_0_EXTENSION			= 2,
++
++	/** SuperSpeed USB device capability */
++	LIBUSB_BT_SS_USB_DEVICE_CAPABILITY		= 3,
++
++	/** Container ID type */
++	LIBUSB_BT_CONTAINER_ID				= 4,
++};
++
++/** \ingroup misc
++ * Error codes. Most libusb functions return 0 on success or one of these
++ * codes on failure.
++ * You can call libusb_error_name() to retrieve a string representation of an
++ * error code or libusb_strerror() to get an end-user suitable description of
++ * an error code.
++ */
++enum libusb_error {
++	/** Success (no error) */
++	LIBUSB_SUCCESS = 0,
++
++	/** Input/output error */
++	LIBUSB_ERROR_IO = -1,
++
++	/** Invalid parameter */
++	LIBUSB_ERROR_INVALID_PARAM = -2,
++
++	/** Access denied (insufficient permissions) */
++	LIBUSB_ERROR_ACCESS = -3,
++
++	/** No such device (it may have been disconnected) */
++	LIBUSB_ERROR_NO_DEVICE = -4,
++
++	/** Entity not found */
++	LIBUSB_ERROR_NOT_FOUND = -5,
++
++	/** Resource busy */
++	LIBUSB_ERROR_BUSY = -6,
++
++	/** Operation timed out */
++	LIBUSB_ERROR_TIMEOUT = -7,
++
++	/** Overflow */
++	LIBUSB_ERROR_OVERFLOW = -8,
++
++	/** Pipe error */
++	LIBUSB_ERROR_PIPE = -9,
++
++	/** System call interrupted (perhaps due to signal) */
++	LIBUSB_ERROR_INTERRUPTED = -10,
++
++	/** Insufficient memory */
++	LIBUSB_ERROR_NO_MEM = -11,
++
++	/** Operation not supported or unimplemented on this platform */
++	LIBUSB_ERROR_NOT_SUPPORTED = -12,
++
++	/* NB: Remember to update LIBUSB_ERROR_COUNT below as well as the
++	   message strings in strerror.c when adding new error codes here. */
++
++	/** Other error */
++	LIBUSB_ERROR_OTHER = -99,
++};
++
++/* Total number of error codes in enum libusb_error */
++#define LIBUSB_ERROR_COUNT 14
++
++/** \ingroup asyncio
++ * Transfer status codes */
++enum libusb_transfer_status {
++	/** Transfer completed without error. Note that this does not indicate
++	 * that the entire amount of requested data was transferred. */
++	LIBUSB_TRANSFER_COMPLETED,
++
++	/** Transfer failed */
++	LIBUSB_TRANSFER_ERROR,
++
++	/** Transfer timed out */
++	LIBUSB_TRANSFER_TIMED_OUT,
++
++	/** Transfer was cancelled */
++	LIBUSB_TRANSFER_CANCELLED,
++
++	/** For bulk/interrupt endpoints: halt condition detected (endpoint
++	 * stalled). For control endpoints: control request not supported. */
++	LIBUSB_TRANSFER_STALL,
++
++	/** Device was disconnected */
++	LIBUSB_TRANSFER_NO_DEVICE,
++
++	/** Device sent more data than requested */
++	LIBUSB_TRANSFER_OVERFLOW,
++
++	/* NB! Remember to update libusb_error_name()
++	   when adding new status codes here. */
++};
++
++/** \ingroup asyncio
++ * libusb_transfer.flags values */
++enum libusb_transfer_flags {
++	/** Report short frames as errors */
++	LIBUSB_TRANSFER_SHORT_NOT_OK = 1<<0,
++
++	/** Automatically free() transfer buffer during libusb_free_transfer() */
++	LIBUSB_TRANSFER_FREE_BUFFER = 1<<1,
++
++	/** Automatically call libusb_free_transfer() after callback returns.
++	 * If this flag is set, it is illegal to call libusb_free_transfer()
++	 * from your transfer callback, as this will result in a double-free
++	 * when this flag is acted upon. */
++	LIBUSB_TRANSFER_FREE_TRANSFER = 1<<2,
++
++	/** Terminate transfers that are a multiple of the endpoint's
++	 * wMaxPacketSize with an extra zero length packet. This is useful
++	 * when a device protocol mandates that each logical request is
++	 * terminated by an incomplete packet (i.e. the logical requests are
++	 * not separated by other means).
++	 *
++	 * This flag only affects host-to-device transfers to bulk and interrupt
++	 * endpoints. In other situations, it is ignored.
++	 *
++	 * This flag only affects transfers with a length that is a multiple of
++	 * the endpoint's wMaxPacketSize. On transfers of other lengths, this
++	 * flag has no effect. Therefore, if you are working with a device that
++	 * needs a ZLP whenever the end of the logical request falls on a packet
++	 * boundary, then it is sensible to set this flag on <em>every</em>
++	 * transfer (you do not have to worry about only setting it on transfers
++	 * that end on the boundary).
++	 *
++	 * This flag is currently only supported on Linux.
++	 * On other systems, libusb_submit_transfer() will return
++	 * LIBUSB_ERROR_NOT_SUPPORTED for every transfer where this flag is set.
++	 *
++	 * Available since libusb-1.0.9.
++	 */
++	LIBUSB_TRANSFER_ADD_ZERO_PACKET = 1 << 3,
++};
++
++/** \ingroup asyncio
++ * Isochronous packet descriptor. */
++struct libusb_iso_packet_descriptor {
++	/** Length of data to request in this packet */
++	unsigned int length;
++
++	/** Amount of data that was actually transferred */
++	unsigned int actual_length;
++
++	/** Status code for this packet */
++	enum libusb_transfer_status status;
++};
++
++struct libusb_transfer;
++
++/** \ingroup asyncio
++ * Asynchronous transfer callback function type. When submitting asynchronous
++ * transfers, you pass a pointer to a callback function of this type via the
++ * \ref libusb_transfer::callback "callback" member of the libusb_transfer
++ * structure. libusb will call this function later, when the transfer has
++ * completed or failed. See \ref asyncio for more information.
++ * \param transfer The libusb_transfer struct the callback function is being
++ * notified about.
++ */
++typedef void (LIBUSB_CALL *libusb_transfer_cb_fn)(struct libusb_transfer *transfer);
++
++/** \ingroup asyncio
++ * The generic USB transfer structure. The user populates this structure and
++ * then submits it in order to request a transfer. After the transfer has
++ * completed, the library populates the transfer with the results and passes
++ * it back to the user.
++ */
++struct libusb_transfer {
++	/** Handle of the device that this transfer will be submitted to */
++	libusb_device_handle *dev_handle;
++
++	/** A bitwise OR combination of \ref libusb_transfer_flags. */
++	uint8_t flags;
++
++	/** Address of the endpoint where this transfer will be sent. */
++	unsigned char endpoint;
++
++	/** Type of the endpoint from \ref libusb_transfer_type */
++	unsigned char type;
++
++	/** Timeout for this transfer in millseconds. A value of 0 indicates no
++	 * timeout. */
++	unsigned int timeout;
++
++	/** The status of the transfer. Read-only, and only for use within
++	 * transfer callback function.
++	 *
++	 * If this is an isochronous transfer, this field may read COMPLETED even
++	 * if there were errors in the frames. Use the
++	 * \ref libusb_iso_packet_descriptor::status "status" field in each packet
++	 * to determine if errors occurred. */
++	enum libusb_transfer_status status;
++
++	/** Length of the data buffer */
++	int length;
++
++	/** Actual length of data that was transferred. Read-only, and only for
++	 * use within transfer callback function. Not valid for isochronous
++	 * endpoint transfers. */
++	int actual_length;
++
++	/** Callback function. This will be invoked when the transfer completes,
++	 * fails, or is cancelled. */
++	libusb_transfer_cb_fn callback;
++
++	/** User context data to pass to the callback function. */
++	void *user_data;
++
++	/** Data buffer */
++	unsigned char *buffer;
++
++	/** Number of isochronous packets. Only used for I/O with isochronous
++	 * endpoints. */
++	int num_iso_packets;
++
++	/** Isochronous packet descriptors, for isochronous transfers only. */
++	struct libusb_iso_packet_descriptor iso_packet_desc
++#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
++	[] /* valid C99 code */
++#else
++	[0] /* non-standard, but usually working code */
++#endif
++	;
++};
++
++/** \ingroup misc
++ * Capabilities supported by an instance of libusb on the current running
++ * platform. Test if the loaded library supports a given capability by calling
++ * \ref libusb_has_capability().
++ */
++enum libusb_capability {
++	/** The libusb_has_capability() API is available. */
++	LIBUSB_CAP_HAS_CAPABILITY = 0x0000,
++	/** Hotplug support is available on this platform. */
++	LIBUSB_CAP_HAS_HOTPLUG = 0x0001,
++	/** The library can access HID devices without requiring user intervention.
++	 * Note that before being able to actually access an HID device, you may
++	 * still have to call additional libusb functions such as
++	 * \ref libusb_detach_kernel_driver(). */
++	LIBUSB_CAP_HAS_HID_ACCESS = 0x0100,
++	/** The library supports detaching of the default USB driver, using 
++	 * \ref libusb_detach_kernel_driver(), if one is set by the OS kernel */
++	LIBUSB_CAP_SUPPORTS_DETACH_KERNEL_DRIVER = 0x0101
++};
++
++/** \ingroup lib
++ *  Log message levels.
++ *  - LIBUSB_LOG_LEVEL_NONE (0)    : no messages ever printed by the library (default)
++ *  - LIBUSB_LOG_LEVEL_ERROR (1)   : error messages are printed to stderr
++ *  - LIBUSB_LOG_LEVEL_WARNING (2) : warning and error messages are printed to stderr
++ *  - LIBUSB_LOG_LEVEL_INFO (3)    : informational messages are printed to stdout, warning
++ *    and error messages are printed to stderr
++ *  - LIBUSB_LOG_LEVEL_DEBUG (4)   : debug and informational messages are printed to stdout,
++ *    warnings and errors to stderr
++ */
++enum libusb_log_level {
++	LIBUSB_LOG_LEVEL_NONE = 0,
++	LIBUSB_LOG_LEVEL_ERROR,
++	LIBUSB_LOG_LEVEL_WARNING,
++	LIBUSB_LOG_LEVEL_INFO,
++	LIBUSB_LOG_LEVEL_DEBUG,
++};
++
++int LIBUSB_CALL libusb_init(libusb_context **ctx);
++void LIBUSB_CALL libusb_exit(libusb_context *ctx);
++void LIBUSB_CALL libusb_set_debug(libusb_context *ctx, int level);
++const struct libusb_version * LIBUSB_CALL libusb_get_version(void);
++int LIBUSB_CALL libusb_has_capability(uint32_t capability);
++const char * LIBUSB_CALL libusb_error_name(int errcode);
++int LIBUSB_CALL libusb_setlocale(const char *locale);
++const char * LIBUSB_CALL libusb_strerror(enum libusb_error errcode);
++
++ssize_t LIBUSB_CALL libusb_get_device_list(libusb_context *ctx,
++	libusb_device ***list);
++void LIBUSB_CALL libusb_free_device_list(libusb_device **list,
++	int unref_devices);
++libusb_device * LIBUSB_CALL libusb_ref_device(libusb_device *dev);
++void LIBUSB_CALL libusb_unref_device(libusb_device *dev);
++
++int LIBUSB_CALL libusb_get_configuration(libusb_device_handle *dev,
++	int *config);
++int LIBUSB_CALL libusb_get_device_descriptor(libusb_device *dev,
++	struct libusb_device_descriptor *desc);
++int LIBUSB_CALL libusb_get_active_config_descriptor(libusb_device *dev,
++	struct libusb_config_descriptor **config);
++int LIBUSB_CALL libusb_get_config_descriptor(libusb_device *dev,
++	uint8_t config_index, struct libusb_config_descriptor **config);
++int LIBUSB_CALL libusb_get_config_descriptor_by_value(libusb_device *dev,
++	uint8_t bConfigurationValue, struct libusb_config_descriptor **config);
++void LIBUSB_CALL libusb_free_config_descriptor(
++	struct libusb_config_descriptor *config);
++int LIBUSB_CALL libusb_get_ss_endpoint_companion_descriptor(
++	struct libusb_context *ctx,
++	const struct libusb_endpoint_descriptor *endpoint,
++	struct libusb_ss_endpoint_companion_descriptor **ep_comp);
++void LIBUSB_CALL libusb_free_ss_endpoint_companion_descriptor(
++	struct libusb_ss_endpoint_companion_descriptor *ep_comp);
++int LIBUSB_CALL libusb_get_bos_descriptor(libusb_device_handle *handle,
++	struct libusb_bos_descriptor **bos);
++void LIBUSB_CALL libusb_free_bos_descriptor(struct libusb_bos_descriptor *bos);
++int LIBUSB_CALL libusb_get_usb_2_0_extension_descriptor(
++	struct libusb_context *ctx,
++	struct libusb_bos_dev_capability_descriptor *dev_cap,
++	struct libusb_usb_2_0_extension_descriptor **usb_2_0_extension);
++void LIBUSB_CALL libusb_free_usb_2_0_extension_descriptor(
++	struct libusb_usb_2_0_extension_descriptor *usb_2_0_extension);
++int LIBUSB_CALL libusb_get_ss_usb_device_capability_descriptor(
++	struct libusb_context *ctx,
++	struct libusb_bos_dev_capability_descriptor *dev_cap,
++	struct libusb_ss_usb_device_capability_descriptor **ss_usb_device_cap);
++void LIBUSB_CALL libusb_free_ss_usb_device_capability_descriptor(
++	struct libusb_ss_usb_device_capability_descriptor *ss_usb_device_cap);
++int LIBUSB_CALL libusb_get_container_id_descriptor(struct libusb_context *ctx,
++	struct libusb_bos_dev_capability_descriptor *dev_cap,
++	struct libusb_container_id_descriptor **container_id);
++void LIBUSB_CALL libusb_free_container_id_descriptor(
++	struct libusb_container_id_descriptor *container_id);
++uint8_t LIBUSB_CALL libusb_get_bus_number(libusb_device *dev);
++uint8_t LIBUSB_CALL libusb_get_port_number(libusb_device *dev);
++int LIBUSB_CALL libusb_get_port_numbers(libusb_device *dev, uint8_t* port_numbers, int port_numbers_len);
++LIBUSB_DEPRECATED_FOR(libusb_get_port_numbers)
++int LIBUSB_CALL libusb_get_port_path(libusb_context *ctx, libusb_device *dev, uint8_t* path, uint8_t path_length);
++libusb_device * LIBUSB_CALL libusb_get_parent(libusb_device *dev);
++uint8_t LIBUSB_CALL libusb_get_device_address(libusb_device *dev);
++int LIBUSB_CALL libusb_get_device_speed(libusb_device *dev);
++int LIBUSB_CALL libusb_get_max_packet_size(libusb_device *dev,
++	unsigned char endpoint);
++int LIBUSB_CALL libusb_get_max_iso_packet_size(libusb_device *dev,
++	unsigned char endpoint);
++
++int LIBUSB_CALL libusb_open(libusb_device *dev, libusb_device_handle **handle);
++void LIBUSB_CALL libusb_close(libusb_device_handle *dev_handle);
++libusb_device * LIBUSB_CALL libusb_get_device(libusb_device_handle *dev_handle);
++
++int LIBUSB_CALL libusb_set_configuration(libusb_device_handle *dev,
++	int configuration);
++int LIBUSB_CALL libusb_claim_interface(libusb_device_handle *dev,
++	int interface_number);
++int LIBUSB_CALL libusb_release_interface(libusb_device_handle *dev,
++	int interface_number);
++
++libusb_device_handle * LIBUSB_CALL libusb_open_device_with_vid_pid(
++	libusb_context *ctx, uint16_t vendor_id, uint16_t product_id);
++
++int LIBUSB_CALL libusb_set_interface_alt_setting(libusb_device_handle *dev,
++	int interface_number, int alternate_setting);
++int LIBUSB_CALL libusb_clear_halt(libusb_device_handle *dev,
++	unsigned char endpoint);
++int LIBUSB_CALL libusb_reset_device(libusb_device_handle *dev);
++
++int LIBUSB_CALL libusb_alloc_streams(libusb_device_handle *dev,
++	uint32_t num_streams, unsigned char *endpoints, int num_endpoints);
++int LIBUSB_CALL libusb_free_streams(libusb_device_handle *dev,
++	unsigned char *endpoints, int num_endpoints);
++
++int LIBUSB_CALL libusb_kernel_driver_active(libusb_device_handle *dev,
++	int interface_number);
++int LIBUSB_CALL libusb_detach_kernel_driver(libusb_device_handle *dev,
++	int interface_number);
++int LIBUSB_CALL libusb_attach_kernel_driver(libusb_device_handle *dev,
++	int interface_number);
++int LIBUSB_CALL libusb_set_auto_detach_kernel_driver(
++	libusb_device_handle *dev, int enable);
++
++/* async I/O */
++
++/** \ingroup asyncio
++ * Get the data section of a control transfer. This convenience function is here
++ * to remind you that the data does not start until 8 bytes into the actual
++ * buffer, as the setup packet comes first.
++ *
++ * Calling this function only makes sense from a transfer callback function,
++ * or situations where you have already allocated a suitably sized buffer at
++ * transfer->buffer.
++ *
++ * \param transfer a transfer
++ * \returns pointer to the first byte of the data section
++ */
++static inline unsigned char *libusb_control_transfer_get_data(
++	struct libusb_transfer *transfer)
++{
++	return transfer->buffer + LIBUSB_CONTROL_SETUP_SIZE;
++}
++
++/** \ingroup asyncio
++ * Get the control setup packet of a control transfer. This convenience
++ * function is here to remind you that the control setup occupies the first
++ * 8 bytes of the transfer data buffer.
++ *
++ * Calling this function only makes sense from a transfer callback function,
++ * or situations where you have already allocated a suitably sized buffer at
++ * transfer->buffer.
++ *
++ * \param transfer a transfer
++ * \returns a casted pointer to the start of the transfer data buffer
++ */
++static inline struct libusb_control_setup *libusb_control_transfer_get_setup(
++	struct libusb_transfer *transfer)
++{
++	return (struct libusb_control_setup *)(void *) transfer->buffer;
++}
++
++/** \ingroup asyncio
++ * Helper function to populate the setup packet (first 8 bytes of the data
++ * buffer) for a control transfer. The wIndex, wValue and wLength values should
++ * be given in host-endian byte order.
++ *
++ * \param buffer buffer to output the setup packet into
++ * This pointer must be aligned to at least 2 bytes boundary.
++ * \param bmRequestType see the
++ * \ref libusb_control_setup::bmRequestType "bmRequestType" field of
++ * \ref libusb_control_setup
++ * \param bRequest see the
++ * \ref libusb_control_setup::bRequest "bRequest" field of
++ * \ref libusb_control_setup
++ * \param wValue see the
++ * \ref libusb_control_setup::wValue "wValue" field of
++ * \ref libusb_control_setup
++ * \param wIndex see the
++ * \ref libusb_control_setup::wIndex "wIndex" field of
++ * \ref libusb_control_setup
++ * \param wLength see the
++ * \ref libusb_control_setup::wLength "wLength" field of
++ * \ref libusb_control_setup
++ */
++static inline void libusb_fill_control_setup(unsigned char *buffer,
++	uint8_t bmRequestType, uint8_t bRequest, uint16_t wValue, uint16_t wIndex,
++	uint16_t wLength)
++{
++	struct libusb_control_setup *setup = (struct libusb_control_setup *)(void *) buffer;
++	setup->bmRequestType = bmRequestType;
++	setup->bRequest = bRequest;
++	setup->wValue = libusb_cpu_to_le16(wValue);
++	setup->wIndex = libusb_cpu_to_le16(wIndex);
++	setup->wLength = libusb_cpu_to_le16(wLength);
++}
++
++struct libusb_transfer * LIBUSB_CALL libusb_alloc_transfer(int iso_packets);
++int LIBUSB_CALL libusb_submit_transfer(struct libusb_transfer *transfer);
++int LIBUSB_CALL libusb_cancel_transfer(struct libusb_transfer *transfer);
++void LIBUSB_CALL libusb_free_transfer(struct libusb_transfer *transfer);
++void LIBUSB_CALL libusb_transfer_set_stream_id(
++	struct libusb_transfer *transfer, uint32_t stream_id);
++uint32_t LIBUSB_CALL libusb_transfer_get_stream_id(
++	struct libusb_transfer *transfer);
++
++/** \ingroup asyncio
++ * Helper function to populate the required \ref libusb_transfer fields
++ * for a control transfer.
++ *
++ * If you pass a transfer buffer to this function, the first 8 bytes will
++ * be interpreted as a control setup packet, and the wLength field will be
++ * used to automatically populate the \ref libusb_transfer::length "length"
++ * field of the transfer. Therefore the recommended approach is:
++ * -# Allocate a suitably sized data buffer (including space for control setup)
++ * -# Call libusb_fill_control_setup()
++ * -# If this is a host-to-device transfer with a data stage, put the data
++ *    in place after the setup packet
++ * -# Call this function
++ * -# Call libusb_submit_transfer()
++ *
++ * It is also legal to pass a NULL buffer to this function, in which case this
++ * function will not attempt to populate the length field. Remember that you
++ * must then populate the buffer and length fields later.
++ *
++ * \param transfer the transfer to populate
++ * \param dev_handle handle of the device that will handle the transfer
++ * \param buffer data buffer. If provided, this function will interpret the
++ * first 8 bytes as a setup packet and infer the transfer length from that.
++ * This pointer must be aligned to at least 2 bytes boundary.
++ * \param callback callback function to be invoked on transfer completion
++ * \param user_data user data to pass to callback function
++ * \param timeout timeout for the transfer in milliseconds
++ */
++static inline void libusb_fill_control_transfer(
++	struct libusb_transfer *transfer, libusb_device_handle *dev_handle,
++	unsigned char *buffer, libusb_transfer_cb_fn callback, void *user_data,
++	unsigned int timeout)
++{
++	struct libusb_control_setup *setup = (struct libusb_control_setup *)(void *) buffer;
++	transfer->dev_handle = dev_handle;
++	transfer->endpoint = 0;
++	transfer->type = LIBUSB_TRANSFER_TYPE_CONTROL;
++	transfer->timeout = timeout;
++	transfer->buffer = buffer;
++	if (setup)
++		transfer->length = (int) (LIBUSB_CONTROL_SETUP_SIZE
++			+ libusb_le16_to_cpu(setup->wLength));
++	transfer->user_data = user_data;
++	transfer->callback = callback;
++}
++
++/** \ingroup asyncio
++ * Helper function to populate the required \ref libusb_transfer fields
++ * for a bulk transfer.
++ *
++ * \param transfer the transfer to populate
++ * \param dev_handle handle of the device that will handle the transfer
++ * \param endpoint address of the endpoint where this transfer will be sent
++ * \param buffer data buffer
++ * \param length length of data buffer
++ * \param callback callback function to be invoked on transfer completion
++ * \param user_data user data to pass to callback function
++ * \param timeout timeout for the transfer in milliseconds
++ */
++static inline void libusb_fill_bulk_transfer(struct libusb_transfer *transfer,
++	libusb_device_handle *dev_handle, unsigned char endpoint,
++	unsigned char *buffer, int length, libusb_transfer_cb_fn callback,
++	void *user_data, unsigned int timeout)
++{
++	transfer->dev_handle = dev_handle;
++	transfer->endpoint = endpoint;
++	transfer->type = LIBUSB_TRANSFER_TYPE_BULK;
++	transfer->timeout = timeout;
++	transfer->buffer = buffer;
++	transfer->length = length;
++	transfer->user_data = user_data;
++	transfer->callback = callback;
++}
++
++/** \ingroup asyncio
++ * Helper function to populate the required \ref libusb_transfer fields
++ * for a bulk transfer using bulk streams.
++ *
++ * Since version 1.0.19, \ref LIBUSB_API_VERSION >= 0x01000103
++ *
++ * \param transfer the transfer to populate
++ * \param dev_handle handle of the device that will handle the transfer
++ * \param endpoint address of the endpoint where this transfer will be sent
++ * \param stream_id bulk stream id for this transfer
++ * \param buffer data buffer
++ * \param length length of data buffer
++ * \param callback callback function to be invoked on transfer completion
++ * \param user_data user data to pass to callback function
++ * \param timeout timeout for the transfer in milliseconds
++ */
++static inline void libusb_fill_bulk_stream_transfer(
++	struct libusb_transfer *transfer, libusb_device_handle *dev_handle,
++	unsigned char endpoint, uint32_t stream_id,
++	unsigned char *buffer, int length, libusb_transfer_cb_fn callback,
++	void *user_data, unsigned int timeout)
++{
++	libusb_fill_bulk_transfer(transfer, dev_handle, endpoint, buffer,
++				  length, callback, user_data, timeout);
++	transfer->type = LIBUSB_TRANSFER_TYPE_BULK_STREAM;
++	libusb_transfer_set_stream_id(transfer, stream_id);
++}
++
++/** \ingroup asyncio
++ * Helper function to populate the required \ref libusb_transfer fields
++ * for an interrupt transfer.
++ *
++ * \param transfer the transfer to populate
++ * \param dev_handle handle of the device that will handle the transfer
++ * \param endpoint address of the endpoint where this transfer will be sent
++ * \param buffer data buffer
++ * \param length length of data buffer
++ * \param callback callback function to be invoked on transfer completion
++ * \param user_data user data to pass to callback function
++ * \param timeout timeout for the transfer in milliseconds
++ */
++static inline void libusb_fill_interrupt_transfer(
++	struct libusb_transfer *transfer, libusb_device_handle *dev_handle,
++	unsigned char endpoint, unsigned char *buffer, int length,
++	libusb_transfer_cb_fn callback, void *user_data, unsigned int timeout)
++{
++	transfer->dev_handle = dev_handle;
++	transfer->endpoint = endpoint;
++	transfer->type = LIBUSB_TRANSFER_TYPE_INTERRUPT;
++	transfer->timeout = timeout;
++	transfer->buffer = buffer;
++	transfer->length = length;
++	transfer->user_data = user_data;
++	transfer->callback = callback;
++}
++
++/** \ingroup asyncio
++ * Helper function to populate the required \ref libusb_transfer fields
++ * for an isochronous transfer.
++ *
++ * \param transfer the transfer to populate
++ * \param dev_handle handle of the device that will handle the transfer
++ * \param endpoint address of the endpoint where this transfer will be sent
++ * \param buffer data buffer
++ * \param length length of data buffer
++ * \param num_iso_packets the number of isochronous packets
++ * \param callback callback function to be invoked on transfer completion
++ * \param user_data user data to pass to callback function
++ * \param timeout timeout for the transfer in milliseconds
++ */
++static inline void libusb_fill_iso_transfer(struct libusb_transfer *transfer,
++	libusb_device_handle *dev_handle, unsigned char endpoint,
++	unsigned char *buffer, int length, int num_iso_packets,
++	libusb_transfer_cb_fn callback, void *user_data, unsigned int timeout)
++{
++	transfer->dev_handle = dev_handle;
++	transfer->endpoint = endpoint;
++	transfer->type = LIBUSB_TRANSFER_TYPE_ISOCHRONOUS;
++	transfer->timeout = timeout;
++	transfer->buffer = buffer;
++	transfer->length = length;
++	transfer->num_iso_packets = num_iso_packets;
++	transfer->user_data = user_data;
++	transfer->callback = callback;
++}
++
++/** \ingroup asyncio
++ * Convenience function to set the length of all packets in an isochronous
++ * transfer, based on the num_iso_packets field in the transfer structure.
++ *
++ * \param transfer a transfer
++ * \param length the length to set in each isochronous packet descriptor
++ * \see libusb_get_max_packet_size()
++ */
++static inline void libusb_set_iso_packet_lengths(
++	struct libusb_transfer *transfer, unsigned int length)
++{
++	int i;
++	for (i = 0; i < transfer->num_iso_packets; i++)
++		transfer->iso_packet_desc[i].length = length;
++}
++
++/** \ingroup asyncio
++ * Convenience function to locate the position of an isochronous packet
++ * within the buffer of an isochronous transfer.
++ *
++ * This is a thorough function which loops through all preceding packets,
++ * accumulating their lengths to find the position of the specified packet.
++ * Typically you will assign equal lengths to each packet in the transfer,
++ * and hence the above method is sub-optimal. You may wish to use
++ * libusb_get_iso_packet_buffer_simple() instead.
++ *
++ * \param transfer a transfer
++ * \param packet the packet to return the address of
++ * \returns the base address of the packet buffer inside the transfer buffer,
++ * or NULL if the packet does not exist.
++ * \see libusb_get_iso_packet_buffer_simple()
++ */
++static inline unsigned char *libusb_get_iso_packet_buffer(
++	struct libusb_transfer *transfer, unsigned int packet)
++{
++	int i;
++	size_t offset = 0;
++	int _packet;
++
++	/* oops..slight bug in the API. packet is an unsigned int, but we use
++	 * signed integers almost everywhere else. range-check and convert to
++	 * signed to avoid compiler warnings. FIXME for libusb-2. */
++	if (packet > INT_MAX)
++		return NULL;
++	_packet = (int) packet;
++
++	if (_packet >= transfer->num_iso_packets)
++		return NULL;
++
++	for (i = 0; i < _packet; i++)
++		offset += transfer->iso_packet_desc[i].length;
++
++	return transfer->buffer + offset;
++}
++
++/** \ingroup asyncio
++ * Convenience function to locate the position of an isochronous packet
++ * within the buffer of an isochronous transfer, for transfers where each
++ * packet is of identical size.
++ *
++ * This function relies on the assumption that every packet within the transfer
++ * is of identical size to the first packet. Calculating the location of
++ * the packet buffer is then just a simple calculation:
++ * <tt>buffer + (packet_size * packet)</tt>
++ *
++ * Do not use this function on transfers other than those that have identical
++ * packet lengths for each packet.
++ *
++ * \param transfer a transfer
++ * \param packet the packet to return the address of
++ * \returns the base address of the packet buffer inside the transfer buffer,
++ * or NULL if the packet does not exist.
++ * \see libusb_get_iso_packet_buffer()
++ */
++static inline unsigned char *libusb_get_iso_packet_buffer_simple(
++	struct libusb_transfer *transfer, unsigned int packet)
++{
++	int _packet;
++
++	/* oops..slight bug in the API. packet is an unsigned int, but we use
++	 * signed integers almost everywhere else. range-check and convert to
++	 * signed to avoid compiler warnings. FIXME for libusb-2. */
++	if (packet > INT_MAX)
++		return NULL;
++	_packet = (int) packet;
++
++	if (_packet >= transfer->num_iso_packets)
++		return NULL;
++
++	return transfer->buffer + ((int) transfer->iso_packet_desc[0].length * _packet);
++}
++
++/* sync I/O */
++
++int LIBUSB_CALL libusb_control_transfer(libusb_device_handle *dev_handle,
++	uint8_t request_type, uint8_t bRequest, uint16_t wValue, uint16_t wIndex,
++	unsigned char *data, uint16_t wLength, unsigned int timeout);
++
++int LIBUSB_CALL libusb_bulk_transfer(libusb_device_handle *dev_handle,
++	unsigned char endpoint, unsigned char *data, int length,
++	int *actual_length, unsigned int timeout);
++
++int LIBUSB_CALL libusb_interrupt_transfer(libusb_device_handle *dev_handle,
++	unsigned char endpoint, unsigned char *data, int length,
++	int *actual_length, unsigned int timeout);
++
++/** \ingroup desc
++ * Retrieve a descriptor from the default control pipe.
++ * This is a convenience function which formulates the appropriate control
++ * message to retrieve the descriptor.
++ *
++ * \param dev a device handle
++ * \param desc_type the descriptor type, see \ref libusb_descriptor_type
++ * \param desc_index the index of the descriptor to retrieve
++ * \param data output buffer for descriptor
++ * \param length size of data buffer
++ * \returns number of bytes returned in data, or LIBUSB_ERROR code on failure
++ */
++static inline int libusb_get_descriptor(libusb_device_handle *dev,
++	uint8_t desc_type, uint8_t desc_index, unsigned char *data, int length)
++{
++	return libusb_control_transfer(dev, LIBUSB_ENDPOINT_IN,
++		LIBUSB_REQUEST_GET_DESCRIPTOR, (uint16_t) ((desc_type << 8) | desc_index),
++		0, data, (uint16_t) length, 1000);
++}
++
++/** \ingroup desc
++ * Retrieve a descriptor from a device.
++ * This is a convenience function which formulates the appropriate control
++ * message to retrieve the descriptor. The string returned is Unicode, as
++ * detailed in the USB specifications.
++ *
++ * \param dev a device handle
++ * \param desc_index the index of the descriptor to retrieve
++ * \param langid the language ID for the string descriptor
++ * \param data output buffer for descriptor
++ * \param length size of data buffer
++ * \returns number of bytes returned in data, or LIBUSB_ERROR code on failure
++ * \see libusb_get_string_descriptor_ascii()
++ */
++static inline int libusb_get_string_descriptor(libusb_device_handle *dev,
++	uint8_t desc_index, uint16_t langid, unsigned char *data, int length)
++{
++	return libusb_control_transfer(dev, LIBUSB_ENDPOINT_IN,
++		LIBUSB_REQUEST_GET_DESCRIPTOR, (uint16_t)((LIBUSB_DT_STRING << 8) | desc_index),
++		langid, data, (uint16_t) length, 1000);
++}
++
++int LIBUSB_CALL libusb_get_string_descriptor_ascii(libusb_device_handle *dev,
++	uint8_t desc_index, unsigned char *data, int length);
++
++/* polling and timeouts */
++
++int LIBUSB_CALL libusb_try_lock_events(libusb_context *ctx);
++void LIBUSB_CALL libusb_lock_events(libusb_context *ctx);
++void LIBUSB_CALL libusb_unlock_events(libusb_context *ctx);
++int LIBUSB_CALL libusb_event_handling_ok(libusb_context *ctx);
++int LIBUSB_CALL libusb_event_handler_active(libusb_context *ctx);
++void LIBUSB_CALL libusb_lock_event_waiters(libusb_context *ctx);
++void LIBUSB_CALL libusb_unlock_event_waiters(libusb_context *ctx);
++int LIBUSB_CALL libusb_wait_for_event(libusb_context *ctx, struct timeval *tv);
++
++int LIBUSB_CALL libusb_handle_events_timeout(libusb_context *ctx,
++	struct timeval *tv);
++int LIBUSB_CALL libusb_handle_events_timeout_completed(libusb_context *ctx,
++	struct timeval *tv, int *completed);
++int LIBUSB_CALL libusb_handle_events(libusb_context *ctx);
++int LIBUSB_CALL libusb_handle_events_completed(libusb_context *ctx, int *completed);
++int LIBUSB_CALL libusb_handle_events_locked(libusb_context *ctx,
++	struct timeval *tv);
++int LIBUSB_CALL libusb_pollfds_handle_timeouts(libusb_context *ctx);
++int LIBUSB_CALL libusb_get_next_timeout(libusb_context *ctx,
++	struct timeval *tv);
++
++/** \ingroup poll
++ * File descriptor for polling
++ */
++struct libusb_pollfd {
++	/** Numeric file descriptor */
++	int fd;
++
++	/** Event flags to poll for from <poll.h>. POLLIN indicates that you
++	 * should monitor this file descriptor for becoming ready to read from,
++	 * and POLLOUT indicates that you should monitor this file descriptor for
++	 * nonblocking write readiness. */
++	short events;
++};
++
++/** \ingroup poll
++ * Callback function, invoked when a new file descriptor should be added
++ * to the set of file descriptors monitored for events.
++ * \param fd the new file descriptor
++ * \param events events to monitor for, see \ref libusb_pollfd for a
++ * description
++ * \param user_data User data pointer specified in
++ * libusb_set_pollfd_notifiers() call
++ * \see libusb_set_pollfd_notifiers()
++ */
++typedef void (LIBUSB_CALL *libusb_pollfd_added_cb)(int fd, short events,
++	void *user_data);
++
++/** \ingroup poll
++ * Callback function, invoked when a file descriptor should be removed from
++ * the set of file descriptors being monitored for events. After returning
++ * from this callback, do not use that file descriptor again.
++ * \param fd the file descriptor to stop monitoring
++ * \param user_data User data pointer specified in
++ * libusb_set_pollfd_notifiers() call
++ * \see libusb_set_pollfd_notifiers()
++ */
++typedef void (LIBUSB_CALL *libusb_pollfd_removed_cb)(int fd, void *user_data);
++
++const struct libusb_pollfd ** LIBUSB_CALL libusb_get_pollfds(
++	libusb_context *ctx);
++void LIBUSB_CALL libusb_set_pollfd_notifiers(libusb_context *ctx,
++	libusb_pollfd_added_cb added_cb, libusb_pollfd_removed_cb removed_cb,
++	void *user_data);
++
++/** \ingroup hotplug
++ * Callback handle.
++ *
++ * Callbacks handles are generated by libusb_hotplug_register_callback()
++ * and can be used to deregister callbacks. Callback handles are unique
++ * per libusb_context and it is safe to call libusb_hotplug_deregister_callback()
++ * on an already deregisted callback.
++ *
++ * Since version 1.0.16, \ref LIBUSB_API_VERSION >= 0x01000102
++ *
++ * For more information, see \ref hotplug.
++ */
++typedef int libusb_hotplug_callback_handle;
++
++/** \ingroup hotplug
++ *
++ * Since version 1.0.16, \ref LIBUSB_API_VERSION >= 0x01000102
++ *
++ * Flags for hotplug events */
++typedef enum {
++	/** Arm the callback and fire it for all matching currently attached devices. */
++	LIBUSB_HOTPLUG_ENUMERATE = 1,
++} libusb_hotplug_flag;
++
++/** \ingroup hotplug
++ *
++ * Since version 1.0.16, \ref LIBUSB_API_VERSION >= 0x01000102
++ *
++ * Hotplug events */
++typedef enum {
++	/** A device has been plugged in and is ready to use */
++	LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED = 0x01,
++
++	/** A device has left and is no longer available.
++	 * It is the user's responsibility to call libusb_close on any handle associated with a disconnected device.
++	 * It is safe to call libusb_get_device_descriptor on a device that has left */
++	LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT    = 0x02,
++} libusb_hotplug_event;
++
++/** \ingroup hotplug
++ * Wildcard matching for hotplug events */
++#define LIBUSB_HOTPLUG_MATCH_ANY -1
++
++/** \ingroup hotplug
++ * Hotplug callback function type. When requesting hotplug event notifications,
++ * you pass a pointer to a callback function of this type.
++ *
++ * This callback may be called by an internal event thread and as such it is
++ * recommended the callback do minimal processing before returning.
++ *
++ * libusb will call this function later, when a matching event had happened on
++ * a matching device. See \ref hotplug for more information.
++ *
++ * It is safe to call either libusb_hotplug_register_callback() or
++ * libusb_hotplug_deregister_callback() from within a callback function.
++ *
++ * Since version 1.0.16, \ref LIBUSB_API_VERSION >= 0x01000102
++ *
++ * \param ctx            context of this notification
++ * \param device         libusb_device this event occurred on
++ * \param event          event that occurred
++ * \param user_data      user data provided when this callback was registered
++ * \returns bool whether this callback is finished processing events.
++ *                       returning 1 will cause this callback to be deregistered
++ */
++typedef int (LIBUSB_CALL *libusb_hotplug_callback_fn)(libusb_context *ctx,
++						libusb_device *device,
++						libusb_hotplug_event event,
++						void *user_data);
++
++/** \ingroup hotplug
++ * Register a hotplug callback function
++ *
++ * Register a callback with the libusb_context. The callback will fire
++ * when a matching event occurs on a matching device. The callback is
++ * armed until either it is deregistered with libusb_hotplug_deregister_callback()
++ * or the supplied callback returns 1 to indicate it is finished processing events.
++ *
++ * If the \ref LIBUSB_HOTPLUG_ENUMERATE is passed the callback will be
++ * called with a \ref LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED for all devices
++ * already plugged into the machine. Note that libusb modifies its internal
++ * device list from a separate thread, while calling hotplug callbacks from
++ * libusb_handle_events(), so it is possible for a device to already be present
++ * on, or removed from, its internal device list, while the hotplug callbacks
++ * still need to be dispatched. This means that when using \ref
++ * LIBUSB_HOTPLUG_ENUMERATE, your callback may be called twice for the arrival
++ * of the same device, once from libusb_hotplug_register_callback() and once
++ * from libusb_handle_events(); and/or your callback may be called for the
++ * removal of a device for which an arrived call was never made.
++ *
++ * Since version 1.0.16, \ref LIBUSB_API_VERSION >= 0x01000102
++ *
++ * \param[in] ctx context to register this callback with
++ * \param[in] events bitwise or of events that will trigger this callback. See \ref
++ *            libusb_hotplug_event
++ * \param[in] flags hotplug callback flags. See \ref libusb_hotplug_flag
++ * \param[in] vendor_id the vendor id to match or \ref LIBUSB_HOTPLUG_MATCH_ANY
++ * \param[in] product_id the product id to match or \ref LIBUSB_HOTPLUG_MATCH_ANY
++ * \param[in] dev_class the device class to match or \ref LIBUSB_HOTPLUG_MATCH_ANY
++ * \param[in] cb_fn the function to be invoked on a matching event/device
++ * \param[in] user_data user data to pass to the callback function
++ * \param[out] handle pointer to store the handle of the allocated callback (can be NULL)
++ * \returns LIBUSB_SUCCESS on success LIBUSB_ERROR code on failure
++ */
++int LIBUSB_CALL libusb_hotplug_register_callback(libusb_context *ctx,
++						libusb_hotplug_event events,
++						libusb_hotplug_flag flags,
++						int vendor_id, int product_id,
++						int dev_class,
++						libusb_hotplug_callback_fn cb_fn,
++						void *user_data,
++						libusb_hotplug_callback_handle *handle);
++
++/** \ingroup hotplug
++ * Deregisters a hotplug callback.
++ *
++ * Deregister a callback from a libusb_context. This function is safe to call from within
++ * a hotplug callback.
++ *
++ * Since version 1.0.16, \ref LIBUSB_API_VERSION >= 0x01000102
++ *
++ * \param[in] ctx context this callback is registered with
++ * \param[in] handle the handle of the callback to deregister
++ */
++void LIBUSB_CALL libusb_hotplug_deregister_callback(libusb_context *ctx,
++						libusb_hotplug_callback_handle handle);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif
+--- owfs-3.1p0/module/owlib/src/include/ow.h
++++ owfs-3.1p0x/module/owlib/src/include/ow.h
+@@ -274,6 +274,9 @@
+ /* Many mutexes separated out for readability */
+ #include "ow_mutexes.h"
+ 
++// regular expressions
++#include "ow_regex.h"
++
+ /* Special checks for config file changes -- OS specific */
+  #ifdef HAVE_SYS_EVENT_H
+   /* BSD and OSX */
+@@ -348,7 +351,6 @@
+ 
+ /* device display format */
+ enum deviceformat { fdi, fi, fdidc, fdic, fidc, fic };
+-
+ /* OWSERVER messages */
+ #include "ow_message.h"
+ 
+--- /dev/null
++++ owfs-3.1p0x/module/owlib/src/include/ow_2810.h
+@@ -0,0 +1,24 @@
++/*
++$Id$
++    OWFS -- One-Wire filesystem
++    OWHTTPD -- One-Wire Web Server
++    Written 2003 Paul H Alfille
++	email: paul.alfille@gmail.com
++	Released under the GPL
++	See the header file: ow.h for full attribution
++	1wire/iButton system from Dallas Semiconductor
++*/
++
++#ifndef OW_2810_H
++#define OW_2810_H
++
++#ifndef OWFS_CONFIG_H
++#error Please make sure owfs_config.h is included *before* this header file
++#endif
++#include "ow_standard.h"
++
++/* ------- Structures ----------- */
++
++DeviceHeader(DS28E10);
++
++#endif							/* OW_2810_H */
+--- owfs-3.1p0/module/owlib/src/include/ow_arg.h
++++ owfs-3.1p0x/module/owlib/src/include/ow_arg.h
+@@ -65,7 +65,6 @@
+ GOOD_OR_BAD ARG_Mock(const char *arg);
+ GOOD_OR_BAD ARG_Link(const char *arg);
+ GOOD_OR_BAD ARG_W1_monitor(void);
+-GOOD_OR_BAD ARG_USB_monitor(const char *arg);
+ GOOD_OR_BAD ARG_MasterHub(const char *arg);
+ GOOD_OR_BAD ARG_Browse(void);
+ GOOD_OR_BAD ARG_Passive(char *adapter_type_name, const char *arg);
+--- owfs-3.1p0/module/owlib/src/include/ow_charblob.h
++++ owfs-3.1p0x/module/owlib/src/include/ow_charblob.h
+@@ -1,5 +1,4 @@
+ /*
+-$Id$
+     OW -- One-Wire filesystem
+     version 0.4 7/2/2003
+ 
+--- owfs-3.1p0/module/owlib/src/include/ow_connection_in.h
++++ owfs-3.1p0x/module/owlib/src/include/ow_connection_in.h
+@@ -71,6 +71,7 @@
+ 	adapter_xport,
+ 	adapter_usb_monitor,
+ 	adapter_enet_monitor,
++	adapter_masterhub_monitor,
+ 	adapter_external,
+ 	adapter_pbm,
+ 	adapter_ds1wm,
+--- owfs-3.1p0/module/owlib/src/include/ow_dirblob.h
++++ owfs-3.1p0x/module/owlib/src/include/ow_dirblob.h
+@@ -1,5 +1,4 @@
+ /*
+-$Id$
+     OW -- One-Wire filesystem
+     version 0.4 7/2/2003
+ 
+--- owfs-3.1p0/module/owlib/src/include/ow_global.h
++++ owfs-3.1p0x/module/owlib/src/include/ow_global.h
+@@ -56,6 +56,7 @@
+ 
+ #define DEFAULT_USB_SCAN_INTERVAL 10 /* seconds */
+ #define DEFAULT_ENET_SCAN_INTERVAL 60 /* seconds */
++#define DEFAULT_MASTERHUB_SCAN_INTERVAL 60 /* seconds */
+ 
+ enum zero_support { zero_unknown, zero_none, zero_bonjour, zero_avahi, } ;
+ 
+@@ -95,7 +96,6 @@
+ 	int error_level_restore;
+ 	int error_print;
+ 	int fatal_debug;
+-	int concurrent_connections;
+ 	ASCII *fatal_debug_file;
+ 	int readonly;
+ 	int max_clients;			// for ftp
+@@ -123,8 +123,6 @@
+ 	int timeout_persistent_high;
+ 	int clients_persistent_low;
+ 	int clients_persistent_high;
+-	int usb_scan_interval ;
+-	int enet_scan_interval ;
+ 	int pingcrazy;
+ 	int no_dirall;
+ 	int no_get;
+--- owfs-3.1p0/module/owlib/src/include/ow_master.h
++++ owfs-3.1p0x/module/owlib/src/include/ow_master.h
+@@ -165,12 +165,23 @@
+ // Search for USB (DS9490R) devices
+ struct master_usb_monitor {
+ 	FILE_DESCRIPTOR_OR_ERROR shutdown_pipe[2] ;
++	int usb_scan_interval ;
++
+ };
+ 
+ struct master_enet_monitor {
+ 	FILE_DESCRIPTOR_OR_ERROR shutdown_pipe[2] ;
++	int enet_scan_interval ;
++
+ };
+ 
++// Search for HobbyBoards MasterHub (network) devices
++struct master_masterhub_monitor {
++	FILE_DESCRIPTOR_OR_ERROR shutdown_pipe[2] ;
++	int mh_scan_interval ;
++
++};
++
+ struct master_browse {
+ #if OW_ZERO
+ 	DNSServiceRef bonjour_browse;
+@@ -195,20 +206,21 @@
+ 	struct master_link link;
+ 	struct master_server server ;
+ 	struct master_usb usb;
++	struct master_usb_monitor usb_monitor ;
+ 	struct master_i2c i2c;
+ 	struct master_fake fake;
+ 	struct master_fake tester;
+ 	struct master_fake mock;
+ 	struct master_enet enet;
++	struct master_enet_monitor enet_monitor ;
+ 	struct master_ha5 ha5;
+ 	struct master_ha7 ha7;
+ 	struct master_pbm pbm;
+ 	struct master_w1 w1;
+ 	struct master_masterhub masterhub;
++	struct master_masterhub_monitor masterhub_monitor ;
+ 	struct master_w1_monitor w1_monitor ;
+ 	struct master_browse browse;
+-	struct master_usb_monitor usb_monitor ;
+-	struct master_enet_monitor enet_monitor ;
+ 	struct master_ds1wm ds1wm ;
+ };
+ 
+--- owfs-3.1p0/module/owlib/src/include/ow_opt.h
++++ owfs-3.1p0x/module/owlib/src/include/ow_opt.h
+@@ -64,13 +64,12 @@
+ 	e_ha7, e_fake, e_link, e_ha3, e_ha4b, e_ha5, e_ha7e, e_tester, e_mock, e_etherweather, e_passive, e_i2c, e_xport, 
+ 	e_enet, e_pbm, e_masterhub, e_ds1wm, e_k1wm,
+ 	e_want_background, e_want_foreground,
+-	e_w1_monitor, e_usb_monitor, e_browse,
++	e_w1_monitor, e_browse,
+ 	e_pressure_mbar, e_pressure_atm, e_pressure_mmhg, e_pressure_inhg, e_pressure_psi, e_pressure_Pa, e_pressure_6, e_pressure_7,
+ 	e_announce,
+ 	e_timeout_volatile, e_timeout_stable, e_timeout_directory, e_timeout_presence,
+ 	e_timeout_serial, e_timeout_usb, e_timeout_network, e_timeout_server, e_timeout_ftp, e_timeout_ha7, e_timeout_w1,
+ 	e_timeout_persistent_low, e_timeout_persistent_high, e_clients_persistent_low, e_clients_persistent_high,
+-	e_concurrent_connections,
+ 	e_fatal_debug_file,
+ 	e_baud,
+ 	e_templow, e_temphigh,
+--- owfs-3.1p0/module/owlib/src/include/ow_parse_address.h
++++ owfs-3.1p0x/module/owlib/src/include/ow_parse_address.h
+@@ -1,6 +1,4 @@
+ /*
+-$Id$
+-
+     Written 2003 Paul H Alfille
+         Fuse code based on "fusexmp" {GPL} by Miklos Szeredi, mszeredi@inf.bme.hu
+         Serial code based on "xt" {GPL} by David Querbach, www.realtime.bc.ca
+--- owfs-3.1p0/module/owlib/src/include/ow_port_in.h
++++ owfs-3.1p0x/module/owlib/src/include/ow_port_in.h
+@@ -34,6 +34,7 @@
+ 	bus_usb,
+ 	bus_usb_monitor,
+ 	bus_enet_monitor,
++	bus_masterhub_monitor,
+ 	bus_parallel,
+ 	bus_server,
+ 	bus_zero,
+--- /dev/null
++++ owfs-3.1p0x/module/owlib/src/include/ow_regex.h
+@@ -0,0 +1,50 @@
++/*
++    OW -- One-Wire filesystem
++    version 0.4 7/2/2003
++
++    Function naming scheme:
++    OW -- Generic call to interaface
++    LI -- LINK commands
++    L1 -- 2480B commands
++    FS -- filesystem commands
++    UT -- utility functions
++
++    Written 2003 Paul H Alfille
++        Fuse code based on "fusexmp" {GPL} by Miklos Szeredi, mszeredi@inf.bme.hu
++        Serial code based on "xt" {GPL} by David Querbach, www.realtime.bc.ca
++        in turn based on "miniterm" by Sven Goldt, goldt@math.tu.berlin.de
++    GPL license
++    This program is free software; you can redistribute it and/or
++    modify it under the terms of the GNU General Public License
++    as published by the Free Software Foundation; either version 2
++    of the License, or (at your option) any later version.
++
++    This program is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++    GNU General Public License for more details.
++
++    Other portions based on Dallas Semiconductor Public Domain Kit,
++*/
++
++// Not intended to be stand-alone -- called from ow.h
++#ifndef OW_REGEX_H			/* tedious wrapper */
++#define OW_REGEX_H
++
++#include <regex.h>
++
++void ow_regcomp( regex_t * preg, const char * regex, int cflags ) ;
++void ow_regdestroy( void ) ;
++void ow_regfree( regex_t * reg ) ;
++
++struct ow_regmatch {
++	int number ;
++	char ** pre ;
++	char ** match ;
++	char ** post ;
++} ;
++
++int ow_regexec( const regex_t * rex, const char * string, struct ow_regmatch * orm ) ;
++void ow_regexec_free( struct ow_regmatch * orm ) ;
++
++#endif							/* OW_REGEX_H */
+--- /dev/null
++++ owfs-3.1p0x/module/owlib/src/include/ownet.h
+@@ -0,0 +1,124 @@
++/*
++$Id$
++    OW -- One-Wire filesystem
++
++    Written 2008 Paul H Alfille
++    GPL license
++    This program is free software; you can redistribute it and/or
++    modify it under the terms of the GNU General Public License
++    as published by the Free Software Foundation; either version 2
++    of the License.
++
++    This program is distributed in the hope that it will be useful,
++    but WITHOUT ANY WARRANTY; without even the implied warranty of
++    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++    GNU General Public License for more details.
++
++*/
++
++/* This is the libownet header
++   a C programmikng interface to easily access owserver
++   and thus the entore Dallas/Maxim 1-wire system.
++
++   This header has all the public routines for a program linking in the library
++*/
++
++#ifndef OWNET_H					/* tedious wrapper */
++#define OWNET_H
++
++#include <sys/types.h>
++
++/* OWNET_HANDLE
++   A (non-negative) integer corresponding to a particular owserver connection.
++   It is used for each function call, and allows multiple owservers to be
++   accessed
++*/
++typedef int OWNET_HANDLE;
++
++/* OWNET_HANDLE OWNET_init( const char * owserver )
++   Starting routine -- takes a string correspondiong to the tcp address of owserver
++   e.g. "192.168.0.1:5000" or "5001" or even "" for the default localhost:4304
++
++   returns a non-negative HANDLE, or <0 for error
++*/
++OWNET_HANDLE OWNET_init(const char *owserver_tcp_address_and_port);
++
++/* int OWNET_dirlist( OWNET_HANDLE h, const char * onewire_path, 
++        char * return_string )
++   Get the 1-wire directory as a comma-separated list.
++   return_string is allocated by this program, and must be free-ed by your program.
++   
++   return non-negative length of return_string on success
++   return <0 error and NULL on error
++*/
++int OWNET_dirlist(OWNET_HANDLE h, const char *onewire_path, char *return_string);
++
++/* int OWNET_dirprocess( OWNET_HANDLE h, const char * onewire_path, 
++        void (*dirfunc) (void * passed_on_value, const char* directory_element), 
++        void * passed_on_value )
++   Get the 1-wire directory corresponding to the given path
++   Call function dirfunc on each element
++   passed_on_value is an arbitrary pointer that gets included in the dirfunc call to
++   add some state information
++
++   returns number of elements processed,
++   or <0 for error
++*/
++int OWNET_dirprocess(OWNET_HANDLE h, const char *onewire_path,
++					 void (*dirfunc) (void *passed_on_value, const char *directory_element), void *passed_on_value);
++
++
++/* int OWNET_read( OWNET_HANDLE h, const char * onewire_path, 
++        char * return_string )
++   Read a value from a one-wire device property
++   return_string has the result but must be free-ed by the calling program.
++
++   returns length of result on success,
++   returns <0 on error
++*/
++int OWNET_read(OWNET_HANDLE h, const char *onewire_path, char *return_string);
++
++/* int OWNET_write( OWNET_HANDLE h, const char * onewire_path, 
++        const char * value_string, size_t value_length )
++   Write a value to a one-wire device property
++   
++   return 0 on success
++   return <0 on error
++*/
++int OWNET_write(OWNET_HANDLE h, const char *onewire_path, const char *value_string, size_t value_length);
++
++/* void OWNET_close( OWNET_HANDLE h)
++   close a particular owserver connection
++*/
++void OWNET_close(OWNET_HANDLE h);
++
++/* void OWNET_closeall( void )
++   close all owserver connections
++*/
++void OWNET_closeall(void);
++
++/* get and set temperature scale
++   Note that temperature scale applies to all HANDLES
++   C - celsius
++   F - farenheit
++   R - rankine
++   K - kelvin
++   0 -> set default (C)
++*/
++void OWNET_set_temperature_scale(char temperature_scale);
++char OWNET_get_temperature_scale(void);
++
++/* get and set device format
++   Note that device format applies to all HANDLES
++   f.i default
++   f.i.c
++   fi.c
++   fi
++   f.ic
++   fic
++   NULL or "" -> set default
++*/
++void OWNET_set_device_format(const char *device_format);
++const char *OWNET_get_device_format(void);
++
++#endif							/* OWNET_H */
+--- /dev/null
++++ owfs-3.1p0x/module/owshell/src/c/compat.c
+@@ -0,0 +1,137 @@
++/*
++$Id$
++    OWFS -- One-Wire filesystem
++    OWHTTPD -- One-Wire Web Server
++    Written 2003 Paul H Alfille
++	email: paul.alfille@gmail.com
++	Released under the GPL
++	See the header file: ow.h for full attribution
++	1wire/iButton system from Dallas Semiconductor
++*/
++
++#include <config.h>
++#include "owfs_config.h"
++#include "ow.h"
++
++//#include "compat.h"
++
++
++#ifndef HAVE_STRSEP
++/*-
++ * Copyright (c) 1990, 1993
++ *      The Regents of the University of California.  All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ * 3. Neither the name of the University nor the names of its contributors
++ *    may be used to endorse or promote products derived from this software
++ *    without specific prior written permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
++ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
++ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
++ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
++ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
++ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE.
++ */
++
++ /*
++  * Get next token from string *stringp, where tokens are possibly-empty
++  * strings separated by characters from delim.
++  *
++  * Writes NULs into the string at *stringp to end tokens.
++  * delim need not remain constant from call to call.
++  * On return, *stringp points past the last NUL written (if there might
++  * be further tokens), or is NULL (if there are definitely no more tokens).
++  *
++  * If *stringp is NULL, strsep returns NULL.
++  */
++char *strsep(char **stringp, const char *delim)
++{
++	char *s;
++	const char *spanp;
++	int c, sc;
++	char *tok;
++
++	if ((s = *stringp) == NULL)
++		return (NULL);
++	for (tok = s;;) {
++		c = *s++;
++		spanp = delim;
++		do {
++			if ((sc = *spanp++) == c) {
++				if (c == 0)
++					s = NULL;
++				else
++					s[-1] = 0;
++				*stringp = s;
++				return (tok);
++			}
++		} while (sc != 0);
++	}
++	/* NOTREACHED */
++}
++
++#endif							/* !defined(HAVE_STRSEP) */
++
++
++#ifndef HAVE_TDESTROY
++/*
++  uClibc older than 0.9.19 is missing tdestroy() (don't know exactly when
++  it was added) I added a replacement to this, just to be able to compile
++  owfs for WRT54G without any patched uClibc.
++*/
++
++typedef struct node_t {
++	void *key;
++	struct node_t *left, *right;
++} node;
++
++static void tdestroy_recurse_(node * root, void *freefct)
++{
++	if (root->left != NULL) {
++		tdestroy_recurse_(root->left, freefct);
++#ifdef DELETE_KEY
++		free(root->left);
++		root->left = NULL;
++#endif
++	}
++	if (root->right != NULL) {
++		tdestroy_recurse_(root->right, freefct);
++#ifdef DELETE_KEY
++		free(root->right);
++		root->right = NULL;
++#endif
++	}
++	//(*freefct) ((void *) root->key);
++#ifdef DELETE_KEY
++	if (root->key) {
++		free(root->key);
++		root->key = NULL;
++	}
++#endif
++}
++
++void tdestroy(void *vroot, void *freefct)
++{
++	node *root = (node *) vroot;
++	if (root != NULL) {
++		tdestroy_recurse_(root, freefct);
++#ifdef DELETE_KEY
++		/* Free the node itself.  */
++		free(root);
++#endif
++	}
++}
++#endif							/* HAVE_TDESTROY */
+--- /dev/null
++++ owfs-3.1p0x/module/owshell/src/c/ow_connect.c
+@@ -0,0 +1,32 @@
++/*
++$Id$
++    OWFS -- One-Wire filesystem
++    OWHTTPD -- One-Wire Web Server
++    Written 2003 Paul H Alfille
++    email: paul.alfille@gmail.com
++    Released under the GPL
++    See the header file: ow.h for full attribution
++    1wire/iButton system from Dallas Semiconductor
++*/
++
++#include "owshell.h"
++
++/* Routines for handling a linked list of connections in and out */
++/* typical connection in would be gthe serial port or USB */
++
++/* Make a new owserver_connection, and place it in the chain */
++/* Based on a shallow copy of "in" if not NULL */
++struct connection_in *NewIn(void)
++{
++	size_t len = sizeof(struct connection_in);
++	struct connection_in *now = (struct connection_in *) malloc(len);
++	if (now) {
++		memset(now, 0, len);
++		now->next = owserver_connection;	/* put in linked list at start */
++		owserver_connection = now;
++		now->index = 0;
++	} else {
++		PRINT_ERROR( "Cannot allocate memory for adapter structure,\n");
++	}
++	return now;
++}
+--- owfs-3.1p0/module/owshell/src/include/owshell.h
++++ owfs-3.1p0x/module/owshell/src/include/owshell.h
+@@ -179,7 +179,6 @@
+ 	int announce_off;			// use zeroconf?
+ 	struct antiloop Token;
+ 	int readonly;
+-	int max_clients;			// for ftp
+ 	int autoserver;
+ 	int quiet ;
+ 	int trim ;
