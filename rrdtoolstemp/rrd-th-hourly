@@ -10,16 +10,16 @@ RRD_DATA_DIR="/etc/rrdtoolstemp"
 count="1"
 while [ "$count" -le "0${OBJECTS_N}" ]
 do
-	eval sensor='SENSOR_'${count}
-	[ "$sensor" <> "TH" ] && continue
+	eval sensor='$SENSOR_'${count}
 	eval objectname='$OBJECTNAME_'${count}
 	eval filename='$FILENAME_'${count}
 	eval webdir='$WEBDIR_'${count}
 	# set default if value empty
 	[ -z "$objectname" ] && "Test"
-	[ -z "$filename" ] && "testfile"
-	[ -z "$webdir" ]  && webdir="/var/www/localhost/htdocs"
+	[ -z "$filename" ]   && "testfile"
+	[ -z "$webdir" ]     && webdir="/var/www/localhost/htdocs"
 	count=`expr ${count} + 1`
+	[ "$sensor" != "TH" ] && continue
 
 	# 1 Tag
 	/usr/bin/rrdtool graph ${webdir}/${filename}-d.png \

@@ -10,8 +10,7 @@ RRD_DATA_DIR="/etc/rrdtoolstemp"
 count="1"
 while [ "$count" -le "0${OBJECTS_N}" ]
 do
-	eval sensor='SENSOR_'${count}
-	[ "$sensor" <> "TH" ] && continue
+	eval sensor='$SENSOR_'${count}
 	eval objectname='$OBJECTNAME_'${count}
 	eval filename='$FILENAME_'${count}
 	eval webdir='$WEBDIR_'${count}
@@ -24,6 +23,7 @@ do
 	[ -z "$gettemp" ]    && gettemp="echo 20.000"
 	[ -z "$gethumi" ]    && gethumi="echo 40.000"
 	count=`expr ${count} + 1`
+	[ "$sensor" != "TH" ] && continue
 
 	# create database if not exists
 	[ -f "${RRD_DATA_DIR}/${filename}.rrd" ] || {
@@ -44,7 +44,7 @@ do
 	# read the humidity (%)
 	valhumi=$($gethumi)
 	# remove leading character
-	valhumi=$(echo $valtemp | cut -c -5)
+	valhumi=$(echo $valhumi | cut -c -5)
 
 	/usr/bin/rrdtool update ${RRD_DATA_DIR}/${filename}.rrd N:$valtemp:$valhumi
 
