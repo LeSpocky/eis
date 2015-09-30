@@ -1,0 +1,100 @@
+#!/bin/sh
+# update script for temperature/humidity sensors EDS0065...
+# 30.09.2015 Jens Vehlhaber jens@eisfair.org 
+# Released under the GPL 
+
+RRD_DATA_DIR="/etc/rrdtoolstemp"
+
+. /etc/rrdtoolstemp/objects.conf
+
+count="1"
+while [ "$count" -le "0${OBJECTS_N}" ]
+do
+	eval sensor='SENSOR_'${count}
+	[ "$sensor" <> "TH" ] && continue
+	eval objectname='$OBJECTNAME_'${count}
+	eval filename='$FILENAME_'${count}
+	eval webdir='$WEBDIR_'${count}
+	eval gettemp='$GETTHT_'${count}
+	eval gethumi='$GETTHH_'${count}
+	# set default if value empty
+	[ -z "$objectname" ] && "Test"
+	[ -z "$filename" ]   && "testfile"
+	[ -z "$webdir" ]     && webdir="/var/www/localhost/htdocs"
+	[ -z "$gettemp" ]    && gettemp="echo 20.000"
+	[ -z "$gethumi" ]    && gethumi="echo 40.000"
+	count=`expr ${count} + 1`
+
+	# create database if not exists
+	[ -f "${RRD_DATA_DIR}/${filename}.rrd" ] || {
+	/usr/bin/rrdtool create ${RRD_DATA_DIR}/${filename}.rrd \
+	--step 60 \
+	DS:temp:GAUGE:300:-30:100 \
+	DS:humi:GAUGE:300:0:100 \
+	RRA:AVERAGE:0.5:1:1200 \
+	RRA:MIN:0.5:12:2400 \
+	RRA:MAX:0.5:12:2400 \
+	RRA:AVERAGE:0.5:12:2400 
+	}
+
+	# read the temperature (degrees celsius)
+	valtemp=$($gettemp)
+	# remove leading character
+	valtemp=$(echo $valtemp | cut -c -5)
+	# read the humidity (%)
+	valhumi=$($gethumi)
+	# remove leading character
+	valhumi=$(echo $valtemp | cut -c -5)
+
+	/usr/bin/rrdtool update ${RRD_DATA_DIR}/${filename}.rrd N:$valtemp:$valhumi
+
+	if [ ! -e "${webdir}" ]
+	then
+		mkdir -p ${webdir}
+		{
+		echo "<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>"
+		echo "<img src=\"${filename}-h.png\"><br><br>" 
+		echo "<img src=\"${filename}-d.png\"><br><br>" 
+		echo "<img src=\"${filename}-w.png\"><br><br>" 
+		echo "<img src=\"${filename}-m.png\"><br><br>" 
+		echo "<img src=\"${filename}-y.png\"><br><br>"
+		echo "</body>" 
+		} > ${webdir}/index.html
+	fi
+
+	/usr/bin/rrdtool graph ${webdir}/${filename}-h.png \
+	--end now --start end-2h \
+	-w 740 -h 280 -a PNG \
+	-l -0 -u 100 \
+	--font DEFAULT:9: \
+	--slope-mode \
+	-t "$objectname - 2 Stunden" \
+	--vertical-label "Temp (°C) / Feuchte (%)" \
+	DEF:temp=${RRD_DATA_DIR}/${filename}.rrd:temp:AVERAGE \
+	DEF:tmin=${RRD_DATA_DIR}/${filename}.rrd:temp:MIN \
+	DEF:tmax=${RRD_DATA_DIR}/${filename}.rrd:temp:MAX \
+	DEF:humi=${RRD_DATA_DIR}/${filename}.rrd:humi:AVERAGE  \
+	DEF:fmin=${RRD_DATA_DIR}/${filename}.rrd:humi:MIN \
+	DEF:fmax=${RRD_DATA_DIR}/${filename}.rrd:humi:MAX \
+	VDEF:gtakt=temp,LAST \
+	VDEF:gtmin=tmin,MINIMUM \
+	VDEF:gtavr=tmin,AVERAGE \
+	VDEF:gtmax=tmax,MAXIMUM \
+	VDEF:gfakt=humi,LAST \
+	VDEF:gfmin=fmin,MINIMUM \
+	VDEF:gfavr=fmin,AVERAGE \
+	VDEF:gfmax=fmax,MAXIMUM \
+	LINE1:temp#ff0000:"Temperatur °C\t\t\t" \
+	LINE2:humi#0000ff:"Feuchte %\n" \
+	GPRINT:gtakt:"Temp aktuell\: %10.2lf °C\t" \
+	GPRINT:gfakt:"Feuchte aktuell\: %10.2lf %%\n" \
+	GPRINT:gtavr:"Temp schnitt\: %10.2lf °C\t" \
+	GPRINT:gfavr:"Feuchte schnitt\: %10.2lf %%\n" \
+	GPRINT:gtmin:"Temp min\:     %10.2lf °C\t" \
+	GPRINT:gfmin:"Feuchte min\:     %10.2lf %%\n" \
+	GPRINT:gtmax:"Temp max\:     %10.2lf °C\t" \
+	GPRINT:gfmax:"Feuchte max\:     %10.2lf %%\n" >/dev/null
+
+done
+
+exit 0

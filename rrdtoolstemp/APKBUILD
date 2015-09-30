@@ -1,0 +1,51 @@
+# Contributor: Jens Vehlhaber jv <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
+pkgname=rrdtoolstemp
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="Scripts to create rrdtool based temperature and huminity logging"
+url="http://www.eisfair.org"
+arch="noarch"
+license="GPL"
+depends="ttf-dejavu rrdtool"
+
+depends_dev=""
+makedepends="$depends_dev"
+install=""
+subpackages=""
+source="
+	objects.conf
+	rrd-th-daily
+	rrd-th-hourly
+	rrd-th-update
+	"
+
+prepare() {
+	cd "$_builddir"
+}
+
+build() {
+	cd "$_builddir"
+}
+
+package() {
+	cd "$_builddir"
+	# add config and check files
+	install -D -m644 ${srcdir}/objects.conf   ${pkgdir}/etc/rrdtoolstemp/objects.conf || return 1
+	install -D -m755 ${srcdir}/rrd-th-daily   ${pkgdir}/usr/bin/rrd-th-daily || return 1
+	install -D -m755 ${srcdir}/rrd-th-hourly  ${pkgdir}/usr/bin/rrd-th-hourly || return 1
+	install -D -m755 ${srcdir}/rrd-th-update  ${pkgdir}/usr/bin/rrd-th-update || return 1
+}
+                                            
+md5sums="a9e379e9c41a7dfd979fae39e74b43e5  objects.conf
+c5fc9f867250060d248b5ecf7472517c  rrd-th-daily
+e124fd9e00bfd016c728b3fa3f29e921  rrd-th-hourly
+48c0781c2f96fc879bb198632be74a79  rrd-th-update"
+sha256sums="845cf99775d4b3131ee5f01ffd5afae3e4ab685c3ee183ea47f958359d28d83d  objects.conf
+09d3e9e2c3efbc25053aff899054dce92604f55f177c350192ac9f7f14a92204  rrd-th-daily
+053a65fbb547c26e6b4bd10aae08973afe6533e240cd45e8266aa8b1fd41b7b8  rrd-th-hourly
+b99d9ad9c7ac7e601b9ee356e05680f3282957fc072fe5e3b648dced6dbda186  rrd-th-update"
+sha512sums="c6150cdc4c3c5f741ea2f423135cc49e80e5e75390343d6951bb22d65cd6ac611fec55c68e3237ca5659ca7093defc6ce3d18cfdfafce13f15b9363b7a50d87d  objects.conf
+a37bc48dc6c545eef6ea204c863d62bdcb6f744684fa77a2add88fa50911791eff042ff14b3faac78b293451056b211d54e3b8ed9d98e7591b649b3d5fac75a9  rrd-th-daily
+c81d997f0b18297d10314e3a4af7df0ccd2750764033df63d5ae4747b0b9f25372ae59dc8d7818f16efad8a953924ec10322832ea55ee6bae175a7523efb4498  rrd-th-hourly
+2b9fe9800553711f6edb0c7c0c3a8d6fcd6d6c9d883ef27a8c6fd89e06cfec3dad95fd67f6a51e15899ce7a23b69fab49b291fd19d390a0f8ec5c2bbeea97ac3  rrd-th-update"
