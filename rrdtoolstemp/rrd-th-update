@@ -60,7 +60,7 @@ do
 	then
 		mkdir -p ${webdir}
 		{
-		echo "<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>"
+		echo "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>"
 		echo "<img src=\"${filename}-h.png\"><br><br>" 
 		echo "<img src=\"${filename}-d.png\"><br><br>" 
 		echo "<img src=\"${filename}-w.png\"><br><br>" 
