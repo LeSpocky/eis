@@ -48,7 +48,7 @@ do
 
 	/usr/bin/rrdtool update ${RRD_DATA_DIR}/${filename}.rrd N:$valtemp:$valhumi
 
-	if [ ! -e "${webdir}" ]
+	if [ ! -e "${webdir}/index.html" ]
 	then
 		mkdir -p ${webdir}
 		{
