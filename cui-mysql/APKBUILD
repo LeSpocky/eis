@@ -7,7 +7,7 @@ url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
 _alpinerelease=$(awk -F \. {'print $1$2'} /etc/alpine-release)
-if [ -n "$_alpinerelease" -a "$_alpinerelease" -lt 31 ]
+if [ -n "$_alpinerelease" -a "$_alpinerelease" -lt 32 ]
 then
 	dbname="mysql"
 else
