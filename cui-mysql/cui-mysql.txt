@@ -1,6 +1,6 @@
 
    START_MYSQL
-          Legt fest, ob der MySQL Server gestartet wird.
+          Legt fest, ob der MySQL/Mariadb Server gestartet wird.
 
           Gueltige Werte: yes,no
 

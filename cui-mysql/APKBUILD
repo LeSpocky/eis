@@ -6,12 +6,12 @@ pkgrel=2
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
-_alpinerelease=`awk -F \. {'print $1$2'} /etc/alpine-release`
-if [ "$_alpinerelease" -gt 31 ]
+_alpinerelease=$(awk -F \. {'print $1$2'} /etc/alpine-release)
+if [ -n "$_alpinerelease" -a "$_alpinerelease" -lt 31 ]
 then
-    dbname="mariadb"
+	dbname="mysql"
 else
-    dbname="mysql"
+	dbname="mariadb"
 fi
 pkgdesc="CUI setup for ${dbname} server"
 depends="cuimenu ${dbname} ${dbname}-client libcui-addonmysql"
@@ -20,22 +20,22 @@ makedepends="$depends_dev"
 install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.post-deinstall"
 subpackages=""
 source="${pkgname}.default
-		${pkgname}.check
-		${pkgname}.check.exp
-		${pkgname}.help
-		${pkgname}.sh
-		${pkgname}-update.sh
-		${pkgname}.dram.sh
-		${pkgname}.maxconn.sh
-		${pkgname}.qcsize.sh    
-		${pkgname}.qcmin.sh
-		${pkgname}.qcmax.sh
-		${pkgname}.menu
-		${pkgname}.menu.tools
-		${pkgname}.txt
-		${pkgname}-backup.sh
-		${pkgname}-restore.sh
-		${pkgname}-setpwd.cui.sh
+	${pkgname}.check
+	${pkgname}.check.exp
+	${pkgname}.help
+	${pkgname}.sh
+	${pkgname}-update.sh
+	${pkgname}.dram.sh
+	${pkgname}.maxconn.sh
+	${pkgname}.qcsize.sh
+	${pkgname}.qcmin.sh
+	${pkgname}.qcmax.sh
+	${pkgname}.menu
+	${pkgname}.menu.tools
+	${pkgname}.txt
+	${pkgname}-backup.sh
+	${pkgname}-restore.sh
+	${pkgname}-setpwd.cui.sh
 "
 
 _builddir=
@@ -70,16 +70,16 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.menu.tools    ${pkgdir}/var/install/menu/setup.services.mysql.tools.menu || return 1	
 
 	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/mysql/mysql.txt || return 1
-	
+
 	# patch database name (mariadb or mysql)
-	sed -i -e "s/_DBNAME_/$dbname/g" ${pkgdir}/var/install/config.d/mysql.sh 
+	sed -i -e "s/_DBNAME_/$dbname/g" ${pkgdir}/var/install/config.d/mysql.sh
 	sed -i -e "s/_DBNAME_/$dbname/g" ${pkgdir}/var/install/menu/setup.services.mysql.menu
 }
 
 md5sums="9ebd44cacae4eda94eb74c921c69e7df  cui-mysql.default
 12f291d5e35030edd40c4c9d5b485e70  cui-mysql.check
 afa1062fa52510df9b58e860904aa4e0  cui-mysql.check.exp
-e0bac301aebbc4f453c59333c02593ca  cui-mysql.help
+21cfb4d12cea3250c1fca15ed58ba3e0  cui-mysql.help
 cb85ca247a2f445b6c009494d6190125  cui-mysql.sh
 e6b208dfe03778880c308ad2392605a6  cui-mysql-update.sh
 55fb2d91f18c98ad2a042cada099369b  cui-mysql.dram.sh
@@ -89,14 +89,14 @@ b0635b346b07d0b39b28299c9678b631  cui-mysql.qcmin.sh
 53aa3509159e850709a1290a78019227  cui-mysql.qcmax.sh
 08a32b89b95d775a563c6c1836205fff  cui-mysql.menu
 9ecaac9fe72f130dbbe04d049d93245d  cui-mysql.menu.tools
-604c33252f8a70c99374eaf935e2a731  cui-mysql.txt
+02ea6fd876bf02192019602c97f70310  cui-mysql.txt
 b16995ebb13e79502dc71c7a34baac2d  cui-mysql-backup.sh
 1907e0a3878489218438c6dcc4bb603e  cui-mysql-restore.sh
 b0bce14d09bdfe2740fe1ef869ce2f38  cui-mysql-setpwd.cui.sh"
 sha256sums="9c5e6f1f8dc2cdac0b05b34a7b39bcc842c42a4c4370f4967a0b6b1ed292d50c  cui-mysql.default
 e9f3664077683cb2ef7633068243e67f4ac003bf5eb642e2f193c33ce7f8aa42  cui-mysql.check
 27f11f00297ac8116c7314e7933f402388c3bb406cd13d2ca2de5391192efe24  cui-mysql.check.exp
-636f9351e241af6d02ff3dccb9e99d6d4171945736b39368a1d32a80988f8e69  cui-mysql.help
+4f222fc5ade195e2b93acda92189bc9c3bbda7affea9931a8b9fc975c286db42  cui-mysql.help
 ec197ae4c121f518dc68182736150e28862cb536e6a8f80451971e71540a8ba8  cui-mysql.sh
 456572bb8f1a369a3b9347e243d2b354fda58fbc533847505f32a3502a335672  cui-mysql-update.sh
 b99a14186dc2bb9e059e63228be1656fc2ce730b49238447b8721cfc7062d19e  cui-mysql.dram.sh
@@ -106,14 +106,14 @@ b99a14186dc2bb9e059e63228be1656fc2ce730b49238447b8721cfc7062d19e  cui-mysql.dram
 e3603f54a46db0511506e27846c745fe5c0a0ea2bf67fb6a2cef17f42cc166e7  cui-mysql.qcmax.sh
 4ee2b910fdc22baa1de9a1f44756b116b6e98b7ddad03ea21e6948b5f954faa9  cui-mysql.menu
 0e4a09e16a30a36a6820608e3e42c09037a53420f9a61853b7869697ba2e26c5  cui-mysql.menu.tools
-ac184717b29dc46ac011c51ed525ba789a66d0fdb9da2ad90a200a1eaa620d54  cui-mysql.txt
+3f8920240b4edf67e057365ed748ab6580d17824f99e29b62fdf11b8e1d7992e  cui-mysql.txt
 0387cb629402dc2a74cf7d0d37c2b1511b62144bdabfa2e3996b1db87ed13168  cui-mysql-backup.sh
 4504e820e9d870dc1d35dfe03000764f59da2d1539a5300953dc44bcb6f49176  cui-mysql-restore.sh
 ef47e4c84e048c8251cf16c1183e07560a5e6d5fe75f127d654cdabbf1b40ecd  cui-mysql-setpwd.cui.sh"
 sha512sums="0ccc48b8818fff41f43356dc8d202c8eeea105d075b5b35bc329c3477df716f93b3087fa963f07a7abd9273a74b34d0924a0fd961c46556b0213cfeb196aa92c  cui-mysql.default
 2a1055600628120292ac5bcbdd88cde120b91522119273d43d3ca67b4b69bf434288a818b85e4f4aa4587cf675c12614cf9f38f164156ecf7cdd6ebb752b9304  cui-mysql.check
 798325ecc1019db41e10d4d325a9c7472a88f6e7f4e4f1b3348bc047e301ff36463cbf6bb63e58b029b26f634f621922ed236adb033a53a3093b6eb82d6d7246  cui-mysql.check.exp
-b11935e3aa96087aca1e993d5b89c6213df845afd158b43e1ff1f4ecc8c1846ab6facd9b1fd284ed2f79ec3136749007fb6ed5bdd8dfb6cb525186d203125425  cui-mysql.help
+de678ebde05b1c3d13547addc3baf60fccc477424f3cdfbc31a64f59b01bbf39d7e4656a8783186e05ed341fb2dd8dc360f99e72b3497b4c18ea18389d179b7c  cui-mysql.help
 c77b17cbd3db023de683f09df3f2a425dd00fae132313a2bd34fb6364f8cfdbc374c27bfb759d2dfecebd119dfc621466c2df524f1b1fe33e0d85a0f32318586  cui-mysql.sh
 cf4e40d962db581918aea88ecf3ad46815dafca30a2e22fe72dc5692ec1f1b331eccd9b0fc655a118aa69e4253385f15539f60fe41d1ba44bba28b9da7e3f8a8  cui-mysql-update.sh
 f2d4b3f58faecf87a459b76ca8bbe4eed4ff3b58707a04e10c2334d48759b871107c21b89fff2130456a05f294c7a0df1396814566f4b633aec2cd58ffad6825  cui-mysql.dram.sh
@@ -123,7 +123,7 @@ f2d4b3f58faecf87a459b76ca8bbe4eed4ff3b58707a04e10c2334d48759b871107c21b89fff2130
 595e541c1b2d340debc5d08d5ce05662cd604562856682fbe78bfacb5b234081bbde11beca34c7f7d90f8b3a5f94235e08007cd3d3991760609703c86dff1c33  cui-mysql.qcmax.sh
 6710d068553d86fa2b65f6e56d905b5cc246a49c6a9c04e70ca299ada11ff387c4b155090358748e341a974849fd6daead48dc588e84a8ef159962591c951257  cui-mysql.menu
 627f3b0968babf2210ac7be57d825cb770b5e6dc1d10804cc4b742e0efc3d8060d39958a3ace657c791db2a4b15cf2014e105b39d3274f9d4627b0eae9a41b77  cui-mysql.menu.tools
-6c0dc3387cb3ebe01def21b60d2b7dce7fdebcbecd4554c015d0fff737408288d46db3eb80fd43d4accf8d10371d1d528b1c3583c4b2a6dc02c6a01eff52daef  cui-mysql.txt
+3a6c19985cf7b620a71468b1a46b90cdec75919479e0f5d0a16f8e5576c76785faa6b4b9024946ba010458004b9b5602be18f0eb2e1e4f997242e6e4f184c28b  cui-mysql.txt
 89232b484f1fa392ebed4c08cce8a039a12b5810fcdc061484fa8ab1902d16254f6a46f057c3ed51997552bdc8592607e5b00e3a5b06f7c2077ff4d74b5d328f  cui-mysql-backup.sh
 cf92e53bb4e8132ffd7a248f82d03a032b68309ef0f07cd9e8e08f915c4cdfd9adce1381703846571659dba569eff8c9e7a841c72dd47cbc37b68f80a9d0de48  cui-mysql-restore.sh
 cc7cf69a8348e7d447ddbe9e4df355ac0a2531ced384c42f1dc70cdb6631aa76c4d6adf861d3efb0bc68611b9463163d73ac5ffa03fd730d8d1f744af8752418  cui-mysql-setpwd.cui.sh"

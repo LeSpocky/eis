@@ -1,5 +1,5 @@
 <help name="START_MYSQL">
-start MySQL server 'yes' or 'no'<br/>
+start MySQL/Mariadb server 'yes' or 'no'<br/>
 <br/>
 Default: START_MYSQL='no'
 </help>
