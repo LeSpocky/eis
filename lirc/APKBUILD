@@ -1,5 +1,5 @@
-# Contributor: starwarsfan <yves@eisfair.org>
-# Maintainer: starwarsfan <yves@eisfair.org>
+# Contributor: Yves Schumann <yves@eisfair.org>
+# Maintainer: Yves Schumann <yves@eisfair.org>
 pkgname=lirc
 pkgver=0.9.0
 pkgrel=0

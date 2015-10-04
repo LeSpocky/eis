@@ -1,5 +1,5 @@
-# Contributor: jv <jens@eisfair.org>
-# Maintainer: jv <jens@eisfair.org>
+# Contributor: Jens Vehlhaber <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=bonnie
 pkgver=1.03e
 pkgrel=1

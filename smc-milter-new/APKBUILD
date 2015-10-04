@@ -1,5 +1,5 @@
-# Contributor: Jens Vehlhaber jv <jens@eisfair.org>
-# Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
+# Contributor: Jens Vehlhaber <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=smc-milter-new
 pkgver=1.0.1
 pkgrel=1

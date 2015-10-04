@@ -1,5 +1,5 @@
-# Contributor: jens vehlhaber <jens@eisfair.org>
-# Maintainer: jens vehlhaber <jens@eisfair.org>
+# Contributor: Jens Vehlhaber <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=libmcp23s17
 pkgver=0.3.3
 pkgrel=0

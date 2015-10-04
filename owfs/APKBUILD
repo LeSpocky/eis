@@ -1,5 +1,5 @@
-# Contributor: Jens Vehlhaber jv <jens@eisfair.org>
-# Maintainer: Jens Vehlhaber jv <jens@eisfair.org>
+# Contributor: Jens Vehlhaber <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=owfs
 pkgver=3.1p0
 pkgrel=1

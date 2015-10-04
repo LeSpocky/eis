@@ -1,5 +1,5 @@
-# Contributor: jens vehlhaber <jens@eisfair.org>
-# Maintainer: jens vehlhaber <jens@eisfair.org>
+# Contributor: Jens Vehlhaber <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=libpifacecad
 pkgver=0.2.1
 pkgrel=0

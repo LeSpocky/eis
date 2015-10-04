@@ -1,5 +1,5 @@
 # Contributor: eisfair team team@eisfair.org
-# Maintainer: daniel@eisfair.org, jens@eisfair.org
+# Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=libcui
 pkgver=2.0.0
 pkgrel=9

@@ -1,5 +1,5 @@
-# Contributor: starwarsfan <yves@eisfair.org>
-# Maintainer: jv <jens@eisfair.org>
+# Contributor: Yves Schumann <yves@eisfair.org>
+# Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=cui-quasselcore
 pkgver=1.0.1
 pkgrel=0

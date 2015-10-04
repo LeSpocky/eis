@@ -1,5 +1,5 @@
-# Contributor: starwarsfan <yves@eisfair.org>
-# Maintainer: starwarsfan <yves@eisfair.org>
+# Contributor: Yves Schumann <yves@eisfair.org>
+# Maintainer: Yves Schumann <yves@eisfair.org>
 pkgname=cui-openntpd
 pkgver=1.0.0
 pkgrel=1

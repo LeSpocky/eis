@@ -1,5 +1,5 @@
-# Contributor: jens vehlhaber <jens@eisfair.org>
-# Maintainer: jens vehlhaber <jens@eisfair.org>
+# Contributor: Jens Vehlhaber <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=graphicsmagick
 pkgver=1.3.21
 pkgrel=0
