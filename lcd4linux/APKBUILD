@@ -1,5 +1,5 @@
 # Contributor: Yves Schumann <yves@eisfair.org>
-# Maintainer:
+# Maintainer: Yves Schumann <yves@eisfair.org>
 pkgname=lcd4linux
 pkgver=0.12.1
 pkgrel=0
