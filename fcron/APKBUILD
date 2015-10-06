@@ -1,4 +1,4 @@
-# Contributor:
+# Contributor: Jens Vehlhaber <jens@eisfair.org>
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=fcron
 pkgver=3.2.0
