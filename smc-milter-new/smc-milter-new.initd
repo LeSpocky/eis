@@ -9,13 +9,17 @@ depend() {
 	before postfix
 }
 
+start_pre() {
+	checkpath --directory /run/milter --owner postfix >/dev/null
+	mkdir -m 0755 -p /var/spool/postfix/run/milter
+	chown postfix /var/spool/postfix/run/milter
+}
+
 start() {
-	mkdir -p -m0770 /run/milter
-	chown -f postfix /run/milter
 	ebegin "Starting ${name}"
 		start-stop-daemon --start --quiet \
 			--pidfile /run/milter/${name}.pid \
-			--exec ${daemon} -- ${sample_opts}
+			--exec ${daemon} -- ${prg_opts}
 	eend $?
 }
 
