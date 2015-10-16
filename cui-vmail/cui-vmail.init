@@ -16,6 +16,11 @@ get_program_portnr()
 # start/stop
 case "$1" in
     start)
+        # add to postfix chroot
+        mkdir -p /var/spool/postfix/etc
+        for i in /etc/hosts /etc/resolv.conf /etc/services ; do
+            cp -f ${i} /var/spool/postfix${i}
+        done
         /sbin/rc-service -q postfixchroot start
         [ "$START_POP3IMAP" = 'yes' ] && /sbin/rc-service dovecot start
         /sbin/rc-service smc-milter-new start
