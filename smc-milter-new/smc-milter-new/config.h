@@ -53,7 +53,7 @@
 #define SELECT_TYPE_ARG5 (struct timeval *)
 
 /* SMC milter socket file. */
-#define SOCKET_FILE "/var/spool/postfix//run/milter/smc-milter-new.sock"
+#define SOCKET_FILE "/var/spool/postfix/run/milter/smc-milter-new.sock"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
