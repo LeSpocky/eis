@@ -2,7 +2,7 @@
 #
 user                    postfix
 action                  2
-socket                  /run/milter/smc-milter-new.sock
+socket                  /var/spool/postfix/run/milter/smc-milter-new.sock
 pidfile                 /run/milter/smc-milter-new.pid
 clamcheck               yes
 clamsocket              /run/clamav/clamd.sock

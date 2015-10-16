@@ -2,19 +2,13 @@
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=smc-milter-new
 pkgver=1.0.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Virus scanner milter for postfix"
 url="http://www.eisfair.org"
 arch="all"
 license="GPLv2"
 depends="altermime unrar zip ripmime"
-_alpinerelease=`awk -F \. {'print $1$2'} /etc/alpine-release`
-if [ "$_alpinerelease" -gt 31 ]
-then
-  depends_dev="libmilter-dev mariadb-dev"
-else
-  depends_dev="libmilter-dev mysql-dev"
-fi
+depends_dev="libmilter-dev mariadb-dev"
 
 makedepends="$depends_dev"
 install="$pkgname.pre-install $pkgname.post-install"
@@ -48,8 +42,8 @@ package() {
 }
 
 md5sums="bb44847376e9a48a7728756c6652a34c  smc-milter-new.initd
-03d8b426db5ff534de9b110a041b7ba8  smc-milter-new.confd"
+f56515589c615606841f303f8909b460  smc-milter-new.confd"
 sha256sums="10db87c4aad054feba4a2b91b31f5af1d0161b866e1966f9608e85699646f8a2  smc-milter-new.initd
-004041e18693bd3cffc94e2cd53149883c1006f6e0a76a90ae1b15224d37e813  smc-milter-new.confd"
+e55b2569e76033b227654544e511f9d3e9a8c2c91ca77e606c35c2055665bb18  smc-milter-new.confd"
 sha512sums="7ce7e9b7fd97fef9fb212948aedde61a93d91e75e144e6fc9fcb3ff264ba0f170b15ee055b66a8170101593b89e2d39072c653e0dbb97d7318f4313f6b06ac2a  smc-milter-new.initd
-ef1a487ec79974bbc4bf0669466bc6d9ca76928cbf5ad3963862d6f30c25cdf06083b713cb2f3bdddb1a0dba7358c7f0f765ce547706ed92e5433c547a465f12  smc-milter-new.confd"
+062da4d55be9af16e5191213d8aed4e7f4c2673d540e30ebb3765f55ab03e62d70b6caeaf45bcd26f51eb1cfd20099ceda5161510f8a64bb1a495b45cdc3bd9d  smc-milter-new.confd"
