@@ -470,6 +470,7 @@ if [ ! -f /usr/sbin/clamd ]; then
 fi
 connectport=0
 [ "${VMAIL_SQL_HOST}" = "localhost" ] || connectport=3306
+sed -i -e "s|^socket.*|socket			/var/spool/postfix/run/milter/smc-milter-new.sock|" /etc/smc-milter-new/smc-milter-new.conf
 sed -i -e "s|^clamcheck.*|clamcheck			${POSTFIX_AV_CLAMAV}|"       /etc/smc-milter-new/smc-milter-new.conf
 sed -i -e "s|^fprotcheck.*|fprotcheck		${POSTFIX_AV_FPROTD}|"       /etc/smc-milter-new/smc-milter-new.conf
 sed -i -e "s|^avmail.*|avmail			${POSTFIX_AV_VIRUS_INFO}|"   /etc/smc-milter-new/smc-milter-new.conf
