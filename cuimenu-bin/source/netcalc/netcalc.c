@@ -22,6 +22,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <net/if.h>
+#include <netdb.h>
+#include <ifaddrs.h>
 
 #define TRUE	1
 #define FALSE	0
@@ -782,6 +785,100 @@ dnsnet (int argc, char ** argv)
     return (0);
 }
 
+
+
+void 
+show_address_info( struct ifaddrs *ifa, int nip4, int nip6, int nName )
+{
+  struct sockaddr_in *s4;
+  struct sockaddr_in6 *s6;
+  char buf[64];
+
+  if ((AF_INET == ifa->ifa_addr->sa_family) && (nip4 >0)){
+    s4 = (struct sockaddr_in *)(ifa->ifa_addr);
+    if (NULL == inet_ntop(ifa->ifa_addr->sa_family, (void *)&(s4->sin_addr), buf, sizeof(buf))){
+      printf("%s: inet_ntop failed!", ifa->ifa_name);
+    } else {
+      if ( nName > 0)
+        printf("%s ", ifa->ifa_name);
+      if ( nip4 > 1)
+        printf("%s ", buf);
+      printf("\n");
+    }
+  }
+  else if ((AF_INET6 == ifa->ifa_addr->sa_family) && (nip6 > 0)) {
+    s6 = (struct sockaddr_in6 *)(ifa->ifa_addr);
+    if (NULL == inet_ntop(ifa->ifa_addr->sa_family, (void *)&(s6->sin6_addr), buf, sizeof(buf))) {
+      printf("%s: inet_ntop failed!", ifa->ifa_name);
+    } else {
+      if ( nName > 0)
+        printf("%s ", ifa->ifa_name);
+      if ( nip6 > 1)
+        printf("%s ", buf);
+      }
+      printf("\n");
+  }
+}
+
+
+
+static BOOL
+getAllInterfaces(int argc, char *argv[])
+{
+  struct ifaddrs *myaddrs, *ifa;
+  int status;
+  int nip4 = 0;
+  int nip6 = 0;
+  int nif = 0;
+
+  if (strcmp(argv[2], "ipv4") == 0) {
+    nip4 = 2;   
+  } else if (strcmp(argv[2], "ipv6") == 0) {
+    nip6 = 2; 
+  } else if (strcmp(argv[2], "ip") == 0) {
+    nip4 = 2;
+    nip6 = 2;
+  } else if (strcmp(argv[2], "all") == 0) {
+    nip4 = 1;
+    nif = 1; 
+  }
+
+  if (argc > 3) {
+    if (strcmp(argv[3], "all") == 0) {
+      nif = 1; 
+    }
+  }
+  
+  status = getifaddrs(&myaddrs);
+  if (status != 0){
+    perror("getifaddrs failed!");
+    exit(1);
+  }
+
+  for (ifa = myaddrs; ifa != NULL; ifa = ifa->ifa_next){
+    if (NULL == ifa->ifa_addr){
+      continue;
+    }
+    if ((ifa->ifa_flags & IFF_UP) == 0) {
+      continue;
+    }
+    if (strcmp(ifa->ifa_name,"lo") == 0) {
+      continue;
+    }
+    if ((argc > 3) && (nif == 0)) {
+      if (!(strcmp(argv[3], ifa->ifa_name ) == 0)) {
+        continue;
+      }
+    }
+    show_address_info(ifa, nip4, nip6, nif);
+  }
+  freeifaddrs(myaddrs);
+  return TRUE;
+}
+
+
+
+
 /**
  * Prints usage information.
  * @param pgm_name
@@ -833,7 +930,9 @@ usage(char const *pgm_name)
     fprintf (stderr, "    %s dnsnet IPADDR NETMASK\n", pgm_name);
     fprintf (stderr, "    %s dnsnet IPADDR/NETMASKBITS\n", pgm_name);
     putc ('\n', stderr);
-
+    fprintf (stderr, "  print (all) network interface:\n");
+    fprintf (stderr, "    %s interfaces [ip46|ipv4|ipv6] [all|eth0...]\n", pgm_name);
+    putc ('\n', stderr);
     return 1;
 }
 
@@ -1039,6 +1138,10 @@ main(int argc, char *argv[])
         if (isValidAddress(&addr)) {
             return (dnsnet (argc, argv));
         }
+    }
+    
+    if (! strcmp (argv[1], "interface")) {
+            return (getAllInterfaces (argc, argv));
     }
     return usage(argv[0]);
 }

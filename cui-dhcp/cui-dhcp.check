@@ -1,2 +1,26 @@
-# Variable            OPT_VARIABLE     VARIABLE_N          VALUE
-START_DHCP            -                -                   YESNO
+# Variable                      OPT_VARIABLE           VARIABLE_N               VALUE
+START_DHCP                      -                      -                        YESNO
+DHCP_DYNAMIC_N                  START_DHCP             -                        NUMERIC
+DHCP_DYNAMIC_%_ACTIVE           START_DHCP             DHCP_DYNAMIC_N           YESNO
+DHCP_DYNAMIC_%_RANGE            DHCP_DYNAMIC_%_ACTIVE  DHCP_DYNAMIC_N           DHCP_IPRANGE
+
+DHCP_PXE_N                      START_DHCP             -                        NUMERIC
+DHCP_PXE_%_NAME                 START_DHCP             DHCP_PXE_N               NOTEMPTY
+DHCP_PXE_%_ACTIVE               START_DHCP             DHCP_PXE_N               YESNO
+DHCP_PXE_%_DESCRIPTION          DHCP_PXE_%_ACTIVE      DHCP_PXE_N               NOTEMPTY
+DHCP_PXE_%_KERNEL               DHCP_PXE_%_ACTIVE      DHCP_PXE_N               E_REL_PATH
+DHCP_PXE_%_INITRD               DHCP_PXE_%_ACTIVE      DHCP_PXE_N               E_REL_PATH
+DHCP_PXE_%_ROOTFS               DHCP_PXE_%_ACTIVE      DHCP_PXE_N               DHCP_ROOTFS
+DHCP_PXE_%_APPEND               DHCP_PXE_%_ACTIVE      DHCP_PXE_N               NONE
+
+DHCP_CLIENT_N                   START_DHCP             -                        NUMERIC
+DHCP_CLIENT_%_NAME              START_DHCP             DHCP_CLIENT_N            HOSTNAME
+DHCP_CLIENT_%_ACTIVE            START_DHCP             DHCP_CLIENT_N            YESNO
+DHCP_CLIENT_%_MAC               DHCP_CLIENT_%_ACTIVE   DHCP_CLIENT_N            MACADDR
+DHCP_CLIENT_%_IPV4              DHCP_CLIENT_%_ACTIVE   DHCP_CLIENT_N            EIPADDR
+DHCP_CLIENT_%_IPV6              DHCP_CLIENT_%_ACTIVE   DHCP_CLIENT_N            EIPADDR6
+++DHCP_CLIENT_%_NETBOOT         DHCP_CLIENT_%_ACTIVE   DHCP_CLIENT_N            E_REL_PATH
+++DHCP_CLIENT_%_PXE_KERNEL      DHCP_CLIENT_%_ACTIVE   DHCP_CLIENT_N            E_REL_PATH
+++DHCP_CLIENT_%_PXE_INITRD      DHCP_CLIENT_%_ACTIVE   DHCP_CLIENT_N            E_REL_PATH
+++DHCP_CLIENT_%_PXE_ROOTFS      DHCP_CLIENT_%_ACTIVE   DHCP_CLIENT_N            DHCP_ROOTFS
+++DHCP_CLIENT_%_PXE_APPEND      DHCP_CLIENT_%_ACTIVE   DHCP_CLIENT_N            NONE

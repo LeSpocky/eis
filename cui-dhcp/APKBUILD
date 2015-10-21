@@ -14,6 +14,8 @@ install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgna
 subpackages=""
 source="${pkgname}.default
 		${pkgname}.check
+		${pkgname}.check.exp    
+		${pkgname}.default
 		${pkgname}.help
 		${pkgname}.sh
 		${pkgname}-update.sh

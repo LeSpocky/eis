@@ -1,11 +1,257 @@
-<!-- Creation:     2015-08-22 jv  -->
-
-<help name="START_DHCP">
-    Fuer die Aktivierung des 'DHCP' Server muss diese Variable<br/>
-    lediglich auf den Wert 'yes' gestellt werden. Die Einstellung<br/>
-    'no' schaltet 'DHCP' ab.<br/>
-<br/>
-    Gueltige Werte: yes, no<br/>
-<br/>
-    Standard-Einstellung: START_DHCP='yes'<br/>
+<help name="START_DHCPD">
+    Setzen Sie diesen Wert auf 'yes' um den DHCP Server zu aktivieren
+    und IP-Adressen zu vergeben.
+<br/><br/>
+    Gültige Werte: yes,no
+<br/><br/>
+    Default: START_DHCP='no'
 </help>
+
+<help name="DHCP_DYNAMIC_N">
+    Hier wird die Anzahl der Bereiche von IP-Adressen angegeben, die
+    per DHCP vergeben werden sollen.
+<br/><br/>
+    Default:  DHCP_DYNAMIC_N='1'
+</help>
+
+<help name="DHCP_DYNAMIC_%_ACTIVE">
+    Hier kann für jeden einzelnen Bereich die Verteilung der
+    IP-Adressen deaktiviert ('no') werden.
+<br/><br/>
+    Gültige Werte: yes,no
+<br/><br/>
+    Default:  DHCP_DYNAMIC_1_ACTIVE='yes'
+</help>
+
+<help name="DHCP_DYNAMIC_%_RANGE">
+    Hier werden die Bereiche der IP-Adressen angegeben, die der
+    Server vergeben darf. Achtung! Hier dürfen keine IP-Adressen
+    angegeben werden, die einem Client fest zugeteilt sind oder
+    die Gateways oder andere Server nutzen.
+<br/><br/>
+    Als IPv6 Adressen können nur folgende Adresstypen verwendet werden:
+      * Site Local IPv6 Addresses der Form fecx, fedx, feex, fefx
+      * Unique Local IPv6 Addresses der Form fcxx, fdxx
+      * Global Unicast Addresses der Form 2xxx, 3xxx
+    (x steht für beliebige Hexadezimalzeichen 0-9 und a-f)
+<br/><br/>
+    Default:  DHCP_DYNAMIC_1_RANGE='172.30.50.100 172.30.50.150'
+</help>
+
+<help name="DHCP_PXE_N">
+    Hier wird die Anzahl der Einträge im PXE-Bootmenü angegeben.
+    Das PXE-Bootmenü wird für alle Clients mit dynamischen IP-Adressen
+    sowie für die Clients mit statischen IP-Adressen, bei denen PXE
+    aktiviert wurde, aber keine individuellen PXE-Startparameter
+    angegeben wurden, verwendet.
+<br/><br/>
+    Default:  DHCP_PXE_N='1'
+</help>
+
+<help name="DHCP_PXE_%_NAME">
+    Hier wird der Name der PXE Konfiguration angegeben.
+<br/><br/>
+    Beispiel: DHCP_PXE_1_NAME='fli4l'
+</help>
+
+<help name="DHCP_PXE_%_ACTIVE">
+    Hier kann eine PXE-Konfiguration deaktiviert ('no') werden.
+    Um eine Konfiguration zu verwenden, muss diese Variable auf 'yes'
+    gesetzt werden.
+<br/><br/>
+    Gültige Werte: yes,no
+<br/><br/>
+    Default:  DHCP_PXE_1_ACTIVE='no'
+</help>
+
+<help name="DHCP_PXE_%_DESCRIPTION">
+    Hier wird der beschreibende Text für die Anzeige im PXE-Bootmenü
+    eingegeben.
+<br/><br/>
+    Beispiel: DHCP_PXE_1_DESCRIPTION='fli4l (router)'
+</help>
+
+<help name="DHCP_PXE_%_KERNEL">
+    Hier wird der für PXE zu verwendende Kernel angegeben.
+<br/><br/>
+    Hier wird der Pfad des Kernel relativ zum Verzeichnis /tftpboot
+    angegeben. Zur Übertragung des Kernel wird pxelinux verwendet, die
+    Konfiguration von pxelinux wird automatisch erstellt.
+<br/><br/>
+    Um von der lokalen Festplatte oder Diskette zu booten, muss diese
+    Option leer gelassen werden.
+<br/><br/>
+    Um ein Image mittels memdisk booten zu können, muss diese Option
+    ebenfalls leer gelassen werden.
+<br/><br/>
+    Beispiel: DHCP_PXE_1_KERNEL='fli4l/kernel'
+</help>
+
+<help name="DHCP_PXE_%_INITRD">
+    Hier wird der Name der zu DHCP_PXE_x_KERNEL gehörigen
+    initrd angegeben. Hier muss der Pfad relativ zu /tftpboot
+    angegeben werden.
+<br/><br/>
+    Um von der lokalen Festplatte oder Diskette zu booten, muss diese
+    Option leer gelassen werden.
+<br/><br/>
+    Um ein Image mittels memdisk zu booten, muss hier der Pfad des
+    Images relativ zu /tftpboot angegeben werden.
+<br/><br/>
+    Beispiel: DHCP_PXE_1_INITRD='fli4l/rootfs.img'
+</help>
+
+<help name="DHCP_PXE_%_ROOTFS">
+    Hier wird der Name des zu DHCP_PXE_x_KERNEL gehörigen
+    rootfs angegeben.
+<br/><br/>
+    Beispiel: DHCP_PXE_1_ROOTFS='/dev/tmpfs'
+</help>
+
+<help name="DHCP_PXE_%_APPEND">
+    Diese Option dient zur Angabe weiterer Optionen bei der Verwendung
+    von pxelinux.
+<br/><br/>
+    Beispiel: DHCP_PXE_1_APPEND='vag=normal ramdisk_size=28000'
+<br/><br/>
+    Default:  DHCP_PXE_1_APPEND=' '
+</help>
+
+<help name="DHCP_CLIENT_N">
+    Hier wird die Anzahl der festen IP-Adressen angegeben, die
+    per DHCP zugeteilt werden sollen. Dies ist eine spezielle
+    Verteilung von IP-Adressen, die auf Basis der Hardware Adresse
+    der Netzwerkkarte des Clients geschieht.
+<br/><br/>
+    Beispiel: DHCP_CLIENT_N='2'
+</help>
+
+<help name="DHCP_CLIENT_%_NAME">
+    Hier wird der Hostname des Clients angegeben, dem eine feste
+    Adresse zugeteilt werden soll. Wenn diese Feld leer gelassen
+    wird, wird der Hostname automatisch generiert.
+<br/><br/>
+    Beispiel: DHCP_CLIENT_1_NAME='fixed-ip-1'
+</help>
+
+<help name="DHCP_CLIENT_%_ACTIVE">
+    Hier kann ein einzelner Client deaktiviert ('no') werden.
+    Um einen Client zu verwenden, muss diese Variable auf 'yes'
+    gesetzt werden.
+<br/><br/>
+    Gültige Werte: yes,no
+<br/><br/>
+    Default:  DHCP_CLIENT_1_ACTIVE='no'
+</help>
+
+<help name="DHCP_CLIENT_%_MAC">
+    Hier wird die Hardware Adresse der Netzwerkkarte angegeben, der
+    die IP-Adresse per DHCP zugeteilt werden sollen. (Ethernet
+    Karten habe eine Adresse der Form 00:10:A4:0B:4D:36).
+    Die Adresse kann mittels winipcfg unter Windows 95/98/Me,
+    "ipconfig -all" unter Windows NT/2000/XP und "ifconfig" unter
+    Linux ausgelesen werden.
+<br/><br/>
+    Beispiel: DHCP_CLIENT_1_MAC='00:01:02:03:04:06:07'
+</help>
+
+<help name="DHCP_CLIENT_%_IPV4">
+    Dieser Eintrag enthält die IPv4-Adresse zur korrespondierenden
+    DHCP_CLIENT_%_MAC. Achtung: hier darf keine Adresse aus dem
+    in DHCP_DYNAMIC_%_RANGE angegebenen Bereich verwendet werden!
+<br/><br/>
+    Beispiel:  DHCP_CLIENT_1_IPV4='172.30.50.2'
+</help>
+
+<help name="DHCP_CLIENT_%_IPV6">
+    Dieser Eintrag enthält die IPv6-Adresse zur korrespondierenden
+    DHCP_CLIENT_%_MAC. Achtung: hier darf keine Adresse aus dem
+    in DHCP_DYNAMIC_%_RANGE angegebenen Bereich verwendet werden!
+<br/><br/>
+    Als IPv6 Adressen können nur folgende Adresstypen verwendet werden:
+      * Site Local IPv6 Addresses der Form fecx, fedx, feex, fefx
+      * Unique Local IPv6 Addresses der Form fcxx, fdxx
+      * Global Unicast Addresses der Form 2xxx, 3xxx
+    (x steht für beliebige Hexadezimalzeichen 0-9 und a-f)
+<br/><br/>
+    Beispiel:  DHCP_CLIENT_1_IPV6='2001:db8:0:f101::123'
+</help>
+
+<help name="DHCP_CLIENT_%_NETBOOT">
+    Wenn diskless Clients (z.B. PCs ohne eingebaute Festplatte) zum
+    Einsatz kommen sollen, kann mit dieser Option das Image angegeben
+    werden, des dem Client übermittelt werden soll.
+<br/><br/>
+    Für den Einsatz von pxelinux über die Optionen
+    DHCP_CLIENT_x_PXE_KERNEL usw. muss diese Option leer bleiben.
+<br/><br/>
+    Durch die Angabe von 'yes' wird der Standard pxelinux.0 (in diesem
+    Paket enthalten) aktiviert. Zur Verwendung des PXE-Menüs muss diese
+    Option auf 'yes' gesetzt werden und die zu diesem Client gehörigen
+    PXE-Parameter müssen leer bleiben.
+<br/><br/>
+    Um ein spezielles Netboot-Image (z.B. Etherboot) booten zu können,
+    muss dieses im Verzeichnis /tftpboot abgelegt werden und
+    der hier angegebene Dateiname darf das führende /tftpboot nicht
+    enthalten (z.B. DHCP_CLIENT_1_NETBOOT='3c90x.zpxe').
+<br/><br/>
+    Default:  DHCP_CLIENT_1_NETBOOT='yes'
+</help>
+
+<help name="DHCP_CLIENT_%_PXE_KERNEL">
+    Beim Booten über PXE wird mit dieser Option der Kernel angegeben,
+    der dem Client übermittelt werden soll.
+<br/><br/>
+    Der Kernel muss im Verzeichnis /tftpboot/DHCP_CLIENT_x_NAME
+    abgelegt sein und den hier angegebenen Namen bekommen. Zur
+    Übertragung des Kernel wird pxelinux verwendet, die Konfiguration
+    von pxelinux wird automatisch erstellt.
+<br/><br/>
+    Um von der lokalen Festplatte oder Diskette zu booten oder um ein
+    Image mittels memdisk zu booten, muss diese Option leer gelassen
+    werden.
+<br/><br/>
+    Default:  DHCP_CLIENT_1_PXE_KERNEL=' '
+</help>
+
+<help name="DHCP_CLIENT_%_PXE_INITRD">
+    Hier wird der Name der zu DHCP_CLIENT_x_PXE_KERNEL gehörigen
+    initrd angegeben. Diese muss im selben Verzeichnis wie der
+    Kernel liegen.
+<br/><br/>
+    Bei der Verwendung von memdisk wird hier in analoger weise das zu
+    bootende Image angegeben.
+<br/><br/>
+    Um von der lokalen Festplatte oder Diskette zu booten, muss diese
+    Option leer gelassen werden.
+<br/><br/>
+    Default:  DHCP_CLIENT_1_PXE_INITRD=' '
+</help>
+
+<help name="DHCP_CLIENT_%_PXE_ROOTFS">
+    Hier wird der Name des zu DHCP_CLIENT_x_PXE_KERNEL gehörigen
+    rootfs angegeben.
+<br/><br/>
+    Default:  DHCP_CLIENT_1_PXE_ROOTFS=' '
+</help>
+
+<help name="DHCP_CLIENT_%_PXE_APPEND">
+    Diese Option dient zur Angabe weiterer Optionen bei der Verwendung
+    von pxelinux.
+<br/><br/>
+    Default:  DHCP_CLIENT_1_PXE_APPEND=' '
+</help>
+
+<help name="DHCP_PLUGIN_%">
+    Hier kann die Verwendung der einzelnen, separat zu installierenden
+    Plugins aktiviert werden.
+<br/><br/>
+    ACHTUNG: Bei Aktivierung eines Plugins kann es zu unvorhersehbaren
+    Fehlfunktionen kommen. Die Sicherstellung der korrekten Funktion
+    obliegt dem Autor des jeweiligen Plugins.
+<br/><br/>
+    Gültige Werte: yes,no
+<br/><br/>
+    Default:  DHCP_PLUGIN_x='no'
+</help>
+
