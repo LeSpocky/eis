@@ -54,6 +54,7 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.check                                ${pkgdir}/etc/check.d/${_pname} || return 1
 	install -D -m644 ${srcdir}/${pkgname}.check.exp                            ${pkgdir}/etc/check.d/${_pname}.exp || return 1
 	install -D -m644 ${srcdir}/${pkgname}.check.ext                            ${pkgdir}/etc/check.d/${_pname}.ext || return 1
+	install -D -m644 ${srcdir}/${pkgname}.default                              ${pkgdir}/etc/default.d/${_pname} || return 1
 	install -D -m644 ${srcdir}/${pkgname}.help                                 ${pkgdir}/var/install/help/${_pname} || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.openntpd.menu         ${pkgdir}/var/install/menu/setup.services.openntpd.menu || return 1
 	install -D -m755 ${srcdir}/${pkgname}.sh                                   ${pkgdir}/var/install/config.d/${_pname}.sh || return 1
