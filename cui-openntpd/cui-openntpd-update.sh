@@ -17,59 +17,17 @@
 
 # set packages name
 packageName=openntpd
+rewriteConfig=false
+
 
 # ---------------------------------------------------------------------------
 # Set the default values for configuration
 # ---------------------------------------------------------------------------
-START_NTP='yes'                       # use ntp: yes or no
+loadDefaults() {
+    [ -f /etc/default.d/${packageName} ] && . /etc/default.d/${packageName}
+}
 
-NTP_CLOCK_N='0'                       # Nbr of clock's
-NTP_CLOCK_1_TYPE='1'                  # 1. clock type
-NTP_CLOCK_1_PREFER='no'               #    prefer this clock?
-NTP_CLOCK_1_DEVICE=''                 #    clock device, default: ''
-NTP_CLOCK_1_LINK_DEVICE=''            #    clock link device, default: ''
-NTP_CLOCK_1_LINK_DEVICE_NBR=''        #    clock link device dumber, default:
-NTP_CLOCK_1_STRATUM='10'              #    clock stratum, default: ''
 
-NTP_CLOCK_2_TYPE='8'                  # 2. clock type
-NTP_CLOCK_2_PREFER='yes'              #    prefer this clock?
-NTP_CLOCK_2_DEVICE='/dev/ttyS1'       #    clock device, default: ''
-NTP_CLOCK_2_LINK_DEVICE='/dev/refclock-'
-NTP_CLOCK_2_LINK_DEVICE_NBR='1'       #    clock link device dumber, default:
-NTP_CLOCK_2_STRATUM=''                #    clock stratum, default: ''
-
-NTP_CLOCK_3_TYPE='35'                 # 3. clock type
-NTP_CLOCK_3_PREFER='no'               #    prefer this clock?
-NTP_CLOCK_3_DEVICE='/dev/lp0'         #    clock device, default: ''
-NTP_CLOCK_3_LINK_DEVICE='/dev/pcfclock'
-NTP_CLOCK_3_LINK_DEVICE_NBR='0'       #    clock link device dumber, default:
-NTP_CLOCK_3_STRATUM=''                #    clock stratum, default: ''
-
-NTP_PEER_N='0'                        # Nbr of peers
-NTP_PEER_1=''                         # 1. NTP peer
-NTP_PEER_2=''                         # 2. NTP peer
-
-NTP_SERVER_N='4'                      # Nbr of server's
-NTP_SERVER_1='1.pool.ntp.org'         # 1. NTP server
-NTP_SERVER_2='2.pool.ntp.org'         # 2. NTP server
-NTP_SERVER_3='0.pool.ntp.org'         # 3. NTP server
-
-NTP_SET_SERVER_N='4'                  # Nbr of server's
-NTP_SET_SERVER_1='1.pool.ntp.org'     # 1. NTP server
-NTP_SET_SERVER_2='2.pool.ntp.org'     # 2. NTP server
-NTP_SET_SERVER_3='0.pool.ntp.org'     # 3. NTP server
-
-NTP_ADD_PARAM_N='0'                   # Nbr of additional parameter
-NTP_ADD_PARAM_1='statsdir /var/log/ntp/'
-NTP_ADD_PARAM_2='filegen peerstats file peerstats type day enable'
-NTP_ADD_PARAM_3='filegen loopstats file loopstats type day enable'
-NTP_ADD_PARAM_4='filegen clockstats file clockstats type day enable'
-NTP_ADD_PARAM_5='statistics peerstats loopstats clockstats'
-
-NTP_LOG_EVENT_N='1'                   # Amount of different log events to log
-NTP_LOG_EVENT_1_ENTRY='all'           # Event type to log: all, syncstatus,
-NTP_LOG_COUNT='10'                    # Nbr of log files to save
-NTP_LOG_INTERVAL='weekly'             # Interval: daily, weekly, monthly
 
 # ---------------------------------------------------------------------------
 # Read configuration from previously installed package if existing
@@ -80,6 +38,7 @@ updateVariables() {
     [ -f /etc/config.d/${packageName} ] && . /etc/config.d/${packageName}
 
     # Nothing to convert at the moment
+    #rewriteConfig=true
 }
 
 
@@ -288,14 +247,13 @@ EOF
 # ===========================================================================
 # Main
 # ===========================================================================
-
-# Generate default configuration
-makeConfigFile /etc/default.d/${packageName}
+loadDefaults
 
 # Update values from previous installed version
 updateVariables
 
 # Write new config file
-makeConfigFile /etc/config.d/${packageName}
-
+if ${rewriteConfig} ; then
+    makeConfigFile /etc/config.d/${packageName}
+fi
 exit 0

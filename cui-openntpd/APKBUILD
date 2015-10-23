@@ -15,6 +15,7 @@ subpackages=""
 source="${pkgname}.check
         ${pkgname}.check.exp
         ${pkgname}.check.ext
+        ${pkgname}.default
         ${pkgname}.help
         ${pkgname}.setup.services.openntpd.menu
         ${pkgname}.sh
@@ -43,11 +44,11 @@ build() {
 package() {
 	cd "$_builddir"
 	cd ${startdir}/dialog.d
-	for currentFile in `ls` ; do
+	for currentFile in $(ls) ; do
 		install -D -m755 ${currentFile} ${pkgdir}/var/install/dialog.d/${currentFile} || return 1
 	done
 	cd ${startdir}/bin
-	for currentFile in `ls` ; do
+	for currentFile in $(ls) ; do
 		install -D -m755 ${currentFile} ${pkgdir}/var/install/bin/${currentFile} || return 1
 	done
 	cd "$_builddir"

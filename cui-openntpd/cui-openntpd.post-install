@@ -1,7 +1,9 @@
 #!/bin/sh
 
-. /var/install/include/eislib
-
 /var/install/bin/add-menu setup.services.menu setup.services.openntpd.menu "NTP"
 
-/var/install/config.d/openntpd-update.sh
+if [ -e /etc/config.d/openntpd ] ; then
+    /var/install/config.d/openntpd-update.sh
+else
+    cp -f /etc/default.d/openntpd /etc/config.d/
+fi
