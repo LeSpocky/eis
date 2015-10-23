@@ -18,6 +18,7 @@
 . /var/install/include/eislib
 
 . /etc/config.d/openntpd
+packageName=openntpd
 
 clrhome
 
@@ -29,7 +30,7 @@ if [ ${NTP_SET_SERVER_N} -eq 0 ] ; then
 else
     if /var/install/bin/ask "Set Time via other NTP Server" ; then
         mecho
-        /etc/init.d/ntp stop
+        /etc/init.d/${packageName} stop
         mecho
 
         sleep 2
@@ -44,7 +45,7 @@ else
             if [ $? -eq 0 ] ; then
                 idx=${NTP_SET_SERVER_N}
             fi
-            idx=`expr ${idx} + 1`
+            idx=$((idx+1))
         done
 
         sleep 1
@@ -61,7 +62,7 @@ else
         mecho
         sleep 1
 
-        /etc/init.d/ntp start
+        /etc/init.d/${packageName} start
         mecho
         anykey
     fi
