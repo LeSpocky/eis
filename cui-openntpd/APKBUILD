@@ -2,7 +2,7 @@
 # Maintainer: Yves Schumann <yves@eisfair.org>
 pkgname=cui-openntpd
 pkgver=1.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="CUI Setup for openntpd"
 url="http://www.eisfair.org"
 arch="noarch"
