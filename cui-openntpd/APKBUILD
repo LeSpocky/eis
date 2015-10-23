@@ -15,7 +15,6 @@ subpackages=""
 source="${pkgname}.check
         ${pkgname}.check.exp
         ${pkgname}.check.ext
-        ${pkgname}.default
         ${pkgname}.help
         ${pkgname}.setup.services.openntpd.menu
         ${pkgname}.sh
