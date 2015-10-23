@@ -3,7 +3,7 @@
 # /var/install/config.d/cui-openntpd-update.sh - update or generate a new ntp
 #                                                configuration
 #
-# Copyright (c) 2001-2014 The Eisfair Team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2015 The eisfair Team, team(at)eisfair(dot)org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,180 +15,68 @@
 . /var/install/include/eislib
 . /var/install/include/configlib
 
-# ---------------------------------------------------------------------------
-# Rename variables
-# ---------------------------------------------------------------------------
-rename_variables () {
-    renamed=0
-    mecho -n "Renaming parameter(s)... "
-
-    # v0.90.2
-    if [ ${NTP_CLOCK_N} -eq 0 ] ; then
-        imax=1
-    else
-        imax=${NTP_CLOCK_N}
-    fi
-
-    renamedParams=false
-    idx=1
-    while [ ${idx} -le ${imax} ] ; do
-        if [ ! -z "`grep ^NTP_CLOCK_${idx}_LINK_DEVICE_N= ${source_conf}`" ] ; then
-            eval ntp_link_device_nbr='$NTP_CLOCK_'${idx}'_LINK_DEVICE_N'
-
-            echo "- NTP_CLOCK_${idx}_LINK_DEVICE_N -> NTP_CLOCK_${idx}_LINK_DEVICE_NBR"
-            eval NTP_CLOCK_${idx}_LINK_DEVICE_NBR="${ntp_link_device_nbr}"
-            renamedParams=true
-        fi
-        
-        # ------------------------------------------------------
-        # Transfer 'NTP_CLOCK_%_MODE' if 'NTP_CLOCK_%_TYPE' == 8
-        eval currentClockType='$NTP_CLOCK_'${idx}'_TYPE'
-        currentClockMode=`echo ${currentClockType} | cut -d " " -f2`
-        currentClockType=`echo ${currentClockType} | cut -d " " -f1`
-        if [ "${currentClockType}" = '8' ] ; then
-            eval preferCurrentClock='$NTP_CLOCK_'${idx}'_PREFER'
-            if [ -z "${preferCurrentClock}" ] ; then
-                # ------------------------------------------------------------
-                # $NTP_CLOCK_'${idx}'_PREFER not found, so this must be an old
-                # installation with the other setup method for the clock mode
-                eval currentClockMode='$NTP_CLOCK_'${idx}'_MODE'
-                
-                # ---------------------------------------------------------------
-                # Now search the string 'prefer' and de-/activate the new setting
-                echo "${currentClockMode}" | grep prefer > /dev/null 2>&1
-                if [ $? -eq 0 ] ; then
-                    eval NTP_CLOCK_${idx}_PREFER='yes'
-                else
-                    eval NTP_CLOCK_${idx}_PREFER='no'
-                fi
-                
-                # ----------------------------------------------------------
-                # Set default value for the case that no mode could be found
-                if [ -z "${currentClockMode}" ] ; then
-                    eval NTP_CLOCK_${idx}_TYPE="'${currentClockType} 14'"
-                fi
-                
-                # --------------------------
-                # Now detect the mode to use
-                modeEntries=`echo ${currentMode} | wc -w`
-                modeIdx=1
-                while [ ${modeIdx} -le ${modeEntries} ] ; do
-                    modeToUse=`echo ${currentMode} | cut -d " " -f ${modeIdx}`
-                    # ----------------------------------------------------------
-                    # Check if it is a number. If so, use it as the mode number.
-                    expr ${modeToUse} + 0 > /dev/null 2>&1
-                    if [ $? -lt 3 ] ; then
-                        eval NTP_CLOCK_${idx}_TYPE="'${currentClockType} ${modeToUse}'"
-                        break
-                    fi
-                    modeIdx=$((modeIdx+1))
-                done
-            fi
-        else
-            # ----------------------------------
-            # Set parameter for all other clocks
-            eval NTP_CLOCK_${idx}_PREFER='no'
-        fi
-        
-        idx=$((idx+1))
-    done
-    
-    # ------------------------------------------------------
-    # V1.1.1 - Added cui script to choose log events, so the 
-    # old var 'NTP_LOG_CONFIG' must be removed
-    if [ -n "${NTP_LOG_CONFIG}" ] ; then
-        idx=0
-        for currentLogConfigParam in ${NTP_LOG_CONFIG} ; do
-            if [ "${currentLogConfigParam}" != "+" ] ; then
-                idx=$((idx+1))
-                eval NTP_LOG_EVENT_${idx}_ENTRY="${currentLogConfigParam}"
-            fi
-        done
-        NTP_LOG_EVENT_N=${idx}
-        renamedParams=true
-    fi
-
-
-    if ${renamedParams} ; then
-        mecho "Done."
-    else
-        mecho "Nothing renamed, parameters up to date."
-    fi
-}
-
-
+# set packages name
+packageName=cui-openntpd
 
 # ---------------------------------------------------------------------------
-# Modify variables
+# Set the default values for configuration
 # ---------------------------------------------------------------------------
-modify_variables () {
-    modifiedParams=false
-    mecho -n "Modifying parameter(s)... "
+START_NTP='yes'                       # use ntp: yes or no
 
-    if ${modifiedParams} ; then
-        mecho "Done."
-    else
-        mecho "Nothing modified, parameters up to date."
-    fi
-}
+NTP_CLOCK_N='0'                       # Nbr of clock's
+NTP_CLOCK_1_TYPE='1'                  # 1. clock type
+NTP_CLOCK_1_PREFER='no'               #    prefer this clock?
+NTP_CLOCK_1_DEVICE=''                 #    clock device, default: ''
+NTP_CLOCK_1_LINK_DEVICE=''            #    clock link device, default: ''
+NTP_CLOCK_1_LINK_DEVICE_NBR=''        #    clock link device dumber, default:
+NTP_CLOCK_1_STRATUM='10'              #    clock stratum, default: ''
 
+NTP_CLOCK_2_TYPE='8'                  # 2. clock type
+NTP_CLOCK_2_PREFER='yes'              #    prefer this clock?
+NTP_CLOCK_2_DEVICE='/dev/ttyS1'       #    clock device, default: ''
+NTP_CLOCK_2_LINK_DEVICE='/dev/refclock-'
+NTP_CLOCK_2_LINK_DEVICE_NBR='1'       #    clock link device dumber, default:
+NTP_CLOCK_2_STRATUM=''                #    clock stratum, default: ''
 
+NTP_CLOCK_3_TYPE='35'                 # 3. clock type
+NTP_CLOCK_3_PREFER='no'               #    prefer this clock?
+NTP_CLOCK_3_DEVICE='/dev/lp0'         #    clock device, default: ''
+NTP_CLOCK_3_LINK_DEVICE='/dev/pcfclock'
+NTP_CLOCK_3_LINK_DEVICE_NBR='0'       #    clock link device dumber, default:
+NTP_CLOCK_3_STRATUM=''                #    clock stratum, default: ''
+
+NTP_PEER_N='0'                        # Nbr of peers
+NTP_PEER_1=''                         # 1. NTP peer
+NTP_PEER_2=''                         # 2. NTP peer
+
+NTP_SERVER_N='4'                      # Nbr of server's
+NTP_SERVER_1='1.pool.ntp.org'         # 1. NTP server
+NTP_SERVER_2='2.pool.ntp.org'         # 2. NTP server
+NTP_SERVER_3='0.pool.ntp.org'         # 3. NTP server
+
+NTP_SET_SERVER_N='4'                  # Nbr of server's
+NTP_SET_SERVER_1='1.pool.ntp.org'     # 1. NTP server
+NTP_SET_SERVER_2='2.pool.ntp.org'     # 2. NTP server
+NTP_SET_SERVER_3='0.pool.ntp.org'     # 3. NTP server
+
+NTP_ADD_PARAM_N='0'                   # Nbr of additional parameter
+NTP_ADD_PARAM_1='statsdir /var/log/ntp/'
+NTP_ADD_PARAM_2='filegen peerstats file peerstats type day enable'
+NTP_ADD_PARAM_3='filegen loopstats file loopstats type day enable'
+NTP_ADD_PARAM_4='filegen clockstats file clockstats type day enable'
+NTP_ADD_PARAM_5='statistics peerstats loopstats clockstats'
+
+NTP_LOG_EVENT_N='1'                   # Amount of different log events to log
+NTP_LOG_EVENT_1_ENTRY='all'           # Event type to log: all, syncstatus,
+NTP_LOG_COUNT='10'                    # Nbr of log files to save
+NTP_LOG_INTERVAL='weekly'             # Interval: daily, weekly, monthly
 
 # ---------------------------------------------------------------------------
-# Add variables
-# ---------------------------------------------------------------------------
-add_variables () {
-    addedParams=false
-    mecho -n "Adding new parameter(s)... "
-
-    # v0.90.2
-    if [ -z "`grep ^NTP_LOG_COUNT $source_conf`" ] ; then
-#        echo "- NTP_LOG_COUNT='10'"
-        NTP_LOG_COUNT='10'
-        addedParams=true
-    fi
-
-    if [ -z "`grep ^NTP_LOG_INTERVAL $source_conf`" ] ; then
-#        echo "- NTP_LOG_INTERVAL='weekly'"
-        NTP_LOG_INTERVAL='weekly'
-        addedParams=true
-    fi
-
-    if [ -z "${NTP_PEER_N}" ] ; then
-        NTP_PEER_N=0
-        NTP_PEER_1=''
-        addedParams=true
-    fi
-
-    if ${addedParams} ; then
-        mecho "Done."
-    else
-        mecho "No new parameters available."
-    fi
-}
-
-
-
-# ---------------------------------------------------------------------------
-# Delete variables
-# ---------------------------------------------------------------------------
-delete_variables () {
-    deleted=0
-    mecho -n "Removing old parameters... "
-
-    for varname in NTP_DRIFT_FILE NTP_LOG_FILE NTP_LOG_ROTATE NTP_MAX_LOGSIZE
-    do
-        if [ ! -z "`grep \"^$varname\" $source_conf`" ] ; then
-#            echo "- $varname"
-            deleted=1
-        fi
-    done
-
-    if [ ${deleted} -eq 1 ] ; then
-        mecho "Done."
-    else
-        mecho "Nothing to remove, parameters up to date."
-    fi
+# Read old configuration and update old variables
+updateVariables() {
+    # -------------------
+    # Read current values
+    [ -f /etc/config.d/${packageName} ] && . /etc/config.d/${packageName}
 }
 
 
@@ -196,14 +84,14 @@ delete_variables () {
 # ---------------------------------------------------------------------------
 # Create new configuration
 # ---------------------------------------------------------------------------
-create_config () {
-    config_level="$1"
-
-    mecho -n "Updating/creating configuration... "
+makeConfigFile () {
+    local configToGenerate=${1}
+    mecho -n "Updating/creating configuration '$configToGenerate' ... "
 
     {
         # -------------------------------------------------------------------
-        printgpl "ntp" "27.12.2003" "jed" "Copyright (c) 2001-2006 The Eisfair Team, team(at)eisfair(dot)org"
+        printgpl "ntp" "23.10.2015" "Y. Schumann" "Copyright (c) 2001-2015 The eisfair Team, team(at)eisfair(dot)org"
+        printgroup "Based on the eisfair-1 package by Jürgen Edner"
         # -------------------------------------------------------------------
         printgroup "NTP configuration"
         # -------------------------------------------------------------------
@@ -306,18 +194,8 @@ EOF
         # -------------------------------------------------------------------
         printvar "NTP_CLOCK_N" "Nbr of clock's"
 
-        if [ ${NTP_CLOCK_N} -eq 0 ] ; then
-            if [ "$config_level" = "update" ] ; then
-                imax=3
-            else
-                imax=1
-            fi
-        else
-            imax=${NTP_CLOCK_N}
-        fi
-
         idx=1
-        while [ ${idx} -le ${imax} ] ; do
+        while [ ${idx} -le ${NTP_CLOCK_N} ] ; do
             printvar "NTP_CLOCK_${idx}_TYPE"            "${idx}. clock type"
             printvar "NTP_CLOCK_${idx}_PREFER"          "   prefer this clock?"
             printvar "NTP_CLOCK_${idx}_DEVICE"          "   clock device, default: ''"
@@ -333,18 +211,8 @@ EOF
         # -------------------------------------------------------------------
         printvar "NTP_PEER_N" "Nbr of peers"
 
-        if [ ${NTP_PEER_N} -eq 0 ] ; then
-            if [ "${config_level}" = "update" ] ; then
-                imax=2
-            else
-                imax=0
-            fi
-        else
-            imax=${NTP_PEER_N}
-        fi
-
         idx=1
-        while [ ${idx} -le ${imax} ] ; do
+        while [ ${idx} -le ${NTP_PEER_N} ] ; do
             printvar "NTP_PEER_${idx}" "${idx}. NTP peer"
             idx=$((idx+1))
         done
@@ -354,18 +222,8 @@ EOF
         # -------------------------------------------------------------------
         printvar "NTP_SERVER_N" "Nbr of server's"
 
-        if [ ${NTP_SERVER_N} -eq 0 ] ; then
-            if [ "$config_level" = "update" ] ; then
-                imax=2
-            else
-                imax=0
-            fi
-        else
-            imax=${NTP_SERVER_N}
-        fi
-
         idx=1
-        while [ ${idx} -le ${imax} ] ; do
+        while [ ${idx} -le ${NTP_SERVER_N} ] ; do
             printvar "NTP_SERVER_${idx}" "${idx}. NTP server"
 
             idx=$((idx+1))
@@ -376,18 +234,8 @@ EOF
         # -------------------------------------------------------------------
         printvar "NTP_SET_SERVER_N" "Nbr of server's"
 
-        if [ ${NTP_SET_SERVER_N} -eq 0 ] ; then
-            if [ "$config_level" = "update" ] ; then
-                imax=2
-            else
-                imax=0
-            fi
-        else
-            imax=${NTP_SET_SERVER_N}
-        fi
-
         idx=1
-        while [ ${idx} -le ${imax} ] ; do
+        while [ ${idx} -le ${NTP_SET_SERVER_N} ] ; do
             printvar "NTP_SET_SERVER_${idx}" "${idx}. NTP server"
             idx=$((idx+1))
         done
@@ -397,18 +245,8 @@ EOF
         # -------------------------------------------------------------------
         printvar "NTP_ADD_PARAM_N" "Nbr of additional parameter"
 
-        if [ ${NTP_ADD_PARAM_N} -eq 0 ] ; then
-            if [ "$config_level" = "update" ] ; then
-                imax=5
-            else
-                imax=0
-            fi
-        else
-            imax=${NTP_ADD_PARAM_N}
-        fi
-
         idx=1
-        while [ ${idx} -le ${imax} ] ; do
+        while [ ${idx} -le ${NTP_ADD_PARAM_N} ] ; do
             printvar "NTP_ADD_PARAM_${idx}" "${idx}. parameter"
 
             idx=$((idx+1))
@@ -438,7 +276,7 @@ EOF
         # -------------------------------------------------------------------
         printend
         # -------------------------------------------------------------------
-    } > ${generate_conf}
+    } > ${configToGenerate}
 
     mecho " Done."
     anykey
@@ -448,58 +286,13 @@ EOF
 # Main
 # ===========================================================================
 
-ntpfile=/etc/config.d/ntp
-installfile=/var/run/ntp.install
+# Generate default configuration
+makeConfigFile /etc/default.d/${packageName}
 
-# setting defaults
-source_conf=${installfile}
-generate_conf=${ntpfile}
+# Update values from previous installed version
+updateVariables
 
-goflag=0
+# Write new config file
+makeConfigFile /etc/config.d/${packageName}
 
-case "$1"
-in
-    update)
-        goflag=1
-        ;;
-
-    test)
-      # source_conf=$ntpfile
-        source_conf=/etc/default.d/ntp
-
-      # generate_conf=/tmp/config.d/mk_ntp.test
-        generate_conf=/tmp/mk_ntp.test
-        goflag=1
-        ;;
-
-    *)
-        mecho
-        mecho "Use one of the following options:"
-        mecho
-        mecho "  ntp-update.sh [update] - the file $ntpfile.import will be read, the configuration will"
-        mecho "                           be checked and an updated mail configuration file will be written."
-        mecho
-        goflag=0
-esac
-
-if [ ${goflag} -eq 1 ] ; then
-    if [ -f ${source_conf} ] ; then
-        # previous configuration file exists
-        mecho -info "previous configuration found ..."
-        . ${source_conf}
-
-        rename_variables
-        modify_variables
-        add_variables
-        delete_variables
-
-        create_config update
-    else
-        mecho -error "no configuration $source_conf found - exiting."
-        anykey
-    fi
-fi
-
-# ===========================================================================
-# End
-# ===========================================================================
+exit 0

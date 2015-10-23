@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------------
 # /var/install/config.d/cui-openntpd.sh - configuration generator script
 #
-# Copyright (c) 2001-2014 The Eisfair Team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2015 The eisfair Team, team(at)eisfair(dot)org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,9 +17,11 @@
 #set -x
 
 pgmname=`basename $0`
+packageName=cui-openntpd
+
 
 ### set file names ###
-ntpConfigfile=/etc/config.d/openntpd
+ntpConfigfile=/etc/config.d/${packageName}
 ntpDriftfile=/etc/ntp.drift
 ntpLogfile=/var/log/ntp.log
 generate_ntpconf=/etc/ntp.conf
@@ -27,7 +29,7 @@ generate_ntplinks=/etc/ntp.links
 generate_logrotate=/etc/logrotate.d/ntp
 
 ### other parameters ###
-packageVersion=`grep "<version>" /var/install/packages/ntp | sed "s#<version>##g" | sed "s#</version>##g"`
+packageVersion=$(apk info ${packageName} -d | grep description | sort -u -r | head -n1 | cut -d ' ' -f1)
 
 ### load configuration ###
 . ${ntpConfigfile}
@@ -43,7 +45,7 @@ delete_oldlinkdevice () {
         idx=1
         while [ ${idx} -le ${NTP_LINK_N} ] ; do
             eval softlinkdevice='$NTP_LINK_'${idx}
-            if [ "$softlinkdevice" != "" ] ; then
+            if [ -n "$softlinkdevice" ] ; then
                 mecho -n "Removing soft link '${softlinkdevice}'..."
                 rm -f ${softlinkdevice}
                 mecho " Done."
@@ -77,12 +79,12 @@ create_ntpconf () {
             # Split the clock type here because if it is of type '8' it will
             # be folled by another number, which leads to an error on the 
             # next test.
-            local mode=`echo ${clock_type} | cut -d " " -f 2`
-            clock_type=`echo ${clock_type} | cut -d " " -f 1`
+            local mode=$(echo ${clock_type} | cut -d " " -f 2)
+            clock_type=$(echo ${clock_type} | cut -d " " -f 1)
             if [ ${clock_type} -eq 1 ] ; then
                 echo "server    127.127.$clock_type.1"
 
-                if [ "$clock_stratum" != "" ] ; then
+                if [ -n "$clock_stratum" ] ; then
                     echo "fudge     127.127.$clock_type.1 stratum $clock_stratum"
                 fi
             else
@@ -111,7 +113,7 @@ create_ntpconf () {
                     fi
                 fi
 
-                if [ "$clock_stratum" != "" ] ; then
+                if [ -n "$clock_stratum" ] ; then
                     echo "fudge     127.127.$clock_type.$clock_link_device_nbr stratum $clock_stratum"
                 fi
             fi
@@ -184,10 +186,10 @@ create_ntplinks () {
             eval clock_link_device='$NTP_CLOCK_'${idx}'_LINK_DEVICE''$NTP_CLOCK_'${idx}'_LINK_DEVICE_NBR'
 
             if [ "$clock_device" != "" ] && [ "$clock_link_device" != "" ] ; then
-                jdx=`expr $jdx + 1`
+                jdx=$((jdx+1))
             fi
 
-            idx=`expr ${idx} + 1`
+            idx=$((idx+1))
         done
 
         echo "NTP_LINK_N='$jdx'"
@@ -199,15 +201,15 @@ create_ntplinks () {
             eval clock_device='$NTP_CLOCK_'${idx}'_DEVICE'
             eval clock_link_device='$NTP_CLOCK_'${idx}'_LINK_DEVICE''$NTP_CLOCK_'${idx}'_LINK_DEVICE_NBR'
 
-            if [ "$clock_device" != "" ] && [ "$clock_link_device" != "" ] ; then
-                jdx=`expr $jdx + 1`
+            if [ -n "$clock_device" ] && [ -n "$clock_link_device" ] ; then
+                jdx=$((jdx+1))
                 echo "NTP_DEVICE_${jdx}='$clock_device'"
                 echo "NTP_LINK_${jdx}='$clock_link_device'"
             fi
 
-            idx=`expr ${idx} + 1`
+            idx=$((idx+1))
         done
-    } >$generate_ntplinks
+    } >${generate_ntplinks}
     mecho " Done."
 }
 
@@ -223,13 +225,12 @@ create_ntplinkdevice () {
         eval clock_device='$NTP_CLOCK_'${idx}'_DEVICE'
         eval clock_link_device='$NTP_CLOCK_'${idx}'_LINK_DEVICE''$NTP_CLOCK_'${idx}'_LINK_DEVICE_NBR'
 
-        if [ "$clock_device" != "" ] && [ "$clock_link_device" != "" ] ; then
+        if [ -n "$clock_device" ] && [ -n "$clock_link_device" ] ; then
             mecho "Creating soft link '${clock_device}' to '${clock_link_device}'..."
             ln -sf ${clock_device} ${clock_link_device}
             mecho " Done."
         fi
-
-        idx=`expr ${idx} + 1`
+        idx=$((idx+1))
     done
 }
 
@@ -280,7 +281,4 @@ create_logrotate
 
 mecho -info "Finished."
 
-#===============================================================================
-# end
-#===============================================================================
 exit 0

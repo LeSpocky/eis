@@ -1,4 +1,4 @@
-<package>openntpd</package>
+<package>cui-openntpd</package>
 <title>NTP Service administration</title>
 <doc>View documentation</doc>
 <edit>Edit configuration</edit>
