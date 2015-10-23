@@ -127,7 +127,7 @@ if [ -n "$apply" ] ; then
                         else
                             # stop package
                             /sbin/rc-service -i -q $current_package stop
-                            /sbin/rc-update -q del $current_package
+                            [ /sbin/rc-service -e $current_package ] && /sbin/rc-update -q del $current_package
                         fi
                     elif [ "$apply" = "stopstart" ] ; then
                         init_script $current_package stop
@@ -137,7 +137,7 @@ if [ -n "$apply" ] ; then
                             /sbin/rc-service -i -q $current_package start
                             /sbin/rc-update -q add $current_package default >/dev/null 2>&1
                         else
-                            /sbin/rc-update -q del $current_package
+                            [ /sbin/rc-service -e $current_package ] && /sbin/rc-update -q del $current_package
                         fi
                     fi
                 else
