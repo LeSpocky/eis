@@ -16,7 +16,7 @@
 . /var/install/include/configlib
 
 # set packages name
-packageName=cui-openntpd
+packageName=openntpd
 
 # ---------------------------------------------------------------------------
 # Set the default values for configuration
@@ -72,11 +72,14 @@ NTP_LOG_COUNT='10'                    # Nbr of log files to save
 NTP_LOG_INTERVAL='weekly'             # Interval: daily, weekly, monthly
 
 # ---------------------------------------------------------------------------
-# Read old configuration and update old variables
+# Read configuration from previously installed package if existing
+# and update configuration variables if necessary
 updateVariables() {
     # -------------------
     # Read current values
     [ -f /etc/config.d/${packageName} ] && . /etc/config.d/${packageName}
+
+    # Nothing to convert at the moment
 }
 
 

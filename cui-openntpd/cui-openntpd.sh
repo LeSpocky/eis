@@ -17,7 +17,7 @@
 #set -x
 
 pgmname=`basename $0`
-packageName=cui-openntpd
+packageName=openntpd
 
 
 ### set file names ###
@@ -29,7 +29,7 @@ generate_ntplinks=/etc/ntp.links
 generate_logrotate=/etc/logrotate.d/ntp
 
 ### other parameters ###
-packageVersion=$(apk info ${packageName} -d | grep description | sort -u -r | head -n1 | cut -d ' ' -f1)
+packageVersion=$(apk info cui-${packageName} -d | grep description | sort -u -r | head -n1 | cut -d ' ' -f1)
 
 ### load configuration ###
 . ${ntpConfigfile}
