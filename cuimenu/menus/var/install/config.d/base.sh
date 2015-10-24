@@ -157,41 +157,59 @@ EOF
 # Set time zone
 #----------------------------------------------------------------------------
 case "$TIME_ZONE" in
-	utc|UTC)     TIME_ZONE="UTC" ;;
-	met|cet|CET) TIME_ZONE="CET" ;;
-	gmt*|GMT*)   TIME_ZONE="CET-1CEST,M3.5.0,M10.5.0/3" ;;
+	utc|UTC) 
+	    echo "UTC" > /etc/TZ 
+	    TIME_ZONE="UTC"
+	    zdir=""
+	    ;;
+	Europe*) 
+	    echo "CET-1CEST,M3.5.0,M10.5.0/3" > /etc/TZ 
+	    zdir="${TIME_ZONE%/*}"
+	    ;;
+	*) 
+	    echo "$TIME_ZONE" > /etc/TZ
+	    zdir="${TIME_ZONE%/*}"
+	    ;;
 esac
-echo "$TIME_ZONE" > /etc/TZ
+
+if [ -f "/usr/share/zoneinfo/$TIME_ZONE" ]
+then
+	rm -r /etc/zoneinfo
+	mkdir -p /etc/zoneinfo/$zdir
+	cp "/usr/share/zoneinfo/$TIME_ZONE" "/etc/zoneinfo/$zdir"
+	rm -f /etc/localtime
+	ln -s /etc/zoneinfo/$TIME_ZONE /etc/localtime
+fi
 
 #----------------------------------------------------------------------------
 # write config for modules treatment
 #----------------------------------------------------------------------------
 if [ -n "$MODULE_N" -a 0$MODULE_N -gt 0 ]
 then
-    MODPROBE_FILE_EIS='/etc/modprobe.d/modules-eis.conf'
-    rm -f $MODPROBE_FILE_EIS
-    idx='1'
-    while [ $idx -le $MODULE_N ]
-    do
-        eval mod='$MODULE_'$idx
-        eval act='$MODULE_'$idx'_ACTION'
-        eval strg='$MODULE_'$idx'_STRING'
-        case $act in
-            option)
-                grep -qs "^options $mod $strg" $MODPROBE_FILE_EIS >/dev/null || echo "options $mod $strg" >>$MODPROBE_FILE_EIS
-            ;;
-            alias)
-                grep -qs "^alias $strg $mod" $MODPROBE_FILE_EIS >/dev/null || echo "alias $strg $mod" >>$MODPROBE_FILE_EIS
-            ;;
-            blacklist) 
-                grep -qs "^blacklist $mod" $MODPROBE_FILE_EIS >/dev/null || echo "blacklist $mod" >>$MODPROBE_FILE_EIS
-            ;;
-            forcedstart) 
-                grep -qs "^$mod" /etc/modules >/dev/null || echo "$mod" >> /etc/modules 
-            ;;
-        esac
-        idx=`expr $idx + 1`
-    done
+	MODPROBE_FILE_EIS='/etc/modprobe.d/modules-eis.conf'
+	rm -f $MODPROBE_FILE_EIS
+	idx='1'
+	while [ $idx -le $MODULE_N ]
+	do
+    		eval mod='$MODULE_'$idx
+    		eval act='$MODULE_'$idx'_ACTION'
+    		eval strg='$MODULE_'$idx'_STRING'
+    		case $act in
+        	option)
+			grep -qs "^options $mod $strg" $MODPROBE_FILE_EIS >/dev/null || echo "options $mod $strg" >>$MODPROBE_FILE_EIS
+			;;
+		alias)
+            		grep -qs "^alias $strg $mod" $MODPROBE_FILE_EIS >/dev/null || echo "alias $strg $mod" >>$MODPROBE_FILE_EIS
+        		;;
+		blacklist) 
+			grep -qs "^blacklist $mod" $MODPROBE_FILE_EIS >/dev/null || echo "blacklist $mod" >>$MODPROBE_FILE_EIS
+			;;
+		forcedstart) 
+			grep -qs "^$mod" /etc/modules >/dev/null || echo "$mod" >> /etc/modules 
+        		;;
+		esac
+    		idx=`expr $idx + 1`
+	done
 fi
 
 #----------------------------------------------------------------------------
@@ -199,7 +217,7 @@ fi
 #----------------------------------------------------------------------------
 if /var/install/bin/ask.cui "Should the network be re-initialized immediately?"
 then
-    /etc/init.d/networking restart
+	/etc/init.d/networking restart
 fi
 
 #----------------------------------------------------------------------------
@@ -320,37 +338,37 @@ fi
 #----------------------------------------------------------------------------
 if [ -e /lib/kbd/keymaps ]
 then
-    mv -f /etc/keymap/* /lib/kbd/keymaps/
-    cp -f /lib/kbd/keymaps/${KEYMAP}.bmap.gz /etc/keymap/
+	mv -f /etc/keymap/* /lib/kbd/keymaps/
+	cp -f /lib/kbd/keymaps/${KEYMAP}.bmap.gz /etc/keymap/
 fi
 if [ -f /etc/keymap/${KEYMAP}.bmap.gz ]
 then
-    sed -i '/^KEYMAP=/d' /etc/conf.d/keymaps
-    echo "KEYMAP=/etc/keymap/${KEYMAP}.bmap.gz" >> /etc/conf.d/keymaps
-    zcat /etc/keymap/${KEYMAP}.bmap.gz | loadkmap
+	sed -i '/^KEYMAP=/d' /etc/conf.d/keymaps
+	echo "KEYMAP=/etc/keymap/${KEYMAP}.bmap.gz" >> /etc/conf.d/keymaps
+	zcat /etc/keymap/${KEYMAP}.bmap.gz | loadkmap
 fi
 if [ -e /lib/kbd/consolefonts ]
 then
-    # remove old values
-    sed -i '/^consolefont=/d' /etc/conf.d/consolefont
-    #sed -i '/^consoletranslation=/d' /etc/conf.d/consolefont
-    #sed -i '/^unicodemap=/d' /etc/conf.d/consolefont
+	# remove old values
+	sed -i '/^consolefont=/d' /etc/conf.d/consolefont
+	#sed -i '/^consoletranslation=/d' /etc/conf.d/consolefont
+	#sed -i '/^unicodemap=/d' /etc/conf.d/consolefont
 
-    {
+	{
 	echo "consolefont=\"$CONSOLEFONT\""
-    #	echo 'consoletranslation="8859-1_to_uni"'
-    #	echo 'unicodemap="iso01"'
-    } >> /etc/conf.d/consolefont
-    /sbin/rc-service -q consolefont restart >/dev/null 2>&1
+	# echo 'consoletranslation="8859-1_to_uni"'
+	# echo 'unicodemap="iso01"'
+	} >> /etc/conf.d/consolefont
+	/sbin/rc-service -q consolefont restart >/dev/null 2>&1
 fi
 [ -f /etc/init.d/kbd-mini ] && /sbin/rc-service -q kbd-mini start >/dev/null 2>&1
 
 # Set console blank time ESC 9 and VESA powerdown ESC 14
 if [ "0$CONSOLE_BLANK_TIME" -eq 0 ]
 then
-    echo -n -e '\033[9;0]\033[14;0]' >/dev/console
+	echo -n -e '\033[9;0]\033[14;0]' >/dev/console
 else
-    echo -n -e "\033[9;${CONSOLE_BLANK_TIME}]\033[14;${CONSOLE_BLANK_TIME}]" >/dev/console
+	echo -n -e "\033[9;${CONSOLE_BLANK_TIME}]\033[14;${CONSOLE_BLANK_TIME}]" >/dev/console
 fi
 
 # force unicode!

@@ -24,7 +24,10 @@ IPV6_ROUTE_%                 -                       IPV6_ROUTE_N      IP_ROUTE6
 DOMAIN_NAME                  -                       -                 DOMAIN
 DNS_SERVER                   -                       -                 IPADDRESSES46
 
-TIME_ZONE                    -                       -                 NONE
+TIME_ZONE                    -                       -                 TIMEZONE_LIST
+KEYMAP                       -                       -                 CONSOLE_KEYMAP
+CONSOLEFONT                  -                       -                 CONSOLEFONT_NAME
+CONSOLE_BLANK_TIME           -                       -                 NUMERIC
 
 START_SYSLOG                 -                       -                 YESNO
 SYSLOG_MESSAGES_INTERVAL     START_SYSLOG            -                 LOG_INTERVAL
@@ -47,10 +50,6 @@ SYSLOG_DEST_%_TARGET         START_SYSLOG            SYSLOG_DEST_N     NOTEMPTY
 SYSLOG_DEST_%_FILTER         START_SYSLOG            SYSLOG_DEST_N     NONE
 SYSLOG_DEST_%_INTERVAL       START_SYSLOG            SYSLOG_DEST_N     LOG_INTERVAL
 SYSLOG_DEST_%_MAXCOUNT       START_SYSLOG            SYSLOG_DEST_N     NUMERIC
-
-KEYMAP                       -                       -                 CONSOLE_KEYMAP
-CONSOLEFONT                  -                       -                 CONSOLEFONT_NAME
-CONSOLE_BLANK_TIME           -                       -                 NUMERIC
 
 MODULE_N                     -                       -                 NUMERIC
 MODULE_%                     -                       MODULE_N          NOTEMPTY
