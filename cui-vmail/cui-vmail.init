@@ -21,7 +21,6 @@ case "$1" in
         for i in /etc/hosts /etc/resolv.conf /etc/services ; do
             cp -f ${i} /var/spool/postfix${i}
         done
-        /sbin/rc-service -q postfixchroot start
         [ "$START_POP3IMAP" = 'yes' ] && /sbin/rc-service dovecot start
         /sbin/rc-service smc-milter-new start
         /sbin/rc-service postfix start
@@ -30,7 +29,6 @@ case "$1" in
         /sbin/rc-service postfix stop
         /sbin/rc-service dovecot stop
         /sbin/rc-service smc-milter-new stop
-        /sbin/rc-service -q postfixchroot stop
     ;;
     restart)
         $0 stop

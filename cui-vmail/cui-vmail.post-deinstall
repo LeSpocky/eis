@@ -3,5 +3,4 @@
 rm -f /etc/backup.d/vmail.*
 rm -f /etc/conf.d/vmail
 /sbin/rc-update -q del vmail 2>/dev/null
-/sbin/rc-update -q del postfixchroot 2>/dev/null
 exit 0

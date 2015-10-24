@@ -949,11 +949,6 @@ if [ "$START_VMAIL" = "yes" ]; then
     /sbin/rc-update -q add smc-milter-new 2>/dev/null
     /sbin/rc-update -q add postfix 2>/dev/null
 #    [ "$START_FETCHMAIL" = "yes" ] && /sbin/rc-update -q add fetchmail 2>/dev/null || /sbin/rc-update -q del fetchmail
-    # add chroot
-    if [ "$pchr" = "y" ]; then
-        /sbin/rc-update -q add postfixchroot 2>/dev/null
-        /sbin/rc-service -q postfixchroot start 2>/dev/null
-    fi
 else
     /sbin/rc-update -q del dovecot
     /sbin/rc-update -q del smc-milter-new
