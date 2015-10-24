@@ -19,7 +19,7 @@ VMail - Mailserver fuer systemunabhaengige (virtuelle) E-Mailkonten
   Mailspeicherung.
 - Sieve Filtersprache ermoeglicht Um- und Weiterleitungen von Nachrichten.
   Diese koennen zeitgesteuert zu und abgeschaltet werden.  
-- Der gleichzeitige Einsatz mehrere Virenscanner ist moeglich. 
+- Der gleichzeitige Einsatz mehrerer Virenscanner ist moeglich.
 
 Folgende Programme sind im Paket enthalten:
 
@@ -32,24 +32,37 @@ Folgende Programme sind im Paket enthalten:
   "POP before SMTP".
 - SMC-Milter ist eine Schnittstelle zum Virenscanner ClamAV und zu weiteren
   Antivirenprogrammen. Wird ein Virus gefunden, so wird die E-Mail nicht
-  angenommen. Gleichzeitig kann er ausgehende E-Mails mit einer Sigantur
-  versehen.
+  angenommen. Gleichzeitig kann SMC-Milter ausgehende E-Mails mit einer
+  Sigantur versehen.
 - Fetchmail: zum Abholen der E-Mailnachrichten von externen Servern.
 
-Nicht im Paket enthalten, aber empfohlen werden die Pakete:
 
-* MySQL - Der Datenbankserver kann auch auf einem anderen Computer
-  installiert sein.
+
+Nicht im Paket enthaltene aber zwingend benötigte separate Komponenten:
+-----------------------------------------------------------------------
+
+* MySQL / MariaDB - Es wird zwingend eine MySQL- oder MariaDB-Datenbank
+  benoetigt. Der Datenbankserver kann dabei durchaus auf einer anderen
+  Maschine laufen und somit physikalisch u/o raeumlich vom Mailserver
+  getrennt werden.
+
+
+
+Nicht im Paket enthalten, aber empfohlen werden die Pakete:
+-----------------------------------------------------------
 * Clamav - der Virenscanner.
+
+
 
 Installation und Konfiguration
 ------------------------------
-1. Ein MySQL Server muss installiert oder auf einem anderen Computer
-   erreichbar sein. Das Kennwort des MySQL User root sollte bekannt sein. 
+1. Ein MySQL- oder MariaDB-Server muss installiert oder auf einem anderen
+   Computer erreichbar sein. Das Kennwort des DB-Users root sollte bekannt
+   sein.
 2. Der Virenscanner Clamav sollte installiert sein.
 3. Starten der Vmail Konfiguration im Menue.
-4. Eintragen der IP-Adresse des MySQL Servers oder belassen des Wertes
-   auf localhost, wenn der MySQL Server auf dem Vmail Server laeuft.
+4. Eintragen der IP-Adresse des DB-Servers oder belassen des Wertes
+   auf localhost, wenn der DB-Server auf dem Vmail Server laeuft.
 5. Setzen weiterer Optionen wie dem Virenscanner.
 6. Speichern der Konfiguration.
 7. Eintragen der E-Mail Domain(s) im Menuepunkt "User & Domain
@@ -64,10 +77,10 @@ Installation und Konfiguration
 Alle Benutzerverzeichnisse werden automatisch erstellt, wenn entweder eine
 E-Mail zugestellt wird, oder der Benutzer sich das erste mal per POP3 oder
 IMAP anmeldet.
-Die Benutzerdaten in den MySQL Tabellen werden, ueber den Menuepunkt
-"User & domain administration" in einem speziellen Curses-Programm, einfach
+Die Benutzerdaten in den MySQL Tabellen werden ueber den Menuepunkt
+"User & domain administration" in einem speziellen Curses-Programm einfach
 und schnell verwaltet. Ein Suchdialog erlaubt die Anzahl der angezeigten
-Benutzeintraege zu reduzieren und damit das schnelle Finden und Bearbeiten 
+Benutzerintraege zu reduzieren und damit das schnelle Finden und Bearbeiten
 von Benutzern auch in sehr grossen Datenbestaenden.
 
 
@@ -405,24 +418,25 @@ FETCHMAIL_POSTMASTER
 
 
 Das VMail Hauptmenue
--------------------
+--------------------
 Das VMail Hauptmenue ist ueber den Menuepunkt "Service administration" im
 zentralen Setup-Programm zu erreichen. Es ist wie folgt aufgebaut:
   * View documentation
     Zeigt die Dokumentation an.
   * Edit configuration
-    Damit wird die Konfiguration des VMAIL-Packages bearbeitet
+    Damit wird die Konfiguration des VMAIL-Packages bearbeitet.
   * Advanced configuration file handling
-    Ermoeglicht eine Versionsverwaltung der VMAIL-Konfigurationsdatei
+    Ermoeglicht eine Versionsverwaltung der VMAIL-Konfigurationsdatei.
   * Start mail services
-    Hier werden alle aktivierten E-Mailprogramme gestartet werden.
+    Hier koennen alle in der Konfiguration aktivierten E-Mailprogramme
+    gestartet werden.
   * Stop mail services
-    Hier werd alle laufenden E-Mailprogramme angehalten.
+    Hier werden alle laufenden E-Mailprogramme angehalten.
   * Show status
-    Zeigt den Status alle E-Mail Daemons
+    Zeigt den Status aller E-Mail Daemons.
   * User & domain administration
-    Untermenue fuer den direkten Zugriff auf die in der MySQL Datenbank
-    gespeicherten E-Mail Benutzerdaten, Domainen usw.
+    Untermenue fuer den direkten Zugriff auf die in der Datenbank
+    gespeicherten E-Mail Benutzerdaten, Domaenen usw.
   * Mail Tools
     Enthaelt einige Zusatzprogramme z.B. zum Auflisten der Warteschlangen.
   * Mail modules
@@ -434,23 +448,23 @@ Die User & domain administration
 --------------------------------
   * E-Mail domain administration
     Hier werden alle Domains eingetragen, welche:
-    - auf diesem E-Mailserver gehosteten werden
+    - auf diesem E-Mailserver gehostet werden
     - weitergeleitet werden
     - ueber die Smarthost Funktion transportiert werden.
   * E-Mail user administration
-    Ermoeglicht die Benutzerverwaltung alle E-Mail Beutzer. Zum schnellen
-    Erfassen vieler Benutzer kann im Benutzererfassungsdialog die Funktions-
-    tasten 'F2'=Speichern verwendet werden. Der Dialog muss so nicht fuer
-    jeden Benutzer neu aufgerufen werden
+    Ermoeglicht die Benutzerverwaltung aller E-Mail Beutzer. Zum schnellen
+    Erfassen vieler Benutzer, kann im Benutzererfassungsdialog die Funktions-
+    taste 'F2'=Speichern verwendet werden. Der Dialog muss so nicht fuer
+    jeden Benutzer neu aufgerufen werden.
   * E-Mail smarthost user administration
     Name und Passwort externer E-Mail-Konten, welche per Smarthost
     genutzt werden sollen.
   * E-Mail forwarding administration
-    Hier koennen Um- und Weiterleitungen, Aliaseintraege, Mailinglisten u.a
+    Hier koennen Um- und Weiterleitungen, Aliaseintraege, Mailinglisten u.a.
     definiert werden.
   * E-Mail canonical maps administration
     Wird zwar nicht oft benoetigt, sollte aber nicht fehlen. Hier koennen 
-    augehende E-Mailadressen umgeschrieben werden:
+    ausgehende E-Mailadressen umgeschrieben werden:
     user@test.tld -> name@domain.tld
   * E-Mail recipient access administration
     Hier koennen E-Mailadressen von der RBL Pruefung ausgenommen (abuse@),
@@ -458,20 +472,20 @@ Die User & domain administration
   * E-Mail sender access administration
     Hier werden u.a. die Absender-Namen-ueberpruefung eingetragen.
   * E-Mail client access administration
-    Hier werden u.a. die Absender-IP-Adressen zur ueberpruefung eingetragen.
+    Hier werden u.a. die Absender-IP-Adressen zur Ueberpruefung eingetragen.
   * Sieve filter administration
     Ermoeglicht das Sperren/Aktivieren oder Loeschen aller benutzerdefinierten
-    und in der MySQL Tabelle eingetragenen Sieve Filter.
+    und in der Datenbank eingetragenen Sieve Filter.
   * Fetchmail user administration
     In diesem Menue kann der Administrator eigene Fetchmailabfragen
-    definieren
+    definieren.
 
 Mail tools
 ----------
   * View mail queue
     Zeigt alle zwischengespeicherten E-Mails, die auf Auslieferung warten.
   * Force queue run
-    Probiert ein erneutes Zustellen der im Queue liegenden E-Mails.
+    Probiert ein erneutes Zustellen der in der Queue liegenden E-Mails.
   * Process mail queue
     Erlaubt den direkten Zugriff auf einzelne E-Mails in den Warteschlangen.
   * Fetchmail force get mail run
@@ -492,7 +506,7 @@ Benutzer-Datenbank  virtual_users
   hinterlegt sein.
 - password
   Das Benutzerpasswort (kodiert) fuer den POP3/IMAP Zugang und die SMTP
-  Authentifizierung
+  Authentifizierung.
 - username
   Enthaelt zur Kompatibilitaet den Benutzername. Dieser wird aber weder von
   Postfix noch von Dovecot ausgewertet.
@@ -550,7 +564,7 @@ user@[domain.tld] foo@domain.tld Direkte Weiterleitung. Kann auch fuer Alias
 [domain.tld]     user@domain.tld Leitet alle nicht zustellbaren E-Mails der
                                  Domain domain.tld an user@domain.tld
                                  weiter.
-[domain.tld]     @another.tld    Hiermit leiten man ganze Domaenen um.
+[domain.tld]     @another.tld    Hiermit leitet man ganze Domaenen um.
                                  Jeder E-Mailname in der domain.tld
                                  Domaene wird an den selben E-Mailnamen
                                  in der Domaene another.tld umgeleitet.
@@ -585,29 +599,6 @@ user@domain.tld  foobar          E-Mail- und Username sind nicht identisch.
                                  Datenbank sein.
 
 
-Mail zu Fax Service
--------------------
-Im VMail Paket ist eine feste Schnittstelle zu einem installierten Eisfax
-Dienst integriert, welcher das Versenden von Faxnachrichten ermoeglicht.
-
-Dazu muss die E-Mail Zieladresse wie folgt aufgebaut sein:
-
-    faxg3/[<Modem>/]<Faxnummer>@localhost
-
-    Beispiel: faxg3/0221556677@localhost  oder
-              faxg3/modem1/0221556677@localhost
-
-Soll an Stelle von "localhost" eine andere Domain verwendet werden, dann ist
-die Domain-Datenbank noch um den entsprechenden Eintrag zu erweitert:
-
-    Domain:          Transport:
-    ------------------------------
-    fax.domain.tld   fax:localhost
-
-Weitere optionale Parameter in der Faxadresse sind der Eisfax Dokumentation zu
-entnehmen.
-
-
 Mail zu SMS Service
 -------------------
 Zur Nutzung muss YAPS installiert sein und ein entsprechender zusaetzlicher
@@ -629,7 +620,7 @@ Zum Abholen von Nachrichten sind folgende Werte in die Fetchmail-SQL-Tabelle
 einzutragen.
 
 Loginname
-  je nach Provider mitunter auch als komplette E-Mailadresse:
+  Je nach Provider mitunter auch als komplette E-Mailadresse:
   testname
   testname@domain.tld
 
@@ -668,14 +659,14 @@ Filtersprache. Sie erlaubt dem Postfacheigentuemer, E-Mails in
 unterschiedlichen Ordnern abzulegen, Kopien und auch automatische 
 Antworttexte (Autoreply, 'Out of office message') zu versenden.
 Da jedoch bisher alle Postfachdaten in SQL-Tabellen abgelegt wurden, bestand
-eine Herausforderrung darin moegliche Filter auch in dieser Form zu
+eine Herausforderrung darin, moegliche Filter auch in dieser Form zu
 speichern. Dabei sollten diese um eine zeitabhaengige Komponente erweitert
 werden, welche die Unterscheidung zwischen 
 -  zeitweise verwendeten Filtereintraegen wie automatischen Antworttexte und
    Weiterleitungen sowie
 -  permanent genutzten Filtern, welche z.B. nach Absendern filtern,
 ermoeglicht. Deshalb wurde ein Programm geschrieben, welches in regelmaessigen
-Zeitabstaenden die MySQL Tabelle nach zu aktivierenden Filtereintraegen 
+Zeitabstaenden die Datenbank-Tabelle nach zu aktivierenden Filtereintraegen
 durchsucht. Diese werden dann nach den auch unter Roundcube Mailclient
 gueltigen Regeln erstellt:
 
