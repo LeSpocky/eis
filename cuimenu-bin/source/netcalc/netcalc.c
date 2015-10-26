@@ -790,33 +790,36 @@ dnsnet (int argc, char ** argv)
 void 
 show_address_info( struct ifaddrs *ifa, int nip4, int nip6, int nName )
 {
-  struct sockaddr_in *s4;
-  struct sockaddr_in6 *s6;
-  char buf[64];
+  char buf1[256];
+  char buf2[256];
+  memset(buf1, 0, sizeof(buf1));
+  memset(buf2, 0, sizeof(buf2));
 
   if ((AF_INET == ifa->ifa_addr->sa_family) && (nip4 >0)){
-    s4 = (struct sockaddr_in *)(ifa->ifa_addr);
-    if (NULL == inet_ntop(ifa->ifa_addr->sa_family, (void *)&(s4->sin_addr), buf, sizeof(buf))){
+    if (NULL == inet_ntop(AF_INET, &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr, buf1, sizeof(buf1))){
       printf("%s: inet_ntop failed!", ifa->ifa_name);
     } else {
       if ( nName > 0)
         printf("%s ", ifa->ifa_name);
       if ( nip4 > 1)
-        printf("%s ", buf);
+        printf("%s ", buf1);
+      inet_ntop(AF_INET, &((struct sockaddr_in *)ifa->ifa_netmask)->sin_addr,  buf2, sizeof(buf2));
+        printf("%s ", buf2);
       printf("\n");
     }
   }
   else if ((AF_INET6 == ifa->ifa_addr->sa_family) && (nip6 > 0)) {
-    s6 = (struct sockaddr_in6 *)(ifa->ifa_addr);
-    if (NULL == inet_ntop(ifa->ifa_addr->sa_family, (void *)&(s6->sin6_addr), buf, sizeof(buf))) {
+    if (NULL == inet_ntop(AF_INET6, &((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr, buf1, sizeof(buf1))) {
       printf("%s: inet_ntop failed!", ifa->ifa_name);
     } else {
       if ( nName > 0)
         printf("%s ", ifa->ifa_name);
       if ( nip6 > 1)
-        printf("%s ", buf);
+        printf("%s ", buf1);
+      inet_ntop(AF_INET6, &((struct sockaddr_in6 *)ifa->ifa_netmask)->sin6_addr,  buf2, sizeof(buf2));
+        printf("%s ", buf2);       
       }
-      printf("\n");
+    printf("\n");
   }
 }
 
@@ -930,8 +933,8 @@ usage(char const *pgm_name)
     fprintf (stderr, "    %s dnsnet IPADDR NETMASK\n", pgm_name);
     fprintf (stderr, "    %s dnsnet IPADDR/NETMASKBITS\n", pgm_name);
     putc ('\n', stderr);
-    fprintf (stderr, "  print (all) network interface:\n");
-    fprintf (stderr, "    %s interfaces [ip46|ipv4|ipv6] [all|eth0...]\n", pgm_name);
+    fprintf (stderr, "  print (all) network interface(s):\n");
+    fprintf (stderr, "    %s interface [ip|ipv4|ipv6] [all|eth0...]\n", pgm_name);
     putc ('\n', stderr);
     return 1;
 }

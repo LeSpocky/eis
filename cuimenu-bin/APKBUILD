@@ -2,7 +2,7 @@
 # Maintainer: The eisfair team <team@eisfair.org>
 pkgname=cuimenu-bin
 pkgver=3.0.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Eisfair CUI basis menu - binary files"
 url="http://www.eisfair.org"
 arch="all"
