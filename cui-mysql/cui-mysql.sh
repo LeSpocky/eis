@@ -220,14 +220,20 @@ nice                        = 0
 #syslog
 #syslog-tag=mysqld
 
+
 [client]
 socket                      = /run/mysqld/mysqld.sock
 default-character-set       = utf8
+
 
 [mysqld]
 ## Charset and Collation
 character-set-server        = utf8
 collation-server            = utf8_general_ci
+
+# Recommended in standard MySQL setup
+#sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
+sql_mode=NO_ENGINE_SUBSTITUTION
 
 ## Files
 back_log                    = 300
