@@ -2,10 +2,17 @@
     Setzen Sie diesen Wert auf 'yes' um den DHCP Server zu aktivieren
     und IP-Adressen zu vergeben.
 <br/><br/>
-    Gültige Werte: yes,no
+    Gueltige Werte: yes,no
 <br/><br/>
     Default: START_DHCP='no'
 </help>
+
+<help name="DHCP_NETWORK_GATE">
+    Dieser Eintrag enthaelt die IPv4-Adresse des Netzwerk-Gateway zu anderen
+    Netzen.
+<br/><br/>
+    Beispiel: DHCP_NETWORK_GATE='172.30.50.1'
+</help
 
 <help name="DHCP_DYNAMIC_N">
     Hier wird die Anzahl der Bereiche von IP-Adressen angegeben, die
@@ -15,33 +22,33 @@
 </help>
 
 <help name="DHCP_DYNAMIC_%_ACTIVE">
-    Hier kann für jeden einzelnen Bereich die Verteilung der
+    Hier kann fuer jeden einzelnen Bereich die Verteilung der
     IP-Adressen deaktiviert ('no') werden.
 <br/><br/>
-    Gültige Werte: yes,no
+    Gueltige Werte: yes,no
 <br/><br/>
     Default:  DHCP_DYNAMIC_1_ACTIVE='yes'
 </help>
 
 <help name="DHCP_DYNAMIC_%_RANGE">
     Hier werden die Bereiche der IP-Adressen angegeben, die der
-    Server vergeben darf. Achtung! Hier dürfen keine IP-Adressen
+    Server vergeben darf. Achtung! Hier duerfen keine IP-Adressen
     angegeben werden, die einem Client fest zugeteilt sind oder
     die Gateways oder andere Server nutzen.
 <br/><br/>
-    Als IPv6 Adressen können nur folgende Adresstypen verwendet werden:
+    Als IPv6 Adressen koennen nur folgende Adresstypen verwendet werden:
       * Site Local IPv6 Addresses der Form fecx, fedx, feex, fefx
       * Unique Local IPv6 Addresses der Form fcxx, fdxx
       * Global Unicast Addresses der Form 2xxx, 3xxx
-    (x steht für beliebige Hexadezimalzeichen 0-9 und a-f)
+    (x steht fuer beliebige Hexadezimalzeichen 0-9 und a-f)
 <br/><br/>
     Default:  DHCP_DYNAMIC_1_RANGE='172.30.50.100 172.30.50.150'
 </help>
 
 <help name="DHCP_PXE_N">
-    Hier wird die Anzahl der Einträge im PXE-Bootmenü angegeben.
-    Das PXE-Bootmenü wird für alle Clients mit dynamischen IP-Adressen
-    sowie für die Clients mit statischen IP-Adressen, bei denen PXE
+    Hier wird die Anzahl der Eintraege im PXE-Bootmenue angegeben.
+    Das PXE-Bootmenue wird fuer alle Clients mit dynamischen IP-Adressen
+    sowie fuer die Clients mit statischen IP-Adressen, bei denen PXE
     aktiviert wurde, aber keine individuellen PXE-Startparameter
     angegeben wurden, verwendet.
 <br/><br/>
@@ -59,36 +66,36 @@
     Um eine Konfiguration zu verwenden, muss diese Variable auf 'yes'
     gesetzt werden.
 <br/><br/>
-    Gültige Werte: yes,no
+    Gueltige Werte: yes,no
 <br/><br/>
     Default:  DHCP_PXE_1_ACTIVE='no'
 </help>
 
 <help name="DHCP_PXE_%_DESCRIPTION">
-    Hier wird der beschreibende Text für die Anzeige im PXE-Bootmenü
+    Hier wird der beschreibende Text fuer die Anzeige im PXE-Bootmenue
     eingegeben.
 <br/><br/>
     Beispiel: DHCP_PXE_1_DESCRIPTION='fli4l (router)'
 </help>
 
 <help name="DHCP_PXE_%_KERNEL">
-    Hier wird der für PXE zu verwendende Kernel angegeben.
+    Hier wird der fuer PXE zu verwendende Kernel angegeben.
 <br/><br/>
     Hier wird der Pfad des Kernel relativ zum Verzeichnis /tftpboot
-    angegeben. Zur Übertragung des Kernel wird pxelinux verwendet, die
+    angegeben. Zur Uebertragung des Kernel wird pxelinux verwendet, die
     Konfiguration von pxelinux wird automatisch erstellt.
 <br/><br/>
     Um von der lokalen Festplatte oder Diskette zu booten, muss diese
     Option leer gelassen werden.
 <br/><br/>
-    Um ein Image mittels memdisk booten zu können, muss diese Option
+    Um ein Image mittels memdisk booten zu koennen, muss diese Option
     ebenfalls leer gelassen werden.
 <br/><br/>
     Beispiel: DHCP_PXE_1_KERNEL='fli4l/kernel'
 </help>
 
 <help name="DHCP_PXE_%_INITRD">
-    Hier wird der Name der zu DHCP_PXE_x_KERNEL gehörigen
+    Hier wird der Name der zu DHCP_PXE_x_KERNEL gehoerigen
     initrd angegeben. Hier muss der Pfad relativ zu /tftpboot
     angegeben werden.
 <br/><br/>
@@ -102,7 +109,7 @@
 </help>
 
 <help name="DHCP_PXE_%_ROOTFS">
-    Hier wird der Name des zu DHCP_PXE_x_KERNEL gehörigen
+    Hier wird der Name des zu DHCP_PXE_x_KERNEL gehoerigen
     rootfs angegeben.
 <br/><br/>
     Beispiel: DHCP_PXE_1_ROOTFS='/dev/tmpfs'
@@ -139,7 +146,7 @@
     Um einen Client zu verwenden, muss diese Variable auf 'yes'
     gesetzt werden.
 <br/><br/>
-    Gültige Werte: yes,no
+    Gueltige Werte: yes,no
 <br/><br/>
     Default:  DHCP_CLIENT_1_ACTIVE='no'
 </help>
@@ -156,7 +163,7 @@
 </help>
 
 <help name="DHCP_CLIENT_%_IPV4">
-    Dieser Eintrag enthält die IPv4-Adresse zur korrespondierenden
+    Dieser Eintrag enthaelt die IPv4-Adresse zur korrespondierenden
     DHCP_CLIENT_%_MAC. Achtung: hier darf keine Adresse aus dem
     in DHCP_DYNAMIC_%_RANGE angegebenen Bereich verwendet werden!
 <br/><br/>
@@ -164,15 +171,15 @@
 </help>
 
 <help name="DHCP_CLIENT_%_IPV6">
-    Dieser Eintrag enthält die IPv6-Adresse zur korrespondierenden
+    Dieser Eintrag enthaelt die IPv6-Adresse zur korrespondierenden
     DHCP_CLIENT_%_MAC. Achtung: hier darf keine Adresse aus dem
     in DHCP_DYNAMIC_%_RANGE angegebenen Bereich verwendet werden!
 <br/><br/>
-    Als IPv6 Adressen können nur folgende Adresstypen verwendet werden:
+    Als IPv6 Adressen koennen nur folgende Adresstypen verwendet werden:
       * Site Local IPv6 Addresses der Form fecx, fedx, feex, fefx
       * Unique Local IPv6 Addresses der Form fcxx, fdxx
       * Global Unicast Addresses der Form 2xxx, 3xxx
-    (x steht für beliebige Hexadezimalzeichen 0-9 und a-f)
+    (x steht fuer beliebige Hexadezimalzeichen 0-9 und a-f)
 <br/><br/>
     Beispiel:  DHCP_CLIENT_1_IPV6='2001:db8:0:f101::123'
 </help>
@@ -180,31 +187,31 @@
 <help name="DHCP_CLIENT_%_NETBOOT">
     Wenn diskless Clients (z.B. PCs ohne eingebaute Festplatte) zum
     Einsatz kommen sollen, kann mit dieser Option das Image angegeben
-    werden, des dem Client übermittelt werden soll.
+    werden, des dem Client uebermittelt werden soll.
 <br/><br/>
-    Für den Einsatz von pxelinux über die Optionen
+    Fuer den Einsatz von pxelinux ueber die Optionen
     DHCP_CLIENT_x_PXE_KERNEL usw. muss diese Option leer bleiben.
 <br/><br/>
     Durch die Angabe von 'yes' wird der Standard pxelinux.0 (in diesem
-    Paket enthalten) aktiviert. Zur Verwendung des PXE-Menüs muss diese
-    Option auf 'yes' gesetzt werden und die zu diesem Client gehörigen
-    PXE-Parameter müssen leer bleiben.
+    Paket enthalten) aktiviert. Zur Verwendung des PXE-Menues muss diese
+    Option auf 'yes' gesetzt werden und die zu diesem Client gehoerigen
+    PXE-Parameter muessen leer bleiben.
 <br/><br/>
-    Um ein spezielles Netboot-Image (z.B. Etherboot) booten zu können,
+    Um ein spezielles Netboot-Image (z.B. Etherboot) booten zu koennen,
     muss dieses im Verzeichnis /tftpboot abgelegt werden und
-    der hier angegebene Dateiname darf das führende /tftpboot nicht
+    der hier angegebene Dateiname darf das fuehrende /tftpboot nicht
     enthalten (z.B. DHCP_CLIENT_1_NETBOOT='3c90x.zpxe').
 <br/><br/>
     Default:  DHCP_CLIENT_1_NETBOOT='yes'
 </help>
 
 <help name="DHCP_CLIENT_%_PXE_KERNEL">
-    Beim Booten über PXE wird mit dieser Option der Kernel angegeben,
-    der dem Client übermittelt werden soll.
+    Beim Booten ueber PXE wird mit dieser Option der Kernel angegeben,
+    der dem Client uebermittelt werden soll.
 <br/><br/>
     Der Kernel muss im Verzeichnis /tftpboot/DHCP_CLIENT_x_NAME
     abgelegt sein und den hier angegebenen Namen bekommen. Zur
-    Übertragung des Kernel wird pxelinux verwendet, die Konfiguration
+    Uebertragung des Kernel wird pxelinux verwendet, die Konfiguration
     von pxelinux wird automatisch erstellt.
 <br/><br/>
     Um von der lokalen Festplatte oder Diskette zu booten oder um ein
@@ -215,7 +222,7 @@
 </help>
 
 <help name="DHCP_CLIENT_%_PXE_INITRD">
-    Hier wird der Name der zu DHCP_CLIENT_x_PXE_KERNEL gehörigen
+    Hier wird der Name der zu DHCP_CLIENT_x_PXE_KERNEL gehoerigen
     initrd angegeben. Diese muss im selben Verzeichnis wie der
     Kernel liegen.
 <br/><br/>
@@ -229,7 +236,7 @@
 </help>
 
 <help name="DHCP_CLIENT_%_PXE_ROOTFS">
-    Hier wird der Name des zu DHCP_CLIENT_x_PXE_KERNEL gehörigen
+    Hier wird der Name des zu DHCP_CLIENT_x_PXE_KERNEL gehoerigen
     rootfs angegeben.
 <br/><br/>
     Default:  DHCP_CLIENT_1_PXE_ROOTFS=' '
@@ -250,7 +257,7 @@
     Fehlfunktionen kommen. Die Sicherstellung der korrekten Funktion
     obliegt dem Autor des jeweiligen Plugins.
 <br/><br/>
-    Gültige Werte: yes,no
+    Gueltige Werte: yes,no
 <br/><br/>
     Default:  DHCP_PLUGIN_x='no'
 </help>

@@ -1,0 +1,53 @@
+#------------------------------------------------------------------------------
+# /etc/config.d/dhcp - configuration file for DHCP service
+# Copyright (c) 2001-2015 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Basic configuration
+#------------------------------------------------------------------------------
+
+START_DHCP='yes'                                      # Use: yes or no
+
+
+DHCP_DYNAMIC_N='2'                                    # number of local dynamic ranges
+  
+DHCP_DYNAMIC_1_ACTIVE='yes'                           # use this range to provide dhcp
+DHCP_DYNAMIC_1_RANGE='172.30.50.10 172.30.50.128'     # ip range for dhcp
+    
+DHCP_DYNAMIC_2_ACTIVE='no'
+DHCP_DYNAMIC_2_RANGE='172.30.50.164 172.30.50.254'
+
+#------------------------------------------------------------------------------
+# DHCP Clients
+#------------------------------------------------------------------------------
+
+DHCP_CLIENT_N='2'
+ 
+DHCP_CLIENT_1_NAME='client1'
+DHCP_CLIENT_1_ACTIVE='no'
+DHCP_CLIENT_1_MAC='00:01:02:03:04:05'
+DHCP_CLIENT_1_IPV4='172.30.50.11'
+DHCP_CLIENT_1_IPV6='2001:db8:0:f101::111'
+DHCP_CLIENT_1_PXE_KERNEL=''
+DHCP_CLIENT_1_PXE_INITRD=''
+DHCP_CLIENT_1_PXE_ROOTFS=''
+DHCP_CLIENT_1_PXE_APPEND=''
+DHCP_CLIENT_1_NETBOOT='yes'
+
+
+DHCP_CLIENT_2_NAME='client2'
+DHCP_CLIENT_2_ACTIVE='no'
+DHCP_CLIENT_2_MAC='01:02:03:04:05:06'
+DHCP_CLIENT_2_IPV4='172.30.50.12'
+DHCP_CLIENT_2_IPV6='2001:db8:0:f101::112'
+DHCP_CLIENT_2_PXE_KERNEL=''
+DHCP_CLIENT_2_PXE_INITRD=''
+DHCP_CLIENT_2_PXE_ROOTFS=''
+DHCP_CLIENT_2_PXE_APPEND=''
+DHCP_CLIENT_2_NETBOOT='yes'
+
+
+#------------------------------------------------------------------------------
+# End
+#------------------------------------------------------------------------------

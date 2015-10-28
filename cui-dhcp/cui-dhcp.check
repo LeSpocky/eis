@@ -1,5 +1,7 @@
 # Variable                      OPT_VARIABLE           VARIABLE_N               VALUE
 START_DHCP                      -                      -                        YESNO
+DHCP_NETWORK_GATE               START_DHCP             -                        IPADDR
+
 DHCP_DYNAMIC_N                  START_DHCP             -                        NUMERIC
 DHCP_DYNAMIC_%_ACTIVE           START_DHCP             DHCP_DYNAMIC_N           YESNO
 DHCP_DYNAMIC_%_RANGE            DHCP_DYNAMIC_%_ACTIVE  DHCP_DYNAMIC_N           DHCP_IPRANGE

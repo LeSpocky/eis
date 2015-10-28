@@ -1,0 +1,4 @@
+DHCP_IPRANGE = '()|((RE:IPADDR)[[:space:]]+(RE:IPADDR))|((RE:IPADDR6)[[:space:]]+(RE:IPADDR6))'
+             : 'no valid ip-range specification, please specify start and end ip-address separated by a space.'
+DHCP_ROOTFS  = '(RE:E_ABS_PATH)|(/dev/ram[1-9]?[0-9] rw)'
+             : 'no valid rootfs for pxe specified.'

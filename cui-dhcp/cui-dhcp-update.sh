@@ -29,11 +29,43 @@ packages_name="dhcp"
     printgpl --conf "$packages_name"
 
     #------------------------------------------------------------------------------
-    printgroup "general settings"
+    printgroup "Basic configuration"
     #------------------------------------------------------------------------------
 
-    printvar "START_DHCP "            "activate configuration: yes or no"
+    printvar "START_DHCP "                       "activate configuration: yes or no"
 
+    printvar "DHCP_NETWORK_GATE"                 "ip-address of network gateway"
+
+    in="1"
+    while [ $in -le 0$DHCP_CLIENT_N ]
+    do
+        printvar 'DHCP_DYNAMIC_'$in'_ACTIVE'     "use this range to provide dhcp?"
+        printvar 'DHCP_DYNAMIC_'$in'_RANGE'      "ip range for dhcp"
+        in=`expr ${in} + 1`
+    done
+    
+    #------------------------------------------------------------------------------
+    printgroup "DHCP Clients"
+    #------------------------------------------------------------------------------
+    
+    in="1"
+    while [ $in -le 0$DHCPD_CLIENT_N ]
+    do
+        printvar 'DHCPD_CLIENT_'$in'_NAME'       "hostname"
+        printvar 'DHCPD_CLIENT_'$in'_ACTIVE'     "is this client available?"
+        printvar 'DHCPD_CLIENT_'$in'_MAC'        "mac address"
+        printvar 'DHCPD_CLIENT_'$in'_IPV4'       "ipv4 address"
+        printvar 'DHCPD_CLIENT_'$in'_IPV6'       "ipv6 address"
+        printvar 'DHCPD_CLIENT_'$in'_NETBOOT'    "filename for netboot     (optional)"
+        printvar 'DHCPD_CLIENT_'$in'_PXE_KERNEL' "kernel for pxelinux boot (optional)" 
+        printvar 'DHCPD_CLIENT_'$in'_PXE_INITRD' "initrd for pxelinux boot (optional)"
+        printvar 'DHCPD_CLIENT_'$in'_PXE_ROOTFS' "rootfs for pxelinux boot (optional)"
+        printvar 'DHCPD_CLIENT_'$in'_PXE_APPEND' "additional parameters    (optional)"
+        printvar ""                              "for pxelinux boot"
+        echo
+        in=`expr ${in} + 1`
+    done    
+    
 
 ) > /etc/config.d/${packages_name}
 # Set rights
