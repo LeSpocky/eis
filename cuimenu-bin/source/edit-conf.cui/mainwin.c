@@ -1774,7 +1774,7 @@ MainwinCheckOptions(CUIWINDOW* win, MAINWINDATA* data)
 		ConfFileWriteConfig(data->Config->ConfData, data->Config->TempConfFileName);
 
 		win_name = _T("EISCHK");
-		coproc_name = _T("/usr/local/bin/eischk");
+		coproc_name = _T("/var/install/bin/eischk");
 
 		p[0] = _T("eischk");
 		p[1] = _T("-c");
