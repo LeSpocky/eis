@@ -70,7 +70,10 @@ package() {
 	make -j1 DESTDIR="$pkgdir" install || return 1
 	cd ${_builddir}/edit-conf.cui
 	make -j1 DESTDIR="$pkgdir" install || return 1
-	cp ${_builddir}/eischk/eischk ${pkgdir}/var/install/bin/
+	install -m 0644 -D ${_builddir}/edit-conf.cui/ecelib \
+		${pkgdir}/var/install/include/ecelib || return 1
+	install -m 0755 -D ${_builddir}/eischk/eischk \
+		${pkgdir}/var/install/bin/eischk || return 1
 	cd ${_builddir}/list-files.cui
 	make -j1 DESTDIR="$pkgdir" install || return 1
 	cp ${_builddir}/netcalc/netcalc ${pkgdir}/var/install/bin/
