@@ -36,6 +36,7 @@
 
 #include <stdlib.h>
 #include "cui.h"
+#include "global.h"
 
 #define KEYDELAY 100
 

@@ -1,4 +1,5 @@
 #include "cui.h"
+#include "global.h"
 
 #define BUTWIDTH 10
 #define BUTSPACE 11

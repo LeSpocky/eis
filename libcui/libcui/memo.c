@@ -24,6 +24,7 @@
  */
 
 #include "cui.h"
+#include "global.h"
 
 /* general options */
 #define INCREMENT_SIZE   32                    /* text buffer increments */

@@ -2,7 +2,7 @@
 # Makefile for curses user interface programs on eisfair
 #
 # Creation     : 13.03.2004
-# Last Modified: $Id: Makefile 39403 2015-10-21 19:39:12Z dv $
+# Last Modified: $Id: Makefile.in 35038 2014-02-02 16:20:50Z dv $
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,10 +15,10 @@
 # ----------------------------------------------------------------------
 
 # Tools
-SHELL           = /bin/sh
-CC              = gcc -std=gnu99
-FLEX            = flex
-SED             = /bin/sed
+SHELL           = @SHELL@
+CC              = @CC@
+FLEX            = @LEX@
+SED             = @SED@
 
 # compile options
 CFLAGS          = -Wall -Wextra -Wstrict-prototypes
@@ -26,20 +26,20 @@ CFLAGS         += -Wno-unused-function
 CFLAGS         += -Wno-sign-compare
 CFLAGS         += -D_XOPEN_SOURCE_EXTENDED 
 CFLAGS         += -D_GNU_SOURCE
-CFLAGS         += -DHAVE_CONFIG_H
+CFLAGS         += @DEFS@
 CFLAGS         += -fPIC
 DBGFLAGS        = -g
 
 # linker
-LDFLAGS         = -lncursesw  -ldl
+LDFLAGS         = @CURSES_LIB@  -ldl
 
 # definitions
-TARGET          = libcui
-VERSION         = 2.0.1
-prefix          = /usr
-exec_prefix     = ${prefix}
-INSTALLLIBDIR   = ${exec_prefix}/lib
-INSTALLINCDIR   = ${prefix}/include
+TARGET          = @PACKAGE_NAME@
+VERSION         = @PACKAGE_VERSION@
+prefix          = @prefix@
+exec_prefix     = @exec_prefix@
+INSTALLLIBDIR   = @libdir@
+INSTALLINCDIR   = @includedir@
 DBG_DIR         = Debug
 REL_DIR         = .
 BASE_DIR        = .

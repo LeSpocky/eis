@@ -38,7 +38,7 @@ LDFLAGS    += -lncursesw -L../../
 # ----------------------------------------------------------------------
 
 # output files
-LIB_VERSION        = 2.0.0
+LIB_VERSION        = 2.0.1
 LIB_NAME           = libmysql-addon
 INC_NAME           = mysqllib-2
 

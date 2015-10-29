@@ -22,13 +22,12 @@
  */
 
 #include "cui.h"
-#include <ctype.h>
+#include "global.h"
 
 /* local constants */
 #define TABWIDTH 8
-#ifndef SIZE_MAX
-#define SIZE_MAX 64535
-#endif
+
+#define BUFFER_SIZE_MAX 64535
 
 typedef struct TEXTLINEStruct
 {
@@ -1293,12 +1292,12 @@ mbchar_dup_to_wchar_t(const char* str)
 static int
 mbchar_char_len(const char* s)
 {
-	return mbsrtowcs(NULL, &s, SIZE_MAX, NULL);
+	return mbsrtowcs(NULL, &s, BUFFER_SIZE_MAX, NULL);
 }
 
 static int
 mbchar_byte_len(const wchar_t* s)
 {
-	return wcsrtombs(NULL, &s, SIZE_MAX, NULL);
+	return wcsrtombs(NULL, &s, BUFFER_SIZE_MAX, NULL);
 }
 

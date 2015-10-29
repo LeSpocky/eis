@@ -35,7 +35,7 @@ LDFLAGS     = -L../../ -lcui -lcui-util -lcui-script -lncursesw -lcrypto -lz
 # ----------------------------------------------------------------------
 
 # output files
-LIB_VERSION        = 2.0.0
+LIB_VERSION        = 2.0.1
 LIB_NAME           = libapk-addon
 INC_NAME           = apklib-2
 

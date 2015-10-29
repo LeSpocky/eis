@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: api_util.c 33485 2013-04-16 20:48:23Z dv $
+ * Last Update:  $Id: api_util.c 39400 2015-10-21 19:23:44Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,6 +27,9 @@
 #include "cui-script.h"
 #include "api.h"
 #include "api_util.h"
+#include <fcntl.h>
+#include <term.h>
+#include <dlfcn.h>
 
 #define MAX_MODULES 32
 

@@ -36,7 +36,7 @@ LDFLAGS    += -lncursesw -L../../
 # ----------------------------------------------------------------------
 
 # output files
-LIB_VERSION        = 2.0.0
+LIB_VERSION        = 2.0.1
 LIB_NAME           = libsys-addon
 INC_NAME           = syslib-2
 

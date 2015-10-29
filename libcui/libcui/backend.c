@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: backend.c 34709 2013-11-23 13:34:20Z dv $
+ * Last Update:  $Id: backend.c 39400 2015-10-21 19:23:44Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,6 +28,9 @@
 #include "api_ctrl.h"
 #include "api_util.h"
 #include "cui-script.h"
+#include <fcntl.h>
+#include <term.h>
+#include <dlfcn.h>
 
 #define MAX_ARG            32
 #define BUFFER_BLOCK_SIZE  512

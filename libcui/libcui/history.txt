@@ -1,3 +1,7 @@
+libcui-2.0.1
+============
+- build libcui using autoconf
+
 libcui-1.0.7
 ============
 - check if the terminal has been resized right before the application has

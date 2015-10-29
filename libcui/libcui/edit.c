@@ -5,7 +5,7 @@
  * Copyright (C) 2006
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: edit.c 33402 2013-04-02 21:32:17Z dv $
+ * Last Update:  $Id: edit.c 39400 2015-10-21 19:23:44Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,6 +24,7 @@
  */
 
 #include "cui.h"
+#include "global.h"
 
 typedef struct EDITDATAStruct
 {

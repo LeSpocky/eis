@@ -25,7 +25,6 @@
 #ifndef CUI_H
 #define CUI_H
 
-#include <curses.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -37,6 +36,10 @@
 #endif
 
 #define CUI_USE_ARG(a) (a) = (a)
+
+struct _win_st;
+
+typedef struct _win_st WINDOW;
 
 /* ---------------------------------------------------------------------
  * color constants

@@ -22,6 +22,7 @@
  */
 
 #include "cui.h"
+#include "global.h"
 
 typedef struct LISTBOXITEMStruct
 {

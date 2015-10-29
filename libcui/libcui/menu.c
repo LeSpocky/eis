@@ -1,20 +1,20 @@
 /* ---------------------------------------------------------------------
  * File: menu.c
  * (menu control with keyboard input)
- *
+ *   
  * Copyright (C) 2006
  * Daniel Vogel, <daniel_vogel@t-online.de>
- *
+ *       
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
- *
+ *               
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
- *
+ *                       
  * You should have received a copy of the GNU Library General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
@@ -22,6 +22,7 @@
  */
 
 #include "cui.h"
+#include "global.h"
 
 #define INPUT_SIZE 3
 
@@ -136,7 +137,7 @@ MenuPaintHook(void* w)
 		index++;
 		item = (MENUITEM*) item->Next;
 	}
-        MenuShowInputField(win, &rc);
+	MenuShowInputField(win, &rc);
 }
 
 
@@ -166,7 +167,7 @@ MenuKeyHook(void* w, int key)
 	CUIRECT      rc;
 	MENUITEM*    olditem;
 
-        if (!data) return FALSE;
+	if (!data) return FALSE;
 
 	if (win->IsEnabled)
 	{
@@ -288,6 +289,7 @@ MenuKeyHook(void* w, int key)
 			}
 			return TRUE;
 		case KEY_PPAGE:
+			WindowGetClientRect(win, &rc);
 			count = rc.H - 2;
 			if (data->SelItem)
 			{
@@ -345,6 +347,7 @@ MenuKeyHook(void* w, int key)
 			}
 			return TRUE;
 		case KEY_NPAGE:
+			WindowGetClientRect(win, &rc);
 			count = rc.H - 2;
 			if (data->SelItem)
 			{
@@ -433,7 +436,7 @@ MenuKeyHook(void* w, int key)
 				{
 					MenuNotifyChange(win, data);
 				}
-			}			
+			}
 			return TRUE;
 		case KEY_END:
 			data->SelItem = data->LastItem;

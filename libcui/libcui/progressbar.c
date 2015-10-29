@@ -22,6 +22,7 @@
  */
 
 #include "cui.h"
+#include "global.h"
 
 typedef struct PROGRESSBARStruct
 {
@@ -93,7 +94,7 @@ ProgressbarPaintHook(void* w)
 	PROGRESSBARDATA* data = (PROGRESSBARDATA*) win->InstData;
 	CUIRECT          rc;
 	int              x, y;
-	int              pos;
+	int              pos = 0;
 
 	WindowGetClientRect(win, &rc);
 

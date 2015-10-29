@@ -47,9 +47,9 @@
 #define PIPE_STDERR     1
 
 #define BUFSIZE         128
-#ifndef SIZE_MAX
-#define SIZE_MAX 64535
-#endif
+
+#define BUFFER_SIZE_MAX 64535
+
 
 typedef struct
 {
@@ -1677,7 +1677,7 @@ wchar_t_dup_to_mbchar(const wchar_t* str)
 static int
 mbchar_byte_len(const wchar_t* s)
 {
-	return wcsrtombs(NULL, &s, SIZE_MAX, NULL);
+	return wcsrtombs(NULL, &s, BUFFER_SIZE_MAX, NULL);
 }
 
 

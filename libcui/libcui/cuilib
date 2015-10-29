@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/sh
 #------------------------------------------------------------------------------
 # /var/install/include/cuilib - script interface for libcui
 #
@@ -379,8 +379,8 @@ CUISEP=$'\x09'   #' tabulator / protocol seperator
 #------------------------------------------------------------------------------
 cui_init()
 {
-    pipe_in="/run/cui/cui${PARENTPID}rp"
-    pipe_out="/run/cui/cui${PARENTPID}wp"
+    pipe_in="/var/run/cui/cui${PARENTPID}rp"
+    pipe_out="/var/run/cui/cui${PARENTPID}wp"
 
     if [ "$CUIID" != "CUISHELL" ]
     then
@@ -402,7 +402,7 @@ cui_init()
 # Expects: $1 .. $n  <-- Parameters to send
 # Returns: <nothing>
 #------------------------------------------------------------------------------
-cui_send()
+function cui_send()
 {
     local val=":$1"
     local tmp=""
@@ -513,7 +513,7 @@ cui_wait_ack()
                 cmd=${cmd//'\s'/'\'}
 
                 # assign and remove colon
-                eval 'p'$cmdcount='${cmd:1}'
+                eval 'p'$cmdcount='${cmd:1}'      
 
                 cmdcount=$[$cmdcount + 1]
             done
@@ -575,7 +575,7 @@ cui_wait_ack()
 # Expects: $1  <-- Handle variable
 # Returns: exit code: (0 = Success, 1 = Failure)
 #----------------------------------------------------------------------------
-cui_valid_handle()
+function cui_valid_handle()
 {
     if [ "$1" != "" -a "$1" != "0" ]
     then
@@ -589,7 +589,7 @@ cui_valid_handle()
 # Expects: $1  <-- Index variable
 # Returns: exit code: (0 = Success, 1 = Failure)
 #----------------------------------------------------------------------------
-cui_valid_index()
+function cui_valid_index()
 {
     if [ "$1" != "" -a "$1" -ge "0" ]
     then
@@ -800,8 +800,8 @@ cui_settimer()
 cui_killtimer()
 {
     cui_send "C" "${API_WINDOWKILLTIMER}" "$@"
-    cui_wait_ack
-    return $
+    cui_wait_ack   
+    return $?  
 }
 
 #------------------------------------------------------------------------------
@@ -823,8 +823,8 @@ cui_killtimer()
 cui_addcolors()
 {
     cui_send "C" "${API_WINDOWADDCOLSCHEME}" "$@"
-    cui_wait_ack
-    return $?
+    cui_wait_ack   
+    return $?      
 }
 
 #------------------------------------------------------------------------------
@@ -835,8 +835,8 @@ cui_addcolors()
 cui_hascolors()
 {
     cui_send "C" "${API_WINDOWHASCOLSCHEME}" "$@"
-    cui_wait_ack
-    return $?
+    cui_wait_ack   
+    return $?  
 }
 
 #------------------------------------------------------------------------------
@@ -848,8 +848,8 @@ cui_hascolors()
 cui_window_setcolors()
 {
     cui_send "C" "${API_WINDOWCOLSCHEME}" "$@"
-    cui_wait_ack
-    return $?
+    cui_wait_ack   
+    return $?  
 }
 
 #------------------------------------------------------------------------------
@@ -861,8 +861,8 @@ cui_window_setcolors()
 cui_window_settext()
 {
     cui_send "C" "${API_WINDOWSETTEXT}" "$@"
-    cui_wait_ack
-    return $?
+    cui_wait_ack   
+    return $? 
 }
 
 #------------------------------------------------------------------------------
@@ -874,8 +874,8 @@ cui_window_settext()
 cui_window_setltext()
 {
     cui_send "C" "${API_WINDOWSETLTEXT}" "$@"
-    cui_wait_ack
-    return $?
+    cui_wait_ack   
+    return $? 
 }
 
 #------------------------------------------------------------------------------
@@ -887,8 +887,8 @@ cui_window_setltext()
 cui_window_setrtext()
 {
     cui_send "C" "${API_WINDOWSETRTEXT}" "$@"
-    cui_wait_ack
-    return $?
+    cui_wait_ack   
+    return $?  
 }
 
 #------------------------------------------------------------------------------
@@ -900,8 +900,8 @@ cui_window_setrtext()
 cui_window_setstatustext()
 {
     cui_send "C" "${API_WINDOWSETSTATUSTEXT}" "$@"
-    cui_wait_ack
-    return $?
+    cui_wait_ack   
+    return $?  
 }
 
 #------------------------------------------------------------------------------
@@ -913,8 +913,8 @@ cui_window_setstatustext()
 cui_window_setlstatustext()
 {
     cui_send "C" "${API_WINDOWSETLSTATUSTEXT}" "$@"
-    cui_wait_ack
-    return $?
+    cui_wait_ack   
+    return $?  
 }
 
 #------------------------------------------------------------------------------
@@ -926,8 +926,8 @@ cui_window_setlstatustext()
 cui_window_setrstatustext()
 {
     cui_send "C" "${API_WINDOWSETRSTATUSTEXT}" "$@"
-    cui_wait_ack
-    return $?
+    cui_wait_ack   
+    return $?      
 }
 
 #------------------------------------------------------------------------------
@@ -1264,7 +1264,7 @@ cui_radio_new()
 {
     cui_send "C" "${API_RADIONEW}" "$@"
     cui_wait_ack
-    return $?
+    return $?   
 }
 
 #------------------------------------------------------------------------------
@@ -1325,7 +1325,7 @@ cui_checkbox_new()
 {
     cui_send "C" "${API_CHECKBOXNEW}" "$@"
     cui_wait_ack
-    return $?
+    return $?   
 }
 
 #------------------------------------------------------------------------------
@@ -1549,7 +1549,7 @@ cui_combobox_new()
 {
     cui_send "C" "${API_COMBOBOXNEW}" "$@"
     cui_wait_ack
-    return $?
+    return $?   
 }
 
 #------------------------------------------------------------------------------
@@ -1764,7 +1764,7 @@ cui_progress_getpos()
 {
     cui_send "C" "${API_PROGRESSBARGETPOS}" "$@"
     cui_wait_ack
-    return $?
+    return $?   
 }
 
 
@@ -1785,7 +1785,7 @@ cui_textview_new()
 {
     cui_send "C" "${API_TEXTVIEWNEW}" "$@"
     cui_wait_ack
-    return $?
+    return $?   
 }
 
 #------------------------------------------------------------------------------
@@ -2073,9 +2073,9 @@ cui_listview_update()
 # Expects: $1  <-- Window   : Window Handle
 #          $2  <-- Column   : Integer
 #          $3  <-- Dir      : 1 = up, 0 = down
-# Returns: <nothing>
+# Returns: <nothing>   
 #------------------------------------------------------------------------------
-cui_listview_alphasort()
+cui_listview_alphasort() 
 {
     cui_send "C" "${API_LISTVIEWALPHASORT}" "$@"
     cui_wait_ack
@@ -2358,7 +2358,7 @@ xml_read_tag()
 {
     cui_send "C" "${API_XMLREADTAG}" "$@"
     cui_wait_ack
-    return $?
+    return $?   
 }
 
 #------------------------------------------------------------------------------
@@ -2370,6 +2370,6 @@ cui_load_addon()
 {
     cui_send "C" "${API_LOADADDON}" "$@"
     cui_wait_ack
-    return $?
+    return $? 
 }
 

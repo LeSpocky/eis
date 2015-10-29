@@ -22,7 +22,7 @@
  */
 
 #include "cui.h"
-
+#include "global.h"
 
 typedef struct CHECKBOXDATAStruct
 {
@@ -55,9 +55,9 @@ CheckboxPaintHook(void* w)
 	CHECKBOXDATA*  data = (CHECKBOXDATA*) win->InstData;
 	CUIRECT        rc;
 	int            i;
-	int            hkey_pos;
-	wchar_t          hkey = _T('\0');
-	wchar_t          buffer[128 + 1];
+	int            hkey_pos = 0;
+	wchar_t        hkey = _T('\0');
+	wchar_t        buffer[128 + 1];
 
 	WindowGetClientRect(win, &rc);
 	if (rc.W <= 0) return;

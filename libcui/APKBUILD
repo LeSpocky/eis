@@ -1,20 +1,15 @@
 # Contributor: Jens Vehlhaber <jens@eisfair.org>
 # Maintainer: The eisfair team <team@eisfair.org>
 pkgname=libcui
-pkgver=2.0.0
-pkgrel=9
+pkgver=2.0.1
+pkgrel=0
 pkgdesc="Eisfair CUI basis libs"
 url="http://www.eisfair.org"
 arch="all"
 license="GPL"
 depends=""
 _alpinerelease=`awk -F \. {'print $1$2'} /etc/alpine-release`
-if [ "$_alpinerelease" -gt 31 ]
-then
-  depends_dev="coreutils ncurses-dev ncurses-widec-libs flex openssl-dev mariadb-dev postgresql-dev"
-else
-  depends_dev="coreutils ncurses-dev ncurses-widec-libs libiconv-dev flex openssl-dev mysql-dev postgresql-dev"
-fi
+depends_dev="coreutils ncurses-dev ncurses-widec-libs flex openssl-dev mariadb-dev postgresql-dev"
 makedepends="$depends_dev"
 install=""
 subpackages="$pkgname-dev $pkgname-addonmysql $pkgname-addonpgsql $pkgname-addonpwdfile"
@@ -35,6 +30,8 @@ prepare() {
 
 build() {
 	cd "$_builddir"
+	autoconf
+	./configure --prefix=/usr
 	make -j1 -s || return 1
 	ln -sf libcui-script.so.${pkgver} libcui-script.so
 	ln -sf libcui-util.so.${pkgver} libcui-util.so
@@ -54,9 +51,10 @@ build() {
 
 package() {
 	cd "$_builddir"
-	make DESTDIR="$pkgdir/" install || return 1
 	mkdir -p ${pkgdir}/var/install/include
-	cp -f cuilib ${pkgdir}/var/install/include/
+	make DESTDIR="$pkgdir/" install || return 1
+	strip -R .note -R .comment ${pkgdir}/usr/lib/*.so.$pkgver
+	chmod 0644 ${pkgdir}/var/install/include/*
 	mkdir -p ${pkgdir}/usr/lib/cui-addons
 	cd ${_builddir}/addons/libapk-addon
 	make DESTDIR=${pkgdir}/ install || return 1
