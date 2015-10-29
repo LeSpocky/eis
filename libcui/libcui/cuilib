@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 #------------------------------------------------------------------------------
 # /var/install/include/cuilib - script interface for libcui
 #
@@ -379,8 +379,8 @@ CUISEP=$'\x09'   #' tabulator / protocol seperator
 #------------------------------------------------------------------------------
 cui_init()
 {
-    pipe_in="/var/run/cui/cui${PARENTPID}rp"
-    pipe_out="/var/run/cui/cui${PARENTPID}wp"
+    pipe_in="/run/cui/cui${PARENTPID}rp"
+    pipe_out="/run/cui/cui${PARENTPID}wp"
 
     if [ "$CUIID" != "CUISHELL" ]
     then
