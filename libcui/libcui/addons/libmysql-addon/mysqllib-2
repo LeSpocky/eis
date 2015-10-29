@@ -50,7 +50,7 @@ SQL_ERROR=2
 #------------------------------------------------------------------------------
 function my_initmodule()
 {
-    cui_load_addon "/usr/lib/cui-addons/libmysql-addon.so.2.0.0"
+    cui_load_addon "/usr/lib/cui-addons/libmysql-addon.so.2.0.1"
     if [ "$p2" != 0 ]
     then
         my_module_offs="$p2"

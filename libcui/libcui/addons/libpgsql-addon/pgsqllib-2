@@ -54,7 +54,7 @@ SQL_ERROR=2
 #------------------------------------------------------------------------------
 function pg_initmodule()
 {
-    cui_load_addon "/usr/lib/cui-addons/libpgsql-addon.so.2.0.0"
+    cui_load_addon "/usr/lib/cui-addons/libpgsql-addon.so.2.0.1"
     if [ "$p2" != 0 ]
     then
         pg_module_offs="$p2"

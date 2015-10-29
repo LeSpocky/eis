@@ -2,7 +2,7 @@
 # Maintainer: The eisfair team <team@eisfair.org>
 pkgname=libcui
 pkgver=2.0.1
-pkgrel=0
+pkgrel=1
 pkgdesc="Eisfair CUI basis libs"
 url="http://www.eisfair.org"
 arch="all"
@@ -36,7 +36,7 @@ build() {
 	ln -sf libcui-script.so.${pkgver} libcui-script.so
 	ln -sf libcui-util.so.${pkgver} libcui-util.so
 	ln -sf libcui.so.${pkgver} libcui.so
-	echo "___Build addons:___"
+	echo "--- Build addons: ---"
 	cd ${_builddir}/addons/libapk-addon
 	make -j1 -s || return 1
 	cd ${_builddir}/addons/libmysql-addon

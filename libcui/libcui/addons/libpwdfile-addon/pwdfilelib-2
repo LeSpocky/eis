@@ -23,7 +23,7 @@ sys_module_offs="99000"
 #------------------------------------------------------------------------------
 function pwdfile_initmodule()
 {
-    cui_load_addon "/usr/lib/cui-addons/libpwdfile-addon.so.2.0.0"
+    cui_load_addon "/usr/lib/cui-addons/libpwdfile-addon.so.2.0.1"
     if [ "$p2" != 0 ]
     then
         sys_module_offs="$p2"

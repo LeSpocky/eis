@@ -28,7 +28,7 @@ pm_module_offs="99000"
 #------------------------------------------------------------------------------
 pm_initmodule()
 {
-    cui_load_addon "/usr/lib/cui-addons/libapk-addon.so.2.0.0"
+    cui_load_addon "/usr/lib/cui-addons/libapk-addon.so.2.0.1"
     if [ "$p2" != 0 ]
     then
         pm_module_offs="$p2"
