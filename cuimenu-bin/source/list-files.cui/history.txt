@@ -1,3 +1,5 @@
+- list-files.cui now is an autoconf project
+
 list-files.cui-3.0.0 
 =============================================
 - only unicode build

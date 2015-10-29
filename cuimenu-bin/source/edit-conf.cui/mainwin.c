@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: mainwin.c 33469 2013-04-14 17:32:04Z dv $
+ * Last Update:  $Id: mainwin.c 39388 2015-10-20 20:57:43Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -1569,7 +1569,6 @@ MainwinManualSaveOptions(CUIWINDOW* win)
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 	int result;
 
-	WindowGetCtrl(win, IDC_CONFVIEW);
 	if (!data->Config->ConfData)
 	{
 		return;
@@ -1775,13 +1774,14 @@ MainwinCheckOptions(CUIWINDOW* win, MAINWINDATA* data)
 		ConfFileWriteConfig(data->Config->ConfData, data->Config->TempConfFileName);
 
 		win_name = _T("EISCHK");
-		coproc_name = _T("/var/install/bin/eischk");
+		coproc_name = _T("/usr/local/bin/eischk");
 
 		p[0] = _T("eischk");
 		p[1] = _T("-c");
 		p[2] = tmppath;
 		p[3] = _T("-x");
-		p[4] = _T("/etc/check.d");
+		/* p[4] = _T("/etc/check.d"); */
+		p[4] = data->Config->CheckFileBase;
 		p[5] = _T("-l");
 		p[6] = logfile;
 		p[7] = _T("-p");

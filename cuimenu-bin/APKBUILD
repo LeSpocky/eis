@@ -1,14 +1,14 @@
 # Contributor: Jens Vehlhaber <jens@eisfair.org>
 # Maintainer: The eisfair team <team@eisfair.org>
 pkgname=cuimenu-bin
-pkgver=3.0.2
-pkgrel=2
+pkgver=3.0.3
+pkgrel=0
 pkgdesc="Eisfair CUI basis menu - binary files"
 url="http://www.eisfair.org"
 arch="all"
 license="GNU"
-depends="libcui>=2.0.0"
-depends_dev="coreutils libcui-dev>=2.0.0 ncurses-dev flex"
+depends="libcui>=2.0.1"
+depends_dev="coreutils libcui-dev>=2.0.1 ncurses-dev ncurses-widec-libs flex"
 
 makedepends="$depends_dev"
 install=""
@@ -29,30 +29,35 @@ prepare() {
 }
 
 build() {
+        echo "--- ask.cui: ---"
 	mkdir -p ${pkgdir}/var/install/bin
 	cd ${_builddir}/ask.cui
 	make -j1 -s || return 1
-	echo ""
+	echo "--- edit-conf.cui: ---"
 	cd ${_builddir}/edit-conf.cui
+	autoconf
+	./configure --prefix=/var/install
 	make -j1 -s || return 1
-	echo ""
+	echo "--- eischk: ---"
 	cd ${_builddir}/eischk
 	make -j1 eischk || return 1
-	echo ""
+	echo "--- list-files.cui: ---"
 	cd ${_builddir}/list-files.cui
+	autoconf
+	./configure --prefix=/var/install
 	make -j1 -s || return 1
-	echo ""
+	echo "--- netcalc: ---"
 	cd ${_builddir}/netcalc
 	make -j1 -s || return 1
-	echo ""
+	echo "--- shellrun.cui: ---"
 	cd ${_builddir}/shellrun.cui
 	make -j1 -s || return 1
-	echo ""
+	echo "--- show-doc.cui: ---"
 	cd ${_builddir}/show-doc.cui
 	autoconf
 	./configure --prefix=/var/install
 	make -j1 -s || return 1
-	echo ""
+	echo "--- show-menu.cui: ---"
 	cd ${_builddir}/show-menu.cui
 	autoconf
 	./configure --prefix=/var/install

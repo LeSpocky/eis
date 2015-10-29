@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: main.c 33469 2013-04-14 17:32:04Z dv $
+ * Last Update:  $Id: main.c 39388 2015-10-20 20:57:43Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -112,23 +112,25 @@ ErrorOut(void* w, const wchar_t* errmsg, const wchar_t* filename,
              int linenr, int is_warning)
 {
 	char* mberror = TCharToMbDup(errmsg);
+	char* mfilename = TCharToMbDup(filename);
 	
 	CUI_USE_ARG(w);
 	CUI_USE_ARG(filename);
 	
-	if (mberror)
+	if (mberror && mfilename)
 	{
 		if (is_warning)
 		{
-			printf("WARNING: (%i): %s\n", linenr, mberror);
+			printf("WARNING: %s (%i): %s\n", mfilename, linenr, mberror);
 			Config.NumWarnings++;
 		}
 		else
 		{
-			printf("ERROR: (%i): %s\n", linenr, mberror);
+			printf("ERROR: %s (%i): %s\n", mfilename, linenr, mberror);
 			Config.NumErrors++;
 		}
 		free(mberror);
+		free(mfilename);
 	}
 }
 
@@ -274,7 +276,7 @@ ReadConfig(const wchar_t* filename)
 		char tmp;
 
 		printf("%i error(s), %i warning(s)\n", Config.NumErrors, Config.NumWarnings);
-		printf("file: %s", "/etc/cui.conf\n");
+		printf("file: %ls", filename);
 
 		printf("\nPress ENTER to continue\n");
 		scanf("%c", &tmp);
@@ -297,7 +299,7 @@ ShowProgramHelp(const char* progname)
 		"\t    --nocolor           run program in black and white mode\n"
 		"\t-m, --mouse             capture mouse as input device\n"
 		"\t    --nomouse           don't use mouse as input device\n"
-		"\t    --debug             write script output to /tmp/cuiout.log\n"
+		"\t    --debug             write script output to /tmp/outcui.log\n"
 		"\t-x, --check             check config files for errors and exit\n"
 		"\t-l  --logfile=FILE      redirect error messages to log file\n"
 		"\t-t, --tolerant          tolerant edit mode\n"
@@ -307,6 +309,7 @@ ShowProgramHelp(const char* progname)
 		"\t    --check-base=DIR    base directory for check files\n"
 		"\t    --default-base=DIR  base directory for default files\n"
 		"\t    --help-base=DIR     base directory for help files\n"
+		"\t    --dialog-base=DIR   base directory for dialog files\n"
 		"\t    --default-ext=EXT   default extention for config files\n"
 		"\t-v, --version           show program version\n"
 		"\t-h, --help              show this help\n\n",
@@ -350,13 +353,13 @@ ReadCommandLine(int argc, char *argv[])
 		{"mkfli4l",     no_argument, 0, 'f'},
 		{"debug",       no_argument, 0, 0},
 		{"logfile",     required_argument, 0, 0},
-		{"config-file", required_argument, 0, 0},
+		{"config-file",	required_argument, 0, 0},
 		{"config-base", required_argument, 0, 0},
 		{"check-base",  required_argument, 0, 0},
 		{"default-base",required_argument, 0, 0},
 		{"help-base",   required_argument, 0, 0},
 		{"default-ext", required_argument, 0, 0},
-		{"dlg-path",    required_argument, 0, 0},
+		{"dialog-base",	required_argument, 0, 0},
 		{0, 0, 0, 0}
 	};
 
@@ -453,7 +456,7 @@ ReadCommandLine(int argc, char *argv[])
 					Config.DefaultExtention = MbToTCharDup(optarg);
 				}
 			}
-			else if (strcmp(long_options[option_index].name, "dlg-path") == 0)
+			else if (strcmp(long_options[option_index].name, "dialog-base") == 0)
 			{
 				if (Config.DialogPath) free(Config.DialogPath);
 				Config.DialogPath = NULL;

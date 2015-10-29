@@ -110,7 +110,7 @@ MainListClickedHook(void* w, void* c)
 static int
 MainListPreKeyHook(void* w,void* c, int key)
 {
-	if ((key == KEY_RETURN) || (key == KEY_F(2)))
+	if ((key == KEY_RETURN) || (key == KEY_F0+2))
 	{
 		MainListClickedHook(w, c);
 		return TRUE;
@@ -321,10 +321,10 @@ MainKeyHook(void* w, int key)
 	{
 		switch(key)
 		{
-		case KEY_F(1):
+		case KEY_F0+1:
 			MainwinToggleHelp(win);
 			return TRUE;
-		case KEY_F(10):
+		case KEY_F0+10:
 			WindowQuit(0);
 			return TRUE;
 		}

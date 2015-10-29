@@ -1,3 +1,13 @@
+edit-conf.cui-3.0.1
+=============================================
+- edit-conf.cui now is an autoconf project. Invoke:
+  ./configure --prefix=/var/install \
+      --build=i486-pc-linux-gnu \
+      --host=i486-pc-linux-gnu
+- show file names in error messages
+- change undocumented option --dlg-path to --dialog-base
+- pass correct check file base path over to eischk
+
 edit-conf.cui-3.0.0 
 =============================================
 - only unicode build

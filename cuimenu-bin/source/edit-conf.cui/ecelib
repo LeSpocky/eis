@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/sh
 #------------------------------------------------------------------------------
 # /var/install/include/ecelib - script interface for edit-conf.cui
 #
@@ -24,7 +24,7 @@ value=""
 #          $2  <-- Variable-Name  : String (something like "FOO_2_NAME")
 # Returns: $p2 --> Value          : String
 #------------------------------------------------------------------------------
-ece_get_value()
+function ece_get_value()
 {
     cui_send "C" "${ECE_API_GETVALUE}" "$@"
     cui_wait_ack
@@ -35,7 +35,7 @@ ece_get_value()
 # setdata
 # ece --> preinitialize value before the dialog is opened
 #----------------------------------------------------------------------------
-setdata()
+function setdata()
 {
     value="$p2"
     cui_return ""
@@ -45,7 +45,7 @@ setdata()
 # getdata
 # ece --> request modified value after the dialog has been closed with IDOK
 #----------------------------------------------------------------------------
-getdata()
+function getdata()
 {
     cui_return "$value"
 }
@@ -62,7 +62,7 @@ ECE_SELECT_LIST_DLG_IDC_CANCEL=12
 # ece_select_list_dlg_ok_button
 # OK button clicked callback
 #----------------------------------------------------------------------------
-ece_select_list_dlg_ok_button()
+function ece_select_list_dlg_ok_button()
 {
     local win="$p2"
     local ctrl
@@ -88,7 +88,7 @@ ece_select_list_dlg_ok_button()
 # ece_select_list_dlg_cancel_button
 # Cancel button clicked callback
 #----------------------------------------------------------------------------
-ece_select_list_dlg_cancel_button()
+function ece_select_list_dlg_cancel_button()
 {
     local win="$p2"
     cui_window_close "$win" "${IDCANCEL}"
@@ -99,7 +99,7 @@ ece_select_list_dlg_cancel_button()
 # ece_select_list_dlg_create_hook (for creation of child windows)
 #    $p2 --> dialog window handle
 #----------------------------------------------------------------------------
-ece_select_list_create_hook()
+function ece_select_list_create_hook()
 {
     local dlg="$p2"
     local ctrl
@@ -165,7 +165,7 @@ ece_select_list_create_hook()
 #          $3  <-- SelList       : String ("Value1,Value2,Value3")
 # Returns: Nothing
 #----------------------------------------------------------------------------
-ece_select_list_dlg()
+function ece_select_list_dlg()
 {
     local win="$1"
     local title="$2"
@@ -203,7 +203,7 @@ ECE_COMMENT_LIST_DLG_IDC_CANCEL=12
 # ece_comment_list_dlg_ok_button
 # OK button clicked callback
 #----------------------------------------------------------------------------
-ece_comment_list_dlg_ok_button()
+function ece_comment_list_dlg_ok_button()
 {
     local win="$p2"
     local ctrl
@@ -221,6 +221,7 @@ ece_comment_list_dlg_ok_button()
             value="$p2"
         fi
     fi
+    
     cui_window_close "$win" "${IDOK}"
     cui_return 1
 }
@@ -229,33 +230,33 @@ ece_comment_list_dlg_ok_button()
 # ece_comment_list_dlg_cancel_button
 # Cancel button clicked callback
 #----------------------------------------------------------------------------
-ece_comment_list_dlg_cancel_button()
+function ece_comment_list_dlg_cancel_button()
 {
     local win="$p2"
     cui_window_close "$win" "${IDCANCEL}"
     cui_return 1
 }
-
+            
 #----------------------------------------------------------------------------
 # ece_comment_list_dlg_create_hook (for creation of child windows)
 #    $p2 --> dialog window handle
 #----------------------------------------------------------------------------
-ece_comment_list_create_hook()
+function ece_comment_list_create_hook()
 {
     local dlg="$p2"
     local ctrl
     local count="0"
     local idx
     local selection=""
-
+    
     local maxwidth1="0"
     local maxwidth2="0"
-
+    
     local reqwidth="42"
     local reqheight="10"
     local termwidth="80"
     local termheight="25"
-
+    
     # get real terminal size
     local desktop
     cui_getdesktop && desktop="$p2"
@@ -272,10 +273,10 @@ ece_comment_list_create_hook()
     if cui_listview_new "$dlg" "" 0 0 42 9 2 ${ECE_COMMENT_LIST_DLG_IDC_COLORS} ${CWS_NONE} ${CWS_BORDER}
     then
         ctrl="$p2"
-        cui_window_create        "$ctrl"
+        cui_window_create        "$ctrl"        
         cui_listview_setcoltext  "$ctrl" "0" " Value "
         cui_listview_setcoltext  "$ctrl" "1" " Description "
-
+        
         cui_listview_settitlealignment  "$ctrl" "0" "${ALIGN_LEFT}"
         cui_listview_settitlealignment  "$ctrl" "1" "${ALIGN_LEFT}"
 
@@ -286,18 +287,18 @@ ece_comment_list_create_hook()
         do
             local column1=${sel%|*}
             local column2=${sel#*|}
-
+            
             [ "${#column1}" -gt "${maxwidth1}" ] && maxwidth1="${#column1}"
             [ "${#column2}" -gt "${maxwidth2}" ] && maxwidth2="${#column2}"
 
             cui_listview_add     "$ctrl" && idx="$p2"
             cui_listview_settext "$ctrl" "$idx" "0" "$column1"
             cui_listview_settext "$ctrl" "$idx" "1" "$column2"
-
+            
             if [ "$column1" == "$value" ]
             then
                 selection="$idx"
-            fi
+            fi            
             count=$[$count + 1]
         done
         IFS="$LOCAL_OLD_IFS"
@@ -306,7 +307,7 @@ ece_comment_list_create_hook()
         reqheight=$[$count + 7]
         [ "$reqheight" -lt "13" ]                 && reqheight="13"
         [ "$reqheight" -gt "$[$termheight - 3]" ] && reqheight="$[$termheight - 3]"
-
+        
         # calculate width of entire window
         reqwidth=$[$maxwidth1 + $maxwidth2 + 3]
         [ "$reqwidth" -lt "44" ]                  && reqwidth="44"
@@ -315,14 +316,14 @@ ece_comment_list_create_hook()
         # resize listbox according to the count of entries
         cui_window_move       "$ctrl" 0 0 "$[$reqwidth - 2]" "$[$reqheight - 4]"
         cui_listview_update   "$ctrl"
-
+        
         # set selection
         if [ ! -z "$selection" ]
         then
             cui_listview_setsel   "$ctrl" "$selection"
         else
             cui_listview_setsel   "$ctrl" "0"
-        fi
+        fi        
     fi
 
     # create buttons
@@ -334,7 +335,7 @@ ece_comment_list_create_hook()
     fi
     if cui_button_new "$dlg" "&Cancel" "$[$reqwidth / 2 + 1]" "$[$reqheight - 3]" 10 1 ${ECE_COMMENT_LIST_DLG_IDC_CANCEL} $CWS_DEFCANCEL $CWS_NONE       
     then
-        ctrl="$p2"
+        ctrl="$p2"        
         cui_button_callback   "$ctrl" "$BUTTON_CLICKED" "$dlg" "ece_comment_list_dlg_cancel_button"
         cui_window_create     "$ctrl"
     fi
@@ -348,9 +349,10 @@ ece_comment_list_create_hook()
         local wh="$p5"
         local deltay="$[13 - $reqheight]"
         local deltax="$[44 - $reqwidth]"
-
+        
         cui_window_move "$dlg" "$[$wx + $deltax / 2]" "$[$wy + $deltay / 2]" "$[44 - $deltax]" "$[13 - $deltay]"
     fi
+
     cui_return 1
 }
 
@@ -362,7 +364,7 @@ ece_comment_list_create_hook()
 #          $3  <-- SelList       : String ("Value1,Value2,Value3")
 # Returns: Nothing
 #----------------------------------------------------------------------------
-ece_comment_list_dlg()
+function ece_comment_list_dlg()
 {
     local win="$1"
     local title="$2"
@@ -380,9 +382,12 @@ ece_comment_list_dlg()
         cui_window_modal      "$dlg" && result="$p2"
         cui_window_destroy    "$dlg"
     fi
+
     cui_return $result
 }
 
 #----------------------------------------------------------------------------
 # COMMENT LIST DIALOG END
 #----------------------------------------------------------------------------
+
+

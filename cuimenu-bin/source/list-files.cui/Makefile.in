@@ -1,0 +1,134 @@
+# -----------------------------------------------------------------------
+# Makefile for curses user interface programs on eisfair
+#
+# Creation     : 13.03.2004
+# Last Modified: $Id: Makefile.in 35038 2014-02-02 16:20:50Z dv $
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# ----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+# Tool settings
+# ----------------------------------------------------------------------
+
+# Tools
+SHELL           = @SHELL@
+CC              = @CC@
+FLEX            = @LEX@
+SED             = @SED@
+
+# compile options
+CFLAGS          = -Wall -Wextra -Wstrict-prototypes
+CFLAGS         += -Wno-unused-function
+CFLAGS         += -Wno-sign-compare
+CFLAGS         += -D_XOPEN_SOURCE_EXTENDED 
+CFLAGS         += -D_GNU_SOURCE
+CFLAGS         += @DEFS@
+DBGFLAGS        = -g
+
+# linker
+LDFLAGS         = -lcui -lcui-util -lcui-script -ldl
+LDFLAGS        += @CURSES_LIB@
+
+# definitions
+TARGET          = @PACKAGE_NAME@
+prefix          = @prefix@
+exec_prefix     = @exec_prefix@
+INSTALLDIR      = @bindir@
+DBG_DIR         = Debug
+REL_DIR         = .
+BASE_DIR        = .
+
+# ----------------------------------------------------------------------
+# Objetcs to build
+# ----------------------------------------------------------------------
+
+# files
+SOURCES          =  main.c
+SOURCES         +=  mainwin.c
+SOURCES         +=  filetools.c
+
+# objects
+OBJECTS         := $(SOURCES:.c=.o)
+
+# targets
+DBG_OBJECTS := $(addprefix $(DBG_DIR)/,$(subst /,!,$(OBJECTS)))
+REL_OBJECTS := $(addprefix $(REL_DIR)/,$(subst /,!,$(OBJECTS)))
+
+# ----------------------------------------------------------------------
+# Rules
+# ----------------------------------------------------------------------
+
+# compile targets
+all:  release
+
+release: $(REL_DIR)/$(TARGET)
+
+debug: $(DBG_DIR)/$(TARGET)
+
+$(REL_DIR)/$(TARGET): $(REL_OBJECTS)
+	@echo "linking $@ ..."
+	@$(CC) -o $@ $^ $(LDFLAGS)
+
+$(DBG_DIR)/$(TARGET): $(DBG_OBJECTS)
+	@echo "linking $@ ..."
+	@$(CC) -o $@ $^ $(LDFLAGS)
+                
+# include dependencies
+-include $(REL_OBJECTS:.o=.d)
+-include $(DBG_OBJECTS:.o=.d)
+
+# pattern build rule for release target
+.SECONDEXPANSION:
+$(REL_DIR)/%.o: $(BASE_DIR)/$$(subst !,/,%).c
+	@echo "building $*.c ..."
+	@mkdir -p  $(REL_DIR)
+	@$(CC) -c  $(CFLAGS) $< -o $@
+	@$(CC) -MM $(CFLAGS) $< > $(subst .o,.d,$@)
+	@mv -f $(subst .o,.d,$@) $(subst .o,.d,$@).tmp
+	@$(SED) -e 's|.*:|$@:|' < $(subst .o,.d,$@).tmp > $(subst .o,.d,$@)
+	@cp -f $(subst .o,.d,$@) $(subst .o,.d,$@).tmp
+	@$(SED) -e 's/.*://' -e 's/\\$$//' < $(subst .o,.d,$@).tmp | fmt -1 | $(SED) -e 's/^ *//' -e 's/$$/:/' >> $(subst .o,.d,$@)
+	@rm -f $(subst .o,.d,$@).tmp
+
+# pattern build rule for debug target
+.SECONDEXPANSION:
+$(DBG_DIR)/%.o: $(BASE_DIR)/$$(subst !,/,%).c
+	@echo "building $*.c ..."
+	@mkdir -p  $(DBG_DIR)
+	@$(CC) -c  $(CFLAGS) $(DBGFLAGS) $< -o $@
+	@$(CC) -MM $(CFLAGS) $(DBGFLAGS) $< > $(subst .o,.d,$@)
+	@mv -f $(subst .o,.d,$@) $(subst .o,.d,$@).tmp
+	@$(SED) -e 's|.*:|$@:|' < $(subst .o,.d,$@).tmp > $(subst .o,.d,$@)
+	@cp -f $(subst .o,.d,$@) $(subst .o,.d,$@).tmp
+	@$(SED) -e 's/.*://' -e 's/\\$$//' < $(subst .o,.d,$@).tmp | fmt -1 | $(SED) -e 's/^ *//' -e 's/$$/:/' >> $(subst .o,.d,$@)
+	@rm -f $(subst .o,.d,$@).tmp
+
+# pattern build rule l->c
+%.c: $(BASE_DIR)/%.l
+	@echo "generating $*.c from $*.l ..."
+	@$(FLEX) -P$* -o$*.c $*.l
+
+# install
+install: $(REL_DIR)/$(TARGET)
+	@echo "installing $(TARGET)..."
+	@mkdir -p $(DESTDIR)/$(INSTALLDIR)
+	@cp $(REL_DIR)/$(TARGET) $(DESTDIR)/$(INSTALLDIR)
+	@strip $(DESTDIR)/$(INSTALLDIR)/$(TARGET)
+
+# uninstall	
+uninstall:
+	@echo "uninstalling $(TARGET)..."
+	@rm -f $(DESTDIR)/$(INSTALLDIR)/$(TARGET)
+
+# clean build directory
+clean :
+	@echo "cleaning up build directories ..."
+	@rm -rf $(REL_DIR)
+	@rm -rf $(DBG_DIR)
+	@rm -f cfg.c check.c exp.c
+
+.PHONY: all release debug install uninstall clean

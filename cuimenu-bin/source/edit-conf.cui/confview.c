@@ -1119,9 +1119,6 @@ ConfviewShowLine(CUIWINDOW* win, const wchar_t* name, const wchar_t* value, int 
 
 	if (rwidth <= 0) return 1;
 
-//	wcslen(name);
-//	wcslen(value);
-
 	/* show value name */
 
 	start = &name[0];
