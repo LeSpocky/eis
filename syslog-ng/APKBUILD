@@ -48,6 +48,8 @@ build() {
 	--disable-sql \
 	--disable-mongodb \
 	--disable-json \
+	--disable-python \
+	--disable-systemd \
 	|| return 1
 	make || return 1
 }

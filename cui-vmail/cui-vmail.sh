@@ -303,6 +303,8 @@ postconf -e "smtp_sasl_auth_enable = $POSTFIX_SMARTHOST"
 postconf -e "smtp_use_tls = $POSTFIX_SMARTHOST_TLS"
 postconf -e "smtp_sasl_password_maps = $postfix_relayhosts_auth"
 postconf -e "smtp_sasl_security_options = noanonymous"
+# utf-8 support not compiled:
+postconf -e "smtputf8_enable = no"
 postconf -e "sender_canonical_maps = proxy:mysql:/etc/postfix/sql/mysql-canonical_maps.cf"
 postconf -e "sender_dependent_relayhost_maps = $postfix_relayhosts"
 
@@ -368,12 +370,17 @@ postconf -e "smtpd_milters = unix:/run/milter/smc-milter-new.sock"
 
 # postscreen antispam setup
 postconf -e "postscreen_greet_action = enforce"
-# postconf -e "postscreen_hangup_action = drop"
+#postconf -e "postscreen_hangup_action = drop"
 postconf -e "postscreen_dnsbl_action = $postfix_pscr_dnsbl_action"
 postconf -e "postscreen_dnsbl_sites = $postfix_rbl_list"
 postconf -e "postscreen_dnsbl_threshold = 3"
 postconf -e "postscreen_access_list = permit_mynetworks, proxy:mysql:/etc/postfix/sql/mysql-client_access_postscreen.cf"
 postconf -e "postscreen_blacklist_action = enforce"
+# deep inspection - create tempfail for all clients:
+#postconf -e "postscreen_bare_newline_enable = yes"
+#postconf -e "postscreen_non_smtp_command_enable = yes"
+#postconf -e "postscreen_pipelining_enable = yes"
+
 echo -n "."
 cat > /etc/postfix/master.cf <<EOF
 # --------------------------------------------------------------------------
