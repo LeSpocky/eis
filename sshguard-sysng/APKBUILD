@@ -2,7 +2,7 @@
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=sshguard-sysng
 pkgver=1.6.1
-pkgrel=1
+pkgrel=0
 pkgdesc="Log monitor that blocks with iptables on bad behaviour - for syslog-ng"
 url="http://www.sshguard.net/"
 arch="all"

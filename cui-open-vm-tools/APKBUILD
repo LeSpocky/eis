@@ -2,12 +2,12 @@
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=cui-open-vm-tools
 pkgver=9.4.0
-pkgrel=0
+pkgrel=1
 pkgdesc="CUI setup for open VMware tools"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
-depends="open-vm-tools open-vm-tools-grsec"
+depends="open-vm-tools open-vm-tools"
 depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.post-deinstall"
