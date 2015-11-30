@@ -2,6 +2,7 @@
  *  netcalc.c - performs various calculations on IP host/network adresses
  *
  *  Copyright (c) 2000-2001 Frank Meyer <frank@fli4l.de>
+ *  Copyright (c) 2001-2015 - fli4l-Team <team@fli4l.de>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -9,7 +10,7 @@
  *  (at your option) any later version.
  *
  *  Creation:       07.11.2000  fm
- *  Last Update:    $Id: netcalc.c 28570 2013-11-07 13:44:36Z kristov $
+ *  Last Update:    $Id: netcalc.c 43089 2015-11-27 18:44:31Z kristov $
  *----------------------------------------------------------------------------
  */
 
@@ -428,6 +429,155 @@ convertCIDRToBroadcast(struct Address *addr)
 }
 
 /**
+ * Converts a number to a string.
+ * @param value
+ *  The value to convert.
+ * @param maxDigits
+ *  The maximum number of digits that can occur.
+ * @param format
+ *  The format to use (e.g. "%u" or "%x").
+ * @return
+ *  A dynamically allocated buffer with the string or NULL if an error occurred.
+ */
+static char *
+convertNumberToString(unsigned value, size_t maxDigits, char const *format)
+{
+    size_t const bufLen = maxDigits + 1;
+    char *const buf = (char *) malloc(bufLen);
+    if (snprintf(buf, bufLen, format, value) > 0) {
+        return buf;
+    } else {
+        free(buf);
+        return NULL;
+    }
+}
+
+/**
+ * Prepends a string in front of another one.
+ * @param buf
+ *  The original string in a dynamically allocated buffer. May be NULL.
+ * @param prefix
+ *  The string to be prepended.
+ * @result
+ *  <prefix>+<buf>, where "+" is the string concatenation.
+ */
+static char *
+prependString(char *buf, char const *prefix)
+{
+    size_t const bufLen = buf ? strlen(buf) : 0;
+    size_t const prefixLen = strlen(prefix);
+    buf = realloc(buf, bufLen + prefixLen + 1);
+    memmove(buf + prefixLen, buf, bufLen);
+    strncpy(buf, prefix, prefixLen);
+    buf[bufLen + prefixLen] = '\0';
+    return buf;
+}
+
+/**
+ * Builds a reverse DNS name for an IPv4 or IPv6 address.
+ * @param addr
+ *  The address to transform.
+ */
+static void
+convertCIDRToDNSRev(struct Address *addr)
+{
+    unsigned char const *p;
+    int bitsPerEntry; /* must be divisor of 8 == sizeof(char)! */
+    size_t maxChars;  /* maximum characters in resulting name entry plus one
+                         for the "." */
+    char const *format;   /* printf format string, including the "." */
+    char const *suffix;   /* domain to be appended to the resulting name */
+    unsigned initialMask; /* initial mask for the leftmost part of a byte */
+    unsigned mask;        /* current mask for the current part of a byte */
+    unsigned initialShiftCount;  /* initial shift count for leftmost part */
+    unsigned shiftCount;  /* current shift count for current part */
+    unsigned bits = addr->netmaskbits;  /* bits to process */
+    char *result = NULL;  /* resulting string, dynamically allocated */
+
+    switch (addr->type) {
+    case AF_INET :
+        p = (unsigned char const *) &addr->address.v4.s_addr;
+        bitsPerEntry = 8; /* each DNS name component describes a byte */
+        maxChars = 3 + 1; /* max. three digits per byte + "." */
+        format = "%u.";   /* print decimal number */
+        suffix = "in-addr.arpa";
+        break;
+    case AF_INET6 :
+        p = addr->address.v6.s6_addr;
+        bitsPerEntry = 4; /* each DNS name component describes a nibble */
+        maxChars = 1 + 1; /* max. one (hexadecimal) digit per byte + "." */
+        format = "%x.";   /* print hexadecimal number */
+        suffix = "ip6.arpa";
+        break;
+    }
+
+    initialMask = (unsigned char) ~(((unsigned char) ~0u) >> bitsPerEntry);
+    initialShiftCount = ((8 / bitsPerEntry) - 1) * bitsPerEntry;
+
+    mask = initialMask;
+    shiftCount = initialShiftCount;
+    while (bits >= bitsPerEntry) {
+        unsigned value;
+        char *str;
+
+        /* mask and shift */
+        value = (*p & mask) >> shiftCount;
+        str = convertNumberToString(value, maxChars, format);
+        if (str) {
+            result = prependString(result, str);
+            free(str);
+        }
+
+        /* adjust mask */
+        mask >>= bitsPerEntry;
+        bits -= bitsPerEntry;
+
+        if (mask == 0) {
+            /* reset mask and shift count to initial values */
+            mask = initialMask;
+            shiftCount = initialShiftCount;
+            /* advance to next byte */
+            ++p;
+        } else {
+            /* process next part */
+            shiftCount -= bitsPerEntry;
+        }
+    }
+
+    if (bits > 0) {
+        unsigned startValue;
+        unsigned value;
+        char *str;
+
+        /* compute mask for remaining bits */
+        unsigned bit = 0x1u << shiftCount;
+        while (bits++ < bitsPerEntry) {
+            mask &= ~bit;
+            bit <<= 1;
+        }
+
+        /* start value for iteration */
+        startValue = (*p & mask) >> shiftCount;
+        mask >>= shiftCount;
+        value = startValue;
+        /* loop ends if incrementing value leaves range covered by mask */
+        while ((value & mask) == startValue) {
+            char *str = convertNumberToString(value, maxChars, format);
+            if (str) {
+                printf("%s%s%s\n", str, result, suffix);
+                free(str);
+            }
+
+            ++value;
+        }
+    } else if (result) {
+        printf("%s%s\n", result, suffix);
+    }
+
+    free(result);
+}
+
+/**
  * Combines a network and a host address by OR-ing all bits.
  * @param addr
  *  The address to transform.
@@ -477,136 +627,6 @@ combineAddresses(struct Address *network, struct Address const *host)
     }
 
     return TRUE;
-}
-
-/**
- * Builds the DNS name for reverse DNS lookup given an IPv4 address.
- * @param addr
- *  The address to transform.
- * @return
- *  Points to the resulting DNS name or NULL if an error occurs (e.g. if the
- *  address passed contains of zeros only).
- */
-static char *
-buildReverseIPv4DNSName(struct Address const *addr)
-{
-    static char const suffix[] = "in-addr.arpa";
-    char one[4 + 1];
-    int num = 4;
-    unsigned char const *p = (unsigned char *) &addr->address.v4.s_addr + num;
-
-    char *buf = (char *) malloc(4 * 4 + sizeof(suffix) - 1);
-    if (!buf) {
-        return NULL;
-    }
-
-    buf[0] = '\0';
-    while (num > 0) {
-        if (*--p != 0) {
-            break;
-        }
-        --num;
-    }
-
-    if (num == 0) {
-        free(buf);
-        buf = NULL;
-    }
-    else {
-        while (num-- > 0) {
-            snprintf(one, sizeof one, "%u.", *p--);
-            strcat(buf, one);
-        }
-        strcat(buf, suffix);
-    }
-
-    return buf;
-}
-
-/**
- * Builds the DNS name for reverse DNS lookup given an IPv6 address.
- * @param addr
- *  The address to transform.
- * @return
- *  Points to the resulting DNS name or NULL if an error occurs (e.g. if the
- *  address passed contains of zeros only).
- */
-static char *
-buildReverseIPv6DNSName(struct Address const *addr)
-{
-    static char const suffix[] = "ip6.arpa";
-    char one[2 + 1];
-    int num = 32; /* number of nibbles */
-    unsigned char const *p = addr->address.v6.s6_addr + (num / 2);
-    BOOL first = TRUE;
-
-    char *buf = (char *) malloc(32 * 2 + sizeof(suffix) - 1);
-    if (!buf) {
-        return NULL;
-    }
-
-    buf[0] = '\0';
-    unsigned char nibble;
-    while (num > 0) {
-        if (first) {
-            --p;
-            nibble = *p & 0x0F;
-        }
-        else {
-            nibble = (*p & 0xF0) >> 4;
-        }
-        first = !first;
-
-        if (nibble != 0) {
-            break;
-        }
-        --num;
-    }
-
-    if (num == 0) {
-        free(buf);
-        buf = NULL;
-    }
-    else {
-        while (num > 0) {
-            snprintf(one, sizeof one, "%x.", nibble);
-            strcat(buf, one);
-
-            if (first) {
-                --p;
-                nibble = *p & 0x0F;
-            }
-            else {
-                nibble = (*p & 0xF0) >> 4;
-            }
-            first = !first;
-            --num;
-        }
-        strcat(buf, suffix);
-    }
-
-    return buf;
-}
-
-/**
- * Builds the DNS name for reverse DNS lookup given an IPv4 or IPv6 address.
- * @param addr
- *  The address to transform.
- * @return
- *  Points to the resulting DNS name or NULL if an error occurs (e.g. if the
- *  address passed is invalid or contains of zeros only).
- */
-static char *
-buildReverseDNSName(struct Address *addr)
-{
-    switch (addr->type) {
-    case AF_INET :
-        return buildReverseIPv4DNSName(addr);
-    case AF_INET6 :
-        return buildReverseIPv6DNSName(addr);
-    default :
-        return NULL;
-    }
 }
 
 /**
@@ -925,7 +945,7 @@ usage(char const *pgm_name)
     fprintf (stderr, "    %s combine IPADDR NETMASK IPADDR2\n", pgm_name);
     fprintf (stderr, "    %s combine IPADDR/NETMASKBITS IPADDR2\n", pgm_name);
     putc ('\n', stderr);
-    fprintf (stderr, "  print reverse dns name:\n");
+    fprintf (stderr, "  compute reverse DNS names:\n");
     fprintf (stderr, "    %s dnsrev IPADDR NETMASK\n", pgm_name);
     fprintf (stderr, "    %s dnsrev IPADDR/NETMASKBITS\n", pgm_name);
     putc ('\n', stderr);
@@ -1060,7 +1080,15 @@ main(int argc, char *argv[])
             err = argv[2];
         }
     }
-
+    
+    if (strcmp(argv[1], "dnsrev") == 0) {
+        if (isValidAddress(&addr)) {
+            convertCIDRToDNSRev(&addr);
+            return 0;
+        }
+        return makeResult(&addr, err, FALSE);
+    }
+    
     if (strcmp(argv[1], "canonicalize") == 0) {
         return makeResult(&addr, err, TRUE);
     }
@@ -1091,25 +1119,6 @@ main(int argc, char *argv[])
                 convertCIDRToBroadcast(&addr);
                 err = argv[2];
             }
-            return makeResult(&addr, err, FALSE);
-        }
-    }
-
-    if (strcmp(argv[1], "dnsrev") == 0) {
-        if (isValidAddress(&addr) &&
-                convertCIDRToNetwork(&addr)) {
-            char *str = buildReverseDNSName(&addr);
-            if (str) {
-                printf("%s\n", str);
-                free(str);
-                return 0;
-            }
-            else {
-                fprintf(stderr, "conversion to DNS name failed\n");
-                return -ERR_DNS_CONVERSION_FAILED + 1;
-            }
-        }
-        else {
             return makeResult(&addr, err, FALSE);
         }
     }
