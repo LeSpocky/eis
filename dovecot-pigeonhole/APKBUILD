@@ -1,7 +1,7 @@
 # Contributor: Kozak Ivan <kozak-iv@yandex.ru>
 # Maintainer: Kozak Ivan <kozak-iv@yandex.ru>
 _pkgname=dovecot-2.2-pigeonhole
-pkgver=0.4.9
+pkgver=0.4.10
 pkgrel=0
 _alpinerelease=`awk -F \. {'print $1$2'} /etc/alpine-release`
 if [ "$_alpinerelease" -gt 31 ]
@@ -43,6 +43,6 @@ package() {
 	rm -f "$pkgdir"/usr/lib/dovecot/sieve/*.la
 }
 
-md5sums="3a2d856c1c50557d098536b687efc5f8  dovecot-2.2-pigeonhole-0.4.9.tar.gz"
-sha256sums="82892f876d26008a076973dfddf1cffaf5a0451825fd44e06287e94b89078649  dovecot-2.2-pigeonhole-0.4.9.tar.gz"
-sha512sums="9e7a18b43d59ed955b142d16696ca221822a547ea59ac70c1bb374eedb28b6ed99ea49f34ead1f9a16ded4573605e410a5cc8e038e1bdf5f943a65588b5d3af2  dovecot-2.2-pigeonhole-0.4.9.tar.gz"
+md5sums="a11632e1302d2d906267d67e761da218  dovecot-2.2-pigeonhole-0.4.10.tar.gz"
+sha256sums="e9dfe7160fd3b465d6d5068f219122626ef790cce507e290cd09852c7d90726f  dovecot-2.2-pigeonhole-0.4.10.tar.gz"
+sha512sums="3e864727fc2bd346a7212135a3dd8759f9a5c27abd938c4d6b805c784c5c2c5aa401dd49cfa90951348a00202b85f91d86a2fa17ccab9a983a6faf2d0add48e8  dovecot-2.2-pigeonhole-0.4.10.tar.gz"
