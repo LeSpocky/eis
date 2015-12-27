@@ -51,9 +51,13 @@ unpack() {
         elif [ "${file%.[jJ][sS]}" != "${file}" ]
         then
             exit 10
-	elif [ "${file%.[vV][bB][sS]}" != "${file}" ]
+        elif [ "${file%.[vV][bB][sS]}" != "${file}" ]
         then
             exit 10
+        elif [ "${file%.[dDxX][oOlL][cCsS]}" != "${file}" ]
+        then
+            grep -q "regedit" "$file" && exit 10
+            grep -q "autoopen" "$file" && exit 10
         fi
     done
 }
