@@ -12,14 +12,14 @@ depend() {
 
 
 start_pre() {
-    checkpath --directory /var/log/radicale --owner daemon
-    checkpath --directory /var/lib/radicale --owner daemon
+    checkpath --directory --owner radicale --mode 755 /var/log/radicale
+    checkpath --directory --owner radicale --mode 750 /var/lib/radicale
 }
 
 start() {
     ebegin "Starting radicale"
         start-stop-daemon --start --quiet --background \
-        --pidfile ${PIDFILE} --make-pidfile --user daemon \
+        --pidfile ${PIDFILE} --make-pidfile --user radicale \
         --exec /usr/bin/radicale -- --foreground
     eend $?
 }
