@@ -15,7 +15,7 @@ START_CLAMD='yes'                # activate ClamAV: yes or no
 
 CLAMD_UPDATE_REGION='de'         # the region for database mirrors (de, fr,
                                  # us...)
-CLAMD_USE_PRIVAT_MIRROR='no'     # use the privat clamav siganture mirror
+CLAMD_USE_PRIVAT_MIRROR='no'     # use the private clamav signature mirror
 CLAMD_PRIVAT_MIRROR='av.eisfair.home' # server name of mirror
 CLAMD_UPDATE_INTERVAL='4'        # schedule update hours
 

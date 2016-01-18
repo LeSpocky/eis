@@ -33,13 +33,13 @@ Folgende Programme sind im Paket enthalten:
 - SMC-Milter ist eine Schnittstelle zum Virenscanner ClamAV und zu weiteren
   Antivirenprogrammen. Wird ein Virus gefunden, so wird die E-Mail nicht
   angenommen. Gleichzeitig kann SMC-Milter ausgehende E-Mails mit einer
-  Sigantur versehen.
+  Signatur versehen.
 - Fetchmail: zum Abholen der E-Mailnachrichten von externen Servern.
 
 
 
-Nicht im Paket enthaltene aber zwingend benötigte separate Komponenten:
------------------------------------------------------------------------
+Nicht im Paket enthaltene aber zwingend benoetigte separate Komponenten:
+------------------------------------------------------------------------
 
 * MySQL / MariaDB - Es wird zwingend eine MySQL- oder MariaDB-Datenbank
   benoetigt. Der Datenbankserver kann dabei durchaus auf einer anderen
@@ -590,7 +590,7 @@ user@domain.tld  foo@domain.tld  E-Mail- und Username sind nicht identisch.
 user@domain.tld  foobar          E-Mail- und Username sind nicht identisch. 
                                  Zum Login auf dem Smarthost-Server wird nur
                                  ein Username benoetigt.
-[smtp.domain.tld] foobar         Alle E-Mail Nachrichten für die Domain 
+[smtp.domain.tld] foobar         Alle E-Mail Nachrichten fuer die Domain
                                  domain.tld werden mit den Zugangsdaten
                                  des Benutzers foobar an den Smarthost
                                  smtp.domain.tld gesendet.
