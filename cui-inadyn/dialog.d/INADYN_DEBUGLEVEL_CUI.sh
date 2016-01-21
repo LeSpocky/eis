@@ -1,7 +1,7 @@
 #!/bin/bash
 # ----------------------------------------------------------------------------
 # /var/install/dialog.d/INADYN_DEBUGLEVEL_CUI.sh - script dialog for ece
-# Creation:     2011-02-13 starwarsfan
+# Creation: 2011-02-13 starwarsfan
 # ----------------------------------------------------------------------------
 
 . /var/install/include/cuilib
