@@ -1,0 +1,5 @@
+#!/bin/sh
+
+addgroup -S radicale 2>/dev/null
+adduser -S -h /var/lib/radicale -H -s /sbin/nologin -D -G radicale radicale 2>/dev/null
+exit 0
