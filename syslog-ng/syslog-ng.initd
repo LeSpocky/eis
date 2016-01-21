@@ -12,7 +12,7 @@ depend() {
 }
 
 start() {
-	[ ! -f /etc/syslog-ng/syslog.conf ] && update
+	[ ! -f /etc/syslog-ng/syslog-ng.conf ] && update
 	ebegin "Starting syslog-ng"
 	start-stop-daemon --start --quiet --exec /usr/sbin/syslog-ng --pidfile /run/syslog-ng.pid
 	eend $?
