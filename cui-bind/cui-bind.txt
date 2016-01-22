@@ -10,27 +10,6 @@ auch als Zonen bezeichnet - im Master- oder Slavemodus verwalten. Ueber
 Forward und Root Eintraege werden nicht beantwortbare Namesanfragen
 weitergeleitet.
 
-In der Vergangenheit wurden immer wieder Sicherheitsprobleme in den aelteren
-BIND-Versionen aufgedeckt. Deshalb liegen die Arbeitsverzeichnisse
-vorbeugend in einem Bereich, der BIND eine eigene Umgebung bietet. 
-BIND9 unterstuetzt in der vorliegenden Version auch SMP-Systeme und kann mit
-dem DHCPD Paket zusammen, Hostnamen dynamisch registrieren und aufloesen.
-
-
-Installation
-------------
-Das Installationsscript erkennt automatisch, ob bereits ein DNS oder BIND9
-Server installiert ist. Vorhandene DNS Einstellungen werden also komplett
-uebernommen. Dennoch sollte die Konfiguration auf eventuelle Fehler ueberprueft
-werden.
-Bei einem Update vom DNS-Paket werden alle Daten in einer primaere Zone
-abgelegt. Besonders die Hostnamen-Eintraege sollte man sich ansehen. Sie
-duerfen keine Bestandteile der Domaenenbezeichnung enthalten, da diese von BIND
-bei der Namensabfrage automatisch angefuegt wird.
-Eine Ausnahme bildet der NS-Eintrag, der durchaus auf eine fremde Domaene
-verweisen kann und deshalb aus Hostname und der kompletten Domaenenkennung
-bestehen muss.
-
 
 Allgemeine Konfiguration
 ------------------------

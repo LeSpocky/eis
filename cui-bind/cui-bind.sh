@@ -9,7 +9,7 @@ bind_run_usr="root"
 bind_run_grp="named"
 
 # use unix-time for zone serial
-bind9_zoneserial=`date '+%s'`
+bind9_zoneserial=$(date '+%s')
 bind9_zonerefresh='6H'
 . /etc/config.d/base
 
@@ -23,12 +23,19 @@ bind9_hostname="$HOSTNAME"
 bind9_pri="/var/bind/pri" # master zone
 bind9_sec="/var/bind/sec" # slave zone
 
+# global parameters
+dns_master=""
+znr=0
+
 ### --------------------------------------------------------------------------
 ### generate a zone file
 ### --------------------------------------------------------------------------
 write_zone_file()
 {
-    zone_name=$1
+    local zone_name=$1
+    local tempipnr=""
+    local temprvip=""
+    local tempname=""    
 
     eval dns_master='$BIND_'${znr}'_MASTER_NS'
     [ -z "$dns_master" ] && dns_master="${bind9_hostname}.${zone_name}"
@@ -60,7 +67,7 @@ EOF
             then
                 echo "@              IN   NS   ${tempname}. " >> ${bind9_pri}/${zone_name}.zone
             fi
-            xn=`expr $xn + 1`
+            xn=$((xn+1))
         done
     fi
 
@@ -75,11 +82,11 @@ EOF
             eval tempname='$BIND_'${znr}'_MX_'${xn}'_NAME'
             eval tempprio='$BIND_'${znr}'_MX_'${xn}'_PRIORITY'
             echo "@              IN   MX   $tempprio   ${tempname}. " >> ${bind9_pri}/${zone_name}.zone
-            xn=`expr $xn + 1`
+            xn=$((xn+1))
         done
     fi
     ### ---------------------------------------------------------------------------------
-    ### check and append the "empty" A record
+    ### append the "empty" A record
     ### ---------------------------------------------------------------------------------
     eval ncnt='$BIND_'${znr}'_HOST_N'
     if [ -n "$ncnt" ] ; then
@@ -94,13 +101,13 @@ EOF
                     break
                 fi
             fi
-            xn=`expr $xn + 1`
+            xn=$((xn+1))
         done
 
         # add default localhost
         echo "localhost      IN   A    127.0.0.1 " >> ${bind9_pri}/${zone_name}.zone
     ### ---------------------------------------------------------------------------------
-    ### check and append the A records
+    ### check and append the named A records
     ### ---------------------------------------------------------------------------------
         xn=1
         while [ $xn -le $ncnt ]
@@ -113,7 +120,24 @@ EOF
                     echo "$tempname    IN   A    ${tempipnr} " >> ${bind9_pri}/${zone_name}.zone
                 fi
             fi
-            xn=`expr $xn + 1`
+            xn=$((xn+1))
+        done
+
+    ### ---------------------------------------------------------------------------------
+    ### append the wildcard "*" A record
+    ### ---------------------------------------------------------------------------------
+        xn=1
+        while [ $xn -le $ncnt ]
+        do
+            eval tempname='$BIND_'${znr}'_HOST_'${xn}'_NAME'
+            if [ "$tempname" = "*" ] ; then
+                eval tempipnr='$BIND_'${znr}'_HOST_'${xn}'_IP'
+                if [ -n "$tempipnr" ] ; then
+                    echo "*       IN   A    $tempipnr " >> ${bind9_pri}/${zone_name}.zone
+                    break
+                fi
+            fi
+            xn=$((xn+1))
         done
 
     ### ---------------------------------------------------------------------------------
@@ -136,7 +160,7 @@ EOF
                     fi
                 done
             fi
-            xn=`expr $xn + 1`
+            xn=$((xn+1))
         done
         set +f
     fi
@@ -161,8 +185,8 @@ EOF
 ### --------------------------------------------------------------------------
 get_revip()
 {
-    ip_addr=$1
-    revip="0"
+    local ip_addr=$1
+    local revip="0"
     case "$zonemask" in
         255.255.255.*)
             revip=`echo $ip_addr | sed -e "s/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)/\4/"`
@@ -229,7 +253,7 @@ EOF
             then
                 echo "@              IN   NS   ${tempname}. " >> ${bind9_pri}/${zone_name}.zone
             fi
-            xn=`expr $xn + 1`
+            xn=$((xn+1))
         done
     fi
 
@@ -271,7 +295,7 @@ EOF
                     fi
                 fi
             fi
-            xn=`expr $xn + 1`
+            xn=$((xn+1))
         done
     fi
     chmod 0640 ${bind9_pri}/${zone_name}.zone
@@ -285,6 +309,7 @@ EOF
 write_named_file()
 {
     local ftmp=""
+    local idx=1
     # remove old zone files:
     for ftmp in ${bind9_pri}/*
     do
@@ -344,12 +369,12 @@ write_named_file()
     echo "        { localnets; };"
     echo "    };"
     echo "    forwarders {"
-    idx="1"
+    idx=1
     while [ $idx -le $BIND_FORWARDER_N ]
     do
         eval ipaddr='$BIND_FORWARDER_'$idx'_IP'
         echo "        ${ipaddr};"
-        idx=`expr $idx + 1`
+        idx=$((idx+1))
     done
     echo "    };"
     # read forwarders before use root server
@@ -372,7 +397,7 @@ write_named_file()
             eval ipaddr='$BIND_FORWARDER_'$idx'_IP'
             echo "server $ipaddr {edns no;};"
         fi
-        idx=`expr $idx + 1`
+        idx=$((idx+1))
     done
     echo ""
     # syslog setup
@@ -412,12 +437,12 @@ write_named_file()
     do
         eval ipaddr='$BIND_FORWARDER_'$idx'_IP'
         echo "    ${ipaddr};"
-        idx=`expr $idx + 1`
+        idx=$((idx+1))
     done
     echo "};"
     echo ""
     echo "acl nslist {"
-    znr="1"
+    znr=1
     s_found=''
     # echo "BEGIN zone: $idx " >/dev/tty
     while [ ${znr} -le $BIND_N ]
@@ -432,10 +457,10 @@ write_named_file()
                     echo "    ${ipaddr};"
                     s_found='yes'
                 fi
-                idx=`expr $idx + 1`
+                idx=$((idx+1))
              done
         fi
-        znr=`expr ${znr} + 1`
+        znr=$((znr+1))
     done
     [ -z "$s_found" ] && echo "    none;"
     echo "};"
@@ -541,7 +566,7 @@ write_named_file()
             } >> /etc/bind/named.conf
         fi
 
-        znr=`expr ${znr} + 1`
+        znr=$((znr+1))
     done
     chmod 0644 /etc/bind/named.conf
 }

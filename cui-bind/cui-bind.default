@@ -51,9 +51,9 @@ BIND_1_HOST_1_IP='192.168.2.10'       # IP-address of host
 BIND_1_HOST_1_ALIAS='www1'            # Optional alias names
 
 
-BIND_1_HOST_2_NAME='server2'
+BIND_1_HOST_2_NAME='*'
 BIND_1_HOST_2_IP='192.168.2.11'
-BIND_1_HOST_2_ALIAS='www2 ftp'
+BIND_1_HOST_2_ALIAS=''
 
 BIND_2_NAME='foo2.local'             # Name of zone
 BIND_2_MASTER='no'                   # Server is master of zone

@@ -18,7 +18,7 @@ case "$1" in
     start)
         # add to postfix chroot
         mkdir -p /var/spool/postfix/etc
-        for i in /etc/hosts /etc/resolv.conf /etc/services ; do
+        for i in /etc/hosts /etc/resolv.conf /etc/services /etc/TZ ; do
             cp -f ${i} /var/spool/postfix${i}
         done
         [ "$START_POP3IMAP" = 'yes' ] && /sbin/rc-service dovecot start
