@@ -4,5 +4,5 @@
 <script file="cui-vmail-modules-mailhandling qlist">View mail queue</script>
 <script file="cui-vmail-modules-mailhandling qflush">Force queue run</script>
 <script file="cui-vmail-modules-mailhandling qhandle">Process mail queue</script>
-<script file="/usr/bin/cui-vmail-fetchmailstart.sh -v &;;/var/install/bin/show-doc.cui -f /var/log/fetchmail/fetchmail.log -t 'Fetchmail run:'">Fetchmail pull external mail</script>
-<script file="/usr/bin/cui-vmail-maildropfilter.sh -v &;;/var/install/bin/show-doc.cui -f /var/log/mysql2sieve.log -t 'Sieve filter:'">Sieve filter rewrite</script>
+<script file="/usr/bin/cui-vmail-fetchmailstart.sh -v & /var/install/bin/show-doc.cui -f /var/log/fetchmail/fetchmail.log -t 'Fetchmail run:'">Fetchmail pull external mail</script>
+<script file="/usr/bin/cui-vmail-maildropfilter.sh -v & /var/install/bin/show-doc.cui -f /var/log/mysql2sieve.log -t 'Sieve filter:'">Sieve filter rewrite</script>
