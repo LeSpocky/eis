@@ -1,8 +1,13 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Eisfair configuration generator script for Apache
-# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
-#----------------------------------------------------------------------------
+# Copyright (c) 2007 - 2016 the eisfair team, team(at)eisfair(dot)org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#-------------------------------------------------------------------------------
 
 #echo "Executing $0 ..."
 #exec 2> /tmp/apache2-trace$$.log
@@ -16,15 +21,17 @@ chmod 600 /etc/config.d/apache2
 # include base config for get ip setting
 . /etc/config.d/base
 
-# -------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # force reinstall default apache config
-# -------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 rm -f /etc/apache2/httpd.conf
 rm -f /etc/apache2/httpd.conf.apk-new
 apk fix -r apache2
 
 
+# ------------------------------------------------------------------------------
 # create error message if packages not installed
+# ------------------------------------------------------------------------------
 errorsyslog()
 {
     local tmp="Fail install: $1"
@@ -32,9 +39,10 @@ errorsyslog()
     echo "$tmp"
 }
 
-# -------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 # function for dir access (host and vhosts)
-# -------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 create_dir_access() {
     local vhostnr="$1"
     local vhost=""
@@ -62,7 +70,7 @@ create_dir_access() {
     do
         eval active='$APACHE2_'$vhost'DIR_'$idx'_ACTIVE'
         if [ "$active" = "no" ] ; then
-            idx=`expr $idx + 1`
+            idx=$((idx+1))
             continue
         fi
         eval useAlias='$APACHE2_'$vhost'DIR_'$idx'_ALIAS'
@@ -141,7 +149,7 @@ create_dir_access() {
         [ "$webdav" = "yes" ] && echo "    Dav on"
         echo "    AllowOverride All"
         echo "</Directory>"
-        idx=`expr $idx + 1`
+        idx=$((idx+1))
     done
 }
 
@@ -164,15 +172,17 @@ create_dir_access() {
 #    /var/install/bin/certs-create-tls-certs web batch alternate "apache" "$APACHE2_SERVER_NAME"
 #fi
 
-#----------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 # activate content of /home/USER/public_html
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 enuser="#"
 [ "$APACHE2_ENABLE_USERDIR" = "yes" ] && enuser=""
 
-#----------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 # activate diskcache and vhosts 
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 encache="#"
 envhost="#"
 uses_vhost_atall="no"
@@ -188,12 +198,13 @@ do
         eval modcache='$APACHE2_VHOST_'$idx'_MOD_CACHE'
         [ "$modcache" = "yes" ] && encache=""
     fi
-    idx=`expr $idx + 1`
+    idx=$((idx+1))
 done
 
-#----------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 # activate ssl 
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 enssl="#"
 if [ "$APACHE2_SSL" = "yes" ]; then
     enssl=""
@@ -237,9 +248,10 @@ else
     rm -f /etc/apache2/conf.d/ssl.conf
 fi
 
-#----------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 # activate webdav 
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 endav="#"
 idx=1
 while [ "$idx" -le "$APACHE2_DIR_N" ]
@@ -249,7 +261,7 @@ do
         endav=""
         break
     fi
-    idx=`expr $idx + 1`
+    idx=$((idx+1))
 done
 vidx=1
 while [ "$vidx" -le "$APACHE2_VHOST_N" ]
@@ -265,7 +277,7 @@ do
                 endav=""
                 break
             fi
-            idx=`expr $idx + 1`
+            idx=$((idx+1))
         done
     fi
     [ "$webdav" = "yes" ] && break
@@ -279,26 +291,31 @@ if [ -z "$endav" ] ; then
     [ $? -eq 0 ] || errorsyslog apache2-webdav
     rm -f /etc/apache2/conf.d/http-dav.conf
 fi
-#----------------------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------
 # use SSI
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 enssi="#"
 [ "$APACHE2_ENABLE_SSI" = "yes" ] && enssi=""
 
-#----------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 # Enable negotiation
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 enneg="#"
 [ "$APACHE2_ERROR_DOCUMENT_N" -gt 0 ] && enneg=""
 
-#----------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 # change access from (Allow from all) to (Require all granted)
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 [ "$APACHE2_ACCESS_CONTROL" = "all" ] && APACHE2_ACCESS_CONTROL="all granted"
 
-#----------------------------------------------------------------------------------------
-# creating httpd.conf
-#----------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+# change directory options
+#-------------------------------------------------------------------------------
 apache_options="FollowSymLinks MultiViews"
 [ "$APACHE2_VIEW_DIRECTORY_CONTENT" = "yes" ] && apache_options="$apache_options Indexes"
 [ "$APACHE2_ENABLE_SSI" = "yes" ]             && apache_options="$apache_options Includes"
@@ -306,22 +323,19 @@ apache_options="FollowSymLinks MultiViews"
 hnlookup='Off'
 [ "$APACHE2_HOSTNAME_LOOKUPS" = "yes" ] && hnlookup='On'
 
+
+################################################################################
+# write eisfair config
+################################################################################
 cat > /etc/apache2/conf.d/eisfair.conf <<EOF
 #-------------------------------------------------------------------------------
-# Apache configuration file generated by eis CUI script
+# eisfair-ng base apache configuration file, generated by eis CUI script
 #-------------------------------------------------------------------------------
 PidFile run/httpd.pid
 MaxKeepAliveRequests ${APACHE2_MAX_KEEP_ALIVE_REQUESTS}
 KeepAliveTimeout ${APACHE2_MAX_KEEP_ALIVE_TIMEOUT}
 
 # prefork MPM
-# StartServers: number of server processes to start
-# MinSpareServers: minimum number of server processes which are kept spare
-# MaxSpareServers: maximum number of server processes which are kept spare
-# ServerLimit: maximum value for MaxClients for the lifetime of the server
-# MaxClients: maximum number of server processes allowed to start
-# MaxRequestsPerChild: maximum number of requests a server process serves
-# if use: /usr/sbin/httpd
 <IfModule prefork.c>
     StartServers       8
     MinSpareServers    5
@@ -332,15 +346,6 @@ KeepAliveTimeout ${APACHE2_MAX_KEEP_ALIVE_TIMEOUT}
 </IfModule>
  
 # itk MPM
-# AssignUserID: takes two parameters, uid and gid (or really, user name and
-#               group name); specifies what uid and gid the vhost will run as
-#               (after parsing the request etc., of course).
-# MaxClientsVHost: a separate MaxClients for each vhost.
-# NiceValue: lets you nice some requests down, to give them less CPU time.
-# AssignUserID and NiceValue can be set wherever you'd like in the Apache
-# configuration, except in .htaccess.  MaxClientsVHost can only be set inside
-# a VirtualHost directive.
-# if use: /usr/sbin/httpd.itk
 <IfModule itk.c>
     AssignUserID apache apache
     StartServers       8
@@ -352,13 +357,6 @@ KeepAliveTimeout ${APACHE2_MAX_KEEP_ALIVE_TIMEOUT}
 </IfModule>
 
 # worker MPM
-# StartServers: initial number of server processes to start
-# MaxClients: maximum number of simultaneous client connections
-# MinSpareThreads: minimum number of worker threads which are kept spare
-# MaxSpareThreads: maximum number of worker threads which are kept spare
-# ThreadsPerChild: constant number of worker threads in each server process
-# MaxRequestsPerChild: maximum number of requests a server process serves
-# if use: /usr/sbin/httpd.worker
 <IfModule worker.c>
     StartServers         4
     MaxClients          ${APACHE2_MAX_CLIENTS}
@@ -429,6 +427,7 @@ CustomLog /var/log/apache2/access.log combined env=!dontlog
 ServerTokens Minor
 ServerSignature ${APACHE2_SERVER_SIGNATURE}
 
+# overwrite default httpd.conf
 DocumentRoot "/var/www/localhost/htdocs"
 <Directory "/var/www/localhost/htdocs">
     Options ${apache_options}
@@ -446,9 +445,11 @@ ${enssi}AddHandler server-parsed .shtml
 EOF
 
 
-#----------------------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------
 # Listen to IP and ports
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 nameIpMixture="no"
 hasAsterisk="no"
 hasIp="no"
@@ -457,7 +458,7 @@ while [ "$idx" -le "$APACHE2_VHOST_N" ]
 do
     eval active='$APACHE2_VHOST_'$idx'_ACTIVE'
     if [ "$active" = "no" ] ; then
-        idx=`expr $idx + 1`
+        idx=$((idx+1))
         continue
     fi
     eval ip='$APACHE2_VHOST_'$idx'_IP'
@@ -480,7 +481,7 @@ do
             hasIp="yes"
         fi
     done
-    idx=`expr $idx + 1`
+    idx=$((idx+1))
 done
 
 # check whether there is a mixture of name- and ip-based vhosts
@@ -497,6 +498,10 @@ else
     fi
 fi
 
+
+################################################################################
+# add following output to config file: 
+################################################################################
 (
 # if a vhost active $envhost=""
 if [  "$envhost" = "#" ] ; then
@@ -521,14 +526,16 @@ else
 fi
 echo ""
 
-#----------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 # directory setup
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 create_dir_access 0
 
-#----------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 # error setup
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 if [ "$APACHE2_ERROR_DOCUMENT_N" -gt 0 ] ; then
     idx=1
     echo "Alias /error/ \"/usr/share/apache2/error/\""
@@ -548,15 +555,16 @@ if [ "$APACHE2_ERROR_DOCUMENT_N" -gt 0 ] ; then
         eval error='$APACHE2_ERROR_DOCUMENT_'$idx'_ERROR'
         eval doc='$APACHE2_ERROR_DOCUMENT_'$idx'_DOCUMENT'
         echo "    ErrorDocument $error $doc"
-        idx=`expr $idx + 1`
+        idx=$((idx+1))
     done
     echo "</IfModule>"
     echo "</IfModule>"
 fi
 
-#----------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 # SSL setup
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 if [ "$APACHE2_SSL" = "yes" ] ; then
     if [ $APACHE2_VHOST_N -eq 0 -o "$uses_vhost_atall" = "no" ] ; then
         echo "<VirtualHost _default_:${APACHE2_SSL_PORT}>"
@@ -583,15 +591,15 @@ if [ "$APACHE2_SSL" = "yes" ] ; then
 fi
 
 
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # VHost setup
-#----------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 idx=1
 while [ "$idx" -le "$APACHE2_VHOST_N" ]
 do
     eval active='$APACHE2_VHOST_'$idx'_ACTIVE'
     if [ "$active" != "yes" ] ; then
-        idx=`expr $idx + 1`
+        idx=$((idx+1))
         continue
     fi
     eval ip='$APACHE2_VHOST_'$idx'_IP'
@@ -724,7 +732,7 @@ do
         chown apache:apache ${scriptdir}
     fi
 
-    idx=`expr $idx + 1`
+    idx=$((idx+1))
 done
 
 if [ -z "$envhost" ] ; then
@@ -738,9 +746,10 @@ fi
 
 ) >>/etc/apache2/conf.d/eisfair.conf
 
-#----------------------------------------------------------------------------------------
+
+################################################################################
 # setup logrotate
-#----------------------------------------------------------------------------------------
+################################################################################
 cat > /etc/logrotate.d/apache2 <<EOF
 /var/log/apache2/*log {
     ${APACHE2_LOG_INTERVAL}
@@ -756,9 +765,10 @@ cat > /etc/logrotate.d/apache2 <<EOF
 }
 EOF
 
-# -------------------------------------------------------------------------
+
+################################################################################
 # Add logfile view menu
-# -------------------------------------------------------------------------
+################################################################################
 # remove _all_ apache2 logfile entries
 grep -vE ".*>Show apache .*" /var/install/menu/setup.system.logfileview.menu >/tmp/setup.system.logfileview.menu.$$
 cp -f /tmp/setup.system.logfileview.menu.$$ /var/install/menu/setup.system.logfileview.menu     # don't mv, keep permissions
@@ -782,7 +792,7 @@ do
         /var/install/bin/add-menu --logfile setup.system.logfileview.menu "$accesslog" "Show apache access $servername"
         /var/install/bin/add-menu --logfile setup.system.logfileview.menu "$errorlog" "Show apache error $servername"
     fi
-    idx=`expr $idx + 1`
+    idx=$((idx+1))
 done
 
 exit 0
