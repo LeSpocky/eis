@@ -158,7 +158,7 @@ supported_boot_fs() {
 
 find_volume_group() {
 	local lv=${1##*/}
-	lvs --noheadings "$1" | awk "\$1 == \"$lv\" {print \$2}"
+	lvs --noheadings "$1" | awk '{print $2}'
 }
 
 find_pvs_in_vg() {
@@ -279,7 +279,10 @@ install_mounted_root() {
 		unpack_apkovl "$APKOVL" "$mnt" || return 1
 	fi
 
-	# generate mkinitfs.conf
+	# we should not try start modloop on sys install
+	rm -f "$mnt"/etc/runlevels/*/modloop
+
+  # generate mkinitfs.conf
 	mkdir -p "$mnt"/etc/mkinitfs/features.d
 	echo "features=\"$initfs_features\"" > "$mnt"/etc/mkinitfs/mkinitfs.conf
 	if [ -n "$raidmod" ]; then
@@ -331,8 +334,8 @@ EOF
 	local apkflags="--initdb --update-cache --clean-protected"
 	# local pkgs=$(cat "$mnt"/etc/apk/world "$mnt"/var/lib/apk/world 2>/dev/null)
 	[ -n "$USE_RAID" ] && raidpkg="mdadm"
-	pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libcui fcron syslog-ng logrotate cuimenu-bin cuimenu syslinux"
 
+	pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libcui fcron syslog-ng logrotate cuimenu-bin cuimenu syslinux"
 	if [ "$(rc --sys)" = "XEN0" ]; then
 		pkgs="$pkgs xen-hypervisor"
 	fi
@@ -430,7 +433,8 @@ is_available_disk() {
 
 find_disks() {
 	local p=
-	for p in $(awk '$1 ~ /[0-9]+/ {print $4}' /proc/partitions); do
+	# filter out ramdisks (major=1)
+	for p in $(awk '$1 != 1 && $1 ~ /[0-9]+/ {print $4}' /proc/partitions); do
 		is_available_disk $p && echo -n " $p"
 	done
 }
@@ -444,16 +448,21 @@ stop_all_raid() {
 
 # install needed programs
 init_progs() {
-	local raidpkg=
+	local raidpkg= lvmpkg= fs= fstools=
 	[ -n "$USE_RAID" ] && raidpkg="mdadm"
-	case $ROOTFS in
-	ext*) fstools=e2fsprogs; mkfs_args="-q";;
-	xfs) fstools=xfsprogs; mkfs_args="-q";;
-  # we need load btrfs module early to avoid the error message:
-	# 'failed to open /dev/btrfs-control'
-	btrfs) fstools=btrfs-progs; mkfs_args=""; modprobe btrfs;;
-	esac
-	apk add --quiet sfdisk e2fsprogs lvm2 $raidpkg syslinux $fstools $@
+	[ -n "$USE_LVM" ] && lvmpkg="lvm2"
+	for fs in $BOOTFS $ROOTFS $VARFS; do
+		# we need load btrfs module early to avoid the error message:
+		# 'failed to open /dev/btrfs-control'
+		modprobe $fs
+
+		case $fs in
+		xfs) fstools="$fstools xfsprogs";;
+		ext*) fstools="$fstools e2fsprogs";;
+		btrfs) fstools="$fstools btrfs-progs";;
+		esac
+	done
+	apk add --quiet sfdisk $lvmpkg $raidpkg syslinux $fstools $@
 }
 
 show_disk_info() {
@@ -520,7 +529,7 @@ find_lvm_partition() {
 
 # set up optional raid and create filesystem on boot device.
 setup_boot_dev() {
-	local disk= bootdev=
+	local disk= bootdev= mkfs_args="-q"
 	local part=$(for disk in $@; do find_boot_partition $disk; done)
 	set -- $part
 	bootdev=$1
@@ -538,7 +547,8 @@ setup_boot_dev() {
 			--metadata=0.90 --quiet --run $@ $missing || return 1
 		bootdev=/dev/md0
 	fi
-	mkfs.$BOOTFS -q $bootdev
+	[ "$BOOTFS" = "btrfs" ] && mkfs_args=""
+	mkfs.$BOOTFS $mkfs_args $bootdev
 	BOOT_DEV="$bootdev"
 }
 
@@ -728,7 +738,8 @@ data_only_disk_install() {
 
 # setup
 setup_root() {
-	local root_dev="$1" boot_dev="$2"
+	local root_dev="$1" boot_dev="$2" mkfs_args="-q"
+	[ "$ROOTFS" = "btrfs" ] && mkfs_args=""
 	mkfs.$ROOTFS $mkfs_args "$root_dev"
 	mkdir -p "$SYSROOT"
 	mount -t $ROOTFS $root_dev "$SYSROOT" || return 1
@@ -875,6 +886,15 @@ data:
 
   Use this mode if you only want to use the disk(s) for a mailspool, databases,
   logs, etc.
+
+lvm:
+  Enable logical volume manager and ask again for 'sys' or 'data'.
+
+lvmsys:
+  Same as 'sys' but use logical volume manager for partitioning.
+
+lvmdata:
+  Same as 'data' but use logical volume manager for partitioning.
 
 __EOF__
 }
@@ -1036,6 +1056,12 @@ options:
  -T  Timezone
  -v  Be more verbose about what is happening
 
+If BOOTFS, ROOTFS, VARFS are specified, then format a partition with specified
+filesystem. If not specified, the default filesystem is ext4.
+Supported filesystems for
+  boot: ext2, ext3, ext4, btrfs
+  root: ext2, ext3, ext4, btrfs, xfs
+   var: ext2, ext3, ext4, btrfs, xfs
 __EOF__
 	exit 1
 }

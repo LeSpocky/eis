@@ -35,19 +35,8 @@ show_disk_info() {
 
 is_available_disk() {
     local p="$1"
-
     # skipping cd-rom sr0
     [ "$p" = "sr0" ] && return 1
-
-#    # skipping read-only device
-#    ro="$(cat /sys/block/${device}/ro)"
-#    [ "$ro" != "0" ] && return 1
-
-#    # skipping cd-rom device
-#    cap="$(cat /sys/block/${device}/capability)"
-#    cap=$(echo "obase=10;ibase=16;${cap}" | bc)
-#    [ "$((cap & 8))" = 8 ] && return 1
-
     # check if its a "root" block device and not a partition
     [ -e /sys/block/$p ] || return 1
     # check so it does not have mounted partitions
@@ -72,8 +61,9 @@ has_mounted_part() {
 
 find_disks() {
     local p=""
-    for p in $(awk '$1 ~ /[0-9]+/ {print $4}' /proc/partitions); do
-        is_available_disk $p  && show_disk_info "$p"
+    # filter out ramdisks (major=1)
+    for p in $(awk '$1 != 1 && $1 ~ /[0-9]+/ {print $4}' /proc/partitions); do
+        is_available_disk $p && show_disk_info "$p"
     done
 }
 
