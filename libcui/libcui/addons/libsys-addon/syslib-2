@@ -1,11 +1,11 @@
-#! /bin/sh
+#!/bin/bash
 #------------------------------------------------------------------------------
 # /var/install/include/syslib - script interface for system files
 #
 # Copyright (c) 2009 eisfair-Team
 #
 # Creation:    2009-09-21 dv
-# Last update: $Id: syslib-2 33436 2013-04-10 20:34:56Z dv $
+# Last update: $Id: syslib-2 40459 2016-02-06 15:55:07Z dv $
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

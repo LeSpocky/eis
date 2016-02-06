@@ -12,6 +12,8 @@ depends_dev=""
 makedepends="python py-setuptools"
 install="$pkgname.pre-install"
 subpackages=""
+pkgusers="radicale"
+pkggroups="radicale"
 source="$pkgname-$pkgver.tar.gz::https://github.com/Kozea/Radicale/archive/$pkgver.tar.gz
 	$pkgname-config.patch
 	radicale-logging.patch

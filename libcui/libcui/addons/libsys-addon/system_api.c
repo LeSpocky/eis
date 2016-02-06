@@ -67,6 +67,7 @@ void
 SysApiInit(void)
 {
 	/* nothing to do right now */
+	SysInit();
 }
 
 /* ---------------------------------------------------------------------
@@ -359,15 +360,19 @@ SysApiSetGroupMembers(int argc, const wchar_t* argv[])
 static int
 SysApiIsMember(const wchar_t* user, const wchar_t* members)
 {
-	const wchar_t* p = wcsstr(members, user);
-	if (p)
+	if (wcslen(user) > 0)
 	{
-		if ((p == members) || (*(p - 1) == _T(',')))
+		const wchar_t* p = wcsstr(members, user);
+		while (p)
 		{
-			if ((p[wcslen(user)] == _T(',')) || (p[wcslen(user)] == _T('\0')))
+			if ((p == members) || (*(p - 1) == _T(',')))
 			{
-				return TRUE;
+				if ((p[wcslen(user)] == _T(',')) || (p[wcslen(user)] == _T('\0')))
+				{
+					return TRUE;
+				}
 			}
+			p = wcsstr(p + wcslen(user), user);
 		}
 	}
 	return FALSE;
