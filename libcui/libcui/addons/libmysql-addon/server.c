@@ -5,7 +5,7 @@
  * Copyright (C) 2006
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: server.c 33402 2013-04-02 21:32:17Z dv $
+ * Last Update:  $Id: server.c 33522 2013-04-21 09:04:24Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -36,7 +36,6 @@
 #endif
 
 SQLCONNECT* DefaultConnect = NULL;
-int         Initialized = FALSE;
 
 /* local prototypes */
 static const char* MyGetClientSocket(void);
@@ -53,12 +52,6 @@ MyServerConnect(const wchar_t* host, const wchar_t* port,
                 const wchar_t* database)
 {
 	SQLCONNECT* con;
-
-	if (!Initialized)
-	{
-		my_init();
-		Initialized = TRUE;
-	}
 
 	con = (SQLCONNECT*) malloc(sizeof(SQLCONNECT));
 	if (con)
@@ -91,6 +84,7 @@ MyServerConnect(const wchar_t* host, const wchar_t* port,
 		con->Port        = (port != NULL)     ? wcsdup(port) : NULL;
 		con->ErrMsg      = NULL;
 
+		/* automatically calls my_init() */
 		mysql_init(&con->HConnect);
 
 		if (mysql_real_connect(&con->HConnect, mbhost, mbuser, mbpasswd, mbdatabase, iport, socket, 0))
@@ -103,7 +97,7 @@ MyServerConnect(const wchar_t* host, const wchar_t* port,
 			}
 		}
 		else
-		{   
+		{
 			con->Connected = FALSE;
 		}
 
@@ -441,7 +435,7 @@ MyResultColumnSize(SQLRESULT* result, int index)
 	if (result && result->Result && (index < result->NumColumns))
 	{
 		MYSQL_FIELD* field;
-         
+
 		field = mysql_fetch_field_direct(result->Result, index);
 		return (field->length);
 	}

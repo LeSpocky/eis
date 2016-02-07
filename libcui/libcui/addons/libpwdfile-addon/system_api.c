@@ -92,8 +92,8 @@ SysApiUsersToList(int argc, const wchar_t* argv[])
 		unsigned long tmplong;
 		int           selindex = 0;
 		char          tmpname[256];
-        const wchar_t*  keyword = _T("");
-		int           index;		
+		const wchar_t*  keyword = _T("");
+		int           index;
 
 		swscanf(argv[0], _T("%ld"), &tmplong);
 		listview = LibSysStubFind(tmplong);
@@ -129,7 +129,7 @@ SysApiUsersToList(int argc, const wchar_t* argv[])
 			}
 			ListviewSetSel(listview->Window, selindex);
 
-            LibSysStartFrame(_T('R'), 32);
+			LibSysStartFrame(_T('R'), 32);
 			LibSysInsertInt (ERROR_SUCCESS);
 			LibSysSendFrame ();
 		}
