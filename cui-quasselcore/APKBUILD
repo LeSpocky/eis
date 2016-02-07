@@ -2,12 +2,12 @@
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=cui-quasselcore
 pkgver=1.0.1
-pkgrel=0
+pkgrel=1
 pkgdesc="CUI Setup for quassel irc"
 url="http://www.quassel-irc.org"
 arch="noarch"
 license="GPL"
-depends="cuimenu quassel-core quassel qt-sqlite"
+depends="cuimenu quassel-core quassel qt-sqlite icu-libs"
 depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.post-install $pkgname.post-deinstall"
