@@ -67,7 +67,6 @@ void
 SysApiInit(void)
 {
 	/* nothing to do right now */
-	SysInit();
 }
 
 /* ---------------------------------------------------------------------
