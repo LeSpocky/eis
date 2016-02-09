@@ -165,7 +165,7 @@ create_dir_access() {
 #if [ "$IP_NET_1_STATIC_IP" = "no" ] ; then
 #    leasefile=/var/lib/dhcp3/dhclient.eth0.leases
 #    if [ -f $leasefile ] ; then
-#        IP_NET_1_IPV4_IPADDR=`grep fixed-address $leasefile | awk 'BEGIN { RS=""; FS="\n"} {print $NF}' | sed -e 's#[^0-9.]##g'`
+#        IP_NET_1_IPV4_IPADDR=`grep fixed-address $leasefile | awk 'BEGIN { RS=""; FS="\n"} {print $NF}' | sed 's#[^0-9.]##g'`
 #    fi
 #fi
 

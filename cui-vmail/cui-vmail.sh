@@ -477,20 +477,20 @@ if [ ! -f /usr/sbin/clamd ]; then
 fi
 connectport=0
 [ "${VMAIL_SQL_HOST}" = "localhost" ] || connectport=3306
-sed -i -e "s|^socket.*|socket			/var/spool/postfix/run/milter/smc-milter-new.sock|" /etc/smc-milter-new/smc-milter-new.conf
-sed -i -e "s|^clamcheck.*|clamcheck			${POSTFIX_AV_CLAMAV}|"       /etc/smc-milter-new/smc-milter-new.conf
-sed -i -e "s|^fprotcheck.*|fprotcheck		${POSTFIX_AV_FPROTD}|"       /etc/smc-milter-new/smc-milter-new.conf
-sed -i -e "s|^avmail.*|avmail			${POSTFIX_AV_VIRUS_INFO}|"   /etc/smc-milter-new/smc-milter-new.conf
-sed -i -e "s|^signatureadd.*|signatureadd		${POSTFIX_AUTOSIGNATURE}|"   /etc/smc-milter-new/smc-milter-new.conf
-sed -i -e "s|^dbhost.*|dbhost			${VMAIL_SQL_HOST}|"          /etc/smc-milter-new/smc-milter-new.conf
-sed -i -e "s|^dbport.*|dbport			${connectport}|"             /etc/smc-milter-new/smc-milter-new.conf
-sed -i -e "s|^dbname.*|dbname			${VMAIL_SQL_DATABASE}|"      /etc/smc-milter-new/smc-milter-new.conf
-sed -i -e "s|^dbuser.*|dbuser			${VMAIL_SQL_USER}|"          /etc/smc-milter-new/smc-milter-new.conf
-sed -i -e "s|^dbpass.*|dbpass			${VMAIL_SQL_PASS}|"          /etc/smc-milter-new/smc-milter-new.conf
+sed -i "s|^socket.*|socket			/var/spool/postfix/run/milter/smc-milter-new.sock|" /etc/smc-milter-new/smc-milter-new.conf
+sed -i "s|^clamcheck.*|clamcheck			${POSTFIX_AV_CLAMAV}|"       /etc/smc-milter-new/smc-milter-new.conf
+sed -i "s|^fprotcheck.*|fprotcheck		${POSTFIX_AV_FPROTD}|"       /etc/smc-milter-new/smc-milter-new.conf
+sed -i "s|^avmail.*|avmail			${POSTFIX_AV_VIRUS_INFO}|"   /etc/smc-milter-new/smc-milter-new.conf
+sed -i "s|^signatureadd.*|signatureadd		${POSTFIX_AUTOSIGNATURE}|"   /etc/smc-milter-new/smc-milter-new.conf
+sed -i "s|^dbhost.*|dbhost			${VMAIL_SQL_HOST}|"          /etc/smc-milter-new/smc-milter-new.conf
+sed -i "s|^dbport.*|dbport			${connectport}|"             /etc/smc-milter-new/smc-milter-new.conf
+sed -i "s|^dbname.*|dbname			${VMAIL_SQL_DATABASE}|"      /etc/smc-milter-new/smc-milter-new.conf
+sed -i "s|^dbuser.*|dbuser			${VMAIL_SQL_USER}|"          /etc/smc-milter-new/smc-milter-new.conf
+sed -i "s|^dbpass.*|dbpass			${VMAIL_SQL_PASS}|"          /etc/smc-milter-new/smc-milter-new.conf
 if [ "$POSTFIX_AV_SCRIPT" = "yes" ]; then
-    sed -i -e "s|.*scriptfile.*|scriptfile		${POSTFIX_AV_SCRIPTFILE}|"   /etc/smc-milter-new/smc-milter-new.conf
+    sed -i "s|.*scriptfile.*|scriptfile		${POSTFIX_AV_SCRIPTFILE}|"   /etc/smc-milter-new/smc-milter-new.conf
 else
-    sed -i -e "s|^scriptfile.*|#scriptfile|"                                     /etc/smc-milter-new/smc-milter-new.conf
+    sed -i "s|^scriptfile.*|#scriptfile|"                                     /etc/smc-milter-new/smc-milter-new.conf
 fi
 [ -e /etc/smc-milter-new/smc-milter-new.hosts ] || touch /etc/smc-milter-new/smc-milter-new.hosts
 mkdir -p   /var/spool/postfix/quarantine
@@ -507,16 +507,16 @@ for sqlfile in mysql-canonical_maps.cf mysql-client_access.cf \
                    mysql-virtual_relayhosts_auth.cf mysql-virtual_relayhosts.cf \
                    mysql-virtual_restrictions.cf
     do
-        sed -i -e "s|^user.*|user = ${VMAIL_SQL_USER}|"         /etc/postfix/sql/$sqlfile
-        sed -i -e "s|^password.*|password = ${VMAIL_SQL_PASS}|" /etc/postfix/sql/$sqlfile
-        sed -i -e "s|^dbname.*|dbname = ${VMAIL_SQL_DATABASE}|" /etc/postfix/sql/$sqlfile
-        sed -i -e "s|^hosts.*|hosts = ${vmail_sql_connect}|"    /etc/postfix/sql/$sqlfile
+        sed -i "s|^user.*|user = ${VMAIL_SQL_USER}|"         /etc/postfix/sql/$sqlfile
+        sed -i "s|^password.*|password = ${VMAIL_SQL_PASS}|" /etc/postfix/sql/$sqlfile
+        sed -i "s|^dbname.*|dbname = ${VMAIL_SQL_DATABASE}|" /etc/postfix/sql/$sqlfile
+        sed -i "s|^hosts.*|hosts = ${vmail_sql_connect}|"    /etc/postfix/sql/$sqlfile
         chmod 0640 /etc/postfix/sql/$sqlfile
         chgrp postfix /etc/postfix/sql/$sqlfile
 done
 chmod 0750 /etc/postfix/sql
 chgrp postfix /etc/postfix/sql
-sed -i -e "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}')) FROM view_relaylogin WHERE email like '%s'|" /etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
+sed -i "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}')) FROM view_relaylogin WHERE email like '%s'|" /etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
 
 ### -------------------------------------------------------------------------
 ### update dovecot
@@ -526,15 +526,15 @@ sed -i -r "s|^[#]?disable_plaintext_auth =.*|disable_plaintext_auth = no|" /etc/
 sed -i -r "s|^[#]?auth_username_format =.*|auth_username_format = ${dovecot_authf}|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -r "s|^[#]?auth_failure_delay =.*|auth_failure_delay = 2 secs|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -r "s|^[#]?auth_master_user_separator =.*|auth_master_user_separator = \*|" /etc/dovecot/conf.d/10-auth.conf
-sed -i -e "s|^auth_mechanisms =.*|auth_mechanisms = plain login digest-md5 cram-md5|" /etc/dovecot/conf.d/10-auth.conf
-sed -i -e "s|^!include auth-system.conf.ext.*|#!include auth-system.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
-sed -i -e "s|^#!include auth-master.conf.ext.*|!include auth-master.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
-sed -i -e "s|^#!include auth-sql.conf.ext.*|!include auth-sql.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
-sed -i -e "s|^!include auth-ldap.conf.ext.*|#!include auth-ldap.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
-sed -i -e "s|^!include auth-passwdfile.conf.ext.*|#!include auth-passwdfile.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
-sed -i -e "s|^!include auth-checkpassword.conf.ext.*|#!include auth-checkpassword.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
-sed -i -e "s|^!include auth-vpopmail.conf.ext.*|#!include auth-vpopmail.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
-sed -i -e "s|^!include auth-static.conf.ext.*|#!include auth-static.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i "s|^auth_mechanisms =.*|auth_mechanisms = plain login digest-md5 cram-md5|" /etc/dovecot/conf.d/10-auth.conf
+sed -i "s|^!include auth-system.conf.ext.*|#!include auth-system.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i "s|^#!include auth-master.conf.ext.*|!include auth-master.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i "s|^#!include auth-sql.conf.ext.*|!include auth-sql.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i "s|^!include auth-ldap.conf.ext.*|#!include auth-ldap.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i "s|^!include auth-passwdfile.conf.ext.*|#!include auth-passwdfile.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i "s|^!include auth-checkpassword.conf.ext.*|#!include auth-checkpassword.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i "s|^!include auth-vpopmail.conf.ext.*|#!include auth-vpopmail.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
+sed -i "s|^!include auth-static.conf.ext.*|#!include auth-static.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
 
 
 ### -------------------------------------------------------------------------
@@ -688,11 +688,11 @@ EOF
 ### -------------------------------------------------------------------------
 #20-imap
 sed -i -r "s|^[#]imap_client_workarounds =.*|imap_client_workarounds = tb-extra-mailbox-sep|" /etc/dovecot/conf.d/20-imap.conf
-sed -i -e "s|.*mail_plugins =.*|  mail_plugins = \$mail_plugins acl imap_acl|" /etc/dovecot/conf.d/20-imap.conf
+sed -i "s|.*mail_plugins =.*|  mail_plugins = \$mail_plugins acl imap_acl|" /etc/dovecot/conf.d/20-imap.conf
 
 ### -------------------------------------------------------------------------
 #20-pop3
-sed -i -e "s|.*mail_plugins =.*|  mail_plugins = \$mail_plugins autocreate acl|" /etc/dovecot/conf.d/20-pop3.conf
+sed -i "s|.*mail_plugins =.*|  mail_plugins = \$mail_plugins autocreate acl|" /etc/dovecot/conf.d/20-pop3.conf
 
 ### -------------------------------------------------------------------------
 #90-acl.conf

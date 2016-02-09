@@ -17,7 +17,7 @@ packages_name=webalizer
 
 # convert to import old eisfair-1/eisfair-2 config files
 if [ -f /etc/config.d/apache2_webalizer ] ; then
-    sed -i -e "s|START_APACHE2_WEBALIZER|START_WEBALIZER|g" /etc/config.d/apache2_webalizer
+    sed -i "s|START_APACHE2_WEBALIZER|START_WEBALIZER|g" /etc/config.d/apache2_webalizer
     rm -f /etc/config.d/${packages_name}
     mv -f /etc/config.d/apache2_webalizer /etc/config.d/${packages_name}
 fi

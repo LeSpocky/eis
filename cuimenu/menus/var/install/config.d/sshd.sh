@@ -20,6 +20,10 @@ echo "Port $SSHD_PORT" >>       /etc/ssh/sshd_config
 sed -i '/^UseDNS /d'            /etc/ssh/sshd_config
 echo "UseDNS $SSHD_USEDNS" >>   /etc/ssh/sshd_config
 
+# root login 
+sed -i '/^PermitRootLogin /d'   /etc/ssh/sshd_config
+echo "PermitRootLogin yes" >>   /etc/ssh/sshd_config
+
 # IP address
 sed -i '/^ListenAddress /d'     /etc/ssh/sshd_config
 if [ "$SSHD_LISTEN_ADDR_N" -gt 0 ] ; then

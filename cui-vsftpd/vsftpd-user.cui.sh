@@ -367,7 +367,7 @@ function users_edituser_dialog()
                         else
                             rndval=$(openssl rand -base64 9)
                             keyval=$(openssl passwd -1 -salt ${rndval} ${usersdlg_userpass1})
-                            if sed -i -e "s/^${usersdlg_userlogin}:.*/${usersdlg_userlogin}:${keyval}/" ${passwdfile}
+                            if sed -i "s/^${usersdlg_userlogin}:.*/${usersdlg_userlogin}:${keyval}/" ${passwdfile}
                             then
                                 write_user_config
                                 result="$IDOK"
@@ -486,7 +486,7 @@ function users_deleteuser_dialog()
             cui_message "$win" "Delete user \"${usersdlg_userlogin}\" too?" "Question" "${MB_YESNO}"
             if [ "$p2" == "$IDYES" ]
             then
-                if sed -i -e "/^${usersdlg_userlogin}:/d" ${passwdfile}
+                if sed -i "/^${usersdlg_userlogin}:/d" ${passwdfile}
                 then
                     rm -f  /etc/vsftpd/users/${usersdlg_userlogin}
                     return 0

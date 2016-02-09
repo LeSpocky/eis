@@ -72,8 +72,8 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/mysql/mysql.txt || return 1
 
 	# patch database name (mariadb or mysql)
-	sed -i -e "s/_DBNAME_/$dbname/g" ${pkgdir}/var/install/config.d/mysql.sh
-	sed -i -e "s/_DBNAME_/$dbname/g" ${pkgdir}/var/install/menu/setup.services.mysql.menu
+	sed -i "s/_DBNAME_/$dbname/g" ${pkgdir}/var/install/config.d/mysql.sh
+	sed -i "s/_DBNAME_/$dbname/g" ${pkgdir}/var/install/menu/setup.services.mysql.menu
 }
 
 md5sums="9ebd44cacae4eda94eb74c921c69e7df  cui-mysql.default

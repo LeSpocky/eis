@@ -14,7 +14,7 @@ packages_name='clamd'
 
 # convert old eisfair-1/eisfair-2 config files
 if [ -f /etc/config.d/clamav ] ; then
-    sed -i -e "s|CLAMAV_|CLAMD_|g" /etc/config.d/clamav
+    sed -i "s|CLAMAV_|CLAMD_|g" /etc/config.d/clamav
     rm -f /etc/config.d/${packages_name}
     cp -f /etc/config.d/clamav /etc/config.d/${packages_name}
 fi
