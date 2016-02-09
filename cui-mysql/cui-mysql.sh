@@ -37,22 +37,18 @@ xarch=$(cat /etc/apk/arch)
 case "$xarch" in
     "x86_64")
        thread_stack="256K"
-       innodb_data_file_path="ibdata1:128M;ibdata2:10M:autoextend"
        innodb_log_file_size="64M" 
        ;;
     "x86")
        thread_stack="192K"
-       innodb_data_file_path="ibdata1:64M;ibdata2:10M:autoextend"
        innodb_log_file_size="32M"        
        ;;
     "armhf")
        thread_stack="192K"
-       innodb_data_file_path="ibdata1:10M;ibdata2:10M:autoextend"
        innodb_log_file_size="5M"
        ;;   
     *)
        thread_stack="192K"
-       innodb_data_file_path="ibdata1:64M;ibdata2:10M:autoextend"
        innodb_log_file_size="32M"       
        ;;
 esac
@@ -350,7 +346,7 @@ myisam-recover-options      = BACKUP #repair mode, recommend BACKUP
 
 ## InnoDB Plugin Independent Settings
 innodb_data_home_dir        = /var/lib/mysql
-innodb_data_file_path       = $innodb_data_file_path
+innodb_data_file_path       = ibdata1:10M:autoextend
 innodb_log_file_size        = $innodb_log_file_size 
 innodb_log_files_in_group   = 2
 innodb_buffer_pool_size     = $innodb_buffer_pool_size
