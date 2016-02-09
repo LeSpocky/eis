@@ -2,14 +2,14 @@
 # Maintainer: The eisfair team <team@eisfair.org>
 pkgname=cuimenu-bin
 pkgver=3.0.3
-pkgrel=0
+pkgrel=1
 pkgdesc="Eisfair CUI basis menu - binary files"
 url="http://www.eisfair.org"
 arch="all"
 license="GNU"
 depends="libcui>=2.0.1"
-depends_dev="coreutils libcui-dev>=2.0.1 ncurses-dev ncurses-widec-libs flex"
-makedepends="$depends_dev autoconf automake libtool"
+depends_dev=""
+makedepends="$depends_dev libcui-dev>=2.0.1 ncurses-dev flex coreutils autoconf automake libtool"
 install=""
 subpackages=""
 source=""
