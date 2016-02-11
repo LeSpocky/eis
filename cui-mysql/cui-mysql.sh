@@ -213,8 +213,8 @@ fi
 cat > /etc/mysql/my.cnf <<EOF
 [mysqld_safe]
 nice                        = 0
-#syslog
-#syslog-tag=mysqld
+syslog
+syslog-tag=mysqld
 
 
 [client]
@@ -242,8 +242,6 @@ skip-name-resolve
 
 ## Logging
 datadir                     = /var/lib/mysql
-#log                        = mysql-gen.log
-log_error                   = mysql-error.log
 log_warnings
 slow-query-log
 slow-query-log-file         = mysql-slow.log
@@ -395,23 +393,21 @@ echo 'AUTO_SETUP="yes"' > /etc/conf.d/_DBNAME_
 # setup logrotate
 #-------------------------------------------------------------------------------
 cat > /etc/logrotate.d/mysql <<EOF
-/var/lib/mysql/mysql-*.log {
+/var/log/mysql.log {
     ${MYSQL_LOG_INTERVAL}
     missingok
-	rotate ${MYSQL_LOG_MAXCOUNT}
+    rotate ${MYSQL_LOG_MAXCOUNT}
     notifempty
     sharedscripts
     delaycompress
-    postrotate
-        /sbin/rc-service --quiet _DBNAME_ restart > /dev/null 2>/dev/null || true
-    endscript
 }
 EOF
 
 #-------------------------------------------------------------------------------
-# add error logfile view
+# setup syslog-ng
 #-------------------------------------------------------------------------------
-/var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/lib/mysql/mysql-error.log" "MySQL errors"
+/sbin/rc-service -i -q syslog-ng update
+/sbin/rc-service -i -q syslog-ng reload
 
 #-------------------------------------------------------------------------------
 # setup cron for database backup

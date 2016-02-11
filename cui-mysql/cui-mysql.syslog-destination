@@ -1,0 +1,1 @@
+  destination df_mysql { file("/var/log/mysql.log"); };

@@ -1,0 +1,5 @@
+log {
+        source(s_all);
+        filter(f_mysql);
+        destination(df_mysql);
+};

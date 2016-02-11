@@ -3,4 +3,5 @@
 rm -f /etc/default.d/mysql
 rm -f /etc/check.d/mysql
 rm -f /etc/check.d/mysql.exp
+/var/install/bin/del-menu setup.system.logfileview.menu '\/var\/lib\/mysql\/mysql-error.log'
 exit 0
