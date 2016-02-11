@@ -2,7 +2,7 @@
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=cui-mysql
 pkgver=1.0.1
-pkgrel=3
+pkgrel=4
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
@@ -36,9 +36,9 @@ source="${pkgname}.default
 	${pkgname}-backup.sh
 	${pkgname}-restore.sh
 	${pkgname}-setpwd.cui.sh
-  ${pkgname}.syslog-destination
-  ${pkgname}.syslog-filter
-  ${pkgname}.syslog-log
+	${pkgname}.syslog-destination
+	${pkgname}.syslog-filter
+	${pkgname}.syslog-log
 "
 
 _builddir=
