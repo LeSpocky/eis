@@ -1,1 +1,1 @@
-  destination df_mysql { file("/var/log/mysql.log"); };
+  destination df_mysql { file("/var/log/mysql.log" _TZ_ ); };
