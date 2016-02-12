@@ -724,6 +724,7 @@ fi
 ################################################################################
 # setup logrotate
 ################################################################################
+rm -f /etc/logrotate.d/apache2.*
 cat > /etc/logrotate.d/apache2 <<EOF
 /var/log/apache2/*log {
     ${APACHE2_LOG_INTERVAL}
@@ -752,8 +753,8 @@ rm -f /tmp/setup.system.logfileview.menu.$$
 /var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/apache2/error.log" "Show apache error"
 
 # fix log-directory for run logrotate!
-chmod 0750 /var/log/apache2
-chown apache:adm /var/log/apache2
+chmod 0755 /var/log/apache2
+chown apache:apache /var/log/apache2
 
 idx=1
 while [ "$idx" -le "$APACHE2_VHOST_N" ]
