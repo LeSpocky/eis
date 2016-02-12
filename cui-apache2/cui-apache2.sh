@@ -147,7 +147,7 @@ create_dir_access() {
             if [ ! -d ${path} ] ; then
                 mkdir -p ${path}
                 echo "<h1>GEHEIM!</h1>" > ${path}/index.html
-                chown -R apache:apache ${path}
+                chown -R apache:www-data ${path}
             fi
         else
             echo "    Require $access"
@@ -699,11 +699,11 @@ do
             echo "The error logfile is <em>$errorlog</em><p>"
             echo "Access to this VirtualHost has <em>$accesscontrol</em></body></html>"
         } > ${docroot}/index.html
-        chown apache:apache -R ${docroot}
+        chown apache:www-data -R ${docroot}
     fi
     if [ ! -d ${scriptdir} ] ; then
         mkdir -p ${scriptdir}
-        chown apache:apache ${scriptdir}
+        chown apache:www-data ${scriptdir}
     fi
 
     idx=$((idx+1))
@@ -754,7 +754,7 @@ rm -f /tmp/setup.system.logfileview.menu.$$
 
 # fix log-directory for run logrotate!
 chmod 0755 /var/log/apache2
-chown apache:apache /var/log/apache2
+chown apache:www-data /var/log/apache2
 
 idx=1
 while [ "$idx" -le "$APACHE2_VHOST_N" ]
