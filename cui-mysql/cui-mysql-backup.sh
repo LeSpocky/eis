@@ -34,6 +34,7 @@ backup_mysql_database()
     echo "database: $dbname" | logger -t 'mysql-backup' -p 'local5.info'
     lastupdate=$(mysql -u $MyUSER -Bse "SELECT DATE_FORMAT(UPDATE_TIME,'%Y%m%d-%H' ) FROM information_schema.tables WHERE table_schema='$dbname' GROUP BY TABLE_SCHEMA ORDER BY UPDATE_TIME DESC")
     [ -z "$lastupdate" -o "$lastupdate" = "NULL" ] && lastupdate="$DATENOW"
+    mysqladmin flush-tables flush-logs
     mysqldump -u $MyUSER --hex-blob --events $dbname | gzip -9 > ${BACKUP_DIR}/${dbname}-${lastupdate}.sql.gz
     [ "$?" = "1" ] && sleep 2
 }

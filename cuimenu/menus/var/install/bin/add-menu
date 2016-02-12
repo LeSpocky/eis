@@ -1,7 +1,7 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/bin/add-menu - add a menu entry
-# Copyright (c) 2001-2015 The Eisfair Team <team@eisfair.org>
+# Copyright (c) 2001-2016 The Eisfair Team <team@eisfair.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -58,10 +58,10 @@ shift 2
 menu_text="$*"
 
 if [ -f "/var/install/menu/$menu_file" ] ; then
-    if grep -q "<${tag}${opt} file=\"${menu_cmd}\"" /var/install/menu/${menu_file} ; then
+    if grep -q "<${tag} file=\"${menu_cmd}\"" /var/install/menu/${menu_file} ; then
         exit 0
     fi
-    echo "<${tag}${opt} file=\"${menu_cmd}\">${menu_text}</${tag}>" >>/var/install/menu/${menu_file}
+    echo "<${tag} file=\"${menu_cmd}\"${opt}>${menu_text}</${tag}>" >>/var/install/menu/${menu_file}
 fi
 
 exit 0
