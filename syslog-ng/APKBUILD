@@ -2,7 +2,7 @@
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=syslog-ng
 pkgver=3.7.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Next generation logging daemon"
 url="http://www.balabit.com"
 arch="all"
@@ -84,7 +84,7 @@ md5sums="ee8d4f3952b976ebe4b743d9db1b235a  syslog-ng-3.7.2.tar.gz
 29ada4379f9cabbab9ed355bf25e5228  syslog-ng-destination.std
 405f4730412fec3a170460d724a6b50e  syslog-ng-filter.std
 bc676f733ea162ea4de7a8c2a16c06ed  syslog-ng-log.std
-078ac758288a6e0aa6d8563cbdc47932  syslog-ng-options.std
+071b35a288c99de0a9db69389bdc3953  syslog-ng-options.std
 835e0bd5ed63ea1b631ce7a6c724affe  syslog-ng-plugins.std
 d1b01c819861945675a6e2fcff8d9a2c  syslog-ng-source.std"
 sha256sums="b1b3ccc0ce7f0d8bf15b23e59f2f4f5ded70eed410dfd27105219bc8856388a5  syslog-ng-3.7.2.tar.gz
@@ -93,7 +93,7 @@ a886b65863d72476504165e6a6dfe3d2922945d8cb61adb6b8eec73ac35d825e  syslog-ng.logr
 8130218323da37f27a4893f4e4eecbc020a935724ebe4daebee2c7458051bf88  syslog-ng-destination.std
 4ee19a76624624a9742f3399887784a55f684d141e115996b82c593aa74dcb66  syslog-ng-filter.std
 df30f0ce37bdf8cc0ac0fcc04800d7d14880bf3a19d01ab96220a325f1ab3943  syslog-ng-log.std
-735b67fe85e2deaf734fae58fb62bd06458032f9a098633238a171547869e3bc  syslog-ng-options.std
+7aba3152c4fd0daf341827119947e07dc68a1e78bce673564eac0990b62e535e  syslog-ng-options.std
 d8512e9901db7d42651a0405392438d80b1f1b110462d1bf57809ddf7a37b2d5  syslog-ng-plugins.std
 0f3ea572b98d21f3afd82d64b17d518d6584b2ea4bfe96df2c1aa9c648890014  syslog-ng-source.std"
 sha512sums="dbf58b51b68bc6616a136df5eb67a120718d8c83f785218d40f62e5f7b3691a3ad4d21db617551e4192e053dc9340440424e3d3b072b47ca590d4eac0dbf0e6f  syslog-ng-3.7.2.tar.gz
@@ -102,6 +102,6 @@ dc36668ba9501a43c715aed43dabd6f27f07712e1f0fc6c4c2985f54ce5e2c56b4a9e438696546a1
 b5d05c637946855cc9bf2f81f3d5af1858acfb542e25133980cd3931385d9cd46920ed2970b7210cf10eb7505f6506b49a464fb7d809694e775fc2baca6a301e  syslog-ng-destination.std
 e04a70a0b8fc4f40951c9b608b0dede1fa561dd7f58ce8fd8bac70b578b749d15d202973fd9de9fe494656ee138ef5efd32ea6229e6ec0a2f19672dd621acc91  syslog-ng-filter.std
 d7864f6666101e0818dd0178a4d1ada2417280de153ff916fe4879348a37b7bfab5936e86629dc52e4edf82fbd601e04d08ed5a2117bcb0470a3d5884add9f55  syslog-ng-log.std
-f17f76f8880a3a49633ece1bd0c0cb7cef7038df04dd7e20f9ba523e593f5799059223f25b31bfd26d99eb0136d1149c6bc5e0f74837f471856479fe6fae0afc  syslog-ng-options.std
+b331f93106aa593525e94e3ab7837b84372a7d43196898036697803600886d093f80647e37f3d75de0b3808c9393b957ef91efc9b6a8a35c25c1495b7a0090db  syslog-ng-options.std
 5547568fad76c27e2da1351b316ca6e83ef0718c0f6ff30bc4eaf2db16978d463a84706e849183e5772ae24e387b6e1be3eb1ee270ee08b59f8ba38bbf4b7233  syslog-ng-plugins.std
 42cc7728a182fee30675aefee9055eb14bdfbf2006bcf1c731864221ea494ad82d9ae4417190ff18da4a663fa9d5efcd514b6e64a568e228cfed1fb2abd2b10c  syslog-ng-source.std"

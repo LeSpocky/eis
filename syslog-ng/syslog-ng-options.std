@@ -22,7 +22,7 @@
 # default owner, group, and permissions for log files (defaults are 0, 0, 0600)
 #owner(root);
   group(adm);
-  perm(0640);
+  perm(0644);
 # default owner, group, and permissions for created directories (defaults are 0, 0, 0700)
 #dir_owner(root);
 #dir_group(root);
