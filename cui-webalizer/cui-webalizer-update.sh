@@ -1,7 +1,12 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # eisfair-ng configuration parameter update script
-# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2007 - 2016 the eisfair team, team(at)eisfair(dot)org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #----------------------------------------------------------------------------
 
 # name of the current package
@@ -61,7 +66,7 @@ fi
         printvar "WEBALIZER_HOST_${idx}_TITLE"      "The title at the top of the analysis"
         printvar "WEBALIZER_HOST_${idx}_BGCOLOR"    "The backgroundcolor"
         printvar "WEBALIZER_HOST_${idx}_TYPE"       "'clf' for Apache, 'squid' for Squid, 'ftp' for FTP"
-        idx=`expr $idx + 1`
+	idx=$((idx+1))
     done
 
     # ------------------------------------------------------------------------

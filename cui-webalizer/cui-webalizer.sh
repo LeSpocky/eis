@@ -1,7 +1,12 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # eisfair-ng configuration generator script for WEBALIZER
-# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2007 - 2016  the eisfair team, team(at)eisfair(dot)org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #----------------------------------------------------------------------------
 
 #exec 2> `pwd`/webalizer-trace$$.log
@@ -13,7 +18,6 @@
 
 # set package name
 packageName=webalizer
-
 
 # ----------------------------------------------------------------------------
 # create a config file
@@ -3615,9 +3619,8 @@ do
     chown -R root:apache ${output_dir}
 
     create_webalizer_configuration > /etc/webalizer/webalizer_${conf_idx}.conf
-
-    idx=`expr $idx + 1`
-    conf_idx=`expr $conf_idx + 1`    
+    idx=$((idx+1))
+    conf_idx=$((conf_idx+1))
 done
 
 
@@ -3627,7 +3630,7 @@ if [ "$WEBALIZER_VHOSTS_RUN_ALL" = 'yes' ] ; then
     do
         eval active='$APACHE2_VHOST_'$idx'_ACTIVE'
         if [ "$active" != "yes" ] ; then
-            idx=`expr $idx + 1`
+	    idx=$((idx+1))
             continue
         fi
         eval servername='$APACHE2_VHOST_'$idx'_SERVER_NAME'
@@ -3661,8 +3664,8 @@ if [ "$WEBALIZER_VHOSTS_RUN_ALL" = 'yes' ] ; then
 
         create_webalizer_configuration > /etc/webalizer/webalizer_${conf_idx}.conf
 
-        idx=`expr $idx + 1`
-        conf_idx=`expr $conf_idx + 1`
+	idx=$((idx+1))
+	conf_idx=$((conf_idx+1))
     done
 fi
 
