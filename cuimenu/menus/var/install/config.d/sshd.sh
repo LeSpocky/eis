@@ -1,7 +1,7 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/config.d/ssh.sh - configuration generator script for SSH
-# Copyright (c) 2001-2015 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2016 the eisfair team, team(at)eisfair(dot)org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,15 +40,15 @@ if [ "$SSHD_LISTEN_ADDR_N" -gt 0 ] ; then
                 [ -n "$ipaddr" ] && echo "ListenAddress $ipaddr " >> /etc/ssh/sshd_config
             fi
         fi
-        idx=`expr ${idx} + 1`
+        idx=$((idx+1))
     done
 fi
 
 # enable sftp
 if [ "$SSHD_ENABLE_SFTP" = "yes" ] ; then
-    sed -i -e 's/^#Subsystem.*sftp.*/Subsystem	sftp	/usr/lib/ssh/sftp-server/' /etc/ssh/sshd_config
+    sed -i 's|^#Subsystem.*sftp.*|Subsystem	sftp	/usr/lib/ssh/sftp-server|' /etc/ssh/sshd_config
 else
-    sed -i -e 's/^Subsystem.*sftp.*/#Subsystem	sftp	/usr/lib/ssh/sftp-server/' /etc/ssh/sshd_config
+    sed -i 's|^Subsystem.*sftp.*|#Subsystem	sftp	/usr/lib/ssh/sftp-server|' /etc/ssh/sshd_config
 fi
 
 # Loglevel
@@ -78,7 +78,7 @@ mkdir -p /root/.ssh
                 echo ""
             fi
         fi
-        idx=`expr $idx + 1`
+        idx=$((idx+1))
     done
 ) > $ssh_authorized_keys_file_tmp 
 
@@ -86,7 +86,6 @@ mkdir -p /root/.ssh
 # omit empty lines
 grep -v '^$' $ssh_authorized_keys_file_tmp > /root/.ssh/authorized_keys
 rm -f $ssh_authorized_keys_file_tmp
-
 
 #----------------------------------------------------------------------------
 # start stop update
@@ -96,6 +95,5 @@ if [ "$START_SSHD" = "yes" ] ; then
 else
 	rc-update -q del sshd default 2>/dev/null
 fi
-
 
 exit 0

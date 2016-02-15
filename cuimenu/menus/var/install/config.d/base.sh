@@ -1,7 +1,7 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/config.d/base.sh - apply configuration for base
-# Copyright (c) 2001-2015 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2016 the eisfair team, team(at)eisfair(dot)org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -208,7 +208,7 @@ then
 			grep -qs "^$mod" /etc/modules >/dev/null || echo "$mod" >> /etc/modules 
         		;;
 		esac
-    		idx=`expr $idx + 1`
+		idx=$((idx+1))
 	done
 fi
 
@@ -273,7 +273,7 @@ then
 		[ -n "$logfilter" ] && echo "        filter(f_$logmsgname);"
 		echo -e "        destination(df_$logmsgname);\n};\n"
 		} >> /etc/syslog-ng/syslog-ng-log.base
-		idx=`expr $idx + 1`
+		idx=$((idx+1))
 	done
 
 	echo_rotate_entry () {
@@ -372,7 +372,7 @@ else
 fi
 
 # force unicode!
-sed -i -e 's/^#unicode=.*/unicode="YES"/' /etc/rc.conf
-sed -i -e 's/^unicode=.*/unicode="YES"/'  /etc/rc.conf
+sed -i 's/^#unicode=.*/unicode="YES"/' /etc/rc.conf
+sed -i 's/^unicode=.*/unicode="YES"/'  /etc/rc.conf
 
 exit 0

@@ -1,7 +1,7 @@
 #!/bin/sh
 #----------------------------------------------------------------------------
 # /var/install/config.d/apk-repositories.sh - apply configuration 
-# Copyright (c) 2001-2015 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2016 the eisfair team, team(at)eisfair(dot)org
 # Creation:     2013-05-03 starwarsfan
 #
 # This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ while [ "${idx}" -le "${APK_REPOSITORY_N}" ] ; do
     echo ${commentCharacter}${host} >> /etc/apk/repositories
 
     # End idx -le ${APK_REPOSITORY_N}
-    idx=`/usr/bin/expr ${idx} + 1`
+    idx=$((idx+1))
 done
 
 echo "Apk repository configuration written."

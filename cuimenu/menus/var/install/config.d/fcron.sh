@@ -1,7 +1,7 @@
 #!/bin/sh
 #-----------------------------------------------------------------------------
 # /var/install/config.d/fcron.sh - fcron configuration file
-# Copyright (c) 2001-2015 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2016 the eisfair team, team(at)eisfair(dot)org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ while [ "${idx}" -le "${FCRON_N}" ] ; do
 		mkdir -p ${cron_path}/${user}
 		echo "${time} ${command}" >> ${cron_path}/${user}/cron.base
 	fi
-	: $(( idx++ ))
+	idx=$((idx+1))
 done
 
 # ----------------------------------------------------------------------------
