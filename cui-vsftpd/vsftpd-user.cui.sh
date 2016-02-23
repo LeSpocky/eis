@@ -3,9 +3,8 @@
 # /var/install/bin/vsftpd-user.cui.sh - virtual user management for vsftpd
 #
 # Creation:     2013-07-04 jv
-# Last update:  $Id: 24072 2013-02-21 09:53:06Z jv $
 #
-# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2016 the eisfair team, team(at)eisfair(dot)org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -367,7 +366,7 @@ function users_edituser_dialog()
                         else
                             rndval=$(openssl rand -base64 9)
                             keyval=$(openssl passwd -1 -salt ${rndval} ${usersdlg_userpass1})
-                            if sed -i "s/^${usersdlg_userlogin}:.*/${usersdlg_userlogin}:${keyval}/" ${passwdfile}
+                            if sed -i "s|^${usersdlg_userlogin}:.*|${usersdlg_userlogin}:${keyval}|" ${passwdfile}
                             then
                                 write_user_config
                                 result="$IDOK"
@@ -486,7 +485,7 @@ function users_deleteuser_dialog()
             cui_message "$win" "Delete user \"${usersdlg_userlogin}\" too?" "Question" "${MB_YESNO}"
             if [ "$p2" == "$IDYES" ]
             then
-                if sed -i "/^${usersdlg_userlogin}:/d" ${passwdfile}
+                if sed -i "/^${usersdlg_userlogin}:.*/d" ${passwdfile}
                 then
                     rm -f  /etc/vsftpd/users/${usersdlg_userlogin}
                     return 0
