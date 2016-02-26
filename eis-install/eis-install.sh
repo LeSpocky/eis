@@ -98,6 +98,7 @@ getNextMenuItem () {
 
 PDRIVE=""
 PRAIDLEVEL="0"
+PLVM="0"
 PSWAPSIZE="512"
 PKEYBLAYOUT="de"
 PKEYBVARIANT="de-latin1"
@@ -127,7 +128,7 @@ while true ; do
             --menu "Base setup" 22 50 15 \
              0 "Shell login" "Return to login" \
              1 "Select disc" "Select disc for installation." \
-             2 "Adjust partition size" "Adjust the size of swap/root partition." \
+             2 "Partition options" "Set options of swap/root partition." \
              3 "Keyboard layout" "Setup the keyboard layout." \
              4 "Use DHCP for network" "Automatic IP-address of first network interface." \
              5 "IP-address" "IP-address of first network interface." \
@@ -148,7 +149,7 @@ while true ; do
             --menu "Base setup" 22 50 15 \
              0 "Shell login" "Return to login" \
              1 "Select disc" "Select disc for installation." \
-             2 "Adjust partition size" "Adjust the size of swap/root partition." \
+             2 "Partition options" "Set options of swap/root partition." \
              3 "Keyboard layout" "Setup the keyboard layout." \
              4 "Use DHCP for network" "Automatic IP-address of first network interface." \
              9 "Hostname" "System Hostname."\
@@ -196,6 +197,17 @@ while true ; do
             if [ -z "$PDRIVE" ] ; then
                 n_item="1"
             else
+                new=$(dialog --no-shadow --no-cancel \
+                    --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
+                    --title "File system configuration"  --clear \
+                    --checklist "Options" 9 61 5 \
+                      "LVM"   "Use LVM for root and swap partition." off \
+                      "BTRFS" "Use BTRFS for root partition." off \
+                    3>&1 1>&2 2>&3 3>&-)
+                case "$new" in
+                    *LVM*) PLVM='1' ;;
+                    *BTRFS*) export ROOTFS='btrfs' ;;
+                esac
                 PSWAPSIZE=$(calulate_swap_size ${PDRIVE})
                 new=$(dialog --no-shadow \
                     --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
@@ -417,6 +429,7 @@ while true ; do
                 if [ "$?" = "0" ] ; then
                     [ "$PNETIPSTATIC" = "0" ] && POPTIONS="$POPTIONS -d"
                     [ "$PRAIDLEVEL" = "1" ] && POPTIONS="$POPTIONS -r"
+                    [ "$PLVM" = "1" ] && POPTIONS="$POPTIONS -L"
                     PRINTK=$(cat /proc/sys/kernel/printk)
                     echo "0" >/proc/sys/kernel/printk
                     tempfile=/tmp/install.$$
