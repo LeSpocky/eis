@@ -491,12 +491,12 @@ setup_partitions() {
 	echo "Initializing partitions on $diskdev..."
 
 	# jv: dd required?  
-	dd if=/dev/zero of=${diskdev} bs=512 count=1 1>/dev/null 2>&1
+	dd if=/dev/zero of=${diskdev} bs=1k count=1 1>/dev/null 2>&1
 	# new disks does not have an DOS signature in sector 0
 	# this makes sfdisk complain. We can workaround this by letting
 	# fdisk create that DOS signature, by just do a "w", a write.
 	# http://bugs.alpinelinux.org/issues/show/145
-	echo "w" | fdisk $diskdev >/dev/null 2>&1
+	echo "w" | fdisk $diskdev >/dev/null
 
 	# fix the MBR while here so extlinux can boot
 	cat "$MBR" > $diskdev
@@ -1139,8 +1139,6 @@ if [ $# -gt 0 ]; then
 		fi
 		diskdevs="$diskdevs /dev/${j//!//}"
 	done
-	# only sys fpr DISK_MODE
-	DISK_MODE="sys"
 else
 	echo "Missing disk!"
 	DISK_MODE="none"

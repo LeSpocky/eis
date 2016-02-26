@@ -96,6 +96,7 @@ getNextMenuItem () {
 }
 
 
+PDISKMODE="sys"
 PDRIVE=""
 PRAIDLEVEL="0"
 PLVM="0"
@@ -440,7 +441,8 @@ while true ; do
                       --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                       --no-kill \
                       --tailboxbg /tmp/fdisk.log 21 75 2>$tempfile
-                    /bin/eis-install.setup-disk -e "$PKEYBVARIANT" -E "$PKEYBLAYOUT" \
+                    /bin/eis-install.setup-disk -m "$PDISKMODE" \ 
+                        -e "$PKEYBVARIANT" -E "$PKEYBLAYOUT" \
                         -H "$PHOSTNAME" -D "$PDOMAIN" -I "$PIPADDRESS" -N "$PNETMASK" \
                         -G "$PGATEWAY" -F "$PDNSSERVER" -P "$PPASSWORD" -s "$PSWAPSIZE" \
                         ${POPTIONS} $PDRIVE >>/tmp/fdisk.log 2>&1
