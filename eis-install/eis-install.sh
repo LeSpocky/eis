@@ -207,6 +207,8 @@ while true ; do
                     3>&1 1>&2 2>&3 3>&-)
                 case "$new" in
                     *LVM*) PLVM='1' ;;
+                esac
+                case "$new" in
                     *BTRFS*) export ROOTFS='btrfs' ;;
                 esac
                 PSWAPSIZE=$(calulate_swap_size ${PDRIVE})
@@ -441,7 +443,7 @@ while true ; do
                       --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                       --no-kill \
                       --tailboxbg /tmp/fdisk.log 21 75 2>$tempfile
-                    /bin/eis-install.setup-disk -m "$PDISKMODE" \ 
+                    /bin/eis-install.setup-disk -m "$PDISKMODE" \
                         -e "$PKEYBVARIANT" -E "$PKEYBLAYOUT" \
                         -H "$PHOSTNAME" -D "$PDOMAIN" -I "$PIPADDRESS" -N "$PNETMASK" \
                         -G "$PGATEWAY" -F "$PDNSSERVER" -P "$PPASSWORD" -s "$PSWAPSIZE" \

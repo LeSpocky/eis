@@ -332,10 +332,10 @@ EOF
 	cp /etc/apk/keys/* "$mnt"/etc/apk/keys/
 
 	local apkflags="--initdb --update-cache --clean-protected"
-	# local pkgs=$(cat "$mnt"/etc/apk/world "$mnt"/var/lib/apk/world 2>/dev/null)
-	[ -n "$USE_RAID" ] && raidpkg="mdadm"
+	local pkgs=$(grep -h -E -v -w "eis-install|sfdisk" "$mnt"/etc/apk/world \
+		"$mnt"/var/lib/apk/world 2>/dev/null)
 
-	pkgs="alpine-base linux-$KERNEL_FLAVOR $raidpkg acct bash dhcpcd e2fsprogs nano openssh libcui fcron syslog-ng logrotate cuimenu-bin cuimenu syslinux"
+	pkgs="$pkgs acct linux-$KERNEL_FLAVOR bash dhcpcd nano openssh libcui fcron syslog-ng logrotate cuimenu-bin cuimenu"
 	if [ "$(rc --sys)" = "XEN0" ]; then
 		pkgs="$pkgs xen-hypervisor"
 	fi
@@ -490,8 +490,9 @@ setup_partitions() {
 
 	echo "Initializing partitions on $diskdev..."
 
-	# jv: dd required?  
-	dd if=/dev/zero of=${diskdev} bs=1k count=1 1>/dev/null 2>&1
+	# jv: To erase the GPT you need to erase the table at both the beginning and end of the disk.
+	dd if=/dev/zero of=$diskdev bs=4096 count=35 >/dev/null 2>&1
+	dd if=/dev/zero of=$diskdev bs=4096 count=35 seek=$(($(blockdev --getsz ${diskdev})*512/4096 - 35)) >/dev/null 2>&1
 	# new disks does not have an DOS signature in sector 0
 	# this makes sfdisk complain. We can workaround this by letting
 	# fdisk create that DOS signature, by just do a "w", a write.
@@ -624,9 +625,9 @@ setup_lvm_swap() {
 	local vgname="$1"
 	local swapname=lv_swap
 	if [ -z "$SWAP_SIZE" ] || [ "$SWAP_SIZE" -eq 0 ]; then
-		return
+		return                                                       
 	fi
-	lvcreate --quiet -n $swapname -L ${SWAP_SIZE}MB $vgname
+	lvcreate --yes --quiet -n $swapname -L ${SWAP_SIZE}MB $vgname
 	setup_swap_dev /dev/$vgname/$swapname
 }
 
@@ -988,6 +989,7 @@ EOF
 
 setup_timezone() {
 	echo "$PTIMEZONE" >/mnt/etc/TZ
+	mkdir -p /mnt/etc/zoneinfo
 }
 # end eisfair-ng configuration -------------------------------------------------
 
