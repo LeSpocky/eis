@@ -118,11 +118,8 @@ POPTIONS=""
 n_item="1"
 
 # add packages for install setup and load default keymap and
-# remove installer from world file
 apk add -q bkeymaps
 [ -f "/usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap" ] && cat "/usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap" | loadkmap
-sed -i "/dialog/d" /etc/apk/world
-sed -i "/eis-install/d" /etc/apk/world
 
 while true ; do
     if [ "$PNETIPSTATIC" = "1" ] ; then
@@ -206,9 +203,9 @@ while true ; do
                     --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                     --title "File system configuration"  --clear \
                     --checklist "Options" 9 61 5 \
-                      "LVM"   "Use LVM for root and swap partition." off \
                       "BTRFS" "Use BTRFS for root partition." off \
                     3>&1 1>&2 2>&3 3>&-)
+                      #"LVM"   "Use LVM for root and swap partition." off \
                 PLVM=""    
                 case "$new" in
                     *LVM*) PLVM="1" ;;
