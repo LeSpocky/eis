@@ -98,8 +98,9 @@ getNextMenuItem () {
 
 PDISKMODE="sys"
 PDRIVE=""
-PRAIDLEVEL="0"
-PLVM="0"
+PRAIDLEVEL=""
+PLVM=""
+PROOTFS="ext4"
 PSWAPSIZE="512"
 PKEYBLAYOUT="de"
 PKEYBVARIANT="de-latin1"
@@ -116,9 +117,12 @@ POPTIONS=""
 
 n_item="1"
 
-# add packages for install setup and load default keymap
+# add packages for install setup and load default keymap and
+# remove installer from world file
 apk add -q bkeymaps
 [ -f "/usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap" ] && cat "/usr/share/bkeymaps/$PKEYBLAYOUT/$PKEYBVARIANT.bmap" | loadkmap
+sed -i "/dialog/d" /etc/apk/world
+sed -i "/eis-install/d" /etc/apk/world
 
 while true ; do
     if [ "$PNETIPSTATIC" = "1" ] ; then
@@ -187,7 +191,7 @@ while true ; do
                             getNextMenuItem
                         fi
                     else
-                        PRAIDLEVEL="0"
+                        PRAIDLEVEL=""
                         PDRIVE="$new"
                         getNextMenuItem
                     fi
@@ -205,11 +209,13 @@ while true ; do
                       "LVM"   "Use LVM for root and swap partition." off \
                       "BTRFS" "Use BTRFS for root partition." off \
                     3>&1 1>&2 2>&3 3>&-)
+                PLVM=""    
                 case "$new" in
-                    *LVM*) PLVM='1' ;;
+                    *LVM*) PLVM="1" ;;
                 esac
+                PROOTFS="ext4"
                 case "$new" in
-                    *BTRFS*) export ROOTFS='btrfs' ;;
+                    *BTRFS*) PROOTFS="btrfs" ;;
                 esac
                 PSWAPSIZE=$(calulate_swap_size ${PDRIVE})
                 new=$(dialog --no-shadow \
@@ -430,9 +436,15 @@ while true ; do
                   --title "Start installation"  --clear \
                   --yesno "Delete all partitions on drive(s):\n${PDRIVE}\nand start installation?" 8 40
                 if [ "$?" = "0" ] ; then
+                    export ROOTFS="$PROOTFS"
                     [ "$PNETIPSTATIC" = "0" ] && POPTIONS="$POPTIONS -d"
-                    [ "$PRAIDLEVEL" = "1" ] && POPTIONS="$POPTIONS -r"
-                    [ "$PLVM" = "1" ] && POPTIONS="$POPTIONS -L"
+                    [ -n "$PLVM" ] && POPTIONS="$POPTIONS -L"
+                    if [ -n "$PRAIDLEVEL" ] 
+                    then
+                        POPTIONS="$POPTIONS -r"
+                        # install mdadm for stop old raid disks                    
+                        apk add --quiet mdadm
+                    fi
                     PRINTK=$(cat /proc/sys/kernel/printk)
                     echo "0" >/proc/sys/kernel/printk
                     tempfile=/tmp/install.$$

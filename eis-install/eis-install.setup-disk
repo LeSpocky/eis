@@ -332,7 +332,7 @@ EOF
 	cp /etc/apk/keys/* "$mnt"/etc/apk/keys/
 
 	local apkflags="--initdb --update-cache --clean-protected"
-	local pkgs=$(grep -h -E -v -w "eis-install|sfdisk" "$mnt"/etc/apk/world \
+	local pkgs=$(grep -h -E -v -w "eis-install|dialog|sfdisk" "$mnt"/etc/apk/world \
 		"$mnt"/var/lib/apk/world 2>/dev/null)
 
 	pkgs="$pkgs acct linux-$KERNEL_FLAVOR bash dhcpcd nano openssh libcui fcron syslog-ng logrotate cuimenu-bin cuimenu"
