@@ -1,22 +1,25 @@
 # Contributor: Jens Vehlhaber <jens@eisfair.org>
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=webalizer
-pkgver=2.23
-pkgrel=2
+pkgver=2.23.08
+_pkgver="2.23-08"
+pkgrel=4
 pkgdesc="Webalizer"
 url="http://www.webalizer.org/"
 arch="all"
 license="GPL"
 depends=""
-depends_dev="db-dev gd-dev libpng-dev jpeg-dev geoip-dev"
+depends_dev="db-dev gd-dev libpng-dev geoip-dev zlib-dev bzip2-dev"
 makedepends="$depends_dev"
 install=""
-subpackages="$pkgname-doc"
+subpackages=""
 source="
-	ftp://ftp.mrunix.net/pub/webalizer/webalizer-2.23-08-src.tgz
+	saveas-ftp://ftp.mrunix.net/pub/webalizer/webalizer-$_pkgver-src.tar.bz2/webalizer-$pkgver.tar.bz2
 	${pkgname}-run"
 
-_builddir="${srcdir}/${pkgname}-${pkgver}-08"
+#	http://www.patrickfrei.ch/webalizer/rb30/webalizer-$_pkgver-RB30-patch.tar.gz
+
+_builddir="${srcdir}/${pkgname}-${_pkgver}"
 
 prepare() {
 	local i
@@ -26,20 +29,18 @@ prepare() {
 		*.patch) msg $i; patch -p1 -i "$srcdir"/$i || return 1;;
 		esac
 	done
+#	msg "webalizer-$_pkgver-RB30-patch"
+#	patch -p1 -i "$srcdir"/webalizer-$_pkgver-RB30-patch
 }
 
 build() {
 	cd "$_builddir"
-	./configure --prefix=/usr \
-		--bindir=/usr/bin \
-		--libdir=/usr/lib \
-		--with-piddir=/run \
-		--mandir=/usr/share/man \
+	./configure \
+		--prefix=/usr \
 		--sysconfdir=/etc/webalizer \
-		--includedir=/usr/include \
-		--enable-dns \
+		--datarootdir=/usr/share \
 		--enable-bz2 \
-		--enable-geoip  || return 1
+		--enable-geoip || return 1
 	make || return 1
 }
 
@@ -50,9 +51,9 @@ package() {
 		"$pkgdir"/usr/bin/${pkgname}-run || return 1
 }
 
-md5sums="00f1f18bd5ed462ea43bf98d867e7966  webalizer-2.23-08-src.tgz
+md5sums="d25a9715dcbfe67ddf86816c27fbda2b  webalizer-2.23.08.tar.bz2
 88381ec057afad46b7051062352c6b66  webalizer-run"
-sha256sums="edaddb5aa41cc4a081a1500e3fa96615d4b41bc12086bcedf9938018ce79ed8d  webalizer-2.23-08-src.tgz
+sha256sums="b37524fbd98e97052a80d59f75e69f857468752cf74cc0eb0972e5fab02eb6f7  webalizer-2.23.08.tar.bz2
 9e41f4988df1a5d1ff90044a2d4d784161da548f12543638f11799d1b7acb070  webalizer-run"
-sha512sums="219cae51d2e938e2d9327ce52c9c814e7436c821b05cb528dc88f548bdfbd7a6ad69c235b078d6af194c3a1d38029fde7dde9e8b81ad6fd93c236ca76a49811b  webalizer-2.23-08-src.tgz
+sha512sums="23fe6e3ef1c85aa527ffafef16c31c13ad8e1f9feb774557c07a5c8fd6c67986b98180ef16d6cebe62d59c5f7ca214b8292e94ce8f195fa0541de9c5438fb9bd  webalizer-2.23.08.tar.bz2
 e1a9a060890997ebcb173de5f9add821088d50af3fcd7af26bc9c43f1f9c62df02a79a7d2688e002dec3f3df4403e4a980a23e3ff813c832df3121d65c70222d  webalizer-run"
