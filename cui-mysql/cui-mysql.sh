@@ -32,29 +32,20 @@ fi
 #[ -z "$ncpu" ] && ncpu=1
 #ncpu=$(( $ncpu * 2 ))
 
-# ---- set to 32/64Bit/ARM -----------------------------------------------------
+# compatible options -----------------------------------------------------------
+if [ -e /etc/mysql/my.cnf ]
+then
+    innodb_data_file_path=$(grep "innodb_data_file_path" /etc/mysql/my.cnf 2>/dev/null)
+    innodb_log_file_size=$(grep "innodb_log_file_size" /etc/mysql/my.cnf 2>/dev/null)
+fi
 xarch=$(cat /etc/apk/arch)
 case "$xarch" in
     "x86_64")
-       thread_stack="256K"
-       innodb_data_file_path="ibdata1:128M;ibdata2:10M:autoextend"
-       innodb_log_file_size="64M" 
-       ;;
-    "x86")
-       thread_stack="192K"
-       innodb_data_file_path="ibdata1:64M;ibdata2:10M:autoextend"
-       innodb_log_file_size="32M"        
-       ;;
-    "armhf")
-       thread_stack="192K"
-       innodb_data_file_path="ibdata1:10M;ibdata2:10M:autoextend"
-       innodb_log_file_size="5M"
-       ;;   
+    	thread_stack="256K"
+    	;;
     *)
-       thread_stack="192K"
-       innodb_data_file_path="ibdata1:64M;ibdata2:10M:autoextend"
-       innodb_log_file_size="32M"       
-       ;;
+    	thread_stack="192K"
+    	;;
 esac
 
 # ---- set options for xx GB RAM -----------------------------------------------
@@ -348,8 +339,8 @@ myisam-recover-options      = BACKUP #repair mode, recommend BACKUP
 
 ## InnoDB Plugin Independent Settings
 innodb_data_home_dir        = /var/lib/mysql
-innodb_data_file_path       = $innodb_data_file_path
-innodb_log_file_size        = $innodb_log_file_size 
+$innodb_data_file_path
+$innodb_log_file_size
 innodb_log_files_in_group   = 2
 innodb_buffer_pool_size     = $innodb_buffer_pool_size
 innodb_additional_mem_pool_size = 4M  #global buffer
