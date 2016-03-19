@@ -35,8 +35,6 @@ packages_name=skeleton
 
     printvar "SKELETON_BIND"           "If set, then bind the SKELETON port only to ip-address."
     
-    printvar "SKELETON_LIST_DOT_FILES" "List files beginning with a dot ('.')"
-
     printvar "SKELETON_LOG_INTERVAL"   "logrotate interval"
 
     printvar "SKELETON_LOG_MAXCOUNT"   "max count of logfiles"
