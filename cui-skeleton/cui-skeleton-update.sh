@@ -1,31 +1,33 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Eisfair configuration parameter update script
-# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
-#----------------------------------------------------------------------------
+# Copyright (c) 2007 - 2016 the eisfair team, team(at)eisfair(dot)org
+# ----------------------------------------------------------------------------
 
-# name of the current package
+# Name of the current package
 # ---------------------------
-packages_name=skeleton
+packageName=skeleton
 
-# include libs for using
-# ----------------------
-. /var/install/include/configlib     # configlib from eisfair
+# Include used libs
+# -----------------
+. /var/install/include/configlib     # Configlib with helpers etc. pp.
 
-### -------------------------------------------------------------------------
-### read old configuration and rename old variables
-### -------------------------------------------------------------------------
-# set the defaults from default.d file
-. /etc/default.d/${packages_name}
+### --------------------------------------------------------------------------
+### Read current configuration
+### --------------------------------------------------------------------------
 
-. /etc/config.d/${packages_name}
+# Set the defaults from default.d file...
+. /etc/default.d/${packageName}
 
-### -------------------------------------------------------------------------
+# ... and replace them with configured ones if existing
+. /etc/config.d/${packageName}
+
+### --------------------------------------------------------------------------
 ### Write the new config
-### -------------------------------------------------------------------------
+### --------------------------------------------------------------------------
 (
-    #------------------------------------------------------------------------
-    printgpl --conf "$packages_name"
+    # ------------------------------------------------------------------------
+    printgpl --conf "$packageName"
 
     printgroup "General settings"
 
@@ -35,13 +37,14 @@ packages_name=skeleton
 
     printvar "SKELETON_BIND"           "If set, then bind the SKELETON port only to ip-address."
     
-    printvar "SKELETON_LOG_INTERVAL"   "logrotate interval"
+    printvar "SKELETON_LOG_INTERVAL"   "Logrotate interval"
 
-    printvar "SKELETON_LOG_MAXCOUNT"   "max count of logfiles"
+    printvar "SKELETON_LOG_MAXCOUNT"   "Max count of logfiles"
 
-) > /etc/config.d/${packages_name}
-# Set rights
-chmod 0644  /etc/config.d/${packages_name}
-chown root  /etc/config.d/${packages_name}
+) > /etc/config.d/${packageName}
+
+# Set proper permissions
+chmod 0644  /etc/config.d/${packageName}
+chown root  /etc/config.d/${packageName}
 
 exit 0
