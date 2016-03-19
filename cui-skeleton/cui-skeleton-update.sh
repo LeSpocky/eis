@@ -29,7 +29,7 @@ packages_name=skeleton
 
     printgroup "General settings"
 
-    printvar "START_SKELETON"          "Start ftp service yes or no"
+    printvar "START_SKELETON"          "Start service yes or no"
 
     printvar "SKELETON_PORT"           "Listen for an incoming connection. Default 21."
 

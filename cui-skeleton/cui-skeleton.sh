@@ -8,65 +8,38 @@
 #exec 2> /tmp/skeleton-trace$$.log
 #set -x
 
+# include eisfair config file
 . /etc/config.d/skeleton
 
 #----------------------------------------------------------------------------------------
-# creating/edit config file
+# creating/edit config file - use one of the examples 1...3
 #----------------------------------------------------------------------------------------
-enbind="#"
 
-[ -n "$FTP_PORT" ] && enbind=""
+# 1. example edit/patch exists config file (better) -------------------------------------
+sed -i "s|^skeleton_data_port=.*|skeleton_data_port=${SKELETON_PORT}|" /etc/skeleton/skeleton.conf
+sed -i "s|^listen_address=.*|listen_address=${SKELETON_BIND}|"         /etc/skeleton/skeleton.conf
+sed -i "s|^syslog_enable=.*|syslog_enable=YES|"                        /etc/skeleton/skeleton.conf
 
+
+# 2. example remove line if exist and append new value ----------------------------------
+# port
+sed -i '/^skeleton_data_port/d'               /etc/skeleton/skeleton.conf
+echo "skeleton_data_port=${SKELETON_PORT}" >> /etc/skeleton/skeleton.conf
+# address
+sed -i '/^listen_address=/d'                  /etc/skeleton/skeleton.conf
+echo "listen_address=${SKELETON_BIND}"     >> /etc/skeleton/skeleton.conf
+# syslog
+sed -i '/^syslog_enable=/d'                   /etc/skeleton/skeleton.conf
+echo "syslog_enable=YES"                   >> /etc/skeleton/skeleton.conf
+
+
+# 3. example write new config (overwrite) -----------------------------------------------
 cat > /etc/skeleton/skeleton.conf <<EOF
-listen=YES
-${enbind}ftp_data_port=${FTP_PORT}
-listen_address=${FTP_BIND}
-seccomp_sandbox=NO
-
-#-------------------------------------------------------------------------------
-anonymous_enable=NO
-local_enable=YES
-guest_enable=YES
-chroot_local_user=YES
-virtual_use_local_privs=YES
-hide_ids=YES
-allow_writeable_chroot=YES
-user_config_dir=/etc/skeleton/users
-chroot_list_enable=YES
-chroot_list_file=/etc/skeleton/chroot.list
-dirmessage_enable=YES
-force_dot_files=$FTP_LIST_DOT_FILES
-write_enable=YES
-local_umask=022
-chmod_enable=YES
-chown_uploads=YES
-chown_username=apache
-
-pam_service_name=skeleton
-ftpd_banner="Welcome to eisfair-ng vsFTPd"
-
-#-------------------------------------------------------------------------------
-# logging:
+skeleton_data_port=${SKELETON_PORT}
+listen_address=${SKELETON_BIND}
 syslog_enable=YES
-log_ftp_protocol=YES
-xferlog_enable=YES
-xferlog_std_format=YES
-xferlog_file=/var/log/ftp-xfer.log
-setproctitle_enable=YES
-
-EOF
-
-[ -f /etc/skeleton/passwd ] || touch /etc/skeleton/passwd
-[ -f /etc/skeleton/chroot.list ] || touch /etc/skeleton/chroot.list
-
-#----------------------------------------------------------------------------------------
-# create pam.d configuration for virtual user
-#----------------------------------------------------------------------------------------
-cat > /etc/pam.d/skeleton <<EOF
-# basic PAM configuration for skeleton.
-auth required pam_pwdfile.so pwdfile /etc/skeleton/passwd
-account required pam_permit.so
-
+# all required values of configuration:
+# ...
 EOF
 
 
@@ -74,10 +47,10 @@ EOF
 # setup logrotate
 #----------------------------------------------------------------------------------------
 cat > /etc/logrotate.d/skeleton <<EOF
-/var/log/ftp*log {
-    ${FTP_LOG_INTERVAL}
+/var/log/skeleton*log {
+    ${SKELETON_LOG_INTERVAL}
     missingok
-	rotate ${FTP_LOG_MAXCOUNT}
+	rotate ${SKELETON_LOG_MAXCOUNT}
     notifempty
     sharedscripts
     delaycompress
@@ -87,4 +60,5 @@ cat > /etc/logrotate.d/skeleton <<EOF
 }
 EOF
 
+#----------------------------------------------------------------------------------------
 exit 0

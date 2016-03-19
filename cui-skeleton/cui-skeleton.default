@@ -12,6 +12,5 @@ SKELETON_PORT='21'                    # Listen for an incoming connection.
                                       # Default 21.
 SKELETON_BIND=''                      # If set, then bind the SKELETON port only to
                                       # ip-address.
-SKELETON_LIST_DOT_FILES='no'          # List files beginning with a dot ('.')
 SKELETON_LOG_INTERVAL="weekly"        # logrotate interval
 SKELETON_LOG_MAXCOUNT="4"             # max count of logfiles
