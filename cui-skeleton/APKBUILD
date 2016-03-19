@@ -24,16 +24,26 @@ source="${pkgname}.default
 _builddir=
 
 prepare() {
+	local i
 	cd "$_builddir"
+	# If there are patch files, apply them
+#	for i in ${source} ; do
+#		case ${i} in
+#		*.patch) msg ${i}; patch -p1 -i "$srcdir"/${i} || return 1;;
+#		esac
+#	done
 }
 
 build() {
 	cd "$_builddir"
+	# This function is usually empty on CUI-* packages as there is nothing to
+	# compile and install. On non CUI-* packages you will find all the
+	# 'make && make install' stuff here.
 }
 
 package() {
 	cd "$_builddir"
-
+	# Install all the files on the proper locations
 	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/skeleton || return 1
 	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/skeleton || return 1
 	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/skeleton || return 1
