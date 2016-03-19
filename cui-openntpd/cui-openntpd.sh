@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------------
 # /var/install/config.d/cui-openntpd.sh - configuration generator script
 #
-# Copyright (c) 2001-2015 The eisfair Team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2016 The eisfair Team, team(at)eisfair(dot)org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

@@ -3,7 +3,7 @@
 # /var/install/config.d/cui-openntpd-update.sh - update or generate a new ntp
 #                                                configuration
 #
-# Copyright (c) 2001-2015 The eisfair Team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2016 The eisfair Team, team(at)eisfair(dot)org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,8 +52,8 @@ makeConfigFile () {
 
     {
         # -------------------------------------------------------------------
-        printgpl "ntp" "23.10.2015" "Y. Schumann" "Copyright (c) 2001-2015 The eisfair Team, team(at)eisfair(dot)org"
-        printgroup "Based on the eisfair-1 package by Jürgen Edner"
+        printgpl "ntp" "2016-03-19" "Y. Schumann" "Copyright (c) 2001-2016 The eisfair Team, team(at)eisfair(dot)org"
+        printgroup "Based on the eisfair-1 package by Juergen Edner"
         # -------------------------------------------------------------------
         printgroup "NTP configuration"
         # -------------------------------------------------------------------
