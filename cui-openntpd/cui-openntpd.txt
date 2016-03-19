@@ -1,19 +1,13 @@
 
 
-                                 Das NTP-Paket
-
-   Dieses Paket wurde initial von Albert Steiner (E-MAIL
-   [1]albert.steiner.dw@gmx.at) zusammengestellt und spaeter von Juergen
-   Edner (E-MAIL [2]juergen@eisfair.org) ueberarbeitet.
-
-                                 Die Einleitung
+                               Das NTP-Paket
 
    NTP ist das Network Time Protocol, der Server funktioniert damit auch
    als NTP Server/Client d.h. man kann mit Hilfe von
    NTP-Server/Clientprogrammen den Linux Rechner als NTP Server/Client im
    LAN verwenden.
 
-                                 Die Funktionen
+                                 Funktionen
 
    Das NTP-Paket besteht aus folgenden Komponenten:
 
@@ -23,12 +17,12 @@
        zur Konfiguration der seriellen Schnittstelle benoetigt.
        ([4]http://power.sourceforge.net/)
 
-                              Die Voraussetzungen
+                              Voraussetzungen
 
    Dieses Paket benoetigt zur korrekten Funktion ein installiertes
    Inet-Paket.
 
-                                Die Installation
+                                Installation
 
    Das NTP-Paket wird ueber das Setup-Menue installiert. Wird eine aeltere
    Paketversion vorgefunden, so wird deren Konfiguration gesichert und das
@@ -61,7 +55,7 @@
    weitere Eingaben erwarten. Aus diesem Grund wird auf deren Funktion
    nicht weiter eingegangen.
 
-Die Hardware
+                                Hardware
 
    Fuer den Betrieb braucht man nicht zwingend einen eigenen Empfaenger!
 
@@ -115,7 +109,7 @@ Die Hardware
           diesen ein oder zwei Servern. (alle haben identische Zeit, ggf.
           alle die 'falsche'!)
 
-Die Software
+                                Software
 
    NTP wurde mit allen moeglichen Referenzuhren compiliert!
 
@@ -207,7 +201,7 @@ Die Software
      * Type 43 RIPE NCC interface for Trimble Palisade
      * Type 44 NeoClock4X - DCF77 / TDF serial line
 
-                        Die Aenderung der Konfiguration
+                           Aenderung der Konfiguration
 
    Die Konfiguration kann ueber den Menuepunkt 'Edit configuration'
    geaendert werden. Standardmaessig wird der Editor aufgerufen, der in
@@ -216,13 +210,13 @@ Die Software
    Konfiguration aktiviert werden soll. Wird dies bestaetigt, werden ueber
    ein Skript die Anpassungen umgehend wirksam gemacht
 
-                            Die Konfigurationsdatei
+                              Konfigurationsdatei
 
    In der Konfigurationsdatei, welche ueber das Menue zugaenglich ist,
    sind folgende Parameter vorhanden; wer sie von Hand editieren will
    findet die Konfigurationsdatei unter /etc/config.d/ntp.
 
-                                 Die Parameter
+                                   Parameter
 
    START_NTP
           Ueber diesen Parameter wird mit den Werten yes bzw. no
@@ -458,14 +452,14 @@ RADMLS1248124P124812P1248121241248112481248P
 
    Wie man hier sehr schoen sieht, hat es zwei Minuten gedauert.
 
-                   Den Zeitempfang per Netzwerk ueberpruefen
+                     Zeitempfang per Netzwerk ueberpruefen
 
    Der Benutzer root kann den Status mit dem Kommando 'ntpq -p'
    ueberpruefen. Aenderungen erfolgen jedoch langsam. Das Intervall legt
    der ntpd selbst anhand der Zeitdifferenz etc. fest. Einige Minuten
    Geduld sind hier erforderlich.
 
-                           Die NTP-Empfangsqualitaet
+                            NTP-Empfangsqualitaet
 
    Hinweis
    Diese Informationen erhalten Sie wenn Sie Im Menue Info anwaehlen
@@ -521,7 +515,7 @@ remote         refid      st t when poll reach  delay  offset  jitter
 
                         Windows als NTP Client / Server
 
-Allgemeines
+                               Allgemeines
 
    Will mann die Zeit seines Windows-PCs mit einem zentralen Zeitserver
    synchronisieren, so kann man entweder auf mitgelieferte Programme des
@@ -536,12 +530,12 @@ Allgemeines
 
    http://www.meinberg.de/german/sw/time-server-monitor.htm
 
-Windows NT
+                                Windows NT
 
    Dieser Dienst ist auch fuer Windows NT erhaeltlich und ersetzt den
    alten Zeitdienst aus dem NT Resource-Kit
 
-Windows 2000
+                               Windows 2000
 
    Windows 2000 bietet mit dem integrierten Dienst 'w32time.exe' die
    Moeglichkeit als NTP Server oder Client zu fungieren. Zur Aktivierung
@@ -596,17 +590,10 @@ HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\Parameters.
    mit 'w32tm -once' eine einmalige Synchronisation mit detaillierter
    Anzeige ausgeloest werden.
 
-Windows XP
+                                  Windows XP
 
    Windows XP kann bereits selbstaendig einen NTP Server abfragen und die
    Zeit angleichen. Die Einstellungen koennen in der Systemsteuerung unter
    'Datum/Uhrzeit' vorgenommen werden. Damit Windows XP auch als
    NTP-Server fungiert, ist in der Registry, wie auch bei Windows 2000,
    folgender Eintrag noetig: 'LocalNTP' = '1'.
-     __________________________________________________________________
-
-
-
-
-    Juergen Edner 2012-05-23
-
