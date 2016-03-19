@@ -1,0 +1,10 @@
+#!/bin/sh
+
+/var/install/bin/del-menu setup.services.menu setup.services.skeleton.menu
+/var/install/bin/del-menu setup.system.logfileview.menu "/var/log/ftp.log"
+rm -f /etc/backup.d/skeleton.*
+rm -f /etc/default.d/skeleton
+rm -f /etc/check.d/skeleton
+rm -f /etc/check.d/skeleton.exp
+
+exit 0

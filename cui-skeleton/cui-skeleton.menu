@@ -1,0 +1,9 @@
+<!-- /var/install/menu/setup.services.skeleton.menu -->
+<title>Administration of Skeleton</title>
+<package>skeleton</package>
+<doc file="skeleton.txt">Read Documentation</doc>
+<edit>Edit Configuration</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
+<init task="status">Status</init>
+<init task="start">Start</init>
+<init task="stop">Stop</init>

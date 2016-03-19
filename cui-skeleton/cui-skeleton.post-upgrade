@@ -1,0 +1,3 @@
+#!/bin/sh
+[ -f /etc/config.d/skeleton ] && /var/install/config.d/skeleton-update.sh
+exit 0

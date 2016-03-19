@@ -1,0 +1,7 @@
+# Variable                             OPT_VARIABLE                  VARIABLE_N                   VALUE
+START_SKELETON                         -                             -                            YESNO
+SKELETON_PORT                          START_SKELETON                -                            PORT
+SKELETON_BIND                          START_SKELETON                -                            EIPADDRESSES
+SKELETON_LIST_DOT_FILES                START_SKELETON                -                            YESNO
+SKELETON_LOG_INTERVAL                  START_SKELETON                -                            LOG_INTERVAL
+SKELETON_LOG_MAXCOUNT                  START_SKELETON                -                            NUMERIC

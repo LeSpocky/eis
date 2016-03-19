@@ -1,0 +1,30 @@
+
+   START_SKELETON
+          Legt fest, ob der SKELETON gestartet wird.
+
+          Gueltige Werte: yes,no
+
+   FPT_PORT
+          Definiert den Port, auf den der SKELETON-Server 'lauschen' soll.
+
+          Default: 21
+
+   SKELETON_BIND
+          Binde den SKELETON-Service an eine bestimmte IP-Adresse.
+
+          Default:
+          
+   SKELETON_LIST_DOT_FILES
+          Bei Angabe von 'yes' werden versteckte Dateien, die mit einem 
+          Punkt ('.') beginnen, immer angezeigt.
+
+          Default: no          
+
+   SKELETON_LOG_INTERVAL
+          Wann soll die Log-Datei durch eine leere Datei ersetzt werden.
+          Damit beeinflusst man die Groesse der Log-Datei.
+
+          Default: weekly
+
+   SKELETON_LOG_MAXCOUNT
+          Maximale Anzahl der gespeicherten Log-Dateien.

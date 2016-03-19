@@ -1,0 +1,6 @@
+#!/bin/sh
+# remove default.d und check.d files
+rm -f /etc/default.d/skeleton
+rm -f /etc/check.d/skeleton
+rm -f /etc/check.d/skeleton.exp
+exit 0

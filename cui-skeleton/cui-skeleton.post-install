@@ -1,0 +1,7 @@
+#!/bin/sh
+
+/var/install/bin/add-menu setup.services.menu setup.services.skeleton.menu "Skeleton Administration"
+/var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/skeleton.log" "Show Skeleton Log"
+
+[ -e /etc/config.d/skeleton ] || cp /etc/default.d/skeleton /etc/config.d/
+exit 0

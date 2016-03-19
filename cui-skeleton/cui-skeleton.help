@@ -1,0 +1,42 @@
+<help name="START_SKELETON">
+Start SKELETON server 'yes' or 'no'<br/>
+<br/>
+Default: START_SKELETON='yes'
+</help>
+
+<help name="SKELETON_PORT">
+Listen for an incoming connection on port SKELETON_PORT.<br/>
+<br/>
+Default: SKELETON_PORT='21'
+</help>
+
+<help name="SKELETON_BIND">
+If set, then bind the SKELETON port only to ip-address.<br/>
+<br/>
+Default: SKELETON_BIND=''<br/>
+Example: SKELETON_BIND='192.168.1.1'<br/>
+</help>
+
+<help name="SKELETON_NAT_MODE">
+enable support for NAT 'yes' or 'no'<br/>
+<br/>
+Default: SKELETON_NAT_MODE='no'
+</help>
+
+<help name="SKELETON_LIST_DOT_FILES">
+List files beginning with a dot ('.') even when the client doesn't append the '-a' option to the list command.<br/>
+This is a workaround for badly configured SKELETON clients.<br/>
+<br/>
+Default: SKELETON_LIST_DOT_FILES='no'
+</help>
+
+<help name="SKELETON_LOG_INTERVAL">
+Logrotate interval: daily, weekly, monthly.<br/>
+How often shall logrotate be executed?
+</help>
+
+<help name="SKELETON_LOG_MAXCOUNT">
+Number of log files to save.<br/>
+This is the number of log file archives that are kept
+on the system by logrotate, before they are outdated and removed.
+</help>
