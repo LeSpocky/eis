@@ -1,4 +1,4 @@
-<help name="START_DHCPD">
+<help name="START_DHCP">
     Setzen Sie diesen Wert auf 'yes' um den DHCP Server zu aktivieren
     und IP-Adressen zu vergeben.
 <br/><br/>
@@ -12,7 +12,7 @@
     Netzen.
 <br/><br/>
     Beispiel: DHCP_NETWORK_GATE='172.30.50.1'
-</help
+</help>
 
 <help name="DHCP_DYNAMIC_N">
     Hier wird die Anzahl der Bereiche von IP-Adressen angegeben, die

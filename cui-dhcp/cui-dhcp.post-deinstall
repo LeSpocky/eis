@@ -1,6 +1,6 @@
 #!/bin/sh
 
-/var/install/bin/del-menu setup.services.menu setup.services.dhcp.menu
+/var/install/bin/del-menu setup.services.menu setup.services.dhcpd.menu
 rm -f /etc/backup.d/dhcp.*
 rm -f /etc/default.d/dhcp
 rm -f /etc/check.d/dhcp

@@ -1,7 +1,6 @@
 #!/bin/sh
 
-/var/install/bin/add-menu setup.services.menu setup.services.dhcp.menu "DHCP Administration"
-#/var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/skeleton.log" "Show Skeleton Log"
+/var/install/bin/add-menu setup.services.menu setup.services.dhcpd.menu "DHCP Administration"
 
-[ -e /etc/config.d/dhcp ] || cp /etc/default.d/dhcp /etc/config.d/
+[ -e /etc/config.d/dhcpd ] || cp /etc/default.d/dhcpd /etc/config.d/
 exit 0

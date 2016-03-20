@@ -6,7 +6,7 @@
 
 # name of the current package
 # ---------------------------
-packages_name="dhcp"
+packages_name="dhcpd"
 
 # include libs for using
 # ----------------------
@@ -41,7 +41,7 @@ packages_name="dhcp"
     do
         printvar 'DHCP_DYNAMIC_'$in'_ACTIVE'     "use this range to provide dhcp?"
         printvar 'DHCP_DYNAMIC_'$in'_RANGE'      "ip range for dhcp"
-        in=`expr ${in} + 1`
+        in=$((in+1))
     done
     
     #------------------------------------------------------------------------------
@@ -49,21 +49,21 @@ packages_name="dhcp"
     #------------------------------------------------------------------------------
     
     in="1"
-    while [ $in -le 0$DHCPD_CLIENT_N ]
+    while [ $in -le 0$DHCP_CLIENT_N ]
     do
-        printvar 'DHCPD_CLIENT_'$in'_NAME'       "hostname"
-        printvar 'DHCPD_CLIENT_'$in'_ACTIVE'     "is this client available?"
-        printvar 'DHCPD_CLIENT_'$in'_MAC'        "mac address"
-        printvar 'DHCPD_CLIENT_'$in'_IPV4'       "ipv4 address"
-        printvar 'DHCPD_CLIENT_'$in'_IPV6'       "ipv6 address"
-        printvar 'DHCPD_CLIENT_'$in'_NETBOOT'    "filename for netboot     (optional)"
-        printvar 'DHCPD_CLIENT_'$in'_PXE_KERNEL' "kernel for pxelinux boot (optional)" 
-        printvar 'DHCPD_CLIENT_'$in'_PXE_INITRD' "initrd for pxelinux boot (optional)"
-        printvar 'DHCPD_CLIENT_'$in'_PXE_ROOTFS' "rootfs for pxelinux boot (optional)"
-        printvar 'DHCPD_CLIENT_'$in'_PXE_APPEND' "additional parameters    (optional)"
+        printvar 'DHCP_CLIENT_'$in'_NAME'       "hostname"
+        printvar 'DHCP_CLIENT_'$in'_ACTIVE'     "is this client available?"
+        printvar 'DHCP_CLIENT_'$in'_MAC'        "mac address"
+        printvar 'DHCP_CLIENT_'$in'_IPV4'       "ipv4 address"
+        printvar 'DHCP_CLIENT_'$in'_IPV6'       "ipv6 address"
+        printvar 'DHCP_CLIENT_'$in'_NETBOOT'    "filename for netboot     (optional)"
+        printvar 'DHCP_CLIENT_'$in'_PXE_KERNEL' "kernel for pxelinux boot (optional)" 
+        printvar 'DHCP_CLIENT_'$in'_PXE_INITRD' "initrd for pxelinux boot (optional)"
+        printvar 'DHCP_CLIENT_'$in'_PXE_ROOTFS' "rootfs for pxelinux boot (optional)"
+        printvar 'DHCP_CLIENT_'$in'_PXE_APPEND' "additional parameters    (optional)"
         printvar ""                              "for pxelinux boot"
         echo
-        in=`expr ${in} + 1`
+        in=$((in+1))
     done    
     
 

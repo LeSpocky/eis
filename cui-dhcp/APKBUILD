@@ -35,44 +35,44 @@ build() {
 
 package() {
 	cd "$_builddir"
-	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/dhcp || return 1
-	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/dhcp.exp || return 1
-	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/dhcp || return 1
-	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/dhcp || return 1
-	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/dhcp.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/dhcp-update.sh || return 1
-	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.dhcp.menu || return 1	
-	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/dhcp/dhcp.txt || return 1
-	install -D -m644 ${srcdir}/${pkgname}.txt.toc       ${pkgdir}/usr/share/doc/dhcp/dhcp.toc || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/dhcpd || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/dhcpd.exp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/dhcpd || return 1
+	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/dhcpd || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/dhcpd.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/dhcpd-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.dhcpd.menu || return 1	
+	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/dhcp/dhcpd.txt || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt.toc       ${pkgdir}/usr/share/doc/dhcp/dhcpd.toc || return 1
 }
 
 md5sums="481ff9d61e57bae37ba2b26d23f7bfac  cui-dhcp.default
 f72f28ebc286edd99c58c0e570ece234  cui-dhcp.check
 9dfbb9e8d2845395e11852a29e98a467  cui-dhcp.check.exp
 481ff9d61e57bae37ba2b26d23f7bfac  cui-dhcp.default
-2720cd8fd0f1f8a97a4d727b0ec97983  cui-dhcp.help
-71114fddfdc0024b99fc4895b3b802be  cui-dhcp.sh
-2b6a83017599ef6457b744b447d0e758  cui-dhcp-update.sh
-f866c0b16acdcba352c075be6563d521  cui-dhcp.menu
+71153f25d7a3c578eee105a5456f4e24  cui-dhcp.help
+70f8ec302b4c7557dd0724f8b470abfb  cui-dhcp.sh
+5912fb9fee61ac7411494eb660181f5a  cui-dhcp-update.sh
+f2d94b1b6f94d8ef8c42178e153129b0  cui-dhcp.menu
 ce1973798b17b70672d6943d5c44bd55  cui-dhcp.txt
 2ad80a029a463049c217e6826685c7ce  cui-dhcp.txt.toc"
 sha256sums="0dd107efdf8919d45092386c814ab75a08d0f3ac69e541a2a000b6faaec34069  cui-dhcp.default
 1ce7088f8d9ebe7e4d86f2cdc80aad2ed4ff0b41e41f5cae9f2f5f1e5a8e5419  cui-dhcp.check
 463ade2f5a6f826bbfa9f292969509c6349a2f8324581ee8bccb349a2eb8f717  cui-dhcp.check.exp
 0dd107efdf8919d45092386c814ab75a08d0f3ac69e541a2a000b6faaec34069  cui-dhcp.default
-59f52ec73c9b3f895b0ff289aef3e64d087d1b6c628226b672d19ee127d9c3d6  cui-dhcp.help
-6a0ef45b80bf950e21aaae255185b693cddc0d1769101308f9ad85fca4dabeec  cui-dhcp.sh
-3ae701ebac59b11b41d7f7482a4c7dbc4a170983de8ca551ed8aad420344dde3  cui-dhcp-update.sh
-c3f2c5bc683b37fba0643c2f1173819bef21d4a487804e77f4a0f36174749a77  cui-dhcp.menu
+f49ae0d339c0ea6d69f68d596b710358b7d86425e9507d7cc55cf933d2d53bfd  cui-dhcp.help
+924ba79f2f85e70f11d62634b2425ef80347499589e417ad6b4dfda26bac46be  cui-dhcp.sh
+eee0b359c74201d69f2a9b693d4c4fbf739cd673a5b9bd5ca55f4d70fb26d07e  cui-dhcp-update.sh
+6d5e964417130a4c33205168fffa118fd2a437a0824164f47d0a707c22d7fdc8  cui-dhcp.menu
 98486c78b02c86912bf8ee21820f8885fecb8e92d6792c9df1622a94744c8511  cui-dhcp.txt
 4d577311addcd83065eb162ea72044d25b84452cdb6cf56f2f7e1f81446c6485  cui-dhcp.txt.toc"
 sha512sums="c54f9cff42982005c5750ab800298215fd7f5379298957d49f05ebf8a926c1e56c19e9dcda756b59739499cd03ca7037805d84ff3e5cd8a8f11a3ba28df29b09  cui-dhcp.default
 6b639b559bdf07bbfe1ee0936a0ddb9aa655e2ef501ff34a8c5a105f518d638ebeedd82d36761e0715a397b7e0c89abd22aa7efd7026c789b3af4ed6408b96c6  cui-dhcp.check
 07efebcfe6b805fce90c763f49b4950bec02c311bbc40f2cb1df90ab7c543047e1f313641d9452494c81df4b5324b20cff573078392871813b0ce02dbd7d4a04  cui-dhcp.check.exp
 c54f9cff42982005c5750ab800298215fd7f5379298957d49f05ebf8a926c1e56c19e9dcda756b59739499cd03ca7037805d84ff3e5cd8a8f11a3ba28df29b09  cui-dhcp.default
-13a81d235c829bc7ce8134042b7cbcaf49d31b56f02d372ee2018f20d10f7a66ab5f6999eedf6bfb812dafdfb343b26fbc80a6a6be4116a3c0c3c175b7a01786  cui-dhcp.help
-3f1ab63786c0f4a3437d473d2c5f0f44d01295af0b36e7b32e4d9c5dcefb5be0fb164846331023f5d122b60a8f4e9549aa99d7c06444c1c5eee6c5f3bc167fb7  cui-dhcp.sh
-e57bf20cf7e730bbde2d8507a5b8730b99ab234bea36aa27fe06a6c274319551963bd6562b0e04f0a2429998914e3652450b960aed4c1dbd75db9310853ffd24  cui-dhcp-update.sh
-edcb52b24e06a1660e1894526e43f2f63b745660fce425e334986ba53c3d7ce809d8753b70a8c5fca545c477e2055d92be470d67e4ba48f7f95a98ee526841e5  cui-dhcp.menu
+d7752b6f2f5b6677e79e89ecaf153c008ead8df26141e3b97e6484515d4bf47360ad45ffe8270d27273060e57e17ae61503edfd3f909dd244f2b875cbf26e690  cui-dhcp.help
+f6450ce2522190cfb17cf62e000b659d2b81515aa7d551dd67e00734f1731adab4aad0381ea94fd6261f08aa9c079873bbed5019a5be7cc5d95dbf5229751862  cui-dhcp.sh
+ea38a49f7a6fa053c4af439c2c539083eddc2399c0636508061259a8bebf235c65ff1c5d90b16998aa2276e9c64c87eb676a8b20a186515b9035dbaa102bf74d  cui-dhcp-update.sh
+02ca461d023843025a7e9a6aaf4b50404ab9456e9f8e1776ec6bc426aeb9c0a04bd4cfc26b1c62ca2a8598aeaaa268290cada0b86f8aac4cf6193349e54f0879  cui-dhcp.menu
 b251204d18507d27c9d52f58e7fd2157d0b1ecc3b7aaebd032129c271f86cbc8d8f004700b6fd335af7f6b1b8cc1dbd94dd5c589676610109de2a1969552648a  cui-dhcp.txt
 77626bd14f5e081f482f6d20a6891a2f15807434fa5d1b6bb6396c9990d1cdc6bbdc27e8c9fb0f619341f346b0f00f26a9ec6f18286b46dde992aaf605f4ee22  cui-dhcp.txt.toc"

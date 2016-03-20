@@ -1,6 +1,6 @@
-<!-- /var/install/menu/setup.service.dhcp.menu -->
+<!-- /var/install/menu/setup.service.dhcpd.menu -->
 <!-- Creation:     2015-08-22 -->
-<package>dhcp</package>
+<package>dhcpd</package>
 <title>DHCP Server administration</title>
 <doc>View documentation</doc>
 <edit>Edit configuration</edit>
