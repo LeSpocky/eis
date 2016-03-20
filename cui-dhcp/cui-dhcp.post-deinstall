@@ -1,9 +1,9 @@
 #!/bin/sh
 
 /var/install/bin/del-menu setup.services.menu setup.services.dhcpd.menu
-rm -f /etc/backup.d/dhcp.*
-rm -f /etc/default.d/dhcp
-rm -f /etc/check.d/dhcp
-rm -f /etc/check.d/dhcp.exp
+rm -f /etc/backup.d/dhcpd.*
+rm -f /etc/default.d/dhcpd
+rm -f /etc/check.d/dhcpd
+rm -f /etc/check.d/dhcpd.exp
 
 exit 0
