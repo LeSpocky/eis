@@ -138,7 +138,7 @@ create_dir_access() {
                     # build an htdigest appropriate line, and tack it onto the file
                     echo "${user}:${auth_name}:${htdigest_hash:0:32}" >> /etc/apache2/passwd/passwords.${vhostnr}-${idx}
                 fi
-                idx2=`expr $idx2 + 1`
+                idx2=$((idx2+1))
             done
             chown -R apache:apache /etc/apache2/passwd
             chmod 700 /etc/apache2/passwd
@@ -550,8 +550,8 @@ if [ "$APACHE2_SSL" = "yes" ] ; then
         echo "    </Directory>"
         echo "    SSLEngine On"
         echo "    SSLCipherSuite ALL:!ADH:!EXP56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL"
-        echo "    SSLCertificateFile /etc/ssl/certs/apache.pem"
-        echo "    SSLCertificateKeyFile /etc/ssl/private/apache.key"
+        echo "    SSLCertificateFile /etc/ssl/apache2/server.pem"
+        echo "    SSLCertificateKeyFile /etc/ssl/apache2/server.key"
         echo '    <Files ~ "\.(pl|cgi|shtml|phtml|php?)$">'
         echo "        SSLOptions +StdEnvVars"
         echo "    </Files>"
@@ -640,14 +640,14 @@ do
     echo "</VirtualHost>"
 
     ### SSL VIRTUALHOST
-    [ -z "$sslcertname" ] && sslcertname="apache"
+    [ -z "$sslcertname" ] && sslcertname="server"
 
     if [ "$APACHE2_SSL" = "yes" -a "$ssl" = "yes" ] ; then
         echo "<VirtualHost ${ip}:${sslport} >"
         echo "    SSLEngine On"
         echo "    SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL"
-        echo "    SSLCertificateFile /etc/ssl/certs/${sslcertname}.pem"
-        echo "    SSLCertificateKeyFile /etc/ssl/private/${sslcertname}.key"
+        echo "    SSLCertificateFile /etc/ssl/apache2/${sslcertname}.pem"
+        echo "    SSLCertificateKeyFile /etc/ssl/apache2/${sslcertname}.key"
         echo '    <Files ~ "\.(pl|cgi|shtml|phtml|php|php?)$">'
         echo "        SSLOptions +StdEnvVars"
         echo "    </Files>"
