@@ -1,7 +1,7 @@
 #!/bin/sh
 #-------------------------------------------------------------------------------
 # Eisfair configuration generator script
-# Copyright (c) 2007 - 2015 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2007 - 2016 the eisfair team, team(at)eisfair(dot)org
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -23,9 +23,9 @@ servermask=="${serverip_mask#* }"
 serverbrc=$(/var/install/bin/netcalc broadcast ${serverip_mask})
 
 
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # creating/edit config file
-#-------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 idx=1
 {
     echo "#----------------------------------------------------------------------"
@@ -44,8 +44,8 @@ idx=1
     echo "  {"
     while [ $idx -le 0$DHCP_DYNAMIC_N ]
     do
-      eval range_en='$DHCP_DYNAMIC_'$idx'_ACTIVE'
-      if [ "$range_en" = "yes" ]
+      eval tmp='$DHCP_DYNAMIC_'$idx'_ACTIVE'
+      if [ "$tmp" = "yes" ]
       then
         eval range_ip='$DHCP_DYNAMIC_'$idx'_RANGE'
         echo "    range $range_ip ;"
@@ -53,6 +53,25 @@ idx=1
       idx=$((idx+1))
     done    
     echo "  }"
+    echo ""
+    idx=1
+    while [ $idx -le 0$DHCP_CLIENT_N ]
+    do
+      eval tmp='$DHCP_CLIENT_'$idx'_ACTIVE'
+      if [ "tmp" = "yes" ]
+      then
+        eval client_name='$DHCP_CLIENT_'$idx'_NAME'
+        echo "host $client_name {"
+        eval tmp='$DHCP_CLIENT_'$idx'_MAC'
+        echo "    hardware ethernet $tmp ;"
+        eval tmp='$DHCP_CLIENT_'$idx'_IPV4'
+        echo "    fixed-address $tmp ;"
+        eval tmp='$DHCP_CLIENT_'$idx'_IPV6'        
+        [ -n "$tmp" ] && echo "    fixed-address6 $tmp ;"
+        echo "    option host-name \"$client_name\";"
+        echo "}"
+      fi
+    done
 } > /etc/dhcp/dhcpd.conf
 
 # Set rights for configuration file
@@ -61,5 +80,5 @@ chmod 0644 /etc/dhcp/dhcp.conf
 chown root /etc/dhcp/dhcp.conf
 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 exit 0

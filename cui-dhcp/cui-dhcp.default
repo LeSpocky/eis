@@ -1,6 +1,6 @@
 #------------------------------------------------------------------------------
 # /etc/config.d/dhcp - configuration file for DHCP service
-# Copyright (c) 2001-2015 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2016 the eisfair team, team(at)eisfair(dot)org
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
@@ -8,6 +8,8 @@
 #------------------------------------------------------------------------------
 
 START_DHCP='yes'                                      # Use: yes or no
+
+DHCP_NETWORK_GATE='172.30.0.1'                        # Default gateway
 
 DHCP_DYNAMIC_N='2'                                    # number of local dynamic ranges
   
