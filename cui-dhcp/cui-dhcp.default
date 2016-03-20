@@ -9,7 +9,6 @@
 
 START_DHCP='yes'                                      # Use: yes or no
 
-
 DHCP_DYNAMIC_N='2'                                    # number of local dynamic ranges
   
 DHCP_DYNAMIC_1_ACTIVE='yes'                           # use this range to provide dhcp

@@ -50,8 +50,8 @@ idx=1
         eval range_ip='$DHCP_DYNAMIC_'$idx'_RANGE'
         echo "    range $range_ip ;"
       fi
-		  idx=`expr $idx + 1`
-	  done    
+      idx=$((idx+1))
+    done    
     echo "  }"
 } > /etc/dhcp/dhcpd.conf
 
