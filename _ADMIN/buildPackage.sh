@@ -75,9 +75,13 @@ extractVariables ()
     packageArch=${JOB_NAME%\/*}
     packageArch=${packageArch#*\/}
     packageStage=${packageArch%\/*}
-    alpineRelease=${packageStage%\/*}
     packageStage=${packageStage#*\/}
     packageArch=${packageArch##*\/}
+    if [ -z "${ALPINE_VERSION}" ] ; then
+        alpineRelease=${packageStage%\/*}
+    else
+        alpineRelease=${ALPINE_VERSION}
+    fi
 }
 
 
@@ -126,6 +130,7 @@ checkDeploymentDestination ()
 
 
 
+ALPINE_VERSION=''
 while [ $# -ne 0 ] ; do
     case $1 in
         -help|--help)
@@ -144,6 +149,13 @@ while [ $# -ne 0 ] ; do
         -r|--result-folder)
             if [ $# -ge 2 ] ; then
                 CI_RESULTFOLDER_EISFAIR_NG=$2
+                shift
+            fi
+            ;;
+
+        -v|--alpine-version)
+            if [ $# -ge 2 ] ; then
+                ALPINE_VERSION=$2
                 shift
             fi
             ;;
