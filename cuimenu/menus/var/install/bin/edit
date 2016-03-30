@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #----------------------------------------------------------------------------
-# Copyright (c) 2001-2015 The Eisfair Team <team@eisfair.org>
+# Copyright (c) 2001-2016 The Eisfair Team <team@eisfair.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,8 +11,70 @@
 #        edit [--apply|--apply-stopstart] package message
 #----------------------------------------------------------------------------
 
-# include backup
-. /var/install/bin/config_shlib
+get_date()
+{
+    old_ifs="$IFS"
+    IFS=.
+    set $1
+    eval echo \$$#
+    IFS="$old_ifs"
+}
+
+# backup config
+backup_config()
+{
+    local package=$1
+    local file=$2
+    local stamp=$(date +%Y-%m-%d-%H-%M-%S)
+    local fmask='*[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
+    local _ccf_max_backup=10    
+    # do the backup
+    if [ -f $file ] ; then
+        cp -p $file /etc/backup.d/$package.$stamp
+        chmod og-rw /etc/backup.d/$package.$stamp
+        logger "Configuration file was saved as /etc/backup.d/$package.$stamp"
+        # create alpine LBU backup if system run from tmpfs
+        roots=$(grep "/ " /proc/mounts)
+        case "$rootfs" in
+            tmpfs*)
+                lbu ci;;
+        esac
+    else
+        logger "File $file not found - no backup done"
+    fi
+    # check if files have to be deleted
+    # count files
+    fcount=$(find /etc/backup.d -maxdepth 1 -type f -name "${package}.${fmask}" 2>/dev/null | wc -l)
+
+    # check number of files
+    if [ "$fcount" -gt "${_ccf_max_backup}" ] ; then
+        # number of files to remove
+        rmcount=`expr $fcount - ${_ccf_max_backup}`
+        count=0
+        # find files in sorted order
+        {
+            for FNAME in `find /etc/backup.d -maxdepth 1 -type f -name "${package}.${fmask}"`
+            do
+                # extract timestamp
+                FDATE=$(get_date ${FNAME})
+                # add timestamp as second field to in-transit output
+                echo "${FNAME}:${FDATE}"
+            done
+        } | sort -t: -k2 | while read line
+        do
+            # remove obsolete files
+            if [ "$count" -lt "$rmcount" ] ; then
+                # extract filename from line
+                file=$(echo ${line} | cut -d: -f1)
+                rm $file
+                count=$((count + 1))
+            else
+                break
+            fi
+        done
+        logger "Backup directory contained $fcount files for package $package ($rmcount removed)."
+    fi
+}
 
 apply=''
 case "$1" in
@@ -27,7 +89,7 @@ case "$1" in
 esac
 
 if [ $# -eq 1 ] ; then
-    package=`basename $1`
+    package=$(basename $1)
 else
     package="$1"
 fi
@@ -36,7 +98,7 @@ fi
 exitval=0
 
 # edit first package...
-current_package=`echo $package | sed -e 's/ .*$//g'`
+current_package=$(echo $package | sed -e 's/ .*$//g')
 
 if [ -f /etc/config.d/$current_package ] ; then
     if ! /var/install/bin/edit-conf.cui --check /etc/config.d/$current_package
@@ -96,7 +158,7 @@ can_start()
     . /etc/config.d/${1}
     # change also '-' to '_', many packages use a '-' in the name,
     # like package-dev and START_PACKAGE-DEV does not work :-(
-    startvar=`echo START_${1} | tr 'a-z' 'A-Z' | tr '-' '_'`
+    startvar=$(echo START_${1} | tr 'a-z' 'A-Z' | tr '-' '_')
     eval start='$'${startvar}
     if [ -n "$start" ] ; then
         test "${start}" = "yes"

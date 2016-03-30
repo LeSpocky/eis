@@ -6,5 +6,5 @@
 # ${EISDATE}
 # ${EISTIME}
 #----------------------------------------------------------------------------
-EISDATE=`/bin/date +%Y-%m-%d`
-EISTIME=`/bin/date +%H:%M:%S`
+EISDATE=$(/bin/date +%Y-%m-%d)
+EISTIME=$(/bin/date +%H:%M:%S)
