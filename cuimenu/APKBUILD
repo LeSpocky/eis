@@ -1,8 +1,8 @@
 # Contributor: Jens Vehlhaber <jens@eisfair.org>
 # Maintainer: The eisfair team <team@eisfair.org>
 pkgname=cuimenu
-pkgver=2.0.2
-pkgrel=6
+pkgver=2.0.3
+pkgrel=0
 pkgdesc="Eisfair CUI base menu"
 url="http://www.eisfair.org"
 arch="noarch"
