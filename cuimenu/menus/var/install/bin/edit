@@ -214,7 +214,7 @@ case "$rootfs" in
     tmpfs*)
 	if ! egrep -q '^LBU_MEDIA=' /etc/lbu/lbu.conf
 	then
-	    /sbin/setup-lbu -q /media/mmcblk0p1
+	    /sbin/setup-lbu -q mmcblk0p1
 	fi
         lbu ci
         ;;
