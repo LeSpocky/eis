@@ -13,17 +13,16 @@
 exec_dialog()
 {
     win="$p2"
-    if [ -e /lib/kbd/keymaps ]
+    sellist="en"
+    if [ -d /usr/share/bkeymaps/de ]
     then    
-        cd /lib/kbd/keymaps
-    else
-        cd /etc/keymap
+        cd /usr/share/bkeymaps/de
+        for I in *
+        do 
+            [ -n "$sellist" ] && sellist="$sellist,"
+            sellist="$sellist$(echo $I | sed 's#.bmap##g')"
+        done
     fi
-    for I in *
-    do 
-        [ -n "$sellist" ] && sellist="$sellist,"
-        sellist="$sellist$(echo $I | sed 's#.bmap.gz##g')"
-    done
     ece_select_list_dlg "$win" "Keyboard layout" "$sellist"
 }
 

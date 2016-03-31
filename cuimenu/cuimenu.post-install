@@ -17,4 +17,6 @@ rc-update -q del syslog boot 2>/dev/null
 rc-update -q del klogd boot 2>/dev/null
 rc-update -q add syslog-ng boot 2>/dev/null
 
+echo -en "Welcome to Alpine Linux with eisfair-ng!\n\nPlease type 'setup' for administration.\n\n" > /etc/motd
+
 exit 0

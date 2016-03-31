@@ -336,16 +336,16 @@ fi
 #----------------------------------------------------------------------------
 # keyboard and console setup
 #----------------------------------------------------------------------------
-if [ -e /lib/kbd/keymaps ]
+if [ -d /usr/share/bkeymaps/de -a "$KEYMAP" <> "en" ]
 then
-	mv -f /etc/keymap/* /lib/kbd/keymaps/
-	cp -f /lib/kbd/keymaps/${KEYMAP}.bmap.gz /etc/keymap/
-fi
-if [ -f /etc/keymap/${KEYMAP}.bmap.gz ]
-then
-	sed -i '/^KEYMAP=/d' /etc/conf.d/keymaps
-	echo "KEYMAP=/etc/keymap/${KEYMAP}.bmap.gz" >> /etc/conf.d/keymaps
-	zcat /etc/keymap/${KEYMAP}.bmap.gz | loadkmap
+  mkdir -p /etc/keymap
+  if gzip -9 -c "/usr/share/bkeymaps/de/$KEYMAP.bmap" > /etc/keymap/$KEYMAP.bmap.gz" ; then
+		[ -f /etc/conf.d/keymaps ] && sed -i '/^KEYMAP=/d' /etc/conf.d/keymaps
+		echo "KEYMAP=/etc/keymap/$KEYMAP.bmap.gz" >> /etc/conf.d/keymaps
+		# we actually load the keymap now
+		zcat /etc/keymap/$KEYMAP.bmap.gz | loadkmap
+		rc-update -q add keymaps boot
+	fi
 fi
 if [ -e /lib/kbd/consolefonts ]
 then
