@@ -338,8 +338,9 @@ fi
 #----------------------------------------------------------------------------
 if [ -d /usr/share/bkeymaps/de -a "$KEYMAP" <> "en" ]
 then
-  mkdir -p /etc/keymap
-  if gzip -9 -c "/usr/share/bkeymaps/de/$KEYMAP.bmap" > /etc/keymap/$KEYMAP.bmap.gz" ; then
+	mkdir -p /etc/keymap
+	if gzip -9 -c "/usr/share/bkeymaps/de/$KEYMAP.bmap" > /etc/keymap/$KEYMAP.bmap.gz
+	then
 		[ -f /etc/conf.d/keymaps ] && sed -i '/^KEYMAP=/d' /etc/conf.d/keymaps
 		echo "KEYMAP=/etc/keymap/$KEYMAP.bmap.gz" >> /etc/conf.d/keymaps
 		# we actually load the keymap now
@@ -347,6 +348,7 @@ then
 		rc-update -q add keymaps boot
 	fi
 fi
+
 if [ -e /lib/kbd/consolefonts ]
 then
 	# remove old values
