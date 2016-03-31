@@ -33,12 +33,6 @@ backup_config()
         cp -p $file /etc/backup.d/$package.$stamp
         chmod og-rw /etc/backup.d/$package.$stamp
         logger "Configuration file was saved as /etc/backup.d/$package.$stamp"
-        # create alpine LBU backup if system run from tmpfs
-        roots=$(grep "/ " /proc/mounts)
-        case "$rootfs" in
-            tmpfs*)
-                lbu ci;;
-        esac
     else
         logger "File $file not found - no backup done"
     fi
@@ -213,5 +207,17 @@ fi
 
 # do it twice ;-)
 rm -f ${tmp_edit_file}
+
+# create alpine LBU backup if system run from tmpfs
+roots=$(grep "/ " /proc/mounts)
+case "$rootfs" in
+    tmpfs*)
+	if ! egrep -q '^LBU_MEDIA=' /etc/lbu/lbu.conf
+	then
+	    /sbin/setup-lbu -q /media/mmcblk0p1
+	fi
+        lbu ci
+        ;;
+esac
 
 exit 0
