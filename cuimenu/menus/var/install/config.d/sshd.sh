@@ -9,6 +9,8 @@
 # (at your option) any later version.
 #----------------------------------------------------------------------------
 
+apk info -q -e openssh || apk add -q openssh
+
 # include config
 . /etc/config.d/sshd
 
@@ -34,7 +36,7 @@ if [ "$SSHD_LISTEN_ADDR_N" -gt 0 ] ; then
         eval laddr='$SSHD_LISTEN_ADDR_'$idx
         if [ -n "$laddr" ] ; then
             # check number, substitution has to result in an empty string
-            e_laddr=`echo "$laddr" | sed 's|[0-9]*||'`
+            e_laddr=$(echo "$laddr" | sed 's|[0-9]*||')
             if [ -z "$e_laddr" ] ; then
                 eval ipaddr=\${IP_NET_${laddr}_IPADDR}
                 [ -n "$ipaddr" ] && echo "ListenAddress $ipaddr " >> /etc/ssh/sshd_config
