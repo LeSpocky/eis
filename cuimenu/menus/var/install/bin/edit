@@ -209,7 +209,7 @@ fi
 rm -f ${tmp_edit_file}
 
 # create alpine LBU backup if system run from tmpfs
-roots=$(grep "/ " /proc/mounts)
+rootfs=$(grep "/ " /proc/mounts)
 case "$rootfs" in
     tmpfs*)
 	if ! egrep -q '^LBU_MEDIA=' /etc/lbu/lbu.conf
