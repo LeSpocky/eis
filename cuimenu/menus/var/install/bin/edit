@@ -216,7 +216,12 @@ case "$rootfs" in
 	then
 	    /sbin/setup-lbu -q mmcblk0p1
 	fi
-        lbu ci
+	if [ -f /media/mmcblk0p1/$(hostname).apkovl.tar.gz ]
+        then
+            lbu ci
+        else
+            lbu ci -d
+        fi
         ;;
 esac
 

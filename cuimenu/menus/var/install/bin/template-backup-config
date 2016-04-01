@@ -28,14 +28,22 @@ cp -p $file /etc/backup.d/${package}.$stamp
 chmod og-rw /etc/backup.d/${package}.$stamp
 
 
-# create LBU backup if system run from tmpfs
-roots=$(grep "/ " /proc/mounts)
+# create alpine LBU backup if system run from tmpfs
+rootfs=$(grep "/ " /proc/mounts)
 case "$rootfs" in
     tmpfs*)
-	lbu ci
-    ;;
+	if ! egrep -q '^LBU_MEDIA=' /etc/lbu/lbu.conf
+	then
+		/sbin/setup-lbu -q mmcblk0p1
+	fi
+	if [ -f /media/mmcblk0p1/$(hostname).apkovl.tar.gz ]
+        then
+        	lbu ci
+        else
+        	lbu ci -d
+        fi
+        ;;
 esac
-
 
 get_date()
 {
