@@ -1,0 +1,65 @@
+--- a/hashtab.c
++++ b/hashtab.c
+@@ -119,7 +119,7 @@
+    {
+       if (verbose)
+       {
+-         fprintf(stderr,"[new_hnode] %s (%d)",msg_big_one,strlen(str));
++         fprintf(stderr,"[new_hnode] %s (%ld)",msg_big_one,strlen(str));
+          if (debug_mode)
+             fprintf(stderr,":\n--> %s",str);
+          fprintf(stderr,"\n");
+@@ -310,7 +310,7 @@
+    {
+       if (verbose)
+       {
+-         fprintf(stderr,"[new_unode] %s (%d)",msg_big_one,strlen(str));
++         fprintf(stderr,"[new_unode] %s (%ld)",msg_big_one,strlen(str));
+          if (debug_mode)
+             fprintf(stderr,":\n--> %s",str);
+          fprintf(stderr,"\n");
+@@ -439,7 +439,7 @@
+    {
+       if (verbose)
+       {
+-         fprintf(stderr,"[new_rnode] %s (%d)",msg_big_one,strlen(str));
++         fprintf(stderr,"[new_rnode] %s (%ld)",msg_big_one,strlen(str));
+          if (debug_mode)
+             fprintf(stderr,":\n--> %s",str);
+          fprintf(stderr,"\n");
+@@ -560,7 +560,7 @@
+    {
+       if (verbose)
+       {
+-         fprintf(stderr,"[new_anode] %s (%d)",msg_big_one,strlen(str));
++         fprintf(stderr,"[new_anode] %s (%ld)",msg_big_one,strlen(str));
+          if (debug_mode)
+             fprintf(stderr,":\n--> %s",str);
+          fprintf(stderr,"\n");
+@@ -679,7 +679,7 @@
+    {
+       if (verbose)
+       {
+-         fprintf(stderr,"[new_snode] %s (%d)",msg_big_one,strlen(str));
++         fprintf(stderr,"[new_snode] %s (%ld)",msg_big_one,strlen(str));
+          if (debug_mode)
+             fprintf(stderr,":\n--> %s",str);
+          fprintf(stderr,"\n");
+@@ -786,7 +786,7 @@
+    {
+       if (verbose)
+       {
+-         fprintf(stderr,"[new_inode] %s (%d)",msg_big_one,strlen(str));
++         fprintf(stderr,"[new_inode] %s (%ld)",msg_big_one,strlen(str));
+          if (debug_mode)
+             fprintf(stderr,":\n--> %s",str);
+          fprintf(stderr,"\n");
+@@ -958,7 +958,7 @@
+    {
+       if (verbose)
+       {
+-         fprintf(stderr,"[new_dnode] %s (%d)",msg_big_one,strlen(str));
++         fprintf(stderr,"[new_dnode] %s (%ld)",msg_big_one,strlen(str));
+          if (debug_mode)
+             fprintf(stderr,":\n--> %s",str);
+          fprintf(stderr,"\n");

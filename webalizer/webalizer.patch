@@ -1,0 +1,57 @@
+--- a/webalizer.c
++++ b/webalizer.c
+@@ -745,7 +745,7 @@
+             total_bad++;                /* if a bad date, bump counter      */
+             if (verbose)
+             {
+-               fprintf(stderr,"%s: %s [%llu]",
++               fprintf(stderr,"%s: %s [%lu]",
+                  msg_bad_date,log_rec.datetime,total_rec);
+                if (debug_mode) fprintf(stderr,":\n%s\n",tmp_buf);
+                else fprintf(stderr,"\n");
+@@ -976,7 +976,7 @@
+          /* if necessary, shrink referrer to fit storage */
+          if (strlen(log_rec.refer)>=MAXREFH)
+          {
+-            if (verbose) fprintf(stderr,"%s [%llu]\n",
++            if (verbose) fprintf(stderr,"%s [%lu]\n",
+                 msg_big_ref,total_rec);
+             log_rec.refer[MAXREFH-1]='\0';
+          }
+@@ -984,7 +984,7 @@
+          /* if necessary, shrink URL to fit storage */
+          if (strlen(log_rec.url)>=MAXURLH)
+          {
+-            if (verbose) fprintf(stderr,"%s [%llu]\n",
++            if (verbose) fprintf(stderr,"%s [%lu]\n",
+                 msg_big_req,total_rec);
+             log_rec.url[MAXURLH-1]='\0';
+          }
+@@ -1403,7 +1403,7 @@
+                total_bad++;
+                if (verbose)
+                {
+-                  fprintf(stderr,"%s (%llu)",msg_bad_rec,total_rec);
++                  fprintf(stderr,"%s (%lu)",msg_bad_rec,total_rec);
+                   if (debug_mode) fprintf(stderr,":\n%s\n",tmp_buf);
+                   else fprintf(stderr,"\n");
+                }
+@@ -1455,14 +1455,14 @@
+       /* display end of processing statistics */
+       if (time_me || (verbose>1))
+       {
+-         printf("%llu %s ",total_rec, msg_records);
++         printf("%lu %s ",total_rec, msg_records);
+          if (total_ignore)
+          {
+-            printf("(%llu %s",total_ignore,msg_ignored);
+-            if (total_bad) printf(", %llu %s) ",total_bad,msg_bad);
++            printf("(%lu %s",total_ignore,msg_ignored);
++            if (total_bad) printf(", %lu %s) ",total_bad,msg_bad);
+                else        printf(") ");
+          }
+-         else if (total_bad) printf("(%llu %s) ",total_bad,msg_bad);
++         else if (total_bad) printf("(%lu %s) ",total_bad,msg_bad);
+ 
+          /* totoal processing time in seconds */
+          temp_time = difftime(end_time, start_time);

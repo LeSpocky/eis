@@ -4,7 +4,7 @@
 
 for config_file in `ls /etc/webalizer/webalizer_*.conf`
 do
-    mkdir -p `grep OutputDir $config_file | sed 's/OutputDir//'`
+    mkdir -p $(grep OutputDir "$config_file" | sed 's/OutputDir//')
     /usr/bin/webalizer -c ${config_file} ${cron}
 done
 
