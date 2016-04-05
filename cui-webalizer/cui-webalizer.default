@@ -25,11 +25,11 @@ WEBALIZER_VHOSTS_TITLE='Auswertung von'
 WEBALIZER_VHOSTS_BGCOLOR='#E8E8E8'    # The backgroundcolor
 
 #------------------------------------------------------------------------------
-# Optional logfiles
+# Apache localhost and optional logfiles
 #------------------------------------------------------------------------------
 
 WEBALIZER_HOST_N='1'                  # Count of hosts
-WEBALIZER_HOST_1_ACCESS_LOG='/var/www/logs/access.log'
+WEBALIZER_HOST_1_ACCESS_LOG='/var/log/apache2/access.log'
                                       # Accesslog of Apache
 WEBALIZER_HOST_1_OUTPUT_DIR='/var/www/localhost/htdocs/logs'
                                       # Where to put the analysis

@@ -450,7 +450,7 @@ echo "YearHeaders     yes"
 # when the table is displaying more than 16 months worth of data.  Values
 # can be 'yes' or 'no', with 'yes' being the default.
 #YearTotals yes
-echo "YearTotals      no"
+echo "YearTotals      yes"
 
 # GraphMonths defines the number of months to display in the main index
 # (yearly summary) graph.  Value can be between 12 and 72 months, with
@@ -3612,8 +3612,11 @@ do
     eval bgcolor='$WEBALIZER_HOST_'$idx'_BGCOLOR'
     eval type='$WEBALIZER_HOST_'$idx'_TYPE'
 
-    [ ! -f $accesslog ] && echo "WARNING: The file '$accesslog' does not exist!" 
-
+    if [ ! -f $accesslog ] 
+    then
+        echo   "WEBALIZER WARNING: The file '$accesslog' does not exist!" 
+        logger "WEBALIZER WARNING: The file '$accesslog' does not exist!" 
+    fi
     mkdir -p ${output_dir}
     chmod 0750 ${output_dir}
     chown -R root:apache ${output_dir}
@@ -3639,13 +3642,13 @@ if [ "$WEBALIZER_VHOSTS_RUN_ALL" = 'yes' ] ; then
         accesslog="/var/log/apache2/access-${servername}.log"
 
         # first remove the trailing slash
-        doc_root=`echo $docroot | sed -e 's|/$||'`
+        doc_root=$(echo "$docroot" | sed -e 's|/$||')
         case "$WEBALIZER_VHOSTS_OUTPUT_DIR" in
             *VHOST_DOCROOT*)
-                output_dir=`echo $WEBALIZER_VHOSTS_OUTPUT_DIR | sed "s|%VHOST_DOCROOT%|${doc_root}|"`
+                output_dir=$(echo "$WEBALIZER_VHOSTS_OUTPUT_DIR" | sed "s|%VHOST_DOCROOT%|${doc_root}|")
                 ;;
             *SERVER_NAME*)
-                output_dir=`echo $WEBALIZER_VHOSTS_OUTPUT_DIR | sed "s|%SERVER_NAME%|${servername}|"`
+                output_dir=$(echo "$WEBALIZER_VHOSTS_OUTPUT_DIR" | sed "s|%SERVER_NAME%|${servername}|")
                 ;;
             *)
                 output_dir="$WEBALIZER_VHOSTS_OUTPUT_DIR"

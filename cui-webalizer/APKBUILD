@@ -2,7 +2,7 @@
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=cui-webalizer
 pkgver=1.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="CUI Setup Webalizer module for apache"
 url="http://www.eisfair.org"
 arch="noarch"
@@ -23,13 +23,6 @@ source="${pkgname}.default
 "
 
 _builddir=
-prepare() {
-	cd "$_builddir"
-}
-
-build() {
-	cd "$_builddir"
-}
 
 package() {
 	cd "$_builddir"
@@ -43,27 +36,27 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/webalizer/webalizer.txt || return 1	
 }
 
-md5sums="13a5c5fce9408370e7f3436ab392b793  cui-webalizer.default
+md5sums="ab2060fd3d69573d14fcc0565955167a  cui-webalizer.default
 5f5830fdcd766345079ef627e852a7b6  cui-webalizer.check
 45156aec6ccd2e2a92a6069aa1f0faec  cui-webalizer.check.exp
 b54fc32c0c65dfb9f22f28e31dacde30  cui-webalizer.help
-eb5ef92afb309576839373d9dc6ebafa  cui-webalizer.sh
+ef80e33c6a835db9abce84c548e9c678  cui-webalizer.sh
 1f098798557b4966b320a3459061e85a  cui-webalizer-update.sh
 e04b0093dbc405f02f9e1107e584dc2a  cui-webalizer.menu
 fc06fcbb26c5d55f75d884b7b7d97f7c  cui-webalizer.txt"
-sha256sums="88dcd6341497234d1070ec2e534aa03d737ec435de729a4c3c9a2e77e2fc95dd  cui-webalizer.default
+sha256sums="59587d1f28848978a6671e3b60b005c47c92f4d1c805c3eb05cac11fcd1a697f  cui-webalizer.default
 7fb3388113aa8171dea8d34afd4dcd340a9bbbe7429fe4c1adc8624461ec00ec  cui-webalizer.check
 5362de7c2719cd38e7ff541508d3204221dd7915894961cb7132a607bfc6058a  cui-webalizer.check.exp
 9dc0dc6304484c43f5117baa974e36964aee5f88b119c82b7cf728c537766801  cui-webalizer.help
-a17cf3d254d3cbd183997711d97a6ddc1c78d6af6f6b74cc734d79dea717feb1  cui-webalizer.sh
+1e35d34d3bdc1e0e87d163686ed11653ce41af16cba42330df5a47b0c8a858a3  cui-webalizer.sh
 194204e9c1f2fc65e9b8fd5abcab6d9c371f1d757385aadc9c173a418005f450  cui-webalizer-update.sh
 e070f97c14228afa366a5d2b9b40ff2eb9cf87c0b93293457d49db0669c1bdcd  cui-webalizer.menu
 a67487ccd3001c89a5ce73c0972ab2d1cdded6dfdd03e3f719cbbbc445108f1b  cui-webalizer.txt"
-sha512sums="32bdb40aff8ec113e1fd997dad799e10347927b18614b9d23466944d815844405cf2a8c04b736039d7953356a2c49d1526d6684b489af444cdb0e58d42855ab3  cui-webalizer.default
+sha512sums="85607a9e1df957a43aebe9e55af54dc456d2700900e0b6ffd800241653ce7767c1afa904b513adb60c7b96f44653ccf604a83c7dad05f954f7266e617aa3fda9  cui-webalizer.default
 5a3c98e76026581273f721220916b3e0f5b21cbf07bb8928266a565ffb1a55f56cf37f4e5bade1a72e331ccfcd55d20e0eff4906c1a24e2ff1f8eb6825ab6e0b  cui-webalizer.check
 9a3cb06bf906d26f9a71f9c412bc7472fa1e4af3b97fcaaf31576ff99b470059a1616aa43bf64e3d1d9e517b4fabd9c79075cb7c0475084c63f116a55f78640a  cui-webalizer.check.exp
 119ffeaa9693dfa4f5433e829d406abe47554b65ca0b8fae9594b9315898838c3364f2122aea97139d481416cf523c9a374fa9c1b264eedc8cd221a3caeb9983  cui-webalizer.help
-2a8188ccc615ea6a973531bd2720504e3aacc8d29cd6a6e14a7c6d8a26c080f2994de1b9468087990d80fc5181b258edc160754db61e35cd28d3b513d5e3b287  cui-webalizer.sh
+e91d1778f32f0b6346365f64b433aee715e2f750ee9d83d5f710895cc9f8192a8546d7c5def2c6d02f2e697809fd94143d34d027451de0602850e582c79e1075  cui-webalizer.sh
 58a2ac889da466640f814e7bedbef3b2700bd4ccbc3836f8efc306282f80dbd8d58a41ea189e85a8368d6f380bfcbd62d03edc4bec5b29892beb45c07b2d7664  cui-webalizer-update.sh
 43f3736561b1a638b9c75eb0fb85cf26baf9a9a2a6ff67bd4000ed39b13adca027273292b291f5cd1a763f3c519da513d2305feebd51453d3cff15f64a5743e6  cui-webalizer.menu
 17851190e2a5b4fffb8b097cdbdb596ba99536e428e03892d37d25ae8fba392f6db9ae114513e553b1e95d13c17b88fdcb9572fe6d555659451b5683f882a786  cui-webalizer.txt"
