@@ -17,8 +17,7 @@ source="
 	saveas-ftp://ftp.mrunix.net/pub/webalizer/webalizer-$_pkgver-src.tar.bz2/webalizer-$pkgver.tar.bz2
 	${pkgname}-run
 	hashtab.patch
-	preserve.patch
-	webalizer.patch"
+	preserve.patch"
 
 #	http://www.patrickfrei.ch/webalizer/rb30/webalizer-$_pkgver-RB30-patch.tar.gz
 
@@ -57,15 +56,12 @@ package() {
 md5sums="d25a9715dcbfe67ddf86816c27fbda2b  webalizer-2.23.08.tar.bz2
 26fcae9f85ac291c3e5b674a931c44d3  webalizer-run
 5b13883388d4c85cad6c7f10390734ac  hashtab.patch
-de627de5e6ce9bdd3e9d3e7389f4918e  preserve.patch
-98894170557072de63fc3e264c06f756  webalizer.patch"
+253be93785c344a94a17b574ee7798b1  preserve.patch"
 sha256sums="b37524fbd98e97052a80d59f75e69f857468752cf74cc0eb0972e5fab02eb6f7  webalizer-2.23.08.tar.bz2
 e63251a4178eb691fae294a201ddca96da487c8fac05a01c8fe0c263126fe2e4  webalizer-run
 f8821c7997ed6af8ed77c2024f7c68e91f8b82be7f96eb5be7957991844ecd21  hashtab.patch
-00d9eb373f157330f92f83af5ff9291dc5295ad6a7d3125f3e82403e63b74dee  preserve.patch
-0a428c20dd678b61d21331380eac4bfab573de51713ce6af290cca77419b27fa  webalizer.patch"
+b143db746c9750ec89f07e03f94b0294a083cf6d809bf2df637e753614afe28a  preserve.patch"
 sha512sums="23fe6e3ef1c85aa527ffafef16c31c13ad8e1f9feb774557c07a5c8fd6c67986b98180ef16d6cebe62d59c5f7ca214b8292e94ce8f195fa0541de9c5438fb9bd  webalizer-2.23.08.tar.bz2
 170bae39f946436b28864f49cd3569a8012f727d1302e0776e01957666f1b98ecba797b5a30791e29a199f5098e41df1c159043c890478c2b2d46bc55213d3f5  webalizer-run
 dfa832340aa1143f6faf90e3d5017f1625693a0d3a57dc71438cdb4ab074139d839dad59ffa923f708d2a8812595b5c9ca1eab6f553207496153ed8e36e8d7b5  hashtab.patch
-587e48e32505a38a54d03773dfceb8085878e7619c4c8d66c77f65b42296512faf7247d161805e2431a55052a5609f3c0bbaca1ee628cb1e7b4334cddd6b6164  preserve.patch
-25e717642a725b99c165080f606588ede372989fd60554eee85bd1312260b128f9a9a841d7ee4aa7bbf216b2642f2e87eea0e99acd82f234717fcc5df1cc3c56  webalizer.patch"
+8fc5c898f014cf308b0d5b5882769070ab2984950169424b0f0163df0b957c16a0c917400f3892be118841c5784ee0849db5b4954294dc5bbd9b51c3958e76a6  preserve.patch"
