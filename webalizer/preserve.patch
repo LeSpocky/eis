@@ -11,30 +11,34 @@
                          hist[i].year=yr; hist[i].month=mth; n--;
                      }
                    }
-@@ -151,7 +151,10 @@
+@@ -151,7 +151,9 @@
     char    old_fname[MAXKVAL+4];
     struct  stat hist_stat;
     time_t  now;
+-   char    timestamp[48];
 +   struct  tm *myts;
-    char    timestamp[48];
 +   int     yr ;
 +   int     mth;
  
     /* generate 'new' filename */
     sprintf(new_fname, "%s.new", hist_fname);
-@@ -170,7 +173,8 @@
+@@ -170,7 +172,7 @@
  
     /* Generate our timestamp */
     now=time(NULL);
 -   strftime(timestamp,sizeof(timestamp),"%d/%b/%Y %H:%M:%S",localtime(&now));
 +   myts=localtime(&now);
-+   strftime(timestamp,sizeof(timestamp),"%d/%b/%Y %H:%M:%S",myts);
  
     /* Open file for writing */
     hist_fp = fopen(new_fname,"w");
-@@ -182,9 +186,17 @@
-       fprintf(hist_fp,"# Webalizer V%s-%s History Data - %s (%d month)\n",
-               version, editlvl, timestamp, HISTSIZE);
+@@ -179,12 +181,20 @@
+       if (verbose>1) printf("%s\n",msg_put_hist);
+ 
+       /* write header */
+-      fprintf(hist_fp,"# Webalizer V%s-%s History Data - %s (%d month)\n",
+-              version, editlvl, timestamp, HISTSIZE);
++      fprintf(hist_fp,"# Webalizer V%s-%s History Data %04d-%02d-%02d %02d:%02d (%d month)\n",
++              version, editlvl, myts->tm_year + 1900, myts->tm_mon + 1, myts->tm_mday, myts->tm_hour, myts->tm_hour, HISTSIZE);
  
 +      // write default empty record is not exists
 +      yr = myts->tm_year + 1900;
@@ -51,7 +55,7 @@
                           hist[i].month,
                           hist[i].year,
                           hist[i].hit,
-@@ -267,7 +279,7 @@
+@@ -267,7 +277,7 @@
                 {
                    if (verbose)
                       fprintf(stderr,"Warning! %d month gap detected! "   \
@@ -60,7 +64,7 @@
                               hist[i].year, cur_month, cur_year);
                    if (n>11) hist_gap=1;  /* year or more? */
                 }
-@@ -277,8 +289,8 @@
+@@ -277,8 +287,8 @@
                    yr = hist[i].year;
                    mth= hist[i].month+1;
                    if (mth>12) { mth=1; yr++; }
@@ -71,7 +75,7 @@
                    hist[i].year=yr; hist[i].month=mth; n--;
                 }
              }
-@@ -351,8 +363,8 @@
+@@ -351,8 +361,8 @@
     /* first, save the easy stuff */
     /* Header record */
     snprintf(buffer,sizeof(buffer),

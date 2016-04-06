@@ -1,0 +1,471 @@
+--- a/output.c
++++ b/output.c
+@@ -521,10 +521,10 @@
+    }
+ 
+    fprintf(out_fp,"<TABLE WIDTH=510 BORDER=2 CELLSPACING=1 CELLPADDING=1>\n");
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH COLSPAN=3 ALIGN=center BGCOLOR=\"%s\">"           \
+       "%s %s %d</TH></TR>\n",GREY,msg_mtot_ms,l_month[cur_month-1],cur_year);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    /* Total Hits */
+    fprintf(out_fp,"<TR><TD WIDTH=380><FONT SIZE=\"-1\">%s</FONT></TD>\n"     \
+       "<TD ALIGN=right COLSPAN=2><FONT SIZE=\"-1\"><B>%llu</B>"              \
+@@ -545,7 +545,7 @@
+    fprintf(out_fp,"<TR><TD WIDTH=380><FONT SIZE=\"-1\">%s</FONT></TD>\n"     \
+       "<TD ALIGN=right COLSPAN=2><FONT SIZE=\"-1\"><B>%.0f</B>"              \
+       "</FONT></TD></TR>\n",msg_mtot_tx,t_xfer/1024);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    /**********************************************/
+    /* Unique Sites */
+    fprintf(out_fp,"<TR>"                                                     \
+@@ -575,7 +575,7 @@
+       "<TD WIDTH=380><FONT SIZE=\"-1\">%s</FONT></TD>\n"                     \
+       "<TD ALIGN=right COLSPAN=2><FONT SIZE=\"-1\"><B>%llu</B>"              \
+       "</FONT></TD></TR>\n",msg_mtot_ua,t_agent);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    /**********************************************/
+    /* Hourly/Daily avg/max totals */
+    fprintf(out_fp,"<TR>"                                                     \
+@@ -585,7 +585,7 @@
+       "<TH WIDTH=65 BGCOLOR=\"%s\" ALIGN=right>"                             \
+       "<FONT SIZE=-1>%s </FONT></TH></TR>\n",
+       GREY,GREY,GREY,msg_h_avg,GREY,msg_h_max);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    /* Max/Avg Hits per Hour */
+    fprintf(out_fp,"<TR>"                                                     \
+       "<TD><FONT SIZE=\"-1\">%s</FONT></TD>\n"                               \
+@@ -629,12 +629,12 @@
+       "<TD WIDTH=65 ALIGN=right><FONT SIZE=-1><B>%.0f</B>"                   \
+       "</FONT></TD></TR>\n",msg_mtot_mkd,
+       (t_xfer/1024)/days_in_month,max_xfer/1024);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    /**********************************************/
+    /* response code totals */
+    fprintf(out_fp,"<TR><TH COLSPAN=3 ALIGN=center BGCOLOR=\"%s\">\n"         \
+            "<FONT SIZE=\"-1\">%s</FONT></TH></TR>\n",GREY,msg_mtot_rc);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    for (i=0;i<TOTAL_RC;i++)
+    {
+       if (response[i].count != 0)
+@@ -643,7 +643,7 @@
+             "<TD ALIGN=right><FONT SIZE=\"-1\"><B>%llu</B></FONT></TD></TR>\n",
+             response[i].desc,PCENT(response[i].count,t_hit),response[i].count);
+    }
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    /**********************************************/
+ 
+    fprintf(out_fp,"</TABLE>\n");
+@@ -660,12 +660,12 @@
+ 
+    /* Daily stats */
+    fprintf(out_fp,"<TABLE WIDTH=510 BORDER=2 CELLSPACING=1 CELLPADDING=1>\n");
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    /* Daily statistics for ... */
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" COLSPAN=13 ALIGN=center>"          \
+            "%s %s %d</TH></TR>\n",
+            GREY,msg_dtot_ds,l_month[cur_month-1], cur_year);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH ALIGN=center BGCOLOR=\"%s\">"                     \
+                   "<FONT SIZE=\"-1\">%s</FONT></TH>\n"                       \
+                   "<TH ALIGN=center BGCOLOR=\"%s\" COLSPAN=2>"               \
+@@ -687,7 +687,7 @@
+                   VISITCOLOR, msg_h_visits,
+                   SITECOLOR,  msg_h_sites,
+                   KBYTECOLOR, msg_h_xfer);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+ 
+    /* skip beginning blank days in a month */
+    for (i=0;i<l_day;i++) if (tm_hit[i]!=0) break;
+@@ -725,7 +725,7 @@
+               "<TD ALIGN=right><FONT SIZE=\"-2\">%3.02f%%</FONT></TD></TR>\n",
+               tm_xfer[i]/1024,PCENT(tm_xfer[i],t_xfer));
+    }
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"</TABLE>\n");
+    fprintf(out_fp,"<P>\n");
+ }
+@@ -744,11 +744,11 @@
+ 
+    /* Hourly stats */
+    fprintf(out_fp,"<TABLE WIDTH=510 BORDER=2 CELLSPACING=1 CELLPADDING=1>\n");
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" COLSPAN=13 ALIGN=center>"\
+            "%s %s %d</TH></TR>\n",
+            GREY,msg_htot_hs,l_month[cur_month-1], cur_year);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH ALIGN=center ROWSPAN=2 BGCOLOR=\"%s\">" \
+                   "<FONT SIZE=\"-1\">%s</FONT></TH>\n"             \
+                   "<TH ALIGN=center BGCOLOR=\"%s\" COLSPAN=3>"     \
+@@ -785,7 +785,7 @@
+                   "<FONT SIZE=\"-2\">%s</FONT></TH></TR>\n",
+                   KBYTECOLOR, msg_h_avg, KBYTECOLOR, msg_h_total);
+ 
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    for (i=0;i<24;i++)
+    {
+       fprintf(out_fp,"<TR><TD ALIGN=center>"                          \
+@@ -817,7 +817,7 @@
+       avg_file += th_file[i]/days_in_month;
+       avg_xfer+= (th_xfer[i]/days_in_month)/1024;
+    }
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"</TABLE>\n<P>\n");
+ }
+ 
+@@ -852,7 +852,7 @@
+       fprintf(out_fp,"<A NAME=\"TOPSITES\"></A>\n");
+ 
+    fprintf(out_fp,"<TABLE WIDTH=510 BORDER=2 CELLSPACING=1 CELLPADDING=1>\n");
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    if (flag) fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=CENTER COLSPAN=10>" \
+            "%s %llu %s %llu %s %s %s</TH></TR>\n",
+            GREY, msg_top_top,tot_num,msg_top_of,
+@@ -860,7 +860,7 @@
+    else      fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=CENTER COLSPAN=10>" \
+            "%s %llu %s %llu %s</TH></TR>\n",
+            GREY,msg_top_top, tot_num, msg_top_of, t_site, msg_top_s);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=center>"                    \
+           "<FONT SIZE=\"-1\">#</FONT></TH>\n",GREY);
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=center COLSPAN=2>"              \
+@@ -873,7 +873,7 @@
+           "<FONT SIZE=\"-1\">%s</FONT></TH>\n",VISITCOLOR,msg_h_visits);
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=center>"                        \
+           "<FONT SIZE=\"-1\">%s</FONT></TH></TR>\n",MISCCOLOR,msg_h_hname);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+ 
+    pointer=h_array; i=0;
+    while(tot_num)
+@@ -913,7 +913,7 @@
+       }
+    }
+ 
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    if ((!flag) || (flag&&!ntop_sites))
+    {
+       if ( (all_sites) && ((h_reg+h_grp)>ntop_sites) )
+@@ -1041,7 +1041,7 @@
+       fprintf(out_fp,"<A NAME=\"TOPURLS\"></A>\n");
+ 
+    fprintf(out_fp,"<TABLE WIDTH=510 BORDER=2 CELLSPACING=1 CELLPADDING=1>\n");
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    if (flag) fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=CENTER COLSPAN=6>"  \
+            "%s %llu %s %llu %s %s %s</TH></TR>\n",
+            GREY,msg_top_top,tot_num,msg_top_of,
+@@ -1049,7 +1049,7 @@
+    else fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=CENTER COLSPAN=6>"   \
+            "%s %llu %s %llu %s</TH></TR>\n",
+            GREY,msg_top_top,tot_num,msg_top_of,t_url,msg_top_u);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=center>"                  \
+                   "<FONT SIZE=\"-1\">#</FONT></TH>\n",GREY);
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=center COLSPAN=2>"            \
+@@ -1061,7 +1061,7 @@
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=center>"                      \
+                   "<FONT SIZE=\"-1\">%s</FONT></TH></TR>\n",
+                   MISCCOLOR,msg_h_url);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+ 
+    pointer=u_array; i=0;
+    while (tot_num)
+@@ -1122,7 +1122,7 @@
+          i++;
+       }
+    }
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    if ((!flag) || (flag&&!ntop_urls))
+    {
+       if ( (all_urls) && ((u_reg+u_grp)>ntop_urls) )
+@@ -1250,12 +1250,12 @@
+    else      fprintf(out_fp,"<A NAME=\"TOPENTRY\"></A>\n");
+ 
+    fprintf(out_fp,"<TABLE WIDTH=510 BORDER=2 CELLSPACING=1 CELLPADDING=1>\n");
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=CENTER COLSPAN=6>"        \
+            "%s %llu %s %llu %s</TH></TR>\n",
+            GREY,msg_top_top,tot_num,msg_top_of,
+            (flag)?u_exit:u_entry,(flag)?msg_top_ex:msg_top_en);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=center>"                  \
+                   "<FONT SIZE=\"-1\">#</FONT></TH>\n",
+                   GREY);
+@@ -1268,7 +1268,7 @@
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=center>"                      \
+                   "<FONT SIZE=\"-1\">%s</FONT></TH></TR>\n",
+                   MISCCOLOR,msg_h_url);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+ 
+    pointer=u_array; i=0;
+    while (tot_num)
+@@ -1312,7 +1312,7 @@
+          i++;
+       }
+    }
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"</TABLE>\n<P>\n");
+ }
+ 
+@@ -1346,11 +1346,11 @@
+ 
+    fprintf(out_fp,"<A NAME=\"TOPREFS\"></A>\n");
+    fprintf(out_fp,"<TABLE WIDTH=510 BORDER=2 CELLSPACING=1 CELLPADDING=1>\n");
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=CENTER COLSPAN=4>"         \
+            "%s %llu %s %llu %s</TH></TR>\n",
+            GREY, msg_top_top, tot_num, msg_top_of, t_ref, msg_top_r);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=center>"                   \
+           "<FONT SIZE=\"-1\">#</FONT></TH>\n",
+           GREY);
+@@ -1360,7 +1360,7 @@
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=center>"                       \
+           "<FONT SIZE=\"-1\">%s</FONT></TH></TR>\n",
+           MISCCOLOR,msg_h_ref);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+ 
+    pointer=r_array; i=0;
+    while(tot_num)
+@@ -1401,7 +1401,7 @@
+          i++;
+       }
+    }
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    if ( (all_refs) && ((r_reg+r_grp)>ntop_refs) )
+    {
+       if (all_refs_page(r_reg, r_grp))
+@@ -1511,11 +1511,11 @@
+ 
+    fprintf(out_fp,"<A NAME=\"TOPAGENTS\"></A>\n");
+    fprintf(out_fp,"<TABLE WIDTH=510 BORDER=2 CELLSPACING=1 CELLPADDING=1>\n");
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=CENTER COLSPAN=4>"        \
+           "%s %llu %s %llu %s</TH></TR>\n",
+           GREY, msg_top_top, tot_num, msg_top_of, t_agent, msg_top_a);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=center>"                  \
+           "<FONT SIZE=\"-1\">#</FONT></TH>\n",
+           GREY);
+@@ -1525,7 +1525,7 @@
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=center>"                      \
+           "<FONT SIZE=\"-1\">%s</FONT></TH></TR>\n",
+           MISCCOLOR,msg_h_agent);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+ 
+    pointer=a_array; i=0;
+    while(tot_num)
+@@ -1555,7 +1555,7 @@
+          i++;
+       }
+    }
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    if ( (all_agents) && ((a_reg+a_grp)>ntop_agents) )
+    {
+       if (all_agents_page(a_reg, a_grp))
+@@ -1658,11 +1658,11 @@
+ 
+    fprintf(out_fp,"<A NAME=\"TOPSEARCH\"></A>\n");
+    fprintf(out_fp,"<TABLE WIDTH=510 BORDER=2 CELLSPACING=1 CELLPADDING=1>\n");
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=CENTER COLSPAN=4>"        \
+           "%s %llu %s %llu %s</TH></TR>\n",
+           GREY, msg_top_top, tot_num, msg_top_of, a_ctr, msg_top_sr);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=center>"                  \
+           "<FONT SIZE=\"-1\">#</FONT></TH>\n",
+           GREY);
+@@ -1672,7 +1672,7 @@
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=center>"                      \
+           "<FONT SIZE=\"-1\">%s</FONT></TH></TR>\n",
+           MISCCOLOR,msg_h_search);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+ 
+    pointer=s_array; i=0;
+    while(tot_num)
+@@ -1690,7 +1690,7 @@
+       tot_num--;
+       i++;
+    }
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    if ( (all_search) && (a_ctr>ntop_search) )
+    {
+       if (all_search_page(a_ctr, t_val))
+@@ -1779,11 +1779,11 @@
+    fprintf(out_fp,"<A NAME=\"TOPUSERS\"></A>\n");       /* now do <A> tag   */
+ 
+    fprintf(out_fp,"<TABLE WIDTH=510 BORDER=2 CELLSPACING=1 CELLPADDING=1>\n");
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=CENTER COLSPAN=10>" \
+            "%s %llu %s %llu %s</TH></TR>\n",
+            GREY,msg_top_top, tot_num, msg_top_of, t_user, msg_top_i);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=center>"                   \
+           "<FONT SIZE=\"-1\">#</FONT></TH>\n",GREY);
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=center COLSPAN=2>"             \
+@@ -1796,7 +1796,7 @@
+           "<FONT SIZE=\"-1\">%s</FONT></TH>\n",VISITCOLOR,msg_h_visits);
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=center>"                       \
+           "<FONT SIZE=\"-1\">%s</FONT></TH></TR>\n",MISCCOLOR,msg_h_uname);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+ 
+    pointer=i_array; i=0;
+    while(tot_num)
+@@ -1836,7 +1836,7 @@
+       }
+    }
+ 
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    if ( (all_users) && ((i_reg+i_grp)>ntop_users) )
+    {
+       if (all_users_page(i_reg, i_grp))
+@@ -2080,11 +2080,11 @@
+ 
+    for (i=0;i<ntop_ctrys;i++) if (top_ctrys[i]->count!=0) tot_num++;
+    fprintf(out_fp,"<TABLE WIDTH=510 BORDER=2 CELLSPACING=1 CELLPADDING=1>\n");
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=CENTER COLSPAN=8>"         \
+            "%s %d %s %d %s</TH></TR>\n",
+            GREY,msg_top_top,tot_num,msg_top_of,tot_ctry,msg_top_c);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" ALIGN=center>"                   \
+           "<FONT SIZE=\"-1\">#</FONT></TH>\n",GREY);
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=center COLSPAN=2>"             \
+@@ -2095,7 +2095,7 @@
+           "<FONT SIZE=\"-1\">%s</FONT></TH>\n",KBYTECOLOR,msg_h_xfer);
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=center>"                       \
+           "<FONT SIZE=\"-1\">%s</FONT></TH></TR>\n",MISCCOLOR,msg_h_ctry);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    for (i=0;i<ntop_ctrys;i++)
+    {
+       flag_buf[0]=0;
+@@ -2130,7 +2130,7 @@
+               (t_xfer==0)?0:((float)top_ctrys[i]->xfer/t_xfer)*100.0,
+               flag_buf,top_ctrys[i]->desc);
+    }
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"</TABLE>\n<P>\n");
+ }
+ 
+@@ -2396,7 +2396,13 @@
+    double  gt_pages=0.0;
+    double  gt_xfer=0.0;
+    double  gt_visits=0.0;
++   time_t  now;
++   struct  tm *myts;
+ 
++   /* Generate our timestamp */
++   now=time(NULL);
++   myts=localtime(&now);
++
+    if (verbose>1) printf("%s\n",msg_gen_sum);
+ 
+    snprintf(buffer,sizeof(buffer),"%s %s",msg_main_us,hname);
+@@ -2434,10 +2440,10 @@
+                   "HEIGHT=256 WIDTH=512><P>\n",buffer);
+    /* month table */
+    fprintf(out_fp,"<TABLE WIDTH=600 BORDER=2 CELLSPACING=1 CELLPADDING=1>\n");
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH COLSPAN=11 BGCOLOR=\"%s\" ALIGN=center>",GREY);
+    fprintf(out_fp,"%s</TH></TR>\n",msg_main_sum);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH ALIGN=left ROWSPAN=2 BGCOLOR=\"%s\">"          \
+           "<FONT SIZE=\"-1\">%s</FONT></TH>\n",GREY,msg_h_mth);
+    fprintf(out_fp,"<TH ALIGN=center COLSPAN=4 BGCOLOR=\"%s\">"            \
+@@ -2464,9 +2470,13 @@
+           "<FONT SIZE=\"-1\">%s</FONT></TH>\n",FILECOLOR,msg_h_files);
+    fprintf(out_fp,"<TH ALIGN=center BGCOLOR=\"%s\">"                      \
+           "<FONT SIZE=\"-1\">%s</FONT></TH></TR>\n",HITCOLOR,msg_h_hits);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    for (i=HISTSIZE-1;i>=HISTSIZE-index_mths;i--)
+    {
++      /* skip empty month */
++      if ( hist[i].month == (myts->tm_mon + 2)) 
++         i--;
++
+       if (hist[i].hit==0)
+       {
+          days_in_month=1;
+@@ -2553,17 +2563,17 @@
+                      "ALIGN=left><FONT SIZE=\"-1\"><STRONG>%04d</TH>\n",
+                      GRPCOLOR,s_year);
+       fprintf(out_fp,"<TH ALIGN=\"right\" BGCOLOR=\"%s\">"       \
+-                     "<FONT SIZE=\"-1\">%.0f</TH>", GRPCOLOR, m_xfer);
++                     "<FONT SIZE=\"-1\">%.0f</TH>\n", GRPCOLOR, m_xfer);
+       fprintf(out_fp,"<TH ALIGN=\"right\" BGCOLOR=\"%s\">"       \
+-                     "<FONT SIZE=\"-1\">%0llu</TH>", GRPCOLOR, m_visits);
++                     "<FONT SIZE=\"-1\">%0llu</TH>\n", GRPCOLOR, m_visits);
+       fprintf(out_fp,"<TH ALIGN=\"right\" BGCOLOR=\"%s\">"       \
+-                     "<FONT SIZE=\"-1\">%0llu</TH>", GRPCOLOR, m_pages);
++                     "<FONT SIZE=\"-1\">%0llu</TH>\n", GRPCOLOR, m_pages);
+       fprintf(out_fp,"<TH ALIGN=\"right\" BGCOLOR=\"%s\">"       \
+-                     "<FONT SIZE=\"-1\">%0llu</TH>", GRPCOLOR, m_files);
++                     "<FONT SIZE=\"-1\">%0llu</TH>\n", GRPCOLOR, m_files);
+       fprintf(out_fp,"<TH ALIGN=\"right\" BGCOLOR=\"%s\">"       \
+-                     "<FONT SIZE=\"-1\">%0llu</TH>", GRPCOLOR, m_hit);
++                     "<FONT SIZE=\"-1\">%0llu</TH>\n", GRPCOLOR, m_hit);
+    }
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"<TR><TH BGCOLOR=\"%s\" COLSPAN=6 ALIGN=left>"          \
+           "<FONT SIZE=\"-1\">%s</FONT></TH>\n",GREY,msg_h_totals);
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=right>"                       \
+@@ -2576,7 +2586,7 @@
+           "<FONT SIZE=\"-1\">%.0f</FONT></TH>\n",GREY,gt_files);
+    fprintf(out_fp,"<TH BGCOLOR=\"%s\" ALIGN=right>"                       \
+           "<FONT SIZE=\"-1\">%.0f</FONT></TH></TR>\n",GREY,gt_hit);
+-   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
++//   fprintf(out_fp,"<TR><TH HEIGHT=4></TH></TR>\n");
+    fprintf(out_fp,"</TABLE>\n");
+    write_html_tail(out_fp);
+    fclose(out_fp);
