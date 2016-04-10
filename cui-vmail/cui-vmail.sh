@@ -1,5 +1,4 @@
 #!/bin/sh
-#------------------------------------------------------------------------------
 # eisfair configuration update script
 # Copyright 2007 - 2014 the eisfair team, team(at)eisfair(dot)org
 #
@@ -7,11 +6,11 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 ### internal parameter - not editable with ECE:
-### -------------------------------------------------------------------------
+
 VMAIL_TLS_CERT='/etc/ssl/certs/imapd.pem' # path to ssl cert
 VMAIL_TLS_KEY='/etc/ssl/private/imapd.key'
 VMAIL_TLS_CAPATH='/etc/ssl/certs'
@@ -22,16 +21,16 @@ POSTFIX_SMARTHOST_TLS='no'
 pchr="y"           # use postfix changeroot
 mysql_user="root"  # MySQL update user
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 ### check the password file and get the passwords
-### -------------------------------------------------------------------------
+
 # include config files base and vmail
 . /etc/config.d/base
 . /etc/config.d/vmail
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 ### set local values
-### -------------------------------------------------------------------------
+
 if [ "$VMAIL_SQL_HOST" = 'localhost' ]; then
     vmail_sql_connect="unix:/run/mysqld/mysqld.sock"
 else
@@ -53,10 +52,21 @@ fi
 uidvmail=$(id -u mail)
 gidvmail=$(id -g mail)
 
+### ----------------------------------------------------------------------------
+### mount rbind mail directory for raspberry pi with tmpfs
+if grep -q "/media/persist" /proc/mounts
+then
+    mkdir -p /media/persist/virtual
+    if ! grep -q "/media/persist/virtual" /etc/fstab
+    then
+        echo "/media/persist/virtual /var/spool/postfix/virtual none rw,bind 0 0" >> /etc/fstab
+        mount -a
+    fi 
+fi
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 ### create new SQL database or change values
-### -------------------------------------------------------------------------
+
 update_mysql_tables()
 {
     local count=1
@@ -128,7 +138,7 @@ update_mysql_tables()
 
 ### ----------------------------------------------------------------------------
 ### write new postfix config
-### ----------------------------------------------------------------------------
+
 postfix_int_netw=""
 postfix_cl_access_bl=""
 postfix_dyn_client_bl=""
@@ -465,9 +475,9 @@ chown -R ${uidvmail}:${gidvmail} /var/spool/postfix/virtual
 /usr/sbin/postfix set-permissions >/dev/null 2>&1
 echo -n "."
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 ### change smc-milter.conf file
-### -------------------------------------------------------------------------
+
 # check if installed clamav
 if [ ! -f /usr/sbin/clamd ]; then
     if [ "$POSTFIX_AV_CLAMAV" = 'yes' ]; then
@@ -498,7 +508,7 @@ chmod 0777 /var/spool/postfix/quarantine
 
 ### ----------------------------------------------------------------------------
 ### update sql query files for postfix and dovecot
-### ----------------------------------------------------------------------------
+
 for sqlfile in mysql-canonical_maps.cf mysql-client_access.cf \
                    mysql-client_access_postscreen.cf mysql-recipient_access.cf \
                    mysql-sender_access.cf mysql-transport.cf \
@@ -518,9 +528,8 @@ chmod 0750 /etc/postfix/sql
 chgrp postfix /etc/postfix/sql
 sed -i "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}')) FROM view_relaylogin WHERE email like '%s'|" /etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 ### update dovecot
-### -------------------------------------------------------------------------
 #10-auth
 sed -i -r "s|^[#]?disable_plaintext_auth =.*|disable_plaintext_auth = no|" /etc/dovecot/conf.d/10-auth.conf
 sed -i -r "s|^[#]?auth_username_format =.*|auth_username_format = ${dovecot_authf}|" /etc/dovecot/conf.d/10-auth.conf
@@ -537,7 +546,7 @@ sed -i "s|^!include auth-vpopmail.conf.ext.*|#!include auth-vpopmail.conf.ext|" 
 sed -i "s|^!include auth-static.conf.ext.*|#!include auth-static.conf.ext|" /etc/dovecot/conf.d/10-auth.conf
 
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 #10-logging
 sed -i -r "s|^[#]syslog_facility =.*|syslog_facility = auth|" /etc/dovecot/conf.d/10-logging.conf
 if [ $POSTFIX_LOGLEVEL -gt 2 ]; then
@@ -547,7 +556,7 @@ else
 fi
 sed -i -r 's|^[#]log_timestamp =.*|log_timestamp = "%Y-%m-%d %H:%M:%S "|' /etc/dovecot/conf.d/10-logging.conf
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 #10-mail
 cat > /etc/dovecot/conf.d/10-mail.conf <<EOF
 ## Mailbox locations and namespaces
@@ -612,7 +621,7 @@ mail_plugins = quota fts fts_squat
 #maildir_broken_filename_sizes = no
 EOF
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 #10-ssl
 [ ! -f "$VMAIL_TLS_CAPATH/ca.pem" ] && nocafile="#"
 cat > /etc/dovecot/conf.d/10-ssl.conf <<EOF
@@ -634,7 +643,7 @@ ssl_client_ca_dir = $VMAIL_TLS_CAPATH
 #ssl_crypto_device =
 EOF
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 #15-lda
 cat > /etc/dovecot/conf.d/15-lda.conf <<EOF
 ## LDA specific settings (also used by LMTP)
@@ -655,7 +664,7 @@ protocol lda {
 }
 EOF
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 #15-mailboxes
 cat > /etc/dovecot/conf.d/15-mailboxes.conf <<EOF
 ## Mailbox definitions
@@ -685,16 +694,16 @@ namespace inbox {
 }
 EOF
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 #20-imap
 sed -i -r "s|^[#]imap_client_workarounds =.*|imap_client_workarounds = tb-extra-mailbox-sep|" /etc/dovecot/conf.d/20-imap.conf
 sed -i "s|.*mail_plugins =.*|  mail_plugins = \$mail_plugins acl imap_acl|" /etc/dovecot/conf.d/20-imap.conf
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 #20-pop3
 sed -i "s|.*mail_plugins =.*|  mail_plugins = \$mail_plugins autocreate acl|" /etc/dovecot/conf.d/20-pop3.conf
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 #90-acl.conf
 cat > /etc/dovecot/conf.d/90-acl.conf <<EOF
 ## Mailbox access control lists.
@@ -704,7 +713,7 @@ plugin {
 }
 EOF
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 #90-plugin.conf
 cat > /etc/dovecot/conf.d/90-plugin.conf <<EOF
 ## Plugin settings
@@ -715,7 +724,7 @@ plugin {
 }
 EOF
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 #91-sieve-plugin.conf
 cat > /etc/dovecot/conf.d/91-sieve-plugin.conf <<EOF
 ## Settings for the Sieve interpreter
@@ -727,7 +736,7 @@ plugin {
 }
 EOF
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 #95-vsz-limit.conf
 cat > /etc/dovecot/conf.d/95-vsz-limit.conf <<EOF
 ## Settings for Memory usage optimization
@@ -739,7 +748,7 @@ protocol imap {
 }
 EOF
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 # create AUTH MASTER configuration
 cat > /etc/dovecot/conf.d/auth-master.conf.ext <<EOF
 # Authentication for master users. Included from 10-auth.conf.
@@ -751,7 +760,7 @@ passdb {
 }
 EOF
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 # create SQL configuration
 cat > /etc/dovecot/dovecot-sql.conf.ext <<EOF
 driver = mysql
@@ -778,7 +787,7 @@ EOF
 chown dovecot:root /etc/dovecot/dovecot-sql-master.conf.ext
 chmod 0640 /etc/dovecot/dovecot-sql-master.conf.ext
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 # create dict configuration
 cat > /etc/dovecot/dovecot-dict-sql.conf.ext <<EOF
 connect = host=$VMAIL_SQL_HOST dbname=$VMAIL_SQL_DATABASE user=$VMAIL_SQL_USER password=${VMAIL_SQL_PASS}
@@ -823,7 +832,7 @@ EOF
 chown dovecot:root /etc/dovecot/dovecot-dict-sql.conf.ext
 chmod 0640 /etc/dovecot/dovecot-dict-sql.conf.ext
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 # write local configuration
 cat > /etc/dovecot/local.conf <<EOF
 # eisfair-ng config
@@ -869,9 +878,9 @@ EOF
 
 echo "."
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 ### create ssl cert file
-### -------------------------------------------------------------------------
+
 mkdir -p $VMAIL_TLS_CAPATH
 mkdir -p $VMAIL_TLS_KEYPATH
 
@@ -922,17 +931,17 @@ mkdir -p /etc/postfix/ssl
 [ -f /etc/postfix/ssl/dh_2048.pem ] || openssl gendh -out /etc/postfix/ssl/dh_2048.pem -2 2048
 chmod 0644 /etc/postfix/ssl/*
 
-### --------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 ### add cron job
-### --------------------------------------------------------------------------
+
 mkdir -p /etc/cron/root
 echo "#59 23 * * * /var/install/bin/vmail-rejectlogfilter.sh" > /etc/cron/root/postfix
 [ "$START_POP3IMAP" = 'yes' ] && echo "00,30 * * * * /usr/bin/cui-vmail-maildropfilter.sh" >> /etc/cron/root/postfix
 [ "$START_FETCHMAIL" = "yes" ] && echo "$FETCHMAIL_CRON_SCHEDULE /usr/bin/cui-vmail-fetchmailstart.sh" >> /etc/cron/root/postfix
 
-### --------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 ### run automatic mysql update if password available
-### --------------------------------------------------------------------------
+
 if [ -f /root/.my.cnf ]; then
     mysql_pass=$(grep -m1 'password=' /root/.my.cnf | sed "s/password=//")
     [ -n "$mysql_pass" ] && mysql_pass="-p${mysql_pass}"
@@ -946,9 +955,9 @@ else
     [ "$1" = "update" ] || update_mysql_tables "X"
 fi
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 ### setup runlevel - not with init.d/vmail!
-### -------------------------------------------------------------------------
+
 # update crontab file
 /sbin/rc-service --quiet fcron reload
 if [ "$START_VMAIL" = "yes" ]; then
@@ -963,5 +972,5 @@ else
 #    /sbin/rc-update -q del fetchmail
 fi
 
-### -------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
 exit 0
