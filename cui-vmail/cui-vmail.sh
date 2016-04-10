@@ -54,6 +54,7 @@ gidvmail=$(id -g mail)
 
 ### ----------------------------------------------------------------------------
 ### mount rbind mail directory for raspberry pi with tmpfs
+mkdir -p /var/spool/postfix/virtual
 if grep -q "/media/persist" /proc/mounts
 then
     mkdir -p /media/persist/virtual
@@ -467,7 +468,6 @@ EOF
 #    chown -R root:root   /var/spool/postfix/lib
 #    chown -R root:root   /var/spool/postfix/usr
 #    chown    root:root   /var/spool/postfix/var
-mkdir -p /var/spool/postfix/virtual 
 chown -R ${uidvmail}:${gidvmail} /var/spool/postfix/virtual
 #    chmod 0777           /var/spool/postfix/var/lib
 #    chown postfix:root /var/spool/postfix
