@@ -1,7 +1,11 @@
 #!/bin/sh
-#-------------------------------------------------------------------------------
 # Eisfair configuration generator script
-# Copyright (c) 2007 - 2014 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2007 - 2016 the eisfair team, team(at)eisfair(dot)org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #-------------------------------------------------------------------------------
 
 #echo "Executing $0 ..."
@@ -10,17 +14,29 @@
 
 . /etc/config.d/mysql
 
-#-------------------------------------------------------------------------------
-# setup defaults
-#-------------------------------------------------------------------------------
-[ -e /var/lib/mysql/mysql ] || rc-service --quiet _DBNAME_ setup
+### ----------------------------------------------------------------------------
+### setup defaults and mount rbind mail directory for raspberry pi with tmpfs
+if [ ! -e  /var/lib/mysql/mysql ]
+then
+    mkdir -p /var/lib/mysql
+    if grep -q "/media/persist" /proc/mounts
+    then
+        if ! grep -q "/var/lib" /proc/mounts
+        then
+            mkdir -p /media/persist/lib
+            mkdir -p /media/persist/.libwork
+            echo "overlay /var/lib overlay lowerdir=/var/lib,upperdir=/media/persist/lib,workdir=/media/persist/.libwork 0 0" >> /etc/fstab 
+            mount -a
+        fi 
+    fi
+    rc-service --quiet _DBNAME_ setup
+fi
 mkdir -p    /var/lib/mysql_backup
 chmod 0750  /var/lib/mysql_backup
 chown mysql /var/lib/mysql_backup
 
-#-------------------------------------------------------------------------------
-# creating/edit config file
-#-------------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
+### creating/edit config file
 bindaddr="bind-address                = 127.0.0.1"
 if [ "$MYSQL_NETWORK" = "yes" ] ; then
     bindaddr="#bind-address               = 127.0.0.1"
@@ -32,7 +48,7 @@ fi
 #[ -z "$ncpu" ] && ncpu=1
 #ncpu=$(( $ncpu * 2 ))
 
-# compatible options -----------------------------------------------------------
+# --- compatible options -------------------------------------------------------
 if [ -e /etc/mysql/my.cnf ]
 then
     innodb_data_file_path=$(grep "innodb_data_file_path" /etc/mysql/my.cnf 2>/dev/null)
@@ -48,7 +64,7 @@ case "$xarch" in
     	;;
 esac
 
-# ---- set options for xx GB RAM -----------------------------------------------
+# --- set options for xx GB RAM ------------------------------------------------
 blg="" # activate binlog
 if [ "$MYSQL_RAM" = "256MB" ]; then
     blg="#"
@@ -204,7 +220,7 @@ fi
 [ -z "$MYSQL_QCACHE_ENTRY_MAX" -o "X$MYSQL_QCACHE_ENTRY_MAX" = "Xdefault" ] || query_cache_limit="$MYSQL_QCACHE_ENTRY_MAX"
 [ -z "$MYSQL_QCACHE_ENTRY_MIN" -o "X$MYSQL_QCACHE_ENTRY_MIN" = "Xdefault" ] || query_cache_min_res_unit="$MYSQL_QCACHE_ENTRY_MIN"
 
-# ---- write config file -------------------------------------------------------
+# --- write config file --------------------------------------------------------
 cat > /etc/mysql/my.cnf <<EOF
 [mysqld_safe]
 nice                        = 0
@@ -379,14 +395,12 @@ EOF
 
 chmod 0644 /etc/mysql/my.cnf
 
-#-------------------------------------------------------------------------------
-# force autosetup on init-script
-#-------------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
+### force autosetup on init-script
 echo 'AUTO_SETUP="yes"' > /etc/conf.d/_DBNAME_
 
-#-------------------------------------------------------------------------------
-# setup logrotate
-#-------------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
+### setup logrotate
 cat > /etc/logrotate.d/mysql <<EOF
 /var/log/mysql.log {
     ${MYSQL_LOG_INTERVAL}
@@ -398,21 +412,18 @@ cat > /etc/logrotate.d/mysql <<EOF
 }
 EOF
 
-#-------------------------------------------------------------------------------
-# setup syslog-ng
-#-------------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
+### setup syslog-ng
 /sbin/rc-service -i -q syslog-ng update
 /sbin/rc-service -i -q syslog-ng reload
 
-#-------------------------------------------------------------------------------
-# setup cron for database backup
-#-------------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
+### setup cron for database backup
 echo "$MYSQL_BACKUP_CRON_SCHEDULE /usr/bin/cui-mysql-backup.sh" > /etc/cron/root/mysql
 /sbin/rc-service --quiet fcron reload
 
-#-------------------------------------------------------------------------------
-# Mariadb start stop setup (different init script name)
-#-------------------------------------------------------------------------------
+### ----------------------------------------------------------------------------
+### Mariadb start stop setup (different init script name)
 if [ "_DBNAME_" = "mariadb" ] ; then
     if [ "$START_MYSQL" = "yes" ] ; then
         # restart package
