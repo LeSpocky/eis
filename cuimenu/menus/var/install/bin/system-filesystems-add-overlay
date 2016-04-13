@@ -1,0 +1,26 @@
+#!/bin/sh
+#-----------------------------------------------------------------------------
+# /var/install/bin/system-filesystems-add-overlay - add overlay storage
+# Copyright (c) 2001-2016 The Eisfair Team <team@eisfair.org>
+#-----------------------------------------------------------------------------
+
+[ -e /media/mmcblk0p1 ] || exit 0
+
+apk add f2fs-tools
+apk add e2fsprogs-extra
+
+if [ ! -e /dev/mmcblk0p2 ]
+then
+
+# resize fat partition
+mount /media/mmcblk0p1 -o ro,remount
+
+#... fatresize???
+
+#mount /media/mmcblk0p1 -o rw,remount
+#sed -i 's/vfat\ ro,/vfat\ rw,' /etc/fstab
+apk add e2fsprogs
+
+fi
+
+exit 0
