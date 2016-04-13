@@ -35,16 +35,12 @@ build() {
 	cd "$_builddir"
 	autoreconf -fiv
 	./configure \
-	    --prefix= \
-	    --disable-nls \
-	    --disable-static
+	    --prefix=
 	make || return 1
 }
 
 package() {
 	cd "$_builddir"
-	mkdir -p "$pkgdir"
-	mkdir -p /home/jens/eis/fatresize/pkg/fatresize/sbin
 	make -j1 DESTDIR="$pkgdir" install || return 1
 }
 
