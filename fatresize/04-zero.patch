@@ -1,0 +1,11 @@
+--- a/fatresize.c
++++ b/fatresize.c
+@@ -148,7 +148,7 @@
+     char *p;
+ 
+     p = dev+strlen(dev)-1;
+-    while (*p && isdigit(*p) && *p != '/')
++    while (*p && *p != '0' && isdigit(*p) && *p != '/')
+ 	p--;
+ 
+     devname = malloc(p-dev+2);

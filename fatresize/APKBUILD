@@ -2,7 +2,7 @@
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=fatresize
 pkgver=1.0.2
-pkgrel=0
+pkgrel=1
 pkgdesc="FAT16/FAT32 filesystem resizer"
 url="https://sourceforge.net/projects/fatresize/"
 arch="all"
@@ -17,6 +17,7 @@ source="
 	01-pkg-config.patch
 	02-libparted-3.1.patch
 	03-ped_free.patch
+	04-zero.patch
 	"
 
 _builddir="${srcdir}/${pkgname}-${pkgver}"
@@ -47,12 +48,15 @@ package() {
 md5sums="3bfac57c0801d33ad39e740841e6441e  fatresize-1.0.2.tar.bz2
 fe533f8f6b4bceb55f90c2eac4e5a9a6  01-pkg-config.patch
 522916ef8d7324aa7cc658b48252d6e5  02-libparted-3.1.patch
-282969c481b306889bc52c0591a68b7b  03-ped_free.patch"
+282969c481b306889bc52c0591a68b7b  03-ped_free.patch
+b603f28db33561ca754082c912c42087  04-zero.patch"
 sha256sums="55fe0834fee07caa2b79b12648bbcd82a07780fa85afd780b504ef7625229713  fatresize-1.0.2.tar.bz2
 152e75ccaa643c03ecbb32c002194ab97ee918b1648ad656a482c4f8935040da  01-pkg-config.patch
 482687e85dc0da0ddf77d1dbf84211fc5d30bd769e15591515ff94aa861aff8f  02-libparted-3.1.patch
-b13570281852139035869eb61ffc5cf5cc3ac38737d4641457f6e2c29118b3f4  03-ped_free.patch"
+b13570281852139035869eb61ffc5cf5cc3ac38737d4641457f6e2c29118b3f4  03-ped_free.patch
+845162e923c7a3f994d6e3fda60aa3bbc27adc36757a0c94477e6cb8f06ffd2c  04-zero.patch"
 sha512sums="3792e110a393fcee51ef5a12c3e09f3a0792470dc3609a262bc0d4b3186ea96922d51db445c3ec7e7eb02741f29f631c94476990914bf4822e2eac0a1e3373f7  fatresize-1.0.2.tar.bz2
 8244a346fd00bc464451774f30f8194b29c25faa3d02ca12e16bf990622c1c6efed4e18b7a31ad2a019f5b5d2f9fcbef268b8d7751a93b422ae5498dbfbe1c1f  01-pkg-config.patch
 a30fa1ddf21f59e202060a64ce6462b0bd4bd6268daff6dad654b530f601c10d6b231da5bf9a2b9d914e1974219e5b1ccfb5462d1fe697bef27d1e87882a7ea0  02-libparted-3.1.patch
-9f6705202134a499b5eb1c303d052b2774ed26ab9eda873cbb9fc84d44f03f7f46cb630607bd1dcbfcbfaf0271758ffd8cd9ee076812116d396f1361ae0c8dd0  03-ped_free.patch"
+9f6705202134a499b5eb1c303d052b2774ed26ab9eda873cbb9fc84d44f03f7f46cb630607bd1dcbfcbfaf0271758ffd8cd9ee076812116d396f1361ae0c8dd0  03-ped_free.patch
+f4d1ac60e129c0f90535ae7f61aaa004d56156a6ebfbd4f3353184c198f7e64c6e3683462ad43600816a7068862699a188fb47516605e7bb9c6a8ac9da076b45  04-zero.patch"
