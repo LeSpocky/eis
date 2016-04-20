@@ -1,4 +1,4 @@
 <package>base</package>
 <title>Filesystem administration</title>
 <script file="system-filesystems-list">List filesystems</script>
-<script file="system-filesystems-add-overlay">Add overlay storage</script>
+<!--- <script file="system-filesystems-add-overlay">Add overlay storage</script> --->

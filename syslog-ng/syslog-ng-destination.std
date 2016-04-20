@@ -3,7 +3,7 @@
 # append log file entry with line on a file: syslog-ng-destination.<package>
 # ---------------------------------------------------------------------------------
   destination df_auth { file("/var/log/auth.log" _TZ_ ); };
-  destination df_kern { file("/var/log/kern.log"); };
+  destination df_kern { file("/var/log/kern.log" _TZ_ ); };
   destination df_mail { file("/var/log/mail.log" _TZ_ ); };
   destination df_error { file("/var/log/error.log" _TZ_ ); };
 # these files are meant for the mail system log files
