@@ -1,1 +1,2 @@
-  filter sshlogs { facility(auth, authpriv) and not match("sshguard" value("PROGRAM")); };
+  filter sshlogsauth { facility(auth, authpriv) and not match("sshguard" value("PROGRAM")); };
+  filter sshlogsmail { level(warn..emerg) and facility(mail); };
