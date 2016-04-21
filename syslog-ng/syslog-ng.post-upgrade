@@ -1,3 +1,6 @@
 #!/bin/sh
 
 rc-service syslog-ng start
+rm -f /etc/logrotate.d/syslog.apk-new
+
+exit 0
