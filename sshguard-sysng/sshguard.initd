@@ -2,11 +2,10 @@
 # init.d file for alpine linux.
 
 name=sshguard
-daemon=/usr/sbin/$name
 
 depend() {
 	need net
-	after syslog
+	before logger
 }
 
 start() {
