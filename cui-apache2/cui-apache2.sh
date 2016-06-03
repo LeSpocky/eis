@@ -34,6 +34,8 @@ rm -f /etc/apache2/httpd.conf
 rm -f /etc/apache2/httpd.conf.apk-new
 apk fix -r apache2
 
+rm -f /var/www/localhost/cgi-bin/printenv*
+rm -f /var/www/localhost/cgi-bin/test-cgi
 
 # ------------------------------------------------------------------------------
 # create error message if packages not installed
