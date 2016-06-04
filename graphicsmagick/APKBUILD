@@ -1,7 +1,7 @@
 # Contributor: Jens Vehlhaber <jens@eisfair.org>
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=graphicsmagick
-pkgver=1.3.21
+pkgver=1.3.24
 pkgrel=0
 pkgdesc="A collection of tools and libraries for many image formats"
 url="http://www.graphicsmagick.org/"
@@ -56,6 +56,6 @@ package() {
 	strip -R .note -R .comment ${pkgdir}/usr/bin/gm
 }
 
-md5sums="fcf543de2d74514376cfd0418cc30989  GraphicsMagick-1.3.21.tar.bz2"
-sha256sums="a0ce08f2710c158e39faa083463441f6eeeecce07dbd59510498ffa4e0b053d1  GraphicsMagick-1.3.21.tar.bz2"
-sha512sums="4beef5a66a267e35e27403c3f763ee00ac05aa95259a734a215f328fc0e33d27697ce65f37785cac2073b34e48619c68005d71038bbd4bde57f7957a6cf06664  GraphicsMagick-1.3.21.tar.bz2"
+md5sums="08e2d3126ba83ba29caea3a503b96b1a  GraphicsMagick-1.3.24.tar.bz2"
+sha256sums="b060a4076308f93c25d52c903ad9a07e71b402dcb2a5c62356384865c129dff2  GraphicsMagick-1.3.24.tar.bz2"
+sha512sums="87ad95e2c3b03212bb85a43edcf73d8b34c389672c388596a3f60dc1fa5bebb01da96a27991863ca26bef828ae42cabeeff764d896a02ae253ce278007743b68  GraphicsMagick-1.3.24.tar.bz2"
