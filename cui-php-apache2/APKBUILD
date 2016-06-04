@@ -1,13 +1,13 @@
 # Contributor: Jens Vehlhaber <jens@eisfair.org>
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=cui-php-apache2
-pkgver=5.5.0
-pkgrel=6
+pkgver=5.6.12
+pkgrel=0
 pkgdesc="CUI Setup PHP 5.x module for apache"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
-depends="cuimenu cui-apache2 php-apache2"
+depends="cuimenu cui-apache2 php5-apache2"
 depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.post-deinstall"
