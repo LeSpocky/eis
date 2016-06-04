@@ -1,2 +1,3 @@
 #!/bin/sh
 rc-service -q fcron stop
+exit 0

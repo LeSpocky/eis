@@ -3,3 +3,4 @@
 rm -rf /var/spool/fcron
 rc-update add cron default
 rc-service cron start
+exit 0

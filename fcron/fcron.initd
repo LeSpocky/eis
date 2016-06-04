@@ -21,7 +21,7 @@ stop () {
 }
 
 update() {
-	cat /var/spool/fcron/systab.orig | fcrontab -u systab -z 
+	cat /var/spool/fcron/systab.orig | fcrontab -u systab -z
 	cd /etc/cron
 	for user in *
 	do

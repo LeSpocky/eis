@@ -2,5 +2,4 @@
 
 rc-service -i cron stop 2>/dev/null
 rc-update del cron default >/dev/null 2>&1
-
 exit 0
