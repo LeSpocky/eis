@@ -1,8 +1,8 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # eisfair-ng configuration generator script
-# Copyright (c) 2007 - 2013 the eisfair team, team(at)eisfair(dot)org
-#----------------------------------------------------------------------------
+# Copyright (c) 2007 - 2016 the eisfair team, team(at)eisfair(dot)org
+#------------------------------------------------------------------------------
 
 pn=php-apache2
 an=apache2
@@ -13,18 +13,32 @@ retval=0
 . /etc/config.d/${an}
 
 APACHE_USER="apache"
+# upgrade php-* to php5-*
+PHPv=php5
+PHPo=php
 
-# create error message if packages not installed
-errorsyslog()
+# -----------------------------------------------------------------------------
+# replace or reinstall php module
+load_php_module()
 {
-    local tmp="Fail install: $1"
-    logger -p error -t cui-php-apache2 "$tmp"
-    echo "$tmp"
+    local name="$1"
+    apk info -q -e ${PHPo}-$name && apk del -q ${PHPo}-$name
+    apk info -q -e ${PHPv}-$name || apk add -q ${PHPv}-$name
+    if [ $? -eq 0 ]; then
+        return 0
+    else
+        # create error message if packages not installed
+        logger -p error -t cui-php-apache2 "Fail install: $name"
+        echo "Fail install: $name"    
+        return 1
+    fi   
 }
 
 
 mkdir -p /etc/php/conf.d
 #rm -f /etc/php/conf.d/*.apk-new
+apk info -q -e ${PHPo}-apache2 && apk del -q ${PHPo}-apache2
+apk fix  -q -r ${PHPv}-apache2
 
 if [ "$PHP_INFO" = "yes" ] ; then
     mkdir -p /var/www/localhost/htdocs
@@ -255,7 +269,7 @@ if [ "$PHP_EXT_MYSQL" = "yes" ] ; then
         [ -z "$PHP_EXT_MYSQL_PORT" ] && PHP_EXT_MYSQL_PORT="3306"
     fi
 
-    apk info -q -e php-mysql || apk add -q php-mysql
+    load_php_module mysql
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/mysql.ini <<EOF
 extension=mysql.so
@@ -273,10 +287,9 @@ mysql.default_password=
 mysql.connect_timeout=60
 mysql.trace_mode=Off
 EOF
-    else
-        errorsyslog php-mysql
     fi
-    apk info -q -e php-pdo_mysql || apk add -q php-pdo_mysql
+
+    load_php_module pdo_mysql
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/pdo_mysql.ini <<EOF
 extension=pdo_mysql.so
@@ -284,10 +297,9 @@ extension=pdo_mysql.so
 pdo_mysql.cache_size=2000
 pdo_mysql.default_socket=${PHP_EXT_MYSQL_SOCKET}
 EOF
-    else
-        errorsyslog php-pdo_mysql
     fi
-    apk info -q -e php-mysqli || apk add -q php-mysqli
+
+    load_php_module mysqli
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/mysqli.ini <<EOF
 extension=mysqli.so
@@ -310,8 +322,6 @@ mysqlnd.collect_memory_statistics=Off
 ;mysqlnd.net_cmd_buffer_size=2048
 ;mysqlnd.net_read_buffer_size=32768
 EOF
-    else
-        errorsyslog php-mysqli
     fi
 fi
 
@@ -319,7 +329,7 @@ fi
 # INTERBASE
 rm -f /etc/php/conf.d/interbase.ini
 if [ "$PHP_EXT_INTER" = "yes" ] ; then
-#    apk info -q -e php-interbase || apk add -q php-interbase
+#    load_php_module interbase
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/interbase.ini <<EOF
 ;extension=interbase.so
@@ -346,8 +356,6 @@ ibase.dateformat = "%Y-%m-%d"
 ; Default time format.
 ibase.timeformat = "%H:%M:%S"
 EOF
-    else
-        errorsyslog php-interbase
     fi
 fi
 
@@ -355,7 +363,7 @@ fi
 # MSSQL
 rm -f /etc/php/conf.d/mssql.ini
 if [ "$PHP_EXT_MSSQL" = "yes" ] ; then
-    apk info -q -e php-mssql || apk add -q php-mssql
+    load_php_module mssql
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/mssql.ini <<EOF
 extension=mssql.so
@@ -397,8 +405,6 @@ mssql.secure_connection = Off
 ; This is only used when compiled with FreeTDS
 ;mssql.charset = "ISO-8859-1"
 EOF
-    else
-        errorsyslog php-mssql
     fi
 fi
 
@@ -407,7 +413,7 @@ fi
 rm -f /etc/php/conf.d/pqsql.ini
 rm -f /etc/php/conf.d/pdo_pgsql.ini
 if [ "${PHP_EXT_PGSQL}" = "yes" ] ; then
-    apk info -q -e php-pgsql || apk add -q php-pgsql
+    load_php_module pgsql
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/pqsql.ini <<EOF
 extension=pgsql.so
@@ -434,16 +440,13 @@ pgsql.ignore_notice = 0
 ; http://php.net/pgsql.log-notice
 pgsql.log_notice = 0
 EOF
-    else
-        errorsyslog php-pgsql
     fi
-    apk info -q -e php-pdo_pgsql || apk add -q php-pdo_pgsql
+
+    load_php_module pdo_pgsql
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/pdo_pgsql.ini <<EOF
 extension=pdo_pgsql.so
 EOF
-    else
-        errorsyslog php-pdo_pgsql
     fi
 fi
 
@@ -452,7 +455,7 @@ fi
 rm -f /etc/php/conf.d/sqlite3.ini
 rm -f /etc/php/conf.d/pdo_sqlite.ini
 if [ "$PHP_EXT_SQLITE3" = "yes" ] ; then
-    apk info -q -e php-sqlite3 || apk add -q php-sqlite3
+    load_php_module sqlite3
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/sqlite3.ini <<EOF
 extension=pdo_sqlite.so
@@ -460,13 +463,11 @@ extension=pdo_sqlite.so
 ;sqlite3.extension_dir =
 EOF
     fi
-    apk info -q -e php-pdo_sqlite || apk add -q php-pdo_sqlite
+    load_php_module pdo_sqlite
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/pdo_sqlite.ini <<EOF
 extension=sqlite3.so
 EOF
-    else
-        errorsyslog php-pdo_sqlite
     fi
 fi
 
@@ -474,13 +475,11 @@ fi
 # CTYPE
 rm -f /etc/php/conf.d/ctype.ini
 if [ "$PHP_EXT_CTYPE" = "yes" ] ; then
-    apk info -q -e php-ctype || apk add -q php-ctype
+    load_php_module ctype
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/ctype.ini <<EOF
 extension=ctype.so
 EOF
-    else
-        errorsyslog php-ctype
     fi
 fi
 
@@ -488,7 +487,7 @@ fi
 # SOAP
 rm -f /etc/php/conf.d/soap.ini
 if [ "$PHP_EXT_SOAP" = "yes" ] ; then
-    apk info -q -e php-soap || apk add -q php-soap
+    load_php_module soap
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/soap.ini <<EOF
 extension=soap.so
@@ -506,8 +505,6 @@ soap.wsdl_cache_ttl=86400
 ; Sets the size of the cache limit. (Max. number of WSDL files to cache)
 soap.wsdl_cache_limit = 5
 EOF
-    else
-        errorsyslog php-soap
     fi
 fi
 
@@ -515,13 +512,11 @@ fi
 # GD
 rm -f /etc/php/conf.d/gd.ini
 if [ "$PHP_EXT_GD" = "yes" ] ; then
-    apk info -q -e php-gd || apk add -q php-gd
+    load_php_module gd
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/gd.ini <<EOF
 extension=gd.so
 EOF
-    else
-        errorsyslog php-gd
     fi
 fi
 
@@ -529,7 +524,7 @@ fi
 # LDAP
 rm -f /etc/php/conf.d/ldap.ini
 if [ "$PHP_EXT_LDAP" = "yes" ] ; then
-    apk info -q -e php-ldap || apk add -q php-ldap
+    load_php_module ldap
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/ldap.ini <<EOF
 extension=ldap.so
@@ -537,8 +532,6 @@ extension=ldap.so
 ; Sets the maximum number of open links or -1 for unlimited.
 ldap.max_links = -1
 EOF
-    else
-        errorsyslog php-ldap
     fi
 fi
 
@@ -546,13 +539,11 @@ fi
 # CURL
 rm -f /etc/php/conf.d/curl.ini
 if [ "$PHP_EXT_CURL" = "yes" ] ; then
-    apk info -q -e php-curl || apk add -q php-curl
+    load_php_module curl
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/curl.ini <<EOF
 extension=curl.so
 EOF
-    else
-        errorsyslog php-curl
     fi
 fi
 
@@ -565,28 +556,24 @@ rm -f /etc/php/conf.d/memcache.ini
 rm -f /etc/php/conf.d/opcache.ini
 
 if [ "$PHP_EXT_CACHE" = "apc" ] ; then
-    apk info -q -e php-apcu || apk add -q php-apcu
+    load_php_module apcu
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/apcu.ini <<EOF
 extension=apcu.so
 ;nur noch User-Cache-Funktionen!
 EOF
-    else
-        errorsyslog apc
     fi
 elif [ "$PHP_EXT_CACHE" = "xcache" ] ; then
-    apk info -q -e php-xcache || apk add -q php-xcache
+    load_php_module xcache
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/xcache.ini <<EOF
 extension=xcache.so
 xcache.size=64M
 xcache.var_size=64M
 EOF
-    else
-        errorsyslog php-xcache
     fi
 elif [ "$PHP_EXT_CACHE" = "memcache" ] ; then
-    apk info -q -e php-memcache || apk add -q php-memcache
+    load_php_module memcache
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/memcache.ini <<EOF
 extension=memcache.so
@@ -604,17 +591,13 @@ extension=memcache.so
 ;memcache.compress_threshold=20000
 ;memcache.lock_timeout=15
 EOF
-    else
-        errorsyslog php-memcache
     fi
 elif [ "$PHP_EXT_CACHE" = "opcache" ] ; then
-    apk info -q -e php-opcache || apk add -q php-opcache
+    load_php_module opcache
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/opcache.ini <<EOF
 zend_extension=opcache.so
 EOF
-    else
-        errorsyslog php-opcache
     fi
 fi
 
@@ -622,13 +605,11 @@ fi
 # JSON
 rm -f /etc/php/conf.d/json.ini
 if [ "$PHP_EXT_JSON" = "yes" ] ; then
-    apk info -q -e php-json || apk add -q php-json
+    load_php_module json
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/json.ini <<EOF
 extension=json.so
 EOF
-    else
-        errorsyslog php-json
     fi
 fi
 
@@ -636,13 +617,11 @@ fi
 # GETTEXT
 rm -f /etc/php/conf.d/gettext.ini
 if [ "$PHP_EXT_GETTEXT" = "yes" ] ; then
-    apk info -q -e php-gettext || apk add -q php-gettext
+    load_php_module gettext
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/gettext.ini <<EOF
 extension=gettext.so
 EOF
-    else
-        errorsyslog php-gettext
     fi
 fi
 
@@ -650,13 +629,11 @@ fi
 # ICONV
 rm -f /etc/php/conf.d/iconv.ini
 if [ "$PHP_EXT_ICONV" = "yes" ] ; then
-    apk info -q -e php-iconv || apk add -q php-iconv
+    load_php_module iconv
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/iconv.ini <<EOF
 extension=iconv.so
 EOF
-    else
-        errorsyslog php-iconv
     fi
 fi
 
@@ -664,13 +641,11 @@ fi
 # IMAP
 rm -f /etc/php/conf.d/imap.ini
 if [ "$PHP_EXT_IMAP" = "yes" ] ; then
-    apk info -q -e php-imap || apk add -q php-imap
+    load_php_module imap
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/imap.ini <<EOF
 extension=imap.so
 EOF
-    else
-        errorsyslog php-imap
     fi
 fi
 
@@ -678,13 +653,11 @@ fi
 # OPENSSL
 rm -f /etc/php/conf.d/openssl.ini
 if [ "$PHP_EXT_SSL" = "yes" ] ; then
-    apk info -q -e php-openssl || apk add -q php-openssl
+    load_php_module openssl
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/openssl.ini <<EOF
 extension=openssl.so
 EOF
-    else
-        errorsyslog php-openssl
     fi
 fi
 
@@ -693,26 +666,22 @@ fi
 # XML
 rm -f /etc/php/conf.d/xml.ini
 if [ "$PHP_EXT_XML" = "yes" ] ; then
-    apk info -q -e php-xml || apk add -q php-xml
+    load_php_module xml
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/xml.ini <<EOF
 extension=xml.so
 EOF
-    else
-        errorsyslog php-xml
     fi
 fi
 # -----------------------------------------------------------------------------
 # XMLREADER
 rm -f /etc/php/conf.d/xmlreader.ini
 if [ "$PHP_EXT_XML" = "yes" ] ; then
-    apk info -q -e php-xmlreader || apk add -q php-xmlreader
+    load_php_module xmlreader
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/xmlreader.ini <<EOF
 extension=xmlreader.so
 EOF
-    else
-        errorsyslog php-xmlreader
     fi
 fi
 
@@ -720,13 +689,11 @@ fi
 # ZIP
 rm -f /etc/php/conf.d/zip.ini
 if [ "$PHP_EXT_ZIP" = "yes" ] ; then
-    apk info -q -e php-zip || apk add -q php-zip
+    load_php_module zip
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/zip.ini <<EOF
 extension=zip.so
 EOF
-    else
-        errorsyslog php-zip
     fi
 fi
 
@@ -734,13 +701,11 @@ fi
 # ZLIB
 rm -f /etc/php/conf.d/zlib.ini
 if [ "$PHP_EXT_ZLIB" = "yes" ] ; then
-    apk info -q -e php-zlib || apk add -q php-zlib
+    load_php_module zlib
     if [ $? -eq 0 ]; then
         cat >/etc/php/conf.d/zlib.ini <<EOF
 extension=zlib.so
 EOF
-    else
-        errorsyslog php-zlib
     fi
 fi
 
