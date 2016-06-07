@@ -32,10 +32,13 @@ chmod 600 /etc/config.d/apache2
 # ------------------------------------------------------------------------------
 rm -f /etc/apache2/httpd.conf
 rm -f /etc/apache2/httpd.conf.apk-new
+
 apk fix -r apache2
 
 rm -f /var/www/localhost/cgi-bin/printenv*
 rm -f /var/www/localhost/cgi-bin/test-cgi
+
+addgroup -g 81 -S apache
 
 # ------------------------------------------------------------------------------
 # create error message if packages not installed

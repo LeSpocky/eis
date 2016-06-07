@@ -22,22 +22,22 @@ PHPo=php
 load_php_module()
 {
     local name="$1"
-    apk info -q -e ${PHPo}-$name && apk del -q ${PHPo}-$name
+    apk info -q -e ${PHPo}-$name && apk del -f -q ${PHPo}-$name
     apk info -q -e ${PHPv}-$name || apk add -q ${PHPv}-$name
     if [ $? -eq 0 ]; then
         return 0
     else
         # create error message if packages not installed
-        logger -p error -t cui-php-apache2 "Fail install: $name"
-        echo "Fail install: $name"    
+        logger -p error -t cui-php-apache2 "Fail install: ${PHPv}-$name"
+        echo "Fail install: ${PHPv}-$name"    
         return 1
     fi   
 }
 
 
-mkdir -p /etc/php/conf.d
-#rm -f /etc/php/conf.d/*.apk-new
-apk info -q -e ${PHPo}-apache2 && apk del -q ${PHPo}-apache2
+mkdir -p /etc/${PHPv}/conf.d
+#rm -f /etc/${PHPv}/conf.d/*.apk-new
+apk info -q -e ${PHPo}-apache2 && apk del -f -q ${PHPo}-apache2
 apk fix  -q -r ${PHPv}-apache2
 
 if [ "$PHP_INFO" = "yes" ] ; then
@@ -115,7 +115,7 @@ fi
 (
     echo "[php]" 
     echo "default_charset = \"UTF-8\"" 
-) > /etc/php/conf.d/eisfair.ini
+) > /etc/${PHPv}/conf.d/eisfair.ini
 
 # -----------------------------------------------------------------------------
 # Log Error
@@ -126,7 +126,7 @@ if [ "$PHP_LOG_ERROR" = "yes" ] ; then
         echo "; error displaying on production web sites."
         echo "log_errors = On"
         echo 
-    ) >> /etc/php/conf.d/eisfair.ini
+    ) >> /etc/${PHPv}/conf.d/eisfair.ini
 else
     (
         echo "; Log errors into a log file (server-specific log, stderr, or error_log (below))"
@@ -134,7 +134,7 @@ else
         echo "; error displaying on production web sites."
         echo "log_errors = Off"
         echo 
-    ) >> /etc/php/conf.d/eisfair.ini
+    ) >> /etc/${PHPv}/conf.d/eisfair.ini
 fi
 
 # -----------------------------------------------------------------------------
@@ -148,7 +148,7 @@ if [ "$PHP_DISPLAY_ERRORS" = "yes" ] ; then
         echo "; server, your database schema or other information."
         echo "display_errors = On"
         echo 
-    ) >> /etc/php/conf.d/eisfair.ini
+    ) >> /etc/${PHPv}/conf.d/eisfair.ini
 else
     (
         echo "; Print out errors (as a part of the output).  For production web sites,"
@@ -158,7 +158,7 @@ else
         echo "; server, your database schema or other information."
         echo "display_errors = Off"
         echo 
-    ) >> /etc/php/conf.d/eisfair.ini
+    ) >> /etc/${PHPv}/conf.d/eisfair.ini
 fi
 
 # -----------------------------------------------------------------------------
@@ -170,7 +170,7 @@ if [ "$PHP_REGISTER_GLOBALS" = "yes" ] ; then
         echo "; to possible security problems, if the code is not very well thought of."
         echo "register_globals = On"
         echo 
-    ) >> /etc/php/conf.d/eisfair.ini
+    ) >> /etc/${PHPv}/conf.d/eisfair.ini
 else
     (
         echo "; You should do your best to write your scripts so that they do not require"
@@ -178,7 +178,7 @@ else
         echo "; to possible security problems, if the code is not very well thought of."
         echo "register_globals = Off"
         echo 
-    ) >> /etc/php/conf.d/eisfair.ini
+    ) >> /etc/${PHPv}/conf.d/eisfair.ini
 fi
 
 # -----------------------------------------------------------------------------
@@ -188,13 +188,13 @@ if [ -n "$PHP_SENDMAIL_PATH" -a -f "$PHP_SENDMAIL_PATH" ] ; then
         echo '; For Unix only.  You may supply arguments as well (default: "sendmail -t -i").'
         echo "sendmail_path = ${PHP_SENDMAIL_PATH} ${PHP_SENDMAIL_APP}"
         echo 
-    ) >> /etc/php/conf.d/eisfair.ini
+    ) >> /etc/${PHPv}/conf.d/eisfair.ini
 else
     (
         echo '; For Unix only.  You may supply arguments as well (default: "sendmail -t -i").'
         echo "sendmail_path = sendmail -t -i"
         echo 
-    ) >> /etc/php/conf.d/eisfair.ini
+    ) >> /etc/${PHPv}/conf.d/eisfair.ini
 fi
 
 # -----------------------------------------------------------------------------
@@ -209,7 +209,7 @@ fi
     echo
     echo ';date.sunrise_zenith = 90.583333'
     echo ';date.sunset_zenith = 90.583333'
-) >> /etc/php/conf.d/eisfair.ini
+) >> /etc/${PHPv}/conf.d/eisfair.ini
 
 # -----------------------------------------------------------------------------
 # Include Path
@@ -217,7 +217,7 @@ fi
     echo '; UNIX: "/path1:/path2"'
     echo "include_path = ${PHP_INCLUDE_PATH}"
     echo 
-) >> /etc/php/conf.d/eisfair.ini
+) >> /etc/${PHPv}/conf.d/eisfair.ini
 
 # -----------------------------------------------------------------------------
 # Upload directory
@@ -227,14 +227,14 @@ if [ -d "$PHP_UPLOAD_DIR" ] ; then
         echo "; specified)."
         echo "upload_tmp_dir = ${PHP_UPLOAD_DIR}"
         echo 
-    ) >> /etc/php/conf.d/eisfair.ini
+    ) >> /etc/${PHPv}/conf.d/eisfair.ini
 else
     (
         echo "; Temporary directory for HTTP uploaded files (will use system default if not"
         echo "; specified)."
         echo 'upload_tmp_dir = "/tmp"'
         echo 
-    ) >> /etc/php/conf.d/eisfair.ini
+    ) >> /etc/${PHPv}/conf.d/eisfair.ini
 fi
 
 # -----------------------------------------------------------------------------
@@ -252,13 +252,13 @@ fi
     echo "; Maximum size of POST data that PHP will accept."
     echo "post_max_size = ${PHP_MAX_POST_SIZE}"
     echo 
-) >> /etc/php/conf.d/eisfair.ini
+) >> /etc/${PHPv}/conf.d/eisfair.ini
 
 # -----------------------------------------------------------------------------
 # MYSQL
-rm  -f /etc/php/conf.d/mysql.ini
-rm  -f /etc/php/conf.d/mysqli.ini
-rm  -f /etc/php/conf.d/pdo_mysql.ini
+rm  -f /etc/${PHPv}/conf.d/mysql.ini
+rm  -f /etc/${PHPv}/conf.d/mysqli.ini
+rm  -f /etc/${PHPv}/conf.d/pdo_mysql.ini
 if [ "$PHP_EXT_MYSQL" = "yes" ] ; then
     if [ -z "$PHP_EXT_MYSQL_SOCKET" -a -z "$PHP_EXT_MYSQL_HOST" ] ; then
         [ -e "/run/mysqld/mysqld.sock" ] && PHP_EXT_MYSQL_SOCKET="/run/mysqld/mysqld.sock"
@@ -271,7 +271,7 @@ if [ "$PHP_EXT_MYSQL" = "yes" ] ; then
 
     load_php_module mysql
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/mysql.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/mysql.ini <<EOF
 extension=mysql.so
 [mysql]
 mysql.allow_local_infile=On
@@ -291,7 +291,7 @@ EOF
 
     load_php_module pdo_mysql
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/pdo_mysql.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/pdo_mysql.ini <<EOF
 extension=pdo_mysql.so
 [pdo_mysql]
 pdo_mysql.cache_size=2000
@@ -301,7 +301,7 @@ EOF
 
     load_php_module mysqli
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/mysqli.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/mysqli.ini <<EOF
 extension=mysqli.so
 [mysqli]
 mysqli.max_persistent=-1
@@ -327,11 +327,11 @@ fi
 
 # ------------------------------------------------------------------------------
 # INTERBASE
-rm -f /etc/php/conf.d/interbase.ini
+rm -f /etc/${PHPv}/conf.d/interbase.ini
 if [ "$PHP_EXT_INTER" = "yes" ] ; then
 #    load_php_module interbase
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/interbase.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/interbase.ini <<EOF
 ;extension=interbase.so
 ;extension=pdo_firebird.so
 [interbase]
@@ -361,11 +361,11 @@ fi
 
 # -----------------------------------------------------------------------------
 # MSSQL
-rm -f /etc/php/conf.d/mssql.ini
+rm -f /etc/${PHPv}/conf.d/mssql.ini
 if [ "$PHP_EXT_MSSQL" = "yes" ] ; then
     load_php_module mssql
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/mssql.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/mssql.ini <<EOF
 extension=mssql.so
 [mssql]
 ; Allow or prevent persistent links.
@@ -410,12 +410,12 @@ fi
 
 # -----------------------------------------------------------------------------
 # POSTGRESQL
-rm -f /etc/php/conf.d/pqsql.ini
-rm -f /etc/php/conf.d/pdo_pgsql.ini
+rm -f /etc/${PHPv}/conf.d/pqsql.ini
+rm -f /etc/${PHPv}/conf.d/pdo_pgsql.ini
 if [ "${PHP_EXT_PGSQL}" = "yes" ] ; then
     load_php_module pgsql
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/pqsql.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/pqsql.ini <<EOF
 extension=pgsql.so
 [PostgresSQL]
 ; Allow or prevent persistent links.
@@ -444,7 +444,7 @@ EOF
 
     load_php_module pdo_pgsql
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/pdo_pgsql.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/pdo_pgsql.ini <<EOF
 extension=pdo_pgsql.so
 EOF
     fi
@@ -452,12 +452,12 @@ fi
 
 # -----------------------------------------------------------------------------
 # SQLite3
-rm -f /etc/php/conf.d/sqlite3.ini
-rm -f /etc/php/conf.d/pdo_sqlite.ini
+rm -f /etc/${PHPv}/conf.d/sqlite3.ini
+rm -f /etc/${PHPv}/conf.d/pdo_sqlite.ini
 if [ "$PHP_EXT_SQLITE3" = "yes" ] ; then
     load_php_module sqlite3
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/sqlite3.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/sqlite3.ini <<EOF
 extension=pdo_sqlite.so
 [sqlite3]
 ;sqlite3.extension_dir =
@@ -465,7 +465,7 @@ EOF
     fi
     load_php_module pdo_sqlite
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/pdo_sqlite.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/pdo_sqlite.ini <<EOF
 extension=sqlite3.so
 EOF
     fi
@@ -473,11 +473,11 @@ fi
 
 # -----------------------------------------------------------------------------
 # CTYPE
-rm -f /etc/php/conf.d/ctype.ini
+rm -f /etc/${PHPv}/conf.d/ctype.ini
 if [ "$PHP_EXT_CTYPE" = "yes" ] ; then
     load_php_module ctype
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/ctype.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/ctype.ini <<EOF
 extension=ctype.so
 EOF
     fi
@@ -485,11 +485,11 @@ fi
 
 # -----------------------------------------------------------------------------
 # SOAP
-rm -f /etc/php/conf.d/soap.ini
+rm -f /etc/${PHPv}/conf.d/soap.ini
 if [ "$PHP_EXT_SOAP" = "yes" ] ; then
     load_php_module soap
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/soap.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/soap.ini <<EOF
 extension=soap.so
 [soap]
 ; Enables or disables WSDL caching feature.
@@ -510,11 +510,11 @@ fi
 
 # -----------------------------------------------------------------------------
 # GD
-rm -f /etc/php/conf.d/gd.ini
+rm -f /etc/${PHPv}/conf.d/gd.ini
 if [ "$PHP_EXT_GD" = "yes" ] ; then
     load_php_module gd
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/gd.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/gd.ini <<EOF
 extension=gd.so
 EOF
     fi
@@ -522,11 +522,11 @@ fi
 
 # -----------------------------------------------------------------------------
 # LDAP
-rm -f /etc/php/conf.d/ldap.ini
+rm -f /etc/${PHPv}/conf.d/ldap.ini
 if [ "$PHP_EXT_LDAP" = "yes" ] ; then
     load_php_module ldap
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/ldap.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/ldap.ini <<EOF
 extension=ldap.so
 [ldap]
 ; Sets the maximum number of open links or -1 for unlimited.
@@ -537,11 +537,11 @@ fi
 
 # -----------------------------------------------------------------------------
 # CURL
-rm -f /etc/php/conf.d/curl.ini
+rm -f /etc/${PHPv}/conf.d/curl.ini
 if [ "$PHP_EXT_CURL" = "yes" ] ; then
     load_php_module curl
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/curl.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/curl.ini <<EOF
 extension=curl.so
 EOF
     fi
@@ -549,16 +549,16 @@ fi
 
 # -----------------------------------------------------------------------------
 # CACHE
-rm -f /etc/php/conf.d/apc.ini
-rm -f /etc/php/conf.d/apcu.ini
-rm -f /etc/php/conf.d/xcache.ini
-rm -f /etc/php/conf.d/memcache.ini
-rm -f /etc/php/conf.d/opcache.ini
+rm -f /etc/${PHPv}/conf.d/apc.ini
+rm -f /etc/${PHPv}/conf.d/apcu.ini
+rm -f /etc/${PHPv}/conf.d/xcache.ini
+rm -f /etc/${PHPv}/conf.d/memcache.ini
+rm -f /etc/${PHPv}/conf.d/opcache.ini
 
 if [ "$PHP_EXT_CACHE" = "apc" ] ; then
     load_php_module apcu
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/apcu.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/apcu.ini <<EOF
 extension=apcu.so
 ;nur noch User-Cache-Funktionen!
 EOF
@@ -566,7 +566,7 @@ EOF
 elif [ "$PHP_EXT_CACHE" = "xcache" ] ; then
     load_php_module xcache
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/xcache.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/xcache.ini <<EOF
 extension=xcache.so
 xcache.size=64M
 xcache.var_size=64M
@@ -575,7 +575,7 @@ EOF
 elif [ "$PHP_EXT_CACHE" = "memcache" ] ; then
     load_php_module memcache
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/memcache.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/memcache.ini <<EOF
 extension=memcache.so
 ;memcache.allow_failover="1"
 ;memcache.max_failover_attempts="20"
@@ -595,7 +595,7 @@ EOF
 elif [ "$PHP_EXT_CACHE" = "opcache" ] ; then
     load_php_module opcache
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/opcache.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/opcache.ini <<EOF
 zend_extension=opcache.so
 EOF
     fi
@@ -603,11 +603,11 @@ fi
 
 # -----------------------------------------------------------------------------
 # JSON
-rm -f /etc/php/conf.d/json.ini
+rm -f /etc/${PHPv}/conf.d/json.ini
 if [ "$PHP_EXT_JSON" = "yes" ] ; then
     load_php_module json
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/json.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/json.ini <<EOF
 extension=json.so
 EOF
     fi
@@ -615,11 +615,11 @@ fi
 
 # -----------------------------------------------------------------------------
 # GETTEXT
-rm -f /etc/php/conf.d/gettext.ini
+rm -f /etc/${PHPv}/conf.d/gettext.ini
 if [ "$PHP_EXT_GETTEXT" = "yes" ] ; then
     load_php_module gettext
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/gettext.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/gettext.ini <<EOF
 extension=gettext.so
 EOF
     fi
@@ -627,11 +627,11 @@ fi
 
 # -----------------------------------------------------------------------------
 # ICONV
-rm -f /etc/php/conf.d/iconv.ini
+rm -f /etc/${PHPv}/conf.d/iconv.ini
 if [ "$PHP_EXT_ICONV" = "yes" ] ; then
     load_php_module iconv
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/iconv.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/iconv.ini <<EOF
 extension=iconv.so
 EOF
     fi
@@ -639,11 +639,11 @@ fi
 
 # -----------------------------------------------------------------------------
 # IMAP
-rm -f /etc/php/conf.d/imap.ini
+rm -f /etc/${PHPv}/conf.d/imap.ini
 if [ "$PHP_EXT_IMAP" = "yes" ] ; then
     load_php_module imap
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/imap.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/imap.ini <<EOF
 extension=imap.so
 EOF
     fi
@@ -651,11 +651,11 @@ fi
 
 # -----------------------------------------------------------------------------
 # OPENSSL
-rm -f /etc/php/conf.d/openssl.ini
+rm -f /etc/${PHPv}/conf.d/openssl.ini
 if [ "$PHP_EXT_SSL" = "yes" ] ; then
     load_php_module openssl
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/openssl.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/openssl.ini <<EOF
 extension=openssl.so
 EOF
     fi
@@ -664,22 +664,22 @@ fi
 
 # -----------------------------------------------------------------------------
 # XML
-rm -f /etc/php/conf.d/xml.ini
+rm -f /etc/${PHPv}/conf.d/xml.ini
 if [ "$PHP_EXT_XML" = "yes" ] ; then
     load_php_module xml
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/xml.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/xml.ini <<EOF
 extension=xml.so
 EOF
     fi
 fi
 # -----------------------------------------------------------------------------
 # XMLREADER
-rm -f /etc/php/conf.d/xmlreader.ini
+rm -f /etc/${PHPv}/conf.d/xmlreader.ini
 if [ "$PHP_EXT_XML" = "yes" ] ; then
     load_php_module xmlreader
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/xmlreader.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/xmlreader.ini <<EOF
 extension=xmlreader.so
 EOF
     fi
@@ -687,11 +687,11 @@ fi
 
 # -----------------------------------------------------------------------------
 # ZIP
-rm -f /etc/php/conf.d/zip.ini
+rm -f /etc/${PHPv}/conf.d/zip.ini
 if [ "$PHP_EXT_ZIP" = "yes" ] ; then
     load_php_module zip
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/zip.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/zip.ini <<EOF
 extension=zip.so
 EOF
     fi
@@ -699,11 +699,11 @@ fi
 
 # -----------------------------------------------------------------------------
 # ZLIB
-rm -f /etc/php/conf.d/zlib.ini
+rm -f /etc/${PHPv}/conf.d/zlib.ini
 if [ "$PHP_EXT_ZLIB" = "yes" ] ; then
     load_php_module zlib
     if [ $? -eq 0 ]; then
-        cat >/etc/php/conf.d/zlib.ini <<EOF
+        cat >/etc/${PHPv}/conf.d/zlib.ini <<EOF
 extension=zlib.so
 EOF
     fi
