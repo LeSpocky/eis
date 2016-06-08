@@ -38,7 +38,7 @@ load_php_module()
 remove_php_module()
 {
     local name="$1"
-    apk info -q -e ${PHPo}-$name && apk del -f -q ${PHPo}-$name
+    apk del -f -q ${PHPo}-$name
     if [ $? -eq 0 ]; then
         return 0
     else
@@ -62,12 +62,13 @@ do
 done
 
 mkdir -p /etc/${PHPv}/conf.d
-apk info -q -e ${PHPo}-apache2 && apk del -f -q ${PHPo}-apache2
-apk info -q -e ${PHPv}-apache2 && apk fix -q -r ${PHPv}-apache2 || apk add -q ${PHPv}-apache2
+apk del -f -q ${PHPo}-apache2
+apk add -f -q ${PHPv}
+apk add -f -q ${PHPv}-apache2
 
 for modfile in $mlist
 do
-    load_php__module $modfile
+    load_php_module $modfile
 done
 
 # -----------------------------------------------------------------------------
