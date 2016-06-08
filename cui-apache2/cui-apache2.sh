@@ -38,7 +38,7 @@ apk fix -r apache2
 rm -f /var/www/localhost/cgi-bin/printenv*
 rm -f /var/www/localhost/cgi-bin/test-cgi
 
-addgroup -g 81 -S apache
+addgroup -g 81 -S apache >/dev/null 2>&1
 
 # ------------------------------------------------------------------------------
 # create error message if packages not installed

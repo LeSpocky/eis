@@ -4,13 +4,11 @@
 # Copyright (c) 2007 - 2016 the eisfair team, team(at)eisfair(dot)org
 #------------------------------------------------------------------------------
 
-pn=php-apache2
-an=apache2
 retval=0
 
-. /etc/default.d/${pn}
-. /etc/config.d/${pn}
-. /etc/config.d/${an}
+. /etc/default.d/php-apache2
+. /etc/config.d/php-apache2
+. /etc/config.d/apache2
 
 APACHE_USER="apache"
 # upgrade php-* to php5-*
@@ -18,11 +16,11 @@ PHPv=php5
 PHPo=php
 
 # -----------------------------------------------------------------------------
-# replace or reinstall php module
+# load php module if not installed
+# -----------------------------------------------------------------------------
 load_php_module()
 {
     local name="$1"
-    apk info -q -e ${PHPo}-$name && apk del -f -q ${PHPo}-$name
     apk info -q -e ${PHPv}-$name || apk add -q ${PHPv}-$name
     if [ $? -eq 0 ]; then
         return 0
@@ -34,12 +32,47 @@ load_php_module()
     fi   
 }
 
+# -----------------------------------------------------------------------------
+# remove old php module if installed
+# -----------------------------------------------------------------------------
+remove_php_module()
+{
+    local name="$1"
+    apk info -q -e ${PHPo}-$name && apk del -f -q ${PHPo}-$name
+    if [ $? -eq 0 ]; then
+        return 0
+    else
+        # create error message if packages not remove
+        logger -p error -t cui-php-apache2 "Fail remove: ${PHPo}-$name"
+        return 1
+    fi   
+}
+
+# -----------------------------------------------------------------------------
+# update all old php modules
+# -----------------------------------------------------------------------------
+mlist=""
+for modfile in /etc/${PHPo}/conf.d/*.ini
+do
+    fname=$(basename "$modfile")
+    fname=${fname%*.ini}
+    [ "$fname" = "eisfair" ] && continue
+    remove_php_module $fname
+    mlist="$fname $mlist"
+done
 
 mkdir -p /etc/${PHPv}/conf.d
-#rm -f /etc/${PHPv}/conf.d/*.apk-new
 apk info -q -e ${PHPo}-apache2 && apk del -f -q ${PHPo}-apache2
-apk fix  -q -r ${PHPv}-apache2
+apk info -q -e ${PHPv}-apache2 && apk fix -q -r ${PHPv}-apache2 || apk add -q ${PHPv}-apache2
 
+for modfile in $mlist
+do
+    load_php__module $modfile
+done
+
+# -----------------------------------------------------------------------------
+# create php info files
+# -----------------------------------------------------------------------------
 if [ "$PHP_INFO" = "yes" ] ; then
     mkdir -p /var/www/localhost/htdocs
     echo '<?php phpinfo() ?>'>/var/www/localhost/htdocs/info.php
