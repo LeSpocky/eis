@@ -27,9 +27,9 @@ load_php_module()
     else
         # create error message if packages not installed
         logger -p error -t cui-php-apache2 "Fail install: ${PHPv}-$name"
-        echo "Fail install: ${PHPv}-$name"    
+        echo "Fail install: ${PHPv}-$name"
         return 1
-    fi   
+    fi
 }
 
 # -----------------------------------------------------------------------------
@@ -45,31 +45,36 @@ remove_php_module()
         # create error message if packages not remove
         logger -p error -t cui-php-apache2 "Fail remove: ${PHPo}-$name"
         return 1
-    fi   
+    fi
 }
 
 # -----------------------------------------------------------------------------
 # update all old php modules
 # -----------------------------------------------------------------------------
 mlist=""
-for modfile in /etc/${PHPo}/conf.d/*.ini
-do
-    fname=$(basename "$modfile")
-    fname=${fname%*.ini}
-    [ "$fname" = "eisfair" ] && continue
-    remove_php_module $fname
-    mlist="$fname $mlist"
-done
-
 mkdir -p /etc/${PHPv}/conf.d
-apk del -f -q ${PHPo}-apache2
-apk add -f -q ${PHPv}
-apk add -f -q ${PHPv}-apache2
+if [ -e /etc/${PHPo}/conf.d/ ]
+then
+    for modfile in /etc/${PHPo}/conf.d/*.ini
+    do
+        fname=$(basename "$modfile")
+        fname=${fname%*.ini}
+        [ "$fname" = "eisfair" ] && continue
+        remove_php_module $fname
+        mlist="$fname $mlist"
+    done
+    apk del -f -q ${PHPo}-apache2
+    apk add -f -q ${PHPv}
+    apk add -f -q ${PHPv}-apache2
+    for modfile in $mlist
+    do
+        load_php_module $modfile
+    done
+else
+    apk info -q -e ${PHPv} || apk add -q ${PHPv}
+    load_php_module apache2
+fi
 
-for modfile in $mlist
-do
-    load_php_module $modfile
-done
 
 # -----------------------------------------------------------------------------
 # create php info files
