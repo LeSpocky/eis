@@ -1,13 +1,13 @@
 # Contributor: Yves Schumann <yves@eisfair.org>
 # Maintainer: Yves Schumann <yves@eisfair.org>
 pkgname=cui-phpmyadmin
-pkgver=1.0.0
-pkgrel=7
+pkgver=1.0.1
+pkgrel=0
 pkgdesc="CUI Setup for phpMyAdmin"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
-depends="cuimenu cui-apache2 cui-php-apache2 php5-xml phpmyadmin"
+depends="cuimenu cui-apache2 cui-php-apache2 phpmyadmin"
 depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.post-install $pkgname.pre-upgrade $pkgname.post-deinstall"
@@ -52,7 +52,7 @@ package() {
 	done
 	cd -
 	install -D -m644 ${srcdir}/${pkgname}.check                                ${pkgdir}/etc/check.d/${_pname} || return 1
-    install -D -m644 ${srcdir}/${pkgname}.txt                                  ${pkgdir}/usr/share/doc/${_pname}/${_pname}.txt || return 1
+        install -D -m644 ${srcdir}/${pkgname}.txt                                  ${pkgdir}/usr/share/doc/${_pname}/${_pname}.txt || return 1
 	install -D -m755 ${srcdir}/${pkgname}.sh                                   ${pkgdir}/var/install/config.d/${_pname}.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh                            ${pkgdir}/var/install/config.d/${_pname}-update.sh || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.phpmyadmin.menu       ${pkgdir}/var/install/menu/setup.services.phpmyadmin.menu || return 1
@@ -77,10 +77,10 @@ md5sums="7553d9bdc92c255e69f3eab3cdd6385a  cui-phpmyadmin.check
 f5c3e001bfef59ac7d95d989fb8beb73  cui-phpmyadmin.help
 2fcbfbe9a496dd5b6e8a45769bc42c66  cui-phpmyadmin.setup.services.phpmyadmin.menu
 7b6d0da75a46f9bdbb696f738b4a0c52  cui-phpmyadmin.setup.services.phpmyadmin.tools.menu
-56cbb82f0a51bb2902f08a48c34cdfb2  cui-phpmyadmin.sh
+48afaee157c29cb4a95cb9de00d5c5d0  cui-phpmyadmin.sh
 9ff913607d5f864a3aa698f551f7ff00  cui-phpmyadmin.txt
-cbaf3edb074454c7961ca397894ac3df  cui-phpmyadmin-activate-websetup.sh
-6cbd629362b2013d1fb884364b7dc1c1  cui-phpmyadmin-deactivate-websetup.sh
+1e13d7e9839d6e820021c8ee30c15d9e  cui-phpmyadmin-activate-websetup.sh
+601cee5c9255a4b784396bccf537c601  cui-phpmyadmin-deactivate-websetup.sh
 2443a29a7d86de06a752020ad48dc8bf  cui-phpmyadmin-helpers.sh
 7d7a06f6c89b5bb4d83580e4c7d6c8d9  cui-phpmyadmin-tools-listservers.sh
 27ed2b900524dc7df69773ad2a4a0253  cui-phpmyadmin-tools-pma-db.sh
@@ -90,10 +90,10 @@ sha256sums="38f4455290cd2b66d49a64592843c4e9f0bb3dd5f98f1eee898ae15cc67cbd1d  cu
 f9a8ea494cc86d532da3a8ed8238fa7a169433db51b3dfe7db8a803f6318b92d  cui-phpmyadmin.help
 7f1b583373c6a9739de9f220d8b000257310bd11e31020b3ef4ee6fe5897554f  cui-phpmyadmin.setup.services.phpmyadmin.menu
 cd6dafa8ccaca82b88d2a07277754f1ed301f764d210ada2f5d4f9c641011c21  cui-phpmyadmin.setup.services.phpmyadmin.tools.menu
-8d6edd7ddc477d6fb8b275612afdb9ca63f577965fa80a1133b80dfb9160d7a9  cui-phpmyadmin.sh
+d7b7345c9fba55e49dd28a36a372f4e86efc1802bac1125a42ab6f1b774793d8  cui-phpmyadmin.sh
 28617f2c9d5b4a5818a8b6e437b20aeb5a5d59e14a16bb0162304da7ac524d3f  cui-phpmyadmin.txt
-d67a43762575410f2e3b666bb427a3affbd8af9dfa71051cd6f7bfcd2fda2d30  cui-phpmyadmin-activate-websetup.sh
-26d7691bd7edc1a5dbf235fd6a4a594c9e7fb38e757da994849e24a973db91a6  cui-phpmyadmin-deactivate-websetup.sh
+378e31e4f014fa9ab9a8e03abe5350a4a5f5201e96d59b77392b62d527379b26  cui-phpmyadmin-activate-websetup.sh
+98fb21290a62d591379b1c2f696185e1f4a166768fbcea10ae18efda8edd83d6  cui-phpmyadmin-deactivate-websetup.sh
 893e7ea851bc54b29df164faad180c0bc3c9b72a2040ddc819ab37a57c84fa63  cui-phpmyadmin-helpers.sh
 c865dd1d521d64bd6d5c047b24767cde7452b3c3869e333d1df0558f5801f361  cui-phpmyadmin-tools-listservers.sh
 ca15e6b5544fcb6a25df98a95ed6fb0d3ca2098a6c4c7662faf49c485bab559b  cui-phpmyadmin-tools-pma-db.sh
@@ -103,10 +103,10 @@ sha512sums="ee009d67c51b50c34c39ad63fd1d08be1c2195562f60f14a23618ebdec399019ef71
 b2671fa757ea2b76c972f62c8843eecbe85d02dc729ebb719657fbad7c3d5e1fff506fef80c0ffe23418f74a44613429cf21270e7f576a98ad74b1004d9f9b0d  cui-phpmyadmin.help
 f3e05edab5091bb323dda36f0db6d102a71678af5bde41110716408506400b16d75e4709a9986e8f1b1a5a4d8aaeea8d014460067f587c0b8374b6763830c887  cui-phpmyadmin.setup.services.phpmyadmin.menu
 eaa3948b2fa2d0a8cbfd9819ebcb7544e92abbadfdd3ad178cc5c6ef7a7884c3c4a4754b8bcdef26de6558b558df400b8225ba2885f6b07d66db1c8a3fdcda2f  cui-phpmyadmin.setup.services.phpmyadmin.tools.menu
-b0967a28775abec94bfd10d16dccf5277d35409d6abc548149a15a416bcb740c5a7cb5a2476758625c9b3260ec0e96a61f57052b3567f329d4cc69d695105cf1  cui-phpmyadmin.sh
+c935debc8980843df4a21c7394c0305c3f6ac0c6d25d0d58ea75662913002acc3b92d5c1573dc9aa064d8cab35e453a6df3dcf6df4f16dcbc456e3a7f70b5f35  cui-phpmyadmin.sh
 cd3796e5ea0f9cf910889699d44f1c4f1587c28be00fa390d4fd31bb10ac5574c61aa7d73783aa01eb3599933ce76ccf42241c96531e46e896d26a1c32b481fc  cui-phpmyadmin.txt
-115a5876b4e46f5dc46773c357aebf2951f1b95a2925869a4285ce54a73286e48795a596dd74a1980f9705c300c3fec5b95482c2be31db1679d5c21985960e80  cui-phpmyadmin-activate-websetup.sh
-9096882d5def1f41606a5f8e153fd2535cd6e221e1155cde00acec4682b544999d6bf88f881d7a9eaf321f92a5049b2a589e523dec9d8ba827a2763a99b04c96  cui-phpmyadmin-deactivate-websetup.sh
+963a5c20dcd44ce05da17905fce93c1be053192ff0511ae0ff2d94189da72dbf7135c63203a409bd0e51fe12c2ba41c5227e924598dde51ff42ad45853d1e710  cui-phpmyadmin-activate-websetup.sh
+418470d9d9c4d96f52769ec7854b14968a2facf75ab6d35825307ad87d3fbde0d998e0aab3f545084f90e2ab537b74963c4dee0c335a45cfdc85265f59d1d930  cui-phpmyadmin-deactivate-websetup.sh
 575603f600cf1e3b67e1a44d4828574fb27360dfbe24d61c3b46d26a2fe7f2db813dc88ecba58203c60328f46b170dbb5cd8ceaff24f39d1d68ffe2f766a7719  cui-phpmyadmin-helpers.sh
 3adcf656faa7c81b818c9cca672f6c9de7faf00227d4fe6f82fc6d5a86956b3f4eb55c3fc4f6f6f6ab340568bffe43c0c25a016f2135edb4d5f6cfb3dd91d549  cui-phpmyadmin-tools-listservers.sh
 3e4653b0850a2b9f69bcfe5c2aec515333844bb54051b4f5a7dbafd1b06fe4824b8c0c501a4ce6bf5d610ac06ac39acdbcbaa3dcd80576db21da2f4df1e18426  cui-phpmyadmin-tools-pma-db.sh

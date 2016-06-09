@@ -1,11 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 # ----------------------------------------------------------------------------
-# /var/install/config.d/cui-phpmyadmin.sh - phpMyAdmin configuration
-#
-# Creation:     2006-09-15 starwarsfan
-#
-# Copyright (c) 2006--2013 The eisfair Team, <team(at)eisfair(dot)org>
-# Maintained by Yves Schumann <yves(at)eisfair(dot)org>
+# eisfair-ng configuration generator script
+# Copyright (c) 2007 - 2016 the eisfair team, team(at)eisfair(dot)org
+# Maintained by Y. Schumann <yves(at)eisfair(dot)org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,65 +10,81 @@
 # (at your option) any later version.
 # ----------------------------------------------------------------------------
 
-#exec 2>/tmp/phpmyadmin-trace$$.log
-#set -x
-
 . /etc/config.d/phpmyadmin
-. /etc/config.d/php-apache2
-. /var/install/include/eislib
+. /etc/config.d/apache2
 
-configFolder=/etc/phpmyadmin
-configPhp=${configFolder}/config.inc.php
+# used php version
+PHPv=php5
 
-installFolder=/usr/share/webapps/phpmyadmin
-webConfigFolder=${installFolder}/setup
-configFolderForWebConfig=${installFolder}/config
+# -----------------------------------------------------------------------------
+# load php module if not installed
+# -----------------------------------------------------------------------------
+load_php_module()
+{
+    local name="$1"
+    apk info -q -e ${PHPv}-$name || apk add -q ${PHPv}-$name
+    if [ $? -eq 0 ]; then
+        return 0
+    else
+        # create error message if packages not installed
+        logger -p error -t cui-phpmyadmin "Fail install: ${PHPv}-$name"
+        echo "Fail install: ${PHPv}-$name"
+        return 1
+    fi
+}
 
-sweKeyConfigured=false
-ownerToUse='apache:apache'
-
-
+load_php_module json
+load_php_module mysql
+load_php_module mysqli
+load_php_module pdo_mysql
+load_php_module xml
 
 # ----------------------------------------------------------------------------
 # Setup all necessary configuration files and perform necessary steps
-activatePhpMyAdmin ()
+activatePhpMyAdmin()
 {
-    cp /etc/default.d/*.phpmyadmin.ini /etc/php/conf.d/
+    cp /etc/default.d/*.phpmyadmin.ini /etc/${PHPv}/conf.d/
+    cat >/etc/apache2/conf.d/phpmyadmin.conf <<EOF
+Alias /phpmyadmin "/usr/share/webapps/phpmyadmin"
+<Directory "/usr/share/webapps/phpmyadmin">
+    AllowOverride All
+    Options FollowSymlinks
+    Order allow,deny
+    Require all granted
+    Allow from all
+</Directory>
+EOF
 }
-
 
 
 # ----------------------------------------------------------------------------
 # Remove all configuration files and perform further necessary steps
-deactivatePhpMyAdmin ()
+deactivatePhpMyAdmin()
 {
-    rm -f /etc/php/conf.d/*.phpmyadmin.ini
+    rm -f /etc/${PHPv}/conf.d/*.phpmyadmin.ini
+    cat >/etc/apache2/conf.d/phpmyadmin.conf <<EOF
+Alias /phpmyadmin "/usr/share/webapps/phpmyadmin"
+<Directory "/usr/share/webapps/phpmyadmin">
+    AllowOverride All
+    Options FollowSymlinks
+    Require all granted
+    Deny from all
+</Directory>
+EOF
+
+
 }
-
-
-
-# ----------------------------------------------------------------------------
-# Restart webserver
-restartWebserver ()
-{
-    rc-service apache2 restart
-}
-
 
 # ----------------------------------------------------------------------------
 # Main
 # ----------------------------------------------------------------------------
-if [ "$1" = '--quiet' ] ; then
-    quietmode=true
-else
-    quietmode=false
-fi
-
-if [ "${START_PHPMYADMIN}" = 'yes' ] ; then
-	activatePhpMyAdmin
+if [ "$START_PHPMYADMIN" = 'yes' ] ; then
+    activatePhpMyAdmin
 else
     deactivatePhpMyAdmin
 fi
-restartWebserver
+
+# Restart apache
+[ "$START_APACHE2" = "yes" ] && rc-service -i apache2 restart
 
 exit 0

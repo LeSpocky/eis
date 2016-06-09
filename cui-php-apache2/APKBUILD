@@ -2,7 +2,7 @@
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=cui-php-apache2
 pkgver=5.6.21
-pkgrel=4
+pkgrel=5
 pkgdesc="CUI Setup PHP 5.x module for apache"
 url="http://www.eisfair.org"
 arch="noarch"
@@ -55,7 +55,7 @@ md5sums="3d462cac61184eb1ba7a10983925ec32  cui-php-apache2.default
 9046562540eb592121c18c12e52bce0e  cui-php-apache2.check
 c32300f06a04eed59513b03f1a016ed2  cui-php-apache2.check.exp
 2e1f9072a9dd4da111be9b26417ead60  cui-php-apache2.help
-1520dfdac9291b0f5aab4ea84df85348  cui-php-apache2.sh
+bcea613aacdd3689e5140741bb04b373  cui-php-apache2.sh
 b67d0377bbb037332463ebce171d0cc7  cui-php-apache2-update.sh
 ae8cf28ea4b40035a5fd6f24cfc3ea95  cui-php-apache2.menu
 be269359757908557f4d7e275a566b22  cui-php-apache2.txt
@@ -67,7 +67,7 @@ sha256sums="bf6943264feb4a1d1e6fc3c0f78517a5aa7dec789ba8d43c329e2bb527c341f7  cu
 aece0cb9c226aecc5ffff3f2abe3ca8f23d4c408ec50f3c9a6b0845c676a3a5d  cui-php-apache2.check
 62f4bcb49b588f22f08a83b740dfe6ca7e40eee8e8baba796368cfc0bd03aa05  cui-php-apache2.check.exp
 2933466917271ca4cffff27689f73a57d2458fa6c8b714afbe90a6b480d537f9  cui-php-apache2.help
-dcf00db4819c44041b11528c3a43985af27d3be6163df8c6d577cb67ec640c51  cui-php-apache2.sh
+595218915c39f86372b3c7e8bba56d2c9f4ba70be3ad7ecd16d9020e9219b220  cui-php-apache2.sh
 c20e2dcca54a6a784faada7efea5c09e9950fa061117b234d584c9d05ac2c891  cui-php-apache2-update.sh
 b7e62a035305b598f8d60fe6c02e9b50cd227af65b9ff34e93224589ff7eb116  cui-php-apache2.menu
 77978c7cd7d537d0ff8a1d51f3f4a75a0173c8408b350e12913dd37b955935bb  cui-php-apache2.txt
@@ -79,7 +79,7 @@ sha512sums="66957c955b5c3ae254ef01de02ead4dc44386a154061a55fef5d7483b16da87d8b40
 c57a0062d03e1b17bdc207a9a27a4e45bb9baa0817921d4639355072d3bbaa0c93a8c919b8433021608b9675ccbdb1c44e851b5fb27a17a9676c473b9557ba10  cui-php-apache2.check
 df91f43317c95aad80f94fb03ccba7dbdc2a787e021d7e9174415efb438c05be3d8f263545157ad219aa8a46caac00765d402b91bfee823d00479a2072134058  cui-php-apache2.check.exp
 2c6bf16ab1d8377b916a1ec24f4540204808a37118b6ae6a2e83752af25a235299f82a6efa01d462ec67e7680a49e16e0f2590b060fd8369d3de537c3a993ce2  cui-php-apache2.help
-f12cea0a773a66413ebb862e1620443c2d8778142c978c4f47e3440928185939d6e293a69fdc94eedefa297b63795e019000b6b1120be3163c54abde45396eb5  cui-php-apache2.sh
+7d56a6648e5e7a6d4149c81bdffd2dbc4b3f0541aec347cc98b34a67ea9927ca5c2ba7b4b958a3f390a221b3280c002f4588569feeb37eff07b70cf520984a07  cui-php-apache2.sh
 f76f8f9cb9917526ae0b4252d50e4b9f8d7518031d4a7d4b45ab56ef9510c946a897c4f3204cbf567373125bed7faba6b28655df289e4f0b4f063c7ba6a4a9f3  cui-php-apache2-update.sh
 eb026564de71e84edf9ee182517cf3d5cc737cd74d091fef9e4711779efd1b9c0255d1431f3a289a22d481eca5780a07746a0a6a53fe9c7798f36a38e27d27cb  cui-php-apache2.menu
 7e3e45805e8e5a53033533a3048bb1176d82e9bb14f813ec0cdf5b26ac0149de6e0d625d03a3aaeeef71636d345eea04e509ec35995f458c38ba3d4d60d8f930  cui-php-apache2.txt

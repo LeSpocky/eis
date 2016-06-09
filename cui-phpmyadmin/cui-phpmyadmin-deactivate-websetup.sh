@@ -1,10 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 # ----------------------------------------------------------------------------
 # /var/install/bin/phpmyadmin-activate-websetup.sh
-#
-# Creation:     2014-03-16 starwarsfan
-#
-# Copyright (c) 2009-2014 The eisfair Team, <team(at)eisfair(dot)org>
+# Copyright (c) 2007 - 2016 the eisfair team, team(at)eisfair(dot)org
 # Maintained by Y. Schumann <yves(at)eisfair(dot)org>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,11 +9,6 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 # ----------------------------------------------------------------------------
-
-#exec 2> /tmp/phpmyadmin-activate-websetup-trace$$.log
-#set -x
-
-. /var/install/include/eislib
 
 configFolder=/etc/phpmyadmin
 configPhp=${configFolder}/config.inc.php

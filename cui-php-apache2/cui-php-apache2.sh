@@ -2,6 +2,11 @@
 #------------------------------------------------------------------------------
 # eisfair-ng configuration generator script
 # Copyright (c) 2007 - 2016 the eisfair team, team(at)eisfair(dot)org
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #------------------------------------------------------------------------------
 
 retval=0
@@ -751,6 +756,6 @@ fi
 
 # =============================================================================
 # Restart apache
-[ "${START_APACHE2}" = "yes" ] && rc-service -i -q apache2 restart 
+[ "$START_APACHE2" = "yes" ] && rc-service -i apache2 restart 
 
 exit 0
