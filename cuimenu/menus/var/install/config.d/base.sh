@@ -311,7 +311,7 @@ then
 	echo_rotate_entry $SYSLOG_KERNEL_MAXCOUNT $SYSLOG_KERNEL_INTERVAL /var/log/kern.log
 	[ "$SYSLOG_KERNEL_RELOAD" = yes ] && echo_postrotate_entry
 	echo_rotate_end
-	echo_rotate_entry $SYSLOG_MESSAGES_MAXCOUNT $SYSLOG_MESSAGES_INTERVAL /var/log/messages /var/log/error.log
+	echo_rotate_entry $SYSLOG_MESSAGES_MAXCOUNT $SYSLOG_MESSAGES_INTERVAL /var/log/error.log
 	[ "$SYSLOG_MESSAGES_RELOAD" = yes ] && echo_postrotate_entry
 	echo_rotate_end
 	} >> /etc/logrotate.d/syslog

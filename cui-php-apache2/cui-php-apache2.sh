@@ -43,7 +43,7 @@ load_php_module()
 remove_php_module()
 {
     local name="$1"
-    apk del -f -q ${PHPo}-$name
+    apk del -f -q ${PHPo}-$name >/dev/null 2>&1
     if [ $? -eq 0 ]; then
         return 0
     else
