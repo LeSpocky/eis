@@ -5,7 +5,6 @@ name=sshguard
 
 depend() {
 	need net
-	before logger
 }
 
 start() {
