@@ -718,8 +718,8 @@ EOF
 cat > /etc/dovecot/conf.d/90-plugin.conf <<EOF
 ## Plugin settings
 plugin {
-  fts = squat
-  fts_squat = partial=4 full=10
+#  fts = squat
+#  fts_squat = partial=4 full=10
   fts_autoindex = yes
 }
 EOF
