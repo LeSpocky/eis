@@ -1,5 +1,6 @@
 #!/bin/sh
 
+mkdir -p -m0770 /etc/config.d
 [ -f /etc/config.d/apk-repositories ] || cp /etc/default.d/apk-repositories /etc/config.d/
 [ -f /etc/config.d/base ]             || cp /etc/default.d/base /etc/config.d/
 [ -f /etc/config.d/cui ]              || cp /etc/default.d/cui /etc/config.d/

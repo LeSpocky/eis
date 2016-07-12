@@ -153,6 +153,7 @@ supported_boot_fs() {
 		[ "$fs" = "$1" ] && return 0
 	done
 	echo "$1 is not supported. Only supported are: $supported" >&2
+	return 1
 }
 
 find_volume_group() {
@@ -552,7 +553,7 @@ setup_boot_dev() {
 		bootdev=/dev/md0
 	fi
 	[ "$BOOTFS" = "btrfs" ] && mkfs_args=""
-  mkfs.$BOOTFS $MKFS_OPTS_BOOT $mkfs_args $bootdev
+	mkfs.$BOOTFS $MKFS_OPTS_BOOT $mkfs_args $bootdev
 	BOOT_DEV="$bootdev"
 }
 
@@ -744,7 +745,7 @@ data_only_disk_install() {
 setup_root() {
 	local root_dev="$1" boot_dev="$2" mkfs_args="-q"
 	[ "$ROOTFS" = "btrfs" ] && mkfs_args=""
-  mkfs.$ROOTFS $MKFS_OPTS_ROOT $mkfs_args "$root_dev"
+	mkfs.$ROOTFS $MKFS_OPTS_ROOT $mkfs_args "$root_dev"
 	mkdir -p "$SYSROOT"
 	mount -t $ROOTFS $root_dev "$SYSROOT" || return 1
 	if [ -n "$boot_dev" ]; then
@@ -765,7 +766,6 @@ setup_root() {
 	# set root password
 	chroot "$SYSROOT" /bin/bash -c "/bin/echo \"root:${PPASSWORD}\" | /usr/sbin/chpasswd 2>&1" 
 	# remove installer files!
-	rm -f "$SYSROOT"/etc/runlevels/eis-install
 	rm -f "$SYSROOT"/etc/runlevels/default/eis-install
 	# change /etc/motd
 	{
@@ -908,12 +908,7 @@ __EOF__
 set_eis_configvar() {
 	local par="$1"
 	local val="$2"
-	if ! grep -q "$par" /mnt/etc/config.d/base 2>/dev/null
-	then
-		echo "${par}='${val}'" >> /mnt/etc/config.d/base
-	else
-		sed -i -e "s/${par}=.*/${par}='${val}'/" /mnt/etc/config.d/base
-	fi
+	sed -i -e "s/${par}=.*/${par}='${val}'/" /mnt/etc/config.d/base
 }
 
 rc_update() {
