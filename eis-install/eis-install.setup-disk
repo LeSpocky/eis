@@ -11,15 +11,15 @@ VARFS=${VARFS:-ext4}
 
 # default location for mounted root
 SYSROOT=${SYSROOT:-/mnt}
-PKEYBLAYOUT="de"
-PKEYBVARIANT="de-latin1"
-PNETIPSTATIC="1"
-PIPADDRESS="192.168.1.2"
-PNETMASK="255.255.255.0"
-PGATEWAY="192.168.1.1"
-PHOSTNAME="eis"
-PDOMAIN="eisfair.home"
-PDNSSERVER="192.168.1.1"
+PKEYBLAYOUT=${PKEYBLAYOUT:-de}
+PKEYBVARIANT=${PKEYBVARIANT:-de-latin1}
+PNETIPSTATIC=${PNETIPSTATIC:-1}
+PIPADDRESS=${PIPADDRESS:-192.168.1.2}
+PNETMASK=${PNETMASK:-255.255.255.0}
+PGATEWAY=${PGATEWAY:-192.168.1.1}
+PDNSSERVER=${PDNSSERVER:-192.168.1.1}
+PHOSTNAME=${PHOSTNAME:-eis}
+PDOMAIN=${PDOMAIN:-eisfair.home}
 PTIMEZONE="CET-1CEST,M3.5.0,M10.5.0/3"
 PPASSWORD="eis"
 
@@ -939,10 +939,7 @@ setup_network() {
 	echo ""
 	echo "auto eth0"
 	} >/mnt/etc/network/interfaces
-	if [ "$PNETIPSTATIC" = "0" ] ; then
-		echo "iface eth0 inet dhcp" >> /mnt/etc/network/interfaces
-		set_eis_configvar "IP_NET_1_IPV4_STATIC_IP" "no"
-	else
+	if [ "$PNETIPSTATIC" = "1" ] ; then
 		{
 		echo "iface eth0 inet static"
 		echo "  address $PIPADDRESS"
@@ -959,6 +956,10 @@ setup_network() {
 		done
 		} >/mnt/etc/resolv.conf
 		set_eis_configvar "IP_NET_1_IPV4_STATIC_IP" "yes"
+	else
+		echo "iface eth0 inet dhcp" >> /mnt/etc/network/interfaces
+    echo "#dhcp" > /mnt/etc/resolv.conf
+		set_eis_configvar "IP_NET_1_IPV4_STATIC_IP" "no"
 	fi
 	echo "$PHOSTNAME" >/mnt/etc/hostname
 	cat <<EOF >/mnt/etc/hosts
@@ -1038,22 +1039,12 @@ options:
  -h  Show this help
  -m  Use disk for MODE without asking, where MODE is either 'data' or 'sys'
  -o  Restore system from given apkovl file
- -d  Use DHCP Client
- -D  Domain name
- -e  Keyboard variant
- -E  Keyboard layout
- -F  DNS-Server
- -G  Gateway
- -H  Host name
- -I  IP-Address
  -k  Use kernelflavor instead of $KERNEL_FLAVOR
  -L  Use LVM to manage partitions
- -N  Netmask
  -P  root password
  -q  Exit quietly if no disks are found
  -r  Enable software raid1 with single disk
  -s  Use SWAPSIZE MB instead of autodetecting swap size (Use 0 to disable swap)
- -T  Timezone
  -v  Be more verbose about what is happening
 
 If BOOTFS, ROOTFS, VARFS are specified, then format a partition with specified
@@ -1076,26 +1067,16 @@ esac
 DISK_MODE=
 USE_LVM=
 # Parse args
-while getopts "dD:e:E:F:G:H:I:hk:Lm:N:o:P:qrs:T:v" opt; do
+while getopts "hk:Lm:o:P:qrs:v" opt; do
 	case $opt in
 		m) DISK_MODE="$OPTARG";;
-		d) PNETIPSTATIC=0;;
-		D) PDOMAIN="$OPTARG";;
-		e) PKEYBVARIANT="$OPTARG";;
-		E) PKEYBLAYOUT="$OPTARG";;
-		F) PDNSSERVER="$OPTARG";;
-		G) PGATEWAY="$OPTARG";;
-		H) PHOSTNAME="$OPTARG";;
-		I) PIPADDRESS="$OPTARG";;
 		k) KERNEL_FLAVOR="$OPTARG";;
 		L) USE_LVM="_lvm";;
-		N) PNETMASK="$OPTARG";;
 		o) APKOVL="$OPTARG";;
 		P) PPASSWORD="$OPTARG";;
 		q) QUIET=1;;
 		r) USE_RAID=1;;
 		s) SWAP_SIZE="$OPTARG";;
-		T) PTIMEZONE="$OPTARG";;
 		v) VERBOSE=1;;
 		*) usage;;
 	esac

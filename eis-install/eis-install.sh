@@ -434,7 +434,14 @@ while true ; do
                   --yesno "Delete all partitions on drive(s):\n${PDRIVE}\nand start installation?" 8 40
                 if [ "$?" = "0" ] ; then
                     export ROOTFS="$PROOTFS"
-                    [ "$PNETIPSTATIC" = "0" ] && POPTIONS="$POPTIONS -d"
+                    export PNETIPSTATIC="$PNETIPSTATIC"
+                    export PNETMASK="$PNETMASK"
+                    export PDOMAIN="$PDOMAIN"
+                    export PIPADDRESS="$PIPADDRESS"
+                    export PGATEWAY="$PGATEWAY"
+                    export PDNSSERVER="$PDNSSERVER"
+                    export PKEYBLAYOUT="$PKEYBLAYOUT"
+                    export PKEYBVARIANT="$PKEYBVARIANT"                    
                     [ -n "$PLVM" ] && POPTIONS="$POPTIONS -L"
                     if [ -n "$PRAIDLEVEL" ] 
                     then
@@ -452,10 +459,7 @@ while true ; do
                       --backtitle "Alpine Linux with eisfair-ng - Installation   $PDRIVE" \
                       --no-kill \
                       --tailboxbg /tmp/fdisk.log 21 75 2>$tempfile
-                    /bin/eis-install.setup-disk -m "$PDISKMODE" \
-                        -e "$PKEYBVARIANT" -E "$PKEYBLAYOUT" \
-                        -H "$PHOSTNAME" -D "$PDOMAIN" -I "$PIPADDRESS" -N "$PNETMASK" \
-                        -G "$PGATEWAY" -F "$PDNSSERVER" -P "$PPASSWORD" -s "$PSWAPSIZE" \
+                    /bin/eis-install.setup-disk -m "$PDISKMODE" -P "$PPASSWORD" -s "$PSWAPSIZE" \
                         ${POPTIONS} $PDRIVE >>/tmp/fdisk.log 2>&1
                     sleep 3; kill -3 `cat $tempfile` 2>&1 >/dev/null 2>/dev/null
                     echo "$PRINTK" > /proc/sys/kernel/printk

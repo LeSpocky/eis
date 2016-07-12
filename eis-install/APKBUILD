@@ -2,7 +2,7 @@
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=eis-install
 pkgver=1.0.1
-pkgrel=1
+pkgrel=2
 pkgdesc="eisfair-ng installer"
 url="http://www.eisfair.org"
 arch="noarch"
@@ -40,11 +40,11 @@ package() {
 }
 
 md5sums="f35bbc1925adef5c52be35b3fff4a113  eis-install.initd
-fb8e2309d1492e3f7ceaa6be03f52aa4  eis-install.sh
-df1b2ee2a3f66c9a6d64e0922e3e44d6  eis-install.setup-disk"
+9b2cc8a2b0d8b66f34589cb87ca42f63  eis-install.sh
+1780c50550ebe629b65d38d05e1f6ae5  eis-install.setup-disk"
 sha256sums="233897dc346393c0422bc6a30653c3bb64498590170a3a5995163bf3d718b258  eis-install.initd
-611733792cb1545e6c380f58fd861e83910eaa25259a49bdecfb66d94c9694a2  eis-install.sh
-8c0fa30917da864d36df8471406bd0c8956b425d4a7e5d80261469b6bcdf9fe7  eis-install.setup-disk"
+102d5cc91959212eeaaea31f18f821535da00488ca1cc8362211eaa89cc5f209  eis-install.sh
+9decdeeb496186b553b3355d56471239ed3185f4c02d2fb39370d0cd14f902bc  eis-install.setup-disk"
 sha512sums="9a0d6864be8a422c8b7f9c39eb9a45f38199cab630c3302048305899eea4f65be56727820433c1e64d04715f523dfda85aac2fdc599687935759a0d5f6b2c060  eis-install.initd
-3e59e23a21d50a1680bbedfae5c5948b6866a8794b5bf2de9e42e5206ae1a00bc52bfbb151719a361486bd8907c9c46addedc042ab538ed1c1d269802f50906f  eis-install.sh
-6c71c4cee0eff44b3eb273e591e2607cd720b94105c0e4acbdd54b51e78f45b4284db38ee2ca187dcb1018ac64402d75ed058d2c319dfe3f855cfd5dbe96ce1a  eis-install.setup-disk"
+fb5eef040a2d49718358239f7deb0d08801da3a8d949a15f9ff5d2af72011a2f456e4d3828600158f2b9b05ff642e09b2525c761259743587ad0fda5ea61a445  eis-install.sh
+4f300d92d0e24728a216bdea574ea4718325950f2064f049de9384d4a22070f6a64ec4ae4222d4d5702d4e0371dc02355384aa0c009c4bcd852c16bf1d3d5760  eis-install.setup-disk"
