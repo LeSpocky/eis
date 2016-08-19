@@ -1,7 +1,7 @@
 # Contributor: Jens Vehlhaber <jens@eisfair.org>
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=sshguard-sysng
-pkgver=1.6.4
+pkgver=1.7.0
 pkgrel=0
 pkgdesc="Log monitor that blocks with iptables on bad behaviour - for syslog-ng"
 url="http://www.sshguard.net/"
@@ -56,19 +56,19 @@ package() {
 		"$pkgdir"/etc/sshguard/whitelist || return 1
 }
 
-md5sums="6f8fcbf5384c5c429dbbf13efeeaad1d  sshguard-1.6.4.tar.gz
+md5sums="db251a2e31cb5af203d10c42be33ea9c  sshguard-1.7.0.tar.gz
 c0855018f1971076d2746945fcc00a88  sshguard.initd
 066ffa8d5d6812b1a397e1a9339cb1dd  sshguard.destination
 9f68fe1c9124d54b0c0935d905a07710  sshguard.filter
 90fdf51d0e07f6efc83697bcffe373cf  sshguard.log
 f7c64f834056ad6926116aac14693d8e  sshguard.whitelist"
-sha256sums="654d5412ed010e500e2715ddeebfda57ab23c47a2bd30dfdc1e68c4f04c912a9  sshguard-1.6.4.tar.gz
+sha256sums="5ce784bc25dc9801fbfadc4117669ee02397526c420170ae1145ada96df8cd59  sshguard-1.7.0.tar.gz
 218c5f90686a18974752ed25db81f1705466d9a5e5751f21f9f748c06b3334d9  sshguard.initd
 617b1416a0ae58cb4ee18891facd926a12c2d382e89cb4d0a67f62cd0d8a11c4  sshguard.destination
 d83e7536634019857359bfdcffbf628e022766ddd36ac5191fda98df34fcf997  sshguard.filter
 d56348781489b1e3274b2f8156e89d291b29b40d2416bddbbb37bda58efdf34d  sshguard.log
 d9434f83f8b3a071fb3db1e10a24ada20c4672af67f5ac729f8f0a9d28871c04  sshguard.whitelist"
-sha512sums="ac8eeb7c303757cfd8ebfa69425afa1a1c6f07998cbb49ee91649c23ff2693f66f315ca6cd04b2011a4d1951f10d69be0db9bbc05b8814d85376eeb3a3f294ee  sshguard-1.6.4.tar.gz
+sha512sums="876789ee0a457b656f9d9488043f0d4f59cb2ba5a6fc3243f6f05e64995c6cf719bffa01bea7f96897b7092946e441507f2ced4f372fb475dfd7ec0cd70bda55  sshguard-1.7.0.tar.gz
 a649ac7795da40566658ef7c2fb541d4284bcf8313a596ff4081c6e308d844cf951522595fe0b7e78db0c72039ec29604e7552d5d282b894d971eb52d3eccbc2  sshguard.initd
 68ad9aa1e2d3cdccc06602d1b338d4a1608870f40ffe9e3aa37a52eadb4d95e1ec7859b6e816d861a4fd2513822ab5828f7ed23a0d528999f6da800632667445  sshguard.destination
 1f8ce4905768ac642aa62afa3807e2cb2ea3adf3fc85595b213ea4231232ae48b10081fff5ef2c46326853c02eda0a4c4eba1c5ba9b149512ff27d4b2eac2648  sshguard.filter
