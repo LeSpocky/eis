@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: mainwin.c 35443 2014-04-25 20:51:34Z dv $
+ * Last Update:  $Id: mainwin.c 42871 2016-08-16 20:59:33Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -47,7 +47,8 @@ static int   GetSinglePackage   ( const wchar_t** ppchar, wchar_t* pname, int si
 
 static int   RunPrePostScript   ( CUIWINDOW* win,
                                   const wchar_t* script, const wchar_t* task, const wchar_t* package,
-                                  const wchar_t* action, const wchar_t* param1, const wchar_t* param2);
+                                  const wchar_t* action, const wchar_t* param1, const wchar_t* param2,
+                                  const wchar_t* itemname);
 
 static void  UpdateMenuStack    ( CUIWINDOW* win );
 
@@ -101,7 +102,7 @@ MainCreateHook(void* w)
 		data->User = wcsdup(_T("unknown"));
 	}
 
-	swprintf(version, 32, _T("V%i.%i.%i"), VERSION, SUBVERSION, PATCHLEVEL);
+	swprintf(version, 32, _T("V%s"), VERSIONSTR);
 	WindowSetRStatusText(win, version);
 
 	WindowSetLStatusText(win, IDLE_STATUS_TEXT);
@@ -741,14 +742,15 @@ GetInterpreter(const wchar_t* file, wchar_t* interpreter, int c)
 static int
 RunPrePostScript(CUIWINDOW* win,
                  const wchar_t* script, const wchar_t* task, const wchar_t* package,
-                 const wchar_t* action, const wchar_t* param1, const wchar_t* param2)
+                 const wchar_t* action, const wchar_t* param1, const wchar_t* param2,
+                 const wchar_t* itemname)
 {
 	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 	int   result = TRUE;
 	int   status;
 	wchar_t scriptfile[512 + 1];
 	wchar_t interpreter[128 + 1];
-	const wchar_t* p[8];
+	const wchar_t* p[9];
 
 	GetAbsolutePath(ITEMTYPE_SCRIPT, script, _T(""), scriptfile, 512);
 
@@ -768,9 +770,10 @@ RunPrePostScript(CUIWINDOW* win,
 		p[2] = task;
 		p[3] = package;
 		p[4] = action;
-		p[5] = param1;
-		p[6] = param2;
-		p[7] = NULL;
+		p[5] = param1 ? param1 : _T("");
+		p[6] = param2 ? param2 : _T("");
+		p[7] = itemname;
+		p[8] = NULL;
 
 		/* execute */
 		result = RunCoProcess(interpreter, (wchar_t**) p, MainwinRunOut, win, &status);
@@ -782,9 +785,10 @@ RunPrePostScript(CUIWINDOW* win,
 		p[1] = task;
 		p[2] = package;
 		p[3] = action;
-		p[4] = param1;
-		p[5] = param2;
-		p[6] = 0;
+		p[4] = param1 ? param1 : _T("");
+		p[5] = param2 ? param2 : _T("");
+		p[6] = itemname;
+		p[7] = 0;
 
 		/* execute */
 		result = RunCoProcess(scriptfile, (wchar_t**) p, MainwinRunOut, win, &status);
@@ -966,6 +970,21 @@ MainCloseMenu(CUIWINDOW* win, EISMENU* menu)
 
 	if (menu->PostProcess)
 	{
+		const wchar_t *itemname = _T("");
+
+		/* try to resolve previously selected item */
+		if (menu->Previous)
+		{
+			EISMENUITEM* item = EisMenuGetItem(
+				((EISMENU*)menu->Previous),
+				((EISMENU*)menu->Previous)->LastChoice);
+			if (item)
+			{
+				itemname = item->Name;
+			}
+		}
+
+		/* run menu post script */
 		RunPrePostScript(
 		    win,
 		    menu->PostProcess->ScriptFile,
@@ -973,7 +992,8 @@ MainCloseMenu(CUIWINDOW* win, EISMENU* menu)
 		    menu->PostProcess->PackageName,
 		    _T("menu"),
 		    menu->PostProcess->MenuFile,
-		    NULL);
+		    NULL,
+		    itemname);
 	}
 	if ((menu->Previous) && (((EISMENU*)menu->Previous)->Menu))
 	{
@@ -1043,7 +1063,8 @@ MainExecuteSubmenu(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 			packname, 
 			_T("menu"), 
 			menufile, 
-			NULL))
+			NULL,
+			item->Name))
 		{
 			EISMENU* newmenu = EisMenuCreate();
 
@@ -1175,7 +1196,8 @@ MainExecuteDocument(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 			packname, 
 			_T("doc"), 
 			document, 
-			NULL) )
+			NULL,
+			item->Name) )
 	{
 		int pos;
 		
@@ -1228,7 +1250,8 @@ MainExecuteDocument(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 				packname, 
 				_T("doc"), 
 				document, 
-				NULL);
+				NULL,
+				item->Name);
 		}
 	}
 }
@@ -1270,15 +1293,16 @@ MainExecuteConfig(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 	GetAbsolutePath(ITEMTYPE_EDIT, _T(""), packname, config, 128);
 
 	if (!preprocess ||
-            RunPrePostScript(
-		win, 
-		preprocess->Value, 
-		_T("pre"), 
-		packname, 
-		_T("edit"), 
-		config, 
-		strrestart))
-        {
+	   RunPrePostScript(
+			win, 
+			preprocess->Value, 
+			_T("pre"), 
+			packname, 
+			_T("edit"), 
+			config, 
+			strrestart,
+			item->Name))
+	{
 		if (stopstart)
 		{
 			swprintf(shellcmd, 256, _T("/var/install/bin/edit -apply-stopstart %ls"), config);
@@ -1301,8 +1325,13 @@ MainExecuteConfig(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 		{
 			RunPrePostScript(
 				win,
-				postprocess->Value, _T("post"),
-				packname, _T("edit"), config, strrestart);
+				postprocess->Value,
+				_T("post"),
+				packname,
+				_T("edit"),
+				config,
+				strrestart,
+				item->Name);
 		}
 	}
 }
@@ -1367,7 +1396,8 @@ MainExecuteService(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 			plist, 
 			_T("init"), 
 			slist, 
-			task->Value) )
+			task->Value,
+			item->Name) )
 		{
 			pchar = plist;
 			cmd[0] = _T('\0');
@@ -1401,8 +1431,13 @@ MainExecuteService(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 			if (postprocess)
 			{
 				RunPrePostScript(win,
-					postprocess->Value, _T("post"), 
-					plist, _T("init"), slist, task->Value);
+					postprocess->Value,
+					_T("post"), 
+					plist,
+					_T("init"),
+					slist,
+					task->Value,
+					item->Name);
 			}
 		}
 	}
@@ -1423,7 +1458,7 @@ MainExecuteScript(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 	EISMENUATTR* preprocess = EisMenuGetAttr(item, _T("PRE"));
 	EISMENUATTR* postprocess = EisMenuGetAttr(item, _T("POST"));
 	static char  package_name[128 + 1];
-	wchar_t*       packname = NULL;
+	wchar_t*     packname = NULL;
 
 	if (file)
 	{
@@ -1457,7 +1492,8 @@ MainExecuteScript(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 			packname, 
 			_T("script"), 
 			shellcmd, 
-			NULL))
+			NULL,
+			item->Name))
 		{
 			WindowLeaveCurses();
 			{
@@ -1474,12 +1510,13 @@ MainExecuteScript(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 					{
 						RunPrePostScript(
 							win,
-						        postprocess->Value,
-						        _T("post"),
-						        packname,
-						        _T("script"),
+							postprocess->Value,
+							_T("post"),
+							packname,
+							_T("script"),
 							shellcmd,
-							NULL);
+							NULL,
+							item->Name);
 					}
 					WindowQuit(127);
 					break;
@@ -1509,7 +1546,8 @@ MainExecuteScript(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 					packname,
 					_T("script"),
 					shellcmd,
-					NULL);
+					NULL,
+					item->Name);
 			}
 		}
 	}

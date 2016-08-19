@@ -38,10 +38,10 @@
 
 #define VERSION     3
 #define SUBVERSION  0
-#define PATCHLEVEL  1
+#define PATCHLEVEL  2
 #define BUILD       0
 
-#define  VERSIONSTR "3.0.1"
+#define  VERSIONSTR PACKAGE_VERSION
 #define  BUILDSTR   "(0) unicode/title option"
 
 
