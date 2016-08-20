@@ -1,6 +1,5 @@
 log {
         source(s_all);
         filter(sshlogsauth);
-        filter(sshlogsmail);
         destination(sshguardproc);
 };
