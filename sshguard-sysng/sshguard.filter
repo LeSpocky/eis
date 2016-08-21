@@ -1,1 +1,1 @@
-  filter sshlogsauth { level(warn..emerg) and facility(auth, authpriv, mail) and not match("sshguard"); };
+  filter sshlogsauth { facility(auth, authpriv, mail) and not match("sshguard"); };
