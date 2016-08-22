@@ -123,7 +123,7 @@ function load_data()
             my_result_status "$myres"
             if [ "$p2" == "$SQL_DATA_READY" ]
             then
-                my_result_tolist "$myres" "$ctrl" "7" "$selected_entry"
+                my_result_tolist "$myres" "$ctrl" "6" "$selected_entry"
             else
                 my_server_geterror "$myconn"
                 cui_message "$win" "$p2" "Error" "$MB_ERROR"
@@ -194,7 +194,7 @@ function resize_windows()
 # resize menu depending on number of entries
 # $1 --> appl. window
 # $2 --> menu
-# $3 --> no. of users
+# $3 --> count of users
 #----------------------------------------------------------------------------
 function resize_menu()
 {
@@ -764,7 +764,7 @@ function fetchmails_delete_dialog()
 
         if p_valid_index $idx
         then
-            cui_listview_gettext "$ctrl" "$idx" "7" && entryname="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "6" && entryname="$p2"
 
             cui_message "$win" "Really delete selected fetchmail query?" "Question" "$MB_YESNO"
             if [ "$p2" == "$IDYES" ]

@@ -2,7 +2,7 @@
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=cui-vmail
 pkgver=1.0.2
-pkgrel=2
+pkgrel=3
 pkgdesc="CUI setup for postfix/dovecot with virtual mail user"
 url="http://www.eisfair.org"
 arch="noarch"
@@ -163,7 +163,7 @@ c4c57064cc74b7e11c66f59b1e46899d  cui-vmail-user-canonicalmap.cui.sh
 2d0057d383e12a7c15e305c75cb37ae4  cui-vmail-user-userhandling.cui.sh
 ef7993fc407b56593645be5cd9bbd76e  cui-vmail-tools-client-access.cui.sh
 ca5a8de343cf5678bb2f0fff41c6769c  cui-vmail-user-domainhandling.cui.sh
-48c69940a3a8eee46d3ce0cd74ef4db0  cui-vmail-tools-fetchmailhandling.cui.sh
+1f3389c2a37f53f4761965d9eca09bca  cui-vmail-tools-fetchmailhandling.cui.sh
 8d7edc84be9cdd90609e882ccdaeaf16  cui-vmail-user-forwardings.cui.sh
 ffa00d49593b70ea8455478fe7b67564  cui-vmail.sqldata.sql
 6e165d2db3074bf4d6532bae5dc21e36  cui-vmail.sqltable.sql
@@ -209,7 +209,7 @@ ddecb7eb78bd36c100e11a16a9466ff14cf17a1bcb7df77d1c73ba69df30984c  cui-vmail-modu
 4f7b0b32acaf7b2ce7a76620f79b23d1777baea6dc01ad4e48de0f137b224a78  cui-vmail-user-userhandling.cui.sh
 257e9701e6ac073447316bb3bf023a19fc7823c27b14524cf48ac9d8a27ee94f  cui-vmail-tools-client-access.cui.sh
 e9907df605f731c03755b933c84d6d7b814e019942b3e43d162d3e8c233561a3  cui-vmail-user-domainhandling.cui.sh
-2f5062978403cd7beafa6b279d18132f36341abfdbabfbb5ae9497a094d86abb  cui-vmail-tools-fetchmailhandling.cui.sh
+6b4b951d732938afad2ecd7f92b75794f5aba8397e8c16a05e665eab479e98d5  cui-vmail-tools-fetchmailhandling.cui.sh
 1c34fcddce7245a1ce2e1506864ebe730415477f3b0e51d486425d8ab5087daf  cui-vmail-user-forwardings.cui.sh
 d4a3988add3b72ce57ed6d05904727cc3ddaabd7a447df399906af855e6520ca  cui-vmail.sqldata.sql
 b14dcc1e26b87af48f87e3c479ac948ece530942a103b56bcd59f8adf2f68e6a  cui-vmail.sqltable.sql
@@ -255,7 +255,7 @@ e9899e7fa425758d7eee875cb9fdc47c141a1a09861f08ceb14d391477635399b734ea75ad11bff3
 016da5f18aadba6a283299996b05462c7b7b44be5faba6ad56a44fccbdfccf4f6f38eda4cd8ec920ccc71a4cacaf9f55a249ca06e982984de3ee822755c7e393  cui-vmail-user-userhandling.cui.sh
 5ace536b7c327e7963b116ca03f050e74ee51ef2b84044147cb0d6dd09bbbbe2e711c8f32fc04e8d0fd224bde31a2e4aecb272a2d3a30dfa4b157136d3e157ce  cui-vmail-tools-client-access.cui.sh
 5a17e8ee917add7f76c65f54535e47d86af0d0446a970aa4ede17c453050b2ddc91283873af396ede0b335d54cfdfb45652f3cc2ca48204ede6a9422bed55246  cui-vmail-user-domainhandling.cui.sh
-697146656148a3810d91da929262a7f9f3483f8d5fdf858ea099a882c574bd803cd34a4705a04ccbcb28580a8513764d04efebc4d5c39ff64f0850ca80f986a8  cui-vmail-tools-fetchmailhandling.cui.sh
+3d7d3507b5d519123b2879b051b0e304712ee39870424b08f9ee37d67ef44064b35826db8fb1646baab06f0657722a3cff139b4559752acd8834ee6bd58f3bf4  cui-vmail-tools-fetchmailhandling.cui.sh
 42340cd986157d6dd22a3fb4af6f67460a411124e53f806f08969c7ffff3f30b1edc637ef8f317add118716182c0e6afa0e1925cc6f77fbbad732a13ccb7eef9  cui-vmail-user-forwardings.cui.sh
 c1f2ad1b1f735b1718b07b89c614da1809315f1545a5fffc10f0a52b382bc8f32123a95729d257664c5df7ae0b6e46879875fc11bf31f6ed21957052d6fe4adc  cui-vmail.sqldata.sql
 130210a0b636094573ee80a99874f0384524ebfe659ad5b70d77927c9158d495b75080e1b250ff15467e80ef5380a42e2261b806e424c9cbb6f724614050b7d7  cui-vmail.sqltable.sql
