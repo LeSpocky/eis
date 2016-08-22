@@ -1,7 +1,7 @@
 #!/bin/bash
 #------------------------------------------------------------------------------
 # /var/install/bin/cui-vmail-tools-fetchmail.cui.sh
-# Copyright (c) 2001-2013 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2016 the eisfair team, team(at)eisfair(dot)org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,6 +38,9 @@ IDC_FETCHMAILDLG_CHKACTIVE='26'     # dlg edit ID
 IDC_INPUTDLG_BUTOK='10'             # dlg OK button ID
 IDC_INPUTDLG_BUTCANCEL='11'         # dlg Cancel button ID
 IDC_INPUTDLG_EDVALUE='20'           # dlg edit ID
+
+current_user=''
+current_user_id="0"
 
 selected_entry=''
 show_help="no"
@@ -102,17 +105,17 @@ function load_data()
         if [ -z "$keyword" ]
         then
             my_query_sql "$myconn" \
-                "SELECT a.loginname, a.servername, a.recipient, a.options, \
-                   a.prot, ELT(a.active +1, ' ', 'x'), b.email, a.id \
-                 FROM fetchmail AS a LEFT JOIN view_users AS b ON a.ownerid=b.id \
-                 ORDER BY a.servername, a.loginname" && myres="$p2"
+                "SELECT loginname, servername, recipient, options, \
+                 prot, ELT(active +1, ' ', 'x'), id \
+                 FROM fetchmail WHERE ownerid = $current_user_id \
+                 ORDER BY servername, loginname" && myres="$p2"
         else
             my_query_sql "$myconn" \
-                "SELECT a.loginname, a.servername, a.recipient, a.options, \
-                   a.prot, ELT(a.active +1, ' ', 'x'), b.email, a.id \
-                 FROM fetchmail AS a LEFT JOIN view_users AS b ON a.ownerid=b.id \
-                 WHERE a.recipient REGEXP '$keyword' \
-                 ORDER BY a.servername, a.loginname" && myres="$p2"
+                "SELECT loginname, servername, recipient, options, \
+                 prot, ELT(active +1, ' ', 'x'), id \
+                 FROM fetchmail \
+                 WHERE ownerid = $current_user_id AND a.recipient REGEXP '$keyword' \
+                 ORDER BY servername, loginname" && myres="$p2"
         fi
 
         if cui_valid_handle "$myres"
@@ -183,6 +186,100 @@ function resize_windows()
         fi
     fi
 }
+
+#============================================================================
+# mail user selection menu
+#============================================================================
+#----------------------------------------------------------------------------
+# resize menu depending on number of entries
+# $1 --> appl. window
+# $2 --> menu
+# $3 --> no. of users
+#----------------------------------------------------------------------------
+function resize_menu()
+{
+    local win="$1"
+    local menu="$2"
+    local count="$3"
+
+    cui_getclientrect "$win"
+    local w="$p4"
+    local h="$p5"
+
+    local mh=$[$count + 5]
+    local mx=$[($w - 50) / 2]
+    local my=$[($h - $mh) / 2]
+    [ $mh -gt $h ] && mh=$h-2
+
+    cui_window_move  "$menu" "$mx" "$my" "50" "$mh"
+}
+
+#----------------------------------------------------------------------------
+# select a user to edit fetchmail entries
+#----------------------------------------------------------------------------
+function select_user()
+{
+    local win="$1"
+    local ctrl
+    local myres
+    local idx='1'
+    local menu
+    local result
+    local item
+    local user
+    local user_ids
+
+    cui_menu_new "$win" "Select user" 0 0 50 11 1 "$[$CWS_CENTERED + $CWS_POPUP]" "$CWS_NONE" && menu="$p2"
+    if cui_valid_handle $menu
+    then
+        # execute query and return result
+        my_query_sql "$myconn" \
+            "SELECT    email, id \
+             FROM      view_users;" && myres="$p2"
+        if cui_valid_handle "$myres"
+        then
+            my_result_status "$myres"
+            if [ "$p2" == "$SQL_DATA_READY" ]
+            then
+                my_result_fetch "$myres"
+                while [ "$p2" == "1" ]
+                do
+                    my_result_data    "$myres" "0"
+                    user[$idx]="$p2"
+                    cui_menu_additem  "$menu" "$p2" "$idx"
+                    my_result_data    "$myres" "1"
+                    user_ids[$idx]="$p2"
+                    idx=$[$idx + 1]
+                    my_result_fetch "$myres"
+                done
+            else
+                my_server_geterror "$myconn"
+                cui_message "$win" "$p2" "Error" "$MB_ERROR"
+            fi
+            my_result_free "$myres"
+        fi
+        cui_menu_addseparator "$menu"
+        cui_menu_additem      "$menu" "Exit"        0
+        cui_menu_selitem      "$menu" 1
+        cui_menu_callback     "$menu" "$MENU_CLICKED" "$win" "menu_clicked_hook"
+        cui_menu_callback     "$menu" "$MENU_ESCAPE"  "$win" "menu_escape_hook"
+        cui_menu_callback     "$menu" "$MENU_POSTKEY" "$win" "menu_postkey_hook"
+        resize_menu           "$win" "$menu" "$idx"
+        cui_window_create     "$menu"
+        cui_window_modal      "$menu" && result="$p2"
+        if [ "$result" == "$IDOK" ]
+        then
+            cui_menu_getselitem "$menu" && item="$p2"
+            if [ "$item" != "0" ]
+            then
+                current_user=${user[$item]}
+                current_user_id=${user_ids[$item]}
+            fi
+        fi
+        cui_window_destroy "$menu"
+    fi
+}
+
 
 
 #============================================================================
@@ -510,10 +607,10 @@ function fetchmails_create_dialog()
         if  [ "$result" == "$IDOK" ]
         then
             cui_window_destroy "$dlg"
-
             my_exec_sql "$myconn" \
-                "INSERT INTO fetchmail(loginname, servername, password, recipient, options, active) \
-                 VALUES ('${fetchmaildlg_login}', \
+                "INSERT INTO fetchmail(ownerid, loginname, servername, password, recipient, options, active) \
+                 VALUES ('${current_user_id}', \
+                         '${fetchmaildlg_login}', \
                          '${fetchmaildlg_server}', \
                          AES_ENCRYPT('${fetchmaildlg_passwd1}','${VMAIL_SQL_ENCRYPT_KEY}'), \
                          '${fetchmaildlg_recipient}', \
@@ -585,7 +682,7 @@ function fetchmails_edit_dialog()
             cui_listview_gettext "$ctrl" "$idx" "2" && fetchmaildlg_recipient="$p2"
             cui_listview_gettext "$ctrl" "$idx" "3" && fetchmaildlg_options="$p2"
             cui_listview_gettext "$ctrl" "$idx" "5" && dlgdata_active="$p2"
-            cui_listview_gettext "$ctrl" "$idx" "7" && edit_id="$p2"
+            cui_listview_gettext "$ctrl" "$idx" "6" && edit_id="$p2"
 
             fetchmaildlg_passwd1="xxxxxxxxxxxxxxxx"
             fetchmaildlg_passwd2="xxxxxxxxxxxxxxxx"
@@ -769,7 +866,8 @@ function listview_clicked_hook()
         cui_menu_addseparator "$menu"
         cui_menu_additem      "$menu" "Search filter"     4
         cui_menu_addseparator "$menu"
-        cui_menu_additem      "$menu" "Exit application"  5
+        cui_menu_additem      "$menu" "Select user"       5  
+        cui_menu_additem      "$menu" "Exit application"  6
         cui_menu_addseparator "$menu"
         cui_menu_additem      "$menu" "Close menu"        0
         cui_menu_selitem      "$menu" 1
@@ -832,6 +930,17 @@ function listview_clicked_hook()
                 ;;
             5)
                 cui_window_destroy  "$menu"
+
+                local old_user=${current_user}
+                select_user $win
+                if [ "$old_user" != "$current_user" ]
+                then
+                    cui_window_settext "$mainwin" "Fetchmail administration for: ${current_user}"
+                    load_data "$win"
+                fi
+                ;;
+            6)
+                cui_window_destroy  "$menu"
                 cui_window_quit 0
                 ;;
             *)
@@ -877,7 +986,7 @@ function mainwin_create_hook()
     local win="$p2"
     local ctrl
 
-    cui_listview_new "$win" "" 0 0 10 10 8 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
+    cui_listview_new "$win" "" 0 0 10 10 7 "$IDC_LISTVIEW" "$CWS_NONE" "$CWS_NONE" && ctrl="$p2"
     if cui_valid_handle $ctrl
     then
         cui_listview_callback   "$ctrl" "$LISTBOX_CLICKED" "$win" "listview_clicked_hook"
@@ -888,8 +997,7 @@ function mainwin_create_hook()
         cui_listview_setcoltext "$ctrl" 3 "Options"
         cui_listview_setcoltext "$ctrl" 4 "Prot"
         cui_listview_setcoltext "$ctrl" 5 "Active"
-        cui_listview_setcoltext "$ctrl" 6 "Owner (e-mail)"
-        cui_listview_setcoltext "$ctrl" 7 "-"
+        cui_listview_setcoltext "$ctrl" 6 "-"
         cui_window_create       "$ctrl"
     fi
 
@@ -934,7 +1042,15 @@ function mainwin_init_hook()
         if p_sql_success "$p2"
         then
             selected_entry=''
-            load_data "$win"
+            select_user "$win"
+
+            if [ -n "$current_user" ]
+            then
+                cui_window_settext "$mainwin" "Fetchmail administration for: ${current_user}"
+                load_data "$win"
+            else
+                cui_window_quit 0
+            fi            
         else
             my_server_geterror "$myconn"
             cui_message "$win" "$p2" "Error" "$MB_ERROR"

@@ -1,7 +1,7 @@
 #!/bin/bash
 #------------------------------------------------------------------------------
 # /var/install/bin/cui-vmail-user-userhandling.cui.sh
-# Copyright (c) 2001-2009 the eisfair team, team(at)eisfair(dot)org
+# Copyright (c) 2001-2016 the eisfair team, team(at)eisfair(dot)org
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -264,7 +264,8 @@ function resize_menu()
     local mh=$[$count + 5]
     local mx=$[($w - 50) / 2]
     local my=$[($h - $mh) / 2]
-
+    [ $mh -gt $h ] && mh=$h-2
+    
     cui_window_move  "$menu" "$mx" "$my" "50" "$mh"
 }
 
