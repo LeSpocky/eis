@@ -2,7 +2,7 @@
 # autoconf configure.ac for show-menu.cui
 #
 # Creation     : 02.02.2014
-# Last Modified: $Id$
+# Last Modified: $Id: configure.ac 42959 2016-08-22 07:50:22Z dv $
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -10,7 +10,7 @@
 # (at your option) any later version.
 # ----------------------------------------------------------------------
 
-AC_INIT([show-menu.cui], [3.0.2], [daniel@eisfair.org])
+AC_INIT([show-menu.cui], [3.0.3], [daniel@eisfair.org])
 
 m4_include([m4/ax_with_curses.m4])
 m4_include([m4/ax_check_cflags.m4])

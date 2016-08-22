@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: shelldlg.c 33482 2013-04-15 17:50:31Z dv $
+ * Last Update:  $Id: shelldlg.c 42959 2016-08-22 07:50:22Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -38,8 +38,8 @@ static void
 ShellDlgCoProcExitHook(void* w, void* c, int code)
 {
 	wchar_t buffer[128 + 1];
+	CUIWINDOW* win = (CUIWINDOW*) w;
 	
-	CUI_USE_ARG(w);
 	CUI_USE_ARG(code);
 
 #ifdef BE_VERBOSE
@@ -50,10 +50,18 @@ ShellDlgCoProcExitHook(void* w, void* c, int code)
 	TerminalWrite((CUIWINDOW*) c, _T("\033[0m\n"), wcslen(_T("\033[0m\n")));
 #endif
 
-	wcscpy(buffer, _T("Press ENTER to continue"));
-	TerminalWrite((CUIWINDOW*) c, _T("\033[33m\033[1m"), wcslen(_T("\033[33m\033[1m")));
-	TerminalWrite((CUIWINDOW*) c, buffer, wcslen(buffer));
-	TerminalWrite((CUIWINDOW*) c, _T("\033[0m"), wcslen(_T("\033[0m")));
+	((SHELLDLGDATA*)win->InstData)->ExitCode = code;
+	if ((((SHELLDLGDATA*)win->InstData)->DoAutoClose) && (code == 0))
+	{
+		WindowClose((CUIWINDOW*) w, IDOK);
+	}
+	else
+	{
+		wcscpy(buffer, _T("Press ENTER to continue"));
+		TerminalWrite((CUIWINDOW*) c, _T("\033[33m\033[1m"), wcslen(_T("\033[33m\033[1m")));
+		TerminalWrite((CUIWINDOW*) c, buffer, wcslen(buffer));
+		TerminalWrite((CUIWINDOW*) c, _T("\033[0m"), wcslen(_T("\033[0m")));
+	}
 }
 
 
@@ -163,6 +171,7 @@ ShellDlgNew(CUIWINDOW* parent, CUIRECT* rc, int sflags, int cflags)
 		((SHELLDLGDATA*)dlg->InstData)->Command[0] = 0;
 		((SHELLDLGDATA*)dlg->InstData)->Title[0] = 0;
 		((SHELLDLGDATA*)dlg->InstData)->ExitCode = 0;
+		((SHELLDLGDATA*)dlg->InstData)->DoAutoClose = FALSE;
 
 		return dlg;
 	}

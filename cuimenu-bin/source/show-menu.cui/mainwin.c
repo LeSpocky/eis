@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: mainwin.c 42871 2016-08-16 20:59:33Z dv $
+ * Last Update:  $Id: mainwin.c 42959 2016-08-22 07:50:22Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -59,8 +59,6 @@ static void  MainwinErrorOut    ( void* w,
                                   int linenr, 
                                   int is_warning );
 
-static void  MainwinRunOut      ( const char* buffer, int source, void* instance );
-
 static void  MainUpdateTitle    ( CUIWINDOW* win, EISMENU* menu );
 static void  MainCloseMenu      ( CUIWINDOW* win, EISMENU* menu );
 static void  MainExecuteMenu    ( CUIWINDOW* win, int index, MAINWINDATA* data );
@@ -73,6 +71,7 @@ static void  MainExecuteScript  ( CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA
 static void  MainOpenDragMode   ( CUIWINDOW* win );
 static void  MainEscDragMode    ( CUIWINDOW* win );
 static void  MainCloseDragMode  ( CUIWINDOW* win );
+
 
 /* ---------------------------------------------------------------------
  * MainCreateHook
@@ -549,13 +548,14 @@ MainwinAddMessage(CUIWINDOW* win, const wchar_t* msg)
  * ---------------------------------------------------------------------
  */
 int
-MainwinShellExecute(CUIWINDOW* win, const wchar_t* cmd, const wchar_t* title)
+MainwinShellExecute(CUIWINDOW* win, const wchar_t* cmd, const wchar_t* title, int autoclose)
 {
 	if (win && (wcscmp(win->Class, _T("SHOW-MENU.CUI")) == 0))
 	{
 		MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 		CUIRECT rc = {0, 0, 40, 10};
 		CUIRECT trc;
+		int     exitcode = 1;
 
 		WindowGetClientRect(win, &rc);
 
@@ -575,51 +575,25 @@ MainwinShellExecute(CUIWINDOW* win, const wchar_t* cmd, const wchar_t* title)
 
 				wcsncpy(dlgdata->Title, title, 128);
 				dlgdata->Title[128] = 0;
+
+				dlgdata->DoAutoClose = autoclose;
+				
+				WindowCreate(data->Terminal);
+				WindowModal(data->Terminal);
+
+				exitcode = dlgdata->ExitCode;
 			}
-			WindowCreate(data->Terminal);
-			WindowModal(data->Terminal);
+			
 			WindowDestroy(data->Terminal);
 			data->Terminal = NULL;
 		}
+		return (exitcode == 0);
 	}
-	return TRUE;
+	return FALSE;
 }
 
 
 /* helper functions */
-
-/* ---------------------------------------------------------------------
- * MainwinRunOut (callback)
- * This function is called from "RunCoProcess" when a coprocess is executed.
- * ---------------------------------------------------------------------
- */
-static void
-MainwinRunOut(const char* buffer, int source, void* instance)
-{
-	CUIWINDOW* win = (CUIWINDOW*) instance;
-	
-	CUI_USE_ARG(source);
-
-	if (win)
-	{
-		MAINWINDATA* data = (MAINWINDATA*) win->InstData;			
-		if (data->NumErrors < 20)
-		{
-			wchar_t* buf = MbToTCharDup(buffer);
-			if (buf)
-			{
-				MainwinAddMessage(win, buf);
-				free(buf);
-			}
-		}
-		else if (data->NumErrors == 20)
-		{
-			MainwinAddMessage(win, _T("... more errors"));
-		}
-		data->NumErrors ++;
-	}
-}
-
 
 /* ---------------------------------------------------------------------
  * GetSinglePackage
@@ -745,18 +719,12 @@ RunPrePostScript(CUIWINDOW* win,
                  const wchar_t* action, const wchar_t* param1, const wchar_t* param2,
                  const wchar_t* itemname)
 {
-	MAINWINDATA* data = (MAINWINDATA*) win->InstData;
 	int   result = TRUE;
-	int   status;
 	wchar_t scriptfile[512 + 1];
 	wchar_t interpreter[128 + 1];
-	const wchar_t* p[9];
+	wchar_t cmd[1024 + 1];
 
 	GetAbsolutePath(ITEMTYPE_SCRIPT, script, _T(""), scriptfile, 512);
-
-	MainwinFreeMessage(win);
-	data->NumErrors = 0;
-	data->NumWarnings = 0;
 
 	if (!package || (package[0] == 0))
 	{
@@ -765,49 +733,42 @@ RunPrePostScript(CUIWINDOW* win,
 
 	if (GetInterpreter(scriptfile, interpreter, 128))
 	{
-		p[0] = interpreter;
-		p[1] = scriptfile;
-		p[2] = task;
-		p[3] = package;
-		p[4] = action;
-		p[5] = param1 ? param1 : _T("");
-		p[6] = param2 ? param2 : _T("");
-		p[7] = itemname;
-		p[8] = NULL;
-
-		/* execute */
-		result = RunCoProcess(interpreter, (wchar_t**) p, MainwinRunOut, win, &status);
+		swprintf(cmd, sizeof(cmd) / sizeof(cmd[0]) - 1,
+			_T("\"%ls\" \"%ls\" \"%ls\" \"%ls\" \"%ls\" \"%ls\" \"%ls\" \"%ls\""),
+			interpreter,
+			scriptfile,
+			task,
+			package,
+			action,
+			param1 ? param1 : _T(""),
+			param2 ? param2 : _T(""),
+			itemname);
 	}
 	else
 	{
-		/* initialize for binary files */
-		p[0] = scriptfile;
-		p[1] = task;
-		p[2] = package;
-		p[3] = action;
-		p[4] = param1 ? param1 : _T("");
-		p[5] = param2 ? param2 : _T("");
-		p[6] = itemname;
-		p[7] = 0;
-
-		/* execute */
-		result = RunCoProcess(scriptfile, (wchar_t**) p, MainwinRunOut, win, &status);
+		swprintf(cmd, sizeof(cmd) / sizeof(cmd[0]) - 1,
+			_T("\"%ls\" \"%ls\" \"%ls\" \"%ls\" \"%ls\" \"%ls\" \"%ls\""),
+			scriptfile,
+			task,
+			package,
+			action,
+			param1 ? param1 : _T(""),
+			param2 ? param2 : _T(""),
+			itemname);
+			
+		result = MainwinShellExecute(win, cmd, task, TRUE);
 	}
 
-	if (result && (status != 0))
+	if (wcscmp(task, _T("pre")) == 0)
 	{
-		result = FALSE;
+		result = MainwinShellExecute(win, cmd, _T("Preprocessing"), TRUE);
+	}
+	else
+	{
+		result = MainwinShellExecute(win, cmd, _T("Postprocessing"), TRUE);
 	}
 
-	if (!result)
-	{
-		MainwinAddMessage(win, _T(""));
-		MainwinAddMessage(win, _T("[ENTER] = Close"));
-		MessageBox(win, data->ErrorMsg, _T("Error"), MB_ERROR);
-        }
-	MainwinFreeMessage(win);
-
-        return result;
+	return result;
 }
 
 /* ---------------------------------------------------------------------
@@ -1422,7 +1383,7 @@ MainExecuteService(CUIWINDOW* win, EISMENUITEM* item, MAINWINDATA* data)
 			}
 
 			/* execute command line */
-			MainwinShellExecute(win, cmd, item->Name);
+			MainwinShellExecute(win, cmd, item->Name, FALSE);
 
 			UpdateMenuStack(win);
 			MainUpdateTitle(win, data->LastMenu);

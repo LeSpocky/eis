@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: mainwin.h 33435 2013-04-09 23:14:26Z dv $
+ * Last Update:  $Id: mainwin.h 42959 2016-08-22 07:50:22Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -65,7 +65,7 @@ void       MainwinSetConfig(CUIWINDOW* win, PROGRAM_CONFIG* cfg);
 void       MainwinFreeMessage(CUIWINDOW* win);
 void       MainwinAddMessage(CUIWINDOW* win, const wchar_t* msg);
 
-int        MainwinShellExecute(CUIWINDOW* win, const wchar_t* cmd, const wchar_t* title);
+int        MainwinShellExecute(CUIWINDOW* win, const wchar_t* cmd, const wchar_t* title, int autoclose);
 
 #endif
 

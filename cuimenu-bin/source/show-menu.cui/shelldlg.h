@@ -5,7 +5,7 @@
  * Copyright (C) 2007
  * Daniel Vogel, <daniel_vogel@t-online.de>
  *
- * Last Update:  $Id: shelldlg.h 33435 2013-04-09 23:14:26Z dv $
+ * Last Update:  $Id: shelldlg.h 42959 2016-08-22 07:50:22Z dv $
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -32,7 +32,8 @@ typedef struct
 {
 	wchar_t Command[256 + 1];
 	wchar_t Title[128 + 1];
-	int   ExitCode;
+	int     DoAutoClose;
+	int     ExitCode;
 } SHELLDLGDATA;
 
 

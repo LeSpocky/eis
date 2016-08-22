@@ -1,3 +1,11 @@
+show-menu.cui-3.0.3
+=============================================
+- run pre and post scripts in terminal windows
+
+show-menu.cui-3.0.2
+=============================================
+- pass menu item as param $6 to pre and post scripts
+
 show-menu.cui-3.0.1
 =============================================
 - show-menu.cui now is an autoconf project
