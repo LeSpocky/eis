@@ -238,6 +238,29 @@ install: release
 	@install cui-script.h $(DESTDIR)/$(INSTALLINCDIR)
 	@install cuilib $(DESTDIR)/var/install/include
 
+# install
+install_debug: debug
+	@echo "installing $(TARGET)..."
+	@mkdir -p $(DESTDIR)/$(INSTALLLIBDIR)
+	@install -m0644 $(DBG_DIR)/$(TARGET).so.$(VERSION) $(DESTDIR)/$(INSTALLLIBDIR)
+	@install -m0644 $(DBG_DIR)/$(TARGET)-util.so.$(VERSION) $(DESTDIR)/$(INSTALLLIBDIR)
+	@install -m0644 $(DBG_DIR)/$(TARGET)-script.so.$(VERSION) $(DESTDIR)/$(INSTALLLIBDIR)
+	@cp $(DBG_DIR)/$(TARGET).a $(DESTDIR)/$(INSTALLLIBDIR)
+	@cp $(DBG_DIR)/$(TARGET)-util.a $(DESTDIR)/$(INSTALLLIBDIR)
+	@cp $(DBG_DIR)/$(TARGET)-script.a $(DESTDIR)/$(INSTALLLIBDIR)
+	@rm -f $(DESTDIR)/$(INSTALLLIBDIR)/$(TARGET).so
+	@rm -f $(DESTDIR)/$(INSTALLLIBDIR)/$(TARGET)-script.so
+	@rm -f $(DESTDIR)/$(INSTALLLIBDIR)/$(TARGET)-util.so
+	@ldconfig -n $(DESTDIR)/$(INSTALLLIBDIR)
+	@cd $(DESTDIR)/$(INSTALLLIBDIR) && ln -s $(TARGET).so.$(VERSION) $(TARGET).so
+	@cd $(DESTDIR)/$(INSTALLLIBDIR) && ln -s $(TARGET)-util.so.$(VERSION) $(TARGET)-util.so
+	@cd $(DESTDIR)/$(INSTALLLIBDIR) && ln -s $(TARGET)-script.so.$(VERSION) $(TARGET)-script.so
+	@install cui.h $(DESTDIR)/$(INSTALLINCDIR)
+	@install cui-char.h $(DESTDIR)/$(INSTALLINCDIR)
+	@install cui-util.h $(DESTDIR)/$(INSTALLINCDIR)
+	@install cui-script.h $(DESTDIR)/$(INSTALLINCDIR)
+	@install cuilib $(DESTDIR)/var/install/include
+
 # uninstall	
 uninstall:
 	@echo "uninstalling $(TARGET)..."

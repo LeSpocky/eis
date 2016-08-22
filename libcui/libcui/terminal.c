@@ -69,7 +69,7 @@ typedef struct
 
 typedef struct TERMINALStruct
 {
-	wchar_t*       Lines[MAX_TERMLINES];         /* Text line buffers */
+	wchar_t*     Lines[MAX_TERMLINES];         /* Text line buffers */
 	BYTE*        Colors[MAX_TERMLINES];        /* Color line buffers */
 
 	int          CurAttr;                      /* Current color attribute */
@@ -81,7 +81,7 @@ typedef struct TERMINALStruct
 
 	int          InputState;                   /* State of input interpreter */
 	int          InputPos;                     /* Sequence read pos */
-	wchar_t        EscSeq[MAX_SEQUENCE + 1];     /* Buffer for ANSI control sequences */
+	wchar_t      EscSeq[MAX_SEQUENCE + 1];     /* Buffer for ANSI control sequences */
 
 	COPROC*      CoProc;                       /* Running co process */
 
@@ -785,14 +785,14 @@ TerminalWrite(CUIWINDOW* win, const wchar_t* text, int numchar)
 					data->InputState = STATE_NORMAL;
 					data->Lines[data->YCursor][data->XCursor] = 27;
 					data->Colors[data->YCursor][data->XCursor] = data->CurAttr;
-					if (++data->XCursor > width)
+					if (++data->XCursor >= width)
 					{
 						TerminalNextLine(win);
 						data->XCursor = 0;
 					}
 					data->Lines[data->YCursor][data->XCursor] = text[i];
 					data->Colors[data->YCursor][data->XCursor] = data->CurAttr;
-					if (++data->XCursor > width)
+					if (++data->XCursor >= width)
 					{
 						TerminalNextLine(win);
 						data->XCursor = 0;
@@ -1092,9 +1092,9 @@ TerminalProcessEscSequence(CUIWINDOW* win, CUIRECT* rc)
 			{
 				data->XCursor = (rc->W > 0) ? rc->W - 1 : 0;
 			}
-			if (data->XCursor > MAX_TERMCOLS)
+			if (data->XCursor >= MAX_TERMCOLS)
 			{
-				data->XCursor = MAX_TERMCOLS;
+				data->XCursor = (MAX_TERMCOLS - 1);
 			}
 		}
 		break;
@@ -1145,6 +1145,10 @@ TerminalProcessEscSequence(CUIWINDOW* win, CUIRECT* rc)
 				column = 1;
 			}
 			data->XCursor = (column < rc->W) ? column : rc->W;
+			if (data->XCursor > MAX_TERMCOLS)
+			{
+				data->XCursor = MAX_TERMCOLS;
+			}
 		}
 		break;
 	}
@@ -1184,7 +1188,14 @@ TerminalPrevLine(CUIWINDOW* win)
 	TERMINALDATA* data = (TERMINALDATA*) win->InstData;
 	if (data->YCursor != data->FirstLine)
 	{
-		data->YCursor = (data->YCursor - 1) % MAX_TERMLINES;
+		if (data->YCursor > 0)
+		{
+			data->YCursor--;
+		}
+		else
+		{
+			data->YCursor = (MAX_TERMLINES - 1);
+		}
 	}
 	TerminalCalcPos(win);
 }
@@ -1668,7 +1679,7 @@ wchar_t_dup_to_mbchar(const wchar_t* str)
 	char* mbstr = (char*) malloc((len + 1) * sizeof(wchar_t));
 	if (mbstr)
 	{
-		wcsrtombs(mbstr, &str, len + 1, NULL);	
+		wcsrtombs(mbstr, &str, len + 1, NULL);
 		return mbstr;
 	}
 	return NULL;

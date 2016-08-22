@@ -356,14 +356,8 @@ WindowStart(int color, int mouse)
 void
 WindowEnd(void)
 {
-	CUICOLSCHEME* scheme = FirstColScheme;
-	while (scheme)
-	{
-		FirstColScheme = (CUICOLSCHEME*) scheme->Next;
-		free(scheme->Name);
-		free(scheme);
-		scheme = FirstColScheme;
-	}
+	CUICOLSCHEME* scheme;
+
 	if (Desktop)
 	{
 		WindowDestroy(Desktop);
@@ -389,6 +383,15 @@ WindowEnd(void)
 		endwin();
 		(void) signal(SIGWINCH, SIG_DFL);
 		printf("\033[%i;0H", LINES);
+	}
+
+	scheme = FirstColScheme;
+	while (scheme)
+	{
+		FirstColScheme = (CUICOLSCHEME*) scheme->Next;
+		free(scheme->Name);
+		free(scheme);
+		scheme = FirstColScheme;
 	}
 }
 

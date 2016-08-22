@@ -1,11 +1,11 @@
-#!/bin/bash
+#! /bin/sh
 #------------------------------------------------------------------------------
 # /var/install/include/cuilib - script interface for libcui
 #
 # Copyright (c) 2007 eisfair-Team
 #
 # Creation:    2007-06-30 dv
-# Last update: $Id: cuilib 34713 2013-11-23 20:10:43Z dv $
+# Last update: $Id: cuilib 42890 2016-08-20 07:43:33Z dv $
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -174,6 +174,8 @@ API_LISTVIEWGETCOUNT=222
 API_LISTVIEWUPDATE=223
 API_LISTVIEWALPHASORT=224
 API_LISTVIEWNUMERICSORT=225
+API_LISTVIEWSETROWTEXT=226
+API_LISTVIEWHILIGHT=227
 
 API_TERMINALNEW=230
 API_TERMINALSETCALLBACK=231
@@ -368,9 +370,14 @@ SEP='	'
 SCRIPTFILE=$0
 CUIID=$1
 PARENTPID=$2
-ARGUMENTS=$@
 CUINL=$'\x0A'    #' newline character
-CUISEP=$'\x09'   #' tabulator / protocol seperator 
+CUISEP=$'\x09'   #' tabulator / protocol seperator
+
+for arg in "${@}"
+do
+    ARGUMENTS="${ARGUMENTS} \"${arg}\""
+done
+
 
 #------------------------------------------------------------------------------
 # Pipe initialisation
@@ -379,16 +386,16 @@ CUISEP=$'\x09'   #' tabulator / protocol seperator
 #------------------------------------------------------------------------------
 cui_init()
 {
-    pipe_in="/run/cui/cui${PARENTPID}rp"
-    pipe_out="/run/cui/cui${PARENTPID}wp"
+    pipe_in="/var/run/cui/cui${PARENTPID}rp"
+    pipe_out="/var/run/cui/cui${PARENTPID}wp"
 
     if [ "$CUIID" != "CUISHELL" ]
     then
-        if [ "$ARGUMENTS" != "" ]
+        if [ -n "${ARGUMENTS}" ]
         then
-            /var/install/bin/shellrun.cui -o "\"$ARGUMENTS\"" "$SCRIPTFILE"
+            /var/install/bin/shellrun.cui -o "${ARGUMENTS}" "${SCRIPTFILE}"
         else
-            /var/install/bin/shellrun.cui "$SCRIPTFILE"
+            /var/install/bin/shellrun.cui "${SCRIPTFILE}"
         fi
         exit $?
     else
@@ -2092,6 +2099,35 @@ cui_listview_alphasort()
 cui_listview_numericsort()
 {
     cui_send "C" "${API_LISTVIEWNUMERICSORT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Set text of a complete row. Fields are separated by '|' letters
+# Expects: $1  <-- Window   : Window Handle
+#          $2  <-- Rec.Index: Integer
+#          $3  <-- Text     : String
+# Returns: <nothing>   
+#------------------------------------------------------------------------------
+cui_listview_setrowtext()
+{
+    cui_send "C" "${API_LISTVIEWSETROWTEXT}" "$@"
+    cui_wait_ack
+    return $?
+}
+
+#------------------------------------------------------------------------------
+# Hilight cell text with window hilight color
+# Expects: $1  <-- Window   : Window Handle
+#          $2  <-- Rec.Index: Integer
+#          $3  <-- Col.Index: Integer
+#          $4  <-- Hilight  : Integer (Boolean 0/1)
+# Returns: <nothing>   
+#------------------------------------------------------------------------------
+cui_listview_hilight()
+{
+    cui_send "C" "${API_LISTVIEWHILIGHT}" "$@"
     cui_wait_ack
     return $?
 }
