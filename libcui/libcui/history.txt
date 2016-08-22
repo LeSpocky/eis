@@ -1,6 +1,13 @@
+libcui-2.0.2
+============
+- fix segmentation fault in terminal window
+- free color schemes after all windows have been closed
+
 libcui-2.0.1
 ============
 - build libcui using autoconf
+- enable to set the text of a complete row within list views for backend
+  scripts
 
 libcui-1.0.7
 ============
