@@ -42,6 +42,12 @@ unpack() {
         elif [ "${file%.[cC][mM][dD]}" != "${file}" ]
         then
             exit 10
+        elif [ "${file%.[dD][oO][cC][mM]}" != "${file}" ]
+        then
+            exit 10
+        elif [ "${file%.[hH][tT][aA]}" != "${file}" ]
+        then
+            exit 10
         elif [ "${file%.[pP][iI][fF]}" != "${file}" ]
         then
             exit 10
