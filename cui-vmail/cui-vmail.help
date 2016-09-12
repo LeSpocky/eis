@@ -57,6 +57,9 @@ Use only: '/var/spool/postfix/virtual' or '/data/vmail/virtual'<br/>
 <help name="POSTFIX_SMTP_TLS">
 Use TLS or SMTP over SSL for mail transport.<br/>
 Before use create mail cert!<br/>
+Default cert files:<br/>
+/etc/ssl/dovecot/server.pem<br/>
+/etc/ssl/dovecot/server.key
 </help>
 
 <help name="POSTFIX_HELO_HOSTNAME">

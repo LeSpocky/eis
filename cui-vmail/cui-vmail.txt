@@ -138,6 +138,10 @@ VMAIL_LOGIN_WITH_MAILADDR
 
 POSTFIX_SMTP_TLS
     Aktiviert Transportsicherheit fuer das Senden von E-Maildaten.
+    Als Zertifikat werden die Dateien
+    /etc/ssl/dovecot/server.pem
+    /etc/ssl/dovecot/server.key
+    verwendet.
 
     Gueltige Werte: yes,no
 
