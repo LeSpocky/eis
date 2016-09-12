@@ -48,7 +48,7 @@ packages_name='vmail'
     while [ ${count} -le ${POSTFIX_RELAY_FROM_NET_N} ]
     do
         printvar "POSTFIX_RELAY_FROM_NET_${count}" "NETWORK/NETMASK 172.16.0.0/16"
-        count=`expr ${count} + 1`
+	count=$((count+1))
     done
 
     printvar "POSTFIX_SMARTHOST" "send all e-mails to external e-mail server"
@@ -77,7 +77,7 @@ packages_name='vmail'
     do
         printvar "POSTFIX_RBL_${count}_SERVER" "Realtime Blackhole List server $count name"
         printvar "POSTFIX_RBL_${count}_WEIGHT" "Blackhole server $count blocking weight"
-        count=`expr ${count} + 1`
+        count=$((count+1))
     done
 
     printvar "POSTFIX_HEADER_N" "Count of header checks"
@@ -86,7 +86,7 @@ packages_name='vmail'
     do
         printvar "POSTFIX_HEADER_${count}_CHECK" "PCRE check string"
         printvar "POSTFIX_HEADER_${count}_HANDL" "handling: REJECT, IGNORE + logstring"
-        count=`expr ${count} + 1`
+	count=$((count+1))
     done
 
     printvar "POSTFIX_CLIENT_N" "Count of checked email clients"
@@ -95,7 +95,7 @@ packages_name='vmail'
     do
         printvar "POSTFIX_CLIENT_${count}_CHECK" "PCRE check string"
         printvar "POSTFIX_CLIENT_${count}_HANDL" "handling: REJECT, IGNORE + logstring"
-        count=`expr ${count} + 1`
+	count=$((count+1))
     done
 
     #-----------------------------------------------------------------------

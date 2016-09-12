@@ -11,10 +11,12 @@
 ### ----------------------------------------------------------------------------
 ### internal parameter - not editable with ECE:
 
-VMAIL_TLS_CERT='/etc/ssl/certs/imapd.pem' # path to ssl cert
-VMAIL_TLS_KEY='/etc/ssl/private/imapd.key'
+VMAIL_TLS_CERT='/etc/ssl/dovecot/server.pem' # path to ssl cert
+VMAIL_TLS_KEY='/etc/ssl/dovecot/server.key'
 VMAIL_TLS_CAPATH='/etc/ssl/certs'
 VMAIL_TLS_KEYPATH="/etc/ssl/private"
+[ -e ${VMAIL_TLS_CAPATH}/ca-certificates.crt ] && VMAIL_TLS_CAFILE="${VMAIL_TLS_CAPATH}/ca-certificates.crt"
+
 # default values
 POSTFIX_SMARTHOST='no'
 POSTFIX_SMARTHOST_TLS='no'
@@ -91,7 +93,7 @@ update_mysql_tables()
             else
                 mysql_pass="X"
             fi
-            count=`expr ${count} + 1`
+            count=$((count+1))
         done
     fi
     if [ "$mysql_pass" = "X" ]; then
@@ -166,7 +168,7 @@ while [ ${count} -le ${POSTFIX_RELAY_FROM_NET_N} ]
 do
     eval temp1='$POSTFIX_RELAY_FROM_NET_'${count}
     postfix_int_netw="${postfix_int_netw}, ${temp1}"
-    count=`expr ${count} + 1`
+    count=$((count+1))
 done
 
 [ $POSTFIX_LIMIT_MAILSIZE -gt 10 ] || POSTFIX_LIMIT_MAILSIZE="10"
@@ -195,7 +197,7 @@ if [ "$POSTFIX_RBL" = "yes" ]; then
             postfix_rbl_list="$postfix_rbl_list ${temp1}${temp2}"
             [ ${POSTFIX_RBL_N} -gt ${count} ] && postfix_rbl_list="$postfix_rbl_list,"
         fi
-        count=`expr ${count} + 1`
+        count=$((count+1))
     done
 fi
 [ "$POSTFIX_SMTP_TLS" = 'yes' ] && postfix_tls=""
@@ -309,7 +311,9 @@ postconf -e 'smtp_connection_cache_on_demand = no'
 postconf -e "smtp_sender_dependent_authentication = $POSTFIX_SMARTHOST"
 postconf -e "smtp_tls_cert_file = $VMAIL_TLS_CERT"
 postconf -e "smtp_tls_key_file = $VMAIL_TLS_KEY"
+postconf -e "smtp_tls_CAfile = $VMAIL_TLS_CAFILE"
 postconf -e "smtp_tls_session_cache_database = btree:/var/lib/postfix/smtp_tls_session_cache"
+postconf -e "smtp_tls_security_level = may"
 postconf -e "smtp_sasl_auth_enable = $POSTFIX_SMARTHOST"
 postconf -e "smtp_use_tls = $POSTFIX_SMARTHOST_TLS"
 postconf -e "smtp_sasl_password_maps = $postfix_relayhosts_auth"
@@ -321,12 +325,8 @@ postconf -e "sender_dependent_relayhost_maps = $postfix_relayhosts"
 
 postconf -e "smtpd_tls_auth_only = no"
 if [ "$POSTFIX_SMTP_TLS" = 'yes' ]; then
-    if [ -e ${VMAIL_TLS_CAPATH}/ca.pem ]; then
-        postconf -e "smtpd_tls_CAfile = ${VMAIL_TLS_CAPATH}/ca.pem"
-    else
-        postconf -e "smtpd_tls_CAfile ="
-    fi
     postconf -e "smtpd_tls_CApath = $VMAIL_TLS_CAPATH"
+    postconf -e "smtpd_tls_CAfile = $VMAIL_TLS_CAFILE"
     postconf -e "smtpd_tls_cert_file = $VMAIL_TLS_CERT"
     postconf -e "smtpd_tls_key_file = $VMAIL_TLS_KEY"
     postconf -e "smtpd_tls_received_header = yes"
@@ -360,7 +360,7 @@ do
     eval temp1='$POSTFIX_HEADER_'${count}'_CHECK'
     eval temp2='$POSTFIX_HEADER_'${count}'_HANDL'
     echo "/${temp1}/ ${temp2}" >> /etc/postfix/header_checks.pcre
-    count=`expr ${count} + 1`
+    count=$((count+1))
 done
 rm -f /etc/postfix/client_access_blocks.pcre
 touch /etc/postfix/client_access_blocks.pcre
@@ -371,7 +371,7 @@ do
     eval temp1='$POSTFIX_CLIENT_'${count}'_CHECK'
     eval temp2='$POSTFIX_CLIENT_'${count}'_HANDL'
     echo "/${temp1}/ ${temp2}" >> /etc/postfix/client_access_blocks.pcre
-    count=`expr ${count} + 1`
+    count=$((count+1))
 done
 
 postconf -e "milter_default_action = accept"
@@ -623,14 +623,14 @@ EOF
 
 ### ----------------------------------------------------------------------------
 #10-ssl
-[ ! -f "$VMAIL_TLS_CAPATH/ca.pem" ] && nocafile="#"
+[ -z "$VMAIL_TLS_CAFILE" ] && nocafile="#"
 cat > /etc/dovecot/conf.d/10-ssl.conf <<EOF
 ## SSL settings
 ssl = $POSTFIX_SMTP_TLS
 ssl_cert = <$VMAIL_TLS_CERT
 ssl_key = <$VMAIL_TLS_KEY
 #ssl_key_password =
-${nocafile}ssl_ca = <${VMAIL_TLS_CAPATH}/ca.pem
+${nocafile}ssl_ca = <$VMAIL_TLS_CAFILE
 #ssl_require_crl = yes
 ssl_client_ca_dir = $VMAIL_TLS_CAPATH
 #ssl_client_ca_file =
