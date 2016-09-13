@@ -3,4 +3,3 @@ password = vmail
 dbname = vmaildata
 query = SELECT response FROM view_recipient_access WHERE source='%s' LIMIT 1
 hosts = unix:/run/mysqld/mysqld.sock
-

@@ -161,6 +161,7 @@ postfix_pscreen="#"
 postfix_psmtpd=""
 postfix_tls="#"
 postfix_prxmynet=""
+postfix_tlslevel=""
 
 [ -z "$POSTFIX_HELO_HOSTNAME" ] && POSTFIX_HELO_HOSTNAME="${HOSTNAME}.${DOMAIN_NAME}"
 count=1
@@ -200,7 +201,10 @@ if [ "$POSTFIX_RBL" = "yes" ]; then
         count=$((count+1))
     done
 fi
-[ "$POSTFIX_SMTP_TLS" = 'yes' ] && postfix_tls=""
+if [ "$POSTFIX_SMTP_TLS" = 'yes' ]; then
+    postfix_tls=""
+    postfix_tlslevel="may"
+fi
 [ "$POSTFIX_MIME_HEADER_CHECK" = 'yes' ] && postfix_mime_header_ch="pcre:/etc/postfix/header_check_mime.pcre"
 [ "$POSTFIX_HEADER_N" -gt 0 ] && postfix_header_ch="pcre:/etc/postfix/header_checks.pcre"
 [ "$START_POP3IMAP" = 'yes' ] && postfix_sasl="permit_sasl_authenticated,"
@@ -306,16 +310,17 @@ else
     postconf -e "broken_sasl_auth_clients = no" 
 fi
 
-# relay host
+# smtp tls 
 postconf -e 'smtp_connection_cache_on_demand = no'
-postconf -e "smtp_sender_dependent_authentication = $POSTFIX_SMARTHOST"
 postconf -e "smtp_tls_cert_file = $VMAIL_TLS_CERT"
 postconf -e "smtp_tls_key_file = $VMAIL_TLS_KEY"
 postconf -e "smtp_tls_CAfile = $VMAIL_TLS_CAFILE"
 postconf -e "smtp_tls_session_cache_database = btree:/var/lib/postfix/smtp_tls_session_cache"
-postconf -e "smtp_tls_security_level = may"
+postconf -e "smtp_tls_security_level = $postfix_tlslevel"
+postconf -e "smtp_use_tls = $POSTFIX_SMTP_TLS"
+# relay
+postconf -e "smtp_sender_dependent_authentication = $POSTFIX_SMARTHOST"
 postconf -e "smtp_sasl_auth_enable = $POSTFIX_SMARTHOST"
-postconf -e "smtp_use_tls = $POSTFIX_SMARTHOST_TLS"
 postconf -e "smtp_sasl_password_maps = $postfix_relayhosts_auth"
 postconf -e "smtp_sasl_security_options = noanonymous"
 # utf-8 support not compiled:
@@ -526,7 +531,7 @@ for sqlfile in mysql-canonical_maps.cf mysql-client_access.cf \
 done
 chmod 0750 /etc/postfix/sql
 chgrp postfix /etc/postfix/sql
-sed -i "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}')) FROM view_relaylogin WHERE email like '%s'|" /etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
+sed -i "s|^query.*|query = SELECT CONCAT(username,':',AES_DECRYPT(password, '${VMAIL_SQL_ENCRYPT_KEY}')) FROM view_relaylogin WHERE email='%s' LIMIT 1|" /etc/postfix/sql/mysql-virtual_relayhosts_auth.cf
 
 ### ----------------------------------------------------------------------------
 ### update dovecot

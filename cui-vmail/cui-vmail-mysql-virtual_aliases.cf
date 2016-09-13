@@ -3,4 +3,3 @@ password = vmail
 dbname = vmaildata
 query = SELECT GROUP_CONCAT(destination) FROM view_aliases WHERE email='%s' GROUP BY destination
 hosts = unix:/run/mysqld/mysqld.sock
-

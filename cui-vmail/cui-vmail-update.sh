@@ -48,7 +48,7 @@ packages_name='vmail'
     while [ ${count} -le ${POSTFIX_RELAY_FROM_NET_N} ]
     do
         printvar "POSTFIX_RELAY_FROM_NET_${count}" "NETWORK/NETMASK 172.16.0.0/16"
-	count=$((count+1))
+        count=$((count+1))
     done
 
     printvar "POSTFIX_SMARTHOST" "send all e-mails to external e-mail server"
@@ -86,7 +86,7 @@ packages_name='vmail'
     do
         printvar "POSTFIX_HEADER_${count}_CHECK" "PCRE check string"
         printvar "POSTFIX_HEADER_${count}_HANDL" "handling: REJECT, IGNORE + logstring"
-	count=$((count+1))
+        count=$((count+1))
     done
 
     printvar "POSTFIX_CLIENT_N" "Count of checked email clients"
@@ -95,7 +95,7 @@ packages_name='vmail'
     do
         printvar "POSTFIX_CLIENT_${count}_CHECK" "PCRE check string"
         printvar "POSTFIX_CLIENT_${count}_HANDL" "handling: REJECT, IGNORE + logstring"
-	count=$((count+1))
+        count=$((count+1))
     done
 
     #-----------------------------------------------------------------------

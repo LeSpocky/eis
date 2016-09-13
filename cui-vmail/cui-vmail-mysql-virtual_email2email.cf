@@ -1,6 +1,5 @@
 user = vmailprovider
 password = vmail
 dbname = vmaildata
-query = SELECT email FROM view_users WHERE email='%s'
+query = SELECT email FROM view_users WHERE email='%s' LIMIT 1
 hosts = unix:/run/mysqld/mysqld.sock
-
