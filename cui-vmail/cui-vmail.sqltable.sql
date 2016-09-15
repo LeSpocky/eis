@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS `virtual_aliases` (
   `destination` VARCHAR(128) NOT NULL,
   `mailprotect` SMALLINT(1)  unsigned NOT NULL default '0',
   `active`      TINYINT(1)   unsigned NOT NULL default '1',
+  `editlevel`   SMALLINT(1)  UNSIGNED NOT NULL default '0',
   FOREIGN KEY (domain_id) REFERENCES virtual_domains(id) ON DELETE CASCADE,
   INDEX source (domain_id, source) 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci; 
