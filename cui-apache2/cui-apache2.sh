@@ -28,15 +28,20 @@ chmod 600 /etc/config.d/apache2
 . /etc/config.d/base
 
 # ------------------------------------------------------------------------------
-# force reinstall default apache config
+# reinstall if not exists
 # ------------------------------------------------------------------------------
-rm -f /etc/apache2/httpd.conf
-rm -f /etc/apache2/httpd.conf.apk-new
+[ -f /var/www/localhost/htdocs/index.html ] && cp -f /var/www/localhost/htdocs/index.html /var/www/localhost/htdocs/index.html.orig
 
-apk fix -r apache2
+apk info -q -e apache2 || apk add -q apache2
 
+if [ ! -f /etc/apache2/httpd.conf ]
+then
+    apk fix -r apache2
+fi
 rm -f /var/www/localhost/cgi-bin/printenv*
 rm -f /var/www/localhost/cgi-bin/test-cgi
+
+[ -f /var/www/localhost/htdocs/index.html.orig ] && cp -f /var/www/localhost/htdocs/index.html.orig /var/www/localhost/htdocs/index.html
 
 addgroup -g 81 -S apache >/dev/null 2>&1
 
@@ -597,8 +602,6 @@ do
     eval sslport='$APACHE2_VHOST_'$idx'_SSL_PORT'
     eval forcessl='$APACHE2_VHOST_'$idx'_SSL_FORCE'
     eval sslcertname='$APACHE2_VHOST_'$idx'_SSL_CERT_NAME'
-    errorlog="/var/log/apache2/error-${servername}.log"
-    accesslog="/var/log/apache2/access-${servername}.log" 
     [ "$accesscontrol" = "all" ] && accesscontrol="all granted"
 
     echo ""
@@ -633,11 +636,16 @@ do
     echo "    </Directory>"
 
     if [ "$APACHE2_SSL" = "yes" -a "$ssl" = "yes" -a "$forcessl" = "yes" ] ; then
-        echo "    Redirect permanent / https://${servername}:${sslport}/"
+        [ "${sslport}0" -ne 4430 ] && tmpsslport=":$sslport"
+        echo "    <IfModule mod_rewrite.c>"
+        echo "        RewriteEngine On"
+        echo "        RewriteCond %{HTTPS} off"
+        echo "        RewriteRule ^/(.*) https://%{HTTP_HOST}${tmpsslport}%{REQUEST_URI} [R=301,L]"
+        echo "    </IfModule>"
     fi
 
-    echo "    ErrorLog $errorlog"
-    echo "    CustomLog $accesslog combined"
+    echo "    ErrorLog  /var/log/apache2/error-${servername}.log"
+    echo "    CustomLog /var/log/apache2/access-${servername}.log combined"
 
     #################################
     create_dir_access  $idx
@@ -670,8 +678,8 @@ do
         echo "    ServerAdmin ${mail}"
         echo "    DocumentRoot ${docroot}"
         echo "    ScriptAlias ${scriptalias} ${scriptdir}"
-        echo "    ErrorLog ${errorlog}.ssl"
-        echo "    CustomLog ${accesslog}.ssl combined"
+        echo "    ErrorLog  /var/log/apache2/error-${servername}.log"
+        echo "    CustomLog /var/log/apache2/access-${servername}.log combined"
         #################################
         create_dir_access  $idx
         #################################
@@ -695,13 +703,13 @@ do
         {
             echo "<html><body><h1>Der VirtualHost <em>$servername</em> wurde erfolgreich eingerichtet!</h1>"
             echo "HTML-Dateien muessen nach <em>$docroot</em> geladen werden, CGI-Scripts nach <i>$scriptdir</i>.<br>"
-            echo "Die Access-Logfile ist <em>$accesslog</em><br>"
-            echo "Die Error-Logfile ist <em>$errorlog</em><p>"
+            echo "Die Access-Logfile ist <em>access-${servername}.log</em><br>"
+            echo "Die Error-Logfile ist <em>error-${servername}.log</em><p>"
             echo "Zugriff auf diesen VirtualHost hat <em>$accesscontrol</em>"
             echo "<h1>The VirtualHost <em>$servername</em> was created succesfully!</h1>"
             echo "HTML files must be loaded into <em>$docroot</em>, the CGI-Scripts into <em>$scriptdir</em>.<br>"
-            echo "The access logfile is <em>$accesslog</em><br>"
-            echo "The error logfile is <em>$errorlog</em><p>"
+            echo "The access logfile is <em>access-${servername}.log</em><br>"
+            echo "The error logfile is <em>error-${servername}.log</em><p>"
             echo "Access to this VirtualHost has <em>$accesscontrol</em></body></html>"
         } > ${docroot}/index.html
         chown apache:www-data -R ${docroot}
@@ -767,10 +775,8 @@ do
     eval active='$APACHE2_VHOST_'$idx'_ACTIVE'
     if [ "$active" = "yes" ] ; then
         eval servername='$APACHE2_VHOST_'$idx'_SERVER_NAME'
-        errorlog="/var/log/apache2/error-${servername}.log"
-        accesslog="/var/log/apache2/access-${servername}.log"
-        /var/install/bin/add-menu --logfile setup.system.logfileview.menu "$accesslog" "Show apache access $servername"
-        /var/install/bin/add-menu --logfile setup.system.logfileview.menu "$errorlog" "Show apache error $servername"
+        /var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/apache2/access-${servername}.log" "Show apache access $servername"
+        /var/install/bin/add-menu --logfile setup.system.logfileview.menu "/var/log/apache2/error-${servername}.log" "Show apache error $servername"
     fi
     idx=$((idx+1))
 done

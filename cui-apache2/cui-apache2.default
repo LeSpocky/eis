@@ -116,7 +116,7 @@ APACHE2_VHOST_1_MOD_CACHE='no'        # Enable mod_cache for current vhost
 APACHE2_VHOST_1_SSL='no'              # activate SSL
 APACHE2_VHOST_1_SSL_PORT='443'        # activate SSL
 APACHE2_VHOST_1_SSL_FORCE='no'        # redirect to https://
-APACHE2_VHOST_1_SSL_CERT_NAME='apache'
+APACHE2_VHOST_1_SSL_CERT_NAME='domain.tld'
                                       # Name of the cert.
 APACHE2_VHOST_1_DIR_N='0'
 APACHE2_VHOST_1_DIR_1_ACTIVE='no'
