@@ -48,7 +48,7 @@ package() {
     install -D -m644 ${srcdir}/${pkgname}.txt                        ${pkgdir}/usr/share/doc/${pkgname}/${pkgname}.txt || return 1
 	install -D -m755 ${srcdir}/${pkgname}.sh                         ${pkgdir}/var/install/config.d/${pkgname}.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh                  ${pkgdir}/var/install/config.d/${pkgname}-update.sh || return 1
-	install -D -m644 ${srcdir}/${pkgname}.setup.services.acme.menu   ${pkgdir}/var/install/menu/setup.services.acme.menu || return 1
+	install -D -m644 ${srcdir}/${pkgname}.setup.services.acme.menu   ${pkgdir}/var/install/menu/setup.services.${pkgname}.menu || return 1
 }
 md5sums="ebaad2e19331a2f74e21fca2b0fffaf5  acme.sh.git
 c813fc14613aea67827bb2f755428e29  cui-acme.check
