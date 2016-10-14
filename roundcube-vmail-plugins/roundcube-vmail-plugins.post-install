@@ -41,7 +41,7 @@ then
     VMAIL_SQL_USER="vmailprovider"
     VMAIL_SQL_PASS="12345678"
     VMAIL_SQL_HOST="localhost"
-    VMAIL_SQL_DATABASE="localhost"
+    VMAIL_SQL_DATABASE="vmaildata"
     [ -e /etc/config.d/vmail ] && . /etc/config.d/vmail
     { 
     echo "// plugin vmail database access: user:password@host/database"
