@@ -1,0 +1,68 @@
+#fetch-cont {
+	border: 1px solid #999999;
+	background-color: #F9F9F9;
+	height: 363px;
+	overflow: auto;
+	width: 650px;
+}
+
+body.mailuser-table {
+	margin: 0px;
+	background-color: #F9F9F9;
+}
+
+#mailuser-table {
+	width: 100%;
+	display: table;
+	table-layout: fixed;
+	/* css hack for IE */
+	width: expression('auto');
+}
+
+/* safari hack \*/
+html>body*#mailuser-table[id$="mailuser-table"]:not ([class="none"] ) {
+	table-layout: auto;
+}
+
+#mailuser-table td.fetch {
+	text-align: left;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+#selected {
+	color: #FFFFFF;
+	background-color: #CC3333;
+}
+
+#mailuser-table td.control {
+	text-align: right;
+	vertical-align: middle;
+}
+
+#myprefs {
+	/* border: 1px solid #909090 !important;*/
+	width: 480px;
+	padding-top: 12px;
+	padding-left: 12px;
+	padding-bottom: 6px;
+}
+
+#myform {
+	
+}
+
+#mytable {
+	
+}
+
+#mybuttons {
+	padding-top: 6px;
+	padding-bottom: 12px;
+	padding-right: 2px;
+	text-align: right;
+}
+
+#fetch-cont {
+	
+}
