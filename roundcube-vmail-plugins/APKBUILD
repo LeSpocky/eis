@@ -16,9 +16,6 @@ source=""
 
 _builddir="$srcdir/$pkgname"
 
-
-_builddir="$srcdir/$pkgname"
-
 prepare() {
         mkdir -p ${startdir}/pkg/${pkgname}
 }

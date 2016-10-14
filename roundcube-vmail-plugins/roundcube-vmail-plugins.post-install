@@ -22,12 +22,26 @@ if ! grep -q '^$config\['\''vmail_useredit' /etc/roundcube/config.inc.php
 then
     echo "// plugin - email username to activate edit user accounts"
     echo "$config['vmail_useredit'] = 'mailadmin,root,m.mustermann,';"
+    echo ""
 fi
 
 if ! grep -q '^$config\['\''vmail_user_signature' /etc/roundcube/config.inc.php
 then
     echo "// vmail default signature"
     echo "$config['vmail_user_signature'] = \"-- \nVorname Nachname \nMitarbeiter \nTestfirma \nTelefon: +49 (0) 1234 567 0 \nTelefax: +49 (0) 1234 567 890 \n\""
+    echo ""
+fi
+
+if ! grep -q '^$config\['\''vmail_db_dsn' /etc/roundcube/config.inc.php
+then
+    VMAIL_SQL_USER="vmailprovider"
+    VMAIL_SQL_PASS="12345678"
+    VMAIL_SQL_HOST="localhost"
+    VMAIL_SQL_DATABASE="localhost"
+    [ -e /etc/config.d/vmail ] && . /etc/config.d/vmail 
+    echo "// plugin vmail database access: user:password@host/database"
+    echo "$config['vmail_db_dsn'] = 'mysql://${VMAIL_SQL_USER}:${VMAIL_SQL_PASS}@${VMAIL_SQL_HOST}/${VMAIL_SQL_DATABASE}';"
+    echo ""
 fi
 
 exit 0
