@@ -21,7 +21,6 @@ packageName=cui-acme
 
 # include configlib for using printvar
 . /var/install/include/configlib
-. /etc/config.d/${packageName}
 
 # ----------------------------------------------------------------------------
 # Set the default values for configuration
