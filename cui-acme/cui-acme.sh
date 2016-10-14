@@ -24,6 +24,7 @@ generateNewCert()
             eval currentDomain='ACME_DOMAIN_'${idx}'_NAME'
             domainsToGetCertFor="$domainsToGetCertFor -d $currentDomain"
         fi
+        idx=$((idx+1))
     done
     if [ -z "$domainsToGetCertFor" ] ; then
         mecho "No domain as active configured! Nothing to do..."
