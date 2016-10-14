@@ -39,7 +39,7 @@ build() {
 
 package() {
 	cd "$_builddir"
-	install -D -m644 ${srcdir}/${pkgname}.check                      ${pkgdir}/etc/check.d/${pkgname} || return 1
+	install -D -m600 ${srcdir}/${pkgname}.check                      ${pkgdir}/etc/check.d/${pkgname} || return 1
 	install -D -m644 ${srcdir}/${pkgname}.txt                        ${pkgdir}/usr/share/doc/${pkgname}/${pkgname}.txt || return 1
 	install -D -m755 ${srcdir}/${pkgname}.sh                         ${pkgdir}/var/install/config.d/${pkgname}.sh || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh                  ${pkgdir}/var/install/config.d/${pkgname}-update.sh || return 1

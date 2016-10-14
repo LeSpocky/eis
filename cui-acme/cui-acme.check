@@ -1,2 +1,6 @@
-# Variable           OPT_VARIABLE                VARIABLE_N                          VALUE
-START_ACME           -                           -                                   YESNO
+# Variable             OPT_VARIABLE                VARIABLE_N                          VALUE
+START_ACME             -                           -                                   YESNO
+
+ACME_DOMAIN_N          START_ACME                  -                                   NUMERIC
+ACME_DOMAIN_%_ACTIVE   START_ACME                  ACME_DOMAIN_N                       YESNO
+ACME_DOMAIN_%_NAME     ACME_DOMAIN_%_ACTIVE        ACME_DOMAIN_N                       DOMAIN

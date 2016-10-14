@@ -21,11 +21,24 @@ packageName=cui-acme
 
 # include configlib for using printvar
 . /var/install/include/configlib
+. /etc/config.d/${packageName}
 
 # ----------------------------------------------------------------------------
 # Set the default values for configuration
 START_ACME='no'
+ACME_DOMAIN_N='1'
+ACME_DOMAIN_1_ACTIVE='yes'
+ACME_DOMAIN_1_NAME='eis.lan'
 
+
+
+# ----------------------------------------------------------------------------
+# Read current configuration if existing
+loadCurrentConfiguration()
+{
+    # read old values
+    [ -f /etc/config.d/${packageName} ] && . /etc/config.d/${packageName}
+}
 
 
 # ----------------------------------------------------------------------------
@@ -42,7 +55,15 @@ createConfigFile()
     printgroup "ACME configuration"
     #-------------------------------------------------------------------------
 
-    printvar "START_ACME"              "Use: yes or no"
+    printvar "START_ACME"                      "Use: yes or no"
+
+    printvar "ACME_DOMAIN_N"                   "Amount of domains for which a certificate should be aquired"
+    idx=1
+    while [ "${idx}" -le "${ACME_DOMAIN_N}" ] ; do
+        printvar "ACME_DOMAIN_${idx}_ACTIVE"   "Is the current domain active or not"
+        printvar "ACME_DOMAIN_${idx}_NAME"     "Domain to get a certificate for"
+        idx=$((idx+1))
+    done
 
     #-------------------------------------------------------------------------
     printend
@@ -60,6 +81,9 @@ createConfigFile()
 
 # Write default config file
 createConfigFile /etc/default.d/${packageName}
+
+# Update from old version
+loadCurrentConfiguration
 
 # Write new config file
 createConfigFile /etc/config.d/${packageName}
