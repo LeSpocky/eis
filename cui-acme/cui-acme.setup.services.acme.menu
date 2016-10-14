@@ -1,0 +1,5 @@
+<!-- /var/install/menu/setup.services.phpmyadmin.menu -->
+<!-- Creation: 2006-09-15 starwarsfan -->
+<package>cui-acme</package>
+<title>ACME Administration</title>
+<edit>Edit configuration</edit>

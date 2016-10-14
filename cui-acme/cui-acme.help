@@ -1,0 +1,9 @@
+<!-- Creation: 2006-09-15 starwarsfan -->
+
+<help name="START_ACME">
+  Soll ACME...<br/>
+<br/>
+  Gueltige Werte: yes, no<br/> 
+  Standard-Einstellung: START_ACME='no'
+<br/>
+</help>

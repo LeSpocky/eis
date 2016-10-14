@@ -1,0 +1,52 @@
+# Contributor: Yves Schumann <yves@eisfair.org>
+# Maintainer: Yves Schumann <yves@eisfair.org>
+pkgname=cui-acme
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="CUI Setup for ACME"
+url="http://www.eisfair.org"
+arch="noarch"
+license="GPL"
+depends="cuimenu cui-apache2"
+depends_dev=""
+makedepends="$depends_dev"
+install="$pkgname.post-install $pkgname.pre-upgrade $pkgname.post-deinstall"
+subpackages=""
+source="git@github.com:Neilpang/acme.sh.git
+        ${pkgname}.check
+        ${pkgname}.help
+        ${pkgname}.setup.services.acme.menu
+        ${pkgname}.sh
+        ${pkgname}.txt
+        ${pkgname}-update.sh
+"
+
+_builddir=
+
+prepare() {
+	local i
+	cd "$_builddir"
+	for i in ${source} ; do
+		case ${i} in
+		*.patch) msg ${i}; patch -p1 -i "$srcdir"/${i} || return 1;;
+		esac
+	done
+}
+
+build() {
+	cd "$_builddir"
+}
+
+package() {
+	cd "$_builddir"
+	cd ${startdir}/default.d
+	for currentDefaultConfig in `ls` ; do
+		install -D -m644 ${currentDefaultConfig} ${pkgdir}/etc/default.d/${currentDefaultConfig} || return 1
+	done
+	cd -
+	install -D -m644 ${srcdir}/${pkgname}.check                      ${pkgdir}/etc/check.d/${pkgname} || return 1
+    install -D -m644 ${srcdir}/${pkgname}.txt                        ${pkgdir}/usr/share/doc/${pkgname}/${pkgname}.txt || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh                         ${pkgdir}/var/install/config.d/${pkgname}.sh || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh                  ${pkgdir}/var/install/config.d/${pkgname}-update.sh || return 1
+	install -D -m644 ${srcdir}/${pkgname}.setup.services.acme.menu   ${pkgdir}/var/install/menu/setup.services.acme.menu || return 1
+}
