@@ -1,0 +1,7 @@
+#!/bin/sh
+
+/var/install/bin/del-menu setup.services.menu setup.services.cui-acme.menu
+
+rm -f /etc/backup.d/cui-acme.*
+rm -f /etc/check.d/cui-acme*
+rm -f /etc/default.d/cui-acme
