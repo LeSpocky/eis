@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><roundcube:object name="pagetitle" /></title>
+<roundcube:include file="/includes/links.html" />
+<link rel="stylesheet" type="text/css" href="/settings.css" />
+<link rel="stylesheet" type="text/css" href="/this/vmail_user.css" />
+<script type="text/javascript" src="/functions.js"></script>
+</head>
+<body>
+
+	<roundcube:include file="/includes/taskbar.html" />
+	<roundcube:include file="/includes/header.html" />
+	<roundcube:include file="/includes/settingstabs.html" />
+
+	<div id="mainscreen">
+		<div id="myprefs">
+
+			<div id="myform">
+				<form name="vmail_userform"
+					action="./?_task=settings&_action=plugin.vmail_user.save"
+					method="post">
+					<roundcube:object name="vmail_user_form" />
+				</form>
+			</div>
+
+			<div id="mybuttons">
+				<roundcube:button command="plugin.vmail_user.save" type="input"
+					class="button mainaction" label="save" />
+				<roundcube:button command="plugin.vmail_user" type="input"
+					class="button mainaction" label="cancel" />
+			</div>
+
+			<div id="mytable">
+				<roundcube:object name="vmail_user_table" class="vmail_user-table"
+					cellspacing="0" deleteIcon="/this/delete.png"
+					enableIcon="/this/enabled.png" disableIcon="/this/disabled.png" />
+			</div>
+
+		</div>
+	</div>
+
+</body>
+</html>

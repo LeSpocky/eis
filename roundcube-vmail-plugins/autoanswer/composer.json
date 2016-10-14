@@ -1,0 +1,27 @@
+{
+    "name": "jvehlhaber/vmail_autoanswer",
+    "type": "roundcube-plugin",
+    "description": "Create or edit autoanswer message entry with vmail database.",
+	  "keywords" : [ 
+        "vmail_forward"
+	  ],
+    "license": "GPLv3+",
+    "version": "1.0",
+    "authors": [
+        {
+            "name": "Jens Vehlhaber",
+            "email": "jens@eisfair.org",
+            "role": "Lead",
+            "homepage" : "https://www.eisfair.org/"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://plugins.roundcube.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    }
+}

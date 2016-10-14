@@ -45,21 +45,21 @@ package() {
 	install -D -m755 ${srcdir}/${pkgname}-update.sh                  ${pkgdir}/var/install/config.d/${pkgname}-update.sh || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.acme.menu   ${pkgdir}/var/install/menu/setup.services.${pkgname}.menu || return 1
 }
-md5sums="d0362792ca572287d7093516e2c0b35d  acme-2.5.2
+md5sums="d0362792ca572287d7093516e2c0b35d  acme.sh-2.5.2.tar.gz
 c813fc14613aea67827bb2f755428e29  cui-acme.check
 62a928062facf3d29068bc23c797f5f7  cui-acme.help
 15b457b156b42dcffa59e46eb65ff4ca  cui-acme.setup.services.acme.menu
 c6da318e2ccabf92cc39e59c43fe315d  cui-acme.sh
 9f50bc3e8c4a13336fd7b6c42fb067f0  cui-acme.txt
 016a42dcc2e6295da9bbb1c6aec33eaa  cui-acme-update.sh"
-sha256sums="8ef8557498c678cc215390d2161cd56a7ef36c31e6e24fff456d538878e4d97c  acme-2.5.2
+sha256sums="8ef8557498c678cc215390d2161cd56a7ef36c31e6e24fff456d538878e4d97c  acme.sh-2.5.2.tar.gz
 359a902519951522521f02a7a0ac5329654f0a128f29c368a2daa7a1a12fcaba  cui-acme.check
 7631e16eebc0726a138d2c4c86c3ff5c966f8fb018c9e88736d1cedad65ecb3e  cui-acme.help
 ec5bc50ad3ce51b4b8c4e244eb5bb0520fcfceda0ea1acf061b9c16b457592fc  cui-acme.setup.services.acme.menu
 ef2eeecdc4fad13e0807d0167f8cbb88b69d66e70db0e8f08997e4286ac2a67d  cui-acme.sh
 2aad1dba4f3dcaff44e058a2ffea2fa5afeb4ae6d9cd1387f3f67d495e5def1a  cui-acme.txt
 846b8090a676f71d936cdadc4f5c173d9a346061666442c0a4e5e67144b5f50e  cui-acme-update.sh"
-sha512sums="c078c8f2575399999209621b15cbd89941e12b8715374928228100b78d8dedee00e995003cc486600247f36334afbc97c2178f9a4f54707f3f039e15c46f3baf  acme-2.5.2
+sha512sums="c078c8f2575399999209621b15cbd89941e12b8715374928228100b78d8dedee00e995003cc486600247f36334afbc97c2178f9a4f54707f3f039e15c46f3baf  acme.sh-2.5.2.tar.gz
 4e2a105b50942034d77df57d56f5df07380bfd8b5a925d79d49f6c5754234ad7d352356983a8027349e32e780219d76ccd90c6c84ddadc7405e160d036439654  cui-acme.check
 6d39c41012cd8691ddf78ac1ea32dd71ff9589159a1d5285033a56b93af50ad21ab668056fefd809e98aa8b82e01686c8bee8b8b99294724a1d3beb75cd5c925  cui-acme.help
 0350c3ec7d3bb8957fc5138995ee247f15021f8a0c3485cebe027ce2324d7964bf78aa0fe8631e722ecb1614bb90cff33d6820ac72d02078945fd6d560b0cbd2  cui-acme.setup.services.acme.menu

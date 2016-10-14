@@ -48,6 +48,7 @@
 /dyn[-.]/                               550 DYN-. We do not accept mail from dynamic IP. Use an authorized relay
 /dyn[0-9]{1,3}\./                       550 DYNn. We do not accept mail from dynamic IP. Use an authorized relay
 /dynamic\./                             550 DYNAMIC. We do not accept mail from dynamic IP. Use an authorized relay
+/dynamic-/                              550 DYNAMIC. We do not accept mail from dynamic IP. Use an authorized relay
 /\w\w\w\w-\w+\.pool\.einsundeins\.de/   550 EINSUNDEIS. We do not accept mail from dynamic IP. Use an authorized relay
 /[0-9]{1,3}\.fibernet\..*\./            550 FIBERNET. We do not accept mail from dynamic IP. Use an authorized relay
 /\w+\d+-\d+\.fibertel\.com\.ar/         550 FIBERTEL. Not accept mail from dynamic IP. Use an authorized relay

@@ -1,0 +1,29 @@
+{
+	  "name" : "jvehlhaber/vmail_user",
+	  "type" : "roundcube-plugin",
+	  "description" : "Roundcube vmail_user plugin is a Roundcube plugin, which allows user listing.",
+	  "keywords" : [ 
+        "vmail_user",
+		    "user",
+		    "mailbox"
+	  ],
+    "license": "GPLv3+",
+    "version": "1.0",
+    "authors": [
+        {
+            "name": "Jens Vehlhaber",
+            "email": "jens@eisfair.org",
+            "role": "Lead",
+            "homepage" : "https://www.eisfair.org/"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://plugins.roundcube.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    }
+}

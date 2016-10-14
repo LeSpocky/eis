@@ -1,0 +1,36 @@
+# Contributor: Jens Vehlhaber <jens@eisfair.org>
+# Maintainer: Jens Vehlhaber <jens@eisfair.org>
+pkgname=roundcube-vmail-plugins
+pkgver=1.0.0
+pkgrel=0
+pkgdesc="Rundcube plugins for vmail server"
+url="http://www.eisfair.org"
+arch="noarch"
+license="GPL"
+depends="roundcubemail"
+depends_dev=""
+makedepends="$depends_dev"
+install="$pkgname.post-install $pkgname.post-upgrade"
+subpackages=""
+source=""
+
+_builddir="$srcdir/$pkgname"
+
+
+_builddir="$srcdir/$pkgname"
+
+prepare() {
+        mkdir -p ${startdir}/pkg/${pkgname}
+}
+
+build() {
+	echo ""
+}
+
+package() {
+        mkdir -p ${pkgdir}/usr/share/webapps/roundcube/plugins
+        cp -r ${startdir}/autoanswer ${pkgdir}/usr/share/webapps/roundcube/plugins/
+        cp -r ${startdir}/forward    ${pkgdir}/usr/share/webapps/roundcube/plugins/
+        cp -r ${startdir}/user       ${pkgdir}/usr/share/webapps/roundcube/plugins/
+}
+
