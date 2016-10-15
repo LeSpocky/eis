@@ -58,8 +58,8 @@ getCertificates() {
         IFS='@'
         for parameter in ${parameters} ; do
             IFS=${OLDIFS}
-            echo "$(date "+%Y-%m-%d %H:%M:%S") --- sh /usr/bin/acme.sh --issue --apache ${parameter} --home /etc/acme/" >> /var/log/acme.log
-            sh /usr/bin/acme.sh --issue --apache ${parameter} --home /etc/acme/ >> /var/log/acme.log 2>&1
+            echo "$(date "+%Y-%m-%d %H:%M:%S") --- sh /usr/bin/acme.sh --issue ${parameter} --home /etc/acme/" >> /var/log/acme.log
+            sh /usr/bin/acme.sh --issue ${parameter} --home /etc/acme/ >> /var/log/acme.log 2>&1
             IFS='@'
         done
         IFS=${OLDIFS}
