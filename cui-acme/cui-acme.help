@@ -16,6 +16,22 @@
 <br/>
 </help>
 
+<help name="ACME_WEBROOT_%_ACTIVE">
+  Ist dieses Webroot-Verzeichnis aktiv oder nicht.<br/>
+<br/>
+  Gueltige Werte: yes, no<br/>
+  Standard-Einstellung: ACME_WEBROOT_%_ACTIVE='yes'
+<br/>
+</help>
+
+<help name="ACME_WEBROOT_%_PATH">
+  Pfad zum Webroot-Verzeichnis.<br/>
+<br/>
+  Gueltige Werte: yes, no<br/>
+  Standard-Einstellung: ACME_WEBROOT_%_PATH='/var/www/localhost/htdocs'
+<br/>
+</help>
+
 <help name="ACME_WEBROOT_%_DOMAIN_N">
   Anzahl der Domains, welche auf dieses Webroot-Verzeichnis zugreifen.<br/>
 <br/>
