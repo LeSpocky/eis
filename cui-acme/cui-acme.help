@@ -1,4 +1,4 @@
-<!-- Creation: 2006-09-15 starwarsfan -->
+<!-- Creation: 2016-10-15 starwarsfan -->
 
 <help name="START_ACME">
   Sollen Zertifikate erstellt resp. angefordert werden?<br/>
@@ -9,7 +9,8 @@
 </help>
 
 <help name="ACME_WEBROOT_N">
-  Anzahl der Webroot-Verzeichnisse, fuer die ein Zertifikat erstellt werden soll<br/>
+  Anzahl der Webroot-Verzeichnisse, fuer die ein Zertifikat erstellt werden<br/>
+  soll.<br/>
 <br/>
   Gueltige Werte: Ziffern<br/>
   Standard-Einstellung: ACME_WEBROOT_N='1'
@@ -27,7 +28,7 @@
 <help name="ACME_WEBROOT_%_PATH">
   Pfad zum Webroot-Verzeichnis.<br/>
 <br/>
-  Gueltige Werte: yes, no<br/>
+  Gueltige Werte: Gueltiger absoluter Pfad<br/>
   Standard-Einstellung: ACME_WEBROOT_%_PATH='/var/www/localhost/htdocs'
 <br/>
 </help>
@@ -41,7 +42,8 @@
 </help>
 
 <help name="ACME_WEBROOT_%_DOMAIN_%_ACTIVE">
-  Ist diese Domain aktiv resp. soll fuer diese Domain ein Zertifikat erstellt werden.<br/>
+  Ist diese Domain aktiv resp. soll fuer diese Domain ein Zertifikat<br/>
+  erstellt werden.<br/>
 <br/>
   Gueltige Werte: yes, no<br/>
   Standard-Einstellung: ACME_WEBROOT_%_DOMAIN_%_ACTIVE='yes'
@@ -49,8 +51,8 @@
 </help>
 
 <help name="ACME_WEBROOT_%_DOMAIN_%_NAME">
-  Domain, unter welcher dieser Server resp. dieses Verzeichnis zu erreichen ist und
-  fuer die ein Zertifikat erstellt werden soll.<br/>
+  Domain, unter welcher dieser Server resp. dieses Verzeichnis zu<br/>
+  erreichen ist und fuer die ein Zertifikat erstellt werden soll.<br/>
 <br/>
   Gueltige Werte: Gueltige Domain<br/>
   Standard-Einstellung: ACME_WEBROOT_%_DOMAIN_%_NAME='eis.lan'
@@ -58,8 +60,9 @@
 </help>
 
 <help name="ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_N">
-  Anzahl der Subdomain, unter welchen dieser Server resp. dieses Verzeichnis zu erreichen ist und
-  fuer die ein Zertifikat erstellt werden soll.<br/>
+  Anzahl der Subdomains, unter welchen dieser Server resp. dieses<br/>
+  Verzeichnis zu erreichen ist und fuer die ein Zertifikat erstellt<br/>
+  werden soll.<br/>
 <br/>
   Gueltige Werte: Ziffern<br/>
   Standard-Einstellung: ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_N='0'
@@ -67,7 +70,8 @@
 </help>
 
 <help name="ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_%_ACTIVE">
-  Ist diese Subdomain aktiv resp. soll fuer diese Subdomain ein Zertifikat erstellt werden.<br/>
+  Ist diese Subdomain aktiv resp. soll fuer diese Subdomain ein Zertifikat<br/>
+  erstellt werden.<br/>
 <br/>
   Gueltige Werte: yes, no<br/>
   Standard-Einstellung: ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_%_ACTIVE='yes'
@@ -75,11 +79,10 @@
 </help>
 
 <help name="ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_%_NAME">
-  Subdomain, unter welcher dieser Server resp. dieses Verzeichnis zu erreichen ist und
-  fuer die ein Zertifikat erstellt werden soll.<br/>
+  Subdomain, unter welcher dieser Server resp. dieses Verzeichnis zu<br/>
+  erreichen ist und fuer die ein Zertifikat erstellt werden soll.<br/>
 <br/>
   Gueltige Werte: Gueltige Subdomain<br/>
   Standard-Einstellung: ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_%_NAME='www'
 <br/>
 </help>
-
