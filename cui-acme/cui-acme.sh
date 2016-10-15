@@ -35,7 +35,7 @@ generateNewCert()
             done
             if [ -n "$domainsToGetCertFor" ] ; then
                 domainsToGetCertFor="$domainsToGetCertFor -w $currentWebroot"
-                getCertificate "${domainsToGetCertFor}"
+                getCertificate "${domainsToGetCertFor}" "${currentWebroot}"
             else
                 mecho "No domain for webroot '$currentWebroot' configured"
             fi
@@ -46,8 +46,11 @@ generateNewCert()
 
 getCertificate() {
     local parameters=$1
-    mecho "Calling 'sh /usr/bin/acme.sh --issue --apache $parameters'"
-    sh /usr/bin/acme.sh --issue --apache $parameters
+    local webroot=$2
+    mecho "Calling 'sh /usr/bin/acme.sh --issue --apache --home /etc/acme/ ${parameters}'"
+    echo "$(date "+%Y-%m-%d %H:%M:%S") ##### Starting acme.sh for webroot ${webroot} #####" >> /var/log/acme.log
+    sh /usr/bin/acme.sh --issue --apache --home /etc/acme/ ${parameters} >> /var/log/acme.log 2>&1 &
+    /var/install/bin/show-doc.cui -t "Output of acme.sh" -f /var/log/acme.log
 }
 
 # ----------------------------------------------------------------------------
