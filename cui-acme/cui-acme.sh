@@ -58,7 +58,7 @@ getCertificates() {
         IFS='@'
         for parameter in ${parameters} ; do
             IFS=${OLDIFS}
-            echo "$(date "+%Y-%m-%d %H:%M:%S") --- sh /usr/bin/acme.sh --issue ${parameter} --home /etc/ssl/acme/"
+            echo "$(date "+%Y-%m-%d %H:%M:%S") --- sh /usr/bin/acme.sh --issue ${parameter} --home /etc/ssl/acme"
             sh /usr/bin/acme.sh --issue ${parameter} --home /etc/ssl/acme/ 2>&1
             rtc=$?
             if [ ${rtc} -ne 0 ] ; then
