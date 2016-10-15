@@ -25,6 +25,7 @@ generateNewCert()
             eval currentWebroot='$ACME_WEBROOT_'${idx}'_PATH'
             eval amountOfDomains='$ACME_WEBROOT_'${idx}'_DOMAIN_N'
             idx2=1
+            domainsToGetCertFor=''
             while [ ${idx2} -le ${amountOfDomains} ] ; do
                 eval isDomainActive='$ACME_WEBROOT_'${idx}'_DOMAIN_'${idx2}'_ACTIVE'
                 if [ "$isDomainActive" = 'yes' ] ; then
@@ -33,16 +34,20 @@ generateNewCert()
                 fi
                 idx2=$((idx2+1))
             done
+            if [ -n "$domainsToGetCertFor" ] ; then
+                domainsToGetCertFor="$domainsToGetCertFor -w $currentWebroot"
+                getCertificate "${domainsToGetCertFor}"
+            else
+                mecho "No domain for webroot '$currentWebroot' configured"
+            fi
         fi
         idx=$((idx+1))
     done
-    if [ -z "$domainsToGetCertFor" ] ; then
-        mecho "No domain as active configured! Nothing to do..."
-        anykey
-        return
-    fi
-    mecho "Parameter list: $domainsToGetCertFor"
-    anykey
+}
+
+getCertificate() {
+    local parameters=$1
+    mecho "Parameter list: $parameters"
 }
 
 # ----------------------------------------------------------------------------
