@@ -46,25 +46,12 @@ generateNewCert()
                             fi
                             idx3=$((idx3+1))
                         done
-                        command="sh /usr/bin/acme.sh \
-                            --issue \
-                            ${domainsToGetCertFor} \
-                            -w ${currentWebroot} \
-                            --home /etc/ssl/acme \
-                            2>&1"
+                        command="sh /usr/bin/acme.sh --issue ${domainsToGetCertFor} -w ${currentWebroot} --home /etc/ssl/acme 2>&1"
                         echo "$(date "+%Y-%m-%d %H:%M:%S") ${command}"
                         ${command}
                         rtc=$?
                         if [ ${rtc} -eq 0 ] ; then
-                            command="sh /usr/bin/acme.sh \
-                                --installcert \
-                                -d ${currentDomain} \
-                                --home /etc/ssl/acme \
-                                --certpath /etc/ssl/certs/${currentDomain}.pem \
-                                --keypath /etc/ssl/private/${currentDomain}.key \
-                                --capath /etc/ssl/certs/${currentDomain}.ca.pem \
-                                --reloadcmd \"rc-service apache2 restart\" \
-                                2>&1"
+                            command="sh /usr/bin/acme.sh --installcert -d ${currentDomain} --home /etc/ssl/acme --certpath /etc/ssl/certs/${currentDomain}.pem --keypath /etc/ssl/private/${currentDomain}.key --capath /etc/ssl/certs/${currentDomain}.ca.pem --reloadcmd 'rc-service apache2 restart' 2>&1"
                             echo "$(date "+%Y-%m-%d %H:%M:%S") ${command}"
                             ${command}
                             if [ ${rtc} -ne 0 ] ; then
