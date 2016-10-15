@@ -52,20 +52,32 @@ generateNewCert()
 
 getCertificates() {
     local parameters=$1
-    echo "$(date "+%Y-%m-%d %H:%M:%S") --- Starting acme.sh ---" >> /var/log/acme.log
+    echo "$(date "+%Y-%m-%d %H:%M:%S") --- Starting ---" >> /var/log/acme.log
     (
         OLDIFS=$IFS
         IFS='@'
         for parameter in ${parameters} ; do
             IFS=${OLDIFS}
-            echo "$(date "+%Y-%m-%d %H:%M:%S") --- sh /usr/bin/acme.sh --issue ${parameter} --home /etc/acme/" >> /var/log/acme.log
-            sh /usr/bin/acme.sh --issue ${parameter} --home /etc/acme/ >> /var/log/acme.log 2>&1
+            echo "$(date "+%Y-%m-%d %H:%M:%S") --- sh /usr/bin/acme.sh --issue ${parameter} --home /etc/ssl/acme/" >> /var/log/acme.log
+            sh /usr/bin/acme.sh --issue ${parameter} --home /etc/ssl/acme/ >> /var/log/acme.log 2>&1
             IFS='@'
         done
         IFS=${OLDIFS}
-        echo "$(date "+%Y-%m-%d %H:%M:%S") --- acme.sh finished ---" >> /var/log/acme.log
+        echo "$(date "+%Y-%m-%d %H:%M:%S") --- acme.sh finished, creating links ---" >> /var/log/acme.log
+        createLinks
+        echo "$(date "+%Y-%m-%d %H:%M:%S") --- Finished ---" >> /var/log/acme.log
     ) &
     /var/install/bin/show-doc.cui -t "Output of acme.sh" -f /var/log/acme.log
+}
+
+createLinks() {
+    cd /etc/ssl/apache2/
+    for currentFile in $(ls /etc/ssl/acme/*/*.{key,csr}) ; do
+        linkname=${currentFile##*/}
+        linkname=${linkname/.csr/.pem}
+        ln -s ${currentFile} ${linkname}
+    done
+    cd - > /dev/null
 }
 
 # ----------------------------------------------------------------------------
