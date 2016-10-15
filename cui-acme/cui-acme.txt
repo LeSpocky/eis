@@ -1,7 +1,14 @@
 ACME for eisfair-ng
 ===================
 
-To be done...
+Dieses Paket stellt einen Wrapper um das acme-Sript von
+https://github.com/Neilpang/acme.sh zur Verfuegung.
 
+Aktuell wird ausschliesslich der Apache-Mode unterstuetzt!
 
-Copyright (c) 2006-2016 The eisfair Team, <team(at)eisfair(dot)org>
+Es koennen beliebig viele Webroot-Verzeichniss sowie dazu jeweils
+beliebig viele Domains konfiguriert werden. Im Anschluss daran wird
+fuer jedes Webroot-Verzeichnis das entsprechende Zertifikat via
+acme.sh erzeugt.
+
+Copyright (c) 2016 The eisfair Team, <team(at)eisfair(dot)org>

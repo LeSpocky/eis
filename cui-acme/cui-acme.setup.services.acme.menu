@@ -2,4 +2,6 @@
 <!-- Creation: 2006-09-15 starwarsfan -->
 <package>cui-acme</package>
 <title>ACME Administration</title>
-<edit>Edit configuration</edit>
+<doc file="cui-acme.txt">View package documentation</doc>
+<edit>Generate certificates</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
