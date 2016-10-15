@@ -26,7 +26,7 @@ packageName=cui-acme
 # Set the default values for configuration
 START_ACME='no'
 
-ACME_WEBROOT_N='no'
+ACME_WEBROOT_N='1'
 ACME_WEBROOT_1_ACTIVE='yes'
 ACME_WEBROOT_1_PATH='/var/www/localhost/htdocs'
 ACME_WEBROOT_1_DOMAIN_N='1'

@@ -31,6 +31,7 @@ generateNewCert()
                     eval currentDomain='$ACME_WEBROOT_'${idx}'_DOMAIN_'${idx2}'_NAME'
                     domainsToGetCertFor="$domainsToGetCertFor -d $currentDomain -w $currentWebroot"
                 fi
+                idx2=$((idx2+1))
             done
         fi
         idx=$((idx+1))
