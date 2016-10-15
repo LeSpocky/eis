@@ -48,7 +48,7 @@ package() {
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.acme.menu   ${pkgdir}/var/install/menu/setup.services.${pkgname}.menu || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh                  ${pkgdir}/var/install/config.d/${pkgname}-update.sh || return 1
 	install -D -m755 ${srcdir}/acme.sh-${pkgver}/acme.sh             ${pkgdir}/usr/bin/acme.sh || return 1
-	mkdir -p /etc/ssl/acme || return 1
+	mkdir -p ${pkgdir}/etc/ssl/acme || return 1
 }
 md5sums="d0362792ca572287d7093516e2c0b35d  acme.sh-2.5.2.tar.gz
 3e36837b7b94dc541137826d16600c96  cui-acme.check
