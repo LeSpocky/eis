@@ -62,7 +62,7 @@ getCertificates() {
             sh /usr/bin/acme.sh --issue ${parameter} --home /etc/ssl/acme/ 2>&1
             rtc=$?
             if [ ${rtc} -ne 0 ] ; then
-                echo "$(date "+%Y-%m-%d %H:%M:%S") ERROR: acme.sh failed (rtc=$rtc)!"
+                echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: acme.sh returned with exit code $rtc)!"
             fi
             IFS='@'
         done
