@@ -18,6 +18,7 @@
 generateNewCert()
 {
     acmeCallParameters=''
+    separator=''
     idx=1
     while [ ${idx} -le ${ACME_WEBROOT_N} ] ; do
         eval currentWebrootFolderActive='$ACME_WEBROOT_'${idx}'_ACTIVE'
@@ -36,7 +37,8 @@ generateNewCert()
             done
             if [ -n "$domainsToGetCertFor" ] ; then
                 domainsToGetCertFor="$domainsToGetCertFor -w $currentWebroot"
-                acmeCallParameters="${acmeCallParameters}@${domainsToGetCertFor}"
+                acmeCallParameters="${acmeCallParameters}${separator}${domainsToGetCertFor}"
+                separator='@'
             else
                 mecho "No domain for webroot '$currentWebroot' configured"
             fi
@@ -56,6 +58,7 @@ getCertificates() {
         IFS='@'
         for parameter in ${parameters} ; do
             IFS=${OLDIFS}
+            echo "$(date "+%Y-%m-%d %H:%M:%S") ##### sh /usr/bin/acme.sh --issue --apache ${parameter} --home /etc/acme/" >> /var/log/acme.log
             sh /usr/bin/acme.sh --issue --apache ${parameter} --home /etc/acme/ >> /var/log/acme.log 2>&1
             IFS='@'
         done
