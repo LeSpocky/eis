@@ -52,23 +52,27 @@ generateNewCert()
 
 getCertificates() {
     local parameters=$1
-    echo "$(date "+%Y-%m-%d %H:%M:%S") --- Starting ---" >> /var/log/acme.log
     (
+        echo "$(date "+%Y-%m-%d %H:%M:%S") --- Starting ---"
         OLDIFS=$IFS
         IFS='@'
         for parameter in ${parameters} ; do
             IFS=${OLDIFS}
-            echo "$(date "+%Y-%m-%d %H:%M:%S") --- sh /usr/bin/acme.sh --issue ${parameter} --home /etc/ssl/acme/" >> /var/log/acme.log
-            sh /usr/bin/acme.sh --issue ${parameter} --home /etc/ssl/acme/ >> /var/log/acme.log 2>&1
+            echo "$(date "+%Y-%m-%d %H:%M:%S") --- sh /usr/bin/acme.sh --issue ${parameter} --home /etc/ssl/acme/"
+            sh /usr/bin/acme.sh --issue ${parameter} --home /etc/ssl/acme/ 2>&1
+            rtc=$?
+            if [ ${rtc} -ne 0 ] ; then
+                echo "$(date "+%Y-%m-%d %H:%M:%S") ERROR: acme.sh failed (rtc=$rtc)!"
+            fi
             IFS='@'
         done
         IFS=${OLDIFS}
-        echo "$(date "+%Y-%m-%d %H:%M:%S") --- acme.sh finished, creating links ---" >> /var/log/acme.log
+        echo "$(date "+%Y-%m-%d %H:%M:%S") --- acme.sh finished, creating links ---"
         createLinks
         checkApacheSslActivation
-        echo "$(date "+%Y-%m-%d %H:%M:%S") --- Finished ---" >> /var/log/acme.log
-    ) &
-    /var/install/bin/show-doc.cui -t "Output of acme.sh" -f /var/log/acme.log
+        echo "$(date "+%Y-%m-%d %H:%M:%S") --- Finished ---"
+    ) >> /var/log/acme.log &
+    /var/install/bin/show-doc.cui -t "Output of acme.sh and further steps" -f /var/log/acme.log
 }
 
 createLinks() {
@@ -79,7 +83,7 @@ createLinks() {
     for currentFile in $(ls /etc/ssl/acme/*/*.key) $(ls /etc/ssl/acme/*/*.csr) ; do
         linkname=${currentFile##*/}
         linkname=${linkname/.csr/.pem}
-        echo "$(date "+%Y-%m-%d %H:%M:%S") $linkname" >> /var/log/acme.log
+        echo "$(date "+%Y-%m-%d %H:%M:%S") $linkname"
         if [ -h ${linkname} ] ; then
             rm -f ${linkname}
         fi
@@ -91,7 +95,7 @@ createLinks() {
 checkApacheSslActivation() {
     . /etc/config.d/apache2
     if [ "$APACHE2_SSL" = 'no' ] ; then
-        echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: APACHE2_SSL is set to 'no' in apache2 configuration!" >> /var/log/acme.log
+        echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: APACHE2_SSL is set to 'no' in apache2 configuration!"
     fi
 }
 
