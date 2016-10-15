@@ -11,6 +11,7 @@
 # ----------------------------------------------------------------------------
 
 . /etc/config.d/cui-acme
+. /var/install/include/eislib
 
 # ----------------------------------------------------------------------------
 # Setup all necessary configuration files and perform necessary steps
@@ -19,9 +20,9 @@ generateNewCert()
     idx=1
     domainsToGetCertFor=''
     while [ ${idx} -le ${ACME_DOMAIN_N} ] ; do
-        eval currentDomainIsActive='ACME_DOMAIN_'${idx}'_ACTIVE'
+        eval currentDomainIsActive='$ACME_DOMAIN_'${idx}'_ACTIVE'
         if [ "$currentDomainIsActive" = 'yes' ] ; then
-            eval currentDomain='ACME_DOMAIN_'${idx}'_NAME'
+            eval currentDomain='$ACME_DOMAIN_'${idx}'_NAME'
             domainsToGetCertFor="$domainsToGetCertFor -d $currentDomain"
         fi
         idx=$((idx+1))
@@ -32,6 +33,7 @@ generateNewCert()
         return
     fi
     mecho "Parameter list: $domainsToGetCertFor"
+    anykey
 }
 
 # ----------------------------------------------------------------------------
