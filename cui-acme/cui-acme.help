@@ -7,3 +7,35 @@
   Standard-Einstellung: START_ACME='no'
 <br/>
 </help>
+
+<help name="ACME_DOMAIN_N">
+  Anzahl der Domains, fuer welche Zertifikate erstellt werden sollen.<br/>
+<br/>
+  Gueltige Werte: yes, no<br/>
+  Standard-Einstellung: ACME_DOMAIN_N='1'
+<br/>
+</help>
+
+<help name="ACME_DOMAIN_1_ACTIVE">
+  Ist diese Domain aktiv resp. soll fuer diese Domain ein Zertifikat erstellt werden.<br/>
+<br/>
+  Gueltige Werte: yes, no<br/>
+  Standard-Einstellung: ACME_DOMAIN_1_ACTIVE='ye'
+<br/>
+</help>
+
+<help name="ACME_DOMAIN_1_NAME">
+  Domain, fuer die ein Zertifikat erstellt werden soll.<br/>
+<br/>
+  Gueltige Werte: yes, no<br/>
+  Standard-Einstellung: ACME_DOMAIN_1_NAME='eis.lan'
+<br/>
+</help>
+
+<help name="ACME_DOMAIN_1_WEBROOTFOLDER">
+  Pfad zum Webroot-Verzeichnis dieser Domain.<br/>
+<br/>
+  Gueltige Werte: yes, no<br/>
+  Standard-Einstellung: ACME_DOMAIN_1_WEBROOTFOLDER='/var/www/localhost/htdocs'
+<br/>
+</help>
