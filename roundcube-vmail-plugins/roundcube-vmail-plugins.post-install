@@ -31,7 +31,7 @@ if ! grep -q '^$config\['\''vmail_user_signature' /etc/roundcube/config.inc.php
 then
     {
     echo "// plugin vmail default signature"
-    echo "\$config['vmail_user_signature'] = \"-- \nVorname Nachname \nMitarbeiter \nTestfirma \nTelefon: +49 (0) 1234 567 0 \nTelefax: +49 (0) 1234 567 890 \n\""
+    echo "\$config['vmail_user_signature'] = \"-- \nVorname Nachname \nMitarbeiter \nTestfirma \nTelefon: +49 (0) 1234 567 0 \nTelefax: +49 (0) 1234 567 890 \n\";"
     echo ""
     } >> /etc/roundcube/config.inc.php
 fi
