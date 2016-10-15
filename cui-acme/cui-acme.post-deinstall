@@ -5,3 +5,4 @@
 rm -f /etc/backup.d/cui-acme.*
 rm -f /etc/check.d/cui-acme*
 rm -f /etc/default.d/cui-acme
+rm -f /var/log/acme.*
