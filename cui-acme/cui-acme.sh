@@ -17,6 +17,7 @@
 # Setup all necessary configuration files and perform necessary steps
 generateNewCert()
 {
+    acmeCallParameters=''
     idx=1
     while [ ${idx} -le ${ACME_WEBROOT_N} ] ; do
         eval currentWebrootFolderActive='$ACME_WEBROOT_'${idx}'_ACTIVE'
@@ -35,21 +36,32 @@ generateNewCert()
             done
             if [ -n "$domainsToGetCertFor" ] ; then
                 domainsToGetCertFor="$domainsToGetCertFor -w $currentWebroot"
-                getCertificate "${domainsToGetCertFor}" "${currentWebroot}"
+                acmeCallParameters="${acmeCallParameters}@${domainsToGetCertFor}"
             else
                 mecho "No domain for webroot '$currentWebroot' configured"
             fi
         fi
         idx=$((idx+1))
     done
+    if [ -n "${acmeCallParameters}" ] ; then
+        getCertificates "${acmeCallParameters}"
+    fi
 }
 
-getCertificate() {
+getCertificates() {
     local parameters=$1
-    local webroot=$2
-    mecho "Calling 'sh /usr/bin/acme.sh --issue --apache --home /etc/acme/ ${parameters}'"
-    echo "$(date "+%Y-%m-%d %H:%M:%S") ##### Starting acme.sh for webroot ${webroot} #####" >> /var/log/acme.log
-    sh /usr/bin/acme.sh --issue --apache --home /etc/acme/ ${parameters} >> /var/log/acme.log 2>&1 &
+    mecho "$(date "+%Y-%m-%d %H:%M:%S") ##### Starting acme.sh #####" >> /var/log/acme.log
+    (
+        OLDIFS=$IFS
+        IFS='@'
+        for parameter in ${parameters} ; do
+            IFS=${OLDIFS}
+            sh /usr/bin/acme.sh --issue --apache ${parameter} --home /etc/acme/ >> /var/log/acme.log 2>&1
+            IFS='@'
+        done
+        IFS=${OLDIFS}
+        mecho "$(date "+%Y-%m-%d %H:%M:%S") ##### acme.sh finished #####" >> /var/log/acme.log
+    ) &
     /var/install/bin/show-doc.cui -t "Output of acme.sh" -f /var/log/acme.log
 }
 
