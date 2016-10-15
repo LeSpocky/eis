@@ -58,6 +58,7 @@ generateNewCert()
                                 echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: Installing certs returned with exit code $rtc)!"
                             else
                                 createLinks ${currentDomain}
+                                createCronjob
                             fi
                         else
                             echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: Issuing certs returned with exit code $rtc)! Skipping cert installation."
@@ -87,6 +88,11 @@ createLinks() {
     ln -s /etc/ssl/certs/${currentDomain}.pem ${currentDomain}.pem
     ln -s /etc/ssl/private/${currentDomain}.key ${currentDomain}.key
     cd - > /dev/null
+}
+
+createCronjob(){
+    echo "#!/bin/sh" > /etc/periodic/daily/acme
+    echo "/usr/bin/acme.sh --cron --home /etc/ssl/acme > /dev/null" >> /etc/periodic/daily/acme
 }
 
 checkApacheSslActivation() {
