@@ -51,14 +51,14 @@ generateNewCert()
                         ${command} 2>&1
                         rtc=$?
                         if [ ${rtc} -eq 0 ] ; then
-                            command="sh /usr/bin/acme.sh --installcert -d ${currentDomain} --home /etc/ssl/acme --certpath /etc/ssl/certs/${currentDomain}.pem --keypath /etc/ssl/private/${currentDomain}.key --capath /etc/ssl/certs/${currentDomain}.ca.pem --reloadcmd 'rc-service apache2 restart'"
-                            echo "$(date "+%Y-%m-%d %H:%M:%S") ${command}"
-                            ${command} 2>&1
+                            command="sh /usr/bin/acme.sh --installcert -d ${currentDomain} --home /etc/ssl/acme --certpath /etc/ssl/certs/${currentDomain}.pem --keypath /etc/ssl/private/${currentDomain}.key --capath /etc/ssl/certs/${currentDomain}.ca.pem"
+                            echo "$(date "+%Y-%m-%d %H:%M:%S") ${command} --reloadcmd \"rc-service apache2 restart\""
+                            ${command} --reloadcmd "rc-service apache2 restart" 2>&1
                             if [ ${rtc} -ne 0 ] ; then
                                 echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: Installing certs returned with exit code $rtc)!"
                             fi
                         else
-                            echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: Issuing certs returned with exit code $rtc)!"
+                            echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: Issuing certs returned with exit code $rtc)! Skipping cert installation."
                         fi
                     else
                         echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: No domain for webroot '$currentWebroot' configured"
