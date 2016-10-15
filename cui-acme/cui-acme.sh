@@ -17,6 +17,7 @@
 # Setup all necessary configuration files and perform necessary steps
 generateNewCert()
 {
+    (
     acmeCallParameters=''
     separator=''
     idx=1
@@ -26,51 +27,57 @@ generateNewCert()
             eval currentWebroot='$ACME_WEBROOT_'${idx}'_PATH'
             eval amountOfDomains='$ACME_WEBROOT_'${idx}'_DOMAIN_N'
             idx2=1
-            domainsToGetCertFor=''
             while [ ${idx2} -le ${amountOfDomains} ] ; do
                 eval isDomainActive='$ACME_WEBROOT_'${idx}'_DOMAIN_'${idx2}'_ACTIVE'
                 if [ "$isDomainActive" = 'yes' ] ; then
                     eval currentDomain='$ACME_WEBROOT_'${idx}'_DOMAIN_'${idx2}'_NAME'
-                    domainsToGetCertFor="$domainsToGetCertFor -d $currentDomain"
+                    if [ -n "$currentDomain" ] ; then
+                        domainsToGetCertFor="-d ${currentDomain}"
+                        eval amountOfSubDomains='$ACME_WEBROOT_'${idx}'_DOMAIN_'${idx2}'_SUBDOMAIN_N'
+                        idx3=1
+                        while [ ${idx3} -le ${amountOfSubDomains} ] ; do
+                            eval isSubDomainActive='$ACME_WEBROOT_'${idx}'_DOMAIN_'${idx2}'_SUBDOMAIN_'${idx3}'_ACTIVE'
+                            if [ "$isSubDomainActive" = 'yes' ] ; then
+                                eval currentSubDomain='$ACME_WEBROOT_'${idx}'_DOMAIN_'${idx2}'_SUBDOMAIN_'${idx3}'_NAME'
+                                if [ -n "$currentSubDomain" ] ; then
+                                    domainsToGetCertFor="${domainsToGetCertFor} -d ${currentSubDomain}.${currentDomain}"
+                                fi
+                            fi
+                            idx3=$((idx3+1))
+                        done
+                        sh /usr/bin/acme.sh \
+                            --issue \
+                            ${domainsToGetCertFor} \
+                            -w ${currentWebroot} \
+                            --home /etc/ssl/acme \
+                            2>&1
+                        rtc=$?
+                        if [ ${rtc} -eq 0 ] ; then
+                            sh /usr/bin/acme.sh \
+                                --installcert \
+                                -d ${currentDomain} \
+                                --home /etc/ssl/acme \
+                                --certpath /etc/ssl/certs/${currentDomain}.pem \
+                                --keypath /etc/ssl/private/${currentDomain}.key \
+                                --capath /etc/ssl/certs/${currentDomain}.ca.pem \
+                                --reloadcmd "rc-service apache2 restart" \
+                                2>&1
+                            if [ ${rtc} -ne 0 ] ; then
+                                echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: Installing certs returned with exit code $rtc)!"
+                            fi
+                        else
+                            echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: Issuing certs returned with exit code $rtc)!"
+                        fi
+                    else
+                        echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: No domain for webroot '$currentWebroot' configured"
+                    fi
                 fi
                 idx2=$((idx2+1))
             done
-            if [ -n "$domainsToGetCertFor" ] ; then
-                domainsToGetCertFor="$domainsToGetCertFor -w $currentWebroot"
-                acmeCallParameters="${acmeCallParameters}${separator}${domainsToGetCertFor}"
-                separator='@'
-            else
-                mecho --warn "No domain for webroot '$currentWebroot' configured"
-            fi
         fi
         idx=$((idx+1))
     done
-    if [ -n "${acmeCallParameters}" ] ; then
-        getCertificates "${acmeCallParameters}"
-    fi
-}
-
-getCertificates() {
-    local parameters=$1
-    (
-        echo "$(date "+%Y-%m-%d %H:%M:%S") --- Starting ---"
-        OLDIFS=$IFS
-        IFS='@'
-        for parameter in ${parameters} ; do
-            IFS=${OLDIFS}
-            echo "$(date "+%Y-%m-%d %H:%M:%S") --- sh /usr/bin/acme.sh --issue ${parameter} --home /etc/ssl/acme"
-            sh /usr/bin/acme.sh --issue ${parameter} --home /etc/ssl/acme/ 2>&1
-            rtc=$?
-            if [ ${rtc} -ne 0 ] ; then
-                echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: acme.sh returned with exit code $rtc)!"
-            fi
-            IFS='@'
-        done
-        IFS=${OLDIFS}
-        echo "$(date "+%Y-%m-%d %H:%M:%S") --- acme.sh finished, creating links ---"
-        createLinks
-        checkApacheSslActivation
-        echo "$(date "+%Y-%m-%d %H:%M:%S") --- Finished ---"
+    checkApacheSslActivation
     ) >> /var/log/acme.log &
     /var/install/bin/show-doc.cui -t "Output of acme.sh and further steps" -f /var/log/acme.log
 }
