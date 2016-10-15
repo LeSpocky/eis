@@ -52,10 +52,12 @@ generateNewCert()
                         rtc=$?
                         if [ ${rtc} -eq 0 ] ; then
                             command="sh /usr/bin/acme.sh --installcert -d ${currentDomain} --home /etc/ssl/acme --certpath /etc/ssl/certs/${currentDomain}.pem --keypath /etc/ssl/private/${currentDomain}.key --capath /etc/ssl/certs/ca-cert-${currentDomain}.pem"
-                            echo "$(date "+%Y-%m-%d %H:%M:%S") ${command} --reloadcmd \"rc-service apache2 restart\""
-                            ${command} --reloadcmd "rc-service apache2 restart" 2>&1
+                            echo "$(date "+%Y-%m-%d %H:%M:%S") ${command}"
+                            ${command} 2>&1
                             if [ ${rtc} -ne 0 ] ; then
                                 echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: Installing certs returned with exit code $rtc)!"
+                            else
+                                createLinks ${currentDomain}
                             fi
                         else
                             echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: Issuing certs returned with exit code $rtc)! Skipping cert installation."
@@ -76,19 +78,14 @@ generateNewCert()
 }
 
 createLinks() {
+    local currentDomain=$1
+    echo "$(date "+%Y-%m-%d %H:%M:%S") Creating links..."
     if [ ! -d /etc/ssl/apache2 ] ; then
         mkdir -p /etc/ssl/apache2
     fi
     cd /etc/ssl/apache2/
-    for currentFile in $(ls /etc/ssl/acme/*/*.key) $(ls /etc/ssl/acme/*/*.csr) ; do
-        linkname=${currentFile##*/}
-        linkname=${linkname/.csr/.pem}
-        echo "$(date "+%Y-%m-%d %H:%M:%S") $linkname"
-        if [ -h ${linkname} ] ; then
-            rm -f ${linkname}
-        fi
-        ln -s ${currentFile} ${linkname}
-    done
+    ln -s /etc/ssl/certs/${currentDomain}.pem ${currentDomain}.pem
+    ln -s /etc/ssl/private/${currentDomain}.key ${currentDomain}.key
     cd - > /dev/null
 }
 
