@@ -18,6 +18,7 @@
 generateNewCert()
 {
     (
+    echo "$(date "+%Y-%m-%d %H:%M:%S") --- START ---"
     acmeCallParameters=''
     separator=''
     idx=1
@@ -45,23 +46,27 @@ generateNewCert()
                             fi
                             idx3=$((idx3+1))
                         done
-                        sh /usr/bin/acme.sh \
+                        command="sh /usr/bin/acme.sh \
                             --issue \
                             ${domainsToGetCertFor} \
                             -w ${currentWebroot} \
                             --home /etc/ssl/acme \
-                            2>&1
+                            2>&1"
+                        echo "$(date "+%Y-%m-%d %H:%M:%S") ${command}"
+                        ${command}
                         rtc=$?
                         if [ ${rtc} -eq 0 ] ; then
-                            sh /usr/bin/acme.sh \
+                            command="sh /usr/bin/acme.sh \
                                 --installcert \
                                 -d ${currentDomain} \
                                 --home /etc/ssl/acme \
                                 --certpath /etc/ssl/certs/${currentDomain}.pem \
                                 --keypath /etc/ssl/private/${currentDomain}.key \
                                 --capath /etc/ssl/certs/${currentDomain}.ca.pem \
-                                --reloadcmd "rc-service apache2 restart" \
-                                2>&1
+                                --reloadcmd \"rc-service apache2 restart\" \
+                                2>&1"
+                            echo "$(date "+%Y-%m-%d %H:%M:%S") ${command}"
+                            ${command}
                             if [ ${rtc} -ne 0 ] ; then
                                 echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: Installing certs returned with exit code $rtc)!"
                             fi
@@ -78,6 +83,7 @@ generateNewCert()
         idx=$((idx+1))
     done
     checkApacheSslActivation
+    echo "$(date "+%Y-%m-%d %H:%M:%S") --- FINISHED ---"
     ) >> /var/log/acme.log &
     /var/install/bin/show-doc.cui -t "Output of acme.sh and further steps" -f /var/log/acme.log
 }
