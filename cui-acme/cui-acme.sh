@@ -65,19 +65,34 @@ getCertificates() {
         IFS=${OLDIFS}
         echo "$(date "+%Y-%m-%d %H:%M:%S") --- acme.sh finished, creating links ---" >> /var/log/acme.log
         createLinks
+        checkApacheSslActivation
         echo "$(date "+%Y-%m-%d %H:%M:%S") --- Finished ---" >> /var/log/acme.log
     ) &
     /var/install/bin/show-doc.cui -t "Output of acme.sh" -f /var/log/acme.log
 }
 
 createLinks() {
+    if [ ! -d /etc/ssl/apache2 ] ; then
+        mkdir -p /etc/ssl/apache2
+    fi
     cd /etc/ssl/apache2/
     for currentFile in $(ls /etc/ssl/acme/*/*.{key,csr}) ; do
         linkname=${currentFile##*/}
         linkname=${linkname/.csr/.pem}
+        echo "$(date "+%Y-%m-%d %H:%M:%S") $linkname" >> /var/log/acme.log
+        if [ -h ${linkname} ] ; then
+            rm -f ${linkname}
+        fi
         ln -s ${currentFile} ${linkname}
     done
     cd - > /dev/null
+}
+
+checkApacheSslActivation() {
+    . /etc/config.d/apache2
+    if [ "$APACHE2_SSL" = 'no' ] ; then
+        echo "$(date "+%Y-%m-%d %H:%M:%S") WARN: APACHE2_SSL is set to 'no' in apache2 configuration!" >> /var/log/acme.log
+    fi
 }
 
 # ----------------------------------------------------------------------------
