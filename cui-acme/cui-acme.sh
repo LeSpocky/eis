@@ -19,12 +19,19 @@ generateNewCert()
 {
     idx=1
     domainsToGetCertFor=''
-    while [ ${idx} -le ${ACME_DOMAIN_N} ] ; do
-        eval currentDomainIsActive='$ACME_DOMAIN_'${idx}'_ACTIVE'
-        if [ "$currentDomainIsActive" = 'yes' ] ; then
-            eval currentDomain='$ACME_DOMAIN_'${idx}'_NAME'
-            eval currentWebroot='$ACME_DOMAIN_'${idx}'_WEBROOTFOLDER'
-            domainsToGetCertFor="$domainsToGetCertFor -d $currentDomain -w $currentWebroot"
+    while [ ${idx} -le ${ACME_WEBROOT_N} ] ; do
+        eval currentWebrootFolderActive='$ACME_WEBROOT_'${idx}'_ACTIVE'
+        if [ "$currentWebrootFolderActive" = 'yes' ] ; then
+            eval currentWebroot='$ACME_WEBROOT_'${idx}'_PATH'
+            eval amountOfDomains='$ACME_WEBROOT_'${idx}'_DOMAIN_N'
+            idx2=1
+            while [ ${idx2} -le ${amountOfDomains} ] ; do
+                eval isDomainActive='$ACME_WEBROOT_'${idx}'_DOMAIN_'${idx2}'_ACTIVE'
+                if [ "$isDomainActive" = 'yes' ] ; then
+                    eval currentDomain='$ACME_WEBROOT_'${idx}'_DOMAIN_'${idx2}'_NAME'
+                    domainsToGetCertFor="$domainsToGetCertFor -d $currentDomain -w $currentWebroot"
+                fi
+            done
         fi
         idx=$((idx+1))
     done

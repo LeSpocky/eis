@@ -8,34 +8,36 @@
 <br/>
 </help>
 
-<help name="ACME_DOMAIN_N">
-  Anzahl der Domains, fuer welche Zertifikate erstellt werden sollen.<br/>
+<help name="ACME_WEBROOT_N">
+  Anzahl der Webroot-Verzeichnisse, fuer die ein Zertifikat erstellt werden soll<br/>
 <br/>
   Gueltige Werte: Ziffern<br/>
-  Standard-Einstellung: ACME_DOMAIN_N='1'
+  Standard-Einstellung: ACME_WEBROOT_N='1'
 <br/>
 </help>
 
-<help name="ACME_DOMAIN_%_ACTIVE">
+<help name="ACME_WEBROOT_%_DOMAIN_N">
+  Anzahl der Domains, welche auf dieses Webroot-Verzeichnis zugreifen.<br/>
+<br/>
+  Gueltige Werte: Ziffern<br/>
+  Standard-Einstellung: ACME_WEBROOT_%_DOMAIN_N='1'
+<br/>
+</help>
+
+<help name="ACME_WEBROOT_%_DOMAIN_%_ACTIVE">
   Ist diese Domain aktiv resp. soll fuer diese Domain ein Zertifikat erstellt werden.<br/>
 <br/>
   Gueltige Werte: yes, no<br/>
-  Standard-Einstellung: ACME_DOMAIN_%_ACTIVE='ye'
+  Standard-Einstellung: ACME_WEBROOT_%_DOMAIN_%_ACTIVE='yes'
 <br/>
 </help>
 
-<help name="ACME_DOMAIN_%_NAME">
-  Domain, unter welcher dieser Server zu erreichen ist und fuer die ein Zertifikat erstellt werden soll.<br/>
+<help name="ACME_WEBROOT_%_DOMAIN_%_NAME">
+  Domain, unter welcher dieser Server resp. dieses Verzeichnis zu erreichen ist und
+  fuer die ein Zertifikat erstellt werden soll.<br/>
 <br/>
   Gueltige Werte: Gueltige Domain<br/>
-  Standard-Einstellung: ACME_DOMAIN_%_NAME='eis.lan'
+  Standard-Einstellung: ACME_WEBROOT_%_DOMAIN_%_NAME='eis.lan'
 <br/>
 </help>
 
-<help name="ACME_DOMAIN_%_WEBROOTFOLDER">
-  Pfad zum Webroot-Verzeichnis dieser Domain.<br/>
-<br/>
-  Gueltige Werte: absoluter Pfad<br/>
-  Standard-Einstellung: ACME_DOMAIN_%_WEBROOTFOLDER='/var/www/localhost/htdocs'
-<br/>
-</help>
