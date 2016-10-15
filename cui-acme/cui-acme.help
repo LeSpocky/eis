@@ -1,7 +1,7 @@
 <!-- Creation: 2006-09-15 starwarsfan -->
 
 <help name="START_ACME">
-  Soll ACME...<br/>
+  Sollen Zertifikate erstellt resp. angefordert werden?<br/>
 <br/>
   Gueltige Werte: yes, no<br/> 
   Standard-Einstellung: START_ACME='no'
@@ -11,31 +11,31 @@
 <help name="ACME_DOMAIN_N">
   Anzahl der Domains, fuer welche Zertifikate erstellt werden sollen.<br/>
 <br/>
-  Gueltige Werte: yes, no<br/>
+  Gueltige Werte: Ziffern<br/>
   Standard-Einstellung: ACME_DOMAIN_N='1'
 <br/>
 </help>
 
-<help name="ACME_DOMAIN_1_ACTIVE">
+<help name="ACME_DOMAIN_%_ACTIVE">
   Ist diese Domain aktiv resp. soll fuer diese Domain ein Zertifikat erstellt werden.<br/>
 <br/>
   Gueltige Werte: yes, no<br/>
-  Standard-Einstellung: ACME_DOMAIN_1_ACTIVE='ye'
+  Standard-Einstellung: ACME_DOMAIN_%_ACTIVE='ye'
 <br/>
 </help>
 
-<help name="ACME_DOMAIN_1_NAME">
-  Domain, fuer die ein Zertifikat erstellt werden soll.<br/>
+<help name="ACME_DOMAIN_%_NAME">
+  Domain, unter welcher dieser Server zu erreichen ist und fuer die ein Zertifikat erstellt werden soll.<br/>
 <br/>
-  Gueltige Werte: yes, no<br/>
-  Standard-Einstellung: ACME_DOMAIN_1_NAME='eis.lan'
+  Gueltige Werte: Gueltige Domain<br/>
+  Standard-Einstellung: ACME_DOMAIN_%_NAME='eis.lan'
 <br/>
 </help>
 
-<help name="ACME_DOMAIN_1_WEBROOTFOLDER">
+<help name="ACME_DOMAIN_%_WEBROOTFOLDER">
   Pfad zum Webroot-Verzeichnis dieser Domain.<br/>
 <br/>
-  Gueltige Werte: yes, no<br/>
-  Standard-Einstellung: ACME_DOMAIN_1_WEBROOTFOLDER='/var/www/localhost/htdocs'
+  Gueltige Werte: absoluter Pfad<br/>
+  Standard-Einstellung: ACME_DOMAIN_%_WEBROOTFOLDER='/var/www/localhost/htdocs'
 <br/>
 </help>
