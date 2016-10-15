@@ -1,9 +1,12 @@
-# Variable                       OPT_VARIABLE                     VARIABLE_N                          VALUE
-START_ACME                       -                                -                                   YESNO
+# Variable                                   OPT_VARIABLE                                 VARIABLE_N                            VALUE
+START_ACME                                   -                                            -                                     YESNO
 
-ACME_WEBROOT_N                   START_ACME                       -                                   NUMERIC
-ACME_WEBROOT_%_ACTIVE            START_ACME                       ACME_WEBROOT_N                      YESNO
-ACME_WEBROOT_%_PATH              START_ACME                       ACME_WEBROOT_N                      ABS_PATH
-ACME_WEBROOT_%_DOMAIN_N          ACME_WEBROOT_%_ACTIVE            ACME_WEBROOT_N                      NUMERIC
-ACME_WEBROOT_%_DOMAIN_%_ACTIVE   ACME_WEBROOT_%_ACTIVE            ACME_WEBROOT_%_DOMAIN_N             YESNO
-ACME_WEBROOT_%_DOMAIN_%_NAME     ACME_WEBROOT_%_DOMAIN_%_ACTIVE   ACME_WEBROOT_%_DOMAIN_N             DOMAIN
+ACME_WEBROOT_N                               START_ACME                                   -                                     NUMERIC
+ACME_WEBROOT_%_ACTIVE                        START_ACME                                   ACME_WEBROOT_N                        YESNO
+ACME_WEBROOT_%_PATH                          START_ACME                                   ACME_WEBROOT_N                        ABS_PATH
+ACME_WEBROOT_%_DOMAIN_N                      ACME_WEBROOT_%_ACTIVE                        ACME_WEBROOT_N                        NUMERIC
+ACME_WEBROOT_%_DOMAIN_%_ACTIVE               ACME_WEBROOT_%_ACTIVE                        ACME_WEBROOT_%_DOMAIN_N               YESNO
+ACME_WEBROOT_%_DOMAIN_%_NAME                 ACME_WEBROOT_%_DOMAIN_%_ACTIVE               ACME_WEBROOT_%_DOMAIN_N               DOMAIN
+ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_N          ACME_WEBROOT_%_DOMAIN_%_ACTIVE               ACME_WEBROOT_%_DOMAIN_N               NUMERIC
+ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_%_ACTIVE   ACME_WEBROOT_%_DOMAIN_%_ACTIVE               ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_N   YESNO
+ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_%_NAME     ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_%_ACTIVE   ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_N   NOTEMPTY

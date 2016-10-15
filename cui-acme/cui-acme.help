@@ -57,3 +57,29 @@
 <br/>
 </help>
 
+<help name="ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_N">
+  Anzahl der Subdomain, unter welchen dieser Server resp. dieses Verzeichnis zu erreichen ist und
+  fuer die ein Zertifikat erstellt werden soll.<br/>
+<br/>
+  Gueltige Werte: Ziffern<br/>
+  Standard-Einstellung: ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_N='0'
+<br/>
+</help>
+
+<help name="ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_%_ACTIVE">
+  Ist diese Subdomain aktiv resp. soll fuer diese Subdomain ein Zertifikat erstellt werden.<br/>
+<br/>
+  Gueltige Werte: yes, no<br/>
+  Standard-Einstellung: ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_%_ACTIVE='yes'
+<br/>
+</help>
+
+<help name="ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_%_NAME">
+  Subdomain, unter welcher dieser Server resp. dieses Verzeichnis zu erreichen ist und
+  fuer die ein Zertifikat erstellt werden soll.<br/>
+<br/>
+  Gueltige Werte: Gueltige Subdomain<br/>
+  Standard-Einstellung: ACME_WEBROOT_%_DOMAIN_%_SUBDOMAIN_%_NAME='www'
+<br/>
+</help>
+
