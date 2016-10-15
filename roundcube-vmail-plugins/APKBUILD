@@ -26,8 +26,8 @@ build() {
 
 package() {
         mkdir -p ${pkgdir}/usr/share/webapps/roundcube/plugins
-        cp -r ${startdir}/autoanswer ${pkgdir}/usr/share/webapps/roundcube/plugins/
-        cp -r ${startdir}/forward    ${pkgdir}/usr/share/webapps/roundcube/plugins/
-        cp -r ${startdir}/user       ${pkgdir}/usr/share/webapps/roundcube/plugins/
+        cp -r ${startdir}/autoanswer ${pkgdir}/usr/share/webapps/roundcube/plugins/vmail_autoanswer
+        cp -r ${startdir}/forward    ${pkgdir}/usr/share/webapps/roundcube/plugins/vmail_forward
+        cp -r ${startdir}/user       ${pkgdir}/usr/share/webapps/roundcube/plugins/vmail_user
 }
 
