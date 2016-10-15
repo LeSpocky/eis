@@ -76,7 +76,7 @@ createLinks() {
         mkdir -p /etc/ssl/apache2
     fi
     cd /etc/ssl/apache2/
-    for currentFile in $(ls /etc/ssl/acme/*/*.{key,csr}) ; do
+    for currentFile in $(ls /etc/ssl/acme/*/*.key) $(ls /etc/ssl/acme/*/*.csr) ; do
         linkname=${currentFile##*/}
         linkname=${linkname/.csr/.pem}
         echo "$(date "+%Y-%m-%d %H:%M:%S") $linkname" >> /var/log/acme.log
