@@ -693,6 +693,10 @@ namespace inbox {
   mailbox "Sent Messages" {
     special_use = \Sent
   }
+  mailbox Spam {
+    auto = create
+    special_use = \Junk
+  }  
   mailbox Archives {
     auto = subscribe
   }

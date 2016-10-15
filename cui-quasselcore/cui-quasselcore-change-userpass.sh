@@ -9,6 +9,8 @@
 . /var/install/include/eislib
 . /etc/config.d/quasselcore
 
+#sqlite3 ${QUASSEL_CORE_DATADIR}/quassel-storage.sqlite 'SELECT username from quasseluser;'
+
 # ask for username and call change-pass function with it
 USER_INPUT=`/var/install/bin/ask "Name of User to change Password" "" "+"`
 
