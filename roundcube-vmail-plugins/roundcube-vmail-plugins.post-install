@@ -2,17 +2,17 @@
 
 [ -e /etc/roundcube/config.inc.php ] || exit 0
 
-if ! grep -q 'vmail_user' /etc/roundcube/config.inc.php
+if ! grep -q '^ .*\''vmail_user'\'',' /etc/roundcube/config.inc.php
 then
     awk '/^\$config\['\''plugins'\''/{print $0 RS "    '\''vmail_user'\'',";next}1' /etc/roundcube/config.inc.php > /etc/roundcube/config.inc.php.tmp
     mv -f /etc/roundcube/config.inc.php.tmp /etc/roundcube/config.inc.php
 fi
-if ! grep -q 'vmail_forward' /etc/roundcube/config.inc.php
+if ! grep -q '^ .*\''vmail_forward'\'',' /etc/roundcube/config.inc.php
 then
     awk '/^\$config\['\''plugins'\''/{print $0 RS "    '\''vmail_forward'\'',";next}1' /etc/roundcube/config.inc.php > /etc/roundcube/config.inc.php.tmp
     mv -f /etc/roundcube/config.inc.php.tmp /etc/roundcube/config.inc.php
 fi
-if ! grep -q 'vmail_autoanswer' /etc/roundcube/config.inc.php
+if ! grep -q '^ .*\''vmail_autoanswer'\'',' /etc/roundcube/config.inc.php
 then
     awk '/^\$config\['\''plugins'\''/{print $0 RS "    '\''vmail_autoanswer'\'',";next}1' /etc/roundcube/config.inc.php > /etc/roundcube/config.inc.php.tmp
     mv -f /etc/roundcube/config.inc.php.tmp /etc/roundcube/config.inc.php
@@ -21,8 +21,8 @@ fi
 if ! grep -q '^$config\['\''vmail_useredit' /etc/roundcube/config.inc.php
 then
     {
-    echo "// plugin - email username to activate edit user accounts"
-    echo "$config['vmail_useredit'] = 'mailadmin,root,m.mustermann,';"
+    echo "// plugin vmail - email username to activate edit user accounts"
+    echo "\$config['vmail_useredit'] = 'info,mailadmin,root,m.mustermann,';"
     echo ""
     } >> /etc/roundcube/config.inc.php
 fi
@@ -30,8 +30,8 @@ fi
 if ! grep -q '^$config\['\''vmail_user_signature' /etc/roundcube/config.inc.php
 then
     {
-    echo "// vmail default signature"
-    echo "$config['vmail_user_signature'] = \"-- \nVorname Nachname \nMitarbeiter \nTestfirma \nTelefon: +49 (0) 1234 567 0 \nTelefax: +49 (0) 1234 567 890 \n\""
+    echo "// plugin vmail default signature"
+    echo "\$config['vmail_user_signature'] = \"-- \nVorname Nachname \nMitarbeiter \nTestfirma \nTelefon: +49 (0) 1234 567 0 \nTelefax: +49 (0) 1234 567 890 \n\""
     echo ""
     } >> /etc/roundcube/config.inc.php
 fi
@@ -45,7 +45,17 @@ then
     [ -e /etc/config.d/vmail ] && . /etc/config.d/vmail
     { 
     echo "// plugin vmail database access: user:password@host/database"
-    echo "$config['vmail_db_dsn'] = 'mysql://${VMAIL_SQL_USER}:${VMAIL_SQL_PASS}@${VMAIL_SQL_HOST}/${VMAIL_SQL_DATABASE}';"
+    echo "\$config['vmail_db_dsn'] = 'mysql://${VMAIL_SQL_USER}:${VMAIL_SQL_PASS}@${VMAIL_SQL_HOST}/${VMAIL_SQL_DATABASE}';"
+    echo ""
+    } >> /etc/roundcube/config.inc.php
+fi
+
+if ! grep -q '^$config\['\''vmail_sql_encrypt_key' /etc/roundcube/config.inc.php
+then
+    [ -e /etc/config.d/vmail ] && . /etc/config.d/vmail
+    { 
+    echo "// plugin vmail password enc key"
+    echo "\$config['vmail_sql_encrypt_key'] = '${VMAIL_SQL_ENCRYPT_KEY}';"
     echo ""
     } >> /etc/roundcube/config.inc.php
 fi

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+sed -i '/^ .*\''vmail_forward'\''/d'    /etc/roundcube/config.inc.php
+sed -i '/^ .*\''vmail_autoanswer'\''/d' /etc/roundcube/config.inc.php
+sed -i '/^ .*\''vmail_user'\''/d'       /etc/roundcube/config.inc.php
+sed -i '/^\/\/ plugin vmail/d'          /etc/roundcube/config.inc.php
+sed -i '/^\$config\['\''vmail_useredit'\''\]/d' /etc/roundcube/config.inc.php
+sed -i '/^\$config\['\''vmail_user_signature'\''\]/d' /etc/roundcube/config.inc.php
+sed -i '/^\$config\['\''vmail_db_dsn'\''\]/d' /etc/roundcube/config.inc.php
+sed -i '/^\$config\['\''vmail_sql_encrypt_key'\''\]/d' /etc/roundcube/config.inc.php
+
+exit 0
