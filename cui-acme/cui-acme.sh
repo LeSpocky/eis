@@ -51,7 +51,7 @@ generateNewCert()
                         ${command} 2>&1
                         rtc=$?
                         if [ ${rtc} -eq 0 ] ; then
-                            command="sh /usr/bin/acme.sh --installcert -d ${currentDomain} --home /etc/ssl/acme --certpath /etc/ssl/certs/${currentDomain}.pem --keypath /etc/ssl/private/${currentDomain}.key --capath /etc/ssl/certs/${currentDomain}.ca.pem"
+                            command="sh /usr/bin/acme.sh --installcert -d ${currentDomain} --home /etc/ssl/acme --certpath /etc/ssl/certs/${currentDomain}.pem --keypath /etc/ssl/private/${currentDomain}.key --capath /etc/ssl/certs/ca-cert-${currentDomain}.pem"
                             echo "$(date "+%Y-%m-%d %H:%M:%S") ${command} --reloadcmd \"rc-service apache2 restart\""
                             ${command} --reloadcmd "rc-service apache2 restart" 2>&1
                             if [ ${rtc} -ne 0 ] ; then
