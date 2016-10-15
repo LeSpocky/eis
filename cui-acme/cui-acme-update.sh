@@ -32,6 +32,9 @@ ACME_WEBROOT_1_PATH='/var/www/localhost/htdocs'
 ACME_WEBROOT_1_DOMAIN_N='1'
 ACME_WEBROOT_1_DOMAIN_1_ACTIVE='yes'
 ACME_WEBROOT_1_DOMAIN_1_NAME='eis.lan'
+ACME_WEBROOT_1_DOMAIN_1_SUBDOMAIN_N='0'
+ACME_WEBROOT_1_DOMAIN_1_SUBDOMAIN_1_ACTIVE='yes'
+ACME_WEBROOT_1_DOMAIN_1_SUBDOMAIN_1_NAME='www'
 
 
 # ----------------------------------------------------------------------------
@@ -69,8 +72,17 @@ createConfigFile()
         amountOfDomains=${amountOfDomains:-0} # Set to 0 if empty
         idx2=1
         while [ "${idx2}" -le "${amountOfDomains}" ] ; do
-            printvar "ACME_WEBROOT_${idx}_DOMAIN_${idx2}_ACTIVE"   "Is this domain active or not"
-            printvar "ACME_WEBROOT_${idx}_DOMAIN_${idx2}_NAME"     "Domain to get a certificate for"
+            printvar "ACME_WEBROOT_${idx}_DOMAIN_${idx2}_ACTIVE"        "Is this domain active or not"
+            printvar "ACME_WEBROOT_${idx}_DOMAIN_${idx2}_NAME"          "Domain to get a certificate for"
+            printvar "ACME_WEBROOT_${idx}_DOMAIN_${idx2}_SUBDOMAIN_N"   "Amount of subdomains for this webroot folder"
+            eval amountOfSubDomains='${ACME_WEBROOT_'${idx}'_DOMAIN_'${idx2}'_SUBDOMAIN_N}'
+            amountOfSubDomains=${amountOfSubDomains:-0} # Set to 0 if empty
+            idx3=1
+            while [ "${idx3}" -le "${amountOfSubDomains}" ] ; do
+                printvar "ACME_WEBROOT_${idx}_DOMAIN_${idx2}_SUBDOMAIN_${idx3}_ACTIVE"   "Is this subdomain active or not"
+                printvar "ACME_WEBROOT_${idx}_DOMAIN_${idx2}_SUBDOMAIN_${idx3}_NAME"     "Subdomain to get a certificate for"
+                idx3=$((idx3+1))
+            done
             idx2=$((idx2+1))
         done
         idx=$((idx+1))
