@@ -28,6 +28,7 @@ START_ACME='no'
 ACME_DOMAIN_N='1'
 ACME_DOMAIN_1_ACTIVE='yes'
 ACME_DOMAIN_1_NAME='eis.lan'
+ACME_DOMAIN_1_WEBROOTFOLDER='/var/www/localhost/htdocs'
 
 
 
@@ -59,8 +60,9 @@ createConfigFile()
     printvar "ACME_DOMAIN_N"                   "Amount of domains for which a certificate should be aquired"
     idx=1
     while [ "${idx}" -le "${ACME_DOMAIN_N}" ] ; do
-        printvar "ACME_DOMAIN_${idx}_ACTIVE"   "Is the current domain active or not"
-        printvar "ACME_DOMAIN_${idx}_NAME"     "Domain to get a certificate for"
+        printvar "ACME_DOMAIN_${idx}_ACTIVE"          "Is the current domain active or not"
+        printvar "ACME_DOMAIN_${idx}_NAME"            "Domain to get a certificate for"
+        printvar "ACME_DOMAIN_${idx}_WEBROOTFOLDER"   "Path to webroot folder for this domain"
         idx=$((idx+1))
     done
 

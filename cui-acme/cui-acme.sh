@@ -23,7 +23,8 @@ generateNewCert()
         eval currentDomainIsActive='$ACME_DOMAIN_'${idx}'_ACTIVE'
         if [ "$currentDomainIsActive" = 'yes' ] ; then
             eval currentDomain='$ACME_DOMAIN_'${idx}'_NAME'
-            domainsToGetCertFor="$domainsToGetCertFor -d $currentDomain"
+            eval currentWebroot='$ACME_DOMAIN_'${idx}'_WEBROOTFOLDER'
+            domainsToGetCertFor="$domainsToGetCertFor -d $currentDomain -w $currentWebroot"
         fi
         idx=$((idx+1))
     done
