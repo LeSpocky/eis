@@ -14,6 +14,7 @@ install="$pkgname.post-install $pkgname.pre-upgrade $pkgname.post-deinstall"
 subpackages=""
 source="acme.sh-${pkgver}.tar.gz::https://github.com/Neilpang/acme.sh/archive/${pkgver}.tar.gz
         ${pkgname}.check
+        ${pkgname}.cron
         ${pkgname}.help
         ${pkgname}.setup.services.acme.menu
         ${pkgname}.sh
@@ -40,12 +41,14 @@ build() {
 package() {
 	cd "$_builddir"
 	install -D -m600 ${srcdir}/${pkgname}.check                      ${pkgdir}/etc/check.d/${pkgname} || return 1
+	install -D -m600 ${srcdir}/${pkgname}.cron                       ${pkgdir}/etc/periodic/daily/${pkgname} || return 1
 	install -D -m644 ${srcdir}/${pkgname}.help                       ${pkgdir}/var/install/help/${pkgname} || return 1
 	install -D -m755 ${srcdir}/${pkgname}.sh                         ${pkgdir}/var/install/config.d/${pkgname}.sh || return 1
 	install -D -m644 ${srcdir}/${pkgname}.txt                        ${pkgdir}/usr/share/doc/${pkgname}/${pkgname}.txt || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.acme.menu   ${pkgdir}/var/install/menu/setup.services.${pkgname}.menu || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh                  ${pkgdir}/var/install/config.d/${pkgname}-update.sh || return 1
 	install -D -m755 ${srcdir}/acme.sh-${pkgver}/acme.sh             ${pkgdir}/usr/bin/acme.sh || return 1
+	mkdir -p /etc/ssl/acme || return 1
 }
 md5sums="d0362792ca572287d7093516e2c0b35d  acme.sh-2.5.2.tar.gz
 3e36837b7b94dc541137826d16600c96  cui-acme.check
