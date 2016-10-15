@@ -46,7 +46,8 @@ generateNewCert()
 
 getCertificate() {
     local parameters=$1
-    mecho "Parameter list: $parameters"
+    mecho "Calling 'sh /usr/bin/acme.sh --issue --apache $parameters'"
+    sh /usr/bin/acme.sh --issue --apache $parameters
 }
 
 # ----------------------------------------------------------------------------
