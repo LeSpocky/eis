@@ -45,7 +45,7 @@ package() {
 	install -D -m755 ${srcdir}/${pkgname}.cron                       ${pkgdir}/etc/periodic/daily/${installName} || return 1
 	install -D -m644 ${srcdir}/${pkgname}.help                       ${pkgdir}/var/install/help/${installName} || return 1
 	install -D -m755 ${srcdir}/${pkgname}.sh                         ${pkgdir}/var/install/config.d/${installName}.sh || return 1
-	install -D -m644 ${srcdir}/${pkgname}.txt                        ${pkgdir}/usr/share/doc/${pkgname}/${installName}.txt || return 1
+	install -D -m644 ${srcdir}/${pkgname}.txt                        ${pkgdir}/usr/share/doc/${installName}/${installName}.txt || return 1
 	install -D -m644 ${srcdir}/${pkgname}.setup.services.acme.menu   ${pkgdir}/var/install/menu/setup.services.${installName}.menu || return 1
 	install -D -m755 ${srcdir}/${pkgname}-update.sh                  ${pkgdir}/var/install/config.d/${installName}-update.sh || return 1
 	install -D -m755 ${srcdir}/acme.sh-${pkgver}/acme.sh             ${pkgdir}/usr/bin/acme.sh || return 1
