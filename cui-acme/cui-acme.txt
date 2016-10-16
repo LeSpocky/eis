@@ -7,8 +7,8 @@ https://github.com/Neilpang/acme.sh zur Verfuegung.
 Aktuell wird ausschliesslich der Apache-Mode unterstuetzt!
 
 Es koennen beliebig viele Webroot-Verzeichniss sowie dazu jeweils
-beliebig viele Domains konfiguriert werden. Im Anschluss daran wird
-fuer jedes Webroot-Verzeichnis das entsprechende Zertifikat via
-acme.sh erzeugt.
+beliebig viele Domains sowie Subdomains konfiguriert werden. Im
+Anschluss daran wird fuer jedes Webroot-Verzeichnis das entsprechende
+Zertifikat via acme.sh erzeugt, installiert und für Apache2 verlinkt.
 
 Copyright (c) 2016 The eisfair Team, <team(at)eisfair(dot)org>

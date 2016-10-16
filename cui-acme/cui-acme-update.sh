@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------------
 # /var/install/config.d/acme-update.sh - parameter update script
 #
-# Creation:     2016-20-14 starwarsfan
+# Creation:     2016-10-14 starwarsfan
 #
 # Copyright (c) 2006-2016 The eisfair Team, <team(at)eisfair(dot)org>
 # Maintained by Y. Schumann <yves(at)eisfair(dot)org>
@@ -17,7 +17,7 @@
 #exec 2>/tmp/acme-update-trace$$.log
 #set -x
 
-packageName=cui-acme
+packageName=acme
 
 # include configlib for using printvar
 . /var/install/include/configlib
@@ -57,7 +57,7 @@ createConfigFile()
     #-------------------------------------------------------------------------
 
     #-------------------------------------------------------------------------
-    printgroup "ACME configuration"
+    printgroup "ACME Let's Encrypt configuration"
     #-------------------------------------------------------------------------
 
     printvar "START_ACME"                         "Use: yes or no"

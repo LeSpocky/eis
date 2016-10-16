@@ -1,5 +1,5 @@
 #!/bin/sh
 # remove default.d und check.d files
-rm -f /etc/default.d/cui-acme
-rm -f /etc/check.d/cui-acme*
+rm -f /etc/default.d/acme
+rm -f /etc/check.d/acme*
 exit 0

@@ -1,7 +1,6 @@
-<!-- /var/install/menu/setup.services.phpmyadmin.menu -->
-<!-- Creation: 2006-09-15 starwarsfan -->
-<package>cui-acme</package>
+<!-- Creation: 2016-10-14 starwarsfan -->
+<package>acme</package>
 <title>ACME Let's Encrypt</title>
-<doc file="cui-acme.txt">View package documentation</doc>
+<doc file="acme.txt">View package documentation</doc>
 <edit>Generate certificates</edit>
 <menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>
