@@ -551,6 +551,18 @@ fi
 #-------------------------------------------------------------------------------
 if [ "$APACHE2_SSL" = "yes" ] ; then
     if [ $APACHE2_VHOST_N -eq 0 -o "$uses_vhost_atall" = "no" ] ; then
+        sKeyFile=${APACHE2_SERVER_NAME#*.}
+        if [ -f /etc/ssl/apache2/${sKeyFile}.key ] ; then
+            sKeyFile="/etc/ssl/apache2/${sKeyFile}.key" 
+        else
+            # get first key file
+            for sKeyFile in /etc/ssl/apache2/*.key
+            do
+                [ -n "$sKeyFile" ] && break
+            done
+        fi
+        sPemFile=${sKeyFile%.*}
+        
         echo "<VirtualHost _default_:${APACHE2_SSL_PORT}>"
         echo "    ServerName ${APACHE2_SERVER_NAME}:${APACHE2_SSL_PORT}"
         echo "    <Directory \"/var/www/localhost/htdocs\">"
@@ -560,8 +572,8 @@ if [ "$APACHE2_SSL" = "yes" ] ; then
         echo "    </Directory>"
         echo "    SSLEngine On"
         echo "    SSLCipherSuite ALL:!ADH:!EXP56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL"
-        echo "    SSLCertificateFile /etc/ssl/apache2/server.pem"
-        echo "    SSLCertificateKeyFile /etc/ssl/apache2/server.key"
+        echo "    SSLCertificateFile ${sPemFile}.pem"
+        echo "    SSLCertificateKeyFile ${sKeyFile}"
         echo '    <Files ~ "\.(pl|cgi|shtml|phtml|php?)$">'
         echo "        SSLOptions +StdEnvVars"
         echo "    </Files>"
