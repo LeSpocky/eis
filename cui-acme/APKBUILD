@@ -13,13 +13,13 @@ makedepends="$depends_dev"
 install="$pkgname.post-install $pkgname.pre-upgrade $pkgname.post-deinstall"
 subpackages=""
 source="acme.sh-${pkgver}.tar.gz::https://github.com/Neilpang/acme.sh/archive/${pkgver}.tar.gz
-        ${pkgname}.check
+        ${pkgname}.setup.services.acme.menu
         ${pkgname}.cron
         ${pkgname}.help
-        ${pkgname}.setup.services.acme.menu
+        ${pkgname}-update.sh
         ${pkgname}.sh
         ${pkgname}.txt
-        ${pkgname}-update.sh
+        ${pkgname}.check
 "
 
 _builddir=

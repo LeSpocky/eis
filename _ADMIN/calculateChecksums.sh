@@ -55,20 +55,28 @@ calculateChecksums(){
         sha256sum -t ${currentfile} >> /tmp/sha256sums.txt
         sha512sum -t ${currentfile} >> /tmp/sha512sums.txt
     done
-    echo -n "md5sums=\"" > /tmp/calculatedChecksums.txt
-    sort -k2 /tmp/md5sums.txt >> /tmp/calculatedChecksums.txt
-    echo -e -n "\"\nsha256sums=\"" >> /tmp/calculatedChecksums.txt
-    sort -k2 /tmp/sha256sums.txt >> /tmp/calculatedChecksums.txt
-    echo -e -n "\"\nsha512sums=\"" >> /tmp/calculatedChecksums.txt
-    sort -k2 /tmp/sha512sums.txt >> /tmp/calculatedChecksums.txt
-    echo "\"" >> /tmp/calculatedChecksums.txt
-    cat /tmp/md5sums.txt
-    cat /tmp/sha256sums.txt
-    cat /tmp/sha512sums.txt
+    sort -k2 /tmp/md5sums.txt >> /tmp/md5sums-sorted.txt
+    sort -k2 /tmp/sha256sums.txt >> /tmp/sha256sums-sorted.txt
+    sort -k2 /tmp/sha512sums.txt >> /tmp/sha512sums-sorted.txt
+
+    readAndWriteContent /tmp/md5sums-sorted.txt "md5sums=\""
+    readAndWriteContent /tmp/sha256sums-sorted.txt "sha256sums=\""
+    readAndWriteContent /tmp/sha512sums-sorted.txt "sha512sums=\""
+
     cat /tmp/calculatedChecksums.txt
-    rm -f /tmp/md5sums.txt
-    rm -f /tmp/sha256sums.txt
-    rm -f /tmp/sha512sums.txt
+    rm -f /tmp/md5sums*
+    rm -f /tmp/sha256sums*
+    rm -f /tmp/sha512sums*
+}
+
+readAndWriteContent(){
+    local fileToRead=$1
+    local placeholder=$2
+    while read currentEntry ; do
+        echo -e -n "${placeholder}${currentEntry}" >> /tmp/calculatedChecksums.txt
+        placeholder="\n"
+    done < ${fileToRead}
+    echo "\"" >> /tmp/calculatedChecksums.txt
 }
 
 doCommit=true
