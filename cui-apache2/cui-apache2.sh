@@ -551,18 +551,23 @@ fi
 #-------------------------------------------------------------------------------
 if [ "$APACHE2_SSL" = "yes" ] ; then
     if [ $APACHE2_VHOST_N -eq 0 -o "$uses_vhost_atall" = "no" ] ; then
-        sKeyFile=${APACHE2_SERVER_NAME#*.}
-        if [ -f /etc/ssl/apache2/${sKeyFile}.key ] ; then
-            sKeyFile="/etc/ssl/apache2/${sKeyFile}.key" 
+
+        if [ -f /etc/ssl/apache2/${APACHE2_SERVER_NAME}.key ] ; then
+            sKeyFile="/etc/ssl/apache2/${APACHE2_SERVER_NAME}.key"
         else
-            # get first key file
-            for sKeyFile in /etc/ssl/apache2/*.key
-            do
-                [ -n "$sKeyFile" ] && break
-            done
+            sKeyFile=${APACHE2_SERVER_NAME#*.}
+            if [ -f /etc/ssl/apache2/${sKeyFile}.key ] ; then
+                sKeyFile="/etc/ssl/apache2/${sKeyFile}.key" 
+            else
+                # get first key file
+                for sKeyFile in /etc/ssl/apache2/*.key
+                do
+                    [ -n "$sKeyFile" ] && break
+                done
+            fi
         fi
         sPemFile=${sKeyFile%.*}
-        
+
         echo "<VirtualHost _default_:${APACHE2_SSL_PORT}>"
         echo "    ServerName ${APACHE2_SERVER_NAME}:${APACHE2_SSL_PORT}"
         echo "    <Directory \"/var/www/localhost/htdocs\">"
