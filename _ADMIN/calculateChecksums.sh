@@ -28,17 +28,17 @@ usage ()
   Usage:
   ${0} [options]
     This script calculates the checksums for all files listed on APKBUILD
-    on current directory and updates them on APKBUILD itself. Additionally
-    it is possible to commit this change.
+    on current directory and updates them on APKBUILD itself. If there are
+    changes, the updated APKBUILD file will be committet.
 
     The checksums will be updated only for existing files listed on $source
     on APKBUILD, download-content like referenced source archives will be
-    skipped.
+    skipped and used as already listed.
 
   Optional parameters:
     -h|-?
        .. Show this help.
-    -n .. Do not commit Change
+    -n .. Do not commit changes.
 
 EOF
 }
