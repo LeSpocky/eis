@@ -48,25 +48,42 @@ calculateChecksums(){
         echo "APKBUILD not found, exiting"
         exit 1
     fi
+    cleanup
+
+    # Get list of files to handle
     . APKBUILD
+
+    # Calculate chksums for each file and write them to temp file
     for currentfile in ${source} ; do
         echo "Current file: ${currentfile}"
-        md5sum -t ${currentfile} >> /tmp/md5sums.txt
-        sha256sum -t ${currentfile} >> /tmp/sha256sums.txt
-        sha512sum -t ${currentfile} >> /tmp/sha512sums.txt
+        md5sum -t ${currentfile} >> /tmp/md5sums.txt 2>/dev/null
+        if [ $? -ne 0 ] ; then
+            handleUnknownFile ${currentfile} /tmp/md5sums.txt "${md5sums}"
+        fi
+        sha256sum -t ${currentfile} >> /tmp/sha256sums.txt 2>/dev/null
+        if [ $? -ne 0 ] ; then
+            handleUnknownFile ${currentfile} /tmp/sha256sums.txt "${sha256sums}"
+        fi
+        sha512sum -t ${currentfile} >> /tmp/sha512sums.txt 2>/dev/null
+        if [ $? -ne 0 ] ; then
+            handleUnknownFile ${currentfile} /tmp/sha512sums.txt "${sha512sums}"
+        fi
     done
+
+    # Sort temp files
     sort -k2 /tmp/md5sums.txt >> /tmp/md5sums-sorted.txt
     sort -k2 /tmp/sha256sums.txt >> /tmp/sha256sums-sorted.txt
     sort -k2 /tmp/sha512sums.txt >> /tmp/sha512sums-sorted.txt
 
+    # Create result
     readAndWriteContent /tmp/md5sums-sorted.txt "md5sums=\""
     readAndWriteContent /tmp/sha256sums-sorted.txt "sha256sums=\""
     readAndWriteContent /tmp/sha512sums-sorted.txt "sha512sums=\""
 
+    # Remove existing checksums and add new list to APKBUILD
+    # ToDo
     cat /tmp/calculatedChecksums.txt
-    rm -f /tmp/md5sums*
-    rm -f /tmp/sha256sums*
-    rm -f /tmp/sha512sums*
+    cleanup
 }
 
 readAndWriteContent(){
@@ -77,6 +94,25 @@ readAndWriteContent(){
         placeholder="\n"
     done < ${fileToRead}
     echo "\"" >> /tmp/calculatedChecksums.txt
+}
+
+handleUnknownFile(){
+    local currentfile=$1
+    local destinationFile=$2
+    local chksums=$3
+    echo "$chksums" | while read currentChksum currentEntry ; do
+        if echo "$currentfile" | grep -q "$currentEntry"; then
+            echo "${currentChksum}  ${currentEntry}" >> ${destinationFile}
+            return
+        fi
+    done
+}
+
+cleanup(){
+    rm -f /tmp/md5sums*
+    rm -f /tmp/sha256sums*
+    rm -f /tmp/sha512sums*
+    rm -f /tmp/calculatedChecksums.txt
 }
 
 doCommit=true
