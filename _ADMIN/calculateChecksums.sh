@@ -80,7 +80,7 @@ calculateChecksums(){
     readAndWriteContent /tmp/sha256sums-sorted.txt "sha256sums=\""
     readAndWriteContent /tmp/sha512sums-sorted.txt "sha512sums=\""
 
-    cat /tmp/calculatedChecksums.txt
+#    cat /tmp/calculatedChecksums.txt
 
     # Remove existing checksums and add new list to APKBUILD
     updateAPKBUILD
@@ -113,9 +113,15 @@ handleUnknownFile(){
 updateAPKBUILD(){
     sed -i -n '/^md5sums=\"/q;p' APKBUILD
     cat /tmp/calculatedChecksums.txt >> APKBUILD
-    if ${doCommit} ; then
-        git add APKBUILD
-        git commit -m "Updated checksums"
+    if git ls-files -m | grep -q APKBUILD; then
+        if ${doCommit} ; then
+            git add APKBUILD
+            git commit -m "Updated checksums"
+        else
+            echo "Commit of updated APKBUILD disabled"
+        fi
+    else
+        echo "No changes on APKBUILD"
     fi
 }
 
