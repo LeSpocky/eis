@@ -3,7 +3,7 @@
 pkgname=cui-acme
 pkgver=2.5.2
 pkgrel=0
-pkgdesc="CUI Setup for ACME"
+pkgdesc="CUI Setup for Let's Encrypt ACME"
 url="http://www.eisfair.org"
 arch="noarch"
 license="GPL"
