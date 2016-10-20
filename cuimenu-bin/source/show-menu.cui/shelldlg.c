@@ -80,14 +80,21 @@ ShellDlgCreateHook(void* w)
 
 	WindowGetClientRect(win, &rc);
 
-	ctrl = TerminalNew(win, data->Title,  rc.X, rc.Y, rc.W, rc.H, IDC_TERMINAL, CWS_NONE, CWS_NONE);
+	ctrl = TerminalNew(win,
+		data->pTitle ? data->pTitle : L"",
+		rc.X, rc.Y, rc.W, rc.H,
+		IDC_TERMINAL,
+		CWS_NONE, CWS_NONE);
 	WindowCreate(ctrl);
 	TerminalSetCoProcExitHook(ctrl, ShellDlgCoProcExitHook, win);
-	
-	TerminalWrite(ctrl, _T("\033[32m"), wcslen(_T("\033[32m")));
-	TerminalWrite(ctrl, data->Command, wcslen(data->Command));
-	TerminalWrite(ctrl, _T("\033[0m\n"), wcslen(_T("\033[0m\n")));
-	TerminalRun(ctrl, data->Command);
+
+	if (data->pCommand)
+	{
+		TerminalWrite(ctrl, _T("\033[32m"), wcslen(_T("\033[32m")));
+		TerminalWrite(ctrl, data->pCommand, wcslen(data->pCommand));
+		TerminalWrite(ctrl, _T("\033[0m\n"), wcslen(_T("\033[0m\n")));
+		TerminalRun(ctrl, data->pCommand);
+	}
 }
 
 
@@ -168,8 +175,8 @@ ShellDlgNew(CUIWINDOW* parent, CUIRECT* rc, int sflags, int cflags)
 		WindowSetKeyHook(dlg, ShellDlgKeyHook);
 
 		dlg->InstData = (SHELLDLGDATA*) malloc(sizeof(SHELLDLGDATA));
-		((SHELLDLGDATA*)dlg->InstData)->Command[0] = 0;
-		((SHELLDLGDATA*)dlg->InstData)->Title[0] = 0;
+		((SHELLDLGDATA*)dlg->InstData)->pCommand = NULL;
+		((SHELLDLGDATA*)dlg->InstData)->pTitle   = NULL;
 		((SHELLDLGDATA*)dlg->InstData)->ExitCode = 0;
 		((SHELLDLGDATA*)dlg->InstData)->DoAutoClose = FALSE;
 

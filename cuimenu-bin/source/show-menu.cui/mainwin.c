@@ -570,11 +570,8 @@ MainwinShellExecute(CUIWINDOW* win, const wchar_t* cmd, const wchar_t* title, in
 			SHELLDLGDATA* dlgdata = ShellDlgGetData(data->Terminal);
 			if (dlgdata)
 			{
-				wcsncpy(dlgdata->Command, cmd, 256);
-				dlgdata->Command[256] = 0;
-
-				wcsncpy(dlgdata->Title, title, 128);
-				dlgdata->Title[128] = 0;
+				dlgdata->pCommand = wcsdup(cmd);
+				dlgdata->pTitle = wcsdup(title);
 
 				dlgdata->DoAutoClose = autoclose;
 				
@@ -582,6 +579,9 @@ MainwinShellExecute(CUIWINDOW* win, const wchar_t* cmd, const wchar_t* title, in
 				WindowModal(data->Terminal);
 
 				exitcode = dlgdata->ExitCode;
+
+				free(dlgdata->pCommand);
+				free(dlgdata->pTitle);
 			}
 			
 			WindowDestroy(data->Terminal);

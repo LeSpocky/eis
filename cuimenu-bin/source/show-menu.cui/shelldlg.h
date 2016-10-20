@@ -30,10 +30,10 @@
 
 typedef struct
 {
-	wchar_t Command[256 + 1];
-	wchar_t Title[128 + 1];
-	int     DoAutoClose;
-	int     ExitCode;
+	wchar_t *pCommand;
+	wchar_t *pTitle;
+	int      DoAutoClose;
+	int      ExitCode;
 } SHELLDLGDATA;
 
 
