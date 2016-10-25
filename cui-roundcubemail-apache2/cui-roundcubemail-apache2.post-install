@@ -1,0 +1,4 @@
+#!/bin/sh
+/var/install/bin/add-menu setup.services.apache2.menu setup.services.apache2.roundcubemail.menu "Roundcube Webmail Administration"
+[ -e /etc/config.d/roundcubemail-apache2 ] || cp /etc/default.d/roundcubemail-apache2 /etc/config.d/
+exit 0

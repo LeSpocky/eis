@@ -1,0 +1,6 @@
+<!-- /var/install/menu/setup.services.apache2.roundcubemail.menu -->
+<title>Roundcube Webmail Administration</title>
+<package>roundcubemail-apache2</package>
+<doc file="roundcubemail-apache2.txt">Roundcube Webmail Documentation</doc>
+<edit>Edit Roundcube Webmail Configuration</edit>
+<menu file="setup.services.advancedconfig.menu">Advanced configuration file handling</menu>

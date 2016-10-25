@@ -1,0 +1,36 @@
+<help name="ROUNDCUBEMAIL_DB_HOST">
+    Hier wird der Datenbank-Host angegeben. Das kann entweder localhost, ein FQDN oder eine IP sein.<br/>
+    <br/>
+    Gueltige Werte: localhost, FQDN, IP<br/>
+    Standard-Einstellung: ROUNDCUBEMAIL_DB_HOST='localhost'
+</help>
+
+<help name="ROUNDCUBEMAIL_DB_NAME">
+    Hier wird Name der Datenbank angegeben.<br/>
+    <br/>
+    Gueltige Werte: Gueltiger Datenbankname<br/>
+    Standard-Einstellung: ROUNDCUBEMAIL_DB_NAME='roundcube'
+</help>
+
+<help name="ROUNDCUBEMAIL_DB_USER">
+    Hier wird der zu verwendende Datenbank-User angegeben.<br/>
+    <br/>
+    Gueltige Werte: String<br/>
+    Standard-Einstellung: ROUNDCUBEMAIL_DB_USER='roundcube'
+</help>
+
+<help name="ROUNDCUBEMAIL_DB_PASSWORD">
+    Hier wird das zu verwendende Datenbank-Passwort angegeben.<br/>
+    <br/>
+    Gueltige Werte: String<br/>
+    Standard-Einstellung: ROUNDCUBEMAIL_DB_PASSWORD=''
+</help>
+
+
+
+
+
+
+
+
+

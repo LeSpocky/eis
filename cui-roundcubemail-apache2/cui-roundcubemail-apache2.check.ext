@@ -1,0 +1,100 @@
+# ----------------------------------------------------------------------------
+# /etc/check.d/roundcubemail-apache2.ext - configuration file for roundcubemail-apache2
+# Copyright (c) 2012 - 2016 the eisfair team, team(at)eisfair(dot)org
+# ----------------------------------------------------------------------------
+if (roundcube_n > 0)
+then
+    # Roundcube has been installed
+    # MYSQL CHECK
+    if (roundcube_db_type == "mysql")
+    then
+        stat ("/var/install/packages/mysql", mysql)
+        stat ("/var/install/packages/mariadb", mariadb)
+
+        if (mysql_res != "OK" && mariadb_res != "OK")
+        then
+            error "ROUNDCUBE_DB_TYPE='mysql' has been set although no MySQL/MariaSB package could be found!"
+        else
+            if (roundcube_db_user == "")
+            then
+                error "ROUNDCUBE_DB_USER hasn't been set although you want to use a MySQL database."
+            fi
+            if (roundcube_db_pass == "")
+            then
+                error "ROUNDCUBE_DB_PASS hasn't been set although you want to use a MySQL database."
+            fi
+        fi
+
+        if (roundcube_db_user == "root")
+        then
+            error "OWNCLOUD_DB_USER='root' has been set, although this is not allowed."
+        fi
+    else
+        # POSTGRES CHECK
+        if (roundcube_db_type == "pgsql")
+        then
+            stat ("/var/install/packages/postgresql", res)
+            if (res_res != "OK")
+            then
+                error "ROUNDCUBE_DB_TYPE='pqsql' has been set although no PostgreSQL package could be found!"
+       	    else
+                if (roundcube_db_user == "")
+                then
+                    error "ROUNDCUBE_DB_USER hasn't been set although you want to use a PostgreSQL database."
+                fi
+              # if (roundcube_db_pass == "")
+              # then
+              #     error "ROUNDCUBE_DB_PASS hasn't been set although you want to use a PostgreSQL database."
+              # fi
+            fi
+
+            if (roundcube_db_user == "postgres")
+            then
+                error "OWNCLOUD_DB_USER='root' has been set, although this is not allowed."
+            fi
+        fi
+    fi
+
+    foreach i in roundcube_n
+    do
+        # process each Roundcube instance
+        # ACTIVE INSTANCE CHECK
+        if (roundcube_%_active[i] == "yes")
+        then
+            # active instance
+            set docroot=roundcube_%_document_root[i]
+
+            # EXTRACTION CHECK
+            stat ("$docroot/index.php", test)
+            if (test_res == "OK")
+            then
+                # Roundcube files have already been extracted, run tests ...
+
+                # PLUGIN CHECK
+                if (roundcube_%_plugins_use_all[i] == "no")
+                then
+                    # not all plugins should be activated
+                    if (roundcube_%_plugins_n[i] > 0)
+                    then
+                        set pluginnbr=roundcube_%_plugins_n[i]
+
+                        foreach j in pluginnbr
+                        do
+                            # check the listed plugins
+                            set pluginname=roundcube_%_plugins_%_dirname[i][j]
+                            set pluginpath="$docroot/plugins/$pluginname"
+
+                            stat ("$pluginpath", test)
+
+                            if (test_res != "OK")
+                            then
+                                # error
+                                error "ROUNDCUBE_${i}_PLUGINS_${j}_DIRNAME='$pluginname' has been set although the plugin cannot be found!"
+                            fi
+                        done
+                    fi
+                fi # PLUGIN CHECK
+            fi # EXTRACTION CHECK
+        fi # ACTIVE INSTANCE CHECK
+    done
+fi

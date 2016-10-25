@@ -1,0 +1,108 @@
+# ----------------------------------------------------------------------------
+# /etc/config.d/roundcubemail-apache2 - configuration file
+# Copyright (c) 2012 - 2016 the eisfair team, team(at)eisfair(dot)org
+# ----------------------------------------------------------------------------
+
+START_ROUNDCUBE='no'                  # start Roundcube client: yes or no
+
+#------------------------------------------------------------------------------
+# client settings
+#------------------------------------------------------------------------------
+
+ROUNDCUBE_N='1'                       # number of webmail instances
+
+ROUNDCUBE_1_ACTIVE='yes'              # 1. activate: yes or no
+ROUNDCUBE_1_DOCUMENT_ROOT='/var/www/htdocs/roundcube'
+                                      #    document root
+ROUNDCUBE_1_SERVER_DOMAIN='domain.lan'
+                                      #    your mail domain
+ROUNDCUBE_1_SERVER_DOMAIN_CHECK='no'  #    check domain referal: yes or no
+ROUNDCUBE_1_SERVER_IMAP_HOST='localhost'
+                                      #    hostname of imap server
+ROUNDCUBE_1_SERVER_IMAP_TYPE='uw'     #    server type: uw or courier
+ROUNDCUBE_1_SERVER_IMAP_AUTH='md5'    #    auth type: digest, md5 or login
+ROUNDCUBE_1_SERVER_IMAP_TRANSPORT='default'
+                                      #    transport to use: default or tls
+ROUNDCUBE_1_SERVER_SMTP_HOST='localhost'
+                                      #    hostname of smtp server
+ROUNDCUBE_1_SERVER_SMTP_AUTH='md5'    #    auth type: digest, md5, login, none
+ROUNDCUBE_1_SERVER_SMTP_TRANSPORT='default'
+                                      #    transport to use: default or tls
+
+#------------------------------------------------------------------------------
+# organization settings
+#------------------------------------------------------------------------------
+
+ROUNDCUBE_1_ORGA_NAME='eisfair-Roundcubemail'
+                                      #    organization name
+ROUNDCUBE_1_ORGA_LOGO=''              #    logo path
+ROUNDCUBE_1_ORGA_PROVIDER_URL='http://trac.roundcube.net/wiki/'
+                                      #    provider link
+ROUNDCUBE_1_ORGA_DEF_LANGUAGE='de_DE' #    default language
+
+#------------------------------------------------------------------------------
+# folder settings
+#------------------------------------------------------------------------------
+
+ROUNDCUBE_1_FOLDER_MOVE_MSGS_TO_TRASH='yes'
+                                      #    move deleted messages to trash
+ROUNDCUBE_1_FOLDER_MOVE_MSGS_TO_SEND='yes'
+                                      #    move sent messages to send folder
+ROUNDCUBE_1_FOLDER_MOVE_MSGS_TO_DRAFT='yes'
+                                      #    show move to draft folder option
+ROUNDCUBE_1_FOLDER_AUTO_EXPUNGE='yes' #    delete source msg after move
+
+#------------------------------------------------------------------------------
+# general settings
+#------------------------------------------------------------------------------
+
+ROUNDCUBE_1_GENERAL_DEF_CHARSET='utf-8'
+                                      #    used charset: utf-8, iso-8859-1, etc.
+ROUNDCUBE_1_GENERAL_DES_KEY=''        #    DES key for cookie encryption
+ROUNDCUBE_1_GENERAL_ALLOW_RECEIPTS_USE='yes'
+                                      #    allow request of receipts
+ROUNDCUBE_1_GENERAL_ALLOW_IDENTITY_EDIT='yes'
+                                      #    allow editing of identity data
+
+#------------------------------------------------------------------------------
+# plugins settings
+#------------------------------------------------------------------------------
+
+ROUNDCUBE_1_PLUGINS_USE_ALL='no'      #    yes - take all, no - take individual
+
+ROUNDCUBE_1_PLUGINS_N='6'             #    number of individual plugins
+ROUNDCUBE_1_PLUGINS_1_DIRNAME='emoticons'
+                                      #    1. plugin
+ROUNDCUBE_1_PLUGINS_2_DIRNAME='filters'
+                                      #    2. plugin
+ROUNDCUBE_1_PLUGINS_3_DIRNAME='help'  #    3. plugin
+ROUNDCUBE_1_PLUGINS_4_DIRNAME='newmail_notifier'
+                                      #    4. plugin
+ROUNDCUBE_1_PLUGINS_5_DIRNAME='userinfo'
+                                      #    5. plugin
+ROUNDCUBE_1_PLUGINS_6_DIRNAME='vcard_attachments'
+                                      #    6. plugin
+
+#------------------------------------------------------------------------------
+
+ROUNDCUBE_1_GLOBADDR_LDAP_N='0'       #    number of ldap addressbooks
+ROUNDCUBE_1_GLOBADDR_LDAP_1_ACTIVE='no'
+                                      #    1. activate ldap addressbook: yes or no
+ROUNDCUBE_1_GLOBADDR_LDAP_1_INFO='My LDAP directory'
+                                      #       description of ldap addressbook
+ROUNDCUBE_1_GLOBADDR_LDAP_1_HOST='localhost'
+                                      #       hostname of ldap server
+ROUNDCUBE_1_GLOBADDR_LDAP_1_BASEDN='ou=contacts,ou=addressbook,dc=domain,dc=lan'
+                                      #       base-dn of ldap addressbook
+ROUNDCUBE_1_GLOBADDR_LDAP_1_AUTH='no' #       require authentication: yes or no
+ROUNDCUBE_1_GLOBADDR_LDAP_1_BINDDN='cn=ldapadmin,dc=domain,dc=lan'
+                                      #       bind-dn for ldap authentication
+ROUNDCUBE_1_GLOBADDR_LDAP_1_BINDPASS='my-secret'
+                                      #       bind-password for ldap
+                                      #       authentication
+ROUNDCUBE_1_GLOBADDR_LDAP_1_WRITEABLE='no'
+                                      #       writable addressbook: yes or no
+
+# ----------------------------------------------------------------------------
+# End
+# ----------------------------------------------------------------------------
