@@ -7,10 +7,11 @@
 # Creation:    2012-12-19 jed
 #
 # Parameters:
-#   roundcube.sh                                     - generates all configuration files
-#   roundcube.sh create-sql-db                                 - initialize sql database
-#   roundcube.sh delete-sql-db [db-type][db-user][db-password] - delete sql database
-#   roundcube.sh removecron                                    - remove cronjob
+#   roundcube.sh                        - generates all configuration files
+#   roundcube.sh --create-sql-db        - initialize sql database
+#   roundcube.sh --delete-sql-db [db-type][db-user][db-password]
+#                                       - delete sql database
+#   roundcube.sh --remove-cron          - remove cronjob
 # ----------------------------------------------------------------------------
 
 # read eislib
@@ -36,17 +37,16 @@ roundcube_log_path=${roundcube_path}/log
 # Set file names
 apache2file=${testroot}/etc/config.d/apache2
 mailfile=${testroot}/etc/config.d/mail
-php5file=${testroot}/etc/config.d/apache2_php5
+php5file=${testroot}/etc/config.d/php-apache2
 vmailfile=${testroot}/etc/config.d/vmail
 roundcubefile=${testroot}/etc/config.d/roundcube
 mariadbfile=${testroot}/etc/config.d/mariadb
 mysqlfile=${testroot}/etc/config.d/mysql
-owncloudfile=${testroot}/etc/config.d/owncloud
 postgresfile=${testroot}/etc/config.d/postgresql
 postgrespwfile=/root/.pgpass
-configlog_file=$roundcube_log_path/roundcube-configlog
+configlog_file=${roundcube_log_path}/roundcube-configlog
 crontab_file=${crontab_path}/roundcube
-services_file=$testroot/etc/services
+services_file=${testroot}/etc/services
 version_file=${roundcube_path}/roundcube_version
 packagefile=${testroot}/var/install/packages/roundcube
 
@@ -59,7 +59,7 @@ DB_NAME='roundcube'
 DB_HOST='localhost'
 
 # Other parameters
-roundcube_version="v`grep "<version>" ${packagefile} | sed 's#<version>\(.*\)</version>#\1#'`"
+roundcube_version=$(apk info roundcubemail | head -1 | cut -d '-' -f2)
 
 # Load configuration
 . ${roundcubefile}
@@ -93,39 +93,8 @@ if [ "${ROUNDCUBE_CRON_SCHEDULE}" = "" ] ; then
 fi
 
 # ----------------------------------------------------------------------------
-# check if mail has been enabled
-# input:  $1 - '-quiet' means no output
-# return:  0 - installed and activated
-#          1 - not installed and activated
-# ----------------------------------------------------------------------------
-check_installed_mail ()
-{
-    retval=1
-
-    if [ -f ${mailfile} ] ; then
-        # mail installed
-        . ${mailfile}
-
-        if [ "${START_MAIL}" = "yes" ] ; then
-            # mail activated
-            if [ "${1}" != "-quiet" ] ; then
-                echo "mail has been enabled ..."
-            fi
-            retval=0
-        else
-            # mail deactivated
-            if [ "${1}" != "-quiet" ] ; then
-                echo "mail is currently disabled ..."
-            fi
-        fi
-    fi
-
-    return ${retval}
-}
-
-# ----------------------------------------------------------------------------
-# check if vmail has been enabled
-# input:  $1 - '-quiet' means no output
+# Check if vmail has been enabled
+# input:  $1 - '--quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
 # ----------------------------------------------------------------------------
@@ -139,45 +108,14 @@ check_installed_vmail ()
 
         if [ "${START_VMAIL}" = "yes" ] ; then
             # vmail activated
-            if [ "${1}" != "-quiet" ] ; then
+            if [ "${1}" != "--quiet" ] ; then
                 echo "vmail has been enabled ..."
             fi
             retval=0
         else
             # vmail deactivated
-            if [ "${1}" != "-quiet" ] ; then
+            if [ "${1}" != "--quiet" ] ; then
                 echo "vmail is currently disabled ..."
-            fi
-        fi
-    fi
-
-    return ${retval}
-}
-
-# ----------------------------------------------------------------------------
-# check if owncloud has been enabled
-# input:  $1 - '-quiet' means no output
-# return:  0 - installed and activated
-#          1 - not installed and activated
-# ----------------------------------------------------------------------------
-check_installed_owncloud ()
-{
-    retval=1
-
-    if [ -f ${owncloudfile} ] ; then
-        # mail installed
-        . ${owncloudfile}
-
-        if [ "${START_OWNCLOUD}" = "yes" ] ; then
-            # ownCloud activated
-            if [ "${1}" != "-quiet" ] ; then
-                echo "ownCloud has been enabled ..."
-            fi
-            retval=0
-        else
-            # ownCloud deactivated
-            if [ "${1}" != "-quiet" ] ; then
-                echo "ownCloud is currently disabled ..."
             fi
         fi
     fi
@@ -190,7 +128,7 @@ check_installed_owncloud ()
 # ----------------------------------------------------------------------------
 # check if Apache2 SSL has been enabled
 #
-# input:  $1 - '-quiet' - suppress screen output
+# input:  $1 - '--quiet' - suppress screen output
 # return:  0 - extension enabled
 #          1 - extension disabled
 # ----------------------------------------------------------------------------
@@ -203,13 +141,13 @@ check_active_apache_ssl ()
 
         if [ "`echo "${APACHE2_SSL}" | tr '[:upper:]' '[:lower:]'`" = "yes" ] ; then
             # ssl support activated
-            if [ "${1}" != "-quiet" ] ; then
+            if [ "${1}" != "--quiet" ] ; then
                 echo "Apache2 SSL has been enabled ..."
             fi
             retval=0
         else
             # ssl support deactivated
-            if [ "${1}" != "-quiet" ] ; then
+            if [ "${1}" != "--quiet" ] ; then
                 echo "Apache2 SSL has been disabled ..."
                 echo "set APACHE2_SSL='yes'"
             fi
@@ -221,7 +159,7 @@ check_active_apache_ssl ()
 
 # ----------------------------------------------------------------------------
 # check if php_ldap has been enabled
-# input:  $1 - '-quiet' means no output
+# input:  $1 - '--quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
 # ----------------------------------------------------------------------------
@@ -266,13 +204,13 @@ check_active_php_ldap ()
 
             if [ "${PHP5_EXT_LDAP}" = "yes" ] ; then
                 # ldap support activated
-                if [ "${1}" != "-quiet" ] ; then
+                if [ "${1}" != "--quiet" ] ; then
                     echo "php-ldap has been enabled ..."
                 fi
                 retval=0
             else
                 # ldap support deactivated
-                if [ "${1}" != "-quiet" ] ; then
+                if [ "${1}" != "--quiet" ] ; then
                     echo "php-ldap is currently disabled ..."
                 fi
                 write_to_config_log -error "PHP5_EXT_LDAP='yes' has not been set!"
@@ -285,7 +223,7 @@ check_active_php_ldap ()
 
 # ----------------------------------------------------------------------------
 # check if php_sqlite3 has been enabled
-# input:  $1 - '-quiet' means no output
+# input:  $1 - '--quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
 # ----------------------------------------------------------------------------
@@ -299,13 +237,13 @@ check_active_php_sqlite ()
 
         if [ "${PHP5_EXT_SQLITE3}" = "yes" ] ; then
             # sqlite support activated
-            if [ "${1}" != "-quiet" ] ; then
+            if [ "${1}" != "--quiet" ] ; then
                 echo "php-sqlite3 has been enabled ..."
             fi
             retval=0
         else
             # sqlite support deactivated
-            if [ "${1}" != "-quiet" ] ; then
+            if [ "${1}" != "--quiet" ] ; then
                 echo "php-sqlite3 is currently disabled ..."
             fi
             write_to_config_log -error "PHP5_EXT_SQLITE3='yes' has not been set!"
@@ -318,7 +256,7 @@ check_active_php_sqlite ()
 # ----------------------------------------------------------------------------
 # check if php_mysql has been enabled
 #
-# input:  $1 - '-quiet' - suppress screen output
+# input:  $1 - '--quiet' - suppress screen output
 # return:  0 - extension enabled
 #          1 - extension disabled
 # ----------------------------------------------------------------------------
@@ -333,13 +271,13 @@ check_active_php_mysql ()
         mysql_php=1
         if [ "${PHP5_EXT_MYSQL}" = "yes" ] ; then
             # mysql support activated
-            if [ "${1}" != "-quiet" ] ; then
+            if [ "${1}" != "--quiet" ] ; then
                 echo "php-mysql has been enabled ..."
             fi
             mysql_php=0
         else
             # mysql support deactivated
-            if [ "${1}" != "-quiet" ] ; then
+            if [ "${1}" != "--quiet" ] ; then
                 echo "php-mysql has been disabled ..."
                 echo "set PHP5_EXT_MYSQL='yes'"
             fi
@@ -353,12 +291,12 @@ check_active_php_mysql ()
                     mysql_sock=`awk -F' = ' '/socket/ {print $2}' /etc/my.cnf | tail -1`
 
                     if [ "${PHP5_EXT_MYSQL_SOCKET}" = "${mysql_sock}" ] ; then
-                        if [ "${1}" != "-quiet" ] ; then
+                        if [ "${1}" != "--quiet" ] ; then
                             echo "php-mysql-socket has correctly been set ..."
                         fi
                         mysql_socket=0
                     else
-                        if [ "${1}" != "-quiet" ] ; then
+                        if [ "${1}" != "--quiet" ] ; then
                             echo "php-mysql-socket hasn't been set correctly ..."
                             echo "set PHP5_EXT_MYSQL_SOCKET='${mysql_sock}'"
                         fi
@@ -370,12 +308,12 @@ check_active_php_mysql ()
             *)
                 # eisfair-2
                 if [ "${PHP5_EXT_MYSQL_SOCKET}" = "/var/run/mysql/mysql.sock" ] ; then
-                    if [ "${1}" != "-quiet" ] ; then
+                    if [ "${1}" != "--quiet" ] ; then
                         echo "php-mysql-socket has correctly been set ..."
                     fi
                     mysql_socket=0
                 else
-                    if [ "${1}" != "-quiet" ] ; then
+                    if [ "${1}" != "--quiet" ] ; then
                         echo "php-mysql-socket hasn't been set correctly ..."
                         echo "set PHP5_EXT_MYSQL_SOCKET='/var/run/mysql/mysql.sock'"
                     fi
@@ -394,7 +332,7 @@ check_active_php_mysql ()
 # ----------------------------------------------------------------------------
 # check if php_pgsql has been enabled
 #
-# input:  $1 - '-quiet' - suppress screen output
+# input:  $1 - '--quiet' - suppress screen output
 # return:  0 - extension enabled
 #          1 - extension disabled
 # ----------------------------------------------------------------------------
@@ -408,13 +346,13 @@ check_active_php_pgsql ()
 
         if [ "${PHP5_EXT_PGSQL}" = "yes" ] ; then
             # pgsql support activated
-            if [ "${1}" != "-quiet" ] ; then
+            if [ "${1}" != "--quiet" ] ; then
                 echo "php-pgsql has been enabled ..."
             fi
             retval=0
         else
             # pgsql support deactivated
-            if [ "${1}" != "-quiet" ] ; then
+            if [ "${1}" != "--quiet" ] ; then
                 echo "php-pgsql has been disabled ..."
                 echo "set PHP5_EXT_PGSQL='yes'"
             fi
@@ -470,7 +408,7 @@ get_smtp_port ()
 
 # ----------------------------------------------------------------------------
 # check if mysql has been enabled
-# input:  $1 - '-quiet' means no output
+# input:  $1 - '--quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
 # ----------------------------------------------------------------------------
@@ -488,13 +426,13 @@ check_installed_mysql ()
         mysql_active=1
         if [ "${START_MYSQL}" = 'yes' -o "${START_MARIADB}" = 'yes' ] ; then
             # mysql activated
-            if [ "$1" != "-quiet" ] ; then
+            if [ "$1" != "--quiet" ] ; then
                 echo "MySQL/MariaDB support has been enabled ..."
             fi
             mysql_active=0
         else
             # mysql deactivated
-            if [ "$1" != "-quiet" ] ; then
+            if [ "$1" != "--quiet" ] ; then
                 echo "MySQL/MariaDB support has been disabled ..."
             fi
         fi
@@ -509,7 +447,7 @@ check_installed_mysql ()
 
 # ----------------------------------------------------------------------------
 # check if postgres has been enabled
-# input:  $1 - '-quiet' means no output
+# input:  $1 - '--quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
 # ----------------------------------------------------------------------------
@@ -522,13 +460,13 @@ check_installed_postgres ()
 
         if [ "${START_POSTGRESQL}" = "yes" ] ; then
             # postgres activated
-            if [ "$1" != "-quiet" ] ; then
+            if [ "$1" != "--quiet" ] ; then
                 echo "PostgreSQL support has been enabled ..."
             fi
             retval=0
         else
             # postgres deactivated
-            if [ "$1" != "-quiet" ] ; then
+            if [ "$1" != "--quiet" ] ; then
                 echo "PostgreSQL support has been disabled ..."
             fi
         fi
@@ -2735,13 +2673,13 @@ purge_document_roots ()
 #========================================================================================
 
 case "$1" in
-    create-sql-db)
+    --create-sql-db)
         create_sql_db_and_table 'force'
         ;;
-    delete-sql-db)
+    --delete-sql-db)
         remove_sql_db_and_table "$2" "$3" "$4"
         ;;
-    removecron)
+    --remove-cron)
         delete_cron_job
         ;;
     *)
@@ -2761,10 +2699,6 @@ case "$1" in
                 # no local mail or vmail package installed
                 MAIL_INSTALLED='none'
             fi
-
-            # owncloud
-            check_installed_owncloud
-            OWNCLOUD_INSTALLED=$?
 
             write_to_config_log -header
 
