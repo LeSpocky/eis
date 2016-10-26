@@ -2634,7 +2634,7 @@ purge_document_roots ()
                     yesno=`cat /tmp/ask.$$|tr 'A-Z' 'a-z'`
                     rm -f /tmp/ask.$$
                     if [ $rc = 255 ] ; then
-                        rm $tmpfile
+                        rm ${tmpfile}
                         exit 1
                     fi
 
