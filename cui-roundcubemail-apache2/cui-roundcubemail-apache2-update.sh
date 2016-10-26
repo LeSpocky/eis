@@ -19,15 +19,14 @@ usage()
     cat <<EOF
 
   Usage:
-  ${0} --test|--update
+  ${0} [Options]
+      The file $sourceConfiguration} will be read, the configuration will
+      be checked and an updated configuration file will be written.
 
-  Parameters:
+  Optional Parameters:
     --test
       .. The file ${sourceConfiguration} will be read and a test configuration
          will be written to the file ${testroot}/etc/config.d/${generatedConfiguration}.
-    --update
-      .. The file $sourceConfiguration} will be read, the configuration will
-         be checked and an updated configuration file will be written.
 
 EOF
 }
@@ -294,17 +293,17 @@ sourceConfiguration=${installfile}
 generatedConfiguration=${roundcubefile}
 
 case "$1" in
-    update)
-        ;;
-    test)
+    --test)
       # sourceConfiguration=${roundcubefile}.new
         sourceConfiguration=${roundcubefile}
         generatedConfiguration=${roundcubefile}.test
         ;;
-    *)
+    -h|--help)
     	usage
         exit 0
         ;;
+	*)
+		;;
 esac
 
 if [ -f ${sourceConfiguration} ] ; then
