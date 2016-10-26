@@ -1,43 +1,33 @@
 #!/bin/sh
-#----------------------------------------------------------------------------
-# /var/install/config.d/roundcube-update.sh - update or generate new roundcube configuration
+# ----------------------------------------------------------------------------
+# /var/install/config.d/roundcubemail-apache2-update.sh 
+# - Update or generate new roundcube configuration
 #
-# Copyright (c) 2012-2014 The Eisfair Team, team(at)eisfair(dot)org
-#
+# Copyright (c) 2012-2016 The Eisfair Team, team(at)eisfair(dot)org
 # Creation:    2012-12-20 jed
-# Last Update: $Id: roundcube-update.sh 35318 2014-03-27 16:01:25Z jed $
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 # read eislib etc.
 . /var/install/include/configlib
-. /var/install/include/check-eisfair-version
 . /var/install/include/eislib
-. /var/install/include/jedlib
 
-#exec 2>./roundcube-trace-$$.log
+#exec 2>./roundcubemail-apache2-update-trace-$$.log
 #set -x
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # function: variable is set
 #
 # input:  $1 - variable name
 # return:  0 - variable set
 #          1 - variable not set
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 variable_set ()
 {
     eval _var1=\$"${1}"
     eval _var2=\$"{${1}+EMPTY}"
 
-    if [ -z "${_var1}" ]
-    then
-        if [ "${_var2}" = "EMPTY" ]
-        then
+    if [ -z "${_var1}" ] ; then
+        if [ "${_var2}" = "EMPTY" ] ; then
             # variable is empty, but set
             ret=0
         else
@@ -52,43 +42,38 @@ variable_set ()
     return ${ret}
 }
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # print variable only if it has been set
 # $1 - variable name
 # $2 - comment
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 printsetvar ()
 {
-    if variable_set "${1}"
-    then
+    if variable_set "${1}" ; then
         printvar "${1}" "${2}"
     fi
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if mail has been enabled
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 check_installed_mail ()
 {
     retval=1
 
-    if [ -f ${mailfile} ]
-    then
+    if [ -f ${mailfile} ] ; then
         # mail installed
         . ${mailfile}
 
-        if [ "${START_MAIL}" = "yes" ]
-        then
+        if [ "${START_MAIL}" = "yes" ] ; then
             # mail activated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho "mail has been enabled ..."
             fi
             retval=0
         else
             # mail deactivated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho --warn "mail has been disabled ..."
             fi
         fi
@@ -97,30 +82,26 @@ check_installed_mail ()
     return ${retval}
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if vmail has been enabled
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 check_installed_vmail ()
 {
     retval=1
 
-    if [ -f ${vmailfile} ]
-    then
+    if [ -f ${vmailfile} ] ; then
         # mail installed
         . ${vmailfile}
 
-        if [ "${START_VMAIL}" = "yes" ]
-        then
+        if [ "${START_VMAIL}" = "yes" ] ; then
             # vmail activated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho "vmail has been enabled ..."
             fi
             retval=0
         else
             # vmail deactivated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho --warn "vmail has been disabled ..."
             fi
         fi
@@ -129,44 +110,40 @@ check_installed_vmail ()
     return ${retval}
 }
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # rename variables
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 rename_variables ()
 {
     renamed=0
     mecho "renaming parameter(s) ..."
 
-    if [ ${renamed} -eq 1 ]
-    then
+    if [ ${renamed} -eq 1 ] ; then
         mecho --info "... read documentation for renamed parameter(s)!"
         anykey
     fi
 }
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # modify variables
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 modify_variables ()
 {
     modified=0
     mecho "modifying parameter(s) ..."
 
-    if [ ${ROUNDCUBE_N} -le 1 ]
-    then
+    if [ ${ROUNDCUBE_N} -le 1 ] ; then
         imax=1
     else
         imax=${ROUNDCUBE_N}
     fi
 
     idx=1
-    while [ ${idx} -le ${imax} ]
-    do
+    while [ ${idx} -le ${imax} ] ; do
         eval des_key='$ROUNDCUBE_'${idx}'_GENERAL_DES_KEY'
 
         key_len=24
-        if [ "${des_key}" = "" -o `echo ${des_key}|wc -L` -lt ${key_len} ]
-        then
+        if [ "${des_key}" = "" -o `echo ${des_key}|wc -L` -lt ${key_len} ] ; then
             # create random key
             randkey="`rand_string ${key_len}`"
 
@@ -178,31 +155,29 @@ modify_variables ()
         idx=`expr ${idx} + 1`
     done
 
-    if [ ${modified} -eq 1 ]
-    then
+    if [ ${modified} -eq 1 ] ; then
         mecho --info "... read documentation for modified parameter(s)!"
         anykey
     fi
 }
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # add variables
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 pre_add_variables ()
 {
     added=0
     mecho "pre-adding new parameter(s) ..."
 
-    if [ ${added} -eq 1 ]
-    then
+    if [ ${added} -eq 1 ] ; then
         mecho --info "... read documentation for new parameter(s)!"
         anykey
     fi
 }
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # add variables
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 add_variables ()
 {
     added=0
@@ -210,80 +185,74 @@ add_variables ()
 
     # ROUNDCUBE_CRON_SCHEDULE
     # 0.90.3
-    if [ -z "`grep ^ROUNDCUBE_CRON_SCHEDULE ${source_conf}`" ]
-    then
+    if [ -z "`grep ^ROUNDCUBE_CRON_SCHEDULE ${source_conf}`" ] ; then
         mecho "- ROUNDCUBE_CRON_SCHEDULE='14 1 * * *'"
         ROUNDCUBE_CRON_SCHEDULE='14 1 * * *'
         added=1
     fi
 
-    if [ ${added} -eq 1 ]
-    then
+    if [ ${added} -eq 1 ] ; then
         mecho --info "... read documentation for new parameter(s)!"
         anykey
     fi
 }
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # delete variables
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 delete_variables ()
 {
     deleted=0
     mecho "deleting old parameters ..."
 
-    if [ ${deleted} -eq 1 ]
-    then
+    if [ ${deleted} -eq 1 ] ; then
         anykey
     fi
 }
 
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # create new configuration
-#------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 create_config ()
 {
     mecho "updating/creating configuration ..."
     {
-        #------------------------------------------------------------------------------
+        # --------------------------------------------------------------------
         printgpl "roundcube" "2012-12-20" "jed" "Copyright (c) 2001-`date +\"%Y\"` The Eisfair Team, team(at)eisfair(dot)org"
-        #------------------------------------------------------------------------------
+        # --------------------------------------------------------------------
         printgroup "start settings"
-        #------------------------------------------------------------------------------
+        # --------------------------------------------------------------------
 
         printsetvar "ROUNDCUBE_DO_DEBUG"   "debug mode: yes or no"
         printsetvar "ROUNDCUBE_DEBUGLEVEL" "debug level: 1-8"
 
         printvar    "START_ROUNDCUBE"      "start Roundcube client: yes or no"
 
-        if variable_set "ROUNDCUBE_DB_TYPE" || variable_set "ROUNDCUBE_DB_USER" || variable_set "ROUNDCUBE_DB_PASS"
-        then
-            #--------------------------------------------------------------------------
+        if variable_set "ROUNDCUBE_DB_TYPE" || variable_set "ROUNDCUBE_DB_USER" || variable_set "ROUNDCUBE_DB_PASS" ; then
+            # ----------------------------------------------------------------
             printgroup "database settings"
-            #--------------------------------------------------------------------------
+            # ----------------------------------------------------------------
 
             printsetvar "ROUNDCUBE_DB_TYPE"            "database type: e.g. mysql"
             printsetvar "ROUNDCUBE_DB_USER"            "database access username"
             printsetvar "ROUNDCUBE_DB_PASS"            "database access pasword"
         fi
 
-        #------------------------------------------------------------------------------
+        # --------------------------------------------------------------------
         printgroup "client settings"
-        #------------------------------------------------------------------------------
+        # --------------------------------------------------------------------
 
         printvar "ROUNDCUBE_N"                      "number of webmail instances"
         echo
 
-        if [ ${ROUNDCUBE_N} -eq 0 ]
-        then
+        if [ ${ROUNDCUBE_N} -eq 0 ] ; then
             imax=1
         else
             imax=${ROUNDCUBE_N}
         fi
 
         idx=1
-        while [ ${idx} -le ${imax} ]
-        do
+        while [ ${idx} -le ${imax} ] ; do
             printvar "ROUNDCUBE_${idx}_ACTIVE"                 "${idx}. activate: yes or no"
             printvar "ROUNDCUBE_${idx}_DOCUMENT_ROOT"          "   document root"
             printvar "ROUNDCUBE_${idx}_SERVER_DOMAIN"          "   your mail domain"
@@ -309,18 +278,18 @@ create_config ()
             printvar "ROUNDCUBE_${idx}_SERVER_SMTP_AUTH"       "   auth type: digest, md5, login, none"
             printvar "ROUNDCUBE_${idx}_SERVER_SMTP_TRANSPORT"  "   transport to use: default or tls"
 
-            #------------------------------------------------------------------------------
+            # ----------------------------------------------------------------
             printgroup "organization settings"
-            #------------------------------------------------------------------------------
+            # ----------------------------------------------------------------
 
             printvar "ROUNDCUBE_${idx}_ORGA_NAME"              "${idx}. name of organization"
             printvar "ROUNDCUBE_${idx}_ORGA_LOGO"              "   logo path"
             printvar "ROUNDCUBE_${idx}_ORGA_PROVIDER_URL"      "   provider link"
             printvar "ROUNDCUBE_${idx}_ORGA_DEF_LANGUAGE"      "   default language"
 
-            #------------------------------------------------------------------------------
+            # ----------------------------------------------------------------
             printgroup "folder settings"
-            #------------------------------------------------------------------------------
+            # ----------------------------------------------------------------
 
             printvar "ROUNDCUBE_${idx}_FOLDER_MOVE_MSGS_TO_TRASH" "${idx}. move deleted messages to trash"
             printvar "ROUNDCUBE_${idx}_FOLDER_MOVE_MSGS_TO_SEND"  "   move sent messages to send folder"
@@ -332,18 +301,18 @@ create_config ()
                 printsetvar "ROUNDCUBE_${idx}_FOLDER_FORCE_NSFOLDER"  "   force namespace folder display"
             fi
 
-            #------------------------------------------------------------------------------
+            # ----------------------------------------------------------------
             printgroup "general settings"
-            #------------------------------------------------------------------------------
+            # ----------------------------------------------------------------
 
             printvar "ROUNDCUBE_${idx}_GENERAL_DEF_CHARSET"         "${idx}. used charset: iso-8859-1, koi8-r"
             printvar "ROUNDCUBE_${idx}_GENERAL_DES_KEY"             "   DES key for cookie encryption"
             printvar "ROUNDCUBE_${idx}_GENERAL_ALLOW_RECEIPTS_USE"  "   allow request of receipts"
             printvar "ROUNDCUBE_${idx}_GENERAL_ALLOW_IDENTITY_EDIT" "   allow editing of identity data"
 
-            #------------------------------------------------------------------------------
+            # ----------------------------------------------------------------
             printgroup "plugins settings"
-            #------------------------------------------------------------------------------
+            # ----------------------------------------------------------------
 
             printvar "ROUNDCUBE_${idx}_PLUGINS_USE_ALL"             "${idx}. yes - take all, no - take individual"
             echo
@@ -351,45 +320,40 @@ create_config ()
 
             eval plugins_n='$ROUNDCUBE_'${idx}'_PLUGINS_N'
 
-            if [ "${plugins_n}" = "" ]
-            then
+            if [ "${plugins_n}" = "" ] ; then
                 plugins_n=0
             fi
 
-            if [ ${plugins_n} -eq 0 ]
-            then
+            if [ ${plugins_n} -eq 0 ] ; then
                 jmax=7
             else
                 jmax=${plugins_n}
             fi
 
             jdx=1
-            while [ ${jdx} -le ${jmax} ]
-            do
+            while [ ${jdx} -le ${jmax} ] ; do
                 printvar "ROUNDCUBE_${idx}_PLUGINS_${jdx}_DIRNAME" "${jdx}. plugin"
                 jdx=`expr ${jdx} + 1`
             done
 
             echo
 
-            #------------------------------------------------------------------------------
+            # ----------------------------------------------------------------
             printgroup "global address books"
-            #------------------------------------------------------------------------------
+            # ----------------------------------------------------------------
 
             printvar "ROUNDCUBE_${idx}_GLOBADDR_LDAP_N"             "${idx}. number of ldap addressbooks"
 
             eval globldap_n='$ROUNDCUBE_'${idx}'_GLOBADDR_LDAP_N'
 
-            if [ ${globldap_n} -eq 0 ]
-            then
+            if [ ${globldap_n} -eq 0 ] ; then
                 jmax=1
             else
                 jmax=${globldap_n}
             fi
 
             jdx=1
-            while [ ${jdx} -le ${jmax} ]
-            do
+            while [ ${jdx} -le ${jmax} ] ; do
                 printvar    "ROUNDCUBE_${idx}_GLOBADDR_LDAP_${jdx}_ACTIVE"    "   ${jdx}. activate ldap addressbook: yes or no"
                 printvar    "ROUNDCUBE_${idx}_GLOBADDR_LDAP_${jdx}_INFO"      "      description of ldap addressbook"
                 printvar    "ROUNDCUBE_${idx}_GLOBADDR_LDAP_${jdx}_HOST"      "      hostname of ldap server"
@@ -402,30 +366,29 @@ create_config ()
                 printsetvar "ROUNDCUBE_${idx}_GLOBADDR_LDAP_${jdx}_CHARSET"   "      charset to use"
                 printsetvar "ROUNDCUBE_${idx}_GLOBADDR_LDAP_${jdx}_MAXROWS"   "      maximum number of rows to read"
 
-                jdx=`expr $jdx + 1`
+                jdx=`expr ${jdx} + 1`
             done
 
-            if variable_set "ROUNDCUBE_CRON_SCHEDULE"
-            then
-                #--------------------------------------------------------------------------
+            if variable_set "ROUNDCUBE_CRON_SCHEDULE" ; then
+                # ------------------------------------------------------------
                 printgroup "others"
-                #--------------------------------------------------------------------------
+                # ------------------------------------------------------------
 
                 printsetvar "ROUNDCUBE_CRON_SCHEDULE"          "cron configuration string"
             fi
 
-            #------------------------------------------------------------------------------
+            # ----------------------------------------------------------------
             printend
-            #------------------------------------------------------------------------------
+            # ----------------------------------------------------------------
 
             idx=`expr ${idx} + 1`
         done
     } > ${generate_conf}
 }
 
-#==============================================================================
+# ============================================================================
 # main
-#==============================================================================
+# ============================================================================
 
 #testroot=/soft/jedroundcube
  testroot=''
@@ -455,12 +418,10 @@ generate_conf=${roundcubefile}
 
 goflag=0
 
-if check_installed_mail -quiet
-then
+if check_installed_mail -quiet ; then
     # mail
     MAIL_INSTALLED='mail'
-elif check_installed_vmail -quiet
-then
+elif check_installed_vmail -quiet ; then
     # vmail
     MAIL_INSTALLED='vmail'
 else
@@ -496,10 +457,8 @@ in
         ;;
 esac
 
-if [ ${goflag} -eq 1 ]
-then
-    if [ -f ${source_conf} ]
-    then
+if [ ${goflag} -eq 1 ] ; then
+    if [ -f ${source_conf} ] ; then
         # previous configuration file exists
         mecho "previous configuration found ..."
         . ${source_conf}
@@ -518,6 +477,6 @@ then
     fi
 fi
 
-#==============================================================================
+# ============================================================================
 # end
-#==============================================================================
+# ============================================================================

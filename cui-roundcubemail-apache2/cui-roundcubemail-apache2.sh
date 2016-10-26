@@ -1,32 +1,23 @@
 #!/bin/sh
-#----------------------------------------------------------------------------------------
-# /var/install/config.d/rouncube.sh - configuration generator script for RoundCube client
+# ----------------------------------------------------------------------------
+# /var/install/config.d/roundcubemail-apache2.sh 
+# - Configuration generator script for RoundCube client
 #
 # Copyright (c) 2012-2016 The Eisfair Team, team(at)eisfair(dot)org
-#
 # Creation:    2012-12-19 jed
-# Last Update: $Id: roundcube.sh 43624 2016-10-02 17:22:51Z jed $
 #
 # Parameters:
 #   roundcube.sh                                     - generates all configuration files
 #   roundcube.sh create-sql-db                                 - initialize sql database
 #   roundcube.sh delete-sql-db [db-type][db-user][db-password] - delete sql database
 #   roundcube.sh removecron                                    - remove cronjob
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 # read eislib
 . /var/install/include/eislib
-. /var/install/include/check-eisfair-version
-. /var/install/include/jedlib
 
-#exec 2>/tmp/roundcube-trace-$$.log
+#exec 2>/tmp/roundcubemail-apache2-trace-$$.log
 #set -x
-#testroot=/soft/jedroundcube                                            # only for testing
 testroot=""
 
 pgmname=`basename $0`
@@ -87,8 +78,7 @@ roundcube_version="v`grep "<version>" ${packagefile} | sed 's#<version>\(.*\)</v
 . ${roundcubefile}
 chmod 600 ${roundcubefile}
 
-if [ "${ROUNDCUBE_DB_TYPE}" = "" ]
-then
+if [ "${ROUNDCUBE_DB_TYPE}" = "" ] ; then
     ROUNDCUBE_DB_TYPE='sqlite'
 fi
 
@@ -111,38 +101,33 @@ case ${ROUNDCUBE_DB_TYPE} in
         ;;
 esac
 
-if [ "${ROUNDCUBE_CRON_SCHEDULE}" = "" ]
-then
+if [ "${ROUNDCUBE_CRON_SCHEDULE}" = "" ] ; then
     ROUNDCUBE_CRON_SCHEDULE='14 1 * * *'
 fi
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if mail has been enabled
 # input:  $1 - '-quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 check_installed_mail ()
 {
     retval=1
 
-    if [ -f ${mailfile} ]
-    then
+    if [ -f ${mailfile} ] ; then
         # mail installed
         . ${mailfile}
 
-        if [ "${START_MAIL}" = "yes" ]
-        then
+        if [ "${START_MAIL}" = "yes" ] ; then
             # mail activated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho "mail has been enabled ..."
             fi
             retval=0
         else
             # mail deactivated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho --warn "mail is currently disabled ..."
             fi
         fi
@@ -151,33 +136,29 @@ check_installed_mail ()
     return ${retval}
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if vmail has been enabled
 # input:  $1 - '-quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 check_installed_vmail ()
 {
     retval=1
 
-    if [ -f ${vmailfile} ]
-    then
+    if [ -f ${vmailfile} ] ; then
         # vmail installed
         . ${vmailfile}
 
-        if [ "${START_VMAIL}" = "yes" ]
-        then
+        if [ "${START_VMAIL}" = "yes" ] ; then
             # vmail activated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho "vmail has been enabled ..."
             fi
             retval=0
         else
             # vmail deactivated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho --warn "vmail is currently disabled ..."
             fi
         fi
@@ -186,33 +167,29 @@ check_installed_vmail ()
     return ${retval}
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if owncloud has been enabled
 # input:  $1 - '-quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 check_installed_owncloud ()
 {
     retval=1
 
-    if [ -f ${owncloudfile} ]
-    then
+    if [ -f ${owncloudfile} ] ; then
         # mail installed
         . ${owncloudfile}
 
-        if [ "${START_OWNCLOUD}" = "yes" ]
-        then
+        if [ "${START_OWNCLOUD}" = "yes" ] ; then
             # ownCloud activated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho "ownCloud has been enabled ..."
             fi
             retval=0
         else
             # ownCloud deactivated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho --warn "ownCloud is currently disabled ..."
             fi
         fi
@@ -221,35 +198,31 @@ check_installed_owncloud ()
     return ${retval}
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if Apache2 SSL has been enabled
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if Apache2 SSL has been enabled
 #
 # input:  $1 - '-quiet' - suppress screen output
 # return:  0 - extension enabled
 #          1 - extension disabled
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 check_active_apache_ssl ()
 {
     retval=1
 
-    if [ -f ${apache2file} ]
-    then
+    if [ -f ${apache2file} ] ; then
         . ${apache2file}
 
-        if [ "`echo "${APACHE2_SSL}" | tr '[:upper:]' '[:lower:]'`" = "yes" ]
-        then
+        if [ "`echo "${APACHE2_SSL}" | tr '[:upper:]' '[:lower:]'`" = "yes" ] ; then
             # ssl support activated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho "Apache2 SSL has been enabled ..."
             fi
             retval=0
         else
             # ssl support deactivated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho --warn "Apache2 SSL has been disabled ..."
                 mecho --warn "set APACHE2_SSL='yes'"
             fi
@@ -259,12 +232,12 @@ check_active_apache_ssl ()
     return ${retval}
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if php_ldap has been enabled
 # input:  $1 - '-quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 check_active_php_ldap ()
 {
     retval=1
@@ -272,21 +245,17 @@ check_active_php_ldap ()
     # check if ldap support is required
     capl_ldap_required=0
     capl_idx=1
-    while [ ${capl_idx} -le ${ROUNDCUBE_N} ]
-    do
+    while [ ${capl_idx} -le ${ROUNDCUBE_N} ] ; do
         eval capl_active='$ROUNDCUBE_'${capl_idx}'_ACTIVE'
 
-        if [ "${capl_active}" = "yes" ]
-        then
+        if [ "${capl_active}" = "yes" ] ; then
             eval capl_globldap_n='$ROUNDCUBE_'${capl_idx}'_GLOBADDR_LDAP_N'
 
             capl_jdx=1
-            while [ ${capl_jdx} -le ${capl_globldap_n} ]
-            do
+            while [ ${capl_jdx} -le ${capl_globldap_n} ] ; do
                 eval capl_globldap_active='$ROUNDCUBE_'${capl_idx}'_GLOBADDR_LDAP_'${capl_jdx}'_ACTIVE'
 
-                if [ "${capl_globldap_active}" = "yes" ]
-                then
+                if [ "${capl_globldap_active}" = "yes" ] ; then
                     capl_ldap_required=1
                     break
                 fi
@@ -295,34 +264,28 @@ check_active_php_ldap ()
             done
         fi
 
-        if [ ${capl_ldap_required} -eq 1 ]
-        then
+        if [ ${capl_ldap_required} -eq 1 ] ; then
             break
         fi
 
         capl_idx=`expr ${capl_idx} + 1`
     done
 
-    if [ ${capl_ldap_required} -eq 1 ]
-    then
+    if [ ${capl_ldap_required} -eq 1 ] ; then
         # ldap support required check php parameter
-        if [ -f ${php5file} ]
-        then
+        if [ -f ${php5file} ] ; then
             # apache2_php5 installed
             . ${php5file}
 
-            if [ "${PHP5_EXT_LDAP}" = "yes" ]
-            then
+            if [ "${PHP5_EXT_LDAP}" = "yes" ] ; then
                 # ldap support activated
-                if [ "${1}" != "-quiet" ]
-                then
+                if [ "${1}" != "-quiet" ] ; then
                     mecho "php-ldap has been enabled ..."
                 fi
                 retval=0
             else
                 # ldap support deactivated
-                if [ "${1}" != "-quiet" ]
-                then
+                if [ "${1}" != "-quiet" ] ; then
                     mecho --error "php-ldap is currently disabled ..."
                 fi
                 write_to_config_log -error "PHP5_EXT_LDAP='yes' has not been set!"
@@ -333,33 +296,29 @@ check_active_php_ldap ()
     return ${retval}
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if php_sqlite3 has been enabled
 # input:  $1 - '-quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 check_active_php_sqlite ()
 {
     retval=1
 
-    if [ -f ${php5file} ]
-    then
+    if [ -f ${php5file} ] ; then
         # apache2_php5 installed
         . ${php5file}
 
-        if [ "${PHP5_EXT_SQLITE3}" = "yes" ]
-        then
+        if [ "${PHP5_EXT_SQLITE3}" = "yes" ] ; then
             # sqlite support activated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho "php-sqlite3 has been enabled ..."
             fi
             retval=0
         else
             # sqlite support deactivated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho --error "php-sqlite3 is currently disabled ..."
             fi
             write_to_config_log -error "PHP5_EXT_SQLITE3='yes' has not been set!"
@@ -369,35 +328,31 @@ check_active_php_sqlite ()
     return ${retval}
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if php_mysql has been enabled
 #
 # input:  $1 - '-quiet' - suppress screen output
 # return:  0 - extension enabled
 #          1 - extension disabled
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 check_active_php_mysql ()
 {
     retval=1
 
-    if [ -f ${php5file} ]
-    then
+    if [ -f ${php5file} ] ; then
         # apache2_php5 installed
         . ${php5file}
 
         mysql_php=1
-        if [ "${PHP5_EXT_MYSQL}" = "yes" ]
-        then
+        if [ "${PHP5_EXT_MYSQL}" = "yes" ] ; then
             # mysql support activated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho "php-mysql has been enabled ..."
             fi
             mysql_php=0
         else
             # mysql support deactivated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho --warn "php-mysql has been disabled ..."
                 mecho --warn "set PHP5_EXT_MYSQL='yes'"
             fi
@@ -407,20 +362,16 @@ check_active_php_mysql ()
         case ${EISFAIR_SYSTEM} in
             eisfair-1)
                 # eisfair-1
-                if [ -f /etc/my.cnf ]
-                then
+                if [ -f /etc/my.cnf ] ; then
                     mysql_sock=`awk -F' = ' '/socket/ {print $2}' /etc/my.cnf | tail -1`
 
-                    if [ "${PHP5_EXT_MYSQL_SOCKET}" = "${mysql_sock}" ]
-                    then
-                        if [ "${1}" != "-quiet" ]
-                        then
+                    if [ "${PHP5_EXT_MYSQL_SOCKET}" = "${mysql_sock}" ] ; then
+                        if [ "${1}" != "-quiet" ] ; then
                             mecho "php-mysql-socket has correctly been set ..."
                         fi
                         mysql_socket=0
                     else
-                        if [ "${1}" != "-quiet" ]
-                        then
+                        if [ "${1}" != "-quiet" ] ; then
                             mecho --warn "php-mysql-socket hasn't been set correctly ..."
                             mecho --warn "set PHP5_EXT_MYSQL_SOCKET='${mysql_sock}'"
                         fi
@@ -431,16 +382,13 @@ check_active_php_mysql ()
                 ;;
             *)
                 # eisfair-2
-                if [ "${PHP5_EXT_MYSQL_SOCKET}" = "/var/run/mysql/mysql.sock" ]
-                then
-                    if [ "${1}" != "-quiet" ]
-                    then
+                if [ "${PHP5_EXT_MYSQL_SOCKET}" = "/var/run/mysql/mysql.sock" ] ; then
+                    if [ "${1}" != "-quiet" ] ; then
                         mecho "php-mysql-socket has correctly been set ..."
                     fi
                     mysql_socket=0
                 else
-                    if [ "${1}" != "-quiet" ]
-                    then
+                    if [ "${1}" != "-quiet" ] ; then
                         mecho --warn "php-mysql-socket hasn't been set correctly ..."
                         mecho --warn "set PHP5_EXT_MYSQL_SOCKET='/var/run/mysql/mysql.sock'"
                     fi
@@ -448,8 +396,7 @@ check_active_php_mysql ()
                 ;;
         esac
 
-        if [ ${mysql_php} -eq 0 -a ${mysql_socket} -eq 0 ]
-        then
+        if [ ${mysql_php} -eq 0 -a ${mysql_socket} -eq 0 ] ; then
             retval=0
         fi
     fi
@@ -457,34 +404,30 @@ check_active_php_mysql ()
     return ${retval}
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if php_pgsql has been enabled
 #
 # input:  $1 - '-quiet' - suppress screen output
 # return:  0 - extension enabled
 #          1 - extension disabled
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 check_active_php_pgsql ()
 {
     retval=1
 
-    if [ -f ${php5file} ]
-    then
+    if [ -f ${php5file} ] ; then
         # apache2_php5 installed
         . ${php5file}
 
-        if [ "${PHP5_EXT_PGSQL}" = "yes" ]
-        then
+        if [ "${PHP5_EXT_PGSQL}" = "yes" ] ; then
             # pgsql support activated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho "php-pgsql has been enabled ..."
             fi
             retval=0
         else
             # pgsql support deactivated
-            if [ "${1}" != "-quiet" ]
-            then
+            if [ "${1}" != "-quiet" ] ; then
                 mecho --warn "php-pgsql has been disabled ..."
                 mecho --warn "set PHP5_EXT_PGSQL='yes'"
             fi
@@ -512,27 +455,24 @@ check_port_availabilty ()
     return ${_cpa_ret}
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # get smtp port
 # input : $1 - smtp port string
 # return: smtp tcp-port number
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 get_smtp_port ()
 {
     smtp_str=$1
 
-    if [ "${smtp_str}" != "" ]
-    then
-        if is_numeric ${smtp_str}
-        then
+    if [ "${smtp_str}" != "" ] ; then
+        if is_numeric ${smtp_str} ; then
             # numeric value is ok
             smtp_nbr=${smtp_str}
         else
             # non-numeric value
             smtp_nbr=`cat ${services_file} | tr -s ' \011\/' ':' | grep -E "^${smtp_str}:[0-9]+:tcp" | cut -d: -f2`
 
-            if ! is_numeric ${smtp_nbr}
-            then
+            if ! is_numeric ${smtp_nbr} ; then
                 smtp_nbr='25'
             fi
         fi
@@ -541,78 +481,67 @@ get_smtp_port ()
     echo ${smtp_nbr}
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if mysql has been enabled
 # input:  $1 - '-quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 check_installed_mysql ()
 {
     retval=1
-    if [ "${ROUNDCUBE_DB_TYPE}" = "mysql" -a \( -f ${mysqlfile} -o -f ${mariadbfile} \) ]
-    then
+    if [ "${ROUNDCUBE_DB_TYPE}" = "mysql" -a \( -f ${mysqlfile} -o -f ${mariadbfile} \) ] ; then
         # mysql installed
-        if [ -f ${mysqlfile} ]
-        then
+        if [ -f ${mysqlfile} ] ; then
             . ${mysqlfile}
-        elif [ -f ${mariadbfile} ]
-        then
+        elif [ -f ${mariadbfile} ] ; then
             . ${mariadbfile}
         fi
 
         mysql_active=1
-        if [ "${START_MYSQL}" = 'yes' -o "${START_MARIADB}" = 'yes' ]
-        then
+        if [ "${START_MYSQL}" = 'yes' -o "${START_MARIADB}" = 'yes' ] ; then
             # mysql activated
-            if [ "$1" != "-quiet" ]
-            then
+            if [ "$1" != "-quiet" ] ; then
                 mecho "MySQL/MariaDB support has been enabled ..."
             fi
             mysql_active=0
         else
             # mysql deactivated
-            if [ "$1" != "-quiet" ]
-            then
+            if [ "$1" != "-quiet" ] ; then
                 mecho --warn "MySQL/MariaDB support has been disabled ..."
             fi
         fi
     fi
 
-    if [ ${mysql_active} -eq 0 ]
-    then
+    if [ ${mysql_active} -eq 0 ] ; then
         retval=0
     fi
 
     return ${retval}
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if postgres has been enabled
 # input:  $1 - '-quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 check_installed_postgres ()
 {
     retval=1
-    if [ "${ROUNDCUBE_DB_TYPE}" = "pgsql" -a -f ${postgresfile} ]
-    then
+    if [ "${ROUNDCUBE_DB_TYPE}" = "pgsql" -a -f ${postgresfile} ] ; then
         # postgres installed
         . ${postgresfile}
 
-        if [ "${START_POSTGRESQL}" = "yes" ]
-        then
+        if [ "${START_POSTGRESQL}" = "yes" ] ; then
             # postgres activated
-            if [ "$1" != "-quiet" ]
-            then
+            if [ "$1" != "-quiet" ] ; then
                 mecho "PostgreSQL support has been enabled ..."
             fi
             retval=0
         else
             # postgres deactivated
-            if [ "$1" != "-quiet" ]
-            then
+            if [ "$1" != "-quiet" ] ; then
                 mecho --warn "PostgreSQL support has been disabled ..."
             fi
         fi
@@ -621,63 +550,55 @@ check_installed_postgres ()
     return ${retval}
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # ask for sql root password
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 get_sql_root_password ()
 {
-    if [ "${root_pass}" = "" ]
-    then
+    if [ "${root_pass}" = "" ] ; then
         /var/install/bin/ask "Please enter the SQL root password" "" "*" > /tmp/ask.$$
         rc=$?
         root_pass=`cat /tmp/ask.$$ | sed 's/ *//g'`
         rm -f /tmp/ask.$$
 
-        if [ "${ROUNDCUBE_DB_TYPE}" = "pgsql" ]
-        then
+        if [ "${ROUNDCUBE_DB_TYPE}" = "pgsql" ] ; then
             # hostname:port:database:username:password
             echo "${DB_HOST}:\*:\*:postgres:${root_pass}" >> ${postgrespwfile}
         fi
 
-        if [ ${rc} = 255 ]
-        then
+        if [ ${rc} = 255 ] ; then
             rm ${tmpfile}
             exit 1
         fi
     fi
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # create SQL database and table
 # $1 - force or ''
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 create_sql_db_and_table ()
 {
     db_type="${ROUNDCUBE_DB_TYPE}"
     db_user="${ROUNDCUBE_DB_USER}"
     db_pass="${ROUNDCUBE_DB_PASS}"
 
-    if [ "$1" = "force" ]
-    then
+    if [ "$1" = "force" ] ; then
         force=1
     else
         force=0
     fi
 
-    if [ "${db_type}" = "" ]
-    then
+    if [ "${db_type}" = "" ] ; then
         db_type='sqlite'
     fi
 
-    if [ "${db_type}" != "sqlite" ]
-    then
-        if [ "${db_user}" = "" ]
-        then
+    if [ "${db_type}" != "sqlite" ] ; then
+        if [ "${db_user}" = "" ] ; then
             db_user='roundcube'
         fi
 
-        if [ "${db_pass}" = "" ]
-        then
+        if [ "${db_pass}" = "" ] ; then
             db_pass='pass'
             write_to_config_log -warn "The parameter ROUNDCUBE_DB_PASS hasn't been set therefore the default"
             write_to_config_log -warn -ff " password 'pass' will be used!"
@@ -686,12 +607,10 @@ create_sql_db_and_table ()
 
     doc_root=''
     rc_nbr=1
-    while [ ${rc_nbr} -le ${ROUNDCUBE_N} ]
-    do
+    while [ ${rc_nbr} -le ${ROUNDCUBE_N} ] ; do
         eval active='$ROUNDCUBE_'${rc_nbr}'_ACTIVE'
 
-        if [ "${active}" = "yes" ]
-        then
+        if [ "${active}" = "yes" ] ; then
             eval doc_root='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
             break
         fi
@@ -699,15 +618,13 @@ create_sql_db_and_table ()
         rc_nbr=`expr ${rc_nbr} + 1`
     done
 
-    if [ "${doc_root}" = "" ]
-    then
+    if [ "${doc_root}" = "" ] ; then
         # no active instance found, exit function
         write_to_config_log -error "Unable to initialize database because no active Roundcube instance found!"
         return 1
     fi
 
-    if [ ! -d "${doc_root}" ]
-    then
+    if [ ! -d "${doc_root}" ] ; then
         mkdir -p "${doc_root}"
     fi
 
@@ -731,8 +648,7 @@ create_sql_db_and_table ()
             ;;
     esac
 
-    if [ ! -f ${sql_init} ]
-    then
+    if [ ! -f ${sql_init} ] ; then
         # extract sql files from archive
         tar --wildcards -C "${doc_root}" -x "*.sql" -zf ${roundcube_path}/.install/rc_bin_prog.tgz
     fi
@@ -741,8 +657,7 @@ create_sql_db_and_table ()
         mysql|mysqli|mssql|sqlsrv)
             root_pass=''
             sql_cmd_file=/var/run/roundcube-cmd-$$
-            for step in 1 2 3 4
-            do
+            for step in 1 2 3 4 ; do
                 # delete sql command file
                 rm -f ${sql_cmd_file}
 
@@ -752,15 +667,13 @@ create_sql_db_and_table ()
                         mecho -n "${step_name} ..."
                         ${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"QUIT" 2>/dev/null
 
-                        if [ $? -ne 0 -o ${force} -eq 1 ]
-                        then
+                        if [ $? -ne 0 -o ${force} -eq 1 ] ; then
                             # sql user doesn't exist, go on...
                             echo
                             get_sql_root_password
 
                             {
-                                if [ ${force} -eq 1 ]
-                                then
+                                if [ ${force} -eq 1 ] ; then
                                     echo "DROP USER '${db_user}'@'${DB_HOST}';"
                                 fi
 
@@ -776,15 +689,13 @@ create_sql_db_and_table ()
                         mecho -n "${step_name} ..."
                         db_exists=`${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"SHOW DATABASES" | grep -c "${DB_NAME}$"`
 
-                        if [ ${db_exists} -eq 0 -o ${force} -eq 1 ]
-                        then
+                        if [ ${db_exists} -eq 0 -o ${force} -eq 1 ] ; then
                             # sql database doesn't exist or no access rights have been granted, go on...
                             echo
                             get_sql_root_password
 
                             {
-                                if [ ${force} -eq 1 ]
-                                then
+                                if [ ${force} -eq 1 ] ; then
                                     echo "DROP DATABASE ${DB_NAME};"
                                 fi
 
@@ -800,8 +711,7 @@ create_sql_db_and_table ()
                         mecho -n "${step_name} ..."
                         ${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"SHOW GRANTS FOR '${db_user}'@'${DB_HOST}'" | grep -q -E "GRANT ALL PRIVILEGES ON .*${DB_NAME}.*\.\* TO .*${db_user}.*@.*${DB_HOST}" 2> /dev/null
 
-                        if [ $? -ne 0 -o ${force} -eq 1 ]
-                        then
+                        if [ $? -ne 0 -o ${force} -eq 1 ] ; then
                             echo
                             get_sql_root_password
 
@@ -817,14 +727,12 @@ create_sql_db_and_table ()
                         mecho -n "${step_name} ..."
                         table_exists=`${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -D${DB_NAME} -e"SHOW TABLES" | grep -c "^users$"`
 
-                        if [ ${table_exists} -eq 0 -o ${force} -eq 1 ]
-                        then
+                        if [ ${table_exists} -eq 0 -o ${force} -eq 1 ] ; then
                             # sql table doesn't exist or no access rights have been granted, go on...
                             echo
                             get_sql_root_password
 
-                            if [ -f ${sql_init} ]
-                            then
+                            if [ -f ${sql_init} ] ; then
                                 {
                                 echo "USE ${DB_NAME};"
                                 cat ${sql_init}
@@ -836,12 +744,10 @@ create_sql_db_and_table ()
                         ;;
                 esac
 
-                if [ -f ${sql_cmd_file} ]
-                then
+                if [ -f ${sql_cmd_file} ] ; then
                     ${SQL_BIN} -h${DB_HOST} -uroot -p${root_pass} < ${sql_cmd_file} 2>${roundcube_path}/roundcube-sql-db-results.txt
 
-                    if [ $? -eq 0 ]
-                    then
+                    if [ $? -eq 0 ] ; then
                         # database created
                         rm -f ${sql_cmd_file}
                         rm -f ${roundcube_path}/roundcube-sql-db-results.txt
@@ -869,8 +775,7 @@ create_sql_db_and_table ()
             echo "${DB_HOST}:\*:\*:${db_user}:${db_pass}" > ${postgrespwfile}
             chmod 0600 ${postgrespwfile}
 
-            for step in 1 2 3 4
-            do
+            for step in 1 2 3 4 ; do
                 # delete sql command file
                 rm -f ${sql_cmd_file}
 
@@ -880,15 +785,13 @@ create_sql_db_and_table ()
                         mecho -n "${step_name} ..."
                         ${SQL_BIN} -h${DB_HOST} -U${db_user} -l >/dev/null 2>/dev/null
 
-                        if [ $? -ne 0 -o ${force} -eq 1 ]
-                        then
+                        if [ $? -ne 0 -o ${force} -eq 1 ] ; then
                             # sql user doesn't exist, go on...
                             echo
                           # get_sql_root_password
 
                             {
-                                if [ ${force} -eq 1 ]
-                                then
+                                if [ ${force} -eq 1 ] ; then
                                     echo "DROP USER '${db_user};"
                                 fi
 
@@ -903,15 +806,13 @@ create_sql_db_and_table ()
                         mecho -n "${step_name} ..."
                         db_exists=`${SQL_BIN} -h${DB_HOST} -U${db_user} -l | grep -c "^ ${DB_NAME} "`
 
-                        if [ ${db_exists} -eq 0 -o ${force} -eq 1 ]
-                        then
+                        if [ ${db_exists} -eq 0 -o ${force} -eq 1 ] ; then
                             # sql database doesn't exist or no access rights have been granted, go on...
                             echo
                           # get_sql_root_password
 
                             {
-                                if [ ${force} -eq 1 ]
-                                then
+                                if [ ${force} -eq 1 ] ; then
                                     echo "DROP DATABASE ${DB_NAME};"
                                 fi
 
@@ -926,8 +827,7 @@ create_sql_db_and_table ()
                         mecho -n "${step_name} ..."
                         ${SQL_BIN} -h${DB_HOST} -U${db_user} -l | grep " ${DB_NAME} " | cut -d'|' -f2 | sed -e 's/^ */:/' -e 's/ *$/:/' | grep -q ":${db_user}:"
 
-                        if [ $? -ne 0 -o ${force} -eq 1 ]
-                        then
+                        if [ $? -ne 0 -o ${force} -eq 1 ] ; then
                             echo
                           # get_sql_root_password
 
@@ -943,14 +843,12 @@ create_sql_db_and_table ()
                         mecho -n "${step_name} ..."
                         table_exists=`${SQL_BIN} --tuples-only -h${DB_HOST} -U${db_user} -d${DB_NAME} -c "SELECT * FROM pg_catalog.pg_tables WHERE tablename = 'users'" | grep -c " users "`
 
-                        if [ ${table_exists} -eq 0 -o ${force} -eq 1 ]
-                        then
+                        if [ ${table_exists} -eq 0 -o ${force} -eq 1 ] ; then
                             # sql table doesn't exist or no access rights have been granted, go on...
                             echo
                           # get_sql_root_password
 
-                            if [ -f ${sql_init} ]
-                            then
+                            if [ -f ${sql_init} ] ; then
                                 {
                                     printf "\c - %s\n" "${db_user}" # switch user to $db_user
                                     printf "\c %s;\n" "${DB_NAME}"  # switch to database $DB_NAME
@@ -963,12 +861,10 @@ create_sql_db_and_table ()
                         ;;
                 esac
 
-                if [ -f ${sql_cmd_file} ]
-                then
+                if [ -f ${sql_cmd_file} ] ; then
                     ${SQL_BIN} -h${DB_HOST} -Upostgres < ${sql_cmd_file} >>${roundcube_path}/roundcube-sql-db-results.txt 2>>${roundcube_path}/roundcube-sql-db-results.txt
 
-                    if [ $? -eq 0 ]
-                    then
+                    if [ $? -eq 0 ] ; then
                         # database created
                         rm -f ${sql_cmd_file}
                         rm -f ${roundcube_path}/roundcube-sql-db-results.txt
@@ -988,15 +884,13 @@ create_sql_db_and_table ()
 
         *|sqlite)
             # Warning: for SQLite use absolute path in DSN:
-            if [ ! -f ${roundcube_data_path}/roundcubemail.db ]
-            then
+            if [ ! -f ${roundcube_data_path}/roundcubemail.db ] ; then
                 # create initial database
                 step_name="initializing sql database"
                 mecho -n "${step_name} ..."
                 ${SQL_BIN} ${roundcube_data_path}/roundcubemail.db < ${sql_init} 2>${roundcube_path}/roundcube-sql-db-results.txt
 
-                if [ $? -eq 0 ]
-                then
+                if [ $? -eq 0 ] ; then
                     # database created
                     rm -f ${roundcube_path}/roundcube-sql-db-results.txt
 
@@ -1012,60 +906,51 @@ create_sql_db_and_table ()
     esac
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # remove SQL table and database
 # $1 - db_type - optional: sqlite, mysql, pgsql
 # $2 - db_user - optional: username for db access, required by mysql and pgsql
 # $3 - db_pass - optional: password for db accees, required by mysql
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 remove_sql_db_and_table()
 {
-    if [ "$1" != "" ]
-    then
+    if [ "$1" != "" ] ; then
         db_type="$1"
     else
         db_type="${ROUNDCUBE_DB_TYPE}"
     fi
 
-    if [ "$2" != "" ]
-    then
+    if [ "$2" != "" ] ; then
         db_user="$2"
     else
         db_user="${ROUNDCUBE_DB_USER}"
     fi
 
-    if [ "$3" != "" ]
-    then
+    if [ "$3" != "" ] ; then
         db_pass="$3"
     else
         db_pass="${ROUNDCUBE_DB_PASS}"
     fi
 
-    if [ "${db_type}" = "" ]
-    then
+    if [ "${db_type}" = "" ] ; then
         db_type='sqlite'
     fi
 
-    if [ "${db_type}" != "sqlite" ]
-    then
-        if [ "${db_user}" = "" ]
-        then
+    if [ "${db_type}" != "sqlite" ] ; then
+        if [ "${db_user}" = "" ] ; then
             db_user='roundcube'
         fi
 
-        if [ "${db_pass}" = "" ]
-        then
+        if [ "${db_pass}" = "" ] ; then
             db_pass='pass'
         fi
     fi
 
     rc_nbr=1
-    while [ ${rc_nbr} -le ${ROUNDCUBE_N} ]
-    do
+    while [ ${rc_nbr} -le ${ROUNDCUBE_N} ] ; do
         eval active='$ROUNDCUBE_'${rc_nbr}'_ACTIVE'
 
-        if [ "${active}" = "yes" ]
-        then
+        if [ "${active}" = "yes" ] ; then
             eval doc_root='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
             break
         fi
@@ -1078,8 +963,7 @@ remove_sql_db_and_table()
             # create sql command file
             root_pass=''
             sql_cmd_file=/var/run/roundcube-cmd-$$
-            for step in 1 2
-            do
+            for step in 1 2 ; do
                 # delete sql command file
                 rm -f ${sql_cmd_file}
 
@@ -1089,8 +973,7 @@ remove_sql_db_and_table()
                         mecho -n "${step_name} ..."
                         db_exists=`${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"SHOW DATABASES" | grep -c "${DB_NAME}$"`
 
-                        if [ ${db_exists} -ne 0 ]
-                        then
+                        if [ ${db_exists} -ne 0 ] ; then
                             echo
                             get_sql_root_password
 
@@ -1106,8 +989,7 @@ remove_sql_db_and_table()
                         mecho -n "${step_name} ..."
                         ${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"QUIT" > /dev/null
 
-                        if [ $? -eq 0 ]
-                        then
+                        if [ $? -eq 0 ] ; then
                             # database can be accessed, go on...
                             echo
                             get_sql_root_password
@@ -1121,12 +1003,10 @@ remove_sql_db_and_table()
                         ;;
                 esac
 
-                if [ -f ${sql_cmd_file} ]
-                then
+                if [ -f ${sql_cmd_file} ] ; then
                     ${SQL_BIN} -h${DB_HOST} -uroot -p${root_pass} < ${sql_cmd_file} 2>${roundcube_path}/roundcube-sql-db-results.txt
 
-                    if [ $? -eq 0 ]
-                    then
+                    if [ $? -eq 0 ] ; then
                         # database created
                         rm -f ${sql_cmd_file}
                         rm -f ${roundcube_path}/roundcube-sql-db-results.txt
@@ -1155,8 +1035,7 @@ remove_sql_db_and_table()
             echo "${DB_HOST}:\*:\*:${db_user}:${db_pass}" > ${postgrespwfile}
             chmod 0600 ${postgrespwfile}
 
-            for step in 1 2
-            do
+            for step in 1 2 ; do
                 # delete sql command file
                 rm -f ${sql_cmd_file}
 
@@ -1166,8 +1045,7 @@ remove_sql_db_and_table()
                         mecho -n "${step_name} ..."
                         db_exists=`${SQL_BIN} -h${DB_HOST} -U${db_user} -l | grep -c "^ ${DB_NAME} "`
 
-                        if [ ${db_exists} -ne 0 ]
-                        then
+                        if [ ${db_exists} -ne 0 ] ; then
                             echo
                           # get_sql_root_password
 
@@ -1183,8 +1061,7 @@ remove_sql_db_and_table()
                         mecho -n "${step_name} ..."
                         ${SQL_BIN} -h${DB_HOST} -U${db_user} -l >/dev/null 2>/dev/null
 
-                        if [ $? -eq 0 ]
-                        then
+                        if [ $? -eq 0 ] ; then
                             # database can be accessed, go on...
                             echo
                           # get_sql_root_password
@@ -1198,12 +1075,10 @@ remove_sql_db_and_table()
                         ;;
                 esac
 
-                if [ -f ${sql_cmd_file} ]
-                then
+                if [ -f ${sql_cmd_file} ] ; then
                     ${SQL_BIN} -h${DB_HOST} -Upostgres < ${sql_cmd_file} >>${roundcube_path}/roundcube-sql-db-results.txt 2>>${roundcube_path}/roundcube-sql-db-results.txt
 
-                    if [ $? -eq 0 ]
-                    then
+                    if [ $? -eq 0 ] ; then
                         # database created
                         rm -f ${sql_cmd_file}
                         rm -f ${roundcube_path}/roundcube-sql-db-results.txt
@@ -1223,8 +1098,7 @@ remove_sql_db_and_table()
 
         *|sqlite)
             # Warning: for SQLite use absolute path in DSN:
-            if [ ! -f ${roundcube_data_path}/roundcubemail.db ]
-            then
+            if [ ! -f ${roundcube_data_path}/roundcubemail.db ] ; then
                 # create initial database
                 step_name="removing sql database"
                 mecho -n "${step_name} ..."
@@ -1236,39 +1110,33 @@ remove_sql_db_and_table()
     esac
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check if unique document root
 # $1 - Roundcube instance
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 is_unique_docroot ()
 {
     rc_nbr=$1
     rcret=0
 
-    if [ ${rc_nbr} -gt 1 -a ${ROUNDCUBE_N} -ne 0 ]
-    then
+    if [ ${rc_nbr} -gt 1 -a ${ROUNDCUBE_N} -ne 0 ] ; then
         eval rc_active1='$ROUNDCUBE_'${rc_nbr}'_ACTIVE'
         eval rc_doc_root1='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
 
-        if [ "${rc_active1}" = "yes" ]
-        then
+        if [ "${rc_active1}" = "yes" ] ; then
             # active entry - compare it...
             mecho "- checking if document root is unique ..."
 
             idx=1
-            while [ ${idx} -le ${ROUNDCUBE_N} ]
-            do
-                if [ ${idx} -ne ${rc_nbr} ]
-                then
+            while [ ${idx} -le ${ROUNDCUBE_N} ] ; do
+                if [ ${idx} -ne ${rc_nbr} ] ; then
                     eval rc_active2='$ROUNDCUBE_'${idx}'_ACTIVE'
 
-                    if [ "${rc_active2}" = "yes" ]
-                    then
+                    if [ "${rc_active2}" = "yes" ] ; then
                         # active entry - compare it...
                         eval rc_doc_root2='$ROUNDCUBE_'${idx}'_DOCUMENT_ROOT'
 
-                        if [ "${rc_doc_root1}" = "${rc_doc_root2}" ]
-                        then
+                        if [ "${rc_doc_root1}" = "${rc_doc_root2}" ] ; then
                             mecho "! Error: duplicate document roots (${rc_nbr} = ${idx}) found, please check configuration!"
                             write_to_config_log -error "Duplicate document roots (${rc_nbr} = ${idx}) found!"
                             rcret=1
@@ -1285,39 +1153,34 @@ is_unique_docroot ()
     return ${rcret}
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # force update of roundcube database and configuration
 # $1 - Roundcube instance
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 force_roundcube_update ()
 {
     rc_nbr=1
     rc_prev_version=''
     rc_curr_version=''
-    while [ ${rc_nbr} -le ${ROUNDCUBE_N} ]
-    do
+    while [ ${rc_nbr} -le ${ROUNDCUBE_N} ] ; do
         eval rc_doc_root='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
 
-        if [ -f ${version_file} ]
-        then
+        if [ -f ${version_file} ] ; then
             # previoud version information found
             rc_prev_version=`cat ${version_file}`
         fi
 
         rc_curr_version=`grep "RCMAIL_VERSION" ${rc_doc_root}/program/include/iniset.php | sed "s/^.*RCMAIL_VERSION' *, *'\(.*\)'.*$/\1/"`
 
-        if [ "${rc_prev_version}" != "" -a "${rc_curr_version}" != "" ]
-        then
-            if [ "${rc_prev_version}" != "${rc_curr_version}" ]
-            then
+        if [ "${rc_prev_version}" != "" -a "${rc_curr_version}" != "" ] ; then
+            if [ "${rc_prev_version}" != "${rc_curr_version}" ] ; then
                 mecho "- updating configuration (${rc_doc_root}) ..."
 
                 # import database content once
                 /var/install/bin/roundcube-import-database --update
 
                 # update database schema and run configuration check
-                if [ -f ${rc_doc_root}/installer/rcube_install.php ]
-                then
+                if [ -f ${rc_doc_root}/installer/rcube_install.php ] ; then
                     # installer sub-directory exists, update database schema and run configuration check
                     chmod 544 ${rc_doc_root}/bin/update.sh
                     ${rc_doc_root}/bin/update.sh --version=${rc_prev_version}
@@ -1328,8 +1191,7 @@ force_roundcube_update ()
             fi
         fi
 
-        if [ -f ${rc_doc_root}/installer/rcube_install.php ]
-        then
+        if [ -f ${rc_doc_root}/installer/rcube_install.php ] ; then
             # remove installer sub-directory
             mecho "- removing installation files ..."
             rm -fr ${rc_doc_root}/installer
@@ -1338,17 +1200,16 @@ force_roundcube_update ()
         rc_nbr=`expr ${rc_nbr} + 1`
     done
 
-    if [ "${rc_curr_version}" != "" ]
-    then
+    if [ "${rc_curr_version}" != "" ] ; then
         # save version information
         echo "${rc_curr_version}" > ${version_file}
     fi
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # copy program files
 # $1 - Roundcube instance
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 copy_program_files ()
 {
     rc_nbr=$1
@@ -1356,11 +1217,9 @@ copy_program_files ()
 
     mecho "- copying program files (${rc_doc_root}) ..."
 
-    if [ ! -f "${rc_doc_root}/index.php" ]
-    then
+    if [ ! -f "${rc_doc_root}/index.php" ] ; then
         # files don't exist - copy ...
-        if [ ! -d "${rc_doc_root}" ]
-        then
+        if [ ! -d "${rc_doc_root}" ] ; then
             mkdir -p "${rc_doc_root}"
         fi
 
@@ -1370,11 +1229,9 @@ copy_program_files ()
         # extract additional Roundcube plugins
         tar xzf ${roundcube_path}/.install/rc_bin_plugins.tgz -C "${rc_doc_root}/plugins"
 
-        if [ ! -h ${rc_doc_root}/config -a -d ${rc_doc_root}/config ]
-        then
+        if [ ! -h ${rc_doc_root}/config -a -d ${rc_doc_root}/config ] ; then
             # not a symbolic link but a directory - move file to 'save' directory
-            if [ ! -d ${roundcube_path}/config ]
-            then
+            if [ ! -d ${roundcube_path}/config ] ; then
                 mkdir -p ${roundcube_path}/config
             fi
 
@@ -1384,22 +1241,18 @@ copy_program_files ()
                 mv ${FNAME} ${roundcube_path}/config/
             done
 
-            if [ -f ${rc_doc_root}/config/.htaccess ]
-            then
+            if [ -f ${rc_doc_root}/config/.htaccess ] ; then
                 rm -f ${rc_doc_root}/config/.htaccess
             fi
             rm -rf ${rc_doc_root}/config
         fi
 
         # check symbolic links
-        if [ ! -h ${rc_doc_root}/config ]
-        then
+        if [ ! -h ${rc_doc_root}/config ] ; then
             # a symbolic link doesn't exist
-            if [ ! -d ${rc_doc_root}/config ]
-            then
+            if [ ! -d ${rc_doc_root}/config ] ; then
                 # check if destination source directory exists
-                if [ ! -d ${roundcube_path}/config ]
-                then
+                if [ ! -d ${roundcube_path}/config ] ; then
                     mkdir -p ${roundcube_path}/config
                 fi
 
@@ -1420,11 +1273,11 @@ copy_program_files ()
     fi
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # generate roundcube configuration
 # $1 - Roundcube instance
 # $2 - 'stop' - generate stop configuration
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 create_roundcube_conf ()
 {
     rc_nbr=$1
@@ -1432,20 +1285,16 @@ create_roundcube_conf ()
     eval rc_doc_root='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
     eval rc_active='$ROUNDCUBE_'${rc_nbr}'_ACTIVE'
 
-    if [ "${START_ROUNDCUBE}" = "yes" -a "${rc_active}" = "yes" ]
-    then
-        if [ ${rc_nbr} -ne 0 -a ${rc_nbr} -le ${ROUNDCUBE_N} ]
-        then
+    if [ "${START_ROUNDCUBE}" = "yes" -a "${rc_active}" = "yes" ] ; then
+        if [ ${rc_nbr} -ne 0 -a ${rc_nbr} -le ${ROUNDCUBE_N} ] ; then
             roundcube_dbconf_file=${rc_doc_root}/config/db.inc.php
             roundcube_mainconf_file=${rc_doc_root}/config/main.inc.php
             roundcube_conf_file=${rc_doc_root}/config/config.inc.php
             roundcube_helpconf_file=${rc_doc_root}/plugins/help/config.inc.php
 
             # check directories
-            for DNAME in ${roundcube_data_path} ${roundcube_log_path}
-            do
-                if [ ! -f ${DNAME} ]
-                then
+            for DNAME in ${roundcube_data_path} ${roundcube_log_path} ; do
+                if [ ! -f ${DNAME} ] ; then
                     mkdir -p ${DNAME}
                 fi
 
@@ -1551,26 +1400,21 @@ create_roundcube_conf ()
                 # For examples see http://pear.php.net/manual/en/package.database.mdb2.intro-dsn.php
                 # NOTE: for SQLite use absolute path: sqlite:////full/path/to/sqlite.db?mode=0646
 
-                if [ "${rc_db_type}" = "" ]
-                then
+                if [ "${rc_db_type}" = "" ] ; then
                     rc_db_type='sqlite'
                 fi
 
-                if [ "${rc_db_type}" != "sqlite" ]
-                then
-                    if [ "${rc_db_user}" = "" ]
-                    then
+                if [ "${rc_db_type}" != "sqlite" ] ; then
+                    if [ "${rc_db_user}" = "" ] ; then
                         rc_db_user='roundcube'
                     fi
 
-                    if [ "${rc_db_pass}" = "" ]
-                    then
+                    if [ "${rc_db_pass}" = "" ] ; then
                         rc_db_pass='pass'
                     fi
                 fi
 
-                if [ "${rc_config_type}" = "stop" ]
-                then
+                if [ "${rc_config_type}" = "stop" ] ; then
                     # generate stop configuration so that no-one can login to Roundcube
                     echo "\$config['db_dsnw'] = '';"
                 else
@@ -1591,8 +1435,7 @@ create_roundcube_conf ()
                 echo '// ----------------------------------'
                 echo
                 echo '// system error reporting, sum of: 1 = log; 2 = report (not implemented yet), 4 = show, 8 = trace'
-                if [ "${ROUNDCUBE_DO_DEBUG}" = "yes" -a "${ROUNDCUBE_DEBUGLEVEL}" != "" ]
-                then
+                if [ "${ROUNDCUBE_DO_DEBUG}" = "yes" -a "${ROUNDCUBE_DEBUGLEVEL}" != "" ] ; then
                     echo "\$config['debug_level'] = ${ROUNDCUBE_DEBUGLEVEL};"
                     rc_debug_answer='true'
                 else
@@ -1641,15 +1484,13 @@ create_roundcube_conf ()
                 # %z - IMAP domain (IMAP hostname without the first part)
                 # For example %n = mail.domain.tld, %t = domain.tld
 
-                if [ "${rc_imap_hostport}" = "" ]
-                then
+                if [ "${rc_imap_hostport}" = "" ] ; then
                 rc_imap_hostport='localhost'
                 fi
 
                 echo "${rc_imap_hostport}" | grep -q ":"
 
-                if [ $? -eq 0 ]
-                then
+                if [ $? -eq 0 ] ; then
                     # split hostname and port
                     rc_imap_host="`echo ${rc_imap_hostport} | cut -d: -f1`"
                     rc_imap_port="`echo ${rc_imap_hostport} | cut -d: -f2`"
@@ -1659,8 +1500,7 @@ create_roundcube_conf ()
                     rc_imap_port='143'
                 fi
 
-                if [ "${rc_imap_port}" = "" ]
-                then
+                if [ "${rc_imap_port}" = "" ] ; then
                     # set default port
                     rc_imap_port="143"
                 fi
@@ -1692,8 +1532,7 @@ create_roundcube_conf ()
                     *)
                         # none local
                         # check port number
-                        if [ "${rc_imap_port}" != "143" -a "${rc_imap_port}" != "993" ]
-                        then
+                        if [ "${rc_imap_port}" != "143" -a "${rc_imap_port}" != "993" ] ; then
                             write_to_config_log -warn "Parameter ROUNDCUBE_${rc_nbr}_SERVER_IMAP_HOST='...:${rc_imap_port}' has been set to a non-standard port!"
                             write_to_config_log -warn "This might cause a communication problem!"
                         fi
@@ -1713,8 +1552,7 @@ create_roundcube_conf ()
                 case ${MAIL_INSTALLED} in
                     mail)
                         # mail
-                        if [ "${MAIL_USER_USE_MAILONLY_PASSWORDS}" = "yes" ]
-                        then
+                        if [ "${MAIL_USER_USE_MAILONLY_PASSWORDS}" = "yes" ] ; then
                             # different passwords are enabled
                             echo "\$config['imap_auth_type'] = 'CRAM-MD5';"
                         else
@@ -1785,16 +1623,14 @@ create_roundcube_conf ()
                 case ${MAIL_INSTALLED} in
                     mail)
                         # mail - show special folders, like #public and #shared
-                        if [ "${rc_force_nsfolder}" = "no" ]
-                        then
+                        if [ "${rc_force_nsfolder}" = "no" ] ; then
                             echo "\$config['imap_force_ns'] = false;"
                         else
                             echo "\$config['imap_force_ns'] = true;"
                         fi
                         ;;
                     vmail)
-                        if [ "${rc_force_nsfolder}" = "yes" ]
-                        then
+                        if [ "${rc_force_nsfolder}" = "yes" ] ; then
                             echo "\$config['imap_force_ns'] = true;"
                         else
                             echo "\$config['imap_force_ns'] = false;"
@@ -1803,18 +1639,15 @@ create_roundcube_conf ()
                     *)
                         # non-local
                         # UW IMAP server
-                        if [ "${rc_imap_type}" = "uw" ]
-                        then
-                            if [ "${rc_force_nsfolder}" = "no" ]
-                            then
+                        if [ "${rc_imap_type}" = "uw" ] ; then
+                            if [ "${rc_force_nsfolder}" = "no" ] ; then
                                 echo "\$config['imap_force_ns'] = false;"
                             else
                                 echo "\$config['imap_force_ns'] = true;"
                             fi
                         else
                             # other IMAP servers
-                            if [ "${rc_force_nsfolder}" = "yes" ]
-                            then
+                            if [ "${rc_force_nsfolder}" = "yes" ] ; then
                                 echo "\$config['imap_force_ns'] = true;"
                             else
                                 echo "\$config['imap_force_ns'] = false;"
@@ -1885,15 +1718,13 @@ create_roundcube_conf ()
                 # %z - IMAP domain (IMAP hostname without the first part)
                 # For example %n = mail.domain.tld, %d = domain.tld
 
-                if [ "${rc_smtp_hostport}" = "" ]
-                then
+                if [ "${rc_smtp_hostport}" = "" ] ; then
                     rc_smtp_hostport='localhost'
                 fi
 
                 echo "${rc_smtp_hostport}" | grep -q ":"
 
-                if [ $? -eq 0 ]
-                then
+                if [ $? -eq 0 ] ; then
                     # split hostname and port
                     rc_smtp_host="`echo ${rc_smtp_hostport} | cut -d: -f1`"
                     rc_smtp_port="`echo ${rc_smtp_hostport} | cut -d: -f2`"
@@ -1903,8 +1734,7 @@ create_roundcube_conf ()
                     rc_smtp_port='25'
                 fi
 
-                if [ "${rc_smtp_port}" = "" ]
-                then
+                if [ "${rc_smtp_port}" = "" ] ; then
                     # set default value
                     rc_smtp_port='25'
                 fi
@@ -1912,17 +1742,14 @@ create_roundcube_conf ()
                 case ${MAIL_INSTALLED} in
                     mail)
                         # mail - read port from mail package
-                        if [ "${SMTP_SERVER_TRANSPORT}" = "tls" ]
-                        then
+                        if [ "${SMTP_SERVER_TRANSPORT}" = "tls" ] ; then
                             # tls connection requested
-                            if [ "${SMTP_SERVER_SSMTP}" = "yes" ]
-                            then
+                            if [ "${SMTP_SERVER_SSMTP}" = "yes" ] ; then
                                 # ssmtp
                                 mail_smtp_protocol='SSMTP'
                                 mail_smtp_port=`get_smtp_port ${SMTP_SERVER_SSMTP_LISTEN_PORT}`
 
-                                if [ "${mail_smtp_port}" = "" ]
-                                then
+                                if [ "${mail_smtp_port}" = "" ] ; then
                                     mail_smtp_port='465'
                                 fi
                             else
@@ -1930,8 +1757,7 @@ create_roundcube_conf ()
                                 mail_smtp_protocol='SMTPS'
                                 mail_smtp_port=`get_smtp_port ${SMTP_LISTEN_PORT}`
 
-                                if [ "${mail_smtp_port}" = "" ]
-                                then
+                                if [ "${mail_smtp_port}" = "" ] ; then
                                     mail_smtp_port='587'
                                 fi
                             fi
@@ -1939,8 +1765,7 @@ create_roundcube_conf ()
                             # check port setting
                             echo ":${mail_smtp_port}:" | grep -q ":${rc_smtp_port}:"
 
-                            if [ $? -ne 0 ]
-                            then
+                            if [ $? -ne 0 ] ; then
                                 write_to_config_log -info "Make sure that the ${mail_smtp_protocol} listen port is properly set in both mail"
                                 write_to_config_log -info -ff "and roundcube package!"
                             fi
@@ -1948,24 +1773,21 @@ create_roundcube_conf ()
                             # normal connection
                             mail_smtp_port=`get_smtp_port ${SMTP_LISTEN_PORT}`
 
-                            if [ "${mail_smtp_port}" = "" ]
-                            then
+                            if [ "${mail_smtp_port}" = "" ] ; then
                                 mail_smtp_port='25:587'
                             fi
 
                             # check port setting
                             echo ":${mail_smtp_port}:" | grep -q ":${rc_smtp_port}:"
 
-                            if [ $? -ne 0 ]
-                            then
+                            if [ $? -ne 0 ] ; then
                                 write_to_config_log -info "Make sure that the SMTP listen port is properly set in both mail"
                                 write_to_config_log -info -ff "and roundcube package!"
                             fi
                         fi
 
                         # check hostname
-                      # if [ "${rc_smtp_host}" != "localhost" -a "${rc_smtp_host}" != "127.0.0.1" ]
-                      # then
+                      # if [ "${rc_smtp_host}" != "localhost" -a "${rc_smtp_host}" != "127.0.0.1" ] ; then
                       #     write_to_config_log -warn "Parameter ROUNDCUBE_${rc_nbr}_SERVER_SMTP_HOST='localhost' has not been set although a local mail"
                       #     write_to_config_log -warn -ff "package has been installed!"
                       # fi
@@ -1973,8 +1795,7 @@ create_roundcube_conf ()
                     vmail)
                         # vmail - use default port
                         # check hostname
-                      # if [ "${rc_smtp_host}" != "localhost" -a "${rc_smtp_host}" != "127.0.0.1" ]
-                      # then
+                      # if [ "${rc_smtp_host}" != "localhost" -a "${rc_smtp_host}" != "127.0.0.1" ] ; then
                       #     write_to_config_log -warn "Parameter ROUNDCUBE_${rc_nbr}_SERVER_SMTP_HOST='localhost' has not been set although a local vmail"
                       #     write_to_config_log -warn -ff "package has been installed!"
                       # fi
@@ -1982,15 +1803,13 @@ create_roundcube_conf ()
                     *)
                         # none local
                         # check port number
-                        if [ "${rc_smtp_port}" != "25" -a "${rc_smtp_port}" != "587" ]
-                        then
+                        if [ "${rc_smtp_port}" != "25" -a "${rc_smtp_port}" != "587" ] ; then
                             write_to_config_log -warn "Parameter ROUNDCUBE_${rc_nbr}_SERVER_SMTP_HOST='...:${rc_smtp_port}' has been set to a non-standard port!"
                             write_to_config_log -warn "This might cause a communication problem!"
                         fi
 
                         # check hostname
-                      # if [ "${rc_smtp_host}" = "localhost" -o "${rc_smtp_host}" = "127.0.0.1" ]
-                      # then
+                      # if [ "${rc_smtp_host}" = "localhost" -o "${rc_smtp_host}" = "127.0.0.1" ] ; then
                       #     write_to_config_log -error "Parameter ROUNDCUBE_${rc_nbr}_SERVER_SMTP_HOST='localhost' has been set although no local mail or"
                       #     write_to_config_log -error -ff "vmail package has been installed!"
                       # fi
@@ -2010,11 +1829,9 @@ create_roundcube_conf ()
                             ssl)
                                 rc_smtp_prefix='ssl://'
 
-                                if [ "${SMTP_SERVER_TRANSPORT}" = "ssl" -a "${SMTP_SERVER_SSMTP}" = "yes" ]
-                                then
+                                if [ "${SMTP_SERVER_TRANSPORT}" = "ssl" -a "${SMTP_SERVER_SSMTP}" = "yes" ] ; then
                                     # check if secure port has been set
-                                    if [ "${rc_smtp_port}" != "465" ]
-                                    then
+                                    if [ "${rc_smtp_port}" != "465" ] ; then
                                         write_to_config_log -warn "Parameters SMTP_${rc_nbr}_SERVER_TRANSPORT='ssl' and SMTP_SERVER_SSMTP='yes'"
                                         write_to_config_log -warn -ff "have been set therefore it's recommended to set parameter"
                                         write_to_config_log -warn -ff "ROUNDCUBE_${rc_nbr}_SERVER_SMTP_HOST='${rc_smtp_host}:465' too."
@@ -2024,11 +1841,9 @@ create_roundcube_conf ()
                             tls)
                                 rc_smtp_prefix='tls://'
 
-                                if [ "${SMTP_SERVER_TRANSPORT}" = "tls" ]
-                                then
+                                if [ "${SMTP_SERVER_TRANSPORT}" = "tls" ] ; then
                                     # check if secure port has been set
-                                    if [ "${rc_smtp_port}" != "25" -a "${rc_smtp_port}" != "587" ]
-                                    then
+                                    if [ "${rc_smtp_port}" != "25" -a "${rc_smtp_port}" != "587" ] ; then
                                         write_to_config_log -warn "Parameters SMTP_SERVER_TRANSPORT='tls' has been set therefore"
                                         write_to_config_log -warn -ff "it's recommended to set parameter ROUNDCUBE_SERVER_SMTP_HOST='${rc_smtp_host}:25'"
                                         write_to_config_log -warn -ff "or ROUNDCUBE_SERVER_SMTP_HOST='${rc_smtp_host}:587' too."
@@ -2091,8 +1906,7 @@ create_roundcube_conf ()
                                 echo "\$config['smtp_user'] = '%u';"
                                 echo "\$config['smtp_pass'] = '%p';"
 
-                                if [ "${MAIL_USER_USE_MAILONLY_PASSWORDS}" = "yes" ]
-                                then
+                                if [ "${MAIL_USER_USE_MAILONLY_PASSWORDS}" = "yes" ] ; then
                                     # cram-md5 is only advertised if this parameter has
                                     # been set: MAIL_USER_USE_MAILONLY_PASSWORDS="yes"
                                     echo "\$config['smtp_auth_type'] = 'CRAM-MD5';"
@@ -2106,8 +1920,7 @@ create_roundcube_conf ()
                                 echo "\$config['smtp_user'] = '${SMTP_AUTH_USER}';"
                                 echo "\$config['smtp_pass'] = '${SMTP_AUTH_PASS}';"
 
-                                if [ "${MAIL_USER_USE_MAILONLY_PASSWORDS}" = "yes" ]
-                                then
+                                if [ "${MAIL_USER_USE_MAILONLY_PASSWORDS}" = "yes" ] ; then
                                     # cram-md5 is only advertised if this parameter has
                                     # been set: MAIL_USER_USE_MAILONLY_PASSWORDS="yes"
                                     echo "\$config['smtp_auth_type'] = 'CRAM-MD5';"
@@ -2146,8 +1959,7 @@ create_roundcube_conf ()
                         ;;
                 esac
 
-                if [ "${rc_smtp_transport}" = "ssl" -o "${rc_smtp_transport}" = "tls" ]
-                then
+                if [ "${rc_smtp_transport}" = "ssl" -o "${rc_smtp_transport}" = "tls" ] ; then
                     echo '// SMTP connection timeout, in seconds.'
                     # Default: 0 (use default_socket_timeout)'
                     # Note: There's a known issue where using ssl connection with
@@ -2185,8 +1997,7 @@ create_roundcube_conf ()
                 # '*' for default logo
                 # for example array("*" => "/images/roundcube_logo.png",
                 #                   "messageprint" => "/images/roundcube_logo_print.png")
-                if [ "${rc_orga_logo}" != "" ]
-                then
+                if [ "${rc_orga_logo}" != "" ] ; then
                     echo "\$config['skin_logo'] = '${rc_orga_logo}';"
                 else
                     echo "\$config['skin_logo'] = NULL;"
@@ -2252,8 +2063,7 @@ create_roundcube_conf ()
 
                 echo
                 echo '// Check client IP in session athorization'
-                if [ "${MAIL_INSTALLED}" = "none" -o ${OWNCLOUD_INSTALLED} -eq 0 ]
-                then
+                if [ "${MAIL_INSTALLED}" = "none" -o ${OWNCLOUD_INSTALLED} -eq 0 ] ; then
                     # this needs to be set if RoundCube is not running on the same server as the mail or vmail package
                     # or if is started from ownCloud
                     echo "\$config['ip_check'] = false;"
@@ -2263,8 +2073,7 @@ create_roundcube_conf ()
 
                 echo
                 echo '// Check referer of incoming requests'
-                if [ "${rc_server_domain_check}" = "yes" ]
-                then
+                if [ "${rc_server_domain_check}" = "yes" ] ; then
                     echo "\$config['referer_check'] = true;"
                 else
                     echo "\$config['referer_check'] = false;"
@@ -2290,8 +2099,7 @@ create_roundcube_conf ()
                 echo "\$config['mail_domain'] = '${rc_server_domain}';"
                 echo
                 echo '// Use this name to compose page titles'
-                if [ "${rc_orga_name}" != "" ]
-                then
+                if [ "${rc_orga_name}" != "" ] ; then
                     echo "\$config['product_name'] = '${rc_orga_name}';"
                 else
                     echo "\$config['product_name'] = 'Roundcube Webmail';"
@@ -2304,8 +2112,7 @@ create_roundcube_conf ()
                 # 2 - one identity with possibility to edit all params
                 # 3 - one identity with possibility to edit all params but not email address
                 # 4 - one identity with possibility to edit only signature
-                if [ "${rc_general_allow_ident}" = "yes" ]
-                then
+                if [ "${rc_general_allow_ident}" = "yes" ] ; then
                     echo "\$config['identities_level'] = 0;"
                 else
                     echo "\$config['identities_level'] = 3;"
@@ -2324,13 +2131,10 @@ create_roundcube_conf ()
                 rc_plugins_path="${rc_doc_root}/plugins"
                 rc_plugins_list=''
 
-                if [ "${rc_plugins_use_all}" = "yes" ]
-                then
+                if [ "${rc_plugins_use_all}" = "yes" ] ; then
                     # activate all existing plugins
-                    for rc_plugins_dirname in `find ${rc_plugins_path} -maxdepth 1 | sed "s#^${rc_plugins_path}/##g" | sort`
-                    do
-                        if [ "${rc_plugins_list}" = "" ]
-                        then
+                    for rc_plugins_dirname in `find ${rc_plugins_path} -maxdepth 1 | sed "s#^${rc_plugins_path}/##g" | sort` ; do
+                        if [ "${rc_plugins_list}" = "" ] ; then
                             rc_plugins_list="'${rc_plugins_dirname}'"
                         else
                             rc_plugins_list="${rc_plugins_list},'${rc_plugins_dirname}'"
@@ -2339,14 +2143,11 @@ create_roundcube_conf ()
                 else
                     # activate an individual plugin list
                     idx=1
-                    while [ ${idx} -le ${rc_plugins_n} ]
-                    do
+                    while [ ${idx} -le ${rc_plugins_n} ] ; do
                         eval rc_plugins_dirname='$ROUNDCUBE_'${rc_nbr}'_PLUGINS_'${idx}'_DIRNAME'
 
-                        if [ -d ${rc_plugins_path}/${rc_plugins_dirname} ]
-                        then
-                            if [ "${rc_plugins_list}" = "" ]
-                            then
+                        if [ -d ${rc_plugins_path}/${rc_plugins_dirname} ] ; then
+                            if [ "${rc_plugins_list}" = "" ] ; then
                                 rc_plugins_list="'${rc_plugins_dirname}'"
                             else
                                 rc_plugins_list="${rc_plugins_list},'${rc_plugins_dirname}'"
@@ -2425,8 +2226,7 @@ create_roundcube_conf ()
                 echo '// Store draft message is this mailbox'
                 # leave blank if draft messages should not be stored
                 # NOTE: Use folder names with namespace prefix (INBOX. on Courier-IMAP)
-                if [ "${rc_mv_msgs_to_draft}" = "yes" ]
-                then
+                if [ "${rc_mv_msgs_to_draft}" = "yes" ] ; then
                     echo "\$config['drafts_mbox'] = '${rc_folder_prefix}Drafts';"
                 else
                     echo "\$config['drafts_mbox'] = NULL;"
@@ -2442,8 +2242,7 @@ create_roundcube_conf ()
                 echo '// Store sent message is this mailbox'
                 # leave blank if sent messages should not be stored
                 # NOTE: Use folder names with namespace prefix (INBOX. on Courier-IMAP)
-                if [ "${rc_mv_msgs_to_send}" = "yes" ]
-                then
+                if [ "${rc_mv_msgs_to_send}" = "yes" ] ; then
                     echo "\$config['sent_mbox'] = '${rc_folder_prefix}Sent';"
                 else
                     echo "\$config['sent_mbox'] = NULL;"
@@ -2455,8 +2254,7 @@ create_roundcube_conf ()
                 # leave blank if they should be deleted directly
                 # NOTE: Use folder names with namespace prefix (INBOX. on Courier-IMAP)
 
-                if [ "${rc_mv_msgs_to_trash}" = "yes" ]
-                then
+                if [ "${rc_mv_msgs_to_trash}" = "yes" ] ; then
                     echo "\$config['trash_mbox'] = '${rc_folder_prefix}Trash';"
                 else
                     echo "\$config['trash_mbox'] = NULL;"
@@ -2479,8 +2277,7 @@ create_roundcube_conf ()
                         ;;
                     *)
                         # non-local
-                        if [ "${rc_imap_type}" = "uw" ]
-                        then
+                        if [ "${rc_imap_type}" = "uw" ] ; then
                             echo "\$config['default_folders'] = array('INBOX', 'Drafts', 'Sent', 'Trash', '#public', '#shared');"
                         else
                             echo "\$config['default_folders'] = array('INBOX', 'Drafts', 'Sent', 'Trash');"
@@ -2526,14 +2323,11 @@ create_roundcube_conf ()
 
                 rc_globldap_list=''
                 idx=1
-                while [ ${idx} -le ${rc_globldap_n} ]
-                do
+                while [ ${idx} -le ${rc_globldap_n} ] ; do
                     eval rc_globldap_active='$ROUNDCUBE_'${rc_nbr}'_GLOBADDR_LDAP_'${idx}'_ACTIVE'
 
-                    if [ "${rc_globldap_active}" = "yes" ]
-                    then
-                        if [ "${rc_globldap_list}" = "" ]
-                        then
+                    if [ "${rc_globldap_active}" = "yes" ] ; then
+                        if [ "${rc_globldap_list}" = "" ] ; then
                             rc_globldap_list="'ldap_${idx}'"
                         else
                             rc_globldap_list="${rc_globldap_list},'ldap_${idx}'"
@@ -2562,8 +2356,7 @@ create_roundcube_conf ()
                         # check if port number has been given
                         echo "${tmp_globldap_hostport}" | grep -q ":"
 
-                        if [ $? -eq 0 ]
-                        then
+                        if [ $? -eq 0 ] ; then
                             # split hostname and port
                             rc_globldap_port=`echo "${tmp_globldap_hostport}" | cut -d: -f2`
                             rc_globldap_host=`echo "${rc_globldap_hostport}" | sed "s#:${rc_globldap_port}##"`
@@ -2574,8 +2367,7 @@ create_roundcube_conf ()
                             # set default ldap port
                             echo "${rc_globldap_hostport}" | grep -q "^ldaps:"
 
-                            if [ $? -eq 0 ]
-                            then
+                            if [ $? -eq 0 ] ; then
                                 # ldaps
                                 rc_globldap_port='636'
                             else
@@ -2590,8 +2382,7 @@ create_roundcube_conf ()
                         echo "      ),"
                         echo "    'port'            => ${rc_globldap_port},"
 
-                        if [ "${rc_globldap_force_tls}" = "yes" ]
-                        then
+                        if [ "${rc_globldap_force_tls}" = "yes" ] ; then
                             echo "    'use_tls'         => true,"
                         else
                             echo "    'use_tls'         => false,"
@@ -2600,16 +2391,14 @@ create_roundcube_conf ()
                         # using LDAPv3
                         echo "    'ldap_version'    => 3,"
 
-                        if [ "${rc_globldap_charset}" != "" ]
-                        then
+                        if [ "${rc_globldap_charset}" != "" ] ; then
                             echo "    'charset'         => '${rc_globldap_charset}',"   # optional
                         else
                             # default value
                             echo "    'charset'         => '${rc_general_def_charset}',"
                         fi
 
-                        if [ "${rc_globldap_maxrows}" != "" ]
-                        then
+                        if [ "${rc_globldap_maxrows}" != "" ] ; then
                             echo "    'maxrows'         => ${rc_globldap_maxrows},"     # optional
                       # else
                       #     # default value
@@ -2620,14 +2409,12 @@ create_roundcube_conf ()
                         echo "    'user_specific'   => false,"
                         echo "    'base_dn'         => '${rc_globldap_basedn}',"
 
-                        if [ "${rc_globldap_auth}" = "yes" ]
-                        then
+                        if [ "${rc_globldap_auth}" = "yes" ] ; then
                             echo "    'bind_dn'         => '${rc_globldap_binddn}',"
                             echo "    'bind_pass'       => '${rc_globldap_bindpass}',"
                         fi
 
-                        if [ "${rc_globldap_writeable}" = "yes" ]
-                        then
+                        if [ "${rc_globldap_writeable}" = "yes" ] ; then
                             echo "    'writable'        => true,"
                         else
                             echo "    'writable'        => false,"
@@ -2729,8 +2516,7 @@ create_roundcube_conf ()
                 echo
 
                 echo '// Compact INBOX on logout'
-                if [ "${rc_auto_expunge}" = "yes" ]
-                then
+                if [ "${rc_auto_expunge}" = "yes" ] ; then
                     echo "\$config['logout_expunge'] = true;"
                 else
                     echo "\$config['logout_expunge'] = false;"
@@ -2754,8 +2540,7 @@ create_roundcube_conf ()
                 echo
 
                 echo '// Return receipt checkbox default state'
-                if [ "${rc_general_allow_receipt}" = "yes" ]
-                then
+                if [ "${rc_general_allow_receipt}" = "yes" ] ; then
                     echo "\$config['mdn_default'] = 1;"
                 else
                     echo "\$config['mdn_default'] = 0;"
@@ -2831,18 +2616,16 @@ create_roundcube_conf ()
     fi
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # set access rights
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 set_roundcube_access_rights ()
 {
     mecho "checking directories ..."
 
     # check directories
-    for DNAME in ${roundcube_data_path} ${roundcube_log_path}
-    do
-        if [ ! -f ${DNAME} ]
-        then
+    for DNAME in ${roundcube_data_path} ${roundcube_log_path} ; do
+        if [ ! -f ${DNAME} ] ; then
             mkdir -p ${DNAME}
         fi
     done
@@ -2850,8 +2633,7 @@ set_roundcube_access_rights ()
     mecho "setting access rights ..."
 
     idx=1
-    while [ ${idx} -le ${ROUNDCUBE_N} ]
-    do
+    while [ ${idx} -le ${ROUNDCUBE_N} ] ; do
         eval rc_doc_root='$ROUNDCUBE_'${idx}'_DOCUMENT_ROOT'
 
 #       roundcube_dbconf_file=${rc_doc_root}/config/db.inc.php
@@ -2860,8 +2642,7 @@ set_roundcube_access_rights ()
         roundcube_helpconf_file=${rc_doc_root}/plugins/help/config.inc.php
         roundcube_sqlite_file=${roundcube_data_path}/roundcubemail.db
 
-        if [ -d ${rc_doc_root} ]
-        then
+        if [ -d ${rc_doc_root} ] ; then
             chown -R ${roundcube_apache_user}  ${rc_doc_root}
             chgrp -R ${roundcube_apache_group} ${rc_doc_root}
             chmod -R 0444 ${rc_doc_root}
@@ -2872,8 +2653,7 @@ set_roundcube_access_rights ()
         fi
 
         # configuration file
-        if [ -f ${roundcube_conf_file} ]
-        then
+        if [ -f ${roundcube_conf_file} ] ; then
             chown ${roundcube_apache_user}  ${roundcube_conf_file}
             chgrp ${roundcube_apache_group} ${roundcube_conf_file}
             chmod 0440 ${roundcube_conf_file}
@@ -2883,8 +2663,7 @@ set_roundcube_access_rights ()
             chmod 0440 ${roundcube_helpconf_file}
         fi
 
-        if [ -f ${roundcube_sqlite_file} ]
-        then
+        if [ -f ${roundcube_sqlite_file} ] ; then
             chown ${roundcube_apache_user}  ${roundcube_sqlite_file}
             chgrp ${roundcube_apache_group} ${roundcube_sqlite_file}
             chmod 0646 ${roundcube_sqlite_file}
@@ -2894,36 +2673,32 @@ set_roundcube_access_rights ()
     done
 
     # data and log directory
-    if [ -d ${roundcube_path} ]
-    then
+    if [ -d ${roundcube_path} ] ; then
         chown -f -R ${roundcube_apache_user}  ${roundcube_path}
         chgrp -f -R ${roundcube_apache_group} ${roundcube_path}
         chmod -f 0755 ${roundcube_path}
     fi
 
-    if [ -d ${roundcube_data_path} ]
-    then
+    if [ -d ${roundcube_data_path} ] ; then
         chmod -f 0750 ${roundcube_data_path}
     fi
 
-    if [ -d ${roundcube_log_path} ]
-    then
+    if [ -d ${roundcube_log_path} ] ; then
         chmod -f 0750 ${roundcube_log_path}
 
         chmod 0640 ${roundcube_log_path}/*
     fi
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # check IMAP server
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 check_imap_server ()
 {
     case ${MAIL_INSTALLED} in
         mail)
             # mail package
-            if [ "${START_IMAP}" = "yes" ]
-            then
+            if [ "${START_IMAP}" = "yes" ] ; then
                 mecho "local imap server is active - ok."
             else
                 mecho --warn "local imap server is inactive."
@@ -2936,8 +2711,7 @@ check_imap_server ()
             case ${EISFAIR_SYSTEM} in
                 eisfair-1)
                     # eisfair-1
-                    if [ "${START_COURIER}" = "yes" ]
-                    then
+                    if [ "${START_COURIER}" = "yes" ] ; then
                         mecho "local imap server is active - ok."
                     else
                         mecho --warn "imap server is inactive!"
@@ -2947,8 +2721,7 @@ check_imap_server ()
                     ;;
                 *)
                     # eisfair-2
-                    if [ "${START_POP3IMAP}" = "yes" ]
-                    then
+                    if [ "${START_POP3IMAP}" = "yes" ] ; then
                         mecho "local imap server is active - ok."
                     else
                         mecho --warn "local imap server is inactive!"
@@ -2966,26 +2739,23 @@ check_imap_server ()
     esac
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # add cron job
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 add_cron_job ()
 {
     mecho "creating cron job ..."
 
     # check for cron directory
-    if [ ! -d ${crontab_path} ]
-    then
+    if [ ! -d ${crontab_path} ] ; then
         mkdir -p ${crontab_path}
     fi
 
     rc_nbr=1
-    while [ ${rc_nbr} -le ${ROUNDCUBE_N} ]
-    do
+    while [ ${rc_nbr} -le ${ROUNDCUBE_N} ] ; do
         eval active='$ROUNDCUBE_'${rc_nbr}'_ACTIVE'
 
-        if [ "${active}" = "yes" ]
-        then
+        if [ "${active}" = "yes" ] ; then
             eval doc_root='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
             break
         fi
@@ -3017,16 +2787,15 @@ add_cron_job ()
     /var/install/config.d/cron > /dev/null 2> /dev/null
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # delete cron job
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 delete_cron_job ()
 {
     mecho "deleting cron job ..."
 
     # check for crontab file
-    if [ -f ${crontab_file} ]
-    then
+    if [ -f ${crontab_file} ] ; then
         # delete existing file
         rm -f ${crontab_file}
 
@@ -3035,69 +2804,61 @@ delete_cron_job ()
     fi
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # set default charset to UTF-8
 # $1 - Roundcube instance
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 set_default_charset ()
 {
     rc_nbr=$1
     eval rc_doc_root='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
 
-    if [ -f ${rc_doc_root}/.htaccess ]
-    then
+    if [ -f ${rc_doc_root}/.htaccess ] ; then
         cp ${rc_doc_root}/.htaccess ${rc_doc_root}/.htaccess.tmp
         sed 's/^# AddDefaultCharset[ \t]*UTF-8/AddDefaultCharset UTF-8/' ${rc_doc_root}/.htaccess.tmp > ${rc_doc_root}/.htaccess
         rm -f ${rc_doc_root}/.htaccess.tmp
     fi
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # show which Roundcube version is currently installed
 # $1 - Roundcube instance
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 show_installed_version ()
 {
     rc_nbr=$1
     eval rc_doc_root='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
 
-    if [ -f ${rc_doc_root}/program/include/iniset.php ]
-    then
+    if [ -f ${rc_doc_root}/program/include/iniset.php ] ; then
         rc_version=`grep "RCMAIL_VERSION" ${rc_doc_root}/program/include/iniset.php | sed "s/^.*RCMAIL_VERSION' *, *'\(.*\)'.*$/\1/"`
         echo "- Roundcube version: ${rc_version}"
     fi
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # remove installed program files
 # $1 - Roundcube document root
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 remove_program_files ()
 {
     rc_doc_root="$1"
 
-    if [ -d "${rc_doc_root}" ]
-    then
+    if [ -d "${rc_doc_root}" ] ; then
         mecho "- removing program files (${rc_doc_root}) ..."
 
-        if [ -f "${docroot_filelist}" ]
-        then
-            while read line
-            do
+        if [ -f "${docroot_filelist}" ] ; then
+            while read line ; do
                 # check for comment
                 echo "${line}" | grep -q "^#"
 
-                if [ $? -ne 0 ]
-                then
+                if [ $? -ne 0 ] ; then
                     # no comment - go on...
                     FDNAME="${testroot}${rc_doc_root}/${line}"
 
-                    if [ -d "${FDNAME}" ]
-                    then
+                    if [ -d "${FDNAME}" ] ; then
                         # remove directory
                         rmdir --ignore-fail-on-non-empty "${FDNAME}"
-                    elif [ -f "${FDNAME}" ]
-                    then
+                    elif [ -f "${FDNAME}" ] ; then
                         # remove file
                         rm -f "${FDNAME}"
                     fi
@@ -3112,9 +2873,9 @@ remove_program_files ()
     fi
 }
 
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # purge document roots
-#----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 purge_document_roots ()
 {
     mecho "purging document root directories ..."
@@ -3122,13 +2883,11 @@ purge_document_roots ()
     # backup doccument root deletion list
     /var/install/bin/backup-file --quiet "${docroot_dellist}" backup
 
-    if [ -f "${docroot_addlist}" ]
-    then
+    if [ -f "${docroot_addlist}" ] ; then
         # document root list exists
         /var/install/bin/backup-file --quiet "${docroot_addlist}" backup
 
-        if [ -f "${docroot_dellist}" ]
-        then
+        if [ -f "${docroot_dellist}" ] ; then
             # append current document root list to deletion list
             cat "${docroot_dellist}" "${docroot_addlist}" | sort > "${docroot_tmplist}"
             mv  "${docroot_tmplist}" "${docroot_dellist}"
@@ -3141,22 +2900,18 @@ purge_document_roots ()
         rm -f "${docroot_addlist}"
     fi
 
-    if [ ${ROUNDCUBE_N} -ne 0 ]
-    then
+    if [ ${ROUNDCUBE_N} -ne 0 ] ; then
         idx=1
-        while [ ${idx} -le ${ROUNDCUBE_N} ]
-        do
+        while [ ${idx} -le ${ROUNDCUBE_N} ] ; do
             eval rc_doc_root='$ROUNDCUBE_'${idx}'_DOCUMENT_ROOT'
 
             # add entry to document root list
             echo "${rc_doc_root}:" >> "${docroot_addlist}"
 
-            if [ -f "${docroot_dellist}" ]
-            then
+            if [ -f "${docroot_dellist}" ] ; then
                 grep -q "^${rc_doc_root}:" "${docroot_dellist}"
 
-                if [ $? -eq 0 ]
-                then
+                if [ $? -eq 0 ] ; then
                     # remove document root from deletion list
                     grep -v "^${rc_doc_root}:" "${docroot_dellist}" > "${docroot_tmplist}"
                     mv  "${docroot_tmplist}" "${docroot_dellist}"
@@ -3167,35 +2922,28 @@ purge_document_roots ()
         done
     fi
 
-    if [ -f "${docroot_dellist}" ]
-    then
-        if [ -f "${docroot_tmplist}" ]
-        then
+    if [ -f "${docroot_dellist}" ] ; then
+        if [ -f "${docroot_tmplist}" ] ; then
             rm -f "${docroot_tmplist}"
         fi
 
         cut -d: -f1 "${docroot_dellist}" |\
-        while read line
-        do
+        while read line ; do
             echo "${line}" | grep -q "^#"
 
-            if [ $? -ne 0 ]
-            then
-                if [ -d "${line}" ]
-                then
+            if [ $? -ne 0 ] ; then
+                if [ -d "${line}" ] ; then
                     # directory exists
                     /var/install/bin/ask "Directory '${line}' is not used anymore, delete it" 'n' > /tmp/ask.$$ <$tty
                     rc=$?
                     yesno=`cat /tmp/ask.$$|tr 'A-Z' 'a-z'`
                     rm -f /tmp/ask.$$
-                    if [ $rc = 255 ]
-                    then
+                    if [ $rc = 255 ] ; then
                         rm $tmpfile
                         exit 1
                     fi
 
-                    if [ "${yesno}" = "yes" ]
-                    then
+                    if [ "${yesno}" = "yes" ] ; then
                         # delete Roundcube program directory
                         remove_program_files "${line}"
                     else
@@ -3206,22 +2954,19 @@ purge_document_roots ()
             fi
         done
 
-        if [ -f "${docroot_tmplist}" -a -s "${docroot_tmplist}" ]
-        then
+        if [ -f "${docroot_tmplist}" -a -s "${docroot_tmplist}" ] ; then
             # tmp file exists and contains data, replace deletion list
             mv "${docroot_tmplist}" "${docroot_dellist}"
         else
             # remove deletion list
-            if [ -f "${docroot_dellist}" ]
-            then
+            if [ -f "${docroot_dellist}" ] ; then
                 rm -f "${docroot_dellist}"
             fi
         fi
     fi
 
     # delete temp file
-    if [ -f "${docroot_tmplist}" ]
-    then
+    if [ -f "${docroot_tmplist}" ] ; then
         rm -f "${docroot_tmplist}"
     fi
 }
@@ -3243,26 +2988,21 @@ case "$1" in
     *)
         mecho "version: ${roundcube_version}"
 
-        if [ "${START_ROUNDCUBE}" = "yes" ]
-        then
+        if [ "${START_ROUNDCUBE}" = "yes" ] ; then
             # generate all configuration files
-            if check_installed_mail
-            then
+            if check_installed_mail ; then
                 # mail
                 MAIL_INSTALLED='mail'
 
-                if [ -f ${mailfile} ]
-                then
+                if [ -f ${mailfile} ] ; then
                     # mail package found
                     . ${mailfile}
                 fi
-            elif check_installed_vmail
-            then
+            elif check_installed_vmail ; then
                 # vmail
                 MAIL_INSTALLED='vmail'
 
-                if [ -f ${vmailfile} ]
-                then
+                if [ -f ${vmailfile} ] ; then
                     # vmail package found
                     . ${vmailfile}
                 fi
@@ -3314,8 +3054,7 @@ case "$1" in
                     ;;
             esac
 
-            if [ ${config_error} -eq 1 ]
-            then
+            if [ ${config_error} -eq 1 ] ; then
                 mecho --error "pre-requisites not met, fix it and re-run configuration!"
                 exit 1
             fi
@@ -3326,17 +3065,14 @@ case "$1" in
             create_sql_db_and_table ""
 
             rcidx=1
-            while [ ${rcidx} -le ${ROUNDCUBE_N} ]
-            do
+            while [ ${rcidx} -le ${ROUNDCUBE_N} ] ; do
                 mecho "processing Roundcube instance (${rcidx}) ..."
 
                 eval active='$ROUNDCUBE_'${rcidx}'_ACTIVE'
 
-                if is_unique_docroot ${rcidx}
-                then
+                if is_unique_docroot ${rcidx} ; then
                     # document root is unique
-                    if [ "${active}" = "yes" ]
-                    then
+                    if [ "${active}" = "yes" ] ; then
                         copy_program_files ${rcidx}
                         show_installed_version ${rcidx}
                         set_default_charset ${rcidx}
@@ -3364,8 +3100,7 @@ case "$1" in
             display_config_log
         else
             rcidx=1
-            while [ ${rcidx} -le ${ROUNDCUBE_N} ]
-            do
+            while [ ${rcidx} -le ${ROUNDCUBE_N} ] ; do
                 create_roundcube_conf ${rcidx} 'stop'
 
                 rcidx=`expr ${rcidx} + 1`
@@ -3375,8 +3110,7 @@ case "$1" in
         fi
 
         # restart web server
-        if /var/install/bin/ask "Do you want to restart the webserver now (recommended)" "yes"
-        then
+        if /var/install/bin/ask "Do you want to restart the webserver now (recommended)" "yes" ; then
             /etc/init.d/apache2 restart
         fi
         ;;
