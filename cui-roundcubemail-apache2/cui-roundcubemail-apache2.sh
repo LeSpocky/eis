@@ -124,9 +124,7 @@ check_installed_vmail ()
 }
 
 # ----------------------------------------------------------------------------
-# check if Apache2 SSL has been enabled
-# ----------------------------------------------------------------------------
-# check if Apache2 SSL has been enabled
+# Check if Apache2 SSL has been enabled
 #
 # input:  $1 - '--quiet' - suppress screen output
 # return:  0 - extension enabled
@@ -158,7 +156,7 @@ check_active_apache_ssl ()
 }
 
 # ----------------------------------------------------------------------------
-# check if php_ldap has been enabled
+# Check if php_ldap has been enabled
 # input:  $1 - '--quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
@@ -167,7 +165,7 @@ check_active_php_ldap ()
 {
     retval=1
 
-    # check if ldap support is required
+    # Check if ldap support is required
     capl_ldap_required=0
     capl_idx=1
     while [ ${capl_idx} -le ${ROUNDCUBE_N} ] ; do
@@ -202,7 +200,7 @@ check_active_php_ldap ()
             # apache2_php5 installed
             . ${php5file}
 
-            if [ "${PHP5_EXT_LDAP}" = "yes" ] ; then
+            if [ "${PHP_EXT_LDAP}" = "yes" ] ; then
                 # ldap support activated
                 if [ "${1}" != "--quiet" ] ; then
                     echo "php-ldap has been enabled ..."
@@ -213,7 +211,7 @@ check_active_php_ldap ()
                 if [ "${1}" != "--quiet" ] ; then
                     echo "php-ldap is currently disabled ..."
                 fi
-                write_to_config_log -error "PHP5_EXT_LDAP='yes' has not been set!"
+                write_to_config_log -error "PHP_EXT_LDAP='yes' has not been set!"
             fi
         fi
     fi
@@ -222,7 +220,7 @@ check_active_php_ldap ()
 }
 
 # ----------------------------------------------------------------------------
-# check if php_sqlite3 has been enabled
+# Check if php_sqlite3 has been enabled
 # input:  $1 - '--quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
@@ -235,7 +233,7 @@ check_active_php_sqlite ()
         # apache2_php5 installed
         . ${php5file}
 
-        if [ "${PHP5_EXT_SQLITE3}" = "yes" ] ; then
+        if [ "${PHP_EXT_SQLITE3}" = "yes" ] ; then
             # sqlite support activated
             if [ "${1}" != "--quiet" ] ; then
                 echo "php-sqlite3 has been enabled ..."
@@ -246,7 +244,7 @@ check_active_php_sqlite ()
             if [ "${1}" != "--quiet" ] ; then
                 echo "php-sqlite3 is currently disabled ..."
             fi
-            write_to_config_log -error "PHP5_EXT_SQLITE3='yes' has not been set!"
+            write_to_config_log -error "PHP_EXT_SQLITE3='yes' has not been set!"
         fi
     fi
 
@@ -254,7 +252,7 @@ check_active_php_sqlite ()
 }
 
 # ----------------------------------------------------------------------------
-# check if php_mysql has been enabled
+# Check if php_mysql has been enabled
 #
 # input:  $1 - '--quiet' - suppress screen output
 # return:  0 - extension enabled
@@ -269,7 +267,7 @@ check_active_php_mysql ()
         . ${php5file}
 
         mysql_php=1
-        if [ "${PHP5_EXT_MYSQL}" = "yes" ] ; then
+        if [ "${PHP_EXT_MYSQL}" = "yes" ] ; then
             # mysql support activated
             if [ "${1}" != "--quiet" ] ; then
                 echo "php-mysql has been enabled ..."
@@ -279,7 +277,7 @@ check_active_php_mysql ()
             # mysql support deactivated
             if [ "${1}" != "--quiet" ] ; then
                 echo "php-mysql has been disabled ..."
-                echo "set PHP5_EXT_MYSQL='yes'"
+                echo "set PHP_EXT_MYSQL='yes'"
             fi
         fi
 
@@ -290,7 +288,7 @@ check_active_php_mysql ()
                 if [ -f /etc/my.cnf ] ; then
                     mysql_sock=`awk -F' = ' '/socket/ {print $2}' /etc/my.cnf | tail -1`
 
-                    if [ "${PHP5_EXT_MYSQL_SOCKET}" = "${mysql_sock}" ] ; then
+                    if [ "${PHP_EXT_MYSQL_SOCKET}" = "${mysql_sock}" ] ; then
                         if [ "${1}" != "--quiet" ] ; then
                             echo "php-mysql-socket has correctly been set ..."
                         fi
@@ -298,7 +296,7 @@ check_active_php_mysql ()
                     else
                         if [ "${1}" != "--quiet" ] ; then
                             echo "php-mysql-socket hasn't been set correctly ..."
-                            echo "set PHP5_EXT_MYSQL_SOCKET='${mysql_sock}'"
+                            echo "set PHP_EXT_MYSQL_SOCKET='${mysql_sock}'"
                         fi
                     fi
                 else
@@ -307,7 +305,7 @@ check_active_php_mysql ()
                 ;;
             *)
                 # eisfair-2
-                if [ "${PHP5_EXT_MYSQL_SOCKET}" = "/var/run/mysql/mysql.sock" ] ; then
+                if [ "${PHP_EXT_MYSQL_SOCKET}" = "/var/run/mysql/mysql.sock" ] ; then
                     if [ "${1}" != "--quiet" ] ; then
                         echo "php-mysql-socket has correctly been set ..."
                     fi
@@ -315,7 +313,7 @@ check_active_php_mysql ()
                 else
                     if [ "${1}" != "--quiet" ] ; then
                         echo "php-mysql-socket hasn't been set correctly ..."
-                        echo "set PHP5_EXT_MYSQL_SOCKET='/var/run/mysql/mysql.sock'"
+                        echo "set PHP_EXT_MYSQL_SOCKET='/var/run/mysql/mysql.sock'"
                     fi
                 fi
                 ;;
@@ -330,7 +328,7 @@ check_active_php_mysql ()
 }
 
 # ----------------------------------------------------------------------------
-# check if php_pgsql has been enabled
+# Check if php_pgsql has been enabled
 #
 # input:  $1 - '--quiet' - suppress screen output
 # return:  0 - extension enabled
@@ -344,7 +342,7 @@ check_active_php_pgsql ()
         # apache2_php5 installed
         . ${php5file}
 
-        if [ "${PHP5_EXT_PGSQL}" = "yes" ] ; then
+        if [ "${PHP_EXT_PGSQL}" = "yes" ] ; then
             # pgsql support activated
             if [ "${1}" != "--quiet" ] ; then
                 echo "php-pgsql has been enabled ..."
@@ -354,7 +352,7 @@ check_active_php_pgsql ()
             # pgsql support deactivated
             if [ "${1}" != "--quiet" ] ; then
                 echo "php-pgsql has been disabled ..."
-                echo "set PHP5_EXT_PGSQL='yes'"
+                echo "set PHP_EXT_PGSQL='yes'"
             fi
         fi
     fi
@@ -363,7 +361,7 @@ check_active_php_pgsql ()
 }
 
 #----------------------------------------------------------------------------------
-# check if port is accessible
+# Check if port is accessible
 # input : $1 - server name
 #         $2 - port number
 # return:  0 - successful
@@ -407,7 +405,7 @@ get_smtp_port ()
 }
 
 # ----------------------------------------------------------------------------
-# check if mysql has been enabled
+# Check if mysql has been enabled
 # input:  $1 - '--quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
@@ -446,7 +444,7 @@ check_installed_mysql ()
 }
 
 # ----------------------------------------------------------------------------
-# check if postgres has been enabled
+# Check if postgres has been enabled
 # input:  $1 - '--quiet' means no output
 # return:  0 - installed and activated
 #          1 - not installed and activated
@@ -1036,7 +1034,7 @@ remove_sql_db_and_table()
 }
 
 # ----------------------------------------------------------------------------
-# check if unique document root
+# Check if unique document root
 # $1 - Roundcube instance
 # ----------------------------------------------------------------------------
 is_unique_docroot ()
@@ -1176,7 +1174,7 @@ copy_program_files ()
         if [ ! -h ${rc_doc_root}/config ] ; then
             # a symbolic link doesn't exist
             if [ ! -d ${rc_doc_root}/config ] ; then
-                # check if destination source directory exists
+                # Check if destination source directory exists
                 if [ ! -d ${roundcube_path}/config ] ; then
                     mkdir -p ${roundcube_path}/config
                 fi
@@ -2075,7 +2073,7 @@ create_roundcube_conf ()
                         # temporarily remove ldap(s):// protocol information
                         tmp_globldap_hostport=`echo "${rc_globldap_hostport}" | sed 's#^ldap.*://##'`
 
-                        # check if port number has been given
+                        # Check if port number has been given
                         echo "${tmp_globldap_hostport}" | grep -q ":"
 
                         if [ $? -eq 0 ] ; then
