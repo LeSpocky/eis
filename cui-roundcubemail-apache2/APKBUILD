@@ -34,6 +34,11 @@ build() {
 
 package() {
 	cd "$_builddir"
+	cd ${startdir}/dialog.d
+	for currentDialogScript in $(ls) ; do
+		install -D -m755 ${currentDialogScript} ${pkgdir}/var/install/dialog.d/${currentDialogScript} || return 1
+	done
+	cd -
 	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/roundcubemail-apache2 || return 1
 	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/roundcubemail-apache2.exp || return 1
 	install -D -m640 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/roundcubemail-apache2 || return 1
