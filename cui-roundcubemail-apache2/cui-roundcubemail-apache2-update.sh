@@ -55,34 +55,6 @@ printsetvar ()
 }
 
 # ----------------------------------------------------------------------------
-# check if mail has been enabled
-# ----------------------------------------------------------------------------
-check_installed_mail ()
-{
-    retval=1
-
-    if [ -f ${mailfile} ] ; then
-        # mail installed
-        . ${mailfile}
-
-        if [ "${START_MAIL}" = "yes" ] ; then
-            # mail activated
-            if [ "${1}" != "-quiet" ] ; then
-                mecho "mail has been enabled ..."
-            fi
-            retval=0
-        else
-            # mail deactivated
-            if [ "${1}" != "-quiet" ] ; then
-                mecho --warn "mail has been disabled ..."
-            fi
-        fi
-    fi
-
-    return ${retval}
-}
-
-# ----------------------------------------------------------------------------
 # check if vmail has been enabled
 # ----------------------------------------------------------------------------
 check_installed_vmail ()
@@ -111,20 +83,6 @@ check_installed_vmail ()
 }
 
 # ----------------------------------------------------------------------------
-# rename variables
-# ----------------------------------------------------------------------------
-rename_variables ()
-{
-    renamed=0
-    mecho "renaming parameter(s) ..."
-
-    if [ ${renamed} -eq 1 ] ; then
-        mecho --info "... read documentation for renamed parameter(s)!"
-        anykey
-    fi
-}
-
-# ----------------------------------------------------------------------------
 # modify variables
 # ----------------------------------------------------------------------------
 modify_variables ()
@@ -143,7 +101,7 @@ modify_variables ()
         eval des_key='$ROUNDCUBE_'${idx}'_GENERAL_DES_KEY'
 
         key_len=24
-        if [ "${des_key}" = "" -o `echo ${des_key}|wc -L` -lt ${key_len} ] ; then
+        if [ "${des_key}" = "" -o $(echo ${des_key}|wc -L) -lt ${key_len} ] ; then
             # create random key
             randkey="`rand_string ${key_len}`"
 
@@ -152,7 +110,7 @@ modify_variables ()
             modified=1
         fi
 
-        idx=`expr ${idx} + 1`
+        idx=$(expr ${idx} + 1)
     done
 
     if [ ${modified} -eq 1 ] ; then
@@ -164,49 +122,13 @@ modify_variables ()
 # ----------------------------------------------------------------------------
 # add variables
 # ----------------------------------------------------------------------------
-pre_add_variables ()
-{
-    added=0
-    mecho "pre-adding new parameter(s) ..."
-
-    if [ ${added} -eq 1 ] ; then
-        mecho --info "... read documentation for new parameter(s)!"
-        anykey
-    fi
-}
-
-# ----------------------------------------------------------------------------
-# add variables
-# ----------------------------------------------------------------------------
 add_variables ()
 {
-    added=0
-    mecho "adding new parameter(s) ..."
+    mecho "Adding new parameter(s)..."
 
-    # ROUNDCUBE_CRON_SCHEDULE
-    # 0.90.3
     if [ -z "`grep ^ROUNDCUBE_CRON_SCHEDULE ${source_conf}`" ] ; then
         mecho "- ROUNDCUBE_CRON_SCHEDULE='14 1 * * *'"
         ROUNDCUBE_CRON_SCHEDULE='14 1 * * *'
-        added=1
-    fi
-
-    if [ ${added} -eq 1 ] ; then
-        mecho --info "... read documentation for new parameter(s)!"
-        anykey
-    fi
-}
-
-# ----------------------------------------------------------------------------
-# delete variables
-# ----------------------------------------------------------------------------
-delete_variables ()
-{
-    deleted=0
-    mecho "deleting old parameters ..."
-
-    if [ ${deleted} -eq 1 ] ; then
-        anykey
     fi
 }
 
@@ -389,60 +311,29 @@ create_config ()
 # ============================================================================
 # main
 # ============================================================================
+testroot=''
 
-#testroot=/soft/jedroundcube
- testroot=''
-
-# set platform specific parameters
-case ${EISFAIR_SYSTEM} in
-    eisfair-1)
-        # eisfair-1
-        roundcube_path=${testroot}/var/roundcube
-        ;;
-    *)
-        # default to eisfair-2/eisxen-1
-        roundcube_path=${testroot}/data/packages/roundcube
-        ;;
-esac
+roundcube_path=${testroot}/usr/.../roundcube
 
 ### set file names ###
-mailfile=${testroot}/etc/config.d/mail
 vmailfile=${testroot}/etc/config.d/vmail
 installfile=${testroot}/var/run/roundcube.install
-roundcubefile=${testroot}/etc/config.d/roundcube
+roundcubefile=${testroot}/etc/config.d/roundcubemail-apache2
 conf_tmpdir=${roundcube_path}
 
 # setting defaults
 source_conf=${installfile}
 generate_conf=${roundcubefile}
 
-goflag=0
-
-if check_installed_mail -quiet ; then
-    # mail
-    MAIL_INSTALLED='mail'
-elif check_installed_vmail -quiet ; then
-    # vmail
-    MAIL_INSTALLED='vmail'
-else
-    # no local mail or vmail package installed
-    MAIL_INSTALLED='none'
-fi
-
-case "$1"
-in
+case "$1" in
     update)
-        goflag=1
         ;;
-
     test)
       # source_conf=${roundcubefile}.new
         source_conf=${roundcubefile}
 
         generate_conf=${roundcubefile}.test
-        goflag=1
         ;;
-
     *)
         mecho
         mecho "Use one of the following options:"
@@ -453,28 +344,23 @@ in
         mecho "  roundcube-update.sh [update] - the file $source_conf} will be read, the configuration will"
         mecho "                                 be checked and an updated configuration file will be written."
         mecho
-        goflag=0
+        exit 0
         ;;
 esac
 
-if [ ${goflag} -eq 1 ] ; then
-    if [ -f ${source_conf} ] ; then
-        # previous configuration file exists
-        mecho "previous configuration found ..."
-        . ${source_conf}
+if [ -f ${source_conf} ] ; then
+    # previous configuration file exists
+    mecho "previous configuration found ..."
+    . ${source_conf}
 
-        pre_add_variables
-        rename_variables
-        modify_variables
-        add_variables
-        delete_variables
+    modify_variables
+    add_variables
 
-        create_config
+    create_config
 
-        mecho "finished."
-    else
-        mecho --error "no configuration ${source_conf} found - exiting."
-    fi
+    mecho "finished."
+else
+    mecho --error "no configuration ${source_conf} found - exiting."
 fi
 
 # ============================================================================
