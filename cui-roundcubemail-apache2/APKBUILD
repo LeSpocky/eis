@@ -10,7 +10,7 @@ license="GPL"
 depends="cuimenu cui-apache2 roundcubemail cui-vmail"
 depends_dev=""
 makedepends="$depends_dev"
-install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.post-deinstall"
+install="$pkgname.pre-upgrade $pkgname.post-install $pkgname.post-deinstall"
 subpackages=""
 source="${pkgname}.check
 		${pkgname}.check.exp

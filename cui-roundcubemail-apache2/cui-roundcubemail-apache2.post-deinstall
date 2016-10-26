@@ -1,0 +1,4 @@
+#!/bin/sh
+/var/install/bin/del-menu setup.services.apache2.menu setup.services.apache2.roundcubemail.menu
+rm -f /etc/backup.d/roundcubemail-apache2.*
+exit 0

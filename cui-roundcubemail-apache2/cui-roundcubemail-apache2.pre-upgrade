@@ -1,0 +1,7 @@
+#!/bin/sh
+# remove default.d und check.d files
+rm -f /etc/default.d/roundcubemail-apache2
+rm -f /etc/check.d/roundcubemail-apache2
+rm -f /etc/check.d/roundcubemail-apache2.exp
+rm -f /etc/check.d/roundcubemail-apache2.ext
+exit 0
