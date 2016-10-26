@@ -26,11 +26,11 @@ exec_dialog()
 
     # sellist="sqlite,mssql,mysql,mysqli,pgsql,sqlsrv"
     sellist="sqlite"
-    if [ -f /var/install/packages/mysql -o /var/install/packages/mariadb ] ; then
+    if apk info | grep -q -E "^mariadb$|^mysql$" ; then
         sellist="${sellist},mysql"
     fi
 
-    if [ -f /var/install/packages/postgresql ] ; then
+    if apk info | grep -q "^postgresql$" ; then
         sellist="${sellist},pgsql"
     fi
 
