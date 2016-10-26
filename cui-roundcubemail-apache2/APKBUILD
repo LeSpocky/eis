@@ -12,15 +12,16 @@ depends_dev=""
 makedepends="$depends_dev"
 install="$pkgname.pre-upgrade $pkgname.post-upgrade $pkgname.post-install $pkgname.post-deinstall"
 subpackages=""
-source="${pkgname}.default
-		${pkgname}.check
+source="${pkgname}.check
 		${pkgname}.check.exp
+		${pkgname}.check.ext
+		${pkgname}.default
 		${pkgname}.help
-		${pkgname}.sh
-		${pkgname}-update.sh
 		${pkgname}.menu
+		${pkgname}.sh
 		${pkgname}.txt
 		${pkgname}.txt.toc
+		${pkgname}-update.sh
 "
 
 _builddir=
@@ -41,13 +42,14 @@ package() {
 	cd -
 	install -D -m644 ${srcdir}/${pkgname}.check         ${pkgdir}/etc/check.d/roundcubemail-apache2 || return 1
 	install -D -m644 ${srcdir}/${pkgname}.check.exp     ${pkgdir}/etc/check.d/roundcubemail-apache2.exp || return 1
+	install -D -m644 ${srcdir}/${pkgname}.check.ext     ${pkgdir}/etc/check.d/roundcubemail-apache2.ext || return 1
 	install -D -m640 ${srcdir}/${pkgname}.default       ${pkgdir}/etc/default.d/roundcubemail-apache2 || return 1
 	install -D -m644 ${srcdir}/${pkgname}.help          ${pkgdir}/var/install/help/roundcubemail-apache2 || return 1
-	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/roundcubemail-apache2.sh || return 1
-	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/roundcubemail-apache2-update.sh || return 1
 	install -D -m644 ${srcdir}/${pkgname}.menu          ${pkgdir}/var/install/menu/setup.services.apache2.roundcubemail.menu || return 1
+	install -D -m755 ${srcdir}/${pkgname}.sh            ${pkgdir}/var/install/config.d/roundcubemail-apache2.sh || return 1
 	install -D -m644 ${srcdir}/${pkgname}.txt           ${pkgdir}/usr/share/doc/roundcubemail-apache2/roundcubemail-apache2.txt || return 1
 	install -D -m644 ${srcdir}/${pkgname}.txt.toc       ${pkgdir}/usr/share/doc/roundcubemail-apache2/roundcubemail-apache2.toc || return 1
+	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/roundcubemail-apache2-update.sh || return 1
 }
 
 md5sums="3d462cac61184eb1ba7a10983925ec32  cui-php-apache2.default

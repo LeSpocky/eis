@@ -1,5 +1,8 @@
 
 
+     Migrated from eisfair-1 package, needs to be updated for eisfair-ng!
+
+
                               Das Roundcube-Paket
 
    Dieses Paket ist als Zusatzpaket zum Mail-Paket zu verstehen und
