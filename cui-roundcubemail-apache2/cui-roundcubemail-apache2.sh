@@ -109,13 +109,13 @@ check_installed_mail ()
         if [ "${START_MAIL}" = "yes" ] ; then
             # mail activated
             if [ "${1}" != "-quiet" ] ; then
-                mecho "mail has been enabled ..."
+                echo "mail has been enabled ..."
             fi
             retval=0
         else
             # mail deactivated
             if [ "${1}" != "-quiet" ] ; then
-                mecho --warn "mail is currently disabled ..."
+                echo "mail is currently disabled ..."
             fi
         fi
     fi
@@ -140,13 +140,13 @@ check_installed_vmail ()
         if [ "${START_VMAIL}" = "yes" ] ; then
             # vmail activated
             if [ "${1}" != "-quiet" ] ; then
-                mecho "vmail has been enabled ..."
+                echo "vmail has been enabled ..."
             fi
             retval=0
         else
             # vmail deactivated
             if [ "${1}" != "-quiet" ] ; then
-                mecho --warn "vmail is currently disabled ..."
+                echo "vmail is currently disabled ..."
             fi
         fi
     fi
@@ -171,13 +171,13 @@ check_installed_owncloud ()
         if [ "${START_OWNCLOUD}" = "yes" ] ; then
             # ownCloud activated
             if [ "${1}" != "-quiet" ] ; then
-                mecho "ownCloud has been enabled ..."
+                echo "ownCloud has been enabled ..."
             fi
             retval=0
         else
             # ownCloud deactivated
             if [ "${1}" != "-quiet" ] ; then
-                mecho --warn "ownCloud is currently disabled ..."
+                echo "ownCloud is currently disabled ..."
             fi
         fi
     fi
@@ -204,14 +204,14 @@ check_active_apache_ssl ()
         if [ "`echo "${APACHE2_SSL}" | tr '[:upper:]' '[:lower:]'`" = "yes" ] ; then
             # ssl support activated
             if [ "${1}" != "-quiet" ] ; then
-                mecho "Apache2 SSL has been enabled ..."
+                echo "Apache2 SSL has been enabled ..."
             fi
             retval=0
         else
             # ssl support deactivated
             if [ "${1}" != "-quiet" ] ; then
-                mecho --warn "Apache2 SSL has been disabled ..."
-                mecho --warn "set APACHE2_SSL='yes'"
+                echo "Apache2 SSL has been disabled ..."
+                echo "set APACHE2_SSL='yes'"
             fi
         fi
     fi
@@ -267,13 +267,13 @@ check_active_php_ldap ()
             if [ "${PHP5_EXT_LDAP}" = "yes" ] ; then
                 # ldap support activated
                 if [ "${1}" != "-quiet" ] ; then
-                    mecho "php-ldap has been enabled ..."
+                    echo "php-ldap has been enabled ..."
                 fi
                 retval=0
             else
                 # ldap support deactivated
                 if [ "${1}" != "-quiet" ] ; then
-                    mecho --error "php-ldap is currently disabled ..."
+                    echo "php-ldap is currently disabled ..."
                 fi
                 write_to_config_log -error "PHP5_EXT_LDAP='yes' has not been set!"
             fi
@@ -300,13 +300,13 @@ check_active_php_sqlite ()
         if [ "${PHP5_EXT_SQLITE3}" = "yes" ] ; then
             # sqlite support activated
             if [ "${1}" != "-quiet" ] ; then
-                mecho "php-sqlite3 has been enabled ..."
+                echo "php-sqlite3 has been enabled ..."
             fi
             retval=0
         else
             # sqlite support deactivated
             if [ "${1}" != "-quiet" ] ; then
-                mecho --error "php-sqlite3 is currently disabled ..."
+                echo "php-sqlite3 is currently disabled ..."
             fi
             write_to_config_log -error "PHP5_EXT_SQLITE3='yes' has not been set!"
         fi
@@ -334,14 +334,14 @@ check_active_php_mysql ()
         if [ "${PHP5_EXT_MYSQL}" = "yes" ] ; then
             # mysql support activated
             if [ "${1}" != "-quiet" ] ; then
-                mecho "php-mysql has been enabled ..."
+                echo "php-mysql has been enabled ..."
             fi
             mysql_php=0
         else
             # mysql support deactivated
             if [ "${1}" != "-quiet" ] ; then
-                mecho --warn "php-mysql has been disabled ..."
-                mecho --warn "set PHP5_EXT_MYSQL='yes'"
+                echo "php-mysql has been disabled ..."
+                echo "set PHP5_EXT_MYSQL='yes'"
             fi
         fi
 
@@ -354,30 +354,30 @@ check_active_php_mysql ()
 
                     if [ "${PHP5_EXT_MYSQL_SOCKET}" = "${mysql_sock}" ] ; then
                         if [ "${1}" != "-quiet" ] ; then
-                            mecho "php-mysql-socket has correctly been set ..."
+                            echo "php-mysql-socket has correctly been set ..."
                         fi
                         mysql_socket=0
                     else
                         if [ "${1}" != "-quiet" ] ; then
-                            mecho --warn "php-mysql-socket hasn't been set correctly ..."
-                            mecho --warn "set PHP5_EXT_MYSQL_SOCKET='${mysql_sock}'"
+                            echo "php-mysql-socket hasn't been set correctly ..."
+                            echo "set PHP5_EXT_MYSQL_SOCKET='${mysql_sock}'"
                         fi
                     fi
                 else
-                    mecho --error "MySQL/MariaDB configuration file /etc/my.cnf cannot be found!"
+                    echo "MySQL/MariaDB configuration file /etc/my.cnf cannot be found!"
                 fi
                 ;;
             *)
                 # eisfair-2
                 if [ "${PHP5_EXT_MYSQL_SOCKET}" = "/var/run/mysql/mysql.sock" ] ; then
                     if [ "${1}" != "-quiet" ] ; then
-                        mecho "php-mysql-socket has correctly been set ..."
+                        echo "php-mysql-socket has correctly been set ..."
                     fi
                     mysql_socket=0
                 else
                     if [ "${1}" != "-quiet" ] ; then
-                        mecho --warn "php-mysql-socket hasn't been set correctly ..."
-                        mecho --warn "set PHP5_EXT_MYSQL_SOCKET='/var/run/mysql/mysql.sock'"
+                        echo "php-mysql-socket hasn't been set correctly ..."
+                        echo "set PHP5_EXT_MYSQL_SOCKET='/var/run/mysql/mysql.sock'"
                     fi
                 fi
                 ;;
@@ -409,14 +409,14 @@ check_active_php_pgsql ()
         if [ "${PHP5_EXT_PGSQL}" = "yes" ] ; then
             # pgsql support activated
             if [ "${1}" != "-quiet" ] ; then
-                mecho "php-pgsql has been enabled ..."
+                echo "php-pgsql has been enabled ..."
             fi
             retval=0
         else
             # pgsql support deactivated
             if [ "${1}" != "-quiet" ] ; then
-                mecho --warn "php-pgsql has been disabled ..."
-                mecho --warn "set PHP5_EXT_PGSQL='yes'"
+                echo "php-pgsql has been disabled ..."
+                echo "set PHP5_EXT_PGSQL='yes'"
             fi
         fi
     fi
@@ -489,13 +489,13 @@ check_installed_mysql ()
         if [ "${START_MYSQL}" = 'yes' -o "${START_MARIADB}" = 'yes' ] ; then
             # mysql activated
             if [ "$1" != "-quiet" ] ; then
-                mecho "MySQL/MariaDB support has been enabled ..."
+                echo "MySQL/MariaDB support has been enabled ..."
             fi
             mysql_active=0
         else
             # mysql deactivated
             if [ "$1" != "-quiet" ] ; then
-                mecho --warn "MySQL/MariaDB support has been disabled ..."
+                echo "MySQL/MariaDB support has been disabled ..."
             fi
         fi
     fi
@@ -523,13 +523,13 @@ check_installed_postgres ()
         if [ "${START_POSTGRESQL}" = "yes" ] ; then
             # postgres activated
             if [ "$1" != "-quiet" ] ; then
-                mecho "PostgreSQL support has been enabled ..."
+                echo "PostgreSQL support has been enabled ..."
             fi
             retval=0
         else
             # postgres deactivated
             if [ "$1" != "-quiet" ] ; then
-                mecho --warn "PostgreSQL support has been disabled ..."
+                echo "PostgreSQL support has been disabled ..."
             fi
         fi
     fi
@@ -651,7 +651,7 @@ create_sql_db_and_table ()
                 case ${step} in
                     1)
                         step_name="checking sql database user"
-                        mecho -n "${step_name} ..."
+                        echo -n "${step_name} ..."
                         ${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"QUIT" 2>/dev/null
 
                         if [ $? -ne 0 -o ${force} -eq 1 ] ; then
@@ -667,13 +667,13 @@ create_sql_db_and_table ()
                                 echo "CREATE USER '${db_user}'@'${DB_HOST}' IDENTIFIED BY '${db_pass}';"
                             } > ${sql_cmd_file}
                         else
-                            mecho --info "done."
+                            echo "done."
                         fi
                         ;;
 
                     2)
                         step_name="checking sql database"
-                        mecho -n "${step_name} ..."
+                        echo -n "${step_name} ..."
                         db_exists=`${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"SHOW DATABASES" | grep -c "${DB_NAME}$"`
 
                         if [ ${db_exists} -eq 0 -o ${force} -eq 1 ] ; then
@@ -689,13 +689,13 @@ create_sql_db_and_table ()
                                 echo "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
                             } > ${sql_cmd_file}
                         else
-                            mecho --info "done."
+                            echo "done."
                         fi
                         ;;
 
                     3)
                         step_name="granting sql database access"
-                        mecho -n "${step_name} ..."
+                        echo -n "${step_name} ..."
                         ${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"SHOW GRANTS FOR '${db_user}'@'${DB_HOST}'" | grep -q -E "GRANT ALL PRIVILEGES ON .*${DB_NAME}.*\.\* TO .*${db_user}.*@.*${DB_HOST}" 2> /dev/null
 
                         if [ $? -ne 0 -o ${force} -eq 1 ] ; then
@@ -706,12 +706,12 @@ create_sql_db_and_table ()
                                 echo "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${db_user}'@'${DB_HOST}' IDENTIFIED BY '${db_pass}';"
                             } > ${sql_cmd_file}
                         else
-                            mecho --info "done."
+                            echo "done."
                         fi
                         ;;
                     4)
                         step_name="initializing sql database"
-                        mecho -n "${step_name} ..."
+                        echo -n "${step_name} ..."
                         table_exists=`${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -D${DB_NAME} -e"SHOW TABLES" | grep -c "^users$"`
 
                         if [ ${table_exists} -eq 0 -o ${force} -eq 1 ] ; then
@@ -726,7 +726,7 @@ create_sql_db_and_table ()
                                 } > ${sql_cmd_file}
                             fi
                         else
-                            mecho --info "done."
+                            echo "done."
                         fi
                         ;;
                 esac
@@ -739,13 +739,13 @@ create_sql_db_and_table ()
                         rm -f ${sql_cmd_file}
                         rm -f ${roundcube_path}/roundcube-sql-db-results.txt
 
-                        mecho --info "done."
+                        echo "done."
                     else
                         # error
                         rm -f ${sql_cmd_file}
 
-                        mecho --error "failed."
-                        mecho --warn  "an error appeared while ${step_name}!"
+                        echo "failed."
+                        echo  "an error appeared while ${step_name}!"
                         break
                     fi
                 fi
@@ -769,7 +769,7 @@ create_sql_db_and_table ()
                 case ${step} in
                     1)
                         step_name="checking sql database user"
-                        mecho -n "${step_name} ..."
+                        echo -n "${step_name} ..."
                         ${SQL_BIN} -h${DB_HOST} -U${db_user} -l >/dev/null 2>/dev/null
 
                         if [ $? -ne 0 -o ${force} -eq 1 ] ; then
@@ -785,12 +785,12 @@ create_sql_db_and_table ()
                                 echo "CREATE USER ${db_user} WITH PASSWORD '${db_pass}';"
                             } > ${sql_cmd_file}
                         else
-                            mecho --info "done."
+                            echo "done."
                         fi
                         ;;
                     2)
                         step_name="checking sql database"
-                        mecho -n "${step_name} ..."
+                        echo -n "${step_name} ..."
                         db_exists=`${SQL_BIN} -h${DB_HOST} -U${db_user} -l | grep -c "^ ${DB_NAME} "`
 
                         if [ ${db_exists} -eq 0 -o ${force} -eq 1 ] ; then
@@ -806,12 +806,12 @@ create_sql_db_and_table ()
                                 echo "CREATE DATABASE ${DB_NAME} TEMPLATE template0 ENCODING 'UNICODE';"
                             } > ${sql_cmd_file}
                         else
-                            mecho --info "done."
+                            echo "done."
                         fi
                         ;;
                     3)
                         step_name="granting sql database access"
-                        mecho -n "${step_name} ..."
+                        echo -n "${step_name} ..."
                         ${SQL_BIN} -h${DB_HOST} -U${db_user} -l | grep " ${DB_NAME} " | cut -d'|' -f2 | sed -e 's/^ */:/' -e 's/ *$/:/' | grep -q ":${db_user}:"
 
                         if [ $? -ne 0 -o ${force} -eq 1 ] ; then
@@ -822,12 +822,12 @@ create_sql_db_and_table ()
                                 echo "ALTER DATABASE ${DB_NAME} OWNER TO ${db_user};"
                             } > ${sql_cmd_file}
                         else
-                            mecho --info "done."
+                            echo "done."
                         fi
                         ;;
                     4)
                         step_name="initializing sql database"
-                        mecho -n "${step_name} ..."
+                        echo -n "${step_name} ..."
                         table_exists=`${SQL_BIN} --tuples-only -h${DB_HOST} -U${db_user} -d${DB_NAME} -c "SELECT * FROM pg_catalog.pg_tables WHERE tablename = 'users'" | grep -c " users "`
 
                         if [ ${table_exists} -eq 0 -o ${force} -eq 1 ] ; then
@@ -843,7 +843,7 @@ create_sql_db_and_table ()
                                 } > ${sql_cmd_file}
                             fi
                         else
-                            mecho --info "done."
+                            echo "done."
                         fi
                         ;;
                 esac
@@ -856,13 +856,13 @@ create_sql_db_and_table ()
                         rm -f ${sql_cmd_file}
                         rm -f ${roundcube_path}/roundcube-sql-db-results.txt
 
-                        mecho --info "done."
+                        echo "done."
                     else
                         # error
                         rm -f ${sql_cmd_file}
 
-                        mecho --error "failed."
-                        mecho --warn  "an error appeared while ${step_name}!"
+                        echo "failed."
+                        echo  "an error appeared while ${step_name}!"
                         break
                     fi
                 fi
@@ -874,18 +874,18 @@ create_sql_db_and_table ()
             if [ ! -f ${roundcube_data_path}/roundcubemail.db ] ; then
                 # create initial database
                 step_name="initializing sql database"
-                mecho -n "${step_name} ..."
+                echo -n "${step_name} ..."
                 ${SQL_BIN} ${roundcube_data_path}/roundcubemail.db < ${sql_init} 2>${roundcube_path}/roundcube-sql-db-results.txt
 
                 if [ $? -eq 0 ] ; then
                     # database created
                     rm -f ${roundcube_path}/roundcube-sql-db-results.txt
 
-                    mecho --info "done."
+                    echo "done."
                 else
                     # error
-                    mecho --error "failed."
-                    mecho --warn  "an error appeared while ${step_name}!"
+                    echo "failed."
+                    echo  "an error appeared while ${step_name}!"
                     break
                 fi
             fi
@@ -957,7 +957,7 @@ remove_sql_db_and_table()
                 case ${step} in
                     1)
                         step_name="removing sql database"
-                        mecho -n "${step_name} ..."
+                        echo -n "${step_name} ..."
                         db_exists=`${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"SHOW DATABASES" | grep -c "${DB_NAME}$"`
 
                         if [ ${db_exists} -ne 0 ] ; then
@@ -968,12 +968,12 @@ remove_sql_db_and_table()
                                 echo "DROP DATABASE ${DB_NAME};"
                             } > ${sql_cmd_file}
                         else
-                            mecho --info "not found."
+                            echo "not found."
                         fi
                         ;;
                     2)
                         step_name="removing sql database user"
-                        mecho -n "${step_name} ..."
+                        echo -n "${step_name} ..."
                         ${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"QUIT" > /dev/null
 
                         if [ $? -eq 0 ] ; then
@@ -985,7 +985,7 @@ remove_sql_db_and_table()
                                 echo "DROP USER '${db_user}'@'${DB_HOST}';"
                             } > ${sql_cmd_file}
                         else
-                            mecho --info "not found."
+                            echo "not found."
                         fi
                         ;;
                 esac
@@ -998,13 +998,13 @@ remove_sql_db_and_table()
                         rm -f ${sql_cmd_file}
                         rm -f ${roundcube_path}/roundcube-sql-db-results.txt
 
-                        mecho --info "done."
+                        echo "done."
                     else
                         # error
                         rm -f ${sql_cmd_file}
 
-                        mecho --error "failed."
-                        mecho --warn  "an error appeared while ${step_name}!"
+                        echo "failed."
+                        echo  "an error appeared while ${step_name}!"
                         break
                     fi
                 fi
@@ -1029,7 +1029,7 @@ remove_sql_db_and_table()
                 case ${step} in
                     1)
                         step_name="removing sql database"
-                        mecho -n "${step_name} ..."
+                        echo -n "${step_name} ..."
                         db_exists=`${SQL_BIN} -h${DB_HOST} -U${db_user} -l | grep -c "^ ${DB_NAME} "`
 
                         if [ ${db_exists} -ne 0 ] ; then
@@ -1040,12 +1040,12 @@ remove_sql_db_and_table()
                                 echo "DROP DATABASE ${DB_NAME};"
                             } > ${sql_cmd_file}
                         else
-                            mecho --info "not found."
+                            echo "not found."
                         fi
                         ;;
                     2)
                         step_name="removing sql database user"
-                        mecho -n "${step_name} ..."
+                        echo -n "${step_name} ..."
                         ${SQL_BIN} -h${DB_HOST} -U${db_user} -l >/dev/null 2>/dev/null
 
                         if [ $? -eq 0 ] ; then
@@ -1057,7 +1057,7 @@ remove_sql_db_and_table()
                                 echo "DROP USER ${db_user};"
                             } > ${sql_cmd_file}
                         else
-                            mecho --info "not found."
+                            echo "not found."
                         fi
                         ;;
                 esac
@@ -1070,13 +1070,13 @@ remove_sql_db_and_table()
                         rm -f ${sql_cmd_file}
                         rm -f ${roundcube_path}/roundcube-sql-db-results.txt
 
-                        mecho --info "done."
+                        echo "done."
                     else
                         # error
                         rm -f ${sql_cmd_file}
 
-                        mecho --error "failed."
-                        mecho --warn  "an error appeared while ${step_name}!"
+                        echo "failed."
+                        echo  "an error appeared while ${step_name}!"
                         break
                     fi
                 fi
@@ -1088,10 +1088,10 @@ remove_sql_db_and_table()
             if [ ! -f ${roundcube_data_path}/roundcubemail.db ] ; then
                 # create initial database
                 step_name="removing sql database"
-                mecho -n "${step_name} ..."
+                echo -n "${step_name} ..."
                 rm -f ${roundcube_data_path}/roundcubemail.db
 
-                mecho --info "done."
+                echo "done."
             fi
             ;;
     esac
@@ -1112,7 +1112,7 @@ is_unique_docroot ()
 
         if [ "${rc_active1}" = "yes" ] ; then
             # active entry - compare it...
-            mecho "- checking if document root is unique ..."
+            echo "- checking if document root is unique ..."
 
             idx=1
             while [ ${idx} -le ${ROUNDCUBE_N} ] ; do
@@ -1124,7 +1124,7 @@ is_unique_docroot ()
                         eval rc_doc_root2='$ROUNDCUBE_'${idx}'_DOCUMENT_ROOT'
 
                         if [ "${rc_doc_root1}" = "${rc_doc_root2}" ] ; then
-                            mecho "! Error: duplicate document roots (${rc_nbr} = ${idx}) found, please check configuration!"
+                            echo "! Error: duplicate document roots (${rc_nbr} = ${idx}) found, please check configuration!"
                             write_to_config_log -error "Duplicate document roots (${rc_nbr} = ${idx}) found!"
                             rcret=1
                             break
@@ -1161,7 +1161,7 @@ force_roundcube_update ()
 
         if [ "${rc_prev_version}" != "" -a "${rc_curr_version}" != "" ] ; then
             if [ "${rc_prev_version}" != "${rc_curr_version}" ] ; then
-                mecho "- updating configuration (${rc_doc_root}) ..."
+                echo "- updating configuration (${rc_doc_root}) ..."
 
                 # import database content once
                 /var/install/bin/roundcube-import-database --update
@@ -1180,7 +1180,7 @@ force_roundcube_update ()
 
         if [ -f ${rc_doc_root}/installer/rcube_install.php ] ; then
             # remove installer sub-directory
-            mecho "- removing installation files ..."
+            echo "- removing installation files ..."
             rm -fr ${rc_doc_root}/installer
         fi
 
@@ -1202,7 +1202,7 @@ copy_program_files ()
     rc_nbr=$1
     eval rc_doc_root='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
 
-    mecho "- copying program files (${rc_doc_root}) ..."
+    echo "- copying program files (${rc_doc_root}) ..."
 
     if [ ! -f "${rc_doc_root}/index.php" ] ; then
         # files don't exist - copy ...
@@ -1298,7 +1298,7 @@ create_roundcube_conf ()
             rm -f ${roundcube_dbconf_file}   ${roundcube_dbconf_file}.dist
             rm -f ${roundcube_mainconf_file} ${roundcube_mainconf_file}.dist
 
-            mecho "- creating roundcube program configuration ..."
+            echo "- creating roundcube program configuration ..."
 
             eval rc_db_type='$ROUNDCUBE_DB_TYPE'
             eval rc_db_user='$ROUNDCUBE_DB_USER'
@@ -2335,7 +2335,7 @@ create_roundcube_conf ()
               # echo '?>'
             } > ${roundcube_conf_file}
 
-            mecho "- creating roundcube help plugin configuration ..."
+            echo "- creating roundcube help plugin configuration ..."
 
             {
                 echo "<?php"
@@ -2405,7 +2405,7 @@ create_roundcube_conf ()
 # ----------------------------------------------------------------------------
 set_roundcube_access_rights ()
 {
-    mecho "checking directories ..."
+    echo "checking directories ..."
 
     # check directories
     for DNAME in ${roundcube_data_path} ${roundcube_log_path} ; do
@@ -2414,7 +2414,7 @@ set_roundcube_access_rights ()
         fi
     done
 
-    mecho "setting access rights ..."
+    echo "setting access rights ..."
 
     idx=1
     while [ ${idx} -le ${ROUNDCUBE_N} ] ; do
@@ -2483,16 +2483,16 @@ check_imap_server ()
         vmail)
             # vmail package
 			if [ "${START_POP3IMAP}" = "yes" ] ; then
-				mecho "local imap server is active - ok."
+				echo "local imap server is active - ok."
 			else
-				mecho --warn "local imap server is inactive!"
+				echo "local imap server is inactive!"
 				write_to_config_log -warn "Parameter START_COURIER='yes' has not been set although a local vmail"
 				write_to_config_log -warn -ff "package has been installed! Email can't be retrieved!"
 			fi
 			;;
         *)
             # none local
-            mecho --warn "no local mail/vmail package found - imap server status cannot be evaluate!"
+            echo "no local mail/vmail package found - imap server status cannot be evaluate!"
             write_to_config_log -warn "no local mail/vmail package found - imap server status cannot be evaluate!"
             ;;
     esac
@@ -2503,7 +2503,7 @@ check_imap_server ()
 # ----------------------------------------------------------------------------
 add_cron_job ()
 {
-    mecho "creating cron job ..."
+    echo "creating cron job ..."
 
     # check for cron directory
     if [ ! -d ${crontab_path} ] ; then
@@ -2551,7 +2551,7 @@ add_cron_job ()
 # ----------------------------------------------------------------------------
 delete_cron_job ()
 {
-    mecho "deleting cron job ..."
+    echo "deleting cron job ..."
 
     # check for crontab file
     if [ -f ${crontab_file} ] ; then
@@ -2603,7 +2603,7 @@ remove_program_files ()
     rc_doc_root="$1"
 
     if [ -d "${rc_doc_root}" ] ; then
-        mecho "- removing program files (${rc_doc_root}) ..."
+        echo "- removing program files (${rc_doc_root}) ..."
 
         if [ -f "${docroot_filelist}" ] ; then
             while read line ; do
@@ -2624,7 +2624,7 @@ remove_program_files ()
                 fi
             done < "${docroot_filelist}"
         else
-            mecho --error "missing ${docroot_filelist} file, error removing package files!"
+            echo "missing ${docroot_filelist} file, error removing package files!"
         fi
 
         # remove document root directory
@@ -2637,7 +2637,7 @@ remove_program_files ()
 # ----------------------------------------------------------------------------
 purge_document_roots ()
 {
-    mecho "purging document root directories ..."
+    echo "purging document root directories ..."
 
     # backup doccument root deletion list
     /var/install/bin/backup-file --quiet "${docroot_dellist}" backup
@@ -2745,7 +2745,7 @@ case "$1" in
         delete_cron_job
         ;;
     *)
-        mecho "version: ${roundcube_version}"
+        echo "version: ${roundcube_version}"
 
         if [ "${START_ROUNDCUBE}" = "yes" ] ; then
             # generate all configuration files
@@ -2774,7 +2774,7 @@ case "$1" in
           #     config_error=1
           # fi
 
-            mecho "db type: ${ROUNDCUBE_DB_TYPE}"
+            echo "db type: ${ROUNDCUBE_DB_TYPE}"
 
             case ${ROUNDCUBE_DB_TYPE} in
                 mysql)
@@ -2806,7 +2806,7 @@ case "$1" in
             esac
 
             if [ ${config_error} -eq 1 ] ; then
-                mecho --error "pre-requisites not met, fix it and re-run configuration!"
+                echo "pre-requisites not met, fix it and re-run configuration!"
                 exit 1
             fi
 
@@ -2817,7 +2817,7 @@ case "$1" in
 
             rcidx=1
             while [ ${rcidx} -le ${ROUNDCUBE_N} ] ; do
-                mecho "processing Roundcube instance (${rcidx}) ..."
+                echo "processing Roundcube instance (${rcidx}) ..."
 
                 eval active='$ROUNDCUBE_'${rcidx}'_ACTIVE'
 
@@ -2830,7 +2830,7 @@ case "$1" in
                         create_roundcube_conf ${rcidx}
                     else
                         # generate stop configuration file
-                        mecho --warn "- instance has been disabled."
+                        echo "- instance has been disabled."
                         write_to_config_log -warn "roundcube has been disabled."
 
                         create_roundcube_conf ${rcidx} 'stop'
@@ -2845,7 +2845,7 @@ case "$1" in
             purge_document_roots
             add_cron_job
 
-            mecho "finished."
+            echo "finished."
 
             compress_config_log
             display_config_log
