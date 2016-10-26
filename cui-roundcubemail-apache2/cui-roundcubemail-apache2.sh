@@ -1068,7 +1068,7 @@ is_unique_docroot ()
                     fi
                 fi
 
-                idx=`expr ${idx} + 1`
+                idx=$(expr ${idx} + 1)
             done
         fi
     fi
@@ -1894,7 +1894,7 @@ create_roundcube_conf ()
                             write_to_config_log -error -ff "it doesn't exist. The plugin will be skipped."
                         fi
 
-                        idx=`expr ${idx} + 1`
+                        idx=$(expr ${idx} + 1)
                     done
 
                     echo "\$config['plugins'] = array(${rc_plugins_list});"
@@ -2190,7 +2190,7 @@ create_roundcube_conf ()
                         echo "  );"
                     fi
 
-                    idx=`expr ${idx} + 1`
+                    idx=$(expr ${idx} + 1)
                 done
 
                 echo
@@ -2389,7 +2389,7 @@ set_roundcube_access_rights ()
             chmod 0646 ${roundcube_sqlite_file}
         fi
 
-        idx=`expr ${idx} + 1`
+        idx=$(expr ${idx} + 1)
     done
 
     # data and log directory
@@ -2613,7 +2613,7 @@ purge_document_roots ()
                 fi
             fi
 
-            idx=`expr ${idx} + 1`
+            idx=$(expr ${idx} + 1)
         done
     fi
 
