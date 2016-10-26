@@ -20,33 +20,20 @@
 #set -x
 testroot=""
 
-pgmname=`basename $0`
-tty=`tty`
+pgmname=$(basename $0)
+tty=$(tty)
 
-# set platform specific parameters
-case ${EISFAIR_SYSTEM} in
-    eisfair-1)
-        # eisfair-1
-        crontab_path=${testroot}/var/cron/etc/root
-        roundcube_path=${testroot}/var/roundcube
-        roundcube_apache_user="wwwrun"
-        roundcube_apache_group="nogroup"
-        ;;
-    *)
-        # eisfair-2
-        crontab_path=${testroot}/etc/cron/root
-        roundcube_path=${testroot}/data/packages/roundcube
-        roundcube_apache_user="www-data"
-        roundcube_apache_group="www-data"
-        ;;
-esac
+crontab_path=${testroot}/etc/cron/root
+roundcube_path=${testroot}/usr/share/webapps/roundcube
+roundcube_apache_user="root"
+roundcube_apache_group="root"
 
-### set path names ###
+# Set path names
 roundcube_data_path=${roundcube_path}/data
 roundcube_config_path=${roundcube_path}/config
 roundcube_log_path=${roundcube_path}/log
 
-### set file names ###
+# Set file names
 apache2file=${testroot}/etc/config.d/apache2
 mailfile=${testroot}/etc/config.d/mail
 php5file=${testroot}/etc/config.d/apache2_php5
@@ -68,13 +55,13 @@ docroot_addlist=${roundcube_path}/rc-docroot.lst
 docroot_dellist=${roundcube_path}/rc-docroot.del
 docroot_tmplist=/tmp/rc-docroot.$$
 
-DB_NAME='roundcubemail'
+DB_NAME='roundcube'
 DB_HOST='localhost'
 
-### other parameters ###
+# Other parameters
 roundcube_version="v`grep "<version>" ${packagefile} | sed 's#<version>\(.*\)</version>#\1#'`"
 
-### load configuration ###
+# Load configuration
 . ${roundcubefile}
 chmod 600 ${roundcubefile}
 
@@ -1360,10 +1347,6 @@ create_roundcube_conf ()
                 echo '|                                                                       |'
 
                 case ${MAIL_INSTALLED} in
-                    mail)
-                        # mail
-                        echo '| Configuration type: mail                                              |'
-                        ;;
                     vmail)
                         # vmail
                         echo '| Configuration type: vmail                                             |'
@@ -1523,9 +1506,6 @@ create_roundcube_conf ()
                 echo "\$config['default_port'] = ${rc_imap_port};"
 
                 case ${MAIL_INSTALLED} in
-                    mail)
-                        # mail
-                        ;;
                     vmail)
                         # vmail
                         ;;
@@ -1550,15 +1530,6 @@ create_roundcube_conf ()
                 echo '// best server supported one)'
 
                 case ${MAIL_INSTALLED} in
-                    mail)
-                        # mail
-                        if [ "${MAIL_USER_USE_MAILONLY_PASSWORDS}" = "yes" ] ; then
-                            # different passwords are enabled
-                            echo "\$config['imap_auth_type'] = 'CRAM-MD5';"
-                        else
-                            echo "\$config['imap_auth_type'] = 'LOGIN';"
-                        fi
-                        ;;
                     vmail)
                         # vmail
                         echo "\$config['imap_auth_type'] = 'LOGIN';"
@@ -1583,22 +1554,9 @@ create_roundcube_conf ()
                 echo "// If you know your imap's folder delimiter, you can specify it here."
                 echo '// Otherwise it will be determined automatically'
                 case ${MAIL_INSTALLED} in
-                    mail)
-                        # mail (uw)
-                        echo "\$config['imap_delimiter'] = '/';"
-                        ;;
                     vmail)
-                        # vmail
-                        case ${EISFAIR_SYSTEM} in
-                            eisfair-2)
-                                # eisfair-2 (dovecot) - auto detect
-                                echo "\$config['imap_delimiter'] = NULL;"
-                                ;;
-                            *)
-                                # default to eisfair-1 (courier)
-                                echo "\$config['imap_delimiter'] = '.';"
-                                ;;
-                        esac
+                        # vmail (dovecot) - auto detect
+						echo "\$config['imap_delimiter'] = NULL;"
                         ;;
                     *)
                         # none local
@@ -1621,14 +1579,6 @@ create_roundcube_conf ()
                 echo "// Some server configurations (e.g. Courier) doesn't list folders in all namespaces"
                 echo '// Enable this option to force listing of folders in all namespaces'
                 case ${MAIL_INSTALLED} in
-                    mail)
-                        # mail - show special folders, like #public and #shared
-                        if [ "${rc_force_nsfolder}" = "no" ] ; then
-                            echo "\$config['imap_force_ns'] = false;"
-                        else
-                            echo "\$config['imap_force_ns'] = true;"
-                        fi
-                        ;;
                     vmail)
                         if [ "${rc_force_nsfolder}" = "yes" ] ; then
                             echo "\$config['imap_force_ns'] = true;"
@@ -1670,21 +1620,9 @@ create_roundcube_conf ()
                 # Note: Because the list is cached, re-login is required after change.
 
                 case ${MAIL_INSTALLED} in
-                    mail)
-                        echo "\$config['imap_disabled_caps'] = array('ESEARCH');"
-                        ;;
                     vmail)
-                        # vmail
-                        case ${EISFAIR_SYSTEM} in
-                            eisfair-2)
-                                # eisfair-2 (dovecot)
-                                echo "\$config['imap_disabled_caps'] = array('LIST-EXTENDED');"
-                                ;;
-                            *)
-                                # default to eisfair-1 (courier)
-                                echo "\$config['imap_disabled_caps'] = array();"
-                                ;;
-                        esac
+                        # vmail (dovecot)
+						echo "\$config['imap_disabled_caps'] = array('LIST-EXTENDED');"
                         ;;
                     *)
                         # none local
@@ -1740,58 +1678,6 @@ create_roundcube_conf ()
                 fi
 
                 case ${MAIL_INSTALLED} in
-                    mail)
-                        # mail - read port from mail package
-                        if [ "${SMTP_SERVER_TRANSPORT}" = "tls" ] ; then
-                            # tls connection requested
-                            if [ "${SMTP_SERVER_SSMTP}" = "yes" ] ; then
-                                # ssmtp
-                                mail_smtp_protocol='SSMTP'
-                                mail_smtp_port=`get_smtp_port ${SMTP_SERVER_SSMTP_LISTEN_PORT}`
-
-                                if [ "${mail_smtp_port}" = "" ] ; then
-                                    mail_smtp_port='465'
-                                fi
-                            else
-                                # smtps
-                                mail_smtp_protocol='SMTPS'
-                                mail_smtp_port=`get_smtp_port ${SMTP_LISTEN_PORT}`
-
-                                if [ "${mail_smtp_port}" = "" ] ; then
-                                    mail_smtp_port='587'
-                                fi
-                            fi
-
-                            # check port setting
-                            echo ":${mail_smtp_port}:" | grep -q ":${rc_smtp_port}:"
-
-                            if [ $? -ne 0 ] ; then
-                                write_to_config_log -info "Make sure that the ${mail_smtp_protocol} listen port is properly set in both mail"
-                                write_to_config_log -info -ff "and roundcube package!"
-                            fi
-                        else
-                            # normal connection
-                            mail_smtp_port=`get_smtp_port ${SMTP_LISTEN_PORT}`
-
-                            if [ "${mail_smtp_port}" = "" ] ; then
-                                mail_smtp_port='25:587'
-                            fi
-
-                            # check port setting
-                            echo ":${mail_smtp_port}:" | grep -q ":${rc_smtp_port}:"
-
-                            if [ $? -ne 0 ] ; then
-                                write_to_config_log -info "Make sure that the SMTP listen port is properly set in both mail"
-                                write_to_config_log -info -ff "and roundcube package!"
-                            fi
-                        fi
-
-                        # check hostname
-                      # if [ "${rc_smtp_host}" != "localhost" -a "${rc_smtp_host}" != "127.0.0.1" ] ; then
-                      #     write_to_config_log -warn "Parameter ROUNDCUBE_${rc_nbr}_SERVER_SMTP_HOST='localhost' has not been set although a local mail"
-                      #     write_to_config_log -warn -ff "package has been installed!"
-                      # fi
-                        ;;
                     vmail)
                         # vmail - use default port
                         # check hostname
@@ -1823,38 +1709,6 @@ create_roundcube_conf ()
                 fi
 
                 case ${MAIL_INSTALLED} in
-                    mail)
-                        # mail
-                        case ${rc_smtp_transport} in
-                            ssl)
-                                rc_smtp_prefix='ssl://'
-
-                                if [ "${SMTP_SERVER_TRANSPORT}" = "ssl" -a "${SMTP_SERVER_SSMTP}" = "yes" ] ; then
-                                    # check if secure port has been set
-                                    if [ "${rc_smtp_port}" != "465" ] ; then
-                                        write_to_config_log -warn "Parameters SMTP_${rc_nbr}_SERVER_TRANSPORT='ssl' and SMTP_SERVER_SSMTP='yes'"
-                                        write_to_config_log -warn -ff "have been set therefore it's recommended to set parameter"
-                                        write_to_config_log -warn -ff "ROUNDCUBE_${rc_nbr}_SERVER_SMTP_HOST='${rc_smtp_host}:465' too."
-                                    fi
-                                fi
-                                ;;
-                            tls)
-                                rc_smtp_prefix='tls://'
-
-                                if [ "${SMTP_SERVER_TRANSPORT}" = "tls" ] ; then
-                                    # check if secure port has been set
-                                    if [ "${rc_smtp_port}" != "25" -a "${rc_smtp_port}" != "587" ] ; then
-                                        write_to_config_log -warn "Parameters SMTP_SERVER_TRANSPORT='tls' has been set therefore"
-                                        write_to_config_log -warn -ff "it's recommended to set parameter ROUNDCUBE_SERVER_SMTP_HOST='${rc_smtp_host}:25'"
-                                        write_to_config_log -warn -ff "or ROUNDCUBE_SERVER_SMTP_HOST='${rc_smtp_host}:587' too."
-                                    fi
-                                fi
-                                ;;
-                            *)
-                                rc_smtp_prefix=''
-                                ;;
-                        esac
-                        ;;
                     vmail)
                         # vmail
                         rc_smtp_prefix=''
@@ -1892,45 +1746,6 @@ create_roundcube_conf ()
                 echo '// SMTP AUTH type (DIGEST-MD5, CRAM-MD5, LOGIN, PLAIN or empty to use'
                 echo '// best server supported one)'
                 case ${MAIL_INSTALLED} in
-                    mail)
-                        # mail
-                        case ${SMTP_AUTH_TYPE} in
-                            none)
-                                # no authentication
-                                echo "\$config['smtp_user'] = '';"
-                                echo "\$config['smtp_pass'] = '';"
-                                echo "// \$config['smtp_auth_type'] = '';"
-                                ;;
-                            user|user_light)
-                                #  SMTP authentication uses IMAP username and password by default
-                                echo "\$config['smtp_user'] = '%u';"
-                                echo "\$config['smtp_pass'] = '%p';"
-
-                                if [ "${MAIL_USER_USE_MAILONLY_PASSWORDS}" = "yes" ] ; then
-                                    # cram-md5 is only advertised if this parameter has
-                                    # been set: MAIL_USER_USE_MAILONLY_PASSWORDS="yes"
-                                    echo "\$config['smtp_auth_type'] = 'CRAM-MD5';"
-                                else
-                                    # use alternate authentication method
-                                    echo "\$config['smtp_auth_type'] = 'LOGIN';"
-                                fi
-                                ;;
-                            server|server_light)
-                                # server authentication
-                                echo "\$config['smtp_user'] = '${SMTP_AUTH_USER}';"
-                                echo "\$config['smtp_pass'] = '${SMTP_AUTH_PASS}';"
-
-                                if [ "${MAIL_USER_USE_MAILONLY_PASSWORDS}" = "yes" ] ; then
-                                    # cram-md5 is only advertised if this parameter has
-                                    # been set: MAIL_USER_USE_MAILONLY_PASSWORDS="yes"
-                                    echo "\$config['smtp_auth_type'] = 'CRAM-MD5';"
-                                else
-                                    # use alternate authentication method
-                                    echo "\$config['smtp_auth_type'] = 'LOGIN';"
-                                fi
-                                ;;
-                        esac
-                        ;;
                     vmail)
                         # vmail - no authentication
                         echo "\$config['smtp_user'] = '%u';"
@@ -2028,22 +1843,9 @@ create_roundcube_conf ()
                 # UPDATE users SET username = LOWER(username);
 
                 case ${MAIL_INSTALLED} in
-                    mail)
-                        # mail (uw) - changed default to 'true' since v1.5.2
-                        echo "\$config['login_lc'] = 2;"
-                        ;;
                     vmail)
-                        # vmail
-                        case ${EISFAIR_SYSTEM} in
-                            eisfair-2)
-                                # eisfair-2 (dovecot)
-                                echo "\$config['login_lc'] = 2;"
-                                ;;
-                            *)
-                                # default to eisfair-1 (courier)
-                                echo "\$config['login_lc'] = 0;"
-                                ;;
-                        esac
+                        # vmail (dovecot)
+						echo "\$config['login_lc'] = 2;"
                         ;;
                     *)
                         # none local
@@ -2063,9 +1865,8 @@ create_roundcube_conf ()
 
                 echo
                 echo '// Check client IP in session athorization'
-                if [ "${MAIL_INSTALLED}" = "none" -o ${OWNCLOUD_INSTALLED} -eq 0 ] ; then
-                    # this needs to be set if RoundCube is not running on the same server as the mail or vmail package
-                    # or if is started from ownCloud
+                if [ "${MAIL_INSTALLED}" = "none" ] ; then
+                    # this needs to be set if RoundCube is not running on the same server as the vmail package
                     echo "\$config['ip_check'] = false;"
                 else
                     echo "\$config['ip_check'] = true;"
@@ -2190,22 +1991,9 @@ create_roundcube_conf ()
                 echo
 
                 case ${MAIL_INSTALLED} in
-                    mail)
-                        # mail (uw)
-                        rc_folder_prefix=''
-                        ;;
                     vmail)
-                        # vmail
-                        case ${EISFAIR_SYSTEM} in
-                            eisfair-2)
-                                # eisfair-2 (dovecot)
-                                rc_folder_prefix=''
-                                ;;
-                            *)
-                                # default to eisfair-1 (courier)
-                                rc_folder_prefix='INBOX.'
-                                ;;
-                        esac
+                        # vmail (dovecot)
+						rc_folder_prefix=''
                         ;;
                     *)
                         # none local
@@ -2268,10 +2056,6 @@ create_roundcube_conf ()
                 # echo "// \$config['default_folders'] = array('INBOX', 'Drafts', 'Sent', 'Junk', 'Trash');"
 
                 case ${MAIL_INSTALLED} in
-                    mail)
-                        # mail - show special folders, like #public/ and #shared/
-                        echo "\$config['default_folders'] = array('INBOX', 'Drafts', 'Sent', 'Trash', '#public', '#shared');"
-                        ;;
                     vmail)
                         echo "\$config['default_folders'] = array('INBOX', 'Drafts', 'Sent', 'Trash');"
                         ;;
@@ -2696,41 +2480,16 @@ set_roundcube_access_rights ()
 check_imap_server ()
 {
     case ${MAIL_INSTALLED} in
-        mail)
-            # mail package
-            if [ "${START_IMAP}" = "yes" ] ; then
-                mecho "local imap server is active - ok."
-            else
-                mecho --warn "local imap server is inactive."
-                write_to_config_log -warn "Parameter START_IMAP='yes' has not been set although a local mail"
-                write_to_config_log -warn -ff "package has been installed! Email can't be retrieved!"
-            fi
-            ;;
         vmail)
             # vmail package
-            case ${EISFAIR_SYSTEM} in
-                eisfair-1)
-                    # eisfair-1
-                    if [ "${START_COURIER}" = "yes" ] ; then
-                        mecho "local imap server is active - ok."
-                    else
-                        mecho --warn "imap server is inactive!"
-                        write_to_config_log -warn "Parameter START_POP3IMAP='yes' has not been set although a local vmail"
-                        write_to_config_log -warn -ff "package has been installed! Email can't be retrieved!"
-                    fi
-                    ;;
-                *)
-                    # eisfair-2
-                    if [ "${START_POP3IMAP}" = "yes" ] ; then
-                        mecho "local imap server is active - ok."
-                    else
-                        mecho --warn "local imap server is inactive!"
-                        write_to_config_log -warn "Parameter START_COURIER='yes' has not been set although a local vmail"
-                        write_to_config_log -warn -ff "package has been installed! Email can't be retrieved!"
-                    fi
-                    ;;
-            esac
-            ;;
+			if [ "${START_POP3IMAP}" = "yes" ] ; then
+				mecho "local imap server is active - ok."
+			else
+				mecho --warn "local imap server is inactive!"
+				write_to_config_log -warn "Parameter START_COURIER='yes' has not been set although a local vmail"
+				write_to_config_log -warn -ff "package has been installed! Email can't be retrieved!"
+			fi
+			;;
         *)
             # none local
             mecho --warn "no local mail/vmail package found - imap server status cannot be evaluate!"
@@ -2990,15 +2749,7 @@ case "$1" in
 
         if [ "${START_ROUNDCUBE}" = "yes" ] ; then
             # generate all configuration files
-            if check_installed_mail ; then
-                # mail
-                MAIL_INSTALLED='mail'
-
-                if [ -f ${mailfile} ] ; then
-                    # mail package found
-                    . ${mailfile}
-                fi
-            elif check_installed_vmail ; then
+            if check_installed_vmail ; then
                 # vmail
                 MAIL_INSTALLED='vmail'
 
