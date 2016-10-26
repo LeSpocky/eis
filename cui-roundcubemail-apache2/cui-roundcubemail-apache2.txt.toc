@@ -1,0 +1,60 @@
+<!-- creation date: 2014-03-27 -->
+<index title="Das Roundcube-Paket">
+    <entry line="9" level="1">Die Einleitung</entry>
+    <entry line="15" level="1">Die Funktionen</entry>
+    <entry line="28" level="1">Die Lizenzen</entry>
+    <entry line="38" level="1">Die Voraussetzungen</entry>
+    <entry line="44" level="1">Die Installation</entry>
+    <entry line="58" level="1">Das Menue im Setup-Programm</entry>
+    <entry line="76" level="1">Die Aenderung der Konfiguration</entry>
+    <entry line="90" level="1">Die Konfigurationsdatei</entry>
+    <entry line="96" level="1">Die Parameter</entry>
+    <entry line="98" level="2">START_ROUNDCUBE</entry>
+    <entry line="107" level="2">ROUNDCUBE_DB_TYPE (Optionaler Parameter)</entry>
+    <entry line="120" level="2">ROUNDCUBE_DB_USER (Optionaler Parameter)</entry>
+    <entry line="133" level="2">ROUNDCUBE_DB_PASS (Optionaler Parameter)</entry>
+    <entry line="142" level="2">ROUNDCUBE_N</entry>
+    <entry line="150" level="3">ROUNDCUBE_x_ACTIVE</entry>
+    <entry line="156" level="3">ROUNDCUBE_x_DOCUMENT_ROOT</entry>
+    <entry line="165" level="3">ROUNDCUBE_x_SERVER_DOMAIN</entry>
+    <entry line="175" level="3">ROUNDCUBE_x_SERVER_DOMAIN_CHECK</entry>
+    <entry line="205" level="3">ROUNDCUBE_x_SERVER_IMAP_HOST</entry>
+    <entry line="215" level="3">ROUNDCUBE_x_SERVER_IMAP_TYPE</entry>
+    <entry line="226" level="3">ROUNDCUBE_x_SERVER_IMAP_AUTH</entry>
+    <entry line="240" level="3">ROUNDCUBE_x_SERVER_IMAP_TRANSPORT</entry>
+    <entry line="250" level="3">ROUNDCUBE_x_SERVER_SMTP_HOST</entry>
+    <entry line="260" level="3">ROUNDCUBE_x_SERVER_SMTP_AUTH</entry>
+    <entry line="278" level="3">ROUNDCUBE_x_SERVER_SMTP_TRANSPORT</entry>
+    <entry line="288" level="3">ROUNDCUBE_x_ORGA_NAME</entry>
+    <entry line="297" level="3">ROUNDCUBE_x_ORGA_LOGO</entry>
+    <entry line="307" level="3">ROUNDCUBE_x_ORGA_PROVIDER_URL</entry>
+    <entry line="316" level="3">ROUNDCUBE_x_ORGA_DEF_LANGUAGE</entry>
+    <entry line="333" level="3">ROUNDCUBE_x_FOLDER_MOVE_MSGS_TO_TRASH</entry>
+    <entry line="342" level="3">ROUNDCUBE_x_FOLDER_MOVE_MSGS_TO_SEND</entry>
+    <entry line="351" level="3">ROUNDCUBE_x_FOLDER_MOVE_MSGS_TO_DRAFT</entry>
+    <entry line="360" level="3">ROUNDCUBE_x_FOLDER_AUTO_EXPUNGE</entry>
+    <entry line="371" level="3">ROUNDCUBE_x_FOLDER_FORCE_NSFOLDER (Optionaler Parameter)</entry>
+    <entry line="381" level="3">ROUNDCUBE_x_GENERAL_DEF_CHARSET</entry>
+    <entry line="391" level="3">ROUNDCUBE_x_GENERAL_DES_KEY</entry>
+    <entry line="402" level="3">ROUNDCUBE_x_GENERAL_ALLOW_RECEIPTS_USE</entry>
+    <entry line="412" level="3">ROUNDCUBE_x_GENERAL_ALLOW_IDENTITY_EDIT</entry>
+    <entry line="422" level="3">ROUNDCUBE_x_PLUGINS_USE_ALL</entry>
+    <entry line="433" level="4">ROUNDCUBE_x_PLUGINS_N / ROUNDCUBE_x_PLUGINS_y_DIRNAME</entry>
+    <entry line="450" level="3">ROUNDCUBE_x_GLOBADDR_LDAP_N</entry>
+    <entry line="460" level="4">ROUNDCUBE_x_GLOBADDR_LDAP_y_ACTIVE</entry>
+    <entry line="469" level="4">ROUNDCUBE_x_GLOBADDR_LDAP_y_INFO</entry>
+    <entry line="477" level="4">ROUNDCUBE_x_GLOBADDR_LDAP_y_BASEDN</entry>
+    <entry line="487" level="4">ROUNDCUBE_x_GLOBADDR_LDAP_y_HOST</entry>
+    <entry line="499" level="4">ROUNDCUBE_x_GLOBADDR_LDAP_y_AUTH</entry>
+    <entry line="509" level="4">ROUNDCUBE_x_GLOBADDR_LDAP_y_BINDDN</entry>
+    <entry line="519" level="4">ROUNDCUBE_x_GLOBADDR_LDAP_y_BINDPASS</entry>
+    <entry line="527" level="4">ROUNDCUBE_x_GLOBADDR_LDAP_y_WRITEABLE</entry>
+    <entry line="536" level="4">ROUNDCUBE_x_GLOBADDR_LDAP_y_CHARSET (Optionaler Parameter)</entry>
+    <entry line="543" level="4">ROUNDCUBE_x_GLOBADDR_LDAP_y_MAXROWS (Optionaler Parameter)</entry>
+    <entry line="550" level="2">ROUNDCUBE_CRON_SCHEDULE (Optionaler Parameter)</entry>
+    <entry line="568" level="1">Die Plugins</entry>
+    <entry line="581" level="2">newmail_notifier-Plugin</entry>
+    <entry line="599" level="1">Verschiedenes</entry>
+    <entry line="601" level="2">PHP-Fehlermeldungen</entry>
+    <entry line="609" level="2">PHP-LDAP-Zugriff</entry>
+</index>

@@ -1,0 +1,629 @@
+
+
+                              Das Roundcube-Paket
+
+   Dieses Paket ist als Zusatzpaket zum Mail-Paket zu verstehen und
+   ermoeglicht den komfortabelen Zugriff auf IMAP-E-Mail-Postfaecher ueber
+   eine Web-Oberflaeche.
+
+                                 Die Einleitung
+
+   In diesem Paket wurden verschiedenste Komponenten zusammengestellt, die
+   zusammen ein komplettes Paket ergeben. Als Web-Frontend-Anwendung wird
+   hierbei Roundcube verwendet, welches komplett auf PHP5 basiert.
+
+                                 Die Funktionen
+
+   Das Roundcube-Paket besteht aus folgenden Komponenten:
+
+     * Roundcube - Das Web-Frontend fuer den Zugriff auf ein IMAP-Postfach
+       ([1]http://roundcube.net/)
+     * CardDAV Plugin - Stellt Funktionen fuer den Zugriff auf einen
+       zentralen CardDAV Server und die dort gespeicherten Kontaktdaten
+       zur Verfuegung. ([2]http://www.benjamin-schieder.de/carddav.html)
+     * Rouncube-Client-side Filters-Plugin - Stellt Funktionen zum
+       leichten Filtern von eingehenden Nachrichten zur Verfuegung.
+       ([3]http://sourceforge.net/projects/rcubefilters)
+
+                                  Die Lizenzen
+
+   Die Dateien des roundcube-Programmpaketes, ausgenommen die Skin- und
+   Plugin-Dateien, sind unter der GNU General Public License v3 (GPLv3),
+   deren Text in der Datei LICENSE im roundcube-Webverzeichnis nachgelesen
+   werden kann, oder neueren Versionen der GPLv3 lizensiert. Alle
+   unmodifizierten Dateien aus diesen oder anderen Quellen unterliegen den
+   urspruenglichen Copyright- und Lizenzangaben, die in den einzelnen
+   Dateien vermerkt wurden.
+
+                              Die Voraussetzungen
+
+   Dieses Paket benoetigt das Mail- bzw. Vmail-Paket mit aktiviertem
+   IMAP-Server, sowie die Apache2- und Apache2_php5-Pakete um
+   funktionieren zu koennen.
+
+                                Die Installation
+
+   Das Roundcube-Paket wird ueber das Setup-Menue installiert. Wird eine
+   aeltere Paketversion vorgefunden, so wird diese deinstalliert bevor die
+   neuen Programmdateien installiert werden. Nach dem Installieren der
+   Programmdateien wird direkt der Konfigurations-Editor gestartet um die
+   Konfiguration anzupassen. Nach Beendigung dieses Schrittes werden die
+   Konfigurationsdateien generiert und alle benoetigten Programme
+   gestartet. Danach kann ueber einen Webbrowser, durch Eingabe von
+   `http://<Name des eisfair-Servers>/roundcube/`, (ein abweichendes
+   Verzeichnis kann in der Konfiguration ueber den Parameter
+   ROUNDCUBE_x_DOCUMENT_ROOT gesetzt werden) auf die Anwendung zugegriffen
+   werden.
+
+                          Das Menue im Setup-Programm
+
+   Das Menue im Setup-Programm wird ueber `Mail Services' -> `Goto mail
+   modules' angesprochen und ist wie folgt aufgebaut:
+
+     * Roundcube Webmail administration
+          + View documentation: Anzeigen der Dokumentation
+          + Edit configuration: Bearbeiten der Konfiguration
+          + Advanced configuration file handling: Konfigurationen
+            verwalten
+          + View configuration log file: Die Konfigurations-Logmeldungen
+            anzeigen
+          + Exit: Untermenue verlassen
+
+   Die Menuepunkte duerften selbsterklaerend sein, da sie keinerlei
+   weitere Eingaben erwarten. Aus diesem Grund wird auf deren Funktion
+   nicht weiter eingegangen.
+
+                        Die Aenderung der Konfiguration
+
+   Die Konfiguration kann ueber den Menuepunkt `Edit configuration'
+   geaendert werden. Standardmaessig wird der Editor aufgerufen, der in
+   der Environment- Konfiguration ueber die Variable 'EDITOR' festgelegt
+   wurde. Nachdem der Editor beendet wurde wird abgefragt, ob die
+   Konfiguration aktiviert werden soll. Wird dies bestaetigt, werden ueber
+   ein Skript die Anpassungen umgehend wirksam gemacht.
+   Hinweis
+   Es ist zu beachten, dass einige Programme eigenstaendig bei erneuter
+   Aktivierung die Konfigurationsdatei neu einlesen, somit fuehrt ein
+   Beantwortung dieser Abfrage mit 'Nein' nur zu einem kurzen Aufschub der
+   Aktivierung.
+
+                            Die Konfigurationsdatei
+
+   In der Konfigurationsdatei, die ueber das Menue zugaenglich ist, sind
+   folgende Parameter vorhanden; wer sie von Hand editieren will findet
+   sie unter /etc/config.d/roundcube.
+
+                                 Die Parameter
+
+   START_ROUNDCUBE
+          Fuer die Aktivierung des Roundcube-Programms muss dieser
+          Parameter lediglich auf den Wert `yes' gestellt werden. Die
+          Einstellung `no' deaktiviert das Roundcube-Programm.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: START_ROUNDCUBE='no'
+
+   ROUNDCUBE_DB_TYPE (Optionaler Parameter)
+          Ueber diesen Parameter kann auf Wunsch, ein vom Standard
+          'sqlite' abweichender Datenbanktyp angegeben werden. Folgende
+          Datenbanken werden unterstuetzt:
+
+          + mysql MySQL
+          + pgsql PostgreSQL
+          + sqlite SQLite (Standard)
+
+          Gueltige Werte: gueltiger Datenbanktyp
+
+          Standardeinstellung: ROUNDCUBE_DB_TYPE=''
+
+   ROUNDCUBE_DB_USER (Optionaler Parameter)
+          Ueber diesen Parameter kann bei Bedarf ein Datenbankanwender
+          festgelegt werden, welcher fuer den Zugriff auf die interne
+          Roundcube-Datenbank verwendet werden soll. ACHTUNG
+          Hier sollte auf keinen Fall 'root' eingetragen werden, da dies
+          ein potentielles Sicherheitsrisiko bedeuten wuerde. Falls
+          SQL-root-Berechtigungen benoetigt werden, werden Sie waehrend
+          der Generierung der Konfiguration zur Eingabe des
+          SQL-root-Kennwortes aufgefordert.
+          Gueltige Werte: Name eines Datenbankanwenders
+
+          Standardeinstellung: ROUNDCUBE_DB_USER=''
+
+   ROUNDCUBE_DB_PASS (Optionaler Parameter)
+          Ueber diesen Parameter kann bei Bedarf ein Datenbankkennwort
+          festgelegt werden, welcher fuer den Zugriff auf die interne
+          Roundcube-Datenbank verwendet werden soll.
+
+          Gueltige Werte: Kennwort
+
+          Standardeinstellung: ROUNDCUBE_DB_PASS=''
+
+   ROUNDCUBE_N
+          Ueber diesen Parameter wird die Anzahl der Roundcube-Instanzen
+          angegeben, die eingerichtet werden sollen.
+
+          Gueltige Werte: Zahl
+
+          Standardeinstellung: ROUNDCUBE_N='1'
+
+   ROUNDCUBE_x_ACTIVE
+          Wird dieser Parameter auf den Wert `yes' gesetzt, so wird die
+          zugehoerige Roundcube-Instanz aktiviert, `no' deaktiviert sie.
+
+          Beispiel: ROUNDCUBE_1_ACTIVE='no'
+
+   ROUNDCUBE_x_DOCUMENT_ROOT
+          Ueber diesen Parameter wird das Document-Root-Verzeichnis
+          festgelegt.
+
+          Gueltige Werte: absolute Pfadangabe
+
+          Standardeinstellung:
+          ROUNDCUBE_1_DOCUMENT_ROOT='/var/www/htdocs/roundcube'
+
+   ROUNDCUBE_x_SERVER_DOMAIN
+          Ueber diesen Parameter wird der Domainname der lokalen Domain
+          festgelegt, fuer welche Roundcube zustaendig sein soll. Dieser
+          sollte gleich der Variablen SMTP_QUALIFY_DOMAIN aus dem
+          Mail-Paket gesetzt sein.
+
+          Gueltige Werte: Domainname
+
+          Beispiel: ROUNDCUBE_1_SERVER_DOMAIN='domain.de'
+
+   ROUNDCUBE_x_SERVER_DOMAIN_CHECK
+          Ueber diesen Parameter kann die Pruefung der Zugriffsdomain beim
+          Zugriff auf alle Roundcube Seiten aktiviert werden. Dies kann
+          helfen sicher zu stellen, dass die Seitenzugriffe vom selben
+          Server und nicht von einem Fremdserver kommen (Dies passiert
+          ueblicherweise bei XSS oder Phishing-Attacken). Weicht die beim
+          Zugriff verwendete Domain von der ueber den Parameter
+          [4]ROUNDCUBE_x_SERVER_DOMAIN festgelegten Domain ab, so wird der
+          Zugriff nach Ausgabe einer Meldung verweigert.
+          ACHTUNG
+          Diese Pruefungen sind nicht narrensicher und manche Browser
+          koennen diese umgehen oder absichtlich keine
+          Referal-Informationen senden (In diesem Fall wird die Pruefung
+          der Zugriffsdomain stillschweigend uebersprungen). Wird der
+          Parameter auf den Wert `no' gesetzt, so wird diese zusaetzliche
+          Pruefung deaktiviert.
+          Hinweis: Falls Roundcube in OwnCloud eingebunden werden soll,
+          beide Pakete jedoch auf unterschiedlichen Servern laufen, so
+          muss dieser Parameter auf den Wert `no' gesetzt werden um einen
+          problemlosen Zugriff zu ermoeglichen.
+
+          Gueltige Werte: yes oder no
+
+          Standardeinstellung: ROUNDCUBE_1_SERVER_DOMAIN_CHECK='yes'
+
+   Die folgenden ROUNDCUBE_x_SERVER_..-Parameter werden nur dann
+   ausgewertet, wenn auf dem lokalen Rechner kein installiertes Mail- oder
+   Vmail-Paket gefunden wird. Sie ermoeglichen den Zugriff auf einen
+   Mailserver, welcher auf einem anderen Rechner betrieben wird.
+
+   ROUNDCUBE_x_SERVER_IMAP_HOST
+          Ueber diesen Parameter wird der Servername des Rechners
+          festgelegt welcher die IMAP-Postfaecher verwaltet. Optional
+          kann, durch einen Doppelpunkt getrennt, ein vom Standard
+          abweichender tcp-Port konfiguriert werden.
+
+          Gueltige Werte: Domainname zzgl. optionalem tcp-Port
+
+          Standardeinstellung: ROUNDCUBE_1_SERVER_IMAP_HOST='localhost'
+
+   ROUNDCUBE_x_SERVER_IMAP_TYPE
+          Ueber diesen Parameter kann der IMAP-Servertyp eingestellt
+          werden, zu welchem sich verbunden werden soll. Es kann zwischen
+          den Typen `uw' (Mail-Paket) und `courier' (Vmail-Paket fuer
+          eisfair-1) bzw. `dovecot' (Vmail-Paket fuer eisfair-2) gewaehlt
+          werden.
+
+          Gueltige Werte: uw, courier oder dovecot
+
+          Standardeinstellung: ROUNDCUBE_1_SERVER_IMAP_TYPE='uw'
+
+   ROUNDCUBE_x_SERVER_IMAP_AUTH
+          Ueber diesen Parameter kann die Authentifizierungsmethode
+          festgelegt werden, welche beim Zugriff auf einen entfernten
+          IMAP-Server verwendet werden soll.
+          Hinweis: Ist auf dem entfernten Mailserver das mail-Paket
+          installiert und wurde dort der Parameter
+          MAIL_USER_USE_MAILONLY_PASSWORDS='yes' gesetzt, so muss hier
+          `md5' (cram-md5), ansonsten `login' eingestellt werden.
+          Hinweis: Ist auf dem entfernten Mailserver das vmail-Paket
+          installiert so muss hier `login' eingestellt werden.
+          Gueltige Werte: md5, digest, login
+
+          Standardeinstellung: ROUNDCUBE_1_SERVER_IMAP_AUTH='md5'
+
+   ROUNDCUBE_x_SERVER_IMAP_TRANSPORT
+          Ueber diesen Parameter kann die verschluesselte Kommunikation
+          mit dem IMAP-Prozess aktiviert werden. Wird der Parameter auf
+          den Wert `default' gesetzt, so wird ueber eine unverschluesselte
+          Verbindung kommuniziert.
+
+          Gueltige Werte: default, ssl oder tls
+
+          Standardeinstellung: ROUNDCUBE_1_SERVER_IMAP_TRANSPORT='default'
+
+   ROUNDCUBE_x_SERVER_SMTP_HOST
+          Ueber diesen Parameter wird der Servername des Rechners
+          festgelegt auf welchem der SMTP-Server laeuft. Optional kann,
+          durch einen Doppelpunkt getrennt, ein vom Standard abweichender
+          tcp-Port konfiguriert werden.
+
+          Gueltige Werte: Domainname zzgl. optionalem tcp-Port
+
+          Standardeinstellung: ROUNDCUBE_1_SERVER_SMTP_HOST='localhost'
+
+   ROUNDCUBE_x_SERVER_SMTP_AUTH
+          Ueber diesen Parameter kann die Authentifizierungsmethode
+          festgelegt werden, welche beim Zugriff auf einen entfernten
+          SMTP-Server verwendet werden soll.
+          Hinweis: Ist auf dem entfernten Mailserver das mail-Paket
+          installiert und wurde dort der Parameter SMTP_AUTH_TYPE='none'
+          gesetzt, so muss hier ebenfalls der Wert 'none' eingestellt
+          werden. Wurde der Parameter SMTP_AUTH_TYPE='user' oder
+          'user_light' gesetzt, so muss bei gesetztem
+          MAIL_USER_USE_MAILONLY_PASSWORDS='yes' `md5' (cram-md5),
+          ansonsten `login' eingestellt werden.
+          Hinweis: Ist auf dem entfernten Mailserver das vmail-Paket
+          installiert so muss hier `login' eingestellt werden.
+
+          Gueltige Werte: md5, digest, login, none
+
+          Standardeinstellung: ROUNDCUBE_1_SERVER_SMTP_AUTH='md5'
+
+   ROUNDCUBE_x_SERVER_SMTP_TRANSPORT
+          Ueber diesen Parameter kann die verschluesselte Kommunikation
+          mit dem SMTP-Server aktiviert werden. Wird der Parameter auf den
+          Wert `default' gesetzt, so wird ueber eine unverschluesselte
+          Verbindung kommuniziert.
+
+          Gueltige Werte: default, ssl oder tls
+
+          Standardeinstellung: ROUNDCUBE_1_SERVER_SMTP_TRANSPORT='default'
+
+   ROUNDCUBE_x_ORGA_NAME
+          Ueber diesen Parameter kann an verschiedenen Stellen in der
+          Roundcube-Oberflaeche der Firmenname, an Stelle von
+          `eisfair-Roundcube', eingeblendet werden.
+
+          Gueltige Werte: Text
+
+          Standardeinstellung: ROUNDCUBE_1_ORGA_NAME='eisfair-Roundcube'
+
+   ROUNDCUBE_x_ORGA_LOGO
+          Ueber diesen Parameter wird das Firmen-Logo festgelegt, welches
+          an verschiedenen Stellen der Roundcube-Oberflaeche angezeigt
+          wird. Es kann entweder ein relativer oder ein absoluter
+          Verzeichnispfad angegeben werden.
+
+          Gueltige Werte: Pfad- und Dateiname
+
+          Beispiel: ROUNDCUBE_1_ORGA_LOGO='eisfair_logo_klein.png'
+
+   ROUNDCUBE_x_ORGA_PROVIDER_URL
+          Ueber diesen Parameter wird die URL des Providers konfiguriert,
+          auf welche beim Zugriff auf das Hilfe-Menue verzweigt wird.
+
+          Gueltige Werte: URL
+
+          Standardeinstellung:
+          ROUNDCUBE_1_ORGA_PROVIDER_URL='http://trac.roundcube.net/wiki/'
+
+   ROUNDCUBE_x_ORGA_DEF_LANGUAGE
+          Dieser Parameter legt fest, welche Standardsprache verwendet
+          werden soll, wenn dies von Roundcube nicht automatisch, z.B.
+          Ueber die Browser-Konfiguration, erkannt wird. Bitte den
+          korrekten Laendercode fuer die gewuenschte Sprache verwenden.
+          Der Wert `de_DE' steht hierbei fuer die deutsche Sprache. Es
+          kann zur Zeit zwischen folgenden Laender-Codes gewaehlt werden:
+          ar, bg_BG, ca_ES, cs_CZ, cy_GB, da_DK, de_DE, el_GR, es_ES,
+          et_EE, fi_FI, fo_FO, fr_FR, he_IL, hr_HR, hu_HU, id_ID, is_IS,
+          it_IT, ja_JP, ko_KR, lt_LT, ms_MY, nl_NL, nn_NO, no_NO, pl_PL,
+          pt_BR, pt_PT, ro_RO, ru_RU, sk_SK, sl_SI, sr_YU, sv_SE, th_TH,
+          tr_TR, uk_UA, vi_VN, zh_CN, zh_TW
+
+          Gueltige Werte: Locale-Kennung
+
+          Standardeinstellung: ROUNDCUBE_1_ORGA_DEF_LANGUAGE='de_DE'
+
+   ROUNDCUBE_x_FOLDER_MOVE_MSGS_TO_TRASH
+          Wird dieser Parameter auf `yes' gestellt, so werden Nachrichten
+          beim Loeschen in den Papierkorb verschoben und nicht direkt
+          geloescht.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: ROUNDCUBE_1_FOLDER_MOVE_MSGS_TO_TRASH='yes'
+
+   ROUNDCUBE_x_FOLDER_MOVE_MSGS_TO_SEND
+          Wird dieser Parameter auf `yes' gestellt, so werden Nachrichten
+          nach dem Versand in den Sent-Ordner verschoben und nicht direkt
+          geloescht.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: ROUNDCUBE_1_FOLDER_MOVE_MSGS_TO_SEND='yes'
+
+   ROUNDCUBE_x_FOLDER_MOVE_MSGS_TO_DRAFT
+          Wird dieser Parameter auf `yes' gestellt, so wird beim Abbrechen
+          der Nachrichtenbearbeitung abgefragt, ob diese im Draft-Ordner
+          gespeichert werden soll.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: ROUNDCUBE_1_FOLDER_MOVE_MSGS_TO_DRAFT='yes'
+
+   ROUNDCUBE_x_FOLDER_AUTO_EXPUNGE
+          Ein IMAP-Server handhabt das Loeschen von Nachrichten wie folgt:
+          Erst wird die Nachricht nur zum Loeschen markiert, anschliessend
+          endgueltig geloescht. Wird dieser Parameter auf `yes' gesetzt,
+          so werden Nachrichten von Roundcube direkt geloescht. Wird 'no'
+          eingestellt, so werden diese nur zum Loeschen markiert.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: ROUNDCUBE_1_FOLDER_AUTO_EXPUNGE='yes'
+
+   ROUNDCUBE_x_FOLDER_FORCE_NSFOLDER (Optionaler Parameter)
+          Wird dieser Parameter auf `yes' gestellt, so wird die Anzeige
+          spezieller Namespace-Ordner, wie z.B. #ftp/, #public/, #shared/
+          forciert. Bei UW-IMAP Servern ist dieser Parameter
+          standardmaessig gesetzt, bei allen anderen Servern deaktiviert.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: ROUNDCUBE_1_FORCE_NSFOLDER nicht gesetzt.
+
+   ROUNDCUBE_x_GENERAL_DEF_CHARSET
+          Dieser Parameter legt fest welcher Zeichensatz beim Versenden
+          von Nachrichten und bei der HTML-Anzeige verwendet werden soll.
+          Verwenden Sie an Stelle von `US_ASCII' auf jeden Fall `UTF-8'.
+          Um kyrillischen Text anzuzeigen stellen Sie `KOI8-R' ein.
+
+          Gueltige Werte: utf-8, iso-8859-1, koi8-r, ...
+
+          Standardeinstellung: ROUNDCUBE_1_GENERAL_DEF_CHARSET='utf-8'
+
+   ROUNDCUBE_x_GENERAL_DES_KEY
+          Ueber diesen Parameter wird der DES-Schluessel festgelegt, mit
+          welchem das IMAP-Kennwort im Session-Datensatz (und im
+          Client-Cookie wenn Kennwort merken aktiviert wurde)
+          verschluesselt werden soll. Der Schluessel muss exakt 24 Zeichen
+          lang sein.
+
+          Gueltige Werte: gueltiger DES-Schluessel
+
+          Standardeinstellung: ROUNDCUBE_1_GENERAL_DES_KEY=''
+
+   ROUNDCUBE_x_GENERAL_ALLOW_RECEIPTS_USE
+          Wird dieser Parameter auf `yes' gesetzt, so kann jeder Anwender
+          Lese- und Zustellbenachrichtigungen fuer gesendete Nachrichten
+          anfordern.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung:
+          ROUNDCUBE_1_GENERAL_ALLOW_RECEIPTS_USE='yes'
+
+   ROUNDCUBE_x_GENERAL_ALLOW_IDENTITY_EDIT
+          Wird dieser Parameter auf `yes' gesetzt, so ist es dem Anwender
+          gestattet seinen Anwendernamen und seine E-Mail-Adresse zu
+          bearbeiten.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung:
+          ROUNDCUBE_1_GENERAL_ALLOW_IDENTITY_EDIT='yes'
+
+   ROUNDCUBE_x_PLUGINS_USE_ALL
+          Wird dieser Parameter auf `yes' gesetzt, so werden alle zur
+          Verfuegung stehenden Roundcube-Plugins aktiviert. Wird dieser
+          Parameter auf `no' gesetzt, so koennen ueber den Parameter
+          [5]ROUNDCUBE_x_PLUGINS_N bzw. [6]ROUNDCUBE_x_PLUGINS_y_DIRNAME
+          Plugins individuell aktiviert werden.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: ROUNDCUBE_1_PLUGINS_USE_ALL='no'
+
+   ROUNDCUBE_x_PLUGINS_N / ROUNDCUBE_x_PLUGINS_y_DIRNAME
+          Ueber den Parameter ROUNDCUBE_x_PLUGINS_N wird die Anzahl der zu
+          aktivierenden Roundcube-Plugins eingestellt. Ueber
+          ROUNDCUBE_x_PLUGINS_y_DIRNAME werden die Namen der zu
+          aktivierenden Plugins festgelegt. Neue Plugins muessen unter dem
+          Verzeichnis
+          `/var/www/htdocs/roundcube/plugins' abgelegt werden.
+
+          Gueltige Werte: Zahl bzw. Verzeichnisname
+
+          Beispiel:
+
+          ROUNDCUBE_1_PLUGINS_N='3'
+          ROUNDCUBE_1_PLUGINS_1_DIRNAME='emoticons'
+          ROUNDCUBE_1_PLUGINS_2_DIRNAME='filters'
+          ROUNDCUBE_1_PLUGINS_3_DIRNAME='help'
+
+   ROUNDCUBE_x_GLOBADDR_LDAP_N
+          Ueber diesen Parameter wird die Anzahl der globalen
+          LDAP-Adressbuecher angegeben auf welche zugegriffen werden soll.
+          Wird dieser Wert auf `0' gesetzt, so werden keine globalen
+          LDAP-Adressbuecher verwendet.
+
+          Gueltige Werte: Zahl
+
+          Standardeinstellung: ROUNDCUBE_1_GLOBADDR_LDAP_N='0'
+
+   ROUNDCUBE_x_GLOBADDR_LDAP_y_ACTIVE
+          Fuer die Aktivierung des LDAP-basierten, globalen Adressbuches
+          muss diese Variable lediglich auf den Wert `yes' gestellt
+          werden. Die Einstellung `no' deaktiviert das Adressbuch.
+
+          Gueltige Werte: yes, no
+
+          Standardwert: ROUNDCUBE_1_GLOBADDR_LDAP_1_ACTIVE='no'
+
+   ROUNDCUBE_x_GLOBADDR_LDAP_y_INFO
+          Ueber diesen Parameter kann ein beschreibender Text zum
+          LDAP-Adressbuch festgelegt werden.
+
+          Gueltige Werte: Text
+
+          Beispiel: ROUNDCUBE_1_GLOBADDR_LDAP_1_INFO='My LDAP directory'
+
+   ROUNDCUBE_x_GLOBADDR_LDAP_y_BASEDN
+          Ueber diesen Parameter wird die base-dn fuer den Zugriff auf das
+          globale LDAP-Adressbuch festgelegt.
+
+          Gueltige Werte: base-dn
+
+          Beispiel:
+          ROUNDCUBE_1_GLOBADDR_LDAP_1_BASEDN='ou=contacts,ou=addressbook,d
+          c=domain,dc=lan'
+
+   ROUNDCUBE_x_GLOBADDR_LDAP_y_HOST
+          Ueber diesen Parameter wird der Name des Rechners festgelegt auf
+          welchem der LDAP-Server laeuft.
+
+          Gueltige Werte: Hostname oder IP-Adresse
+
+          Standardwert: ROUNDCUBE_1_GLOBADDR_LDAP_1_HOST='localhost'
+
+          Beispiel:
+          ROUNDCUBE_1_GLOBADDR_LDAP_1_HOST='ldap://myldap.local.lan:389'
+          ROUNDCUBE_1_GLOBADDR_LDAP_1_HOST='ldaps://myldap.local.lan'
+
+   ROUNDCUBE_x_GLOBADDR_LDAP_y_AUTH
+          Falls eine Authentifikation gegenueber des LDAP-Servers
+          erforderlich ist, so muss diese Variable lediglich auf den Wert
+          `yes' gestellt werden. Bei der Einstellung `no' wird keine
+          Authentifizierung durchgefuehrt.
+
+          Gueltige Werte: yes, no
+
+          Standardwert: ROUNDCUBE_1_GLOBADDR_LDAP_1_AUTH='no'
+
+   ROUNDCUBE_x_GLOBADDR_LDAP_y_BINDDN
+          Ueber diesen Parameter wird die bind-dn fuer die
+          Authentifizierung am LDAP-Server festgelegt.
+
+          Gueltige Werte: bind-dn
+
+          Beispiel:
+          ROUNDCUBE_1_GLOBADDR_LDAP_1_BINDDN='cn=ldapadmin,dc=domain,dc=la
+          n'
+
+   ROUNDCUBE_x_GLOBADDR_LDAP_y_BINDPASS
+          Ueber diesen Parameter wird das bind-Kennwort fuer die
+          Authentifizierung am LDAP-Server festgelegt.
+
+          Gueltige Werte: Kennwort
+
+          Beispiel: ROUNDCUBE_1_GLOBADDR_LDAP_1_BINDPASS='my-secret'
+
+   ROUNDCUBE_x_GLOBADDR_LDAP_y_WRITEABLE
+          Wird dieser Parameter auf `yes' gesetzt, so wird das Bearbeiten
+          des LDAP- Adressbuchs zugelassen. Wird der Parameter auf `no'
+          gesetzt, so wird das Bearbeiten unterbunden.
+
+          Gueltige Werte: yes, no
+
+          Standardeinstellung: ROUNDCUBE_1_GLOBADDR_LDAP_1_WRITEABLE='no'
+
+   ROUNDCUBE_x_GLOBADDR_LDAP_y_CHARSET (Optionaler Parameter)
+          Ueber diesen Parameter kann ein vom Standardzeichensatz, welcher
+          ueber den Parameter [7]ROUNDCUBE_x_GENERAL_DEF_CHARSET definiert
+          wurde, abweichender Zeichensatz festgelegt werden.
+
+          Beispiel: ROUNDCUBE_1_GENERAL_DEF_CHARSET='utf-8'
+
+   ROUNDCUBE_x_GLOBADDR_LDAP_y_MAXROWS (Optionaler Parameter)
+          Ueber diesen Parameter wird die maximale Anzahl von
+          Antwortzeilen definiert die fuer die Anzeige des Suchergebnisses
+          genutzt werden, ansonsten wird der Standardwert '150' verwendet.
+
+          Beispiel: ROUNDCUBE_1_GLOBADDR_LDAP_1_MAXROWS='200'
+
+   ROUNDCUBE_CRON_SCHEDULE (Optionaler Parameter)
+          Ueber diesen Parameter wird festgelegt zu welchem Zeitpunkt bzw.
+          in welchem Intervall automatisch Datenbankbereinigungen
+          durchgefuehrt werden sollen. Die fuenf Teilparameter haben dabei
+          folgende Bedeutung:
+          1 - Minuten, 2 - Stunden, 3 - Tag des Monats, 4 - Monat, 5 -
+          Wochentag.
+
+          D.h. bei Verwendung der Standardeinstellung wird jeden Tag um
+          01:14h die Bereinigung des Verzeichnisses durchgefuehrt. Wer
+          Naeheres ueber die verwendete Befehlsyntax erfahren moechte,
+          sollte ueber eine Internet-Suchmaschine nach `man' und `crontab'
+          suchen.
+
+          Gueltige Werte: Crontab-spezifischer Parametereintrag
+
+          Standardeinstellung: ROUNDCUBE_CRON_SCHEDULE='14 1 * * *'
+
+                                  Die Plugins
+
+   Ueber Roundcube-Plugins koennen zusaetzliche Funktionen in das
+   Roundcube-Paket eingebunden werden. Hierbei obliegt es jedem Einzelnen
+   zu entscheiden ob er ein Plugin, trotz eventueller Sicherheitsrisiken,
+   aktivieren moechte oder nicht. Abhaengig von den jeweiligen Plugins
+   kann es notwendig sein, dass zuvor andere Programme installiert werden
+   muessen, die ueber das Roundcube-Paket bzw. den eisfair-Server nicht
+   zur Verfuegung gestellt werden. Es wird empfohlen, vor einer
+   Aktivierung eines Plugins, die im jeweiligen Plugin-Verzeichnis
+   vorhandene Dokumentation zu lesen und sich ueber die Roundcub-Webseite
+   ([8]http://roundcube.net) weiter zu informieren.
+
+   newmail_notifier-Plugin
+          Ueber 'Einstellungen->Mailbox-Ansicht->Neue Nachricht' kann man
+          bei aktiviertem newmail_notifer-Plugin die Art der
+          Benachrichtigung bei eingehenden neuen Nachrichten festlegen.
+          Zur Auswahl stehen die folgende Optionen:
+
+          + Benachrichtigung im Browser neuer Nachricht - Hierbei wird der
+            Fenstertitel und das angezeigte Favicon des Webbrowsers
+            angepasst.
+          + Desktop-Benachrichtigung bei neuer Nachricht - Um diese
+            Funktion nutzen zu koennen muss der verwendet Webbrowser HTML5
+            webkitNotifications unterstuetzen. Chrome und Mozilla Firefox,
+            mit installiertem HTML5 Notifications-Plugin, stellen diese
+            Funktion z.B. bereit.
+          + Akustische Meldung bei neuer Nachricht - Es wird die im
+            Verzeichnis /plugins/newmail_notifier befindliche Tondatei
+            `sound.wav' abgespielt.
+
+                                 Verschiedenes
+
+   PHP-Fehlermeldungen
+          Werden z.B. in der Ordner-Funktion Meldungen ueber nicht
+          initialisierte Variablen angezeigt, so sollte man pruefen, ob in
+          der Datei `/etc/php.ini' der folgende Parameter gesetzt wurde:
+
+;error_reporting  =  E_ALL                               # alt
+error_reporting  =  E_ALL & ~E_NOTICE & ~E_USER_NOTICE   # neu
+
+   PHP-LDAP-Zugriff
+          Um verschluesselt auf ein LDAP-Verzeichnis zugreifen zu koennen
+          muss zuvor das ldapclient-Paket installiert werden. Wurde fuer
+          den LDAP-Server ein selbstsigniertes Zertifikat verwendet, so
+          ist in der Konfiguration des ldapclient-Paketes sicher zu
+          stellen, dass der Parameter LDAPCLIENT_SERVER_CERT_CHECK dessen
+          Verwendung nicht verweigert. Wird des Wert des Parameters z.B.
+          auf 'never' gesetzt, so erfolgt keine Pruefung der
+          Zertifikatskette. Mittels des im Verzeichnis
+          /usr/share/doc/roundcube mitgelieferten PHP-Skripts
+          'test-ldap.php' kann der Zugriff auf einen LDAP-Server getestet
+          werden. Das Skript ist hierzu in den Webserverpfad zu kopieren,
+          die Zugriffsrechte und Skriptparameter anzupassen und dann ueber
+          einen Webbrowser aufzurufen.
+     __________________________________________________________________
+
+
+
+
+    Juergen Edner 2014-03-27
+
