@@ -101,6 +101,7 @@ iteratePackageFolders ()
 # Create new jenkins job using the jenkins-cli
 #
 # $1 .. Package name
+# $2 .. Logical Jenkins folder name, which should contain generated job
 # $3 .. Name of the template-job which should be used
 #       as the base for the new job
 createJob ()
@@ -231,7 +232,7 @@ EOF
 
 # Set some defaults
 buildNewJobs=true
-jobFolderList='eisfair-ng/v3.1/testing/x86 eisfair-ng/v3.1/testing/x86_64'
+jobFolderList='eisfair-ng/stable/testing/x86 eisfair-ng/stable/testing/x86_64'
 jobTemplateName=_TEMPLATE
 
 while [ $# -ne 0 ]
