@@ -14,6 +14,24 @@
 #exec 2>./roundcubemail-apache2-update-trace-$$.log
 #set -x
 
+usage()
+{
+    cat <<EOF
+
+  Usage:
+  ${0} --test|--update
+
+  Parameters:
+    --test
+      .. The file ${sourceConfiguration} will be read and a test configuration
+         will be written to the file ${testroot}/etc/config.d/${generatedConfiguration}.
+    --update
+      .. The file $sourceConfiguration} will be read, the configuration will
+         be checked and an updated configuration file will be written.
+
+EOF
+}
+
 # ----------------------------------------------------------------------------
 # input:  $1 - variable name
 # return:  0 - variable set
@@ -89,7 +107,7 @@ add_variables ()
 {
     echo "Adding new parameter(s)..."
 
-    if [ -z "`grep ^ROUNDCUBE_CRON_SCHEDULE ${source_conf}`" ] ; then
+    if [ -z "`grep ^ROUNDCUBE_CRON_SCHEDULE ${sourceConfiguration}`" ] ; then
         echo "- ROUNDCUBE_CRON_SCHEDULE='14 1 * * *'"
         ROUNDCUBE_CRON_SCHEDULE='14 1 * * *'
     fi
@@ -144,9 +162,7 @@ create_config ()
             printvar "ROUNDCUBE_${idx}_SERVER_DOMAIN_CHECK"    "   check domain referal: yes or no"
             echo
             printvar "ROUNDCUBE_${idx}_SERVER_IMAP_HOST"       "   hostname of imap server"
-
             printvar "ROUNDCUBE_${idx}_SERVER_IMAP_TYPE"       "   server type: uw or dovecot"
-
             printvar "ROUNDCUBE_${idx}_SERVER_IMAP_AUTH"       "   auth type: digest, md5 or login"
             printvar "ROUNDCUBE_${idx}_SERVER_IMAP_TRANSPORT"  "   transport to use: default or tls"
             printvar "ROUNDCUBE_${idx}_SERVER_SMTP_HOST"       "   hostname of smtp server"
@@ -171,9 +187,8 @@ create_config ()
             printvar "ROUNDCUBE_${idx}_FOLDER_MOVE_MSGS_TO_DRAFT" "   show move to draft folder option"
             printvar "ROUNDCUBE_${idx}_FOLDER_AUTO_EXPUNGE"       "   delete source msg after move"
 
-            if isVariableSet "ROUNDCUBE_${idx}_FOLDER_FORCE_NSFOLDER"
-            then
-                printVarIfSet "ROUNDCUBE_${idx}_FOLDER_FORCE_NSFOLDER"  "   force namespace folder display"
+            if isVariableSet "ROUNDCUBE_${idx}_FOLDER_FORCE_NSFOLDER" ; then
+                printvar "ROUNDCUBE_${idx}_FOLDER_FORCE_NSFOLDER"  "   force namespace folder display"
             fi
 
             # ----------------------------------------------------------------
@@ -258,7 +273,7 @@ create_config ()
 
             idx=$(expr ${idx} + 1)
         done
-    } > ${generate_conf}
+    } > ${generatedConfiguration}
 }
 
 # ============================================================================
@@ -266,45 +281,36 @@ create_config ()
 # ============================================================================
 testroot=''
 
-roundcube_path=${testroot}/usr/.../roundcube
+roundcube_path=${testroot}/usr/share/webapps/roundcube
 
-### set file names ###
+# Set file names
 vmailfile=${testroot}/etc/config.d/vmail
 installfile=${testroot}/var/run/roundcube.install
 roundcubefile=${testroot}/etc/config.d/roundcubemail-apache2
 conf_tmpdir=${roundcube_path}
 
-# setting defaults
-source_conf=${installfile}
-generate_conf=${roundcubefile}
+# Set defaults
+sourceConfiguration=${installfile}
+generatedConfiguration=${roundcubefile}
 
 case "$1" in
     update)
         ;;
     test)
-      # source_conf=${roundcubefile}.new
-        source_conf=${roundcubefile}
-
-        generate_conf=${roundcubefile}.test
+      # sourceConfiguration=${roundcubefile}.new
+        sourceConfiguration=${roundcubefile}
+        generatedConfiguration=${roundcubefile}.test
         ;;
     *)
-        echo
-        echo "Use one of the following options:"
-        echo
-        echo "  roundcube-update.sh [test]   - the file ${source_conf} will be read and a test configuration"
-        echo "                                 will be written to the file ${testroot}/etc/config.d/${generate_conf}."
-        echo
-        echo "  roundcube-update.sh [update] - the file $source_conf} will be read, the configuration will"
-        echo "                                 be checked and an updated configuration file will be written."
-        echo
+    	usage
         exit 0
         ;;
 esac
 
-if [ -f ${source_conf} ] ; then
+if [ -f ${sourceConfiguration} ] ; then
     # previous configuration file exists
     echo "Previous configuration found..."
-    . ${source_conf}
+    . ${sourceConfiguration}
 
     modify_variables
     add_variables
@@ -313,7 +319,7 @@ if [ -f ${source_conf} ] ; then
 
     echo "Finished."
 else
-    echo "No configuration ${source_conf} found - exiting."
+    echo "No configuration ${sourceConfiguration} found - exiting."
 fi
 
 # ============================================================================
