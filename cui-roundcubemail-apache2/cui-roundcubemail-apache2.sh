@@ -211,7 +211,7 @@ check_active_php_ldap ()
                 if [ "${1}" != "--quiet" ] ; then
                     echo "php-ldap is currently disabled ..."
                 fi
-                write_to_config_log -error "PHP_EXT_LDAP='yes' has not been set!"
+                error "PHP_EXT_LDAP='yes' has not been set!"
             fi
         fi
     fi
@@ -244,7 +244,7 @@ check_active_php_sqlite ()
             if [ "${1}" != "--quiet" ] ; then
                 echo "php-sqlite3 is currently disabled ..."
             fi
-            write_to_config_log -error "PHP_EXT_SQLITE3='yes' has not been set!"
+            error "PHP_EXT_SQLITE3='yes' has not been set!"
         fi
     fi
 
@@ -523,8 +523,7 @@ create_sql_db_and_table ()
 
         if [ "${db_pass}" = "" ] ; then
             db_pass='pass'
-            write_to_config_log -warn "The parameter ROUNDCUBE_DB_PASS hasn't been set therefore the default"
-            write_to_config_log -warn -ff " password 'pass' will be used!"
+            warn "The parameter ROUNDCUBE_DB_PASS hasn't been set therefore the default password 'pass' will be used!"
         fi
     fi
 
@@ -543,7 +542,7 @@ create_sql_db_and_table ()
 
     if [ "${doc_root}" = "" ] ; then
         # no active instance found, exit function
-        write_to_config_log -error "Unable to initialize database because no active Roundcube instance found!"
+        error "Unable to initialize database because no active Roundcube instance found!"
         return 1
     fi
 
@@ -1061,7 +1060,7 @@ is_unique_docroot ()
 
                         if [ "${rc_doc_root1}" = "${rc_doc_root2}" ] ; then
                             echo "! Error: duplicate document roots (${rc_nbr} = ${idx}) found, please check configuration!"
-                            write_to_config_log -error "Duplicate document roots (${rc_nbr} = ${idx}) found!"
+                            error "Duplicate document roots (${rc_nbr} = ${idx}) found!"
                             rcret=1
                             break
                         fi
@@ -1184,7 +1183,7 @@ copy_program_files ()
                 ln -sf ${roundcube_path}/config config
             else
                 # error - directory with this name found
-                write_to_config_log -error "A problem exists with '${roundcube_path}/config' - it should be a symbolic link!"
+                error "A problem exists with '${roundcube_path}/config' - it should be a symbolic link!"
             fi
         fi
 
@@ -1449,8 +1448,8 @@ create_roundcube_conf ()
                         # none local
                         # check port number
                         if [ "${rc_imap_port}" != "143" -a "${rc_imap_port}" != "993" ] ; then
-                            write_to_config_log -warn "Parameter ROUNDCUBE_${rc_nbr}_SERVER_IMAP_HOST='...:${rc_imap_port}' has been set to a non-standard port!"
-                            write_to_config_log -warn "This might cause a communication problem!"
+                            warn "Parameter ROUNDCUBE_${rc_nbr}_SERVER_IMAP_HOST='...:${rc_imap_port}' has been set to a non-standard port!"
+                            warn "This might cause a communication problem!"
                         fi
                         ;;
                 esac
@@ -1458,7 +1457,7 @@ create_roundcube_conf ()
                 # check IMAP listen port availability
                 if ! check_port_availabilty "${rc_imap_host}" "${rc_imap_port}"
                 then
-                    write_to_config_log -warn "Unable to connect to IMAP server '${rc_imap_host}' on port '${rc_imap_port}/tcp'!"
+                    warn "Unable to connect to IMAP server '${rc_imap_host}' on port '${rc_imap_port}/tcp'!"
                 fi
 
                 echo
@@ -1618,22 +1617,20 @@ create_roundcube_conf ()
                         # vmail - use default port
                         # check hostname
                       # if [ "${rc_smtp_host}" != "localhost" -a "${rc_smtp_host}" != "127.0.0.1" ] ; then
-                      #     write_to_config_log -warn "Parameter ROUNDCUBE_${rc_nbr}_SERVER_SMTP_HOST='localhost' has not been set although a local vmail"
-                      #     write_to_config_log -warn -ff "package has been installed!"
+                      #     warn "Parameter ROUNDCUBE_${rc_nbr}_SERVER_SMTP_HOST='localhost' has not been set although vmail package has been installed!"
                       # fi
                         ;;
                     *)
                         # none local
                         # check port number
                         if [ "${rc_smtp_port}" != "25" -a "${rc_smtp_port}" != "587" ] ; then
-                            write_to_config_log -warn "Parameter ROUNDCUBE_${rc_nbr}_SERVER_SMTP_HOST='...:${rc_smtp_port}' has been set to a non-standard port!"
-                            write_to_config_log -warn "This might cause a communication problem!"
+                            warn "Parameter ROUNDCUBE_${rc_nbr}_SERVER_SMTP_HOST='...:${rc_smtp_port}' has been set to a non-standard port!"
+                            warn "This might cause a communication problem!"
                         fi
 
                         # check hostname
                       # if [ "${rc_smtp_host}" = "localhost" -o "${rc_smtp_host}" = "127.0.0.1" ] ; then
-                      #     write_to_config_log -error "Parameter ROUNDCUBE_${rc_nbr}_SERVER_SMTP_HOST='localhost' has been set although no local mail or"
-                      #     write_to_config_log -error -ff "vmail package has been installed!"
+                      #     error "Parameter ROUNDCUBE_${rc_nbr}_SERVER_SMTP_HOST='localhost' has been set although no vmail package has been installed!"
                       # fi
                         ;;
                 esac
@@ -1641,7 +1638,7 @@ create_roundcube_conf ()
                 # check SMTP listen port availability
                 if ! check_port_availabilty "${rc_smtp_host}" "${rc_smtp_port}"
                 then
-                    write_to_config_log -warn "Unable to connect to SMTP server '${rc_smtp_host}' on port '${rc_smtp_port}/tcp'!"
+                    warn "Unable to connect to SMTP server '${rc_smtp_host}' on port '${rc_smtp_port}/tcp'!"
                 fi
 
                 case ${MAIL_INSTALLED} in
@@ -1890,8 +1887,7 @@ create_roundcube_conf ()
                                 rc_plugins_list="${rc_plugins_list},'${rc_plugins_dirname}'"
                             fi
                         else
-                            write_to_config_log -error "You've set ROUNDCUBE_${rc_nbr}_PLUGINS_${idx}_DIRNAME='${rc_plugins_dirname}' although"
-                            write_to_config_log -error -ff "it doesn't exist. The plugin will be skipped."
+                            error "You've set ROUNDCUBE_${rc_nbr}_PLUGINS_${idx}_DIRNAME='${rc_plugins_dirname}' although it doesn't exist. The plugin will be skipped."
                         fi
 
                         idx=$(expr ${idx} + 1)
@@ -2422,14 +2418,13 @@ check_imap_server ()
 				echo "local imap server is active - ok."
 			else
 				echo "local imap server is inactive!"
-				write_to_config_log -warn "Parameter START_COURIER='yes' has not been set although a local vmail"
-				write_to_config_log -warn -ff "package has been installed! Email can't be retrieved!"
+				warn "Parameter START_COURIER='yes' has not been set although a vmail package has been installed! Email can't be retrieved!"
 			fi
 			;;
         *)
             # none local
             echo "no local mail/vmail package found - imap server status cannot be evaluate!"
-            write_to_config_log -warn "no local mail/vmail package found - imap server status cannot be evaluate!"
+            warn "no local mail/vmail package found - imap server status cannot be evaluate!"
             ;;
     esac
 }
@@ -2666,10 +2661,40 @@ purge_document_roots ()
     fi
 }
 
+######### HELPER-FUNCTIONS #########
+_init() {
+    if [ -n "${TERM}" -a "${TERM}" != "dumb" ]; then
+        GREEN=$(tput setaf 2) RED=$(tput setaf 1) BLUE="$(tput setaf 4)"
+        LTGREYBG="$(tput setab 7)"
+        NORMAL=$(tput sgr0) BLINK=$(tput blink)
+    else
+        GREEN="" RED="" BLUE="" LTGREYBG="" NORMAL="" BLINK=""
+    fi
+}
+
+die() {
+    local _error=${1:-1}
+    shift
+    error "$*" >&2
+    exit ${_error}
+}
+
+info() {
+    printf "${NORMAL}%-7s: %s${NORMAL}\n" "info" "$*"
+}
+
+error() {
+    printf "${RED}%-7s: %s${NORMAL}\n" "error" "$*"
+}
+
+warning() {
+    printf "${BLUE}%-7s: %s${NORMAL}\n" "warning" "$*"
+}
+
 #========================================================================================
 # Main
 #========================================================================================
-
+_init
 case "$1" in
     --create-sql-db)
         create_sql_db_and_table 'force'
@@ -2694,11 +2719,9 @@ case "$1" in
                     . ${vmailfile}
                 fi
             else
-                # no local mail or vmail package installed
+                # vmail package not installed
                 MAIL_INSTALLED='none'
             fi
-
-            write_to_config_log -header
 
             config_error=0
           # if ! check_active_apache_ssl
@@ -2763,7 +2786,7 @@ case "$1" in
                     else
                         # generate stop configuration file
                         echo "- instance has been disabled."
-                        write_to_config_log -warn "roundcube has been disabled."
+                        warn "roundcube has been disabled."
 
                         create_roundcube_conf ${rcidx} 'stop'
                     fi
@@ -2778,24 +2801,17 @@ case "$1" in
             add_cron_job
 
             echo "finished."
-
-            compress_config_log
-            display_config_log
         else
             rcidx=1
             while [ ${rcidx} -le ${ROUNDCUBE_N} ] ; do
                 create_roundcube_conf ${rcidx} 'stop'
-
                 rcidx=`expr ${rcidx} + 1`
             done
-
             delete_cron_job
         fi
 
         # restart web server
-        if /var/install/bin/ask "Do you want to restart the webserver now (recommended)" "yes" ; then
-            /etc/init.d/apache2 restart
-        fi
+        /sbin/rc-service --quiet apache2 restart
         ;;
 esac
 
