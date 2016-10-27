@@ -137,7 +137,7 @@ check_active_apache_ssl ()
     if [ -f ${apache2file} ] ; then
         . ${apache2file}
 
-        if [ "`echo "${APACHE2_SSL}" | tr '[:upper:]' '[:lower:]'`" = "yes" ] ; then
+        if [ "$(echo "${APACHE2_SSL}" | tr '[:upper:]' '[:lower:]')" = "yes" ] ; then
             # ssl support activated
             if [ "${1}" != "--quiet" ] ; then
                 echo "Apache2 SSL has been enabled ..."
@@ -183,7 +183,7 @@ check_active_php_ldap ()
                     break
                 fi
 
-                capl_jdx=`expr ${capl_jdx} + 1`
+                capl_jdx=$(expr ${capl_jdx} + 1)
             done
         fi
 
@@ -191,7 +191,7 @@ check_active_php_ldap ()
             break
         fi
 
-        capl_idx=`expr ${capl_idx} + 1`
+        capl_idx=$(expr ${capl_idx} + 1)
     done
 
     if [ ${capl_ldap_required} -eq 1 ] ; then
@@ -286,7 +286,7 @@ check_active_php_mysql ()
             eisfair-1)
                 # eisfair-1
                 if [ -f /etc/my.cnf ] ; then
-                    mysql_sock=`awk -F' = ' '/socket/ {print $2}' /etc/my.cnf | tail -1`
+                    mysql_sock=$(awk -F' = ' '/socket/ {print $2}' /etc/my.cnf | tail -1)
 
                     if [ "${PHP_EXT_MYSQL_SOCKET}" = "${mysql_sock}" ] ; then
                         if [ "${1}" != "--quiet" ] ; then
@@ -393,7 +393,7 @@ get_smtp_port ()
             smtp_nbr=${smtp_str}
         else
             # non-numeric value
-            smtp_nbr=`cat ${services_file} | tr -s ' \011\/' ':' | grep -E "^${smtp_str}:[0-9]+:tcp" | cut -d: -f2`
+            smtp_nbr=$(cat ${services_file} | tr -s ' \011\/' ':' | grep -E "^${smtp_str}:[0-9]+:tcp" | cut -d: -f2)
 
             if ! is_numeric ${smtp_nbr} ; then
                 smtp_nbr='25'
@@ -481,7 +481,7 @@ get_sql_root_password ()
     if [ "${root_pass}" = "" ] ; then
         /var/install/bin/ask "Please enter the SQL root password" "" "*" > /tmp/ask.$$
         rc=$?
-        root_pass=`cat /tmp/ask.$$ | sed 's/ *//g'`
+        root_pass=$(cat /tmp/ask.$$ | sed 's/ *//g')
         rm -f /tmp/ask.$$
 
         if [ "${ROUNDCUBE_DB_TYPE}" = "pgsql" ] ; then
@@ -537,7 +537,7 @@ create_sql_db_and_table ()
             break
         fi
 
-        rc_nbr=`expr ${rc_nbr} + 1`
+        rc_nbr=$(expr ${rc_nbr} + 1)
     done
 
     if [ "${doc_root}" = "" ] ; then
@@ -609,7 +609,7 @@ create_sql_db_and_table ()
                     2)
                         step_name="checking sql database"
                         echo -n "${step_name} ..."
-                        db_exists=`${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"SHOW DATABASES" | grep -c "${DB_NAME}$"`
+                        db_exists=$(${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"SHOW DATABASES" | grep -c "${DB_NAME}$")
 
                         if [ ${db_exists} -eq 0 -o ${force} -eq 1 ] ; then
                             # sql database doesn't exist or no access rights have been granted, go on...
@@ -647,7 +647,7 @@ create_sql_db_and_table ()
                     4)
                         step_name="initializing sql database"
                         echo -n "${step_name} ..."
-                        table_exists=`${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -D${DB_NAME} -e"SHOW TABLES" | grep -c "^users$"`
+                        table_exists=$(${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -D${DB_NAME} -e"SHOW TABLES" | grep -c "^users$")
 
                         if [ ${table_exists} -eq 0 -o ${force} -eq 1 ] ; then
                             # sql table doesn't exist or no access rights have been granted, go on...
@@ -726,7 +726,7 @@ create_sql_db_and_table ()
                     2)
                         step_name="checking sql database"
                         echo -n "${step_name} ..."
-                        db_exists=`${SQL_BIN} -h${DB_HOST} -U${db_user} -l | grep -c "^ ${DB_NAME} "`
+                        db_exists=$(${SQL_BIN} -h${DB_HOST} -U${db_user} -l | grep -c "^ ${DB_NAME} ")
 
                         if [ ${db_exists} -eq 0 -o ${force} -eq 1 ] ; then
                             # sql database doesn't exist or no access rights have been granted, go on...
@@ -763,7 +763,7 @@ create_sql_db_and_table ()
                     4)
                         step_name="initializing sql database"
                         echo -n "${step_name} ..."
-                        table_exists=`${SQL_BIN} --tuples-only -h${DB_HOST} -U${db_user} -d${DB_NAME} -c "SELECT * FROM pg_catalog.pg_tables WHERE tablename = 'users'" | grep -c " users "`
+                        table_exists=$(${SQL_BIN} --tuples-only -h${DB_HOST} -U${db_user} -d${DB_NAME} -c "SELECT * FROM pg_catalog.pg_tables WHERE tablename = 'users'" | grep -c " users ")
 
                         if [ ${table_exists} -eq 0 -o ${force} -eq 1 ] ; then
                             # sql table doesn't exist or no access rights have been granted, go on...
@@ -877,7 +877,7 @@ remove_sql_db_and_table()
             break
         fi
 
-        rc_nbr=`expr ${rc_nbr} + 1`
+        rc_nbr=$(expr ${rc_nbr} + 1)
     done
 
     case ${db_type} in
@@ -893,7 +893,7 @@ remove_sql_db_and_table()
                     1)
                         step_name="removing sql database"
                         echo -n "${step_name} ..."
-                        db_exists=`${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"SHOW DATABASES" | grep -c "${DB_NAME}$"`
+                        db_exists=$(${SQL_BIN} -h${DB_HOST} -u${db_user} -p${db_pass} -e"SHOW DATABASES" | grep -c "${DB_NAME}$")
 
                         if [ ${db_exists} -ne 0 ] ; then
                             echo
@@ -965,7 +965,7 @@ remove_sql_db_and_table()
                     1)
                         step_name="removing sql database"
                         echo -n "${step_name} ..."
-                        db_exists=`${SQL_BIN} -h${DB_HOST} -U${db_user} -l | grep -c "^ ${DB_NAME} "`
+                        db_exists=$(${SQL_BIN} -h${DB_HOST} -U${db_user} -l | grep -c "^ ${DB_NAME} ")
 
                         if [ ${db_exists} -ne 0 ] ; then
                             echo
@@ -1089,10 +1089,10 @@ force_roundcube_update ()
 
         if [ -f ${version_file} ] ; then
             # previoud version information found
-            rc_prev_version=`cat ${version_file}`
+            rc_prev_version=$(cat ${version_file})
         fi
 
-        rc_curr_version=`grep "RCMAIL_VERSION" ${rc_doc_root}/program/include/iniset.php | sed "s/^.*RCMAIL_VERSION' *, *'\(.*\)'.*$/\1/"`
+        rc_curr_version=$(grep "RCMAIL_VERSION" ${rc_doc_root}/program/include/iniset.php | sed "s/^.*RCMAIL_VERSION' *, *'\(.*\)'.*$/\1/")
 
         if [ "${rc_prev_version}" != "" -a "${rc_curr_version}" != "" ] ; then
             if [ "${rc_prev_version}" != "${rc_curr_version}" ] ; then
@@ -1119,7 +1119,7 @@ force_roundcube_update ()
             rm -fr ${rc_doc_root}/installer
         fi
 
-        rc_nbr=`expr ${rc_nbr} + 1`
+        rc_nbr=$(expr ${rc_nbr} + 1)
     done
 
     if [ "${rc_curr_version}" != "" ] ; then
@@ -1157,7 +1157,7 @@ copy_program_files ()
                 mkdir -p ${roundcube_path}/config
             fi
 
-            for FNAME in `find ${rc_doc_root}/config -maxdepth 1 \( -name "*.dist" -o -name "*.php" \)`
+            for FNAME in $(find ${rc_doc_root}/config -maxdepth 1 \( -name "*.dist" -o -name "*.php" \))
             do
                 # move file
                 mv ${FNAME} ${roundcube_path}/config/
@@ -1278,7 +1278,7 @@ create_roundcube_conf ()
                 echo "| by ${pgmname}                                                       |"
                 echo '|                                                                       |'
                 echo "| Do not edit this file, edit ${roundcubefile}                   |"
-                echo "| Creation date: `date`                           |"
+                echo "| Creation date: $(date)                           |"
                 echo '|                                                                       |'
 
                 case ${MAIL_INSTALLED} in
@@ -1410,8 +1410,8 @@ create_roundcube_conf ()
 
                 if [ $? -eq 0 ] ; then
                     # split hostname and port
-                    rc_imap_host="`echo ${rc_imap_hostport} | cut -d: -f1`"
-                    rc_imap_port="`echo ${rc_imap_hostport} | cut -d: -f2`"
+                    rc_imap_host="$(echo ${rc_imap_hostport} | cut -d: -f1)"
+                    rc_imap_port="$(echo ${rc_imap_hostport} | cut -d: -f2)"
                 else
                     # hostname only
                     rc_imap_host="${rc_imap_hostport}"
@@ -1599,8 +1599,8 @@ create_roundcube_conf ()
 
                 if [ $? -eq 0 ] ; then
                     # split hostname and port
-                    rc_smtp_host="`echo ${rc_smtp_hostport} | cut -d: -f1`"
-                    rc_smtp_port="`echo ${rc_smtp_hostport} | cut -d: -f2`"
+                    rc_smtp_host="$(echo ${rc_smtp_hostport} | cut -d: -f1)"
+                    rc_smtp_port="$(echo ${rc_smtp_hostport} | cut -d: -f2)"
                 else
                     # hostname only
                     rc_smtp_host="${rc_smtp_hostport}"
@@ -1867,7 +1867,7 @@ create_roundcube_conf ()
 
                 if [ "${rc_plugins_use_all}" = "yes" ] ; then
                     # activate all existing plugins
-                    for rc_plugins_dirname in `find ${rc_plugins_path} -maxdepth 1 | sed "s#^${rc_plugins_path}/##g" | sort` ; do
+                    for rc_plugins_dirname in $(find ${rc_plugins_path} -maxdepth 1 | sed "s#^${rc_plugins_path}/##g" | sort) ; do
                         if [ "${rc_plugins_list}" = "" ] ; then
                             rc_plugins_list="'${rc_plugins_dirname}'"
                         else
@@ -2067,15 +2067,15 @@ create_roundcube_conf ()
                         echo "    'name'            => '${rc_globldap_info}',"
 
                         # temporarily remove ldap(s):// protocol information
-                        tmp_globldap_hostport=`echo "${rc_globldap_hostport}" | sed 's#^ldap.*://##'`
+                        tmp_globldap_hostport=$(echo "${rc_globldap_hostport}" | sed 's#^ldap.*://##')
 
                         # Check if port number has been given
                         echo "${tmp_globldap_hostport}" | grep -q ":"
 
                         if [ $? -eq 0 ] ; then
                             # split hostname and port
-                            rc_globldap_port=`echo "${tmp_globldap_hostport}" | cut -d: -f2`
-                            rc_globldap_host=`echo "${rc_globldap_hostport}" | sed "s#:${rc_globldap_port}##"`
+                            rc_globldap_port=$(echo "${tmp_globldap_hostport}" | cut -d: -f2)
+                            rc_globldap_host=$(echo "${rc_globldap_hostport}" | sed "s#:${rc_globldap_port}##")
                         else
                             # hostname only
                             rc_globldap_host="${rc_globldap_hostport}"
@@ -2276,7 +2276,7 @@ create_roundcube_conf ()
                 echo "| Configuration file for help plugin generated by ${pgmname}          |"
                 echo '|                                                                       |'
                 echo "| Do not edit this file, edit ${roundcubefile}                   |"
-                echo "| Creation date: `date`                           |"
+                echo "| Creation date: $(date)                           |"
                 echo '|                                                                       |'
                 echo '| This file is part of the Roundcube Webmail client                     |'
                 echo '| Copyright (C) 2005-2009, The Roundcube Dev Team                       |'
@@ -2450,7 +2450,7 @@ add_cron_job ()
             break
         fi
 
-        rc_nbr=`expr ${rc_nbr} + 1`
+        rc_nbr=$(expr ${rc_nbr} + 1)
     done
 
     # write file
@@ -2520,7 +2520,7 @@ show_installed_version ()
     eval rc_doc_root='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
 
     if [ -f ${rc_doc_root}/program/include/iniset.php ] ; then
-        rc_version=`grep "RCMAIL_VERSION" ${rc_doc_root}/program/include/iniset.php | sed "s/^.*RCMAIL_VERSION' *, *'\(.*\)'.*$/\1/"`
+        rc_version=$(grep "RCMAIL_VERSION" ${rc_doc_root}/program/include/iniset.php | sed "s/^.*RCMAIL_VERSION' *, *'\(.*\)'.*$/\1/")
         echo "- Roundcube version: ${rc_version}"
     fi
 }
@@ -2626,7 +2626,7 @@ purge_document_roots ()
                     # directory exists
                     /var/install/bin/ask "Directory '${line}' is not used anymore, delete it" 'n' > /tmp/ask.$$ <$tty
                     rc=$?
-                    yesno=`cat /tmp/ask.$$|tr 'A-Z' 'a-z'`
+                    yesno=$(cat /tmp/ask.$$|tr 'A-Z' 'a-z')
                     rm -f /tmp/ask.$$
                     if [ $rc = 255 ] ; then
                         rm ${tmpfile}
@@ -2792,7 +2792,7 @@ case "$1" in
                     fi
                 fi
 
-                rcidx=`expr ${rcidx} + 1`
+                rcidx=$(expr ${rcidx} + 1)
             done
 
             force_roundcube_update
@@ -2805,7 +2805,7 @@ case "$1" in
             rcidx=1
             while [ ${rcidx} -le ${ROUNDCUBE_N} ] ; do
                 create_roundcube_conf ${rcidx} 'stop'
-                rcidx=`expr ${rcidx} + 1`
+                rcidx=$(expr ${rcidx} + 1)
             done
             delete_cron_job
         fi
