@@ -52,7 +52,7 @@ package() {
 	install -D -m755 ${srcdir}/${pkgname}-update.sh     ${pkgdir}/var/install/config.d/roundcubemail-apache2-update.sh || return 1
 }
 
-md5sums="9b8c2ee0c545db66fe14cc6d6aec3b29  cui-roundcubemail-apache2.check
+md5sums="9d64e5c2666d74c8aff857587930cf87  cui-roundcubemail-apache2.check
 c1b3d9e0a4371fb9cee1842c1fb9c9de  cui-roundcubemail-apache2.check.exp
 1bcad8f202b9fdb729bc9cc74c1accae  cui-roundcubemail-apache2.check.ext
 761ae7fd9288113e4820a1022f510ae4  cui-roundcubemail-apache2.default
@@ -62,7 +62,7 @@ dc3fb63fdd12f20c9b5aba97976df6fe  cui-roundcubemail-apache2.sh
 2ce0c079c0c990e57d9f7e17d036ee8e  cui-roundcubemail-apache2.txt
 a2de51e4a8e3e38589129e22273880fd  cui-roundcubemail-apache2.txt.toc
 0912019fe6c3f6b1f2d44d9a7e6cf1b8  cui-roundcubemail-apache2-update.sh"
-sha256sums="67913461f23ec4341e6b6a7e2281a95c57a52bdf5daf271cff319ef24ed9e7a6  cui-roundcubemail-apache2.check
+sha256sums="5b3696b6ab8940b0b743ae1922a61e5799fec9ae0c64e300f6d83aba431c4e23  cui-roundcubemail-apache2.check
 229a3fd48dd8430e289f150efa5413eeba452deb3c2ef6acf4bc9bc2264c7886  cui-roundcubemail-apache2.check.exp
 2a9c8664cc91e8978f35cf9f3915ead8ddc844be1d366efc79fa45e14d2d82ba  cui-roundcubemail-apache2.check.ext
 89a77d9c523cbaaaea570cc856a4521521ec7e14ad9f337231e3e5eaa65180ab  cui-roundcubemail-apache2.default
@@ -72,7 +72,7 @@ f35a0bda2777de667a6f21f58c06219dd3fc39b185b8a549b6997fc64d77a12f  cui-roundcubem
 92ae9da22c31157b30d6f9546953bafd0fa96b63799fe63f98a873b473323342  cui-roundcubemail-apache2.txt
 50115ab3397f801fcfef1a3de8388499418b6464f2933d96f204a840e429aa78  cui-roundcubemail-apache2.txt.toc
 c0a70f23a6d8be871192047af2a5bcd80c8a9bb7ffd2298020ac4a1f3b022927  cui-roundcubemail-apache2-update.sh"
-sha512sums="b6572507cef794bc12a1832dc6591638791d3367baeced74fa56fbd7600bd50c92c1bb0974a106b99231d799292dac5e13807a259ce8a9f09672cbdd3e981db5  cui-roundcubemail-apache2.check
+sha512sums="446852caf1012036dfcbd9ef9a7ecd8765cc8b03376590f0c67d9867eadeafe59e9d5b6c13632a8f2a66fd7b9b8259760bb63954a53c9f8e452c845b936bc711  cui-roundcubemail-apache2.check
 abc12d853cf57c6fb40066ce98e5ec0e0dcb5c59e5045152d9ba16bb237d5ec7d5fdc63d9e9c090340401258dfc7292ae1d139202c9ff97e3f66fba2294ae024  cui-roundcubemail-apache2.check.exp
 93798ed6e93e2e3752df63d1bfcf335a648d70cb841f15124db29eda2a41e75b5628581552b6da9e984b80501483a19c3be14a26e134ba8ca1b5ebf90e1f14d1  cui-roundcubemail-apache2.check.ext
 95fa9653871588d797271a1f5e09df3aff7e12632734156c1b7683f3ac0d8b0f20753c2d8c516a68ccc46ca29af57453d6fc53c1e865cf854bf7c150e8c54e61  cui-roundcubemail-apache2.default
