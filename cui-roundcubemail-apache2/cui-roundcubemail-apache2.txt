@@ -55,7 +55,7 @@
    gestartet. Danach kann ueber einen Webbrowser, durch Eingabe von
    `http://<Name des eisfair-Servers>/roundcube/`, (ein abweichendes
    Verzeichnis kann in der Konfiguration ueber den Parameter
-   ROUNDCUBE_x_DOCUMENT_ROOT gesetzt werden) auf die Anwendung zugegriffen
+   ROUNDCUBE_DOCUMENT_ROOT gesetzt werden) auf die Anwendung zugegriffen
    werden.
 
                           Das Menue im Setup-Programm
@@ -142,30 +142,7 @@
 
           Standardeinstellung: ROUNDCUBE_DB_PASS=''
 
-   ROUNDCUBE_N
-          Ueber diesen Parameter wird die Anzahl der Roundcube-Instanzen
-          angegeben, die eingerichtet werden sollen.
-
-          Gueltige Werte: Zahl
-
-          Standardeinstellung: ROUNDCUBE_N='1'
-
-   ROUNDCUBE_x_ACTIVE
-          Wird dieser Parameter auf den Wert `yes' gesetzt, so wird die
-          zugehoerige Roundcube-Instanz aktiviert, `no' deaktiviert sie.
-
-          Beispiel: ROUNDCUBE_1_ACTIVE='no'
-
-   ROUNDCUBE_x_DOCUMENT_ROOT
-          Ueber diesen Parameter wird das Document-Root-Verzeichnis
-          festgelegt.
-
-          Gueltige Werte: absolute Pfadangabe
-
-          Standardeinstellung:
-          ROUNDCUBE_1_DOCUMENT_ROOT='/var/www/htdocs/roundcube'
-
-   ROUNDCUBE_x_SERVER_DOMAIN
+   ROUNDCUBE_SERVER_DOMAIN
           Ueber diesen Parameter wird der Domainname der lokalen Domain
           festgelegt, fuer welche Roundcube zustaendig sein soll. Dieser
           sollte gleich der Variablen SMTP_QUALIFY_DOMAIN aus dem
@@ -173,16 +150,16 @@
 
           Gueltige Werte: Domainname
 
-          Beispiel: ROUNDCUBE_1_SERVER_DOMAIN='domain.de'
+          Beispiel: ROUNDCUBE_SERVER_DOMAIN='domain.de'
 
-   ROUNDCUBE_x_SERVER_DOMAIN_CHECK
+   ROUNDCUBE_SERVER_DOMAIN_CHECK
           Ueber diesen Parameter kann die Pruefung der Zugriffsdomain beim
           Zugriff auf alle Roundcube Seiten aktiviert werden. Dies kann
           helfen sicher zu stellen, dass die Seitenzugriffe vom selben
           Server und nicht von einem Fremdserver kommen (Dies passiert
           ueblicherweise bei XSS oder Phishing-Attacken). Weicht die beim
           Zugriff verwendete Domain von der ueber den Parameter
-          [4]ROUNDCUBE_x_SERVER_DOMAIN festgelegten Domain ab, so wird der
+          [4]ROUNDCUBE_SERVER_DOMAIN festgelegten Domain ab, so wird der
           Zugriff nach Ausgabe einer Meldung verweigert.
           ACHTUNG
           Diese Pruefungen sind nicht narrensicher und manche Browser
@@ -198,14 +175,14 @@
 
           Gueltige Werte: yes oder no
 
-          Standardeinstellung: ROUNDCUBE_1_SERVER_DOMAIN_CHECK='yes'
+          Standardeinstellung: ROUNDCUBE_SERVER_DOMAIN_CHECK='yes'
 
-   Die folgenden ROUNDCUBE_x_SERVER_..-Parameter werden nur dann
+   Die folgenden ROUNDCUBE_SERVER_..-Parameter werden nur dann
    ausgewertet, wenn auf dem lokalen Rechner kein installiertes Mail- oder
    Vmail-Paket gefunden wird. Sie ermoeglichen den Zugriff auf einen
    Mailserver, welcher auf einem anderen Rechner betrieben wird.
 
-   ROUNDCUBE_x_SERVER_IMAP_HOST
+   ROUNDCUBE_SERVER_IMAP_HOST
           Ueber diesen Parameter wird der Servername des Rechners
           festgelegt welcher die IMAP-Postfaecher verwaltet. Optional
           kann, durch einen Doppelpunkt getrennt, ein vom Standard
@@ -213,9 +190,9 @@
 
           Gueltige Werte: Domainname zzgl. optionalem tcp-Port
 
-          Standardeinstellung: ROUNDCUBE_1_SERVER_IMAP_HOST='localhost'
+          Standardeinstellung: ROUNDCUBE_SERVER_IMAP_HOST='localhost'
 
-   ROUNDCUBE_x_SERVER_IMAP_TYPE
+   ROUNDCUBE_SERVER_IMAP_TYPE
           Ueber diesen Parameter kann der IMAP-Servertyp eingestellt
           werden, zu welchem sich verbunden werden soll. Es kann zwischen
           den Typen `uw' (Mail-Paket) und `courier' (Vmail-Paket fuer
@@ -224,9 +201,9 @@
 
           Gueltige Werte: uw, courier oder dovecot
 
-          Standardeinstellung: ROUNDCUBE_1_SERVER_IMAP_TYPE='uw'
+          Standardeinstellung: ROUNDCUBE_SERVER_IMAP_TYPE='uw'
 
-   ROUNDCUBE_x_SERVER_IMAP_AUTH
+   ROUNDCUBE_SERVER_IMAP_AUTH
           Ueber diesen Parameter kann die Authentifizierungsmethode
           festgelegt werden, welche beim Zugriff auf einen entfernten
           IMAP-Server verwendet werden soll.
@@ -238,9 +215,9 @@
           installiert so muss hier `login' eingestellt werden.
           Gueltige Werte: md5, digest, login
 
-          Standardeinstellung: ROUNDCUBE_1_SERVER_IMAP_AUTH='md5'
+          Standardeinstellung: ROUNDCUBE_SERVER_IMAP_AUTH='md5'
 
-   ROUNDCUBE_x_SERVER_IMAP_TRANSPORT
+   ROUNDCUBE_SERVER_IMAP_TRANSPORT
           Ueber diesen Parameter kann die verschluesselte Kommunikation
           mit dem IMAP-Prozess aktiviert werden. Wird der Parameter auf
           den Wert `default' gesetzt, so wird ueber eine unverschluesselte
@@ -248,9 +225,9 @@
 
           Gueltige Werte: default, ssl oder tls
 
-          Standardeinstellung: ROUNDCUBE_1_SERVER_IMAP_TRANSPORT='default'
+          Standardeinstellung: ROUNDCUBE_SERVER_IMAP_TRANSPORT='default'
 
-   ROUNDCUBE_x_SERVER_SMTP_HOST
+   ROUNDCUBE_SERVER_SMTP_HOST
           Ueber diesen Parameter wird der Servername des Rechners
           festgelegt auf welchem der SMTP-Server laeuft. Optional kann,
           durch einen Doppelpunkt getrennt, ein vom Standard abweichender
@@ -258,9 +235,9 @@
 
           Gueltige Werte: Domainname zzgl. optionalem tcp-Port
 
-          Standardeinstellung: ROUNDCUBE_1_SERVER_SMTP_HOST='localhost'
+          Standardeinstellung: ROUNDCUBE_SERVER_SMTP_HOST='localhost'
 
-   ROUNDCUBE_x_SERVER_SMTP_AUTH
+   ROUNDCUBE_SERVER_SMTP_AUTH
           Ueber diesen Parameter kann die Authentifizierungsmethode
           festgelegt werden, welche beim Zugriff auf einen entfernten
           SMTP-Server verwendet werden soll.
@@ -276,9 +253,9 @@
 
           Gueltige Werte: md5, digest, login, none
 
-          Standardeinstellung: ROUNDCUBE_1_SERVER_SMTP_AUTH='md5'
+          Standardeinstellung: ROUNDCUBE_SERVER_SMTP_AUTH='md5'
 
-   ROUNDCUBE_x_SERVER_SMTP_TRANSPORT
+   ROUNDCUBE_SERVER_SMTP_TRANSPORT
           Ueber diesen Parameter kann die verschluesselte Kommunikation
           mit dem SMTP-Server aktiviert werden. Wird der Parameter auf den
           Wert `default' gesetzt, so wird ueber eine unverschluesselte
@@ -286,18 +263,18 @@
 
           Gueltige Werte: default, ssl oder tls
 
-          Standardeinstellung: ROUNDCUBE_1_SERVER_SMTP_TRANSPORT='default'
+          Standardeinstellung: ROUNDCUBE_SERVER_SMTP_TRANSPORT='default'
 
-   ROUNDCUBE_x_ORGA_NAME
+   ROUNDCUBE_ORGA_NAME
           Ueber diesen Parameter kann an verschiedenen Stellen in der
           Roundcube-Oberflaeche der Firmenname, an Stelle von
           `eisfair-Roundcube', eingeblendet werden.
 
           Gueltige Werte: Text
 
-          Standardeinstellung: ROUNDCUBE_1_ORGA_NAME='eisfair-Roundcube'
+          Standardeinstellung: ROUNDCUBE_ORGA_NAME='eisfair-Roundcube'
 
-   ROUNDCUBE_x_ORGA_LOGO
+   ROUNDCUBE_ORGA_LOGO
           Ueber diesen Parameter wird das Firmen-Logo festgelegt, welches
           an verschiedenen Stellen der Roundcube-Oberflaeche angezeigt
           wird. Es kann entweder ein relativer oder ein absoluter
@@ -305,18 +282,18 @@
 
           Gueltige Werte: Pfad- und Dateiname
 
-          Beispiel: ROUNDCUBE_1_ORGA_LOGO='eisfair_logo_klein.png'
+          Beispiel: ROUNDCUBE_ORGA_LOGO='eisfair_logo_klein.png'
 
-   ROUNDCUBE_x_ORGA_PROVIDER_URL
+   ROUNDCUBE_ORGA_PROVIDER_URL
           Ueber diesen Parameter wird die URL des Providers konfiguriert,
           auf welche beim Zugriff auf das Hilfe-Menue verzweigt wird.
 
           Gueltige Werte: URL
 
           Standardeinstellung:
-          ROUNDCUBE_1_ORGA_PROVIDER_URL='http://trac.roundcube.net/wiki/'
+          ROUNDCUBE_ORGA_PROVIDER_URL='http://trac.roundcube.net/wiki/'
 
-   ROUNDCUBE_x_ORGA_DEF_LANGUAGE
+   ROUNDCUBE_ORGA_DEF_LANGUAGE
           Dieser Parameter legt fest, welche Standardsprache verwendet
           werden soll, wenn dies von Roundcube nicht automatisch, z.B.
           Ueber die Browser-Konfiguration, erkannt wird. Bitte den
@@ -331,36 +308,36 @@
 
           Gueltige Werte: Locale-Kennung
 
-          Standardeinstellung: ROUNDCUBE_1_ORGA_DEF_LANGUAGE='de_DE'
+          Standardeinstellung: ROUNDCUBE_ORGA_DEF_LANGUAGE='de_DE'
 
-   ROUNDCUBE_x_FOLDER_MOVE_MSGS_TO_TRASH
+   ROUNDCUBE_FOLDER_MOVE_MSGS_TO_TRASH
           Wird dieser Parameter auf `yes' gestellt, so werden Nachrichten
           beim Loeschen in den Papierkorb verschoben und nicht direkt
           geloescht.
 
           Gueltige Werte: yes, no
 
-          Standardeinstellung: ROUNDCUBE_1_FOLDER_MOVE_MSGS_TO_TRASH='yes'
+          Standardeinstellung: ROUNDCUBE_FOLDER_MOVE_MSGS_TO_TRASH='yes'
 
-   ROUNDCUBE_x_FOLDER_MOVE_MSGS_TO_SEND
+   ROUNDCUBE_FOLDER_MOVE_MSGS_TO_SEND
           Wird dieser Parameter auf `yes' gestellt, so werden Nachrichten
           nach dem Versand in den Sent-Ordner verschoben und nicht direkt
           geloescht.
 
           Gueltige Werte: yes, no
 
-          Standardeinstellung: ROUNDCUBE_1_FOLDER_MOVE_MSGS_TO_SEND='yes'
+          Standardeinstellung: ROUNDCUBE_FOLDER_MOVE_MSGS_TO_SEND='yes'
 
-   ROUNDCUBE_x_FOLDER_MOVE_MSGS_TO_DRAFT
+   ROUNDCUBE_FOLDER_MOVE_MSGS_TO_DRAFT
           Wird dieser Parameter auf `yes' gestellt, so wird beim Abbrechen
           der Nachrichtenbearbeitung abgefragt, ob diese im Draft-Ordner
           gespeichert werden soll.
 
           Gueltige Werte: yes, no
 
-          Standardeinstellung: ROUNDCUBE_1_FOLDER_MOVE_MSGS_TO_DRAFT='yes'
+          Standardeinstellung: ROUNDCUBE_FOLDER_MOVE_MSGS_TO_DRAFT='yes'
 
-   ROUNDCUBE_x_FOLDER_AUTO_EXPUNGE
+   ROUNDCUBE_FOLDER_AUTO_EXPUNGE
           Ein IMAP-Server handhabt das Loeschen von Nachrichten wie folgt:
           Erst wird die Nachricht nur zum Loeschen markiert, anschliessend
           endgueltig geloescht. Wird dieser Parameter auf `yes' gesetzt,
@@ -369,9 +346,9 @@
 
           Gueltige Werte: yes, no
 
-          Standardeinstellung: ROUNDCUBE_1_FOLDER_AUTO_EXPUNGE='yes'
+          Standardeinstellung: ROUNDCUBE_FOLDER_AUTO_EXPUNGE='yes'
 
-   ROUNDCUBE_x_FOLDER_FORCE_NSFOLDER (Optionaler Parameter)
+   ROUNDCUBE_FOLDER_FORCE_NSFOLDER (Optionaler Parameter)
           Wird dieser Parameter auf `yes' gestellt, so wird die Anzeige
           spezieller Namespace-Ordner, wie z.B. #ftp/, #public/, #shared/
           forciert. Bei UW-IMAP Servern ist dieser Parameter
@@ -379,9 +356,9 @@
 
           Gueltige Werte: yes, no
 
-          Standardeinstellung: ROUNDCUBE_1_FORCE_NSFOLDER nicht gesetzt.
+          Standardeinstellung: ROUNDCUBE_FORCE_NSFOLDER nicht gesetzt.
 
-   ROUNDCUBE_x_GENERAL_DEF_CHARSET
+   ROUNDCUBE_GENERAL_DEF_CHARSET
           Dieser Parameter legt fest welcher Zeichensatz beim Versenden
           von Nachrichten und bei der HTML-Anzeige verwendet werden soll.
           Verwenden Sie an Stelle von `US_ASCII' auf jeden Fall `UTF-8'.
@@ -389,9 +366,9 @@
 
           Gueltige Werte: utf-8, iso-8859-1, koi8-r, ...
 
-          Standardeinstellung: ROUNDCUBE_1_GENERAL_DEF_CHARSET='utf-8'
+          Standardeinstellung: ROUNDCUBE_GENERAL_DEF_CHARSET='utf-8'
 
-   ROUNDCUBE_x_GENERAL_DES_KEY
+   ROUNDCUBE_GENERAL_DES_KEY
           Ueber diesen Parameter wird der DES-Schluessel festgelegt, mit
           welchem das IMAP-Kennwort im Session-Datensatz (und im
           Client-Cookie wenn Kennwort merken aktiviert wurde)
@@ -400,9 +377,9 @@
 
           Gueltige Werte: gueltiger DES-Schluessel
 
-          Standardeinstellung: ROUNDCUBE_1_GENERAL_DES_KEY=''
+          Standardeinstellung: ROUNDCUBE_GENERAL_DES_KEY=''
 
-   ROUNDCUBE_x_GENERAL_ALLOW_RECEIPTS_USE
+   ROUNDCUBE_GENERAL_ALLOW_RECEIPTS_USE
           Wird dieser Parameter auf `yes' gesetzt, so kann jeder Anwender
           Lese- und Zustellbenachrichtigungen fuer gesendete Nachrichten
           anfordern.
@@ -410,9 +387,9 @@
           Gueltige Werte: yes, no
 
           Standardeinstellung:
-          ROUNDCUBE_1_GENERAL_ALLOW_RECEIPTS_USE='yes'
+          ROUNDCUBE_GENERAL_ALLOW_RECEIPTS_USE='yes'
 
-   ROUNDCUBE_x_GENERAL_ALLOW_IDENTITY_EDIT
+   ROUNDCUBE_GENERAL_ALLOW_IDENTITY_EDIT
           Wird dieser Parameter auf `yes' gesetzt, so ist es dem Anwender
           gestattet seinen Anwendernamen und seine E-Mail-Adresse zu
           bearbeiten.
@@ -420,23 +397,23 @@
           Gueltige Werte: yes, no
 
           Standardeinstellung:
-          ROUNDCUBE_1_GENERAL_ALLOW_IDENTITY_EDIT='yes'
+          ROUNDCUBE_GENERAL_ALLOW_IDENTITY_EDIT='yes'
 
-   ROUNDCUBE_x_PLUGINS_USE_ALL
+   ROUNDCUBE_PLUGINS_USE_ALL
           Wird dieser Parameter auf `yes' gesetzt, so werden alle zur
           Verfuegung stehenden Roundcube-Plugins aktiviert. Wird dieser
           Parameter auf `no' gesetzt, so koennen ueber den Parameter
-          [5]ROUNDCUBE_x_PLUGINS_N bzw. [6]ROUNDCUBE_x_PLUGINS_y_DIRNAME
+          [5]ROUNDCUBE_PLUGINS_N bzw. [6]ROUNDCUBE_PLUGINS_y_DIRNAME
           Plugins individuell aktiviert werden.
 
           Gueltige Werte: yes, no
 
-          Standardeinstellung: ROUNDCUBE_1_PLUGINS_USE_ALL='no'
+          Standardeinstellung: ROUNDCUBE_PLUGINS_USE_ALL='no'
 
-   ROUNDCUBE_x_PLUGINS_N / ROUNDCUBE_x_PLUGINS_y_DIRNAME
-          Ueber den Parameter ROUNDCUBE_x_PLUGINS_N wird die Anzahl der zu
+   ROUNDCUBE_PLUGINS_N / ROUNDCUBE_PLUGINS_y_DIRNAME
+          Ueber den Parameter ROUNDCUBE_PLUGINS_N wird die Anzahl der zu
           aktivierenden Roundcube-Plugins eingestellt. Ueber
-          ROUNDCUBE_x_PLUGINS_y_DIRNAME werden die Namen der zu
+          ROUNDCUBE_PLUGINS_y_DIRNAME werden die Namen der zu
           aktivierenden Plugins festgelegt. Neue Plugins muessen unter dem
           Verzeichnis
           `/var/www/htdocs/roundcube/plugins' abgelegt werden.
@@ -445,12 +422,12 @@
 
           Beispiel:
 
-          ROUNDCUBE_1_PLUGINS_N='3'
-          ROUNDCUBE_1_PLUGINS_1_DIRNAME='emoticons'
-          ROUNDCUBE_1_PLUGINS_2_DIRNAME='filters'
-          ROUNDCUBE_1_PLUGINS_3_DIRNAME='help'
+          ROUNDCUBE_PLUGINS_N='3'
+          ROUNDCUBE_PLUGINS_1_DIRNAME='emoticons'
+          ROUNDCUBE_PLUGINS_2_DIRNAME='filters'
+          ROUNDCUBE_PLUGINS_3_DIRNAME='help'
 
-   ROUNDCUBE_x_GLOBADDR_LDAP_N
+   ROUNDCUBE_GLOBADDR_LDAP_N
           Ueber diesen Parameter wird die Anzahl der globalen
           LDAP-Adressbuecher angegeben auf welche zugegriffen werden soll.
           Wird dieser Wert auf `0' gesetzt, so werden keine globalen
@@ -458,48 +435,48 @@
 
           Gueltige Werte: Zahl
 
-          Standardeinstellung: ROUNDCUBE_1_GLOBADDR_LDAP_N='0'
+          Standardeinstellung: ROUNDCUBE_GLOBADDR_LDAP_N='0'
 
-   ROUNDCUBE_x_GLOBADDR_LDAP_y_ACTIVE
+   ROUNDCUBE_GLOBADDR_LDAP_y_ACTIVE
           Fuer die Aktivierung des LDAP-basierten, globalen Adressbuches
           muss diese Variable lediglich auf den Wert `yes' gestellt
           werden. Die Einstellung `no' deaktiviert das Adressbuch.
 
           Gueltige Werte: yes, no
 
-          Standardwert: ROUNDCUBE_1_GLOBADDR_LDAP_1_ACTIVE='no'
+          Standardwert: ROUNDCUBE_GLOBADDR_LDAP_1_ACTIVE='no'
 
-   ROUNDCUBE_x_GLOBADDR_LDAP_y_INFO
+   ROUNDCUBE_GLOBADDR_LDAP_y_INFO
           Ueber diesen Parameter kann ein beschreibender Text zum
           LDAP-Adressbuch festgelegt werden.
 
           Gueltige Werte: Text
 
-          Beispiel: ROUNDCUBE_1_GLOBADDR_LDAP_1_INFO='My LDAP directory'
+          Beispiel: ROUNDCUBE_GLOBADDR_LDAP_1_INFO='My LDAP directory'
 
-   ROUNDCUBE_x_GLOBADDR_LDAP_y_BASEDN
+   ROUNDCUBE_GLOBADDR_LDAP_y_BASEDN
           Ueber diesen Parameter wird die base-dn fuer den Zugriff auf das
           globale LDAP-Adressbuch festgelegt.
 
           Gueltige Werte: base-dn
 
           Beispiel:
-          ROUNDCUBE_1_GLOBADDR_LDAP_1_BASEDN='ou=contacts,ou=addressbook,d
+          ROUNDCUBE_GLOBADDR_LDAP_1_BASEDN='ou=contacts,ou=addressbook,d
           c=domain,dc=lan'
 
-   ROUNDCUBE_x_GLOBADDR_LDAP_y_HOST
+   ROUNDCUBE_GLOBADDR_LDAP_y_HOST
           Ueber diesen Parameter wird der Name des Rechners festgelegt auf
           welchem der LDAP-Server laeuft.
 
           Gueltige Werte: Hostname oder IP-Adresse
 
-          Standardwert: ROUNDCUBE_1_GLOBADDR_LDAP_1_HOST='localhost'
+          Standardwert: ROUNDCUBE_GLOBADDR_LDAP_1_HOST='localhost'
 
           Beispiel:
-          ROUNDCUBE_1_GLOBADDR_LDAP_1_HOST='ldap://myldap.local.lan:389'
-          ROUNDCUBE_1_GLOBADDR_LDAP_1_HOST='ldaps://myldap.local.lan'
+          ROUNDCUBE_GLOBADDR_LDAP_1_HOST='ldap://myldap.local.lan:389'
+          ROUNDCUBE_GLOBADDR_LDAP_1_HOST='ldaps://myldap.local.lan'
 
-   ROUNDCUBE_x_GLOBADDR_LDAP_y_AUTH
+   ROUNDCUBE_GLOBADDR_LDAP_y_AUTH
           Falls eine Authentifikation gegenueber des LDAP-Servers
           erforderlich ist, so muss diese Variable lediglich auf den Wert
           `yes' gestellt werden. Bei der Einstellung `no' wird keine
@@ -507,48 +484,48 @@
 
           Gueltige Werte: yes, no
 
-          Standardwert: ROUNDCUBE_1_GLOBADDR_LDAP_1_AUTH='no'
+          Standardwert: ROUNDCUBE_GLOBADDR_LDAP_1_AUTH='no'
 
-   ROUNDCUBE_x_GLOBADDR_LDAP_y_BINDDN
+   ROUNDCUBE_GLOBADDR_LDAP_y_BINDDN
           Ueber diesen Parameter wird die bind-dn fuer die
           Authentifizierung am LDAP-Server festgelegt.
 
           Gueltige Werte: bind-dn
 
           Beispiel:
-          ROUNDCUBE_1_GLOBADDR_LDAP_1_BINDDN='cn=ldapadmin,dc=domain,dc=la
+          ROUNDCUBE_GLOBADDR_LDAP_1_BINDDN='cn=ldapadmin,dc=domain,dc=la
           n'
 
-   ROUNDCUBE_x_GLOBADDR_LDAP_y_BINDPASS
+   ROUNDCUBE_GLOBADDR_LDAP_y_BINDPASS
           Ueber diesen Parameter wird das bind-Kennwort fuer die
           Authentifizierung am LDAP-Server festgelegt.
 
           Gueltige Werte: Kennwort
 
-          Beispiel: ROUNDCUBE_1_GLOBADDR_LDAP_1_BINDPASS='my-secret'
+          Beispiel: ROUNDCUBE_GLOBADDR_LDAP_1_BINDPASS='my-secret'
 
-   ROUNDCUBE_x_GLOBADDR_LDAP_y_WRITEABLE
+   ROUNDCUBE_GLOBADDR_LDAP_y_WRITEABLE
           Wird dieser Parameter auf `yes' gesetzt, so wird das Bearbeiten
           des LDAP- Adressbuchs zugelassen. Wird der Parameter auf `no'
           gesetzt, so wird das Bearbeiten unterbunden.
 
           Gueltige Werte: yes, no
 
-          Standardeinstellung: ROUNDCUBE_1_GLOBADDR_LDAP_1_WRITEABLE='no'
+          Standardeinstellung: ROUNDCUBE_GLOBADDR_LDAP_1_WRITEABLE='no'
 
-   ROUNDCUBE_x_GLOBADDR_LDAP_y_CHARSET (Optionaler Parameter)
+   ROUNDCUBE_GLOBADDR_LDAP_y_CHARSET (Optionaler Parameter)
           Ueber diesen Parameter kann ein vom Standardzeichensatz, welcher
-          ueber den Parameter [7]ROUNDCUBE_x_GENERAL_DEF_CHARSET definiert
+          ueber den Parameter [7]ROUNDCUBE_GENERAL_DEF_CHARSET definiert
           wurde, abweichender Zeichensatz festgelegt werden.
 
-          Beispiel: ROUNDCUBE_1_GENERAL_DEF_CHARSET='utf-8'
+          Beispiel: ROUNDCUBE_GENERAL_DEF_CHARSET='utf-8'
 
-   ROUNDCUBE_x_GLOBADDR_LDAP_y_MAXROWS (Optionaler Parameter)
+   ROUNDCUBE_GLOBADDR_LDAP_y_MAXROWS (Optionaler Parameter)
           Ueber diesen Parameter wird die maximale Anzahl von
           Antwortzeilen definiert die fuer die Anzeige des Suchergebnisses
           genutzt werden, ansonsten wird der Standardwert '150' verwendet.
 
-          Beispiel: ROUNDCUBE_1_GLOBADDR_LDAP_1_MAXROWS='200'
+          Beispiel: ROUNDCUBE_GLOBADDR_LDAP_1_MAXROWS='200'
 
    ROUNDCUBE_CRON_SCHEDULE (Optionaler Parameter)
           Ueber diesen Parameter wird festgelegt zu welchem Zeitpunkt bzw.

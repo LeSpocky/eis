@@ -166,35 +166,21 @@ check_active_php_ldap ()
     retval=1
 
     # Check if ldap support is required
-    capl_ldap_required=0
-    capl_idx=1
-    while [ ${capl_idx} -le ${ROUNDCUBE_N} ] ; do
-        eval capl_active='$ROUNDCUBE_'${capl_idx}'_ACTIVE'
+    capl_ldap_required=false
+    if [ "${START_ROUNDCUBE}" = "yes" ] ; then
+        capl_jdx=1
+        while [ ${capl_jdx} -le ${ROUNDCUBE_GLOBADDR_LDAP_N} ] ; do
+            eval capl_globldap_active='$ROUNDCUBE_GLOBADDR_LDAP_'${capl_jdx}'_ACTIVE'
 
-        if [ "${capl_active}" = "yes" ] ; then
-            eval capl_globldap_n='$ROUNDCUBE_'${capl_idx}'_GLOBADDR_LDAP_N'
+            if [ "${capl_globldap_active}" = "yes" ] ; then
+                capl_ldap_required=true
+                break
+            fi
+            capl_jdx=$(expr ${capl_jdx} + 1)
+        done
+    fi
 
-            capl_jdx=1
-            while [ ${capl_jdx} -le ${capl_globldap_n} ] ; do
-                eval capl_globldap_active='$ROUNDCUBE_'${capl_idx}'_GLOBADDR_LDAP_'${capl_jdx}'_ACTIVE'
-
-                if [ "${capl_globldap_active}" = "yes" ] ; then
-                    capl_ldap_required=1
-                    break
-                fi
-
-                capl_jdx=$(expr ${capl_jdx} + 1)
-            done
-        fi
-
-        if [ ${capl_ldap_required} -eq 1 ] ; then
-            break
-        fi
-
-        capl_idx=$(expr ${capl_idx} + 1)
-    done
-
-    if [ ${capl_ldap_required} -eq 1 ] ; then
+    if ${capl_ldap_required} ; then
         # ldap support required check php parameter
         if [ -f ${php5file} ] ; then
             # apache2_php5 installed
@@ -282,42 +268,17 @@ check_active_php_mysql ()
         fi
 
         mysql_socket=1
-        case ${EISFAIR_SYSTEM} in
-            eisfair-1)
-                # eisfair-1
-                if [ -f /etc/my.cnf ] ; then
-                    mysql_sock=$(awk -F' = ' '/socket/ {print $2}' /etc/my.cnf | tail -1)
-
-                    if [ "${PHP_EXT_MYSQL_SOCKET}" = "${mysql_sock}" ] ; then
-                        if [ "${1}" != "--quiet" ] ; then
-                            echo "php-mysql-socket has correctly been set ..."
-                        fi
-                        mysql_socket=0
-                    else
-                        if [ "${1}" != "--quiet" ] ; then
-                            echo "php-mysql-socket hasn't been set correctly ..."
-                            echo "set PHP_EXT_MYSQL_SOCKET='${mysql_sock}'"
-                        fi
-                    fi
-                else
-                    echo "MySQL/MariaDB configuration file /etc/my.cnf cannot be found!"
-                fi
-                ;;
-            *)
-                # eisfair-2
-                if [ "${PHP_EXT_MYSQL_SOCKET}" = "/var/run/mysql/mysql.sock" ] ; then
-                    if [ "${1}" != "--quiet" ] ; then
-                        echo "php-mysql-socket has correctly been set ..."
-                    fi
-                    mysql_socket=0
-                else
-                    if [ "${1}" != "--quiet" ] ; then
-                        echo "php-mysql-socket hasn't been set correctly ..."
-                        echo "set PHP_EXT_MYSQL_SOCKET='/var/run/mysql/mysql.sock'"
-                    fi
-                fi
-                ;;
-        esac
+        if [ "${PHP_EXT_MYSQL_SOCKET}" = "/var/run/mysql/mysql.sock" ] ; then
+            if [ "${1}" != "--quiet" ] ; then
+                echo "php-mysql-socket has correctly been set ..."
+            fi
+            mysql_socket=0
+        else
+            if [ "${1}" != "--quiet" ] ; then
+                echo "php-mysql-socket hasn't been set correctly ..."
+                echo "set PHP_EXT_MYSQL_SOCKET='/var/run/mysql/mysql.sock'"
+            fi
+        fi
 
         if [ ${mysql_php} -eq 0 -a ${mysql_socket} -eq 0 ] ; then
             retval=0
@@ -868,18 +829,6 @@ remove_sql_db_and_table()
         fi
     fi
 
-    rc_nbr=1
-    while [ ${rc_nbr} -le ${ROUNDCUBE_N} ] ; do
-        eval active='$ROUNDCUBE_'${rc_nbr}'_ACTIVE'
-
-        if [ "${active}" = "yes" ] ; then
-            eval doc_root='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
-            break
-        fi
-
-        rc_nbr=$(expr ${rc_nbr} + 1)
-    done
-
     case ${db_type} in
         mysql|mysqli|mssql|sqlsrv)
             # create sql command file
@@ -1030,169 +979,6 @@ remove_sql_db_and_table()
             fi
             ;;
     esac
-}
-
-# ----------------------------------------------------------------------------
-# Check if unique document root
-# $1 - Roundcube instance
-# ----------------------------------------------------------------------------
-is_unique_docroot ()
-{
-    rc_nbr=$1
-    rcret=0
-
-    if [ ${rc_nbr} -gt 1 -a ${ROUNDCUBE_N} -ne 0 ] ; then
-        eval rc_active1='$ROUNDCUBE_'${rc_nbr}'_ACTIVE'
-        eval rc_doc_root1='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
-
-        if [ "${rc_active1}" = "yes" ] ; then
-            # active entry - compare it...
-            echo "- checking if document root is unique ..."
-
-            idx=1
-            while [ ${idx} -le ${ROUNDCUBE_N} ] ; do
-                if [ ${idx} -ne ${rc_nbr} ] ; then
-                    eval rc_active2='$ROUNDCUBE_'${idx}'_ACTIVE'
-
-                    if [ "${rc_active2}" = "yes" ] ; then
-                        # active entry - compare it...
-                        eval rc_doc_root2='$ROUNDCUBE_'${idx}'_DOCUMENT_ROOT'
-
-                        if [ "${rc_doc_root1}" = "${rc_doc_root2}" ] ; then
-                            echo "! Error: duplicate document roots (${rc_nbr} = ${idx}) found, please check configuration!"
-                            error "Duplicate document roots (${rc_nbr} = ${idx}) found!"
-                            rcret=1
-                            break
-                        fi
-                    fi
-                fi
-
-                idx=$(expr ${idx} + 1)
-            done
-        fi
-    fi
-
-    return ${rcret}
-}
-
-# ----------------------------------------------------------------------------
-# force update of roundcube database and configuration
-# $1 - Roundcube instance
-# ----------------------------------------------------------------------------
-force_roundcube_update ()
-{
-    rc_nbr=1
-    rc_prev_version=''
-    rc_curr_version=''
-    while [ ${rc_nbr} -le ${ROUNDCUBE_N} ] ; do
-        eval rc_doc_root='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
-
-        if [ -f ${version_file} ] ; then
-            # previoud version information found
-            rc_prev_version=$(cat ${version_file})
-        fi
-
-        rc_curr_version=$(grep "RCMAIL_VERSION" ${rc_doc_root}/program/include/iniset.php | sed "s/^.*RCMAIL_VERSION' *, *'\(.*\)'.*$/\1/")
-
-        if [ "${rc_prev_version}" != "" -a "${rc_curr_version}" != "" ] ; then
-            if [ "${rc_prev_version}" != "${rc_curr_version}" ] ; then
-                echo "- updating configuration (${rc_doc_root}) ..."
-
-                # import database content once
-                /var/install/bin/roundcube-import-database --update
-
-                # update database schema and run configuration check
-                if [ -f ${rc_doc_root}/installer/rcube_install.php ] ; then
-                    # installer sub-directory exists, update database schema and run configuration check
-                    chmod 544 ${rc_doc_root}/bin/update.sh
-                    ${rc_doc_root}/bin/update.sh --version=${rc_prev_version}
-                fi
-            else
-                # no update possible/necessary
-                break
-            fi
-        fi
-
-        if [ -f ${rc_doc_root}/installer/rcube_install.php ] ; then
-            # remove installer sub-directory
-            echo "- removing installation files ..."
-            rm -fr ${rc_doc_root}/installer
-        fi
-
-        rc_nbr=$(expr ${rc_nbr} + 1)
-    done
-
-    if [ "${rc_curr_version}" != "" ] ; then
-        # save version information
-        echo "${rc_curr_version}" > ${version_file}
-    fi
-}
-
-# ----------------------------------------------------------------------------
-# copy program files
-# $1 - Roundcube instance
-# ----------------------------------------------------------------------------
-copy_program_files ()
-{
-    rc_nbr=$1
-    eval rc_doc_root='$ROUNDCUBE_'${rc_nbr}'_DOCUMENT_ROOT'
-
-    echo "- copying program files (${rc_doc_root}) ..."
-
-    if [ ! -f "${rc_doc_root}/index.php" ] ; then
-        # files don't exist - copy ...
-        if [ ! -d "${rc_doc_root}" ] ; then
-            mkdir -p "${rc_doc_root}"
-        fi
-
-        # extract Roundcube software
-        tar xzf ${roundcube_path}/.install/rc_bin_prog.tgz -C "${rc_doc_root}"
-
-        # extract additional Roundcube plugins
-        tar xzf ${roundcube_path}/.install/rc_bin_plugins.tgz -C "${rc_doc_root}/plugins"
-
-        if [ ! -h ${rc_doc_root}/config -a -d ${rc_doc_root}/config ] ; then
-            # not a symbolic link but a directory - move file to 'save' directory
-            if [ ! -d ${roundcube_path}/config ] ; then
-                mkdir -p ${roundcube_path}/config
-            fi
-
-            for FNAME in $(find ${rc_doc_root}/config -maxdepth 1 \( -name "*.dist" -o -name "*.php" \))
-            do
-                # move file
-                mv ${FNAME} ${roundcube_path}/config/
-            done
-
-            if [ -f ${rc_doc_root}/config/.htaccess ] ; then
-                rm -f ${rc_doc_root}/config/.htaccess
-            fi
-            rm -rf ${rc_doc_root}/config
-        fi
-
-        # check symbolic links
-        if [ ! -h ${rc_doc_root}/config ] ; then
-            # a symbolic link doesn't exist
-            if [ ! -d ${rc_doc_root}/config ] ; then
-                # Check if destination source directory exists
-                if [ ! -d ${roundcube_path}/config ] ; then
-                    mkdir -p ${roundcube_path}/config
-                fi
-
-                # create a symbolic link
-                cd ${rc_doc_root}
-                ln -sf ${roundcube_path}/config config
-            else
-                # error - directory with this name found
-                error "A problem exists with '${roundcube_path}/config' - it should be a symbolic link!"
-            fi
-        fi
-
-        # remove obsolete directories
-        rm -fr ${rc_doc_root}/logs
-
-        # add document root to list
-        echo "${rc_doc_root}:" >> "${docroot_addlist}"
-    fi
 }
 
 # ----------------------------------------------------------------------------
@@ -2522,142 +2308,6 @@ show_installed_version ()
     if [ -f ${rc_doc_root}/program/include/iniset.php ] ; then
         rc_version=$(grep "RCMAIL_VERSION" ${rc_doc_root}/program/include/iniset.php | sed "s/^.*RCMAIL_VERSION' *, *'\(.*\)'.*$/\1/")
         echo "- Roundcube version: ${rc_version}"
-    fi
-}
-
-# ----------------------------------------------------------------------------
-# remove installed program files
-# $1 - Roundcube document root
-# ----------------------------------------------------------------------------
-remove_program_files ()
-{
-    rc_doc_root="$1"
-
-    if [ -d "${rc_doc_root}" ] ; then
-        echo "- removing program files (${rc_doc_root}) ..."
-
-        if [ -f "${docroot_filelist}" ] ; then
-            while read line ; do
-                # check for comment
-                echo "${line}" | grep -q "^#"
-
-                if [ $? -ne 0 ] ; then
-                    # no comment - go on...
-                    FDNAME="${testroot}${rc_doc_root}/${line}"
-
-                    if [ -d "${FDNAME}" ] ; then
-                        # remove directory
-                        rmdir --ignore-fail-on-non-empty "${FDNAME}"
-                    elif [ -f "${FDNAME}" ] ; then
-                        # remove file
-                        rm -f "${FDNAME}"
-                    fi
-                fi
-            done < "${docroot_filelist}"
-        else
-            echo "missing ${docroot_filelist} file, error removing package files!"
-        fi
-
-        # remove document root directory
-        rmdir --ignore-fail-on-non-empty "${rc_doc_root}"
-    fi
-}
-
-# ----------------------------------------------------------------------------
-# purge document roots
-# ----------------------------------------------------------------------------
-purge_document_roots ()
-{
-    echo "purging document root directories ..."
-
-    # backup doccument root deletion list
-    /var/install/bin/backup-file --quiet "${docroot_dellist}" backup
-
-    if [ -f "${docroot_addlist}" ] ; then
-        # document root list exists
-        /var/install/bin/backup-file --quiet "${docroot_addlist}" backup
-
-        if [ -f "${docroot_dellist}" ] ; then
-            # append current document root list to deletion list
-            cat "${docroot_dellist}" "${docroot_addlist}" | sort > "${docroot_tmplist}"
-            mv  "${docroot_tmplist}" "${docroot_dellist}"
-        else
-            # copy current document root list to deletion list
-            cp  "${docroot_addlist}" "${docroot_dellist}"
-        fi
-
-        # remove previous document root list
-        rm -f "${docroot_addlist}"
-    fi
-
-    if [ ${ROUNDCUBE_N} -ne 0 ] ; then
-        idx=1
-        while [ ${idx} -le ${ROUNDCUBE_N} ] ; do
-            eval rc_doc_root='$ROUNDCUBE_'${idx}'_DOCUMENT_ROOT'
-
-            # add entry to document root list
-            echo "${rc_doc_root}:" >> "${docroot_addlist}"
-
-            if [ -f "${docroot_dellist}" ] ; then
-                grep -q "^${rc_doc_root}:" "${docroot_dellist}"
-
-                if [ $? -eq 0 ] ; then
-                    # remove document root from deletion list
-                    grep -v "^${rc_doc_root}:" "${docroot_dellist}" > "${docroot_tmplist}"
-                    mv  "${docroot_tmplist}" "${docroot_dellist}"
-                fi
-            fi
-
-            idx=$(expr ${idx} + 1)
-        done
-    fi
-
-    if [ -f "${docroot_dellist}" ] ; then
-        if [ -f "${docroot_tmplist}" ] ; then
-            rm -f "${docroot_tmplist}"
-        fi
-
-        cut -d: -f1 "${docroot_dellist}" |\
-        while read line ; do
-            echo "${line}" | grep -q "^#"
-
-            if [ $? -ne 0 ] ; then
-                if [ -d "${line}" ] ; then
-                    # directory exists
-                    /var/install/bin/ask "Directory '${line}' is not used anymore, delete it" 'n' > /tmp/ask.$$ <$tty
-                    rc=$?
-                    yesno=$(cat /tmp/ask.$$|tr 'A-Z' 'a-z')
-                    rm -f /tmp/ask.$$
-                    if [ $rc = 255 ] ; then
-                        rm ${tmpfile}
-                        exit 1
-                    fi
-
-                    if [ "${yesno}" = "yes" ] ; then
-                        # delete Roundcube program directory
-                        remove_program_files "${line}"
-                    else
-                        # preserve directory
-                        echo "${line}:" >> "${docroot_tmplist}"
-                    fi
-                fi
-            fi
-        done
-
-        if [ -f "${docroot_tmplist}" -a -s "${docroot_tmplist}" ] ; then
-            # tmp file exists and contains data, replace deletion list
-            mv "${docroot_tmplist}" "${docroot_dellist}"
-        else
-            # remove deletion list
-            if [ -f "${docroot_dellist}" ] ; then
-                rm -f "${docroot_dellist}"
-            fi
-        fi
-    fi
-
-    # delete temp file
-    if [ -f "${docroot_tmplist}" ] ; then
-        rm -f "${docroot_tmplist}"
     fi
 }
 
