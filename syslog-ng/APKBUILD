@@ -1,8 +1,8 @@
 # Contributor: Jens Vehlhaber <jens@eisfair.org>
 # Maintainer: Jens Vehlhaber <jens@eisfair.org>
 pkgname=syslog-ng
-pkgver=3.8.1
-pkgrel=1
+pkgver=3.9.1
+pkgrel=0
 pkgdesc="Next generation logging daemon"
 url="http://www.balabit.com"
 arch="all"
@@ -78,7 +78,7 @@ package() {
 	install -D -m644 "$srcdir"/syslog-ng.logrotate ${pkgdir}/etc/logrotate.d/syslog || return 1
 }
 
-md5sums="acf14563cf5ce435db8db35486ce66af  syslog-ng-3.8.1.tar.gz
+md5sums="1b48da9ef620cf06e55e481b5abb677a  syslog-ng-3.9.1.tar.gz
 8916d55f8213d2746e8c2a6a89c29d6c  syslog-ng.logrotate
 3c204eb956302603428a189ad4cfb967  syslog-ng.initd
 ef7e473de5a980c49789dc8367700c13  syslog-ng-destination.std
@@ -87,7 +87,7 @@ bc676f733ea162ea4de7a8c2a16c06ed  syslog-ng-log.std
 071b35a288c99de0a9db69389bdc3953  syslog-ng-options.std
 835e0bd5ed63ea1b631ce7a6c724affe  syslog-ng-plugins.std
 d1b01c819861945675a6e2fcff8d9a2c  syslog-ng-source.std"
-sha256sums="84b081f6e5f98cbc52052e342bcfdc5de5fe0ebe9f5ec32fe9eaec5759224cc5  syslog-ng-3.8.1.tar.gz
+sha256sums="5678856a550ae790618fabde9d1447f932ce7a9080d55dca8fc5df1202c70a17  syslog-ng-3.9.1.tar.gz
 a886b65863d72476504165e6a6dfe3d2922945d8cb61adb6b8eec73ac35d825e  syslog-ng.logrotate
 6d699681d973c014df478f7227115e07bb3317437525362d5cee1e367519afdf  syslog-ng.initd
 12dcea7b7e332e21fe86f4f72850c6c55a17475fb153defa4e56b1d6a4bf2fe9  syslog-ng-destination.std
@@ -96,7 +96,7 @@ df30f0ce37bdf8cc0ac0fcc04800d7d14880bf3a19d01ab96220a325f1ab3943  syslog-ng-log.
 7aba3152c4fd0daf341827119947e07dc68a1e78bce673564eac0990b62e535e  syslog-ng-options.std
 d8512e9901db7d42651a0405392438d80b1f1b110462d1bf57809ddf7a37b2d5  syslog-ng-plugins.std
 0f3ea572b98d21f3afd82d64b17d518d6584b2ea4bfe96df2c1aa9c648890014  syslog-ng-source.std"
-sha512sums="cdd07427e7ddf4aebc1e4ed9512a1d7718d49d5c0deadccdeb0b1d7762eae178c3018b2b48b475ff8c7aec999b75d1f1cc424fca823b543f607f4fc8872070a5  syslog-ng-3.8.1.tar.gz
+sha512sums="aade44fa6dffa7e84fc951aa20f0e40db2ee6438f46108c95244e465b1fafc08e6f9afab12c057576d601cc51dd7cefb16370183ca036af0d68046fdb29fdd02  syslog-ng-3.9.1.tar.gz
 a062d1601f5215f60e2fc40c6ca498d768aa97af3647a9468731123a28fdd67962421b4412bfbe08a1123141b730cb78f102230ab72befec05ba7f398b39e27a  syslog-ng.logrotate
 dc36668ba9501a43c715aed43dabd6f27f07712e1f0fc6c4c2985f54ce5e2c56b4a9e438696546a11ff46969f86403ad90421f9db4d09a4d2c977ce9208ae51f  syslog-ng.initd
 f07c1712ada8871d51b4d66e390a83f87a340e126b4fed8e89fe2d51d4007e5d5f7dc77ff7c93e92798b38a90473367f5d82742fc964b168a3f69e39a5f3bede  syslog-ng-destination.std

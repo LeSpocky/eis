@@ -826,8 +826,8 @@ mlfi_eom (SMFICTX *ctx) {
 	            switch (ret) {
 	                case 1:
 		              syslog(LOG_ERR,  "ERR body rem.: %s attachment: %s ", priv->temp_mail, optremove );
-                      break;	         
-	                case 9:            
+                      break;
+	                case 9:
 		              syslog(LOG_INFO, "Remove from:   %s attachment: %s ", priv->temp_mail, optremove );
                       break;
                 }
@@ -862,9 +862,10 @@ mlfi_cleanup (SMFICTX *ctx, sfsistat rc) {
     if (debuglevel < 4) {
 	    /* unlink temporary files */
 	    if (*priv->temp_mail) {
-            if (debuglevel > 0)
-                syslog(LOG_INFO, "Cleanup remove %s", priv->temp_mail);   	    
-	        (void) unlink(priv->temp_mail);
+              if (debuglevel > 0) {
+                syslog(LOG_INFO, "Cleanup remove %s", priv->temp_mail);
+              }
+	      (void) unlink(priv->temp_mail);
 	    }
 	    if (*priv->temp_signtxt) 
 	        (void) unlink(priv->temp_signtxt);
