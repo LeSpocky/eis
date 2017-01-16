@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------------
 # Apk repository configuration
 # ----------------------------------------------------------------------------
-APK_REPOSITORY_N='5'                   # Number of repositories to configure
+APK_REPOSITORY_N='7'                   # Number of repositories to configure
 APK_REPOSITORY_1_NAME='cd rom'         # Use a name what ever you want. The
                                        # entered value is only for your overview
 APK_REPOSITORY_1_ACTIVE='no'           # Should this repository be used at the
@@ -26,9 +26,17 @@ APK_REPOSITORY_4_NAME='eisfair-ng backports'
 APK_REPOSITORY_4_ACTIVE='yes'
 APK_REPOSITORY_4_URL='http://download.eisfair.org/v_RELVERS_/backports'
 
-APK_REPOSITORY_5_NAME='alpine packages (mirror)'
-APK_REPOSITORY_5_ACTIVE='no'
-APK_REPOSITORY_5_URL='http://nl.alpinelinux.org/alpine/v_RELVERS_/main'
+APK_REPOSITORY_5_NAME='alpine community packages'
+APK_REPOSITORY_5_ACTIVE='yes'
+APK_REPOSITORY_5_URL='http://nl.alpinelinux.org/alpine/v_RELVERS_/community'
+
+APK_REPOSITORY_6_NAME='alpine packages (mirror)'
+APK_REPOSITORY_6_ACTIVE='no'
+APK_REPOSITORY_6_URL='http://nl.alpinelinux.org/alpine/v_RELVERS_/main'
+
+APK_REPOSITORY_7_NAME='alpine community packages (mirror)'
+APK_REPOSITORY_7_ACTIVE='no'
+APK_REPOSITORY_7_URL='http://nl.alpinelinux.org/alpine/v_RELVERS_/community'
 
 # ----------------------------------------------------------------------------
 # End
