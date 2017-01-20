@@ -352,7 +352,7 @@ ${endav}LoadModule dav_module modules/mod_dav.so
 ${endav}LoadModule dav_fs_module modules/mod_dav_fs.so
 ${endav}LoadModule dav_lock_module modules/mod_dav_lock.so
 
-<IfModule !auth_digest_moddule>
+<IfModule !auth_digest_module>
     LoadModule auth_digest_module modules/mod_auth_digest.so
 </IfModule>
 
