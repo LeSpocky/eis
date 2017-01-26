@@ -65,7 +65,7 @@ createInadynConfiguration()
                     inadyn_system='custom@dyndns.org'
                     ;;
                 changeip.com)
-                    inadyn_system='custom@http_svr_basic_auth'
+                    inadyn_system='default@changeip.com'
                     inadyn_ip_server_name='ip.changeip.com'
                     ;;
                 *)
@@ -128,7 +128,7 @@ verbose ${inadyn_log_level}
 ip_server_name ${inadyn_ip_server_name} /
 
 # Inadyn chache directory
-cache_dir /tmp/inadyn_cache
+cache-dir /tmp/inadyn_cache
 EOF
 
             case "$inadyn_system_type" in
