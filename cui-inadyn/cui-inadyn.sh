@@ -3,7 +3,7 @@
 # /var/install/config.d/cui-inadyn.sh - INADYN configuration
 #
 # Copyright (c) 2008-2010 Rene Hanke, hanker(at)rpg-domain(dot)de
-# Copyright (c) 2011-2013 the eisfair team, <team(at)eisfair(dot)org>
+# Copyright (c) 2011-2017 the eisfair team, <team(at)eisfair(dot)org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ createInadynConfiguration()
                 custom)
                     inadyn_system='custom@dyndns.org'
                     ;;
-                changeip.org)
+                changeip.com)
                     inadyn_system='custom@http_svr_basic_auth'
                     inadyn_ip_server_name='ip.changeip.com'
                     ;;
@@ -98,8 +98,8 @@ dyndns_system ${inadyn_system}
 EOF
             # Change alias list into separate aliases
             jdx=1
-            while [ $jdx -le ${inadyn_alias_number} ] ; do
-                eval inadyn_alias='$INADYN_ACCOUNT_'${idx}'_ALIAS_'$jdx
+            while [ ${jdx} -le ${inadyn_alias_number} ] ; do
+                eval inadyn_alias='$INADYN_ACCOUNT_'${idx}'_ALIAS_'${jdx}
                 case ${inadyn_alias} in
                     [1-5])
                         # Set number given, so add '*' in front of it

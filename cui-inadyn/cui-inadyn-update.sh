@@ -3,7 +3,7 @@
 # /var/install/config.d/inadyn-update.sh - paramater update script
 #
 # Creation   : 2011-02-12 starwarsfan
-# Copyright (c) 2011-2013 the eisfair team, <team(at)eisfair(dot)org>
+# Copyright (c) 2011-2017 the eisfair team, <team(at)eisfair(dot)org>
 #
 # ----------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ EOFG
     printgpl --check_exp ${packageName} >/etc/check.d/${packageName}.exp
     cat >> /etc/check.d/${packageName}.exp <<EOFG
 
-INADYN_SYSTEM_CUI     = 'dynamic|static|custom|zoneedit|no-ip|changeip'
-                      : 'One of the values "dynamic", "static", "custom", "zoneedit", "no-ip" or "changeip" must be used'
+INADYN_SYSTEM_CUI     = 'dynamic|static|custom|dyndns.org|freedns.afraid.org|zoneedit.com|no-ip.com|easydns.com|tzo.com|3322.org|dnsomatic.com|tunnelbroker.net|dns.he.net/|dynsip.org|sitelutions.com|dnsexit.com|changeip.com|zerigo.com|dhis.org|nsupdate.info|duckdns.org|loopia.com|namecheap.com|domains.google.com|ovh.com|dtdns.com|giradns.com|duiadns.net'
+                      : 'One of the values dynamic, static, custom, dyndns.org, freedns.afraid.org, zoneedit.com, no-ip.com, easydns.com, tzo.com, 3322.org, dnsomatic.com, tunnelbroker.net, dns.he.net/, dynsip.org, sitelutions.com, dnsexit.com, changeip.com, zerigo.com, dhis.org, nsupdate.info, duckdns.org, loopia.com, namecheap.com, domains.google.com, ovh.com, dtdns.com, giradns.com or duiadns.net must be used'
 
 INADYN_ALIAS          = '(RE:FQDN)|[1-5]'
                       : 'Only a full qualified domain name or numbers from 1-5 are supportet!'
