@@ -40,31 +40,31 @@
     * dynamic:  dyndns.org (dynamisch)<br/>
     * static:   dyndns.org (statisch)<br/>
     * custom:   dyndns.org (custom)<br/>
-	* www.dyndns.org<br/
-	* freedns.afraid.org<br/
-	* www.zoneedit.com<br/
-	* www.no-ip.com<br/
-	* www.easydns.com<br/
-	* www.tzo.com<br/
-	* www.3322.org<br/
-	* www.dnsomatic.com<br/
-	* www.tunnelbroker.net<br/
-	* dns.he.net/<br/
-	* www.dynsip.org<br/
-	* www.sitelutions.com<br/
-	* www.dnsexit.com<br/
-	* www.changeip.com<br/
-	* www.zerigo.com<br/
-	* www.dhis.org<br/
-	* nsupdate.info<br/
-	* duckdns.org<br/
-	* www.loopia.com<br/
-	* www.namecheap.com<br/
-	* domains.google.com<br/
-	* www.ovh.com<br/
-	* www.dtdns.com<br/
-	* giradns.com<br/
-	* www.duiadns.net<br/
+	* www.dyndns.org<br/>
+	* freedns.afraid.org<br/>
+	* www.zoneedit.com<br/>
+	* www.no-ip.com<br/>
+	* www.easydns.com<br/>
+	* www.tzo.com<br/>
+	* www.3322.org<br/>
+	* www.dnsomatic.com<br/>
+	* www.tunnelbroker.net<br/>
+	* dns.he.net/<br/>
+	* www.dynsip.org<br/>
+	* www.sitelutions.com<br/>
+	* www.dnsexit.com<br/>
+	* www.changeip.com<br/>
+	* www.zerigo.com<br/>
+	* www.dhis.org<br/>
+	* nsupdate.info<br/>
+	* duckdns.org<br/>
+	* www.loopia.com<br/>
+	* www.namecheap.com<br/>
+	* domains.google.com<br/>
+	* www.ovh.com<br/>
+	* www.dtdns.com<br/>
+	* giradns.com<br/>
+	* www.duiadns.net<br/>
 <br/>
     Standard-Einstellung: INADYN_ACCOUNT_%_SYSTEM='dynamic'<br/>
 </help>
