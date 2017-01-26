@@ -33,9 +33,9 @@ start() {
 
     checkCacheDir
 
-    if [ `ls -l /etc/inadyn/inadyn*.conf 2>/dev/null | wc -l` -ge 1 ] ; then
+    if [ $(ls -l /etc/inadyn/inadyn*.conf 2>/dev/null | wc -l) -ge 1 ] ; then
         # Only start if config-file(s) are really present
-        for configfile in `eval ls -1 /etc/inadyn/inadyn*.conf` ; do
+        for configfile in $(eval ls -1 /etc/inadyn/inadyn*.conf) ; do
             /usr/bin/inadyn --input_file ${configfile}
         done
     else
@@ -50,9 +50,9 @@ forcestart() {
 
     checkCacheDir
 
-    if [ `ls -l /etc/inadyn/inadyn*.conf 2>/dev/null | wc -l` -ge 1 ] ; then
+    if [ $(ls -l /etc/inadyn/inadyn*.conf 2>/dev/null | wc -l) -ge 1 ] ; then
         ## only start if config-file(s) are really present
-        for configfile in `eval ls -1 /etc/inadyn/inadyn*.conf` ; do
+        for configfile in $(eval ls -1 /etc/inadyn/inadyn*.conf) ; do
             /usr/bin/inadyn --input_file ${configfile}
         done
     else
@@ -64,14 +64,14 @@ forcestart() {
 
 stop() {
     mecho --info "Shutting down inadyn..."
-    determinedPids=`pidof inadyn`
+    determinedPids=$(pidof inadyn)
     if [ -n "$determinedPids" ] ; then
         kill -9 ${determinedPids} 2>/dev/null
         sleep 2
     fi
 
     # Log service shutdown
-    if [ `pidof inadyn | wc -w` -le 0 ] ; then
+    if [ $(pidof inadyn | wc -w) -le 0 ] ; then
          /usr/bin/logger -t INADYN    \
                          -p user.info \
                          "INADYN: Stopped all 'INADYN' - processes."
@@ -99,7 +99,7 @@ restart() {
 }
 
 status() {
-    if [ `pidof inadyn | wc -w` -gt 0 ] ; then
+    if [ $(pidof inadyn | wc -w) -gt 0 ] ; then
         mecho --info "Inadyn is running"
         exit 0
     else
