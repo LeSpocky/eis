@@ -36,10 +36,10 @@ then
         echo "Account $inadynAccountNumber:"
         echo "Name: $inadynAccountName"
         echo "Type: $inadynAccountType"
-        echo "Update time: `date +\"%b %d %T %Y %Z\"`"
+        echo "Update time: $(date +\"%b %d %T %Y %Z\")"
         if [ -f /tmp/inadyn_cache/inadyn_ip.cache ]
         then
-            currentIp=`cut -d " " -f1 /tmp/inadyn_cache/inadyn_ip.cache`
+            currentIp=$(cut -d " " -f1 /tmp/inadyn_cache/inadyn_ip.cache)
             echo "Current IP: $currentIp"
         fi
         echo
