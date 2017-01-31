@@ -3,5 +3,5 @@
 cd /etc/init.d
 ln -s inadyn cui-inadyn
 
-/var/install/bin/add-menu setup.services.menu setup.services.cui-inadyn.menu "inadyn"
+/var/install/bin/add-menu setup.services.menu setup.services.cui-inadyn.menu "Inadyn"
 /var/install/config.d/cui-inadyn-update.sh
