@@ -29,6 +29,8 @@ package() {
 	mkdir -p ${pkgdir}
 	cp -r ${startdir}/menus/* ${pkgdir}/
 	sed -i -e "s/_RELVERS_/${alpinerelease}/g" ${pkgdir}/etc/default.d/apk-repositories
+	mkdir -p   ${pkgdir}/etc/backup.d
+	mkdir -p   ${pkgdir}/etc/config.d
 	chmod 0770 ${pkgdir}/etc/backup.d
 	chmod 0770 ${pkgdir}/etc/config.d
 	chmod 0770 ${pkgdir}/etc/default.d
